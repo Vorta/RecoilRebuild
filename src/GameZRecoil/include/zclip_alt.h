@@ -36,17 +36,12 @@ extern int gAltClipSourceRectValid;
 extern int gAltClipPassEnabled;
 }
 
-void __fastcall zClipAltBuildFrustumPlanes(
-    CZCameraDataPartial *cameraData
-);
+void __fastcall zClipAltBuildFrustumPlanes(CZCameraDataPartial* cameraData);
 
 namespace zClipAlt {
-void __fastcall SetSourceRect(const zClipAltFloatRect *rect);
-void __fastcall SetTargetRect(
-    const zClipAltFloatRect *rect,
-    int replicate
-);
-int __fastcall RemapPointXYInPlace(float *point);
+void __fastcall SetSourceRect(const zClipAltFloatRect* rect);
+void __fastcall SetTargetRect(const zClipAltFloatRect* rect, int replicate);
+int __fastcall RemapPointXYInPlace(float* point);
 } // namespace zClipAlt
 
 #endif // GAMEZRECOIL_INCLUDE_ZCLIP_ALT_H

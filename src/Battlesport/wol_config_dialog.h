@@ -13,7 +13,7 @@
  * in this source tree.
  */
 struct WestwoodOnlineUpgradeConfigDialog : CDialog {
-  public:
+public:
     CComboBox m_profileCombo;
     CEdit m_connectStringEdit;
     CString m_reservedString;
@@ -30,15 +30,13 @@ struct WestwoodOnlineUpgradeConfigDialog : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    WestwoodOnlineUpgradeConfigDialog(CWnd *parentWnd);
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
+    WestwoodOnlineUpgradeConfigDialog(CWnd* parentWnd);
     virtual ~WestwoodOnlineUpgradeConfigDialog();
-    virtual const AFX_MSGMAP * GetMessageMap() const;
-    WestwoodOnlineUpgradeConfigDialog * Constructor(
-        CWnd *parentWnd
-    );
+    virtual const AFX_MSGMAP* GetMessageMap() const;
+    WestwoodOnlineUpgradeConfigDialog* Constructor(CWnd* parentWnd);
     void Destructor();
-    virtual void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange* dataExchange);
     void OnConnectStringEditSetFocusClear();
     void OnConnectStringEditKillFocus();
     virtual BOOL OnInitDialog();
@@ -48,84 +46,20 @@ struct WestwoodOnlineUpgradeConfigDialog : CDialog {
     void OnProfileComboEditChange();
     void OnProfileComboDropdown();
     void OnConnectStringModeClicked();
-    void GetSelectedProfileValues(
-        char **playerNameOut,
-        char **connectStringOut,
-        int *connectStringModeOut
-    );
+    void GetSelectedProfileValues(char** playerNameOut, char** connectStringOut, int* connectStringModeOut);
     static int ShowModalAndApplySelectedProfileValues();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeConfigDialog) == 0x11c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_profileCombo
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_connectStringEdit
-    ) == 0xa0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_reservedString
-    ) == 0xe0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_connectStringEditText
-    ) == 0xe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_wolPasswordFlag
-    ) == 0xe8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_savedPlayerNames
-    ) == 0xec
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_savedConnectStrings
-    ) == 0xf4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_profilePlayerNames
-    ) == 0xfc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_profileConnectStrings
-    ) == 0x104
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_profileConnectStringModes
-    ) == 0x10c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_selectedProfileIndex
-    ) == 0x114
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeConfigDialog,
-        m_profileComboEditDirty
-    ) == 0x118
-);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_profileCombo) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_connectStringEdit) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_reservedString) == 0xe0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_connectStringEditText) == 0xe4);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_wolPasswordFlag) == 0xe8);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_savedPlayerNames) == 0xec);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_savedConnectStrings) == 0xf4);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_profilePlayerNames) == 0xfc);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_profileConnectStrings) == 0x104);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_profileConnectStringModes) == 0x10c);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_selectedProfileIndex) == 0x114);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeConfigDialog, m_profileComboEditDirty) == 0x118);

@@ -10,7 +10,7 @@
 #include <math.h>
 #include <string.h>
 
-CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime = {0};
+CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime = { 0 };
 /*
  * Purpose: retain whole polygon faces without overwriting adjacent globals.
  * Mission-one runtime captures prove writes through vertex 13; four entries
@@ -18,10 +18,11 @@ CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime =
  * follows the 64-vertex retail scratch family and available 0x300-byte span.
  * The original allocation extent remains unresolved; this is no data proof.
  */
-zVec3 g_CZClass_DiFaceVertexScratch4[64] = {0};
+zVec3 g_CZClass_DiFaceVertexScratch4[64] = { 0 };
 
-namespace {
-    const char *kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
+namespace
+{
+    const char* kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
     const int kNodeClassCamera = 1;
     const int kNodeClassObject3D = 5;
     const int kNodeClassLod = 6;
@@ -50,7 +51,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: absolute float component for dominant-axis selection.
      */
-    float AbsFloat(float value) {
+    float AbsFloat(float value)
+    {
         return value < 0.0f ? -value : value;
     }
 
@@ -59,11 +61,12 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: read float sign bits for side-test rejection.
      */
-    unsigned int FloatBits(float value) {
+    unsigned int FloatBits(float value)
+    {
         union {
             float f;
             unsigned int u;
-        } bits = {value};
+        } bits = { value };
         return bits.u;
     }
 
@@ -72,10 +75,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: three-component dot product for plane side tests.
      */
-    float Dot3(
-        const zVec3 *a,
-        const zVec3 *b
-    ) {
+    float Dot3(const zVec3* a, const zVec3* b)
+    {
         return a->x * b->x + a->y * b->y + a->z * b->z;
     }
 
@@ -84,11 +85,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: build the segment endpoint delta used by plane tests.
      */
-    zVec3 Delta3(
-        const zVec3 *a,
-        const zVec3 *b
-    ) {
-        zVec3 result = {a->x - b->x, a->y - b->y, a->z - b->z};
+    zVec3 Delta3(const zVec3* a, const zVec3* b)
+    {
+        zVec3 result = { a->x - b->x, a->y - b->y, a->z - b->z };
         return result;
     }
 
@@ -97,22 +96,18 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: projected 2D edge cross product for winding tests.
      */
-    double ProjectedEdgeCross(
-        const zVec3 *edgeStart,
-        const zVec3 *edgeEnd,
-        const zVec3 *point,
-        int axis
-    ) {
+    double ProjectedEdgeCross(const zVec3* edgeStart, const zVec3* edgeEnd, const zVec3* point, int axis)
+    {
         switch (axis) {
         case 0:
-            return (edgeEnd->y - edgeStart->y) * (point->z - edgeStart->z) -
-                   (edgeEnd->z - edgeStart->z) * (point->y - edgeStart->y);
+            return (edgeEnd->y - edgeStart->y) * (point->z - edgeStart->z)
+                - (edgeEnd->z - edgeStart->z) * (point->y - edgeStart->y);
         case 1:
-            return (edgeEnd->x - edgeStart->x) * (point->z - edgeStart->z) -
-                   (edgeEnd->z - edgeStart->z) * (point->x - edgeStart->x);
+            return (edgeEnd->x - edgeStart->x) * (point->z - edgeStart->z)
+                - (edgeEnd->z - edgeStart->z) * (point->x - edgeStart->x);
         default:
-            return (edgeEnd->x - edgeStart->x) * (point->y - edgeStart->y) -
-                   (edgeEnd->y - edgeStart->y) * (point->x - edgeStart->x);
+            return (edgeEnd->x - edgeStart->x) * (point->y - edgeStart->y)
+                - (edgeEnd->y - edgeStart->y) * (point->x - edgeStart->x);
         }
     }
 
@@ -121,7 +116,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the dominant normal component for 2D projection.
      */
-    int DominantAxis(const zVec3 *normal) {
+    int DominantAxis(const zVec3* normal)
+    {
         int axis = 0;
         float maxAbs = AbsFloat(normal->x);
         const float absY = AbsFloat(normal->y);
@@ -141,10 +137,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: read the normal component selected by DominantAxis.
      */
-    float DominantAxisComponent(
-        const zVec3 *normal,
-        int axis
-    ) {
+    float DominantAxisComponent(const zVec3* normal, int axis)
+    {
         if (axis == 0) {
             return normal->x;
         }
@@ -159,10 +153,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: orient projected polygon winding against the dominant axis.
      */
-    int ProjectedWindingSign(
-        const zVec3 *normal,
-        int axis
-    ) {
+    int ProjectedWindingSign(const zVec3* normal, int axis)
+    {
         const int componentIsNegative = DominantAxisComponent(normal, axis) < 0.0f ? 1 : 0;
         if (axis == 1) {
             return componentIsNegative != 0 ? 1 : -1;
@@ -175,21 +167,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether the projected segment-plane hit lies inside the polygon.
      */
-    bool PointInProjectedPolygon(
-        const zVec3 *polygonVertices,
-        int vertexCount,
-        const zVec3 *point,
-        const zVec3 *normal
-    ) {
+    bool PointInProjectedPolygon(const zVec3* polygonVertices, int vertexCount, const zVec3* point, const zVec3* normal)
+    {
         const int axis = DominantAxis(normal);
         const int windingSign = ProjectedWindingSign(normal, axis);
 
         {
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-                const double edgeValue =
-                    (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
+                const zVec3* edgeStart = &polygonVertices[edgeIndex];
+                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                const double edgeValue = (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
                 if (edgeValue <= kPickEdgeInsideEpsilon) {
                     return false;
                 }
@@ -206,13 +193,14 @@ namespace {
      */
     bool BuildPickCandidateForSegmentVsPolygonCore(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
-        const zVec3 *polygonVertices,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
+        const zVec3* polygonVertices,
         int vertexCount,
         int cullBackface,
-        int *outDominantAxis
-    ) {
+        int* outDominantAxis
+    )
+    {
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -243,12 +231,7 @@ namespace {
             *outDominantAxis = dominantAxis;
         }
 
-        return PointInProjectedPolygon(
-            polygonVertices,
-            vertexCount,
-            &candidate->hitPos,
-            &candidate->surfaceNormal
-        );
+        return PointInProjectedPolygon(polygonVertices, vertexCount, &candidate->hitPos, &candidate->surfaceNormal);
     }
 
     /**
@@ -258,11 +241,12 @@ namespace {
      */
     bool BuildBatchSegmentPlaneHit(
         zClassDiPickCandidateEntry * candidate,
-        const CZDisplayInstanceSegmentEndpoints *segment,
-        const zVec3 *polygonVertices,
-        const zVec3 *normal,
+        const CZDisplayInstanceSegmentEndpoints* segment,
+        const zVec3* polygonVertices,
+        const zVec3* normal,
         int cullBackface
-    ) {
+    )
+    {
         const zVec3 endDelta = Delta3(&segment->end, &polygonVertices[0]);
         const float endSide = Dot3(&endDelta, normal);
         if (cullBackface == 0 && endSide >= 0.0f) {
@@ -291,14 +275,15 @@ namespace {
     void AppendBatchPolygonCandidate(
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * buffer,
-        const zVec3 *normal,
-        const zModel_PickFaceEntry *faceEntry
-    ) {
+        const zVec3* normal,
+        const zModel_PickFaceEntry* faceEntry
+    )
+    {
         if (buffer->candidateCount >= kMaxPickCandidates) {
             return;
         }
 
-        zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+        zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
         entry->surfaceNormal = *normal;
         entry->node = candidateOwner;
         entry->scenePayload = faceEntry->scenePayload;
@@ -311,12 +296,13 @@ namespace {
      * Purpose: solve hit UV coordinates in the dominant projected plane.
      */
     void SolvePickCandidateUvForProjectedPlane(
-        const zClassDiPickCandidateEntry *candidate,
-        const zVec3 *polygonVertices,
-        const zModel_PickFaceUvData *faceUvData,
-        zVec2 *outUv,
+        const zClassDiPickCandidateEntry* candidate,
+        const zVec3* polygonVertices,
+        const zModel_PickFaceUvData* faceUvData,
+        zVec2* outUv,
         int dominantAxis
-    ) {
+    )
+    {
         float uGrad0;
         float uGrad1;
         float vGrad0;
@@ -350,10 +336,10 @@ namespace {
                 faceUvData->uvs[2].y
             );
 
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
             return;
         }
 
@@ -385,10 +371,10 @@ namespace {
                 faceUvData->uvs[2].y
             );
 
-            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
             return;
         }
 
@@ -419,10 +405,10 @@ namespace {
             faceUvData->uvs[2].y
         );
 
-        outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1 +
-                   (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-        outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1 +
-                   (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+        outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1
+            + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+        outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1
+            + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
     }
 
     /**
@@ -432,8 +418,9 @@ namespace {
      * Purpose: return the current model matrix used by cls_di point and normal
      * transforms.
      */
-    const zMat4x3 *CurrentMatrix() {
-        return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3* CurrentMatrix()
+    {
+        return (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
     }
 
     /**
@@ -441,15 +428,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: transform a world-space query point into the active model matrix space.
      */
-    zVec3 TransformWorldPointToModel(const zVec3 *point) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformWorldPointToModel(const zVec3* point)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
         const float x = point->x - matrix->posX;
         const float y = point->y - matrix->posY;
         const float z = point->z - matrix->posZ;
 
-        zVec3 result = {x * matrix->xx + y * matrix->xy + z * matrix->xz,
+        zVec3 result = { x * matrix->xx + y * matrix->xy + z * matrix->xz,
             x * matrix->yx + y * matrix->yy + z * matrix->yz,
-            x * matrix->zx + y * matrix->zy + z * matrix->zz};
+            x * matrix->zx + y * matrix->zy + z * matrix->zz };
         return result;
     }
 
@@ -458,13 +446,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: transform a model-space hit point into world space.
      */
-    zVec3 TransformModelPointToWorld(const zVec3 *point) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformModelPointToWorld(const zVec3* point)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
 
-        zVec3 result = {point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx +
-                            matrix->posX,
+        zVec3 result = { point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX,
             point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY,
-            point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ};
+            point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ };
         return result;
     }
 
@@ -473,12 +461,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: rotate a model-space surface normal into world space.
      */
-    zVec3 TransformModelVectorToWorld(const zVec3 *vec) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformModelVectorToWorld(const zVec3* vec)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
 
-        zVec3 result = {vec->x * matrix->xx + vec->y * matrix->yx + vec->z * matrix->zx,
+        zVec3 result = { vec->x * matrix->xx + vec->y * matrix->yx + vec->z * matrix->zx,
             vec->x * matrix->xy + vec->y * matrix->yy + vec->z * matrix->zy,
-            vec->x * matrix->xz + vec->y * matrix->yz + vec->z * matrix->zz};
+            vec->x * matrix->xz + vec->y * matrix->yz + vec->z * matrix->zz };
         return result;
     }
 
@@ -487,11 +476,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: gather indexed face vertices into the four-entry DI scratch buffer.
      */
-    void CopyFaceVerticesToScratch(
-        const zVec3 *vertices,
-        const int *vertexIndices,
-        unsigned int vertexCount
-    ) {
+    void CopyFaceVerticesToScratch(const zVec3* vertices, const int* vertexIndices, unsigned int vertexCount)
+    {
         for (unsigned int i = 0; i < vertexCount; ++i) {
             g_CZClass_DiFaceVertexScratch4[i] = vertices[vertexIndices[i]];
         }
@@ -503,8 +489,9 @@ namespace {
      * 0x445b20, and 0x445c20 as the typed mesh face payload access.
      * Purpose: view the node DI payload as polygon/mesh pick face data.
      */
-    zModel_PickFaceData *NodePickFaceData(CZNodePartial * node) {
-        return (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+    zModel_PickFaceData* NodePickFaceData(CZNodePartial * node)
+    {
+        return (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
     }
 
     /**
@@ -512,7 +499,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the current node to the active pick-candidate cursor.
      */
-    void AppendCurrentCandidateNode(CZNodePartial * node) {
+    void AppendCurrentCandidateNode(CZNodePartial * node)
+    {
         g_DiPickCandidateCursor->node = node;
         ++g_DiPickCandidateCursor;
         ++g_DiPickCandidateBuffer->candidateCount;
@@ -523,7 +511,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether traversal should stop after the first accepted candidate.
      */
-    bool BreakOnFirstCandidateHit() {
+    bool BreakOnFirstCandidateHit()
+    {
         return g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0;
     }
 
@@ -532,7 +521,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: convert the active candidate count into the original no-hit return value.
      */
-    int NoCandidatesReturn() {
+    int NoCandidatesReturn()
+    {
         return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
     }
 
@@ -541,10 +531,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the smaller floating-point segment bound.
      */
-    float MinFloat(
-        float a,
-        float b
-    ) {
+    float MinFloat(float a, float b)
+    {
         return a < b ? a : b;
     }
 
@@ -553,10 +541,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the larger floating-point segment bound.
      */
-    float MaxFloat(
-        float a,
-        float b
-    ) {
+    float MaxFloat(float a, float b)
+    {
         return a > b ? a : b;
     }
 
@@ -565,10 +551,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: expand a bounding box into the local eight-corner scratch order.
      */
-    void CopyBBoxToCornersLocal(
-        const zBBox3f *bbox,
-        zBBoxCorners *outCorners
-    ) {
+    void CopyBBoxToCornersLocal(const zBBox3f* bbox, zBBoxCorners* outCorners)
+    {
         const float minX = bbox->min.x;
         const float minY = bbox->min.y;
         const float minZ = bbox->min.z;
@@ -576,7 +560,7 @@ namespace {
         const float maxY = bbox->max.y;
         const float maxZ = bbox->max.z;
 
-        zVec3 *vertices = outCorners->corners;
+        zVec3* vertices = outCorners->corners;
         vertices[0].x = minX;
         vertices[0].y = minY;
         vertices[0].z = maxZ;
@@ -608,8 +592,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: apply the optional node-name prefix filter for region hits.
      */
-    int FilterRegionNodeNameAllowed(CZNodePartial * node) {
-        const char *prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
+    int FilterRegionNodeNameAllowed(CZNodePartial * node)
+    {
+        const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
         if (prefix == 0) {
             return 1;
         }
@@ -622,17 +607,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: compute squared clearance outside the active filter sphere.
      */
-    float FilterRegionClearanceDistanceSq(
-        const zVec3 *boundsCenter,
-        float boundsRadius
-    ) {
+    float FilterRegionClearanceDistanceSq(const zVec3* boundsCenter, float boundsRadius)
+    {
         if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck == 0) {
             return 0.0f;
         }
 
-        float clearance =
-            zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, boundsCenter) -
-            boundsRadius;
+        float clearance = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, boundsCenter) - boundsRadius;
         if (clearance < 0.0f) {
             return 0.0f;
         }
@@ -645,20 +626,18 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: reject nodes whose bounds center is hidden by the active world raycast.
      */
-    int FilterRegionLineOfSightBlocked(
-        CZNodePartial * node,
-        const zVec3 *boundsCenter
-    ) {
-        CZNodePartial *world = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
+    int FilterRegionLineOfSightBlocked(CZNodePartial * node, const zVec3* boundsCenter)
+    {
+        CZNodePartial* world = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
         if (world == 0 || (node->flags & kNodeFlagRequiresLineOfSight) == 0) {
             return 0;
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = {0};
+        PlayerProbeSampleCandidateBuffer rayData = { 0 };
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZClass::gwNodeSetRaycastable(node, 0);
-        zVec3 *center = g_CZDisplayInstance_FilterRegions_Center;
+        zVec3* center = g_CZDisplayInstance_FilterRegions_Center;
         const int result = CZDisplayInstance::RaycastFindClosest(
             world,
             &rayData,
@@ -680,13 +659,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append one filter-region hit entry to the active raycast hit list.
      */
-    void AppendFilterRegionHit(
-        CZNodePartial * node,
-        const zVec3 *hitPos,
-        float distanceSq
-    ) {
-        OptCatalogRaycastHitList *hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
-        OptCatalogRaycastHitEntry *entry = &hitList->hits[hitList->hitCount];
+    void AppendFilterRegionHit(CZNodePartial * node, const zVec3* hitPos, float distanceSq)
+    {
+        OptCatalogRaycastHitList* hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
+        OptCatalogRaycastHitEntry* entry = &hitList->hits[hitList->hitCount];
         entry->hitNode = node;
         entry->pos = *hitPos;
         entry->surfaceRef = 0;
@@ -699,7 +675,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the signed grid step direction for a ray delta.
      */
-    int RayGridStep(float delta) {
+    int RayGridStep(float delta)
+    {
         if (delta > 0.0f) {
             return 1;
         }
@@ -714,14 +691,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the node when its pick-face data produces a segment hit.
      */
-    void AppendNodeFaceCandidateIfHit(CZNodePartial * node) {
-        zModel_PickFaceData *faceData = NodePickFaceData(node);
-        if (faceData != 0 && CZDisplayInstance::AppendPickCandidatesForFace(
-                                 faceData,
-                                 g_DiPickCandidateCursor,
-                                 &g_DiPickQueryPoint,
-                                 &g_DiSegmentEnd
-                             ) != 0) {
+    void AppendNodeFaceCandidateIfHit(CZNodePartial * node)
+    {
+        zModel_PickFaceData* faceData = NodePickFaceData(node);
+        if (faceData != 0
+            && CZDisplayInstance::AppendPickCandidatesForFace(
+                   faceData,
+                   g_DiPickCandidateCursor,
+                   &g_DiPickQueryPoint,
+                   &g_DiSegmentEnd
+               ) != 0) {
             AppendCurrentCandidateNode(node);
         }
     }
@@ -731,10 +710,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: shift the active ray packet into or out of a world-area cell.
      */
-    void OffsetActiveRayPacket(
-        float offsetX,
-        float offsetZ
-    ) {
+    void OffsetActiveRayPacket(float offsetX, float offsetZ)
+    {
         g_DiPickQueryPoint.x += offsetX;
         g_DiPickQueryPoint.z += offsetZ;
         g_DiSegmentEnd.x += offsetX;
@@ -755,7 +732,8 @@ namespace {
         int firstCandidate,
         float offsetX,
         float offsetZ
-    ) {
+    )
+    {
         for (int i = firstCandidate; i < rayData->candidateCount; ++i) {
             rayData->entries[i].hitPos.x -= offsetX;
             rayData->entries[i].hitPos.z -= offsetZ;
@@ -767,12 +745,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: scan one world-area cell for raycastable segment children.
      */
-    void ProcessWorldAreaPickCell(
-        zWorldAreaPartial * area,
-        int nodeCountHint
-    ) {
+    void ProcessWorldAreaPickCell(zWorldAreaPartial * area, int nodeCountHint)
+    {
         for (int i = 0; i < area->childCount; ++i) {
-            CZNodePartial *node = area->childList[i];
+            CZNodePartial* node = area->childList[i];
             const int flags = node->flags;
             if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
                 CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(node, nodeCountHint);
@@ -789,20 +765,14 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children with optional enabled/raycastable filtering.
      */
-    void RecurseListBChildren(
-        CZNodePartial * node,
-        bool requireEnabledRaycastFlags
-    ) {
+    void RecurseListBChildren(CZNodePartial * node, bool requireEnabledRaycastFlags)
+    {
         {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                CZNodePartial *child = node->listB[childIndex];
-                if (!requireEnabledRaycastFlags ||
-                    ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                        (child->flags & kNodeFlagRaycastable) != 0)) {
-                    CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(
-                        child,
-                        node->listCountB
-                    );
+                CZNodePartial* child = node->listB[childIndex];
+                if (!requireEnabledRaycastFlags
+                    || ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0)) {
+                    CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(child, node->listCountB);
                 }
 
                 if (BreakOnFirstCandidateHit()) {
@@ -818,15 +788,16 @@ namespace {
      * Purpose: compute min/max extents from the eight transformed bbox corners.
      */
     void ComputeBBoxExtents(
-        const zBBoxCorners *corners,
-        float *outMinX,
-        float *outMaxX,
-        float *outMinY,
-        float *outMaxY,
-        float *outMinZ,
-        float *outMaxZ
-    ) {
-        const zVec3 *vertices = corners->corners;
+        const zBBoxCorners* corners,
+        float* outMinX,
+        float* outMaxX,
+        float* outMinY,
+        float* outMaxY,
+        float* outMinZ,
+        float* outMaxZ
+    )
+    {
+        const zVec3* vertices = corners->corners;
         *outMinX = vertices[0].x;
         *outMaxX = vertices[0].x;
         *outMinY = vertices[0].y;
@@ -835,7 +806,7 @@ namespace {
         *outMaxZ = vertices[0].z;
 
         for (int i = 1; i < 8; ++i) {
-            const zVec3 *corner = &vertices[i];
+            const zVec3* corner = &vertices[i];
             if (corner->x < *outMinX) {
                 *outMinX = corner->x;
             } else if (corner->x > *outMaxX) {
@@ -859,13 +830,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy one bbox corner into the DI four-vertex scratch polygon.
      */
-    void CopyBBoxCornerToScratch(
-        const zBBoxCorners *bboxCorners,
-        int sourceCorner,
-        int scratchCorner
-    ) {
-        const zVec3 *src = &bboxCorners->corners[sourceCorner];
-        zVec3 *dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
+    void CopyBBoxCornerToScratch(const zBBoxCorners* bboxCorners, int sourceCorner, int scratchCorner)
+    {
+        const zVec3* src = &bboxCorners->corners[sourceCorner];
+        zVec3* dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
         dst->x = src->x;
         dst->y = src->y;
         dst->z = src->z;
@@ -878,14 +846,15 @@ namespace {
      */
     bool TestBBoxFace(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
         int corner0,
         int corner1,
         int corner2,
         int corner3,
-        const zBBoxCorners *bboxCorners
-    ) {
+        const zBBoxCorners* bboxCorners
+    )
+    {
         CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
         CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
         CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
@@ -897,7 +866,8 @@ namespace {
                    g_CZClass_DiFaceVertexScratch4,
                    4,
                    0
-               ) != 0;
+               )
+            != 0;
     }
 
     /**
@@ -909,15 +879,16 @@ namespace {
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        const zBBoxCorners *bboxCorners,
-        zModel_PickFaceEntry *faceEntry,
+        const zBBoxCorners* bboxCorners,
+        zModel_PickFaceEntry* faceEntry,
         int corner0,
         int corner1,
         int corner2,
         int corner3
-    ) {
+    )
+    {
         CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
         CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
         CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
@@ -940,8 +911,9 @@ namespace {
      * Purpose: reinterpret the active pick point array as segment endpoint
      * pairs for batched segment traversal.
      */
-    CZDisplayInstanceSegmentEndpoints *SegmentEndpointBatchFromPickPointArray() {
-        return (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray));
+    CZDisplayInstanceSegmentEndpoints* SegmentEndpointBatchFromPickPointArray()
+    {
+        return (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray));
     }
 
     /**
@@ -950,16 +922,17 @@ namespace {
      * Purpose: reject segment bounds that do not overlap a candidate box.
      */
     bool SegmentBoundsOverlapBox(
-        const CZDisplayInstanceSegmentBounds *bounds,
+        const CZDisplayInstanceSegmentBounds* bounds,
         float minX,
         float maxX,
         float minY,
         float maxY,
         float minZ,
         float maxZ
-    ) {
-        return bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY &&
-               bounds->minY < maxY && bounds->maxZ > minZ && bounds->minZ < maxZ;
+    )
+    {
+        return bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY && bounds->minY < maxY
+            && bounds->maxZ > minZ && bounds->minZ < maxZ;
     }
 
     /**
@@ -967,10 +940,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy the per-segment active mask for recursive filtering.
      */
-    void CopySegmentActiveMask(
-        int *dst,
-        const int *src
-    ) {
+    void CopySegmentActiveMask(int* dst, const int* src)
+    {
         memcpy(dst, src, (size_t)(g_DiPickPointCount) * sizeof(int));
     }
 
@@ -979,11 +950,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: convert a world coordinate to a grid cell coordinate.
      */
-    int GridCoordFromWorld(
-        float value,
-        float origin,
-        float invCellSize
-    ) {
+    int GridCoordFromWorld(float value, float origin, float invCellSize)
+    {
         return (int)(floor((value - origin) * invCellSize));
     }
 
@@ -992,10 +960,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: clamp a grid coordinate into the world-area grid range.
      */
-    int ClampGridCoord(
-        int coord,
-        int count
-    ) {
+    int ClampGridCoord(int coord, int count)
+    {
         if (coord < 0) {
             return 0;
         }
@@ -1010,11 +976,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: shift all active segment endpoints and bounds in the XZ plane.
      */
-    void OffsetSegmentBatchXZ(
-        float offsetX,
-        float offsetZ
-    ) {
-        CZDisplayInstanceSegmentEndpoints *segments = SegmentEndpointBatchFromPickPointArray();
+    void OffsetSegmentBatchXZ(float offsetX, float offsetZ)
+    {
+        CZDisplayInstanceSegmentEndpoints* segments = SegmentEndpointBatchFromPickPointArray();
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             segments[i].start.x += offsetX;
             segments[i].start.z += offsetZ;
@@ -1033,7 +997,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: snapshot candidate counts before processing a clamped grid cell.
      */
-    void SaveSegmentCandidateCounts(int *candidateCounts) {
+    void SaveSegmentCandidateCounts(int* candidateCounts)
+    {
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             candidateCounts[i] = g_DiPickCandidateBuffer[i].candidateCount;
         }
@@ -1044,13 +1009,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: restore new candidate positions from clamped cell space to world space.
      */
-    void RestoreClampedSegmentCandidatePositions(
-        const int *firstNewCandidate,
-        float offsetX,
-        float offsetZ
-    ) {
+    void RestoreClampedSegmentCandidatePositions(const int* firstNewCandidate, float offsetX, float offsetZ)
+    {
         for (int i = 0; i < g_DiPickPointCount; ++i) {
-            PlayerProbeSampleCandidateBuffer *buffer = &g_DiPickCandidateBuffer[i];
+            PlayerProbeSampleCandidateBuffer* buffer = &g_DiPickCandidateBuffer[i];
             for (int j = firstNewCandidate[i]; j < buffer->candidateCount; ++j) {
                 buffer->entries[j].hitPos.x -= offsetX;
                 buffer->entries[j].hitPos.z -= offsetZ;
@@ -1064,9 +1026,10 @@ namespace {
      * Purpose: build axis-aligned segment bounds from start and end points.
      */
     void BuildSegmentBoundsFromEndpoints(
-        const CZDisplayInstanceSegmentEndpoints *segments,
-        CZDisplayInstanceSegmentBounds *bounds
-    ) {
+        const CZDisplayInstanceSegmentEndpoints* segments,
+        CZDisplayInstanceSegmentBounds* bounds
+    )
+    {
         bounds->minX = segments->start.x < segments->end.x ? segments->start.x : segments->end.x;
         bounds->maxX = segments->start.x < segments->end.x ? segments->end.x : segments->start.x;
         bounds->minY = segments->start.y < segments->end.y ? segments->start.y : segments->end.y;
@@ -1080,27 +1043,22 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether segment bounds overlap the world grid in XZ.
      */
-    bool SegmentBoundsOverlapWorldXZ(
-        const CZDisplayInstanceSegmentBounds *bounds,
-        const CZWorldDataPartial *worldData
-    ) {
-        return bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX &&
-               bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ;
+    bool SegmentBoundsOverlapWorldXZ(const CZDisplayInstanceSegmentBounds* bounds, const CZWorldDataPartial* worldData)
+    {
+        return bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX
+            && bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ;
     }
 
-    zDiPartial *NodeDiRef(CZNodePartial * node);
+    zDiPartial* NodeDiRef(CZNodePartial * node);
 
     /**
      * Original static helper observed in cls_di segment-batch traversal callers
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: filter the current node's pick faces against the active segment batch.
      */
-    void FilterCurrentSegmentRegions(
-        CZNodePartial * node,
-        int *activeMask
-    ) {
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+    void FilterCurrentSegmentRegions(CZNodePartial * node, int* activeMask)
+    {
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
         if (faceData != 0) {
             CZDisplayInstance::FilterRegionsAgainstPolygon(
                 node,
@@ -1118,20 +1076,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active segment batch.
      */
-    void RecurseSegmentBatchChildren(
-        CZNodePartial * node,
-        int *activeMask,
-        bool requirePickFlags
-    ) {
+    void RecurseSegmentBatchChildren(CZNodePartial * node, int* activeMask, bool requirePickFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
-            if (!requirePickFlags || ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                                         (child->flags & kNodeFlagRaycastable) != 0)) {
-                CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive(
-                    child,
-                    node->listCountB,
-                    activeMask
-                );
+            CZNodePartial* child = node->listB[i];
+            if (!requirePickFlags
+                || ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0)) {
+                CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, activeMask);
             }
 
             if (BreakOnFirstCandidateHit()) {
@@ -1147,8 +1098,9 @@ namespace {
      * Purpose: view the node payload pointer as a zDi record for point and
      * segment pick tests.
      */
-    zDiPartial *NodeDiRef(CZNodePartial * node) {
-        return (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+    zDiPartial* NodeDiRef(CZNodePartial * node)
+    {
+        return (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
     }
 
     /**
@@ -1156,7 +1108,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: apply the optional variant id gate for point-query nodes.
      */
-    bool NodePassesQueryVariant(CZNodePartial * node) {
+    bool NodePassesQueryVariant(CZNodePartial * node)
+    {
         return (node->flags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0;
     }
 
@@ -1165,7 +1118,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test the node flags required for point-query candidates.
      */
-    bool NodePassesQueryFlags(CZNodePartial * node) {
+    bool NodePassesQueryFlags(CZNodePartial * node)
+    {
         return (node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0;
     }
 
@@ -1174,14 +1128,15 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the node when its DI payload accepts the active query point.
      */
-    void AppendQueryPointCandidateIfHit(CZNodePartial * node) {
-        zDiPartial *di = NodeDiRef(node);
+    void AppendQueryPointCandidateIfHit(CZNodePartial * node)
+    {
+        zDiPartial* di = NodeDiRef(node);
         if (di == 0) {
             return;
         }
 
-        PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-        zClassDiPickCandidateEntry *outCandidate = &buffer->entries[buffer->candidateCount];
+        PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+        zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
         if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
             AppendCurrentCandidateNode(node);
         }
@@ -1192,13 +1147,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active single point query.
      */
-    void RecurseQueryPointChildren(
-        CZNodePartial * node,
-        int cullCount,
-        bool requireQueryFlags
-    ) {
+    void RecurseQueryPointChildren(CZNodePartial * node, int cullCount, bool requireQueryFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
+            CZNodePartial* child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
                 CZDisplayInstance::BuildPickCandidateList(child, cullCount);
             }
@@ -1210,14 +1162,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active point batch query.
      */
-    void RecursePointBatchChildren(
-        CZNodePartial * node,
-        int depth,
-        int *hitFlags,
-        bool requireQueryFlags
-    ) {
+    void RecursePointBatchChildren(CZNodePartial * node, int depth, int* hitFlags, bool requireQueryFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
+            CZNodePartial* child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
                 CZDisplayInstance::BuildPickCandidatesForPoints(child, depth, hitFlags);
             }
@@ -1229,10 +1177,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy or transform model vertices into the shared world-space scratch buffer.
      */
-    void TransformVerticesToSharedScratch(
-        const zVec3 *vertices,
-        int vertexCount
-    ) {
+    void TransformVerticesToSharedScratch(const zVec3* vertices, int vertexCount)
+    {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(vertexCount) * sizeof(zVec3));
             return;
@@ -1244,7 +1190,8 @@ namespace {
     }
 }
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setbreakonfirstcandidate
      * @recoil-artifact defines .text recoil:function:0x443c50: CZDisplayInstance::SetBreakOnFirstCandidate.
@@ -1252,7 +1199,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    void __fastcall SetBreakOnFirstCandidate(int enabled) {
+    void __fastcall SetBreakOnFirstCandidate(int enabled)
+    {
         g_cls_di_BreakOnFirstCandidate = enabled;
     }
 
@@ -1263,7 +1211,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    void __fastcall SetStopAfterFirstHit(int flag) {
+    void __fastcall SetStopAfterFirstHit(int flag)
+    {
         g_cls_di_StopAfterFirstHit = flag;
     }
 
@@ -1276,30 +1225,25 @@ namespace CZDisplayInstance {
      */
     void __fastcall FindBestPickCandidateBelowPoint(
         CZNodePartial * world,
-        const zVec3 *position,
-        PlayerProbeSampleCandidateBuffer *outResults
-    ) {
-        if (BuildPickCandidateListBelowPoint(
-                world,
-                position->x,
-                position->y,
-                position->z,
-                outResults
-            ) != 0) {
+        const zVec3* position,
+        PlayerProbeSampleCandidateBuffer* outResults
+    )
+    {
+        if (BuildPickCandidateListBelowPoint(world, position->x, position->y, position->z, outResults) != 0) {
             outResults->candidateCount = 0;
             zTag4::Clear(&outResults->entries[0].variantTag);
             return;
         }
 
-        zClassDiPickCandidateEntry *best = &outResults->entries[0];
+        zClassDiPickCandidateEntry* best = &outResults->entries[0];
         for (int i = 1; i < outResults->candidateCount; ++i) {
-            zClassDiPickCandidateEntry *candidate = &outResults->entries[i];
+            zClassDiPickCandidateEntry* candidate = &outResults->entries[i];
             if (candidate->hitPos.y > position->y) {
                 continue;
             }
 
-            if (best->hitPos.y > position->y || candidate->hitPos.y > best->hitPos.y ||
-                (candidate->hitPos.y == best->hitPos.y && best->variantTag.count == 0)) {
+            if (best->hitPos.y > position->y || candidate->hitPos.y > best->hitPos.y
+                || (candidate->hitPos.y == best->hitPos.y && best->variantTag.count == 0)) {
                 best = candidate;
             }
         }
@@ -1320,8 +1264,9 @@ namespace CZDisplayInstance {
         float x,
         float maxY,
         float z,
-        PlayerProbeSampleCandidateBuffer * outResults
-    ) {
+        PlayerProbeSampleCandidateBuffer* outResults
+    )
+    {
         if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
             CZTypeList::UpdateQueuedTrees();
         }
@@ -1333,10 +1278,10 @@ namespace CZDisplayInstance {
         g_DiPickCandidateCursor = outResults->entries;
         outResults->candidateCount = 0;
 
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
 
         const int gridCol = (int)(floor((x - worldData->originX) * worldData->areaInvSizeX));
@@ -1349,8 +1294,8 @@ namespace CZDisplayInstance {
         float offsetX = 0.0f;
         float offsetZ = 0.0f;
 
-        const bool insideGrid = gridCol >= 0 && gridCol < worldData->areaGridColCount &&
-                                gridRow >= 0 && gridRow < worldData->areaGridRowCount;
+        const bool insideGrid = gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
+            && gridRow < worldData->areaGridRowCount;
         if (!insideGrid) {
             if (worldData->clampQueriesToBounds == 0) {
                 visitGridCell = false;
@@ -1379,13 +1324,11 @@ namespace CZDisplayInstance {
                 g_DiPickQueryPoint.z += offsetZ;
             }
 
-            zWorldAreaPartial *area = &worldData->areaGridRows[cellRow][cellCol];
+            zWorldAreaPartial* area = &worldData->areaGridRows[cellRow][cellCol];
             for (int i = 0; i < area->childCount; ++i) {
-                CZNodePartial *node = area->childList[i];
-                if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
-                    (node->flags & 0x08) != 0 &&
-                    ((node->flags & 0x01000000) == 0 ||
-                        VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
+                CZNodePartial* node = area->childList[i];
+                if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0
+                    && ((node->flags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
                     BuildPickCandidateList(node, area->childCount + 1);
                 }
             }
@@ -1397,11 +1340,9 @@ namespace CZDisplayInstance {
         }
 
         for (int i = 0; i < world->listCountB; ++i) {
-            CZNodePartial *node = world->listB[i];
-            if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
-                (node->flags & 0x08) != 0 &&
-                ((node->flags & 0x01000000) == 0 ||
-                    VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
+            CZNodePartial* node = world->listB[i];
+            if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0
+                && ((node->flags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
                 BuildPickCandidateList(node, world->listCountB + 1);
             }
         }
@@ -1417,10 +1358,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidateList(
-        CZNodePartial * node,
-        int cullCount
-    ) {
+    int __fastcall BuildPickCandidateList(CZNodePartial * node, int cullCount)
+    {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -1435,12 +1374,7 @@ namespace CZDisplayInstance {
         nodeFlags &= ~kNodeFlagClearDuringPick;
         node->flags = nodeFlags;
         if (g_DiPickCandidateBuffer->candidateCount >= kMaxPickCandidates) {
-            zError::ReportOld(
-                0x200,
-                kClsDiSourceFile,
-                0x26b,
-                "Database intersections array is full"
-            );
+            zError::ReportOld(0x200, kClsDiSourceFile, 0x26b, "Database intersections array is full");
             return 1;
         }
 
@@ -1450,35 +1384,29 @@ namespace CZDisplayInstance {
                 return 1;
             }
 
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
                 }
             }
 
-            zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+            zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
             if (di != 0) {
-                PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-                zClassDiPickCandidateEntry *outCandidate =
-                    &buffer->entries[buffer->candidateCount];
-                if (zDi::BuildPickCandidateForQueryPoint(
-                        di,
-                        outCandidate,
-                        &g_DiPickQueryPoint
-                    ) != 0) {
+                PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+                zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
+                if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                     g_DiPickCandidateCursor->node = node;
                     ++g_DiPickCandidateCursor;
                     ++g_DiPickCandidateBuffer->candidateCount;
@@ -1486,9 +1414,8 @@ namespace CZDisplayInstance {
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial *child = node->listB[i];
-                if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                    (child->flags & 0x08) != 0) {
+                CZNodePartial* child = node->listB[i];
+                if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
                     BuildPickCandidateList(child, node->listCountB);
                 }
             }
@@ -1501,7 +1428,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassLod: {
-            CZLodDataPartial *lodData = (CZLodDataPartial *)(node->classData);
+            CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
             if (lodData->nearRangeSq > 5.0f) {
                 return 1;
             }
@@ -1517,31 +1444,22 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassCamera: {
-            zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            CZCameraDataPartial *cameraData = (CZCameraDataPartial *)(node->classData);
+            zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+            CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
 
             int pushedMatrix = 0;
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
                 // Retail 0x4441c1 passes camera data +0x20 in ECX and +0x14 in EDX.
-                zMath::MatApplyLocalTRS(
-                    &cameraData->posOffset,
-                    &cameraData->targetOrEuler,
-                    &unitScale
-                );
+                zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
             }
 
-            zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+            zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
             if (di != 0) {
-                PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-                zClassDiPickCandidateEntry *outCandidate =
-                    &buffer->entries[buffer->candidateCount];
-                if (zDi::BuildPickCandidateForQueryPoint(
-                        di,
-                        outCandidate,
-                        &g_DiPickQueryPoint
-                    ) != 0) {
+                PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+                zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
+                if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                     g_DiPickCandidateCursor->node = node;
                     ++g_DiPickCandidateCursor;
                     ++g_DiPickCandidateBuffer->candidateCount;
@@ -1549,9 +1467,8 @@ namespace CZDisplayInstance {
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial *child = node->listB[i];
-                if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                    (child->flags & 0x08) != 0) {
+                CZNodePartial* child = node->listB[i];
+                if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
                     BuildPickCandidateList(child, node->listCountB);
                 }
             }
@@ -1564,8 +1481,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassSequence: {
-            CZSequenceDataPartial *sequenceData =
-                (CZSequenceDataPartial *)(node->classData);
+            CZSequenceDataPartial* sequenceData = (CZSequenceDataPartial*)(node->classData);
             if (sequenceData->isActive == 0) {
                 return 1;
             }
@@ -1574,10 +1490,7 @@ namespace CZDisplayInstance {
                 return 1;
             }
 
-            BuildPickCandidateList(
-                sequenceData->entries[sequenceData->currentIndex].node,
-                node->listCountB
-            );
+            BuildPickCandidateList(sequenceData->entries[sequenceData->currentIndex].node, node->listCountB);
             return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
         }
 
@@ -1610,15 +1523,12 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesRecursive(
-        CZNodePartial * node,
-        int cullCount
-    ) {
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+    int __fastcall BuildPickCandidatesRecursive(CZNodePartial * node, int cullCount)
+    {
+        zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-            zClassDiPickCandidateEntry *outCandidate =
-                &buffer->entries[buffer->candidateCount];
+            PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+            zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
             if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
@@ -1626,12 +1536,12 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZAnimateDataPartial *animateData = (CZAnimateDataPartial *)(node->classData);
+        CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
         int pushedMatrix = 0;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+            zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
         }
 
         if (cullCount > 1) {
@@ -1662,10 +1572,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForLight(
-        CZNodePartial * node,
-        int cullCount
-    ) {
+    int __fastcall BuildPickCandidatesForLight(CZNodePartial * node, int cullCount)
+    {
         if (cullCount > 1) {
             const int result = IsPickQueryPointOutsideViewBBoxXZ(node);
             if (result != 0) {
@@ -1673,22 +1581,17 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZLightDataPartial *lightData = (CZLightDataPartial *)(node->classData);
+        CZLightDataPartial* lightData = (CZLightDataPartial*)(node->classData);
         zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
-        zMath::MatTranslate(
-            lightData->localPosition.x,
-            lightData->localPosition.y,
-            lightData->localPosition.z
-        );
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y, lightData->localPosition.z);
         zMath::MatRotateY(lightData->localRotation.y);
         zMath::MatRotateX(lightData->localRotation.x);
         zMath::MatRotateZ(lightData->localRotation.z);
 
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-            zClassDiPickCandidateEntry *outCandidate =
-                &buffer->entries[buffer->candidateCount];
+            PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+            zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
             if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
@@ -1716,16 +1619,11 @@ namespace CZDisplayInstance {
         zVec3 * pointArray,
         int pointCount,
         float queryMaxY,
-        PlayerProbeSampleCandidateBuffer *outCandidateBuffersByPoint
-    ) {
+        PlayerProbeSampleCandidateBuffer* outCandidateBuffersByPoint
+    )
+    {
         if (pointCount > 24) {
-            zError::ReportOld(
-                0x200,
-                kClsDiSourceFile,
-                0x495,
-                "More test pnts than space for: %d",
-                pointCount
-            );
+            zError::ReportOld(0x200, kClsDiSourceFile, 0x495, "More test pnts than space for: %d", pointCount);
             pointCount = 24;
         }
 
@@ -1733,25 +1631,23 @@ namespace CZDisplayInstance {
             CZTypeList::UpdateQueuedTrees();
         }
 
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
-        zWorldAreaPartial *gridCellForPoint[24] = {0};
-        zWorldAreaPartial *uniqueGridCells[24] = {0};
-        int pointActive[24] = {0};
-        int pointWasClamped[24] = {0};
-        float clampOffsetX[24] = {0.0f};
-        float clampOffsetZ[24] = {0.0f};
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
+        zWorldAreaPartial* gridCellForPoint[24] = { 0 };
+        zWorldAreaPartial* uniqueGridCells[24] = { 0 };
+        int pointActive[24] = { 0 };
+        int pointWasClamped[24] = { 0 };
+        float clampOffsetX[24] = { 0.0f };
+        float clampOffsetZ[24] = { 0.0f };
 
         for (int i = 0; i < pointCount; ++i) {
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersByPoint[i];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersByPoint[i];
             buffer->candidateCount = 0;
 
-            const int gridCol =
-                (int)(floor((pointArray[i].x - worldData->originX) * worldData->areaInvSizeX));
-            const int gridRow =
-                (int)(floor((pointArray[i].z - worldData->originZ) * worldData->areaInvSizeZ));
+            const int gridCol = (int)(floor((pointArray[i].x - worldData->originX) * worldData->areaInvSizeX));
+            const int gridRow = (int)(floor((pointArray[i].z - worldData->originZ) * worldData->areaInvSizeZ));
 
-            if (gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0 &&
-                gridRow < worldData->areaGridRowCount) {
+            if (gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
+                && gridRow < worldData->areaGridRowCount) {
                 pointActive[i] = 1;
                 gridCellForPoint[i] = &worldData->areaGridRows[gridRow][gridCol];
                 continue;
@@ -1786,7 +1682,7 @@ namespace CZDisplayInstance {
 
         int uniqueGridCellCount = 0;
         for (int uniquePointIndex = 0; uniquePointIndex < pointCount; ++uniquePointIndex) {
-            zWorldAreaPartial *cell = gridCellForPoint[uniquePointIndex];
+            zWorldAreaPartial* cell = gridCellForPoint[uniquePointIndex];
             if (cell == 0) {
                 continue;
             }
@@ -1804,8 +1700,8 @@ namespace CZDisplayInstance {
             }
         }
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
 
         g_DiPickCandidateBuffer = outCandidateBuffersByPoint;
@@ -1815,18 +1711,16 @@ namespace CZDisplayInstance {
         g_DiPickPointCount = pointCount;
 
         for (int cellIndex = 0; cellIndex < uniqueGridCellCount; ++cellIndex) {
-            zWorldAreaPartial *cell = uniqueGridCells[cellIndex];
-            int hitFlags[24] = {0};
+            zWorldAreaPartial* cell = uniqueGridCells[cellIndex];
+            int hitFlags[24] = { 0 };
             for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
-                hitFlags[pointIndex] =
-                    pointActive[pointIndex] != 0 && gridCellForPoint[pointIndex] == cell ? 1 : 0;
+                hitFlags[pointIndex] = pointActive[pointIndex] != 0 && gridCellForPoint[pointIndex] == cell ? 1 : 0;
             }
 
             for (int childIndex = 0; childIndex < cell->childCount; ++childIndex) {
-                CZNodePartial *node = cell->childList[childIndex];
+                CZNodePartial* node = cell->childList[childIndex];
                 const int nodeFlags = node->flags;
-                if ((nodeFlags & kNodeFlagEnabledForPick) != 0 &&
-                    (nodeFlags & 0x08) != 0) {
+                if ((nodeFlags & kNodeFlagEnabledForPick) != 0 && (nodeFlags & 0x08) != 0) {
                     BuildPickCandidatesForPoints(node, cell->childCount + 1, hitFlags);
                 }
             }
@@ -1840,12 +1734,10 @@ namespace CZDisplayInstance {
         }
 
         for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
-            CZNodePartial *node = world->listB[worldNodeIndex];
+            CZNodePartial* node = world->listB[worldNodeIndex];
             const int nodeFlags = node->flags;
-            if ((nodeFlags & kNodeFlagEnabledForPick) != 0 &&
-                (nodeFlags & 0x08) != 0 &&
-                ((nodeFlags & 0x01000000) == 0 ||
-                 VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
+            if ((nodeFlags & kNodeFlagEnabledForPick) != 0 && (nodeFlags & 0x08) != 0
+                && ((nodeFlags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
                 BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
             }
         }
@@ -1861,11 +1753,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForPoints(
-        CZNodePartial * node,
-        int depth,
-        int *hitFlags
-    ) {
+    int __fastcall BuildPickCandidatesForPoints(CZNodePartial * node, int depth, int* hitFlags)
+    {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -1892,27 +1781,25 @@ namespace CZDisplayInstance {
                 }
             }
 
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
                 }
             }
 
-            zModel_PickFaceData *faceData =
-                (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+            zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
             if (faceData != 0) {
                 PickTestMeshAtQueryXZ(
                     node,
@@ -1926,10 +1813,9 @@ namespace CZDisplayInstance {
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial *child = node->listB[i];
+                CZNodePartial* child = node->listB[i];
                 const int childFlags = child->flags;
-                if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
-                    (childFlags & 0x08) != 0) {
+                if ((childFlags & kNodeFlagEnabledForPick) != 0 && (childFlags & 0x08) != 0) {
                     BuildPickCandidatesForPoints(child, node->listCountB, sampleMask);
                 }
             }
@@ -1943,22 +1829,17 @@ namespace CZDisplayInstance {
         case kNodeClassCamera: {
             memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
-            zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            CZCameraDataPartial *cameraData = (CZCameraDataPartial *)(node->classData);
+            zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+            CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
                 // Retail 0x444a52 uses the same camera transform as rendering.
-                zMath::MatApplyLocalTRS(
-                    &cameraData->posOffset,
-                    &cameraData->targetOrEuler,
-                    &unitScale
-                );
+                zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
             }
 
-            zModel_PickFaceData *faceData =
-                (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+            zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
             if (faceData != 0) {
                 PickTestMeshAtQueryXZ(
                     node,
@@ -1972,10 +1853,9 @@ namespace CZDisplayInstance {
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial *child = node->listB[i];
+                CZNodePartial* child = node->listB[i];
                 const int childFlags = child->flags;
-                if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
-                    (childFlags & 0x08) != 0) {
+                if ((childFlags & kNodeFlagEnabledForPick) != 0 && (childFlags & 0x08) != 0) {
                     BuildPickCandidatesForPoints(child, node->listCountB, sampleMask);
                 }
             }
@@ -1987,7 +1867,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassLod: {
-            CZLodDataPartial *lodData = (CZLodDataPartial *)(node->classData);
+            CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
             if (lodData->nearRangeSq > 5.0f) {
                 return 1;
             }
@@ -2007,8 +1887,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassSequence: {
-            CZSequenceDataPartial *sequenceData =
-                (CZSequenceDataPartial *)(node->classData);
+            CZSequenceDataPartial* sequenceData = (CZSequenceDataPartial*)(node->classData);
             if (sequenceData->isActive == 0) {
                 return 1;
             }
@@ -2057,11 +1936,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForPointsRecursive(
-        CZNodePartial * node,
-        int depth,
-        int *hitFlags
-    ) {
+    int __fastcall BuildPickCandidatesForPointsRecursive(CZNodePartial * node, int depth, int* hitFlags)
+    {
         int sampleMask[24];
         memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
@@ -2072,16 +1948,15 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZAnimateDataPartial *animateData = (CZAnimateDataPartial *)(node->classData);
+        CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
         int pushedMatrix = 0;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+            zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
         }
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
         if (faceData != 0) {
             PickTestMeshAtQueryXZ(
                 node,
@@ -2112,11 +1987,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForPointsForLight(
-        CZNodePartial * node,
-        int depth,
-        int *hitFlags
-    ) {
+    int __fastcall BuildPickCandidatesForPointsForLight(CZNodePartial * node, int depth, int* hitFlags)
+    {
         int sampleMask[24];
         memcpy(sampleMask, hitFlags, (size_t)(g_DiPickPointCount) * sizeof(int));
 
@@ -2127,19 +1999,14 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZLightDataPartial *lightData = (CZLightDataPartial *)(node->classData);
+        CZLightDataPartial* lightData = (CZLightDataPartial*)(node->classData);
         zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
-        zMath::MatTranslate(
-            lightData->localPosition.x,
-            lightData->localPosition.y,
-            lightData->localPosition.z
-        );
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y, lightData->localPosition.z);
         zMath::MatRotateY(lightData->localRotation.y);
         zMath::MatRotateX(lightData->localRotation.x);
         zMath::MatRotateZ(lightData->localRotation.z);
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
         if (faceData != 0) {
             PickTestMeshAtQueryXZ(
                 node,
@@ -2169,10 +2036,11 @@ namespace CZDisplayInstance {
      */
     int __fastcall RaycastSelectClosestHitBetweenPoints(
         CZNodePartial * world,
-        const zVec3 *startPoint,
-        const zVec3 *endPoint,
-        PlayerProbeSampleCandidateBuffer *rayData
-    ) {
+        const zVec3* startPoint,
+        const zVec3* endPoint,
+        PlayerProbeSampleCandidateBuffer* rayData
+    )
+    {
         if (RaycastFindClosest(
                 world,
                 rayData,
@@ -2182,7 +2050,8 @@ namespace CZDisplayInstance {
                 endPoint->x,
                 endPoint->y,
                 endPoint->z
-            ) != 0) {
+            )
+            != 0) {
             return 1;
         }
 
@@ -2191,7 +2060,7 @@ namespace CZDisplayInstance {
             return 0;
         }
 
-        const zClassDiPickCandidateEntry *candidate = &rayData->entries[0];
+        const zClassDiPickCandidateEntry* candidate = &rayData->entries[0];
         float closestDistance = zMath::Vec3DeltaLengthSq(startPoint, &candidate->hitPos);
         int bestCandidateIndex = 0;
         int candidateIndex = 0;
@@ -2201,8 +2070,7 @@ namespace CZDisplayInstance {
             ++candidate;
             ++candidateIndex;
 
-            const float candidateDistance =
-                zMath::Vec3DeltaLengthSq(startPoint, &candidate->hitPos);
+            const float candidateDistance = zMath::Vec3DeltaLengthSq(startPoint, &candidate->hitPos);
             if (!(candidateDistance >= closestDistance)) {
                 closestDistance = candidateDistance;
                 bestCandidateIndex = candidateIndex;
@@ -2235,7 +2103,8 @@ namespace CZDisplayInstance {
         float endX,
         float endY,
         float endZ
-    ) {
+    )
+    {
         rayData->candidateCount = 0;
 
         if (world == 0) {
@@ -2252,7 +2121,7 @@ namespace CZDisplayInstance {
             CZTypeList::UpdateQueuedTrees();
         }
 
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
 
         g_DiSegmentMinX = startX < endX ? startX : endX;
         g_DiSegmentMaxX = startX > endX ? startX : endX;
@@ -2270,21 +2139,18 @@ namespace CZDisplayInstance {
         g_DiPickCandidateBuffer = rayData;
         g_DiPickCandidateCursor = rayData->entries;
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
 
-        const bool segmentOverlapsWorld =
-            g_DiSegmentMaxX >= worldData->originX && g_DiSegmentMinX <= worldData->worldMaxX &&
-            g_DiSegmentMaxZ >= worldData->originZ && g_DiSegmentMinZ <= worldData->worldMaxZ;
+        const bool segmentOverlapsWorld = g_DiSegmentMaxX >= worldData->originX
+            && g_DiSegmentMinX <= worldData->worldMaxX && g_DiSegmentMaxZ >= worldData->originZ
+            && g_DiSegmentMinZ <= worldData->worldMaxZ;
 
-        if ((worldData->clampQueriesToBounds != 0 || segmentOverlapsWorld) &&
-            worldData->areaGridRows != 0 && worldData->areaGridColCount > 0 &&
-            worldData->areaGridRowCount > 0) {
-            int gridCol =
-                (int)(floor((g_DiPickQueryPoint.x - worldData->originX) * worldData->areaInvSizeX));
-            int gridRow =
-                (int)(floor((g_DiPickQueryPoint.z - worldData->originZ) * worldData->areaInvSizeZ));
+        if ((worldData->clampQueriesToBounds != 0 || segmentOverlapsWorld) && worldData->areaGridRows != 0
+            && worldData->areaGridColCount > 0 && worldData->areaGridRowCount > 0) {
+            int gridCol = (int)(floor((g_DiPickQueryPoint.x - worldData->originX) * worldData->areaInvSizeX));
+            int gridRow = (int)(floor((g_DiPickQueryPoint.z - worldData->originZ) * worldData->areaInvSizeZ));
 
             const float deltaX = g_DiSegmentEnd.x - g_DiPickQueryPoint.x;
             const float deltaZ = g_DiSegmentEnd.z - g_DiPickQueryPoint.z;
@@ -2294,8 +2160,8 @@ namespace CZDisplayInstance {
             const float invDeltaZ = gridRowStep != 0 ? 1.0f / deltaZ : 0.0f;
 
             while (true) {
-                const bool insideGrid = gridCol >= 0 && gridCol < worldData->areaGridColCount &&
-                                        gridRow >= 0 && gridRow < worldData->areaGridRowCount;
+                const bool insideGrid = gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
+                    && gridRow < worldData->areaGridRowCount;
 
                 if (insideGrid || worldData->clampQueriesToBounds != 0) {
                     int cellCol = gridCol;
@@ -2331,17 +2197,15 @@ namespace CZDisplayInstance {
                         g_DiSegmentMaxZ += offsetZ;
                     }
 
-                    zWorldAreaPartial *area = &worldData->areaGridRows[cellRow][cellCol];
+                    zWorldAreaPartial* area = &worldData->areaGridRows[cellRow][cellCol];
                     for (int i = 0; i < area->childCount; ++i) {
-                        CZNodePartial *node = area->childList[i];
+                        CZNodePartial* node = area->childList[i];
                         const int flags = node->flags;
-                        if ((flags & kNodeFlagEnabledForPick) != 0 &&
-                            (flags & kNodeFlagRaycastable) != 0) {
+                        if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
                             BuildPickCandidatesForSegmentChildFallback(node, area->childCount + 1);
                         }
 
-                        if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                            g_DiPickCandidateBuffer->candidateCount > 0) {
+                        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                             break;
                         }
                     }
@@ -2355,16 +2219,13 @@ namespace CZDisplayInstance {
                         g_DiSegmentMaxX -= offsetX;
                         g_DiSegmentMinZ -= offsetZ;
                         g_DiSegmentMaxZ -= offsetZ;
-                        for (int i = candidateCountBeforeCell;
-                             i < rayData->candidateCount;
-                             ++i) {
+                        for (int i = candidateCountBeforeCell; i < rayData->candidateCount; ++i) {
                             rayData->entries[i].hitPos.x -= offsetX;
                             rayData->entries[i].hitPos.z -= offsetZ;
                         }
                     }
 
-                    if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                        g_DiPickCandidateBuffer->candidateCount > 0) {
+                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                         break;
                     }
                 } else if (gridColStep == 0 && gridRowStep == 0) {
@@ -2374,17 +2235,17 @@ namespace CZDisplayInstance {
                 float tToNextGridColBoundary = 2.0f;
                 if (gridColStep != 0) {
                     const int nextGridCol = gridColStep == 1 ? gridCol + 1 : gridCol;
-                    tToNextGridColBoundary = ((float)(nextGridCol)*worldData->areaCellSizeX +
-                                                 worldData->originX - g_DiPickQueryPoint.x) *
-                                             invDeltaX;
+                    tToNextGridColBoundary
+                        = ((float)(nextGridCol)*worldData->areaCellSizeX + worldData->originX - g_DiPickQueryPoint.x)
+                        * invDeltaX;
                 }
 
                 float tToNextGridRowBoundary = 2.0f;
                 if (gridRowStep != 0) {
                     const int nextGridRow = gridRowStep == 1 ? gridRow + 1 : gridRow;
-                    tToNextGridRowBoundary = ((float)(nextGridRow)*worldData->areaCellSizeZ +
-                                                 worldData->originZ - g_DiPickQueryPoint.z) *
-                                             invDeltaZ;
+                    tToNextGridRowBoundary
+                        = ((float)(nextGridRow)*worldData->areaCellSizeZ + worldData->originZ - g_DiPickQueryPoint.z)
+                        * invDeltaZ;
                 }
 
                 if (tToNextGridColBoundary > 1.0f && tToNextGridRowBoundary > 1.0f) {
@@ -2400,8 +2261,7 @@ namespace CZDisplayInstance {
             }
         }
 
-        if ((g_cls_di_BreakOnFirstCandidate == 0 || rayData->candidateCount <= 0) &&
-            world->listCountB > 0) {
+        if ((g_cls_di_BreakOnFirstCandidate == 0 || rayData->candidateCount <= 0) && world->listCountB > 0) {
             BuildPickCandidatesForSegment(world);
         }
 
@@ -2418,15 +2278,15 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegment(CZNodePartial * self) {
+    int __fastcall BuildPickCandidatesForSegment(CZNodePartial * self)
+    {
         int result = self->listCountB;
         {
             for (int childIndex = 0; childIndex < result; ++childIndex) {
-                CZNodePartial *child = self->listB[childIndex];
+                CZNodePartial* child = self->listB[childIndex];
                 const int childFlags = child->flags;
-                if ((childFlags & kNodeFlagEnabledForPick) != 0 &&
-                    (childFlags & kNodeFlagRaycastable) != 0 &&
-                    VariantTag::CurrentAllowsId(child->nodeType) != 0) {
+                if ((childFlags & kNodeFlagEnabledForPick) != 0 && (childFlags & kNodeFlagRaycastable) != 0
+                    && VariantTag::CurrentAllowsId(child->nodeType) != 0) {
                     BuildPickCandidatesForSegmentChildFallback(child, self->listCountB + 1);
                     result = g_cls_di_BreakOnFirstCandidate;
                     if (result != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -2448,10 +2308,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentChildFallback(
-        CZNodePartial * node,
-        int nodeCountHint
-    ) {
+    int __fastcall BuildPickCandidatesForSegmentChildFallback(CZNodePartial * node, int nodeCountHint)
+    {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -2462,8 +2320,7 @@ namespace CZDisplayInstance {
         if ((g_cls_di_StopAfterFirstHit & nodeFlags) != 0) {
             return 1;
         }
-        if (g_cls_di_BreakOnFirstCandidate != 0 &&
-            g_DiPickCandidateBuffer->candidateCount > 0) {
+        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
             return 0;
         }
         if (VariantTag::CurrentAllowsId(node->nodeType) == 0) {
@@ -2473,19 +2330,14 @@ namespace CZDisplayInstance {
         nodeFlags &= ~kNodeFlagClearDuringPick;
         node->flags = nodeFlags;
         if (g_DiPickCandidateBuffer->candidateCount >= kMaxPickCandidates) {
-            zError::ReportOld(
-                0x200,
-                kClsDiSourceFile,
-                0x94c,
-                "Database intersections array is full"
-            );
+            zError::ReportOld(0x200, kClsDiSourceFile, 0x94c, "Database intersections array is full");
             return 1;
         }
 
         switch (node->classId) {
         case kNodeClassObject3D: {
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
+                const int result = FilterPointsBBox(node, (void*)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2498,48 +2350,40 @@ namespace CZDisplayInstance {
                 }
             }
 
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 3);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
                 }
             }
 
-            zModel_PickFaceData *faceData =
-                (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
-            if (faceData != 0 && AppendPickCandidatesForFace(
-                                     faceData,
-                                     g_DiPickCandidateCursor,
-                                     &g_DiPickQueryPoint,
-                                     &g_DiSegmentEnd
-                                 ) != 0) {
+            zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
+            if (faceData != 0
+                && AppendPickCandidatesForFace(faceData, g_DiPickCandidateCursor, &g_DiPickQueryPoint, &g_DiSegmentEnd)
+                    != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 ||
-                g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                    CZNodePartial *child = node->listB[childIndex];
-                    if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                        (child->flags & kNodeFlagRaycastable) != 0) {
+                    CZNodePartial* child = node->listB[childIndex];
+                    if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0) {
                         BuildPickCandidatesForSegmentChildFallback(child, node->listCountB);
                     }
 
-                    if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                        g_DiPickCandidateBuffer->candidateCount > 0) {
+                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                         break;
                     }
                 }
@@ -2553,13 +2397,13 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassLod: {
-            CZLodDataPartial *lodData = (CZLodDataPartial *)(node->classData);
+            CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
             if (lodData->nearRangeSq > 5.0f) {
                 return 1;
             }
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
+                const int result = FilterPointsBBox(node, (void*)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2573,13 +2417,9 @@ namespace CZDisplayInstance {
             }
 
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentChildFallback(
-                    node->listB[childIndex],
-                    node->listCountB
-                );
+                BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
 
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -2587,14 +2427,13 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassSequence: {
-            CZSequenceDataPartial *sequenceData =
-                (CZSequenceDataPartial *)(node->classData);
+            CZSequenceDataPartial* sequenceData = (CZSequenceDataPartial*)(node->classData);
             if (sequenceData->isActive == 0) {
                 return 1;
             }
 
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
-                const int result = FilterPointsBBox(node, (void *)((unsigned int)(nodeFlags)));
+                const int result = FilterPointsBBox(node, (void*)((unsigned int)(nodeFlags)));
                 if (result != 0) {
                     return result;
                 }
@@ -2646,12 +2485,10 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentRecursive(
-        CZNodePartial * node,
-        int depth
-    ) {
+    int __fastcall BuildPickCandidatesForSegmentRecursive(CZNodePartial * node, int depth)
+    {
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FilterPointsBBox(node, (void *)((unsigned int)(depth)));
+            const int result = FilterPointsBBox(node, (void*)((unsigned int)(depth)));
             if (result != 0) {
                 return result;
             }
@@ -2664,35 +2501,26 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZAnimateDataPartial *animateData = (CZAnimateDataPartial *)(node->classData);
+        CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
         int pushedMatrix = 0;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+            zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
         }
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
-        if (faceData != 0 && AppendPickCandidatesForFace(
-                                 faceData,
-                                 g_DiPickCandidateCursor,
-                                 &g_DiPickQueryPoint,
-                                 &g_DiSegmentEnd
-                             ) != 0) {
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
+        if (faceData != 0
+            && AppendPickCandidatesForFace(faceData, g_DiPickCandidateCursor, &g_DiPickQueryPoint, &g_DiSegmentEnd)
+                != 0) {
             g_DiPickCandidateCursor->node = node;
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 ||
-            g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentChildFallback(
-                    node->listB[childIndex],
-                    node->listCountB
-                );
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -2712,9 +2540,10 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentForCamera(CZNodePartial * node, int /*depth*/) {
-        zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-        CZCameraDataPartial *cameraData = (CZCameraDataPartial *)(node->classData);
+    int __fastcall BuildPickCandidatesForSegmentForCamera(CZNodePartial * node, int /*depth*/)
+    {
+        zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+        CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
 
         int pushedMatrix = 0;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
@@ -2723,27 +2552,18 @@ namespace CZDisplayInstance {
             zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
         }
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
-        if (faceData != 0 && AppendPickCandidatesForFace(
-                                 faceData,
-                                 g_DiPickCandidateCursor,
-                                 &g_DiPickQueryPoint,
-                                 &g_DiSegmentEnd
-                             ) != 0) {
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
+        if (faceData != 0
+            && AppendPickCandidatesForFace(faceData, g_DiPickCandidateCursor, &g_DiPickQueryPoint, &g_DiSegmentEnd)
+                != 0) {
             g_DiPickCandidateCursor->node = node;
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 ||
-            g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentChildFallback(
-                    node->listB[childIndex],
-                    node->listCountB
-                );
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -2763,14 +2583,12 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentForLight(
-        CZNodePartial * node,
-        int depth
-    ) {
-        CZLightDataPartial *lightData = (CZLightDataPartial *)(node->classData);
+    int __fastcall BuildPickCandidatesForSegmentForLight(CZNodePartial * node, int depth)
+    {
+        CZLightDataPartial* lightData = (CZLightDataPartial*)(node->classData);
 
         if (depth > 1 || (node->flags & kNodeFlagPointCandidate) != 0) {
-            const int result = FilterPointsBBox(node, (void *)((unsigned int)(depth)));
+            const int result = FilterPointsBBox(node, (void*)((unsigned int)(depth)));
             if (result != 0) {
                 return result;
             }
@@ -2784,36 +2602,23 @@ namespace CZDisplayInstance {
         }
 
         zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
-        zMath::MatTranslate(
-            lightData->localPosition.x,
-            lightData->localPosition.y,
-            lightData->localPosition.z
-        );
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y, lightData->localPosition.z);
         zMath::MatRotateY(lightData->localRotation.y);
         zMath::MatRotateX(lightData->localRotation.x);
         zMath::MatRotateZ(lightData->localRotation.z);
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
-        if (faceData != 0 && AppendPickCandidatesForFace(
-                                 faceData,
-                                 g_DiPickCandidateCursor,
-                                 &g_DiPickQueryPoint,
-                                 &g_DiSegmentEnd
-                             ) != 0) {
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
+        if (faceData != 0
+            && AppendPickCandidatesForFace(faceData, g_DiPickCandidateCursor, &g_DiPickQueryPoint, &g_DiSegmentEnd)
+                != 0) {
             g_DiPickCandidateCursor->node = node;
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 ||
-            g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentChildFallback(
-                    node->listB[childIndex],
-                    node->listCountB
-                );
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -2834,16 +2639,11 @@ namespace CZDisplayInstance {
         CZNodePartial * world,
         CZDisplayInstanceSegmentEndpoints * segmentEndpoints,
         int endpointCount,
-        PlayerProbeSampleCandidateBuffer *hitBatches
-    ) {
+        PlayerProbeSampleCandidateBuffer* hitBatches
+    )
+    {
         if (endpointCount > 24) {
-            zError::ReportOld(
-                0x200,
-                kClsDiSourceFile,
-                0xba9,
-                "More test pnts than space for: %d",
-                endpointCount
-            );
+            zError::ReportOld(0x200, kClsDiSourceFile, 0xba9, "More test pnts than space for: %d", endpointCount);
             endpointCount = 24;
         }
 
@@ -2852,28 +2652,28 @@ namespace CZDisplayInstance {
         }
 
         const int segmentCount = endpointCount >> 1;
-        int segmentActive[24] = {0};
+        int segmentActive[24] = { 0 };
         for (int activeIndex = 0; activeIndex < segmentCount; ++activeIndex) {
             segmentActive[activeIndex] = 1;
             hitBatches[activeIndex].candidateCount = 0;
         }
 
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
         int anyActive = 0;
         for (int boundsIndex = 0; boundsIndex < segmentCount; ++boundsIndex) {
-            const CZDisplayInstanceSegmentEndpoints *segment = &segmentEndpoints[boundsIndex];
-            CZDisplayInstanceSegmentBounds *bounds = &g_DiSegmentBounds[boundsIndex];
+            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpoints[boundsIndex];
+            CZDisplayInstanceSegmentBounds* bounds = &g_DiSegmentBounds[boundsIndex];
             bounds->minX = segment->start.x < segment->end.x ? segment->start.x : segment->end.x;
             bounds->maxX = segment->start.x < segment->end.x ? segment->end.x : segment->start.x;
             bounds->minY = segment->start.y < segment->end.y ? segment->start.y : segment->end.y;
             bounds->maxY = segment->start.y < segment->end.y ? segment->end.y : segment->start.y;
             bounds->minZ = segment->start.z < segment->end.z ? segment->start.z : segment->end.z;
             bounds->maxZ = segment->start.z < segment->end.z ? segment->end.z : segment->start.z;
-            if (worldData->clampQueriesToBounds == 0 &&
-                !(bounds->minX < worldData->worldMaxX &&
-                    bounds->maxX >= worldData->originX &&
-                    bounds->minZ <= worldData->originZ &&
-                    bounds->maxZ > worldData->worldMaxZ)) {
+            if (worldData->clampQueriesToBounds == 0
+                && !(
+                    bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX
+                    && bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ
+                )) {
                 segmentActive[boundsIndex] = 0;
             } else {
                 anyActive = 1;
@@ -2881,8 +2681,8 @@ namespace CZDisplayInstance {
         }
 
         if (anyActive != 0) {
-            zMat4x3 slotBuffer = {0};
-            zMath::MatStackPushPtr((float *)(&slotBuffer));
+            zMat4x3 slotBuffer = { 0 };
+            zMath::MatStackPushPtr((float*)(&slotBuffer));
             zMath::MatLoadIdentity();
 
             g_DiPickCandidateBuffer = hitBatches;
@@ -2891,19 +2691,13 @@ namespace CZDisplayInstance {
 
             BuildPickCandidatesForSegmentsInGridWindow(world, segmentActive);
             for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
-                CZNodePartial *node = world->listB[worldNodeIndex];
-                if ((node->flags & kNodeFlagEnabledForPick) != 0 &&
-                    (node->flags & kNodeFlagRaycastable) != 0 &&
-                    VariantTag::CurrentAllowsId(node->nodeType) != 0) {
-                    BuildPickCandidatesForSegmentsRecursive(
-                        node,
-                        world->listCountB + 1,
-                        segmentActive
-                    );
+                CZNodePartial* node = world->listB[worldNodeIndex];
+                if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0
+                    && VariantTag::CurrentAllowsId(node->nodeType) != 0) {
+                    BuildPickCandidatesForSegmentsRecursive(node, world->listCountB + 1, segmentActive);
                 }
 
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -2921,36 +2715,26 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    void __fastcall BuildPickCandidatesForSegmentsInGridWindow(
-        CZNodePartial * world,
-        int *activeMask
-    ) {
+    void __fastcall BuildPickCandidatesForSegmentsInGridWindow(CZNodePartial * world, int* activeMask)
+    {
         const int segmentCount = g_DiPickPointCount;
         if (segmentCount <= 0) {
             return;
         }
 
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
 
-        int segmentMinCol[24] = {0};
-        int segmentMaxCol[24] = {0};
-        int segmentMinRow[24] = {0};
-        int segmentMaxRow[24] = {0};
+        int segmentMinCol[24] = { 0 };
+        int segmentMaxCol[24] = { 0 };
+        int segmentMinRow[24] = { 0 };
+        int segmentMaxRow[24] = { 0 };
 
         for (int i = 0; i < segmentCount; ++i) {
-            const CZDisplayInstanceSegmentBounds *bounds = &g_DiSegmentBounds[i];
-            segmentMinCol[i] = (int)(floor(
-                (bounds->minX - worldData->originX) * worldData->areaInvSizeX
-            ));
-            segmentMaxCol[i] = (int)(floor(
-                (bounds->maxX - worldData->originX) * worldData->areaInvSizeX
-            ));
-            segmentMinRow[i] = (int)(floor(
-                (bounds->minZ - worldData->originZ) * worldData->areaInvSizeZ
-            ));
-            segmentMaxRow[i] = (int)(floor(
-                (bounds->maxZ - worldData->originZ) * worldData->areaInvSizeZ
-            ));
+            const CZDisplayInstanceSegmentBounds* bounds = &g_DiSegmentBounds[i];
+            segmentMinCol[i] = (int)(floor((bounds->minX - worldData->originX) * worldData->areaInvSizeX));
+            segmentMaxCol[i] = (int)(floor((bounds->maxX - worldData->originX) * worldData->areaInvSizeX));
+            segmentMinRow[i] = (int)(floor((bounds->minZ - worldData->originZ) * worldData->areaInvSizeZ));
+            segmentMaxRow[i] = (int)(floor((bounds->maxZ - worldData->originZ) * worldData->areaInvSizeZ));
         }
 
         int windowMinCol = segmentMinCol[0];
@@ -2977,12 +2761,12 @@ namespace CZDisplayInstance {
                 int cellCol = col;
                 int cellRow = row;
                 int usedClampedCell = 0;
-                int firstNewCandidate[24] = {0};
+                int firstNewCandidate[24] = { 0 };
                 float offsetX = 0.0f;
                 float offsetZ = 0.0f;
 
-                const int insideGrid = col >= 0 && col < worldData->areaGridColCount && row >= 0 &&
-                                       row < worldData->areaGridRowCount;
+                const int insideGrid
+                    = col >= 0 && col < worldData->areaGridColCount && row >= 0 && row < worldData->areaGridRowCount;
                 if (insideGrid == 0) {
                     if (worldData->clampQueriesToBounds == 0) {
                         continue;
@@ -2990,8 +2774,7 @@ namespace CZDisplayInstance {
 
                     usedClampedCell = 1;
                     for (int candidateIndex = 0; candidateIndex < segmentCount; ++candidateIndex) {
-                        firstNewCandidate[candidateIndex] =
-                            g_DiPickCandidateBuffer[candidateIndex].candidateCount;
+                        firstNewCandidate[candidateIndex] = g_DiPickCandidateBuffer[candidateIndex].candidateCount;
                     }
                     if (cellCol < 0) {
                         cellCol = 0;
@@ -3007,13 +2790,13 @@ namespace CZDisplayInstance {
                     offsetZ = (float)(cellRow - row) * worldData->areaCellSizeZ;
                 }
 
-                zWorldAreaPartial *area = &worldData->areaGridRows[cellRow][cellCol];
+                zWorldAreaPartial* area = &worldData->areaGridRows[cellRow][cellCol];
                 for (int cellPass = 0; cellPass <= usedClampedCell; ++cellPass) {
                     if (usedClampedCell != 0) {
                         const float passOffsetX = cellPass == 0 ? offsetX : -offsetX;
                         const float passOffsetZ = cellPass == 0 ? offsetZ : -offsetZ;
-                        CZDisplayInstanceSegmentEndpoints *segments =
-                            (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray));
+                        CZDisplayInstanceSegmentEndpoints* segments
+                            = (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray));
                         for (int segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
                             segments[segmentIndex].start.x += passOffsetX;
                             segments[segmentIndex].start.z += passOffsetZ;
@@ -3028,28 +2811,22 @@ namespace CZDisplayInstance {
 
                     if (cellPass == 0) {
                         for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                            CZNodePartial *child = area->childList[childIndex];
-                            if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                                (child->flags & kNodeFlagRaycastable) != 0) {
-                                BuildPickCandidatesForSegmentsRecursive(
-                                    child,
-                                    area->childCount + 1,
-                                    activeMask
-                                );
+                            CZNodePartial* child = area->childList[childIndex];
+                            if ((child->flags & kNodeFlagEnabledForPick) != 0
+                                && (child->flags & kNodeFlagRaycastable) != 0) {
+                                BuildPickCandidatesForSegmentsRecursive(child, area->childCount + 1, activeMask);
                             }
 
-                            if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                                g_DiPickCandidateBuffer->candidateCount > 0) {
+                            if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                                 break;
                             }
                         }
                     } else {
                         for (int segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
-                            PlayerProbeSampleCandidateBuffer *buffer =
-                                &g_DiPickCandidateBuffer[segmentIndex];
+                            PlayerProbeSampleCandidateBuffer* buffer = &g_DiPickCandidateBuffer[segmentIndex];
                             for (int candidateIndex = firstNewCandidate[segmentIndex];
-                                 candidateIndex < buffer->candidateCount;
-                                 ++candidateIndex) {
+                                candidateIndex < buffer->candidateCount;
+                                ++candidateIndex) {
                                 buffer->entries[candidateIndex].hitPos.x -= offsetX;
                                 buffer->entries[candidateIndex].hitPos.z -= offsetZ;
                             }
@@ -3067,11 +2844,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentsRecursive(
-        CZNodePartial * node,
-        int nodeCountHint,
-        int *activeMask
-    ) {
+    int __fastcall BuildPickCandidatesForSegmentsRecursive(CZNodePartial * node, int nodeCountHint, int* activeMask)
+    {
         int nodeFlags = node->flags;
         if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
             return 1;
@@ -3105,51 +2879,42 @@ namespace CZDisplayInstance {
                 }
             }
 
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
                 if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 3);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
                 } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
                     zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), 1);
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
                     if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
                         objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
                     }
                 }
             }
 
-            zModel_PickFaceData *faceData =
-                (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+            zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
             if (faceData != 0) {
                 CZDisplayInstance::FilterRegionsAgainstPolygon(
                     node,
                     faceData,
-                    (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray)),
+                    (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray)),
                     localActive,
                     g_DiPickPointCount,
                     g_DiPickCandidateBuffer
                 );
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 ||
-                g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                    CZNodePartial *child = node->listB[childIndex];
-                    if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                        (child->flags & kNodeFlagRaycastable) != 0) {
-                        BuildPickCandidatesForSegmentsRecursive(
-                            child,
-                            node->listCountB,
-                            localActive
-                        );
+                    CZNodePartial* child = node->listB[childIndex];
+                    if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0) {
+                        BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, localActive);
                     }
-                    if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                        g_DiPickCandidateBuffer->candidateCount > 0) {
+                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                         break;
                     }
                 }
@@ -3161,7 +2926,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassLod: {
-            CZLodDataPartial *lodData = (CZLodDataPartial *)(node->classData);
+            CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
             if (lodData->nearRangeSq > 5.0f) {
                 return 1;
             }
@@ -3181,13 +2946,8 @@ namespace CZDisplayInstance {
             }
 
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentsRecursive(
-                    node->listB[childIndex],
-                    node->listCountB,
-                    localActive
-                );
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                BuildPickCandidatesForSegmentsRecursive(node->listB[childIndex], node->listCountB, localActive);
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -3195,8 +2955,7 @@ namespace CZDisplayInstance {
         }
 
         case kNodeClassSequence: {
-            CZSequenceDataPartial *sequenceData =
-                (CZSequenceDataPartial *)(node->classData);
+            CZSequenceDataPartial* sequenceData = (CZSequenceDataPartial*)(node->classData);
             if (sequenceData->isActive == 0) {
                 return 1;
             }
@@ -3226,41 +2985,30 @@ namespace CZDisplayInstance {
             return BuildPickCandidatesForSegmentsForAnimate(node, nodeCountHint, activeMask);
 
         case kNodeClassCamera: {
-            zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            CZCameraDataPartial *cameraData = (CZCameraDataPartial *)(node->classData);
+            zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+            CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
             int pushedMatrix = 0;
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
-                zMath::MatApplyLocalTRS(
-                    &cameraData->posOffset,
-                    &cameraData->targetOrEuler,
-                    &unitScale
-                );
+                zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
             }
 
-            zModel_PickFaceData *faceData =
-                (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+            zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
             if (faceData != 0) {
                 CZDisplayInstance::FilterRegionsAgainstPolygon(
                     node,
                     faceData,
-                    (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray)),
+                    (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray)),
                     activeMask,
                     g_DiPickPointCount,
                     g_DiPickCandidateBuffer
                 );
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 ||
-                g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                    BuildPickCandidatesForSegmentsRecursive(
-                        node->listB[childIndex],
-                        node->listCountB,
-                        activeMask
-                    );
-                    if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                        g_DiPickCandidateBuffer->candidateCount > 0) {
+                    BuildPickCandidatesForSegmentsRecursive(node->listB[childIndex], node->listCountB, activeMask);
+                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                         break;
                     }
                 }
@@ -3297,11 +3045,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentsForAnimate(
-        CZNodePartial * node,
-        int nodeCountHint,
-        int *activeMask
-    ) {
+    int __fastcall BuildPickCandidatesForSegmentsForAnimate(CZNodePartial * node, int nodeCountHint, int* activeMask)
+    {
         int localActive[24];
         for (int activeIndex = 0; activeIndex < g_DiPickPointCount; ++activeIndex) {
             localActive[activeIndex] = activeMask[activeIndex];
@@ -3317,36 +3062,29 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZAnimateDataPartial *animateData = (CZAnimateDataPartial *)(node->classData);
+        CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
         int pushedMatrix = 0;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
-            zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), 1);
+            zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
         }
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
         if (faceData != 0) {
             CZDisplayInstance::FilterRegionsAgainstPolygon(
                 node,
                 faceData,
-                (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray)),
+                (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray)),
                 localActive,
                 g_DiPickPointCount,
                 g_DiPickCandidateBuffer
             );
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 ||
-            g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                BuildPickCandidatesForSegmentsRecursive(
-                    node->listB[childIndex],
-                    node->listCountB,
-                    localActive
-                );
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                BuildPickCandidatesForSegmentsRecursive(node->listB[childIndex], node->listCountB, localActive);
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -3365,11 +3103,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall BuildPickCandidatesForSegmentsForLight(
-        CZNodePartial * node,
-        int nodeCountHint,
-        int *activeMask
-    ) {
+    int __fastcall BuildPickCandidatesForSegmentsForLight(CZNodePartial * node, int nodeCountHint, int* activeMask)
+    {
         int localActive[24];
         for (int activeIndex = 0; activeIndex < g_DiPickPointCount; ++activeIndex) {
             localActive[activeIndex] = activeMask[activeIndex];
@@ -3385,39 +3120,31 @@ namespace CZDisplayInstance {
             }
         }
 
-        CZLightDataPartial *lightData = (CZLightDataPartial *)(node->classData);
+        CZLightDataPartial* lightData = (CZLightDataPartial*)(node->classData);
         zMath::MatStackPushAndCloneParent(lightData->savedParentMatrix);
-        zMath::MatTranslate(
-            lightData->localPosition.x,
-            lightData->localPosition.y,
-            lightData->localPosition.z
-        );
+        zMath::MatTranslate(lightData->localPosition.x, lightData->localPosition.y, lightData->localPosition.z);
         zMath::MatRotateY(lightData->localRotation.y);
         zMath::MatRotateX(lightData->localRotation.x);
         zMath::MatRotateZ(lightData->localRotation.z);
 
-        zModel_PickFaceData *faceData =
-            (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
         if (faceData != 0) {
             CZDisplayInstance::FilterRegionsAgainstPolygon(
                 node,
                 faceData,
-                (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray)),
+                (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray)),
                 localActive,
                 g_DiPickPointCount,
                 g_DiPickCandidateBuffer
             );
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 ||
-            g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                CZNodePartial *child = node->listB[childIndex];
-                if ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                    (child->flags & kNodeFlagRaycastable) != 0) {
+                CZNodePartial* child = node->listB[childIndex];
+                if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0) {
                     BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, localActive);
                 }
-                if (g_cls_di_BreakOnFirstCandidate != 0 &&
-                    g_DiPickCandidateBuffer->candidateCount > 0) {
+                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                     break;
                 }
             }
@@ -3437,12 +3164,13 @@ namespace CZDisplayInstance {
     int __fastcall FilterRegionsAgainstSphere(
         CZNodePartial * world,
         zVec3 * center,
-        const char *nodeNamePrefix,
+        const char* nodeNamePrefix,
         float radius,
         int enableDistanceCull,
         int requireLineOfSight,
-        OptCatalogRaycastHitList *outHitList
-    ) {
+        OptCatalogRaycastHitList* outHitList
+    )
+    {
         if (world == 0) {
             zError::ReportOld(0x400, kClsDiSourceFile, 0xf8a, "Null node pointer.");
             return 5;
@@ -3458,30 +3186,19 @@ namespace CZDisplayInstance {
         }
 
         outHitList->hitCount = 0;
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
 
         int minCol = 0;
         int startRow = 0;
         int maxCol = 0;
         int endRow = 0;
-        int result = CZWorld::WorldToGridCoordsClamped(
-            world,
-            &minCol,
-            center->x - radius,
-            center->z + radius,
-            &startRow
-        );
+        int result
+            = CZWorld::WorldToGridCoordsClamped(world, &minCol, center->x - radius, center->z + radius, &startRow);
         if (result != 0) {
             return result;
         }
 
-        result = CZWorld::WorldToGridCoordsClamped(
-            world,
-            &maxCol,
-            center->x + radius,
-            center->z - radius,
-            &endRow
-        );
+        result = CZWorld::WorldToGridCoordsClamped(world, &maxCol, center->x + radius, center->z - radius, &endRow);
         if (result != 0) {
             return result;
         }
@@ -3495,26 +3212,20 @@ namespace CZDisplayInstance {
 
         for (int row = startRow; row <= endRow; ++row) {
             for (int col = minCol; col <= maxCol; ++col) {
-                zWorldAreaPartial *area = &worldData->areaGridRows[row][col];
+                zWorldAreaPartial* area = &worldData->areaGridRows[row][col];
                 for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                    CZNodePartial *node = area->childList[childIndex];
+                    CZNodePartial* node = area->childList[childIndex];
                     if (outHitList->hitCount >= kMaxPickCandidates) {
-                        zError::ReportOld(
-                            0x200,
-                            kClsDiSourceFile,
-                            0xff3,
-                            "Database intersections array is full"
-                        );
+                        zError::ReportOld(0x200, kClsDiSourceFile, 0xff3, "Database intersections array is full");
                         continue;
                     }
 
                     int nodeFlags = node->flags;
-                    if ((nodeFlags & kNodeFlagEnabledForPick) == 0 ||
-                        (nodeFlags & kNodeFlagFilterRegionCandidate) == 0 ||
-                        VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+                    if ((nodeFlags & kNodeFlagEnabledForPick) == 0 || (nodeFlags & kNodeFlagFilterRegionCandidate) == 0
+                        || VariantTag::CurrentAllowsId(node->nodeType) == 0) {
                         continue;
                     }
-                    const char *prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
+                    const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
                     if (prefix != 0 && strncmp(node->name, prefix, strlen(prefix)) != 0) {
                         continue;
                     }
@@ -3535,8 +3246,8 @@ namespace CZDisplayInstance {
                     zBBoxCorners corners;
                     CZBBox::ExpandToCorners(&bbox, &corners);
 
-                    zMat4x3 slotBuffer = {0};
-                    zMath::MatStackPushPtr((float *)(&slotBuffer));
+                    zMat4x3 slotBuffer = { 0 };
+                    zMath::MatStackPushPtr((float*)(&slotBuffer));
                     zMath::MatLoadIdentity();
                     if (CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1) != 0) {
                         zMath::MatStackPopPtr();
@@ -3550,10 +3261,9 @@ namespace CZDisplayInstance {
                     CZBBox::CornersToBoundingSphere(&corners, &boundsCenter, &boundsRadius);
                     float distanceSq = 0.0f;
                     if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck != 0) {
-                        float clearance = zMath::Vec3DeltaLength(
-                            g_CZDisplayInstance_FilterRegions_Center,
-                            &boundsCenter
-                        ) - boundsRadius;
+                        float clearance
+                            = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, &boundsCenter)
+                            - boundsRadius;
                         if (clearance > 0.0f) {
                             distanceSq = clearance * clearance;
                         }
@@ -3563,15 +3273,13 @@ namespace CZDisplayInstance {
                     }
 
                     int lineOfSightBlocked = 0;
-                    CZNodePartial *lineOfSightWorld =
-                        g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
-                    if (lineOfSightWorld != 0 &&
-                        (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
-                        PlayerProbeSampleCandidateBuffer rayData = {0};
+                    CZNodePartial* lineOfSightWorld = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
+                    if (lineOfSightWorld != 0 && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
+                        PlayerProbeSampleCandidateBuffer rayData = { 0 };
                         CZDisplayInstance::SetBreakOnFirstCandidate(1);
                         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
                         CZClass::gwNodeSetRaycastable(node, 0);
-                        zVec3 *queryCenter = g_CZDisplayInstance_FilterRegions_Center;
+                        zVec3* queryCenter = g_CZDisplayInstance_FilterRegions_Center;
                         const int rayResult = CZDisplayInstance::RaycastFindClosest(
                             lineOfSightWorld,
                             &rayData,
@@ -3590,7 +3298,7 @@ namespace CZDisplayInstance {
                         continue;
                     }
 
-                    OptCatalogRaycastHitEntry *entry = &outHitList->hits[outHitList->hitCount];
+                    OptCatalogRaycastHitEntry* entry = &outHitList->hits[outHitList->hitCount];
                     entry->hitNode = node;
                     entry->pos = boundsCenter;
                     entry->surfaceRef = 0;
@@ -3608,21 +3316,20 @@ namespace CZDisplayInstance {
     }
 }
 
-namespace CZBBox {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.expandtocorners
- * @recoil-artifact defines .text recoil:function:0x446ed0: CZBBox::ExpandToCorners.
- * @recoil-match byte
- *
- * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
- * behavior/global evidence; native smoke coverage exercises the owner slice.
- * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
- */
-    void __fastcall ExpandToCorners(
-        const zBBox3f *bbox,
-        zBBoxCorners *outCorners
-    ) {
-        zVec3 *vertices = outCorners->corners;
+namespace CZBBox
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.expandtocorners
+     * @recoil-artifact defines .text recoil:function:0x446ed0: CZBBox::ExpandToCorners.
+     * @recoil-match byte
+     *
+     * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
+     * behavior/global evidence; native smoke coverage exercises the owner slice.
+     * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     */
+    void __fastcall ExpandToCorners(const zBBox3f* bbox, zBBoxCorners* outCorners)
+    {
+        zVec3* vertices = outCorners->corners;
         vertices[0].x = bbox->min.x;
         vertices[0].y = bbox->min.y;
         vertices[0].z = bbox->max.z;
@@ -3650,7 +3357,8 @@ namespace CZBBox {
     }
 }
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregions-tryappendnode
      * @recoil-artifact defines .text recoil:function:0x446f60: CZDisplayInstance::FilterRegionsTryAppendNode.
@@ -3658,24 +3366,19 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FilterRegionsTryAppendNode(CZNodePartial * node) {
+    int __fastcall FilterRegionsTryAppendNode(CZNodePartial * node)
+    {
         if (g_CZDisplayInstance_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
-            zError::ReportOld(
-                0x200,
-                kClsDiSourceFile,
-                0xff3,
-                "Database intersections array is full"
-            );
+            zError::ReportOld(0x200, kClsDiSourceFile, 0xff3, "Database intersections array is full");
             return 1;
         }
 
         int nodeFlags = node->flags;
-        if ((nodeFlags & kNodeFlagEnabledForPick) == 0 ||
-            (nodeFlags & kNodeFlagFilterRegionCandidate) == 0 ||
-            VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+        if ((nodeFlags & kNodeFlagEnabledForPick) == 0 || (nodeFlags & kNodeFlagFilterRegionCandidate) == 0
+            || VariantTag::CurrentAllowsId(node->nodeType) == 0) {
             return 1;
         }
-        const char *prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
+        const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
         if (prefix != 0 && strncmp(node->name, prefix, strlen(prefix)) != 0) {
             return 1;
         }
@@ -3699,7 +3402,7 @@ namespace CZDisplayInstance {
         CZClass::gwNodeGetBBox(node, &bbox);
 
         zBBoxCorners corners;
-        zVec3 *vertices = corners.corners;
+        zVec3* vertices = corners.corners;
         vertices[0].x = bbox.min.x;
         vertices[0].y = bbox.min.y;
         vertices[0].z = bbox.max.z;
@@ -3725,8 +3428,8 @@ namespace CZDisplayInstance {
         vertices[7].y = bbox.max.y;
         vertices[7].z = bbox.min.z;
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
         const int matrixResult = CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
         if (matrixResult != 0) {
@@ -3743,10 +3446,8 @@ namespace CZDisplayInstance {
 
         float distanceSq = 0.0f;
         if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck != 0) {
-            float clearance = zMath::Vec3DeltaLength(
-                g_CZDisplayInstance_FilterRegions_Center,
-                &boundsCenter
-            ) - boundsRadius;
+            float clearance
+                = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, &boundsCenter) - boundsRadius;
             if (clearance > 0.0f) {
                 distanceSq = clearance * clearance;
             }
@@ -3755,15 +3456,13 @@ namespace CZDisplayInstance {
             return 1;
         }
 
-        CZNodePartial *lineOfSightWorld =
-            g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
-        if (lineOfSightWorld != 0 &&
-            (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
-            PlayerProbeSampleCandidateBuffer rayData = {0};
+        CZNodePartial* lineOfSightWorld = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
+        if (lineOfSightWorld != 0 && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
+            PlayerProbeSampleCandidateBuffer rayData = { 0 };
             CZDisplayInstance::SetBreakOnFirstCandidate(1);
             CZDisplayInstance::SetStopAfterFirstHit(0x40000);
             CZClass::gwNodeSetRaycastable(node, 0);
-            zVec3 *queryCenter = g_CZDisplayInstance_FilterRegions_Center;
+            zVec3* queryCenter = g_CZDisplayInstance_FilterRegions_Center;
             const int rayResult = CZDisplayInstance::RaycastFindClosest(
                 lineOfSightWorld,
                 &rayData,
@@ -3781,8 +3480,8 @@ namespace CZDisplayInstance {
             }
         }
 
-        OptCatalogRaycastHitList *hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
-        OptCatalogRaycastHitEntry *entry = &hitList->hits[hitList->hitCount];
+        OptCatalogRaycastHitList* hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
+        OptCatalogRaycastHitEntry* entry = &hitList->hits[hitList->hitCount];
         entry->hitNode = node;
         entry->pos = boundsCenter;
         entry->surfaceRef = 0;
@@ -3798,14 +3497,13 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall IsPickQueryPointOutsideViewBBoxXZ(
-        CZNodePartial * node
-    ) {
+    int __fastcall IsPickQueryPointOutsideViewBBoxXZ(CZNodePartial * node)
+    {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        zBBoxCorners corners = {0};
+        zBBoxCorners corners = { 0 };
         CZClass::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
@@ -3814,12 +3512,12 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const zVec3 *vertices = corners.corners;
+        const zVec3* vertices = corners.corners;
         minX = maxX = vertices[0].x;
         minY = maxY = vertices[0].y;
         minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const zVec3 *corner = &vertices[bboxCornerIndex];
+            const zVec3* corner = &vertices[bboxCornerIndex];
             if (corner->x < minX) {
                 minX = corner->x;
             } else if (corner->x > maxX) {
@@ -3837,10 +3535,10 @@ namespace CZDisplayInstance {
             }
         }
 
-        return g_DiPickQueryPoint.x >= minX && g_DiPickQueryPoint.x <= maxX &&
-                       g_DiPickQueryPoint.z >= minZ && g_DiPickQueryPoint.z <= maxZ
-                   ? 0
-                   : 1;
+        return g_DiPickQueryPoint.x >= minX && g_DiPickQueryPoint.x <= maxX && g_DiPickQueryPoint.z >= minZ
+                && g_DiPickQueryPoint.z <= maxZ
+            ? 0
+            : 1;
     }
 
     /**
@@ -3850,15 +3548,13 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall PickTestBBox2D(
-        CZNodePartial * node,
-        int *hitFlags
-    ) {
+    int __fastcall PickTestBBox2D(CZNodePartial * node, int* hitFlags)
+    {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        zBBoxCorners corners = {0};
+        zBBoxCorners corners = { 0 };
         CZClass::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
@@ -3867,12 +3563,12 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const zVec3 *vertices = corners.corners;
+        const zVec3* vertices = corners.corners;
         minX = maxX = vertices[0].x;
         minY = maxY = vertices[0].y;
         minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const zVec3 *corner = &vertices[bboxCornerIndex];
+            const zVec3* corner = &vertices[bboxCornerIndex];
             if (corner->x < minX) {
                 minX = corner->x;
             } else if (corner->x > maxX) {
@@ -3893,7 +3589,7 @@ namespace CZDisplayInstance {
         int result = 1;
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             if (hitFlags[i] != 0) {
-                const zVec3 *point = &g_DiPickPointArray[i];
+                const zVec3* point = &g_DiPickPointArray[i];
                 if (point->x >= minX && point->x <= maxX && point->z >= minZ && point->z <= maxZ) {
                     result = 0;
                 } else {
@@ -3912,12 +3608,13 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FilterPointsBBox(CZNodePartial * node, void * /*pointData*/) {
+    int __fastcall FilterPointsBBox(CZNodePartial * node, void* /*pointData*/)
+    {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        zBBoxCorners corners = {0};
+        zBBoxCorners corners = { 0 };
         CZClass::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
@@ -3926,12 +3623,12 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const zVec3 *vertices = corners.corners;
+        const zVec3* vertices = corners.corners;
         minX = maxX = vertices[0].x;
         minY = maxY = vertices[0].y;
         minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const zVec3 *corner = &vertices[bboxCornerIndex];
+            const zVec3* corner = &vertices[bboxCornerIndex];
             if (corner->x < minX) {
                 minX = corner->x;
             } else if (corner->x > maxX) {
@@ -3949,17 +3646,18 @@ namespace CZDisplayInstance {
             }
         }
 
-        if (g_DiSegmentMaxX <= minX || g_DiSegmentMinX >= maxX || g_DiSegmentMaxY <= minY ||
-            g_DiSegmentMinY >= maxY || g_DiSegmentMaxZ <= minZ || g_DiSegmentMinZ >= maxZ) {
+        if (g_DiSegmentMaxX <= minX || g_DiSegmentMinX >= maxX || g_DiSegmentMaxY <= minY || g_DiSegmentMinY >= maxY
+            || g_DiSegmentMaxZ <= minZ || g_DiSegmentMinZ >= maxZ) {
             return 1;
         }
 
-        if ((node->flags & 0x20) != 0 && BuildPickCandidatesForSegmentVsBBoxFaces(
-                                             &corners,
-                                             g_DiPickCandidateCursor,
-                                             &g_DiPickQueryPoint,
-                                             &g_DiSegmentEnd
-                                         ) == 0) {
+        if ((node->flags & 0x20) != 0
+            && BuildPickCandidatesForSegmentVsBBoxFaces(
+                   &corners,
+                   g_DiPickCandidateCursor,
+                   &g_DiPickQueryPoint,
+                   &g_DiSegmentEnd
+               ) == 0) {
             return 1;
         }
 
@@ -3973,15 +3671,13 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FrustumTestAndPick(
-        CZNodePartial * node,
-        int *activeMask
-    ) {
+    int __fastcall FrustumTestAndPick(CZNodePartial * node, int* activeMask)
+    {
         if ((node->flags & 0x100) == 0) {
             return 1;
         }
 
-        zBBoxCorners corners = {0};
+        zBBoxCorners corners = { 0 };
         CZClass::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;
@@ -3990,12 +3686,12 @@ namespace CZDisplayInstance {
         float maxY;
         float minZ;
         float maxZ;
-        const zVec3 *vertices = corners.corners;
+        const zVec3* vertices = corners.corners;
         minX = maxX = vertices[0].x;
         minY = maxY = vertices[0].y;
         minZ = maxZ = vertices[0].z;
         for (int bboxCornerIndex = 1; bboxCornerIndex < 8; ++bboxCornerIndex) {
-            const zVec3 *corner = &vertices[bboxCornerIndex];
+            const zVec3* corner = &vertices[bboxCornerIndex];
             if (corner->x < minX) {
                 minX = corner->x;
             } else if (corner->x > maxX) {
@@ -4019,10 +3715,9 @@ namespace CZDisplayInstance {
                 continue;
             }
 
-            const CZDisplayInstanceSegmentBounds *bounds = &g_DiSegmentBounds[i];
-            if (bounds->maxX > minX && bounds->minX < maxX &&
-                bounds->maxY > minY && bounds->minY < maxY &&
-                bounds->maxZ > minZ && bounds->minZ < maxZ) {
+            const CZDisplayInstanceSegmentBounds* bounds = &g_DiSegmentBounds[i];
+            if (bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY && bounds->minY < maxY
+                && bounds->maxZ > minZ && bounds->minZ < maxZ) {
                 anyActive = 1;
             } else {
                 activeMask[i] = 0;
@@ -4033,7 +3728,7 @@ namespace CZDisplayInstance {
             const int bboxHit = FilterRegionsAgainstPolygonWithDamageMaskUv(
                 node,
                 g_DiPickCandidateBuffer,
-                (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray)),
+                (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray)),
                 activeMask,
                 g_DiPickPointCount,
                 &corners
@@ -4045,37 +3740,8 @@ namespace CZDisplayInstance {
     }
 }
 
-namespace CZDisplayInstance {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+namespace CZDisplayInstance
+{
 
     /*
      * Provenance-only routing note: CZDisplayInstance::BuildPickCandidatesForSegmentVsBBoxFaces.
@@ -4123,21 +3789,24 @@ namespace CZDisplayInstance {
      */
 }
 
-namespace zDi {
+namespace zDi
+{
     /*
      * Provenance-only routing note: zDi::BuildPickCandidateForQueryPoint.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 }
 
-namespace zModelConst {
+namespace zModelConst
+{
     /*
      * Provenance-only routing note: zModelConst::AddFaceToPlayerProbeSampleBuckets.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
 }
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
 
     /*
      * Provenance-only routing note: CZDisplayInstance::PickTestMeshAtQueryXZ.
@@ -4153,34 +3822,6 @@ namespace CZDisplayInstance {
      * Provenance-only routing note: CZDisplayInstance::FilterRegionsAgainstHexahedronFaces.
      * The definition now lives in the literal-backed gmod_const.c contribution.
      */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 /*
  * Provenance-only routing marker: this definition compiles through the

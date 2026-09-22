@@ -9,7 +9,7 @@
  * callback used by Draw after the shared source-surface setup.
  */
 struct zVideoFxPass3Element : HudUiElement {
-    HudUiRect *clipRectOrNull;
+    HudUiRect* clipRectOrNull;
 
     /**
      * Original inline helper; no standalone retail function exists. Observed
@@ -18,7 +18,7 @@ struct zVideoFxPass3Element : HudUiElement {
      * Purpose: leave default storage initialization inert for owner-managed
      * pass-3 elements.
      */
-    zVideoFxPass3Element() {}
+    zVideoFxPass3Element() { }
     /**
      * Original inline helper; no standalone retail function exists. Observed in
      * constructors 0x41eb30 and 0x41eb90 as HudUiElement::Constructor(0, 0)
@@ -26,13 +26,9 @@ struct zVideoFxPass3Element : HudUiElement {
      * Purpose: construct a pass-3 HUD element while preserving derived virtual
      * dispatch identity.
      */
-    zVideoFxPass3Element(
-        int x,
-        int y
-    ) : HudUiElement(
-            x,
-            y
-        ) {
+    zVideoFxPass3Element(int x, int y)
+        : HudUiElement(x, y)
+    {
         clipRectOrNull = 0;
     }
 
@@ -50,10 +46,10 @@ struct zVideoFxPass3RootElement : zVideoFxPass3Element {
      * its five-element slot array; no standalone retail body exists.
      * Purpose: Construct the root pass-3 element at the origin through its base.
      */
-    zVideoFxPass3RootElement() : zVideoFxPass3Element(
-        0,
-        0
-    ) {}
+    zVideoFxPass3RootElement()
+        : zVideoFxPass3Element(0, 0)
+    {
+    }
 
     void ApplyPass3();
 };
@@ -79,8 +75,8 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
 };
 
 struct zVideoFxPass3Config : HudUiContainer {
-    HudUiRect *inputRectsOrNull[2];
-    unsigned short *surfacePixels;
+    HudUiRect* inputRectsOrNull[2];
+    unsigned short* surfacePixels;
     int surfaceWidth;
     int surfaceHeight;
     int surfacePitchBytes;
@@ -101,24 +97,11 @@ struct zVideoFxPass3Config : HudUiContainer {
         float sinFreq,
         float sinPhase
     );
-    void SetInputRectByIndex(
-        int index,
-        HudUiRect *rectOrNull
-    );
-    void QueuePrimitiveRaw(
-        void *primitive,
-        int width,
-        int height,
-        int pitchBytes
-    );
+    void SetInputRectByIndex(int index, HudUiRect* rectOrNull);
+    void QueuePrimitiveRaw(void* primitive, int width, int height, int pitchBytes);
 };
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Element) == 0x38);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zVideoFxPass3Element,
-        clipRectOrNull
-    ) == 0x34
-);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Element, clipRectOrNull) == 0x34);
 #endif

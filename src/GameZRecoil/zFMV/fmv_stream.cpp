@@ -103,10 +103,8 @@ char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
  * @recoil-artifact defines .text recoil:function:0x463d50: zFMV_Stream::Init.
  * Purpose: initialize an FMV stream object, audio/video state, and critical section.
  */
-zFMV_Stream * zFMV_Stream::Init(
-    const char *mediaPath,
-    int modeFlags
-) {
+zFMV_Stream* zFMV_Stream::Init(const char* mediaPath, int modeFlags)
+{
     this->mediaPath = DuplicateCString(mediaPath);
     srcFormat = 0;
     dstFormat = 0;
@@ -134,7 +132,8 @@ zFMV_Stream * zFMV_Stream::Init(
  * @recoil-artifact defines .text recoil:function:0x463dd0: zFMV_Stream::Destructor.
  * Purpose: release audio/video streams, decompressor state, image buffers, and critical section.
  */
-void zFMV_Stream::Destructor() {
+void zFMV_Stream::Destructor()
+{
     if (hasAudioStream != 0) {
         if (audioBuffer != 0) {
             free(audioBuffer);
@@ -164,7 +163,7 @@ void zFMV_Stream::Destructor() {
         free(compressedFrameBuffer);
 
         if (surface != 0) {
-            g_zVideo_pfnImageEnsureSurfaceForCurrentDevice((zVidImagePartial *)(this));
+            g_zVideo_pfnImageEnsureSurfaceForCurrentDevice((zVidImagePartial*)(this));
         }
 
         free(pixels);
@@ -184,17 +183,11 @@ void zFMV_Stream::Destructor() {
  * @recoil-artifact defines .text recoil:function:0x463ef0: zFMV_Stream::Constructor.
  * Purpose: open the AVI video stream, configure decompression, and initialize the image surface state.
  */
-void zFMV_Stream::Constructor() {
+void zFMV_Stream::Constructor()
+{
     currentFrameIndex = 0;
 
-    const HRESULT openResult = AVIStreamOpenFromFileA(
-        &videoStream,
-        mediaPath,
-        streamtypeVIDEO,
-        0,
-        0x10,
-        0
-    );
+    const HRESULT openResult = AVIStreamOpenFromFileA(&videoStream, mediaPath, streamtypeVIDEO, 0, 0x10, 0);
     if (openResult != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x60, g_zFMV_CannotOpenAviFileMsg);
         AVIFileExit();
@@ -203,47 +196,32 @@ void zFMV_Stream::Constructor() {
 
     LONG formatBytes = 0;
     if (AVIStreamReadFormat(videoStream, 0, 0, &formatBytes) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x67,
-            g_zFMV_CannotReadAviFormatSizeMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x67, g_zFMV_CannotReadAviFormatSizeMsg);
         AVIFileExit();
         return;
     }
 
     srcFormat = calloc(formatBytes, 1);
-    const LONG dstFormatBytes =
-        formatBytes > (LONG)(sizeof(BITMAPV4HEADER)) ? formatBytes : (LONG)(sizeof(BITMAPV4HEADER));
+    const LONG dstFormatBytes
+        = formatBytes > (LONG)(sizeof(BITMAPV4HEADER)) ? formatBytes : (LONG)(sizeof(BITMAPV4HEADER));
     dstFormat = calloc(dstFormatBytes, 1);
 
     if (AVIStreamReadFormat(videoStream, 0, srcFormat, &formatBytes) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x71,
-            g_zFMV_CannotReadAviFormatMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x71, g_zFMV_CannotReadAviFormatMsg);
         AVIFileExit();
         return;
     }
 
     videoFrameCount = AVIStreamLength(videoStream);
     if (AVIStreamInfoA(videoStream, &videoStreamInfo, sizeof(videoStreamInfo)) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0x79,
-            g_zFMV_CannotReadAviStreamInfoMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x79, g_zFMV_CannotReadAviStreamInfoMsg);
         AVIFileExit();
         return;
     }
 
     memcpy(dstFormat, srcFormat, formatBytes);
-    BITMAPINFOHEADER *const srcHeader = (BITMAPINFOHEADER *)(srcFormat);
-    BITMAPV4HEADER *const dstHeader = (BITMAPV4HEADER *)(dstFormat);
+    BITMAPINFOHEADER* const srcHeader = (BITMAPINFOHEADER*)(srcFormat);
+    BITMAPV4HEADER* const dstHeader = (BITMAPV4HEADER*)(dstFormat);
     dstHeader->bV4Size = (DWORD)(dstFormatBytes);
     dstHeader->bV4BitCount = (WORD)(zVideo::GetDisplayModeBpp());
     dstHeader->bV4V4Compression = BI_BITFIELDS;
@@ -252,17 +230,16 @@ void zFMV_Stream::Constructor() {
     }
     dstHeader->bV4ClrUsed = 0;
     zVideo::PixelPackGetRgbMasks(
-        (unsigned int *)(&dstHeader->bV4RedMask),
-        (unsigned int *)(&dstHeader->bV4GreenMask),
-        (unsigned int *)(&dstHeader->bV4BlueMask)
+        (unsigned int*)(&dstHeader->bV4RedMask),
+        (unsigned int*)(&dstHeader->bV4GreenMask),
+        (unsigned int*)(&dstHeader->bV4BlueMask)
     );
     dstHeader->bV4AlphaMask = 0;
 
     const int alignedWidth = (dstHeader->bV4Width + 3) & ~3;
     dstHeader->bV4SizeImage = dstHeader->bV4Height * alignedWidth * (dstHeader->bV4BitCount >> 3);
 
-    int compressedFrameBytes =
-        (srcHeader->biBitCount >> 3) * srcHeader->biWidth * srcHeader->biHeight;
+    int compressedFrameBytes = (srcHeader->biBitCount >> 3) * srcHeader->biWidth * srcHeader->biHeight;
     const int suggestedBufferSize = (int)(videoStreamInfo.dwSuggestedBufferSize);
     if (suggestedBufferSize != 0) {
         compressedFrameBytes = suggestedBufferSize;
@@ -318,7 +295,8 @@ void zFMV_Stream::Constructor() {
  * @recoil-artifact defines .text recoil:function:0x4641a0: zFMV_Stream::OpenAudio.
  * Purpose: open AVI audio, load or queue sample data, and create the FMV sound sample.
  */
-void zFMV_Stream::OpenAudio() {
+void zFMV_Stream::OpenAudio()
+{
     audioStream = 0;
     if (AVIStreamOpenFromFileA(&audioStream, mediaPath, streamtypeAUDIO, 0, 0, 0) != 0) {
         return;
@@ -326,33 +304,18 @@ void zFMV_Stream::OpenAudio() {
 
     LONG audioFormatBytes = 0;
     if (AVIStreamReadFormat(audioStream, 0, 0, &audioFormatBytes) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xcb,
-            g_zFMV_CannotReadAviSoundFormatSizeMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xcb, g_zFMV_CannotReadAviSoundFormatSizeMsg);
         return;
     }
 
     audioFormat = calloc(audioFormatBytes, 1);
     if (AVIStreamReadFormat(audioStream, 0, audioFormat, &audioFormatBytes) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xd2,
-            g_zFMV_CannotReadAviSoundFormatMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xd2, g_zFMV_CannotReadAviSoundFormatMsg);
         return;
     }
 
     if (AVIStreamInfoA(audioStream, &audioStreamInfo, sizeof(audioStreamInfo)) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xd8,
-            g_zFMV_CannotReadAviSoundStreamInfoMsg
-        );
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xd8, g_zFMV_CannotReadAviSoundStreamInfoMsg);
         return;
     }
 
@@ -362,29 +325,13 @@ void zFMV_Stream::OpenAudio() {
         audioSegmentBytes = segmentBytes;
         audioBuffer = calloc(segmentBytes * 2, 1);
 
-        if (AVIStreamRead(
-                audioStream,
-                0,
-                segmentBytes / sampleSize,
-                audioBuffer,
-                segmentBytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0xe2,
-                g_zFMV_CannotReadAviSoundStreamMsg
-            );
+        if (AVIStreamRead(audioStream, 0, segmentBytes / sampleSize, audioBuffer, segmentBytes, 0, 0) != 0) {
+            zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xe2, g_zFMV_CannotReadAviSoundStreamMsg);
             return;
         }
 
-        audioSample = zSndSampleCreateQueuedStreamingSample(
-            (WAVEFORMATEX *)(audioFormat),
-            audioBuffer,
-            segmentBytes * 2
-        );
+        audioSample
+            = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, segmentBytes * 2);
         audioRefillSecondHalfNext = 1;
         hasAudioStream = 1;
         audioReadSampleIndex = segmentBytes / sampleSize;
@@ -395,29 +342,12 @@ void zFMV_Stream::OpenAudio() {
     audioSegmentBytes = audioBytes;
     audioBuffer = calloc(audioBytes, 1);
 
-    if (AVIStreamRead(
-            audioStream,
-            0,
-            audioStreamInfo.dwLength,
-            audioBuffer,
-            audioBytes,
-            0,
-            0
-        ) != 0) {
-        zError::ReportOld(
-            0x400,
-            g_zFMV_SourceFile_FmvStreamCpp,
-            0xf0,
-            g_zFMV_CannotReadAviSoundStreamMsg
-        );
+    if (AVIStreamRead(audioStream, 0, audioStreamInfo.dwLength, audioBuffer, audioBytes, 0, 0) != 0) {
+        zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xf0, g_zFMV_CannotReadAviSoundStreamMsg);
         return;
     }
 
-    audioSample = zSndSampleCreateQueuedStreamingSample(
-        (WAVEFORMATEX *)(audioFormat),
-        audioBuffer,
-        audioBytes
-    );
+    audioSample = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, audioBytes);
     hasAudioStream = 1;
 }
 
@@ -426,30 +356,17 @@ void zFMV_Stream::OpenAudio() {
  * @recoil-artifact defines .text recoil:function:0x4643a0: zFMV_Stream::ReadAndDecodeFrame
  * Purpose: read and decompress one video frame and refill streaming audio when needed.
  */
-int zFMV_Stream::ReadAndDecodeFrame(
-    unsigned int frameIndex
-) {
+int zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex)
+{
     if (frameIndex != 0xffffffffu) {
         currentFrameIndex = frameIndex;
     }
 
     const unsigned int frameCount = videoFrameCount;
     if ((int)(currentFrameIndex) < (int)(frameCount)) {
-        if (AVIStreamRead(
-                videoStream,
-                currentFrameIndex,
-                1,
-                compressedFrameBuffer,
-                compressedFrameBufferBytes,
-                0,
-                0
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x105,
-                g_zFMV_CannotReadAviVideoStreamMsg
-            );
+        if (AVIStreamRead(videoStream, currentFrameIndex, 1, compressedFrameBuffer, compressedFrameBufferBytes, 0, 0)
+            != 0) {
+            zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x105, g_zFMV_CannotReadAviVideoStreamMsg);
             return 0;
         }
 
@@ -461,13 +378,9 @@ int zFMV_Stream::ReadAndDecodeFrame(
                 compressedFrameBuffer,
                 (LPBITMAPINFOHEADER)(dstFormat),
                 pixels
-            ) != 0) {
-            zError::ReportOld(
-                0x400,
-                g_zFMV_SourceFile_FmvStreamCpp,
-                0x10c,
-                g_zFMV_CannotDecompressAviVideoStreamMsg
-            );
+            )
+            != 0) {
+            zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x10c, g_zFMV_CannotDecompressAviVideoStreamMsg);
             return 0;
         }
         LeaveCriticalSection(&criticalSection);
@@ -512,23 +425,15 @@ int zFMV_Stream::ReadAndDecodeFrame(
  * Purpose: lock the sound buffers, refill the AVI audio spans, and
  * release the buffers.
  */
-int zFMV_Stream::FillAudioBuffer(
-    unsigned int offset,
-    unsigned int bytes
-) {
-    void *buffer1Data;
-    void *buffer2Data;
+int zFMV_Stream::FillAudioBuffer(unsigned int offset, unsigned int bytes)
+{
+    void* buffer1Data;
+    void* buffer2Data;
     int buffer1Bytes;
     int buffer2Bytes;
 
-    int result = audioSample->LockBackendBuffers(
-        offset,
-        bytes,
-        &buffer1Data,
-        &buffer2Data,
-        &buffer1Bytes,
-        &buffer2Bytes
-    );
+    int result
+        = audioSample->LockBackendBuffers(offset, bytes, &buffer1Data, &buffer2Data, &buffer1Bytes, &buffer2Bytes);
 
     if (result != 0) {
         if (buffer1Bytes != 0) {
@@ -540,13 +445,9 @@ int zFMV_Stream::FillAudioBuffer(
                     buffer1Bytes,
                     0,
                     0
-                ) != 0) {
-                zError::ReportOld(
-                    0x400,
-                    g_zFMV_SourceFile_FmvStreamCpp,
-                    0x13d,
-                    g_zFMV_CannotReadAviSoundStreamMsg
-                );
+                )
+                != 0) {
+                zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x13d, g_zFMV_CannotReadAviSoundStreamMsg);
             }
             audioReadSampleIndex += (unsigned int)(buffer1Bytes) / audioStreamInfo.dwSampleSize;
         }
@@ -560,13 +461,9 @@ int zFMV_Stream::FillAudioBuffer(
                     buffer2Bytes,
                     0,
                     0
-                ) != 0) {
-                zError::ReportOld(
-                    0x400,
-                    g_zFMV_SourceFile_FmvStreamCpp,
-                    0x144,
-                    g_zFMV_CannotReadAviSoundStreamMsg
-                );
+                )
+                != 0) {
+                zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x144, g_zFMV_CannotReadAviSoundStreamMsg);
             }
 
             // The original advances by the first locked span again after the wrapped read.

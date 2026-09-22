@@ -18,7 +18,9 @@ struct CHudUiMpExitDialogNewGameButton : HudUiZrdWidget {
      * Purpose: construct the multiplayer-exit new-game button with its
      * recovered C++ dispatch identity.
      */
-    CHudUiMpExitDialogNewGameButton() : HudUiZrdWidget() {
+    CHudUiMpExitDialogNewGameButton()
+        : HudUiZrdWidget()
+    {
     }
 
     void OnActivate();
@@ -39,7 +41,9 @@ struct CHudUiMpExitDialogExitButton : HudUiZrdWidget {
      * Purpose: construct the multiplayer-exit leave button with its recovered
      * C++ dispatch identity.
      */
-    CHudUiMpExitDialogExitButton() : HudUiZrdWidget() {
+    CHudUiMpExitDialogExitButton()
+        : HudUiZrdWidget()
+    {
     }
 
     void OnActivate();
@@ -53,7 +57,7 @@ struct CHudUiMpExitDialogExitButton : HudUiZrdWidget {
 struct HudUiMpExitDialog : HudUiBackground {
     CHudUiMpExitDialogNewGameButton m_mpNewGameButton;
     CHudUiMpExitDialogExitButton m_mpExitButton;
-    zVidImagePartial *m_capturedBackgroundImage;
+    zVidImagePartial* m_capturedBackgroundImage;
     float m_fadeElapsedSeconds;
     int m_mpNewGameButtonMode;
 
@@ -64,9 +68,11 @@ struct HudUiMpExitDialog : HudUiBackground {
      * Purpose: construct the multiplayer-exit dialog owner with recovered
      * class and member dispatch identities.
      */
-    HudUiMpExitDialog() : HudUiBackground(),
-                          m_mpNewGameButton(),
-                          m_mpExitButton() {
+    HudUiMpExitDialog()
+        : HudUiBackground()
+        , m_mpNewGameButton()
+        , m_mpExitButton()
+    {
     }
 
     void UnloadLayout();
@@ -75,36 +81,11 @@ struct HudUiMpExitDialog : HudUiBackground {
     virtual ~HudUiMpExitDialog();
 };
 
-extern HudUiMpExitDialog *g_HudUiMpExitDialog;
+extern HudUiMpExitDialog* g_HudUiMpExitDialog;
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMpExitDialog,
-        m_mpNewGameButton
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMpExitDialog,
-        m_mpExitButton
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMpExitDialog,
-        m_capturedBackgroundImage
-    ) == 0xabe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMpExitDialog,
-        m_fadeElapsedSeconds
-    ) == 0xabe8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMpExitDialog,
-        m_mpNewGameButtonMode
-    ) == 0xabec
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMpExitDialog, m_mpNewGameButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMpExitDialog, m_mpExitButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMpExitDialog, m_capturedBackgroundImage) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMpExitDialog, m_fadeElapsedSeconds) == 0xabe8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMpExitDialog, m_mpNewGameButtonMode) == 0xabec);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMpExitDialog) == 0xabf0);

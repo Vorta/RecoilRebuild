@@ -20,35 +20,15 @@ struct AiPropertyDlg : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    const AFX_MSGMAP * GetMessageMap() const;
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
+    const AFX_MSGMAP* GetMessageMap() const;
     void OnDestroy();
     void OnSelChange();
     void UpdatePropertyLabels();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(AiPropertyDlg) == 0x108);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AiPropertyDlg,
-        m_selectedPropertyIndex
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AiPropertyDlg,
-        m_selectedBehaviorIndex
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AiPropertyDlg,
-        m_behaviorCombo
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AiPropertyDlg,
-        m_propertyCombo
-    ) == 0xa8
-);
+RECOIL_STATIC_ASSERT(offsetof(AiPropertyDlg, m_selectedPropertyIndex) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(AiPropertyDlg, m_selectedBehaviorIndex) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(AiPropertyDlg, m_behaviorCombo) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(AiPropertyDlg, m_propertyCombo) == 0xa8);

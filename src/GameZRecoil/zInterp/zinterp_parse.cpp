@@ -1,5 +1,6 @@
 #include "GameZRecoil/zInterp/zinterp.h"
 
+#include "Battlesport/wol_download.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/include/zdi.h"
@@ -12,7 +13,6 @@
 #include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
-#include "Battlesport/wol_download.h"
 
 #include <ctype.h>
 #include <direct.h>
@@ -45,7 +45,7 @@ const char kCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTetherAltitud
  *
  * Purpose: shared line buffer used while reading and running script input.
  */
-char g_zInterp_LineBuffer[1024] = {0};
+char g_zInterp_LineBuffer[1024] = { 0 };
 
 namespace {
 /**
@@ -92,7 +92,7 @@ int g_zInterp_VerboseLevel = 0;
  *
  * Purpose: preserve the display instance for Object3D material commands.
  */
-zDiPartial *g_zInterp_Object3DCommandDi = 0;
+zDiPartial* g_zInterp_Object3DCommandDi = 0;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-currentcycletexturedi
@@ -101,7 +101,7 @@ zDiPartial *g_zInterp_Object3DCommandDi = 0;
  *
  * Purpose: holds the current display-instance cursor for texture commands.
  */
-zDiPartial *g_zInterp_CurrentCycleTextureDi = 0;
+zDiPartial* g_zInterp_CurrentCycleTextureDi = 0;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-nodeuserdatascratch
@@ -132,7 +132,7 @@ CRecoilInterp g_zInterp_GlobalContext;
  *
  * Purpose: default prepared script index path passed to the global context.
  */
-char *g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
+char* g_zInterp_PreparedIndexFileName = g_zInterp_PreparedIndexFileNameStr;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-preparedindexfilenamestr
@@ -153,29 +153,69 @@ char g_zInterp_PreparedIndexFileNameStr[] = "interp.zbd";
  * Purpose: retain the unresolved initialized byte pattern without accepting
  * a float-defaults role or the current declaration's source identity.
  */
-extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = {
-    0.0f, 2.2f, 0.2f,
-    2.0f, -2.2f, 0.2f,
-    -2.0f, -2.2f, -0.2f,
-    2.0f, 2.2f, -0.2f,
-    -2.0f, 0.0f, 5.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 5.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 5.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    -5.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f
-};
+extern "C" float g_zInterp_UnresolvedFloatDefaults[63] = { 0.0f,
+    2.2f,
+    0.2f,
+    2.0f,
+    -2.2f,
+    0.2f,
+    -2.0f,
+    -2.2f,
+    -0.2f,
+    2.0f,
+    2.2f,
+    -0.2f,
+    -2.0f,
+    0.0f,
+    5.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    1.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    5.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    5.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    -5.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f,
+    0.0f };
 
 namespace {
 /**
@@ -184,8 +224,7 @@ namespace {
  *
  * Purpose: compare the current command token against a literal prefix length.
  */
-#define CommandIs(ctx, text) \
-    (strncmp((ctx)->tokenCount > 0 ? (ctx)->tokenList[0] : 0, (text), sizeof(text) - 1) == 0)
+#define CommandIs(ctx, text) (strncmp((ctx)->tokenCount > 0 ? (ctx)->tokenList[0] : 0, (text), sizeof(text) - 1) == 0)
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
@@ -193,8 +232,7 @@ namespace {
  *
  * Purpose: compare the current command token against a full literal string.
  */
-#define CommandIsExact(ctx, text) \
-    (strcmp((ctx)->tokenCount > 0 ? (ctx)->tokenList[0] : 0, (text)) == 0)
+#define CommandIsExact(ctx, text) (strcmp((ctx)->tokenCount > 0 ? (ctx)->tokenList[0] : 0, (text)) == 0)
 
 /**
  * Original inline helper evidence: no standalone retail function observed;
@@ -202,7 +240,7 @@ namespace {
  *
  * Purpose: compare the current command token against a named prefix.
  */
-#define CommandHasPrefix(ctx, text) \
+#define CommandHasPrefix(ctx, text)                                                                                    \
     (strncmp((ctx)->tokenCount > 0 ? (ctx)->tokenList[0] : 0, (text), sizeof(text) - 1) == 0)
 } // namespace
 
@@ -211,9 +249,8 @@ namespace {
  *
  * Purpose: report an unhandled command token through the parser error path.
  */
-int CZInterp::DispatchHook(
-    char *commandToken
-) {
+int CZInterp::DispatchHook(char* commandToken)
+{
     return ReportParseError(commandToken);
 }
 
@@ -222,9 +259,8 @@ int CZInterp::DispatchHook(
  *
  * Purpose: report an unhandled command token after core dispatch.
  */
-int CZInterp::PostDispatchHook(
-    char *commandToken
-) {
+int CZInterp::PostDispatchHook(char* commandToken)
+{
     return ReportParseError(commandToken);
 }
 
@@ -236,9 +272,8 @@ int CZInterp::PostDispatchHook(
  *
  * Purpose: provide a default deferred-command hook that accepts the command.
  */
-int CZInterp::DeferredDispatchHook(
-    char *
-) {
+int CZInterp::DeferredDispatchHook(char*)
+{
     return 0;
 }
 /**
@@ -249,13 +284,11 @@ int CZInterp::DeferredDispatchHook(
  * Purpose: initialize one parser context, including prepared-script index
  * state, macro/variable tables, runtime scratch storage, and scroll callbacks.
  */
-CZInterp::CZInterp(
-    const char *preparedIndexPath,
-    const char *searchPathText
-) {
+CZInterp::CZInterp(const char* preparedIndexPath, const char* searchPathText)
+{
     includeDepth = 0;
 
-    runtimeBlob = (zInterpPolygonState *)(malloc(sizeof(zInterpPolygonState)));
+    runtimeBlob = (zInterpPolygonState*)(malloc(sizeof(zInterpPolygonState)));
     memset(runtimeBlob, 0, sizeof(*runtimeBlob));
 
     currentNode = 0;
@@ -277,7 +310,7 @@ CZInterp::CZInterp(
     preparedIndexStream = 0;
     memset(&preparedIndexHeader, 0, sizeof(preparedIndexHeader));
 
-    preparedEntryCount = (int *)(malloc(sizeof(int)));
+    preparedEntryCount = (int*)(malloc(sizeof(int)));
     *preparedEntryCount = 0;
 
     preparedEntryTable = 0;
@@ -287,7 +320,6 @@ CZInterp::CZInterp(
     varCount = 0;
     ptrArrayHead = 0;
     ptrArrayCount = 0;
-
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-zinterp-context-destructor
@@ -296,7 +328,8 @@ CZInterp::CZInterp(
  *
  * Purpose: tear down a context after Destroy has released active runtime state.
  */
-CZInterp::~CZInterp() {
+CZInterp::~CZInterp()
+{
     Destroy();
 
     if (tempAlloc != 0) {
@@ -317,7 +350,6 @@ CZInterp::~CZInterp() {
     if (searchPathSpec != 0) {
         free(searchPathSpec);
     }
-
 }
 
 /**
@@ -328,7 +360,8 @@ CZInterp::~CZInterp() {
  * Purpose: clear per-run parser tables, search paths, scroll callbacks, and
  * pointer-array state while leaving constructor-owned storage intact.
  */
-void CZInterp::Destroy() {
+void CZInterp::Destroy()
+{
     ClearMacroTable();
     ClearVarTable();
     ClearFileFrameStack();
@@ -357,10 +390,8 @@ void CZInterp::Destroy() {
  *
  * Purpose: read script input lines or prepared token blobs and run each one.
  */
-int CZInterp::RunStream(
-    FILE *scriptFile,
-    int preparedInput
-) {
+int CZInterp::RunStream(FILE* scriptFile, int preparedInput)
+{
     if (scriptFile == 0) {
         return 0;
     }
@@ -387,9 +418,8 @@ int CZInterp::RunStream(
  * Purpose: tokenize one command line, dispatch builtins/core hooks, and clear
  * temporary token storage.
  */
-int CZInterp::RunLine(
-    char *lineBuffer
-) {
+int CZInterp::RunLine(char* lineBuffer)
+{
     if (lineBuffer == 0) {
         return 0;
     }
@@ -404,7 +434,7 @@ int CZInterp::RunLine(
     }
 
     if (tokenCount != 0) {
-        char *const commandToken = tokenCount > 0 ? tokenList[0] : 0;
+        char* const commandToken = tokenCount > 0 ? tokenList[0] : 0;
         if (HandleBuiltinCommand(commandToken) != 0) {
             tokenReadIndex = 1;
             if (DispatchHook(commandToken) != 0) {
@@ -437,10 +467,8 @@ int CZInterp::RunLine(
  *
  * Purpose: read either a text script line or a prepared token block.
  */
-int CZInterp::ReadLineOrPreparedTokens(
-    FILE *scriptFile,
-    char *lineBuffer
-) {
+int CZInterp::ReadLineOrPreparedTokens(FILE* scriptFile, char* lineBuffer)
+{
     if (hasPreparedInput == 0) {
         int ch;
         while ((ch = fgetc(scriptFile)) != 0 && feof(scriptFile) == 0) {
@@ -464,10 +492,10 @@ int CZInterp::ReadLineOrPreparedTokens(
     }
 
     fread(&tokenCount, 4, 1, scriptFile);
-    tempAlloc = (char *)(malloc(tokenBlobSize));
+    tempAlloc = (char*)(malloc(tokenBlobSize));
     fread(tempAlloc, tokenBlobSize, 1, scriptFile);
 
-    char *tokenText = tempAlloc;
+    char* tokenText = tempAlloc;
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         tokenList[tokenIndex] = tokenText;
         tokenText += strlen(tokenText) + 1;
@@ -484,15 +512,14 @@ int CZInterp::ReadLineOrPreparedTokens(
  * Purpose: substitute percent-delimited macro references into a shared scratch
  * buffer before token parsing consumes the argument.
  */
-char * CZInterp::ExpandMacroRefs(
-    char *lineBuf
-) {
+char* CZInterp::ExpandMacroRefs(char* lineBuf)
+{
     if (lineBuf == 0) {
         return 0;
     }
 
-    char *open = strchr(lineBuf, '%');
-    char *close = open != 0 ? strchr(open + 1, '%') : 0;
+    char* open = strchr(lineBuf, '%');
+    char* close = open != 0 ? strchr(open + 1, '%') : 0;
     if (open == 0) {
         return lineBuf;
     }
@@ -501,7 +528,7 @@ char * CZInterp::ExpandMacroRefs(
     }
 
     g_zInterp_MacroExpansionScratch[0] = '\0';
-    char *segmentStart = lineBuf;
+    char* segmentStart = lineBuf;
     char macroName[64];
 
     do {
@@ -514,7 +541,7 @@ char * CZInterp::ExpandMacroRefs(
         strncpy(macroName, open + 1, macroSpanLength);
         macroName[macroSpanLength - 1] = '\0';
 
-        char *const value = FindMacroValue(macroName, 0);
+        char* const value = FindMacroValue(macroName, 0);
         if (value != 0) {
             strcat(g_zInterp_MacroExpansionScratch, value);
         }
@@ -544,9 +571,8 @@ char * CZInterp::ExpandMacroRefs(
  * each whitespace classification call.
  * Purpose: copy a text line, strip comments, and split command tokens.
  */
-int CZInterp::TokenizeLine(
-    const char *line
-) {
+int CZInterp::TokenizeLine(const char* line)
+{
     if (hasPreparedInput != 0) {
         return 1;
     }
@@ -554,22 +580,22 @@ int CZInterp::TokenizeLine(
     tokenCount = 0;
     tokenReadIndex = 1;
 
-    const char *const comment = strchr(line, '#');
+    const char* const comment = strchr(line, '#');
     if (comment == 0) {
         tempAlloc = _strdup(line);
     } else {
         const size_t prefixSize = strlen(line) - strlen(comment) + 1;
-        tempAlloc = (char *)(malloc(prefixSize));
+        tempAlloc = (char*)(malloc(prefixSize));
         memcpy(tempAlloc, line, prefixSize);
         tempAlloc[prefixSize - 1] = '\0';
     }
 
-    char *cursor = tempAlloc;
+    char* cursor = tempAlloc;
     while (iswspace(*cursor) != 0) {
         ++cursor;
     }
 
-    char *separator = strpbrk(cursor, ", \t\n");
+    char* separator = strpbrk(cursor, ", \t\n");
     while (separator != 0) {
         tokenList[tokenCount++] = cursor;
 
@@ -602,10 +628,9 @@ int CZInterp::TokenizeLine(
  *
  * Purpose: push nested script state, choose prepared or text input, and run it.
  */
-int CZInterp::RunScriptFile(
-    const char *filePath
-) {
-    FILE *scriptFile = 0;
+int CZInterp::RunScriptFile(const char* filePath)
+{
+    FILE* scriptFile = 0;
     int hasPrepared = 0;
 
     if (currentScriptFile != 0) {
@@ -613,8 +638,7 @@ int CZInterp::RunScriptFile(
         PushFileFrame(currentScriptFile, filePos, hasPreparedInput);
     }
 
-    if (g_zInterp_EnablePreparedScripts != 0 &&
-        LoadPreparedScriptIndex(preparedIndexFileName) != 0) {
+    if (g_zInterp_EnablePreparedScripts != 0 && LoadPreparedScriptIndex(preparedIndexFileName) != 0) {
         scriptFile = OpenPreparedScriptStream(filePath);
         if (scriptFile != 0) {
             hasPrepared = 1;
@@ -634,7 +658,7 @@ int CZInterp::RunScriptFile(
         }
     }
 
-    zInterpFileFrame *const frame = PopFileFrame();
+    zInterpFileFrame* const frame = PopFileFrame();
     if (frame != 0) {
         currentScriptFile = frame->file;
         fseek(currentScriptFile, frame->filePos, 0);
@@ -652,11 +676,9 @@ int CZInterp::RunScriptFile(
  *
  * Purpose: locate a macro entry by name and optionally return its table slot.
  */
-char * CZInterp::FindMacroValue(
-    const char *name,
-    zInterpMacroEntry **outEntry
-) {
-    zInterpMacroEntry *entry = macroTable;
+char* CZInterp::FindMacroValue(const char* name, zInterpMacroEntry** outEntry)
+{
+    zInterpMacroEntry* entry = macroTable;
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex, ++entry) {
         if (strcmp(name, entry->name) == 0) {
             if (outEntry != 0) {
@@ -676,8 +698,9 @@ char * CZInterp::FindMacroValue(
  *
  * Purpose: free all macro names, values, and table storage for the context.
  */
-void CZInterp::ClearMacroTable() {
-    zInterpMacroEntry *entry = macroTable;
+void CZInterp::ClearMacroTable()
+{
+    zInterpMacroEntry* entry = macroTable;
     for (unsigned int macroIndex = 0; macroIndex < macroCount; ++macroIndex, ++entry) {
         free(entry->name);
         free(entry->value);
@@ -697,8 +720,9 @@ void CZInterp::ClearMacroTable() {
  *
  * Purpose: free variable table names and release the context's table storage.
  */
-void CZInterp::ClearVarTable() {
-    zInterpVarEntry *entry = varTable;
+void CZInterp::ClearVarTable()
+{
+    zInterpVarEntry* entry = varTable;
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
         free(entry->name);
     }
@@ -717,10 +741,9 @@ void CZInterp::ClearVarTable() {
  *
  * Purpose: test whether a named macro currently holds the TRUE literal.
  */
-int CZInterp::IsMacroTrue(
-    const char *name
-) {
-    const char *const value = FindMacroValue(name, 0);
+int CZInterp::IsMacroTrue(const char* name)
+{
+    const char* const value = FindMacroValue(name, 0);
     if (value == 0) {
         return 0;
     }
@@ -734,24 +757,18 @@ int CZInterp::IsMacroTrue(
  *
  * Purpose: create or update one dynamically allocated macro table entry.
  */
-int CZInterp::SetMacro(
-    const char *name,
-    const char *value
-) {
-    zInterpMacroEntry *entry = 0;
+int CZInterp::SetMacro(const char* name, const char* value)
+{
+    zInterpMacroEntry* entry = 0;
     if (name != 0 && value != 0) {
         if (FindMacroValue(name, &entry) != 0) {
             const size_t valueSize = strlen(value) + 1;
-            entry->value = (char *)(realloc(entry->value, valueSize));
+            entry->value = (char*)(realloc(entry->value, valueSize));
             strcpy(entry->value, value);
             return 1;
         }
 
-        macroTable =
-            (zInterpMacroEntry *)(realloc(
-                macroTable,
-                (macroCount + 1) * sizeof(zInterpMacroEntry)
-            ));
+        macroTable = (zInterpMacroEntry*)(realloc(macroTable, (macroCount + 1) * sizeof(zInterpMacroEntry)));
         entry = &macroTable[macroCount];
         entry->name = _strdup(name);
         entry->value = _strdup(value);
@@ -768,7 +785,8 @@ int CZInterp::SetMacro(
  *
  * Purpose: print each parsed token followed by a newline.
  */
-int CZInterp::EchoTokens() {
+int CZInterp::EchoTokens()
+{
     for (unsigned int tokenIndex = 0; tokenIndex < tokenCount; ++tokenIndex) {
         printf("%s ", tokenIndex < tokenCount ? tokenList[tokenIndex] : 0);
     }
@@ -783,15 +801,10 @@ int CZInterp::EchoTokens() {
  *
  * Purpose: append one saved script file position for nested source commands.
  */
-int CZInterp::PushFileFrame(
-    FILE *file,
-    long filePos,
-    int hasPreparedInput
-) {
-    zInterpFileFrame *const frames = (zInterpFileFrame *)(realloc(
-        fileFrameStack,
-        (fileFrameCount + 1) * sizeof(zInterpFileFrame)
-    ));
+int CZInterp::PushFileFrame(FILE* file, long filePos, int hasPreparedInput)
+{
+    zInterpFileFrame* const frames
+        = (zInterpFileFrame*)(realloc(fileFrameStack, (fileFrameCount + 1) * sizeof(zInterpFileFrame)));
     const int frameIndex = fileFrameCount;
     fileFrameStack = frames;
 
@@ -809,7 +822,8 @@ int CZInterp::PushFileFrame(
  *
  * Purpose: pop the most recent nested-script file frame without freeing storage.
  */
-zInterpFileFrame * CZInterp::PopFileFrame() {
+zInterpFileFrame* CZInterp::PopFileFrame()
+{
     int count = fileFrameCount;
     if (count == 0) {
         return 0;
@@ -827,7 +841,8 @@ zInterpFileFrame * CZInterp::PopFileFrame() {
  *
  * Purpose: free saved nested-script file frames and reset the frame count.
  */
-void CZInterp::ClearFileFrameStack() {
+void CZInterp::ClearFileFrameStack()
+{
     if (fileFrameStack != 0) {
         free(fileFrameStack);
         fileFrameStack = 0;
@@ -842,11 +857,12 @@ void CZInterp::ClearFileFrameStack() {
  *
  * Purpose: advance the token cursor and return the macro-expanded token text.
  */
-char * CZInterp::NextToken() {
+char* CZInterp::NextToken()
+{
     const unsigned int tokenIndex = (unsigned int)(tokenReadIndex);
     tokenReadIndex = (int)(tokenIndex + 1);
 
-    char *token = tokenIndex < tokenCount ? tokenList[tokenIndex] : 0;
+    char* token = tokenIndex < tokenCount ? tokenList[tokenIndex] : 0;
 
     if (token == 0) {
         return 0;
@@ -862,8 +878,9 @@ char * CZInterp::NextToken() {
  *
  * Purpose: parse the next token as an on/true boolean value.
  */
-int CZInterp::ParseBoolToken() {
-    char *const token = NextToken();
+int CZInterp::ParseBoolToken()
+{
+    char* const token = NextToken();
     if (token != 0) {
         if (_stricmp(token, "on") == 0 || _stricmp(token, "true") == 0) {
             return 1;
@@ -879,8 +896,9 @@ int CZInterp::ParseBoolToken() {
  *
  * Purpose: parse the next token as a floating-point value.
  */
-float CZInterp::ParseFloatToken() {
-    char *const token = NextToken();
+float CZInterp::ParseFloatToken()
+{
+    char* const token = NextToken();
     if (token != 0) {
         return (float)(atof(token));
     }
@@ -895,8 +913,9 @@ float CZInterp::ParseFloatToken() {
  *
  * Purpose: parse the next token as an integer value.
  */
-int CZInterp::ParseIntToken() {
-    char *const token = NextToken();
+int CZInterp::ParseIntToken()
+{
+    char* const token = NextToken();
     if (token != 0) {
         return atoi(token);
     }
@@ -911,10 +930,9 @@ int CZInterp::ParseIntToken() {
  *
  * Purpose: find a registered script variable entry by name.
  */
-zInterpVarEntry * CZInterp::FindVarEntry(
-    const char *name
-) {
-    zInterpVarEntry *entry = varTable;
+zInterpVarEntry* CZInterp::FindVarEntry(const char* name)
+{
+    zInterpVarEntry* entry = varTable;
     for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
         if (strcmp(name, entry->name) == 0) {
             return entry;
@@ -931,9 +949,8 @@ zInterpVarEntry * CZInterp::FindVarEntry(
  *
  * Purpose: log one variable entry according to its stored scalar/string type.
  */
-void CZInterp::DumpVarEntry(
-    zInterpVarEntry *entry
-) {
+void CZInterp::DumpVarEntry(zInterpVarEntry* entry)
+{
     if (entry != 0) {
         switch (entry->type) {
         case 0:
@@ -957,7 +974,8 @@ void CZInterp::DumpVarEntry(
  *
  * Purpose: count one parser error for the current command line.
  */
-void CZInterp::IncErrorCount() {
+void CZInterp::IncErrorCount()
+{
     ++errorCount;
 }
 
@@ -968,15 +986,12 @@ void CZInterp::IncErrorCount() {
  *
  * Purpose: forward formatted parser logging to the context callback.
  */
-void CZInterp::Logf(
-    CZInterp *ctx,
-    const char *fmt,
-    ...
-) {
+void CZInterp::Logf(CZInterp* ctx, const char* fmt, ...)
+{
     if (ctx->logFn != 0) {
         va_list args;
         va_start(args, fmt);
-        ctx->logFn(fmt, (char *)args);
+        ctx->logFn(fmt, (char*)args);
         va_end(args);
     }
 }
@@ -988,7 +1003,8 @@ void CZInterp::Logf(
  *
  * Purpose: evaluate simple macro truth expressions used by ifdef/ifndef.
  */
-int CZInterp::EvalConditionExpr() {
+int CZInterp::EvalConditionExpr()
+{
     if (tokenCount == 1) {
         return 0;
     }
@@ -1002,7 +1018,7 @@ int CZInterp::EvalConditionExpr() {
     int result = 0;
     while (tokenIndex < tokenCount) {
         const unsigned int nameIndex = tokenIndex++;
-        const char *const name = nameIndex < tokenCount ? tokenList[nameIndex] : 0;
+        const char* const name = nameIndex < tokenCount ? tokenList[nameIndex] : 0;
 
         switch (op) {
         case 0:
@@ -1018,7 +1034,7 @@ int CZInterp::EvalConditionExpr() {
 
         if (tokenIndex < tokenCount) {
             const unsigned int opIndex = tokenIndex++;
-            const char *const opText = opIndex < tokenCount ? tokenList[opIndex] : 0;
+            const char* const opText = opIndex < tokenCount ? tokenList[opIndex] : 0;
             if (strncmp(opText, "||", 2) == 0) {
                 op = 1;
             } else if (strncmp(opText, "&&", 2) == 0) {
@@ -1040,9 +1056,8 @@ int CZInterp::EvalConditionExpr() {
  * Purpose: handle parser builtins for conditions, macros, script inclusion,
  * and variable mutation before core command dispatch.
  */
-int CZInterp::HandleBuiltinCommand(
-    char *commandToken
-) {
+int CZInterp::HandleBuiltinCommand(char* commandToken)
+{
     if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "endif", 5) == 0) {
         if (conditionalDepth != 0) {
             --conditionalDepth;
@@ -1067,7 +1082,7 @@ int CZInterp::HandleBuiltinCommand(
     }
 
     if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "mkdir", 5) == 0) {
-        char *const path = NextToken();
+        char* const path = NextToken();
         if (_mkdir(path) != 0 && errno != EEXIST) {
             ReportErrorf(this, "%s %s FAILED (errno == %d)", commandToken, path, errno);
         }
@@ -1080,16 +1095,16 @@ int CZInterp::HandleBuiltinCommand(
     }
 
     if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "set", 3) == 0) {
-        char *const name = NextToken();
-        char *const value = NextToken();
+        char* const name = NextToken();
+        char* const value = NextToken();
         SetMacro(name, value);
         return 0;
     }
 
     if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "source", 6) == 0) {
-        char *const sourcePath = NextToken();
+        char* const sourcePath = NextToken();
         if (sourcePath != 0) {
-            char *const filePath = _strdup(sourcePath);
+            char* const filePath = _strdup(sourcePath);
             free(tempAlloc);
             tempAlloc = 0;
             RunScriptFile(filePath);
@@ -1105,7 +1120,7 @@ int CZInterp::HandleBuiltinCommand(
             Logf(this, "%12s: %s", macroTable[i].name, macroTable[i].value);
         }
         Logf(this, "%d Variables", varCount);
-        zInterpVarEntry *entry = varTable;
+        zInterpVarEntry* entry = varTable;
         for (unsigned int varIndex = 0; varIndex < varCount; ++varIndex, ++entry) {
             DumpVarEntry(entry);
         }
@@ -1113,14 +1128,14 @@ int CZInterp::HandleBuiltinCommand(
     }
 
     if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "var", 3) == 0) {
-        char *const name = NextToken();
-        zInterpVarEntry *const entry = FindVarEntry(name);
+        char* const name = NextToken();
+        zInterpVarEntry* const entry = FindVarEntry(name);
         if (entry == 0) {
             Logf(this, "Can't find variable ( %s )", name);
             return 0;
         }
 
-        char *const op = NextToken();
+        char* const op = NextToken();
         if (strncmp(op, "set", 3) != 0 && strncmp(op, "=", 1) != 0) {
             IncErrorCount();
             return 0;
@@ -1150,10 +1165,8 @@ int CZInterp::HandleBuiltinCommand(
  *
  * Purpose: recursively log a zClass node tree with two-space child indentation.
  */
-void CZInterp::PrintNodeTree(
-    CZNodePartial *node,
-    int indent
-) {
+void CZInterp::PrintNodeTree(CZNodePartial* node, int indent)
+{
     if (node != 0) {
         Logf(this, "%*s%s", indent, " ", node->name);
         for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
@@ -1168,9 +1181,8 @@ void CZInterp::PrintNodeTree(
  *
  * Purpose: count an unhandled command parse error and report failure.
  */
-int CZInterp::ReportParseError(
-    char *
-) {
+int CZInterp::ReportParseError(char*)
+{
     IncErrorCount();
     return 1;
 }
@@ -1335,9 +1347,8 @@ int CZInterp::ReportParseError(
  *
  * Purpose: dispatch script commands to engine subsystems.
  */
-int CZInterp::DispatchCoreCommand(
-    char *commandToken
-) {
+int CZInterp::DispatchCoreCommand(char* commandToken)
+{
     float y;
     float x;
     float z;
@@ -1349,26 +1360,15 @@ int CZInterp::DispatchCoreCommand(
     switch (commandToken[0]) {
     case 'A':
         if (CommandIs(this, "AddChild") != 0) {
-            char *const searchName = NextToken();
-            CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
-            CZNodePartial *const parent = (CZNodePartial *)(currentNode);
+            char* const searchName = NextToken();
+            CZNodePartial* const child = CZClass::FindByTypeAndName(6, searchName);
+            CZNodePartial* const parent = (CZNodePartial*)(currentNode);
             if (parent == 0) {
-                ReportErrorf(
-                    this,
-                    "%s %s FAILED because current node is NULL",
-                    commandToken,
-                    searchName
-                );
+                ReportErrorf(this, "%s %s FAILED because current node is NULL", commandToken, searchName);
                 return 1;
             }
             if (child == 0) {
-                ReportErrorf(
-                    this,
-                    "%s %s FAILED because node [%s] wasn't found",
-                    commandToken,
-                    searchName,
-                    searchName
-                );
+                ReportErrorf(this, "%s %s FAILED because node [%s] wasn't found", commandToken, searchName, searchName);
                 return 1;
             }
             CZClass::AddChild(parent, child);
@@ -1397,7 +1397,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZCamera::gwCameraSetPosition((CZNodePartial *)(currentNode), x, y, z);
+            CZCamera::gwCameraSetPosition((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1406,20 +1406,13 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            CZCamera::gwCameraGetTarget((CZNodePartial *)(currentNode), &x, &y, &z);
-            Logf(
-                this,
-                "%s --> ( %.2f %.2f %.2f )",
-                ((CZNodePartial *)(currentNode))->name,
-                x,
-                y,
-                z
-            );
+            CZCamera::gwCameraGetTarget((CZNodePartial*)(currentNode), &x, &y, &z);
+            Logf(this, "%s --> ( %.2f %.2f %.2f )", ((CZNodePartial*)(currentNode))->name, x, y, z);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetActive") != 0) {
-            CZCamera::gwCameraSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZCamera::gwCameraSetActive((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -1434,77 +1427,50 @@ int CZInterp::DispatchCoreCommand(
             float verticalFov = ParseFloatToken();
             horizontalFov = (float)(horizontalFov * kDegreesToRadians);
             verticalFov = (float)(verticalFov * kDegreesToRadians);
-            CZCamera::gwCameraSetFOV(
-                (CZNodePartial *)(currentNode),
-                horizontalFov,
-                verticalFov
-            );
+            CZCamera::gwCameraSetFOV((CZNodePartial*)(currentNode), horizontalFov, verticalFov);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetHorizonXZ") != 0) {
-            CZNodePartial *const horizon = CZClass::FindByTypeAndName(6, NextToken());
-            CZCamera::gwCameraSetHorizonXZ((CZNodePartial *)(currentNode), horizon);
+            CZNodePartial* const horizon = CZClass::FindByTypeAndName(6, NextToken());
+            CZCamera::gwCameraSetHorizonXZ((CZNodePartial*)(currentNode), horizon);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetHorizon") != 0) {
-            CZNodePartial *const horizon = CZClass::FindByTypeAndName(6, NextToken());
-            CZCamera::gwCameraSetHorizon((CZNodePartial *)(currentNode), horizon);
+            CZNodePartial* const horizon = CZClass::FindByTypeAndName(6, NextToken());
+            CZCamera::gwCameraSetHorizon((CZNodePartial*)(currentNode), horizon);
             return 1;
         }
 
         if (CommandHasPrefix(this, "CameraSetLODMultiplier") != 0) {
             const float clipDistance = ParseFloatToken();
-            CZCamera::gwCameraSetClipDistance(
-                (CZNodePartial *)(currentNode),
-                clipDistance
-            );
+            CZCamera::gwCameraSetClipDistance((CZNodePartial*)(currentNode), clipDistance);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetNearFarClip") != 0) {
             const float nearClip = ParseFloatToken();
             const float farClip = ParseFloatToken();
-            CZCamera::gwCameraSetNearFarClip(
-                (CZNodePartial *)(currentNode),
-                nearClip,
-                farClip
-            );
+            CZCamera::gwCameraSetNearFarClip((CZNodePartial*)(currentNode), nearClip, farClip);
             return 1;
         }
 
         if (CommandIsExact(this, "CameraSetNearClip") != 0) {
             float nearClip;
             float farClip;
-            CZCamera::gwCameraGetNearFarClip(
-                (CZNodePartial *)(currentNode),
-                &nearClip,
-                &farClip
-            );
+            CZCamera::gwCameraGetNearFarClip((CZNodePartial*)(currentNode), &nearClip, &farClip);
             nearClip = ParseFloatToken();
-            CZCamera::gwCameraSetNearFarClip(
-                (CZNodePartial *)(currentNode),
-                nearClip,
-                farClip
-            );
+            CZCamera::gwCameraSetNearFarClip((CZNodePartial*)(currentNode), nearClip, farClip);
             return 1;
         }
 
         if (CommandIsExact(this, "CameraSetFarClip") != 0) {
             float nearClip;
             float farClip;
-            CZCamera::gwCameraGetNearFarClip(
-                (CZNodePartial *)(currentNode),
-                &nearClip,
-                &farClip
-            );
+            CZCamera::gwCameraGetNearFarClip((CZNodePartial*)(currentNode), &nearClip, &farClip);
             farClip = ParseFloatToken();
-            CZCamera::gwCameraSetNearFarClip(
-                (CZNodePartial *)(currentNode),
-                nearClip,
-                farClip
-            );
+            CZCamera::gwCameraSetNearFarClip((CZNodePartial*)(currentNode), nearClip, farClip);
             return 1;
         }
 
@@ -1514,14 +1480,14 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "CameraSetWindow") != 0) {
-            CZNodePartial *const window = CZClass::FindByTypeAndName(14, NextToken());
-            CZCamera::gwCameraSetWindow((CZNodePartial *)(currentNode), window);
+            CZNodePartial* const window = CZClass::FindByTypeAndName(14, NextToken());
+            CZCamera::gwCameraSetWindow((CZNodePartial*)(currentNode), window);
             return 1;
         }
 
         if (CommandIs(this, "CameraSetWorld") != 0) {
-            CZNodePartial *const world = CZClass::FindByTypeAndName(13, NextToken());
-            CZCamera::gwCameraSetWorld((CZNodePartial *)(currentNode), world);
+            CZNodePartial* const world = CZClass::FindByTypeAndName(13, NextToken());
+            CZCamera::gwCameraSetWorld((CZNodePartial*)(currentNode), world);
             return 1;
         }
 
@@ -1529,7 +1495,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZCamera::gwCameraSetTarget((CZNodePartial *)(currentNode), x, y, z);
+            CZCamera::gwCameraSetTarget((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1549,8 +1515,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "CycleTextureSetMap") != 0) {
-            zImage_TexDirEntryPartial *const texDirEntry =
-                zImage::TexDirFindOrAppendByPath(NextToken());
+            zImage_TexDirEntryPartial* const texDirEntry = zImage::TexDirFindOrAppendByPath(NextToken());
             zModel_Instance::AddCycleTexture(g_zInterp_CurrentCycleTextureDi, texDirEntry);
             return 1;
         }
@@ -1568,31 +1533,25 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_CurrentCycleTextureDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
             if (g_zInterp_CurrentCycleTextureDi == 0) {
                 zError::ReportOld(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1a2,
                     "ERROR no GFX data for cycled texture (%s)",
-                    ((CZNodePartial *)(currentNode))->name
+                    ((CZNodePartial*)(currentNode))->name
                 );
             }
 
-            if (zDi::SetCurrentVariantCycleTextureCount(
-                    g_zInterp_CurrentCycleTextureDi,
-                    textureCount
-                ) != 0) {
+            if (zDi::SetCurrentVariantCycleTextureCount(g_zInterp_CurrentCycleTextureDi, textureCount) != 0) {
                 zError::ReportOld(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1a8,
                     "Node (%s) has no graphics data for cycled texture\n",
-                    ((CZNodePartial *)(currentNode))->name
+                    ((CZNodePartial*)(currentNode))->name
                 );
             }
             return 1;
@@ -1612,20 +1571,17 @@ int CZInterp::DispatchCoreCommand(
         return 1;
     case 'D':
         if (CommandIs(this, "DeleteChild") != 0) {
-            char *const name = NextToken();
-            CZNodePartial *const child = CZClass::FindSubNodeByName(
-                (CZNodePartial *)(currentNode),
-                name
-            );
+            char* const name = NextToken();
+            CZNodePartial* const child = CZClass::FindSubNodeByName((CZNodePartial*)(currentNode), name);
             if (currentNode != 0 && child != 0) {
-                CZClass::RemoveChild((CZNodePartial *)(currentNode), child);
+                CZClass::RemoveChild((CZNodePartial*)(currentNode), child);
             } else {
                 zError::ReportOld(
                     0x200,
                     "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
                     0x1c6,
                     "interp: DeleteChild (%s, %s) --> NULL NODE",
-                    currentNode != 0 ? ((CZNodePartial *)(currentNode))->name : "NULL",
+                    currentNode != 0 ? ((CZNodePartial*)(currentNode))->name : "NULL",
                     name
                 );
             }
@@ -1638,8 +1594,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "DeleteTree") != 0) {
-            char *const searchName = NextToken();
-            CZNodePartial *const node = CZClass::FindByTypeAndName(6, searchName);
+            char* const searchName = NextToken();
+            CZNodePartial* const node = CZClass::FindByTypeAndName(6, searchName);
             if (node == 0) {
                 zError::ReportOld(
                     0x200,
@@ -1657,14 +1613,14 @@ int CZInterp::DispatchCoreCommand(
         if (CommandIs(this, "DisplayOrigin") != 0) {
             const int x = ParseIntToken();
             const int y = ParseIntToken();
-            CZDisplay::gwDisplaySetPosition((CZNodePartial *)(currentNode), x, y);
+            CZDisplay::gwDisplaySetPosition((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
         if (CommandIs(this, "DisplayResolution") != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            CZDisplay::gwDisplaySetSize((CZNodePartial *)(currentNode), width, height);
+            CZDisplay::gwDisplaySetSize((CZNodePartial*)(currentNode), width, height);
             return 1;
         }
 
@@ -1672,12 +1628,7 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            CZDisplay::gwDisplaySetBackgroundColor(
-                (CZNodePartial *)(currentNode),
-                red,
-                green,
-                blue
-            );
+            CZDisplay::gwDisplaySetBackgroundColor((CZNodePartial*)(currentNode), red, green, blue);
             return 1;
         } else {
             IncErrorCount();
@@ -1701,7 +1652,7 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'F':
         if (CommandIs(this, "FindNode") != 0) {
-            char *const searchName = NextToken();
+            char* const searchName = NextToken();
             currentNode = CZClass::FindByTypeAndName(6, searchName);
             if (currentNode == 0) {
                 ReportErrorf(this, "FindNode %s: FAILED", searchName);
@@ -1710,11 +1661,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "FindSubNode") != 0) {
-            char *const name = NextToken();
-            currentNode = CZClass::FindSubNodeByName(
-                (CZNodePartial *)(currentNode),
-                name
-            );
+            char* const name = NextToken();
+            currentNode = CZClass::FindSubNodeByName((CZNodePartial*)(currentNode), name);
             if (currentNode == 0) {
                 ReportErrorf(this, "FindSubNode %s: FAILED", name);
             }
@@ -1722,26 +1670,26 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "FreeNode") != 0) {
-            char *const searchName = NextToken();
-            CZNodePartial *const node = CZClass::FindByTypeAndName(6, searchName);
+            char* const searchName = NextToken();
+            CZNodePartial* const node = CZClass::FindByTypeAndName(6, searchName);
             int result;
             switch (node->classId) {
-                case 1:
-                    result = CZCamera::DeleteNode(node);
-                    break;
-                case 2:
-                    result = CZWorld::DeleteNode(node);
-                    break;
-                case 3:
-                    result = CZWindow::DeleteNode(node);
-                    break;
-                case 5:
-                    result = CZObject3D::DeleteNode(node);
-                    break;
-                default:
-                    printf("Unrecognized node class = %d\n", node->classId);
-                    result = 1;
-                    break;
+            case 1:
+                result = CZCamera::DeleteNode(node);
+                break;
+            case 2:
+                result = CZWorld::DeleteNode(node);
+                break;
+            case 3:
+                result = CZWindow::DeleteNode(node);
+                break;
+            case 5:
+                result = CZObject3D::DeleteNode(node);
+                break;
+            default:
+                printf("Unrecognized node class = %d\n", node->classId);
+                result = 1;
+                break;
             }
             if (result != 0) {
                 printf("   Error freeing node %s\n", searchName);
@@ -1753,7 +1701,7 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'G':
         if (CommandIs(this, "GameZReadZBDFile") != 0) {
-            char *const filename = NextToken();
+            char* const filename = NextToken();
             if (CZZbd::ReadZBDFile(filename) != 0) {
                 ReportErrorf(this, "%s %s FAILED", commandToken, filename);
             }
@@ -1761,7 +1709,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "GameZWriteZBDFile") != 0) {
-            char *const filename = NextToken();
+            char* const filename = NextToken();
             CZClass::gwNodeUpdateAll();
             CZClass::ProcessDeferredWork();
             CZZbd::WriteZBDFile(filename);
@@ -1780,26 +1728,25 @@ int CZInterp::DispatchCoreCommand(
     case 'L':
         if (CommandIs(this, "LensFlareTexture") != 0) {
             const int stageIndex = ParseIntToken();
-            zImage_TexDirEntryPartial *const texDirEntry =
-                zImage::TexDirFindOrAppendByPath(NextToken());
+            zImage_TexDirEntryPartial* const texDirEntry = zImage::TexDirFindOrAppendByPath(NextToken());
             zRndrLensFlareSetVisibleSampleStage(stageIndex, texDirEntry);
             return 1;
         }
 
         if (CommandIs(this, "LightNew") != 0) {
             currentNode = CZLight::gwLightNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "LightSetActive") != 0) {
-            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "LightSetAmbient") != 0) {
             x = ParseFloatToken();
-            CZLight::gwLightSetIntensity((CZNodePartial *)(currentNode), x);
+            CZLight::gwLightSetIntensity((CZNodePartial*)(currentNode), x);
             return 1;
         }
 
@@ -1807,31 +1754,23 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            CZLight::gwLightSetSpecularColor(
-                (CZNodePartial *)(currentNode),
-                red,
-                green,
-                blue
-            );
+            CZLight::gwLightSetSpecularColor((CZNodePartial*)(currentNode), red, green, blue);
             return 1;
         }
 
         if (CommandIs(this, "LightSetDiffuse") != 0) {
             x = ParseFloatToken();
-            CZLight::gwLightSetFalloff((CZNodePartial *)(currentNode), x);
+            CZLight::gwLightSetFalloff((CZNodePartial*)(currentNode), x);
             return 1;
         }
 
         if (CommandIs(this, "LightSetDirectedSource") != 0) {
-            CZLight::gwLightSetDirectedSource((CZNodePartial *)(currentNode));
+            CZLight::gwLightSetDirectedSource((CZNodePartial*)(currentNode));
             return 1;
         }
 
         if (CommandIs(this, "LightSetDirectional") != 0) {
-            CZLight::gwLightSetDirectional(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZLight::gwLightSetDirectional((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -1840,7 +1779,7 @@ int CZInterp::DispatchCoreCommand(
             y = ParseFloatToken();
             z = ParseFloatToken();
             CZLight::gwLightSetRotation(
-                (CZNodePartial *)(currentNode),
+                (CZNodePartial*)(currentNode),
                 (float)(x * kDegreesToRadians),
                 (float)(y * kDegreesToRadians),
                 (float)(z * kDegreesToRadians)
@@ -1849,14 +1788,14 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LightSetPointSource") != 0) {
-            CZLight::gwLightSetPointSource((CZNodePartial *)(currentNode));
+            CZLight::gwLightSetPointSource((CZNodePartial*)(currentNode));
             return 1;
         }
 
         if (CommandIs(this, "LightSetRanges") != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZLight::gwLightSetRange((CZNodePartial *)(currentNode), x, y);
+            CZLight::gwLightSetRange((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
@@ -1866,7 +1805,7 @@ int CZInterp::DispatchCoreCommand(
                 return 1;
             }
 
-            CZLight::gwLightSetParam((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZLight::gwLightSetParam((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -1874,7 +1813,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZLight::gwLightSetPosition((CZNodePartial *)(currentNode), x, y, z);
+            CZLight::gwLightSetPosition((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1884,16 +1823,16 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "LODAddChild") != 0) {
-            CZNodePartial *const child = CZClass::FindByTypeAndName(6, NextToken());
-            CZLod::gwLodAddChild((CZNodePartial *)(currentNode), child);
+            CZNodePartial* const child = CZClass::FindByTypeAndName(6, NextToken());
+            CZLod::gwLodAddChild((CZNodePartial*)(currentNode), child);
             return 1;
         }
 
         if (CommandIs(this, "LODSetRange") != 0) {
             float nearRange = ParseFloatToken();
             float farRange = ParseFloatToken();
-            ((CZLodDataPartial *)(((CZNodePartial *)(currentNode))->classData))->nearRangeSq = nearRange * nearRange;
-            ((CZLodDataPartial *)(((CZNodePartial *)(currentNode))->classData))->farRangeSq = farRange * farRange;
+            ((CZLodDataPartial*)(((CZNodePartial*)(currentNode))->classData))->nearRangeSq = nearRange * nearRange;
+            ((CZLodDataPartial*)(((CZNodePartial*)(currentNode))->classData))->farRangeSq = farRange * farRange;
         } else {
             IncErrorCount();
         }
@@ -1904,8 +1843,8 @@ int CZInterp::DispatchCoreCommand(
             runtimeBlob->material.colorRgb.red = ParseFloatToken();
             runtimeBlob->material.colorRgb.green = ParseFloatToken();
             runtimeBlob->material.colorRgb.blue = ParseFloatToken();
-            runtimeBlob->material.packedColor =
-                zVidPackColorRgbFloats((zVideo_ColorRgbFloat *)(&runtimeBlob->material.colorRgb));
+            runtimeBlob->material.packedColor
+                = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&runtimeBlob->material.colorRgb));
             return 1;
         }
 
@@ -1915,8 +1854,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "MatlTexture") != 0) {
-            runtimeBlob->material.currentTextureDirectoryEntry =
-                zImage::FindTexDirEntryByName(NextToken());
+            runtimeBlob->material.currentTextureDirectoryEntry = zImage::FindTexDirEntryByName(NextToken());
             if (runtimeBlob->material.currentTextureDirectoryEntry == 0) {
                 runtimeBlob->material.flags &= 0xfeff;
             } else {
@@ -1927,17 +1865,14 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "ModelNew") != 0) {
             currentNode = CZObject3D::gwObject3DInit();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             runtimeBlob->displayInstance = zModel_DiPool::AllocFromFreeList();
-            CZClass::gwNodeSetDisplayInstance(
-                (CZNodePartial *)(currentNode),
-                runtimeBlob->displayInstance
-            );
-            const char *const modelType = NextToken();
+            CZClass::gwNodeSetDisplayInstance((CZNodePartial*)(currentNode), runtimeBlob->displayInstance);
+            const char* const modelType = NextToken();
             if (strncmp(modelType, "Facade", 6) == 0) {
-                zUtil::StoreInt32((int *)runtimeBlob->displayInstance, 1);
+                zUtil::StoreInt32((int*)runtimeBlob->displayInstance, 1);
             } else {
-                zUtil::StoreInt32((int *)runtimeBlob->displayInstance, 0);
+                zUtil::StoreInt32((int*)runtimeBlob->displayInstance, 0);
             }
             return 1;
         }
@@ -1990,80 +1925,74 @@ int CZInterp::DispatchCoreCommand(
     case 'N':
         if (CommandIs(this, "NewCamera") != 0) {
             currentNode = CZCamera::gwCameraNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewDisplay") != 0) {
             currentNode = CZDisplay::gwDisplayInit();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewLOD") != 0) {
             currentNode = CZLod::gwLodNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewNode") != 0) {
             currentNode = CZClass::gwNodeNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewObject3D") != 0) {
             currentNode = CZObject3D::gwObject3DInit();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewSEQ") != 0) {
             currentNode = CZSequence::gwSequenceNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewWindow") != 0) {
             currentNode = CZWindow::gwWindowNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NewWorld") != 0) {
             currentNode = CZWorld::gwWorldNew();
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetActive") != 0) {
-            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetDescription") != 0) {
-            CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+            CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetCanModify") != 0) {
-            CZClass::gwNodeSetFlag16((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetFlag16((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetLighting") != 0) {
-            CZNode::AssignInt32ToDiRecursive(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZNode::AssignInt32ToDiRecursive((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "NodeSetOverwrite") != 0) {
-            CZClass::gwNodeSetVertexAlphaOverride(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZClass::gwNodeSetVertexAlphaOverride((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         } else {
             IncErrorCount();
@@ -2071,9 +2000,9 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'O':
         if (CommandIs(this, "Object3DAddChild") != 0) {
-            char *const searchName = NextToken();
-            CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
-            CZNodePartial *const parent = (CZNodePartial *)(currentNode);
+            char* const searchName = NextToken();
+            CZNodePartial* const child = CZClass::FindByTypeAndName(6, searchName);
+            CZNodePartial* const parent = (CZNodePartial*)(currentNode);
             if (parent != 0 && child != 0) {
                 CZObject3D::gwObject3DAddChild(parent, child);
             } else {
@@ -2093,33 +2022,20 @@ int CZInterp::DispatchCoreCommand(
             if (currentNode == 0) {
                 return 1;
             }
-            CZObject3D::gwObject3DGetPosition((CZNodePartial *)(currentNode), &x, &y, &z);
-            Logf(
-                this,
-                "%s --> ( %.2f %.2f %.2f )",
-                ((CZNodePartial *)(currentNode))->name,
-                x,
-                y,
-                z
-            );
+            CZObject3D::gwObject3DGetPosition((CZNodePartial*)(currentNode), &x, &y, &z);
+            Logf(this, "%s --> ( %.2f %.2f %.2f )", ((CZNodePartial*)(currentNode))->name, x, y, z);
             return 1;
         }
 
         if (CommandIs(this, "Object3DRegisterTexturesToWorld") != 0) {
             const int registerTextures = ParseBoolToken();
             if (registerTextures != 0) {
-                CZClass::gwNodeGetUserData(
-                    (CZNodePartial *)(currentNode),
-                    &g_zInterp_NodeUserDataScratch
-                );
-                g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+                CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+                g_zInterp_CurrentCycleTextureDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
                 g_zInterp_CurrentCycleTextureDi->flags |= 0x04;
             } else {
-                CZClass::gwNodeGetUserData(
-                    (CZNodePartial *)(currentNode),
-                    &g_zInterp_NodeUserDataScratch
-                );
-                g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+                CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+                g_zInterp_CurrentCycleTextureDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
                 g_zInterp_CurrentCycleTextureDi->flags &= ~0x04;
             }
             return 1;
@@ -2130,7 +2046,7 @@ int CZInterp::DispatchCoreCommand(
             y = ParseFloatToken();
             z = ParseFloatToken();
             CZObject3D::gwObject3DSetRotation(
-                (CZNodePartial *)(currentNode),
+                (CZNodePartial*)(currentNode),
                 (float)(x * kDegreesToRadians),
                 (float)(y * kDegreesToRadians),
                 (float)(z * kDegreesToRadians)
@@ -2142,75 +2058,57 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZObject3D::gwObject3DSetScale((CZNodePartial *)(currentNode), x, y, z);
+            CZObject3D::gwObject3DSetScale((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetActionPriority") != 0) {
-            CZClass::gwNodeSetPriority((CZNodePartial *)(currentNode), ParseIntToken());
+            CZClass::gwNodeSetPriority((CZNodePartial*)(currentNode), ParseIntToken());
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetActive") != 0) {
-            CZClass::gwNodeSetActive((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetActive((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetColor") != 0) {
             const int colorMode = ParseIntToken();
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_Object3DCommandDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
             zDi::SetObject3DColorModeForMaterials(g_zInterp_Object3DCommandDi, colorMode);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetFacade") != 0) {
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zUtil::StoreInt32((int *)g_zInterp_CurrentCycleTextureDi, 1);
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_CurrentCycleTextureDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
+            zUtil::StoreInt32((int*)g_zInterp_CurrentCycleTextureDi, 1);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetOpacityIsSet") != 0) {
-            CZObject3D::gwObject3DSetLitFlag(
-                (CZNodePartial *)(currentNode),
-                ParseIntToken()
-            );
+            CZObject3D::gwObject3DSetLitFlag((CZNodePartial*)(currentNode), ParseIntToken());
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetOpacity") != 0) {
             const float opacity = ParseFloatToken();
-            CZObject3D::gwObject3DSetAlphaScale((CZNodePartial *)(currentNode), opacity);
+            CZObject3D::gwObject3DSetAlphaScale((CZNodePartial*)(currentNode), opacity);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetPoints") != 0) {
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_CurrentCycleTextureDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zUtil::StoreInt32((int *)g_zInterp_CurrentCycleTextureDi, 2);
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_CurrentCycleTextureDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
+            zUtil::StoreInt32((int*)g_zInterp_CurrentCycleTextureDi, 2);
             return 1;
         }
 
         if (CommandIs(this, "Object3DSetPriority") != 0) {
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
-            zDi::SetEntryValueForAllEntries(
-                g_zInterp_Object3DCommandDi,
-                (unsigned int)(ParseIntToken())
-            );
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_Object3DCommandDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
+            zDi::SetEntryValueForAllEntries(g_zInterp_Object3DCommandDi, (unsigned int)(ParseIntToken()));
             return 1;
         }
 
@@ -2219,7 +2117,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             if (enabled != 0) {
-                if (RegisterScrollAlwaysNode((CZNodePartial *)(currentNode), x, y, 1) == 0) {
+                if (RegisterScrollAlwaysNode((CZNodePartial*)(currentNode), x, y, 1) == 0) {
                     zError::ReportOld(
                         0x200,
                         "D:\\Proj\\GameZRecoil\\zInterp\\zinterp_parse.cpp",
@@ -2231,7 +2129,7 @@ int CZInterp::DispatchCoreCommand(
                 }
                 return 1;
             }
-            HandleScrollDisable((CZNodePartial *)(currentNode));
+            HandleScrollDisable((CZNodePartial*)(currentNode));
             return 1;
         }
 
@@ -2239,7 +2137,7 @@ int CZInterp::DispatchCoreCommand(
             const int enabled = ParseBoolToken();
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZNodePartial *const node = (CZNodePartial *)(currentNode);
+            CZNodePartial* const node = (CZNodePartial*)(currentNode);
             if (node == 0) {
                 ReportErrorf(
                     this,
@@ -2261,11 +2159,8 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "Object3DSetShowBackFace") != 0) {
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            g_zInterp_Object3DCommandDi = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            g_zInterp_Object3DCommandDi = (zDiPartial*)g_zInterp_NodeUserDataScratch;
             zDi::SetShowBackFaceForAllEntries(g_zInterp_Object3DCommandDi, ParseBoolToken());
             return 1;
         }
@@ -2277,11 +2172,7 @@ int CZInterp::DispatchCoreCommand(
             return 1;
         }
 
-        if (strncmp(
-            tokenCount > 0 ? tokenList[0] : 0,
-            "Object3DSetTextureWorldTexturesPerMeter",
-            37
-        ) == 0) {
+        if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "Object3DSetTextureWorldTexturesPerMeter", 37) == 0) {
             x = ParseFloatToken();
             z = ParseFloatToken();
             zModel::SetTextureWorldPerMeter(x, z);
@@ -2290,11 +2181,8 @@ int CZInterp::DispatchCoreCommand(
 
         if (CommandIs(this, "Object3DSetMorphVertex") != 0) {
             y = ParseFloatToken();
-            CZClass::gwNodeGetUserData(
-                (CZNodePartial *)(currentNode),
-                &g_zInterp_NodeUserDataScratch
-            );
-            zDiPartial *const di = (zDiPartial *)g_zInterp_NodeUserDataScratch;
+            CZClass::gwNodeGetUserData((CZNodePartial*)(currentNode), &g_zInterp_NodeUserDataScratch);
+            zDiPartial* const di = (zDiPartial*)g_zInterp_NodeUserDataScratch;
             g_zInterp_CurrentCycleTextureDi = di;
             zDi::BuildBlendVertsFromConnectivity(di, y, excludedVertexIndices, 0, 6);
             g_zInterp_CurrentCycleTextureDi->blendScale = 1.0f;
@@ -2302,7 +2190,7 @@ int CZInterp::DispatchCoreCommand(
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZObject3D::gwObject3DSetPosition((CZNodePartial *)(currentNode), x, y, z);
+            CZObject3D::gwObject3DSetPosition((CZNodePartial*)(currentNode), x, y, z);
         } else {
             IncErrorCount();
         }
@@ -2314,10 +2202,10 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandIs(this, "PrintNodeCount") != 0) {
-            char *const prefixText = NextToken();
+            char* const prefixText = NextToken();
             CZClass::FindNextByTypePrefix(prefixText, 6);
             int count = 0;
-            CZNodePartial *node = CZClass::FindNextByTypePrefix(0, 0);
+            CZNodePartial* node = CZClass::FindNextByTypePrefix(0, 0);
             while (node != 0) {
                 ++count;
                 node = CZClass::FindNextByTypePrefix(0, 0);
@@ -2330,7 +2218,7 @@ int CZInterp::DispatchCoreCommand(
             if (currentNode == 0) {
                 ReportErrorf(this, "No current node");
             }
-            PrintNodeTree((CZNodePartial *)(currentNode), 2);
+            PrintNodeTree((CZNodePartial*)(currentNode), 2);
             return 1;
         }
 
@@ -2357,51 +2245,43 @@ int CZInterp::DispatchCoreCommand(
     case 'S': {
         if (CommandHasPrefix(this, "SEQ") != 0) {
             if (CommandHasPrefix(this, "SEQAddChild") != 0) {
-                char *const searchName = NextToken();
+                char* const searchName = NextToken();
                 const int insertIndex = ParseIntToken();
                 const float delay = ParseFloatToken();
-                CZNodePartial *const child = CZClass::FindByTypeAndName(6, searchName);
-                CZSequence::gwSequenceAddChild(
-                    (CZNodePartial *)(currentNode),
-                    child,
-                    insertIndex,
-                    delay
-                );
+                CZNodePartial* const child = CZClass::FindByTypeAndName(6, searchName);
+                CZSequence::gwSequenceAddChild((CZNodePartial*)(currentNode), child, insertIndex, delay);
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQNew") != 0) {
                 currentNode = CZSequence::gwSequenceNew();
-                CZClass::gwNodeSetName((CZNodePartial *)(currentNode), NextToken());
+                CZClass::gwNodeSetName((CZNodePartial*)(currentNode), NextToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetActive") != 0) {
-                CZSequence::SetActive((CZNodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetActive((CZNodePartial*)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetLoop") != 0) {
-                CZSequence::SetLoop((CZNodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetLoop((CZNodePartial*)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "SEQSetPause", 12) == 0) {
-                CZSequence::SetPause((CZNodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetPause((CZNodePartial*)(currentNode), ParseIntToken());
                 return 1;
             }
 
             if (CommandHasPrefix(this, "SEQSetRepeat") != 0) {
-                CZSequence::SetRepeat((CZNodePartial *)(currentNode), ParseIntToken());
+                CZSequence::SetRepeat((CZNodePartial*)(currentNode), ParseIntToken());
             }
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetAltitudeSurface") != 0) {
-            CZClass::gwNodeSetCellPickable(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZClass::gwNodeSetCellPickable((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -2441,23 +2321,17 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "SetIntersectBBOX") != 0) {
-            CZClass::gwNodeSetPickable((CZNodePartial *)(currentNode), ParseBoolToken());
+            CZClass::gwNodeSetPickable((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetIntersectSurface") != 0) {
-            CZClass::gwNodeSetRaycastable(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZClass::gwNodeSetRaycastable((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandHasPrefix(this, "SetLandmark") != 0) {
-            CZClass::gwNodeSetBypassFarClip(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZClass::gwNodeSetBypassFarClip((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -2490,11 +2364,7 @@ int CZInterp::DispatchCoreCommand(
             return 1;
         }
 
-        if (strncmp(
-            tokenCount > 0 ? tokenList[0] : 0,
-            "SetPerspectiveInverseZTolerance",
-            20
-        ) == 0) {
+        if (strncmp(tokenCount > 0 ? tokenList[0] : 0, "SetPerspectiveInverseZTolerance", 20) == 0) {
             const float tolerance = ParseFloatToken();
             zRndr::SetPerspectiveAdaptiveCorrection(tolerance);
             return 1;
@@ -2507,18 +2377,11 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandHasPrefix(this, "SetProximity") != 0) {
-            CZClass::gwNodeSetHasHitCallback(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZClass::gwNodeSetHasHitCallback((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
-        const int matchesSmallPolygonRejectArea = strncmp(
-            GetCurrentCommand(),
-            "SetSmallPolygonRejectArea",
-            0x19
-        ) == 0;
+        const int matchesSmallPolygonRejectArea = strncmp(GetCurrentCommand(), "SetSmallPolygonRejectArea", 0x19) == 0;
         if (matchesSmallPolygonRejectArea != 0) {
             const float area = ParseFloatToken();
             zModel::UpdateSmallPolyRejectThresholds(area);
@@ -2566,110 +2429,90 @@ int CZInterp::DispatchCoreCommand(
         }
     case 'W':
         if (CommandEqualsPrefix("WindowAddClearPolygonVertex", 0x1b) != 0) {
-            if (ValidateArgsAndNodeType(3, 3, (CZNodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(3, 3, (CZNodePartial*)(currentNode)) != 0) {
                 zVec3 point;
                 point.x = ParseFloatToken();
                 point.y = ParseFloatToken();
                 point.z = ParseFloatToken();
-                CZWindow::gwWindowAddClearPolygonVertex(
-                    (CZNodePartial *)(currentNode),
-                    &point
-                );
+                CZWindow::gwWindowAddClearPolygonVertex((CZNodePartial*)(currentNode), &point);
             }
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowBuffer", 0xf) != 0) {
-            if (ValidateArgsAndNodeType(1, 3, (CZNodePartial *)(currentNode)) != 0) {
-                CZWindow::gwWindowSetBuffer(
-                    (CZNodePartial *)(currentNode),
-                    ParseIntToken()
-                );
+            if (ValidateArgsAndNodeType(1, 3, (CZNodePartial*)(currentNode)) != 0) {
+                CZWindow::gwWindowSetBuffer((CZNodePartial*)(currentNode), ParseIntToken());
             }
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowCloseClearPolygon", 0x17) != 0) {
-            CZWindow::gwWindowCloseClearPolygon((CZNodePartial *)(currentNode));
+            CZWindow::gwWindowCloseClearPolygon((CZNodePartial*)(currentNode));
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowOrigin", 0xc) != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            CZWindow::gwWindowSetSize((CZNodePartial *)(currentNode), width, height);
+            CZWindow::gwWindowSetSize((CZNodePartial*)(currentNode), width, height);
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowResolution", 0x10) != 0) {
             const int width = ParseIntToken();
             const int height = ParseIntToken();
-            CZWindow::gwWindowSetResolution(
-                (CZNodePartial *)(currentNode),
-                width,
-                height
-            );
+            CZWindow::gwWindowSetResolution((CZNodePartial*)(currentNode), width, height);
             return 1;
         }
 
         if (CommandEqualsPrefix("WindowSetClearPolygon", 0x15) != 0) {
-            CZWindow::gwWindowSetClearPolygon(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZWindow::gwWindowSetClearPolygon((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldAddLight", 0xd) != 0) {
-            CZNodePartial *const light = CZClass::FindByTypeAndName(9, NextToken());
-            CZWorld::AddLight((CZNodePartial *)(currentNode), light);
+            CZNodePartial* const light = CZClass::FindByTypeAndName(9, NextToken());
+            CZWorld::AddLight((CZNodePartial*)(currentNode), light);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldExtents", 0xc) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZWorld::gwWorldSetSize((CZNodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetSize((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldOrigin", 0xb) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZWorld::gwWorldSetOrigin((CZNodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetOrigin((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldPartitionInclusionTolerance", 0x20) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZWorld::gwWorldSetPartitionInclusionTolerance(
-                (CZNodePartial *)(currentNode),
-                x,
-                y
-            );
+            CZWorld::gwWorldSetPartitionInclusionTolerance((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldPartitionMaxDECFeatureCount", 0x20) != 0) {
-            CZWorld::gwWorldSetMaxDecFeatures(
-                (CZNodePartial *)(currentNode),
-                ParseIntToken()
-            );
+            CZWorld::gwWorldSetMaxDecFeatures((CZNodePartial*)(currentNode), ParseIntToken());
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldPartition", 0xe) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZWorld::gwWorldSetVirtualAreaPartition((CZNodePartial *)(currentNode), x, y);
+            CZWorld::gwWorldSetVirtualAreaPartition((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldSetFogAltitude", 0x13) != 0) {
             x = ParseFloatToken();
             y = ParseFloatToken();
-            CZWorld::SetPendingFogAltitudeRange((CZNodePartial *)(currentNode), x, y);
+            CZWorld::SetPendingFogAltitudeRange((CZNodePartial*)(currentNode), x, y);
             return 1;
         }
 
@@ -2677,85 +2520,56 @@ int CZInterp::DispatchCoreCommand(
             red = ParseFloatToken();
             green = ParseFloatToken();
             blue = ParseFloatToken();
-            CZWorld::SetPendingFogColorRgb01(
-                (CZNodePartial *)(currentNode),
-                red,
-                green,
-                blue
-            );
+            CZWorld::SetPendingFogColorRgb01((CZNodePartial*)(currentNode), red, green, blue);
             return 1;
         }
 
         if (CommandEqualsPrefix("WorldSetFogDensity", 0x12) != 0) {
             const float density = ParseFloatToken();
-            CZWorld::SetPendingFogDensity((CZNodePartial *)(currentNode), density);
+            CZWorld::SetPendingFogDensity((CZNodePartial*)(currentNode), density);
             return 1;
         }
 
         if (CommandEquals("WorldSetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(2, 2, (CZNodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(2, 2, (CZNodePartial*)(currentNode)) != 0) {
                 const float nearRange = ParseFloatToken();
                 const float farRange = ParseFloatToken();
-                CZWorld::SetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    nearRange,
-                    farRange
-                );
+                CZWorld::SetPendingFogRange((CZNodePartial*)(currentNode), nearRange, farRange);
             }
             return 1;
         }
 
         if (CommandEquals("WorldSetFogRangeNear") != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial*)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                CZWorld::GetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    &nearRange,
-                    &farRange
-                );
+                CZWorld::GetPendingFogRange((CZNodePartial*)(currentNode), &nearRange, &farRange);
                 nearRange = ParseFloatToken();
-                CZWorld::SetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    nearRange,
-                    farRange
-                );
+                CZWorld::SetPendingFogRange((CZNodePartial*)(currentNode), nearRange, farRange);
             }
             return 1;
         }
 
         if (CommandEquals("WorldSetFogRangeFar") != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial*)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                CZWorld::GetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    &nearRange,
-                    &farRange
-                );
+                CZWorld::GetPendingFogRange((CZNodePartial*)(currentNode), &nearRange, &farRange);
                 farRange = ParseFloatToken();
-                CZWorld::SetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    nearRange,
-                    farRange
-                );
+                CZWorld::SetPendingFogRange((CZNodePartial*)(currentNode), nearRange, farRange);
             }
             return 1;
         }
 
         if (CommandEquals("WorldGetFogRange") != 0) {
-            if (ValidateArgsAndNodeType(0, 2, (CZNodePartial *)(currentNode)) != 0) {
+            if (ValidateArgsAndNodeType(0, 2, (CZNodePartial*)(currentNode)) != 0) {
                 float nearRange;
                 float farRange;
-                CZWorld::GetPendingFogRange(
-                    (CZNodePartial *)(currentNode),
-                    &nearRange,
-                    &farRange
-                );
+                CZWorld::GetPendingFogRange((CZNodePartial*)(currentNode), &nearRange, &farRange);
                 Logf(
                     this,
                     "Fog Range: [%s] [ %.2f, %.2f ]",
-                    ((CZNodePartial *)(currentNode))->name,
+                    ((CZNodePartial*)(currentNode))->name,
                     nearRange,
                     farRange
                 );
@@ -2764,17 +2578,17 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldSetFogState", 0x10) != 0) {
-            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial *)(currentNode)) == 0) {
+            if (ValidateArgsAndNodeType(1, 2, (CZNodePartial*)(currentNode)) == 0) {
                 return 1;
             }
 
-            char *const state = NextToken();
+            char* const state = NextToken();
             if (strncmp(state, "linear", 6) == 0) {
-                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 1);
+                CZWorld::SetPendingFogState((CZNodePartial*)(currentNode), 1);
             } else if (strncmp(state, "exponential", 11) == 0) {
-                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 2);
+                CZWorld::SetPendingFogState((CZNodePartial*)(currentNode), 2);
             } else if (strncmp(state, "off", 3) == 0) {
-                CZWorld::SetPendingFogState((CZNodePartial *)(currentNode), 0);
+                CZWorld::SetPendingFogState((CZNodePartial*)(currentNode), 0);
             } else {
                 printf("Did not understand: %s\n", state);
             }
@@ -2782,10 +2596,7 @@ int CZInterp::DispatchCoreCommand(
         }
 
         if (CommandEqualsPrefix("WorldSetVirtualPartition", 0x18) != 0) {
-            CZWorld::SetVirtualPartition(
-                (CZNodePartial *)(currentNode),
-                ParseBoolToken()
-            );
+            CZWorld::SetVirtualPartition((CZNodePartial*)(currentNode), ParseBoolToken());
             return 1;
         }
 
@@ -2815,11 +2626,9 @@ int CZInterp::DispatchCoreCommand(
  *
  * Purpose: compare the current command token against a caller-supplied prefix.
  */
-int CZInterp::CommandEqualsPrefix(
-    const char *prefix,
-    unsigned int prefixLen
-) {
-    char *command = tokenCount > 0 ? tokenList[0] : 0;
+int CZInterp::CommandEqualsPrefix(const char* prefix, unsigned int prefixLen)
+{
+    char* command = tokenCount > 0 ? tokenList[0] : 0;
 
     return strncmp(command, prefix, prefixLen) == 0;
 }
@@ -2831,10 +2640,9 @@ int CZInterp::CommandEqualsPrefix(
  *
  * Purpose: compare the current command token against a complete string.
  */
-int CZInterp::CommandEquals(
-    const char *other
-) {
-    char *command = tokenCount > 0 ? tokenList[0] : 0;
+int CZInterp::CommandEquals(const char* other)
+{
+    char* command = tokenCount > 0 ? tokenList[0] : 0;
 
     return strcmp(command, other) == 0;
 }
@@ -2846,7 +2654,8 @@ int CZInterp::CommandEquals(
  *
  * Purpose: return token zero for the current parsed command line.
  */
-char * CZInterp::GetCurrentCommand() {
+char* CZInterp::GetCurrentCommand()
+{
     if (tokenCount > 0) {
         return tokenList[0];
     }
@@ -2861,16 +2670,13 @@ char * CZInterp::GetCurrentCommand() {
  *
  * Purpose: mark the current line failed and forward formatted parser logging.
  */
-void CZInterp::ReportErrorf(
-    CZInterp *ctx,
-    const char *fmt,
-    ...
-) {
+void CZInterp::ReportErrorf(CZInterp* ctx, const char* fmt, ...)
+{
     ctx->lineHadError = 1;
     if (ctx->logFn != 0) {
         va_list args;
         va_start(args, fmt);
-        ctx->logFn(fmt, (char *)args);
+        ctx->logFn(fmt, (char*)args);
         va_end(args);
     }
 }
@@ -2882,13 +2688,17 @@ void CZInterp::ReportErrorf(
  * Purpose: read the entry count for the supported prepared-script format,
  * closing and clearing the stream if validation or the count read fails.
  */
-inline int CZInterp::ReadPreparedScriptTableCount(const zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue) {
-        if (preparedHeader.version != kPreparedScriptVersion ||
-            fread(&preparedEntryCountValue, 4, 1, preparedIndexStream) != 1) {
-            fclose(preparedIndexStream);
-            preparedIndexStream = 0;
-            return 0;
-        }
+inline int CZInterp::ReadPreparedScriptTableCount(
+    const zInterpPreparedScriptHeader& preparedHeader,
+    unsigned int& preparedEntryCountValue
+)
+{
+    if (preparedHeader.version != kPreparedScriptVersion
+        || fread(&preparedEntryCountValue, 4, 1, preparedIndexStream) != 1) {
+        fclose(preparedIndexStream);
+        preparedIndexStream = 0;
+        return 0;
+    }
     return 1;
 }
 
@@ -2899,7 +2709,12 @@ inline int CZInterp::ReadPreparedScriptTableCount(const zInterpPreparedScriptHea
  * Purpose: decode the prepared-script index, invalidating its stream on error.
  * A short table read leaves its allocation unreleased, as in retail.
  */
-inline int CZInterp::ReadPreparedScriptIndex(zInterpPreparedScriptHeader &preparedHeader, unsigned int &preparedEntryCountValue, zInterpPreparedScriptEntry *&entries) {
+inline int CZInterp::ReadPreparedScriptIndex(
+    zInterpPreparedScriptHeader& preparedHeader,
+    unsigned int& preparedEntryCountValue,
+    zInterpPreparedScriptEntry*& entries
+)
+{
     if (fread(&preparedHeader, sizeof(preparedHeader), 1, preparedIndexStream) != 1) {
         fclose(preparedIndexStream);
         preparedIndexStream = 0;
@@ -2908,12 +2723,13 @@ inline int CZInterp::ReadPreparedScriptIndex(zInterpPreparedScriptHeader &prepar
 
     switch (preparedHeader.magic) {
     case kPreparedScriptMagic:
-        if (!ReadPreparedScriptTableCount(preparedHeader, preparedEntryCountValue)) return 0;
-        entries = (zInterpPreparedScriptEntry *)realloc(
-            0, (preparedEntryCountValue + 1) * sizeof(zInterpPreparedScriptEntry)
-        );
-        if (entries != 0 && fread(entries, sizeof(*entries), preparedEntryCountValue,
-                preparedIndexStream) == preparedEntryCountValue) {
+        if (!ReadPreparedScriptTableCount(preparedHeader, preparedEntryCountValue))
+            return 0;
+        entries = (zInterpPreparedScriptEntry*)
+            realloc(0, (preparedEntryCountValue + 1) * sizeof(zInterpPreparedScriptEntry));
+        if (entries != 0
+            && fread(entries, sizeof(*entries), preparedEntryCountValue, preparedIndexStream)
+                == preparedEntryCountValue) {
             break;
         }
     default:
@@ -2931,9 +2747,8 @@ inline int CZInterp::ReadPreparedScriptIndex(zInterpPreparedScriptHeader &prepar
  *
  * Purpose: open and validate the prepared script index and cache its entries.
  */
-int CZInterp::LoadPreparedScriptIndex(
-    const char *zrdrPath
-) {
+int CZInterp::LoadPreparedScriptIndex(const char* zrdrPath)
+{
     zInterpPreparedScriptHeader preparedHeader;
     memset(&preparedHeader, 0, sizeof(preparedHeader));
     unsigned int preparedEntryCountValue = 0;
@@ -2951,15 +2766,13 @@ int CZInterp::LoadPreparedScriptIndex(
         return 0;
     }
 
-    zInterpPreparedScriptEntry *entries;
-    if (!ReadPreparedScriptIndex(preparedHeader, preparedEntryCountValue, entries)) return 0;
+    zInterpPreparedScriptEntry* entries;
+    if (!ReadPreparedScriptIndex(preparedHeader, preparedEntryCountValue, entries))
+        return 0;
     int entriesFresh = 1;
-    for (int entryIndex = 0;
-        entryIndex < (int)(preparedEntryCountValue) && entriesFresh != 0;
-        ++entryIndex) {
+    for (int entryIndex = 0; entryIndex < (int)(preparedEntryCountValue) && entriesFresh != 0; ++entryIndex) {
         struct _stat sourceStat;
-        if (_stat(entries[entryIndex].path, &sourceStat) == 0 &&
-            entries[entryIndex].fileTime != sourceStat.st_mtime) {
+        if (_stat(entries[entryIndex].path, &sourceStat) == 0 && entries[entryIndex].fileTime != sourceStat.st_mtime) {
             entriesFresh = 0;
         }
     }
@@ -2984,7 +2797,8 @@ int CZInterp::LoadPreparedScriptIndex(
  * The helper name is descriptive; no original spelling is known.
  * Purpose: search the prepared script table for a named command.
  */
-inline int CZInterp::FindPreparedScriptIndex(const char *commandName) {
+inline int CZInterp::FindPreparedScriptIndex(const char* commandName)
+{
     int matchedIndex = -1;
     for (int entryIndex = 0; entryIndex < *preparedEntryCount; ++entryIndex) {
         if (_stricmp(preparedEntryTable[entryIndex].path, commandName) == 0) {
@@ -3002,21 +2816,19 @@ inline int CZInterp::FindPreparedScriptIndex(const char *commandName) {
  *
  * Purpose: locate a prepared script entry and seek the shared stream to it.
  */
-FILE * CZInterp::OpenPreparedScriptStream(
-    const char *commandName
-) {
+FILE* CZInterp::OpenPreparedScriptStream(const char* commandName)
+{
     if (preparedIndexStream != 0) {
         int matchedIndex = FindPreparedScriptIndex(commandName);
         if (matchedIndex != -1) {
-            zInterpPreparedScriptEntry *const matchedEntry = &preparedEntryTable[matchedIndex];
+            zInterpPreparedScriptEntry* const matchedEntry = &preparedEntryTable[matchedIndex];
             int usePreparedStream = 1;
             struct _stat sourceStat;
-            if (_stat(commandName, &sourceStat) == 0 &&
-                difftime(sourceStat.st_mtime, matchedEntry->fileTime) > 0.0) {
+            if (_stat(commandName, &sourceStat) == 0 && difftime(sourceStat.st_mtime, matchedEntry->fileTime) > 0.0) {
                 usePreparedStream = 0;
             }
             if (usePreparedStream != 0) {
-                FILE *const stream = preparedIndexStream;
+                FILE* const stream = preparedIndexStream;
                 if (fseek(stream, matchedEntry->fileOffset, SEEK_SET) == 0) {
                     return stream;
                 }
@@ -3034,14 +2846,11 @@ FILE * CZInterp::OpenPreparedScriptStream(
  *
  * Purpose: validate argument count and optional zClass node type for commands.
  */
-bool CZInterp::ValidateArgsAndNodeType(
-    int expectedArgCount,
-    int expectedClassType,
-    CZNodePartial *node
-) {
+bool CZInterp::ValidateArgsAndNodeType(int expectedArgCount, int expectedClassType, CZNodePartial* node)
+{
     if (expectedClassType != 0) {
         if (node == 0) {
-            char *commandToken = tokenCount > 0 ? tokenList[0] : 0;
+            char* commandToken = tokenCount > 0 ? tokenList[0] : 0;
             ReportErrorf(this, "Interp: keyword [%s] has NULL node to work with", commandToken);
             return 0;
         }
@@ -3084,9 +2893,8 @@ bool CZInterp::ValidateArgsAndNodeType(
  * Purpose: process a scroll-disable request by touching the node user-data
  * provider entry and returning false.
  */
-bool CZInterp::HandleScrollDisable(
-    CZNodePartial *node
-) {
+bool CZInterp::HandleScrollDisable(CZNodePartial* node)
+{
     if (node != 0) {
         CZClass::gwNodeGetUserData(node, 0);
     }
@@ -3102,15 +2910,16 @@ bool CZInterp::HandleScrollDisable(
  * Purpose: register a node for immediate or driver-driven texture scrolling.
  */
 bool CZInterp::RegisterScrollAlwaysNode(
-    CZNodePartial *node,
+    CZNodePartial* node,
     float scrollRateU,
     float scrollRateV,
     bool installDriverCallback
-) {
+)
+{
     if (node != 0) {
         unsigned int diValue = 0;
         CZClass::gwNodeGetUserData(node, &diValue);
-        zDiPartial *const di = (zDiPartial *)(diValue);
+        zDiPartial* const di = (zDiPartial*)(diValue);
         if (di != 0) {
             zModel::SetDiTextureWorldPerMeter(di, 1, scrollRateU, scrollRateV);
             if (installDriverCallback != 0) {
@@ -3118,19 +2927,15 @@ bool CZInterp::RegisterScrollAlwaysNode(
                     scrollAlwaysDriverNode = CZObject3D::gwObject3DInit();
                     CZClass::gwNodeSetActionCallback(
                         scrollAlwaysDriverNode,
-                        (void *)(&zInterp_Object3D::ScrollAlwaysTickAction)
+                        (void*)(&zInterp_Object3D::ScrollAlwaysTickAction)
                     );
                     CZClass::gwNodeSetName(scrollAlwaysDriverNode, "ScrollAlways");
-                    scrollAlwaysDriverNode->callbackContext =
-                        (CZNodePartial *)(this);
+                    scrollAlwaysDriverNode->callbackContext = (CZNodePartial*)(this);
                 }
 
                 scrollAlwaysList.push_back(node);
             } else {
-                CZClass::gwNodeSetActionCallback(
-                    node,
-                    (void *)(&zInterp_Object3D::DefaultRenderAction)
-                );
+                CZClass::gwNodeSetActionCallback(node, (void*)(&zInterp_Object3D::DefaultRenderAction));
             }
             return true;
         }
@@ -3146,12 +2951,11 @@ namespace zInterp_Object3D {
  *
  * Purpose: update scrolling textures for a node's display-instance payload.
  */
-int __fastcall DefaultRenderAction(
-    CZNodePartial *node
-) {
+int __fastcall DefaultRenderAction(CZNodePartial* node)
+{
     unsigned int userData;
     CZClass::gwNodeGetUserData(node, &userData);
-    return zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial *)(userData));
+    return zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial*)(userData));
 }
 
 /**
@@ -3162,14 +2966,13 @@ int __fastcall DefaultRenderAction(
  * Purpose: walk the context-owned always-scroll list and run the texture
  * update action for each payload node.
  */
-void __fastcall ScrollAlwaysTickAction(
-    CZNodePartial *wrapperNode
-) {
+void __fastcall ScrollAlwaysTickAction(CZNodePartial* wrapperNode)
+{
     if (wrapperNode == 0) {
         return;
     }
 
-    CZInterp *const context = (CZInterp *)(wrapperNode->callbackContext);
+    CZInterp* const context = (CZInterp*)(wrapperNode->callbackContext);
     zInterpScrollList::iterator entry = context->scrollAlwaysList.begin();
     while (entry != context->scrollAlwaysList.end()) {
         DefaultRenderAction(*entry);

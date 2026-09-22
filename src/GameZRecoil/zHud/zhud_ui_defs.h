@@ -15,11 +15,8 @@
  * ordinary constructions such as the one at 0x4bb790 inline the same body.
  */
 inline HudUiTransitionTextPanel::HudUiTransitionTextPanel()
-    : HudUiPanel(
-        0,
-        0,
-        0
-    ) {
+    : HudUiPanel(0, 0, 0)
+{
     flashResetValue = 0.349999994f;
     flashCountdown = 0;
     flashAltColor0 = 0;

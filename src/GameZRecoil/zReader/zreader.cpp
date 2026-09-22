@@ -12,7 +12,7 @@
 /**
  * Purpose: store reusable archive-list nodes for ZRDR list operations.
  */
-extern "C" zArchiveList *g_zUtil_ZRDR_FreePool = 0;
+extern "C" zArchiveList* g_zUtil_ZRDR_FreePool = 0;
 /**
  * Purpose: count archive-list nodes allocated for the ZRDR free pool.
  */
@@ -28,23 +28,23 @@ extern "C" int g_zUtil_ZRDR_GrowCount = 0;
 /**
  * Purpose: store the file extension split out before archive-member lookup.
  */
-extern "C" char g_zReader_FileExtBuf[0x100] = {0};
+extern "C" char g_zReader_FileExtBuf[0x100] = { 0 };
 /**
  * Purpose: store the basename joined with extension for archive-member lookup.
  */
-extern "C" char g_zReader_FileNameBuf[0x100] = {0};
+extern "C" char g_zReader_FileNameBuf[0x100] = { 0 };
 /**
  * Purpose: store the global ZRDR search-path list.
  */
-extern "C" zArchiveList *g_zRdr_SearchPathList = 0;
+extern "C" zArchiveList* g_zRdr_SearchPathList = 0;
 /**
  * Purpose: store the process-wide list of mounted ZRDR/ZAR index archives.
  */
-extern "C" zArchiveList *g_zArchive_MountedList = 0;
+extern "C" zArchiveList* g_zArchive_MountedList = 0;
 /**
  * Purpose: store the current mounted archive selected by archive mounting.
  */
-extern "C" zIndexArchive *g_zArchive_Current = 0;
+extern "C" zIndexArchive* g_zArchive_Current = 0;
 namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zrdr-preallocnodepool
@@ -53,9 +53,8 @@ namespace zUtil {
  *
  * Purpose: initialize an absent free-node pool with the requested node count.
  */
-void __fastcall zRdrInitNodePool(
-    int count
-) {
+void __fastcall zRdrInitNodePool(int count)
+{
     if (g_zUtil_ZRDR_FreePool != 0) {
         return;
     }
@@ -68,7 +67,6 @@ void __fastcall zRdrInitNodePool(
 }
 } // namespace zUtil
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-growfreepool
  * @recoil-artifact defines .text recoil:function:0x48c800: zRdrGrowNodePool.
@@ -76,8 +74,9 @@ void __fastcall zRdrInitNodePool(
  *
  * Purpose: allocate one reusable ZRDR list node and add it to the free pool.
  */
-extern "C" void __cdecl zRdrGrowNodePool() {
-    zArchiveListNode *node = (zArchiveListNode *)(malloc(sizeof(zArchiveListNode)));
+extern "C" void __cdecl zRdrGrowNodePool()
+{
+    zArchiveListNode* node = (zArchiveListNode*)(malloc(sizeof(zArchiveListNode)));
     zRdrFreeNode(node);
     ++g_zUtil_ZRDR_TotalAllocated;
 }
@@ -88,16 +87,15 @@ extern "C" void __cdecl zRdrGrowNodePool() {
  *
  * Purpose: return a node to the shared ZRDR free-node list.
  */
-extern "C" void __fastcall zRdrFreeNode(
-    zArchiveListNode *node
-) {
-    zArchiveList *pool = g_zUtil_ZRDR_FreePool;
+extern "C" void __fastcall zRdrFreeNode(zArchiveListNode* node)
+{
+    zArchiveList* pool = g_zUtil_ZRDR_FreePool;
     if (g_zUtil_ZRDR_FreePool == 0) {
         pool = g_zUtil_ZRDR_FreePool = zArchiveListNew();
     }
 
-    zArchiveListNode **headPtr = &g_zUtil_ZRDR_FreePool->head;
-    zArchiveListNode *head = *headPtr;
+    zArchiveListNode** headPtr = &g_zUtil_ZRDR_FreePool->head;
+    zArchiveListNode* head = *headPtr;
     if (head == 0) {
         *headPtr = node;
         node->next = node;
@@ -111,7 +109,6 @@ extern "C" void __fastcall zRdrFreeNode(
     ++g_zUtil_ZRDR_FreeCount;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-freenodepool
  * @recoil-artifact defines .text recoil:function:0x48c890: zRdrFreeNodePool.
@@ -119,12 +116,13 @@ extern "C" void __fastcall zRdrFreeNode(
  *
  * Purpose: release all nodes currently held in the ZRDR free-node pool.
  */
-extern "C" void __cdecl zRdrFreeNodePool() {
+extern "C" void __cdecl zRdrFreeNodePool()
+{
     if (g_zUtil_ZRDR_FreePool == 0) {
         return;
     }
 
-    zArchiveListNode *node = zUtil_ZRDR_AllocNode(0);
+    zArchiveListNode* node = zUtil_ZRDR_AllocNode(0);
     while (node != 0) {
         free(node);
         node = zUtil_ZRDR_AllocNode(0);
@@ -140,10 +138,9 @@ extern "C" void __cdecl zRdrFreeNodePool() {
  *
  * Purpose: pop one reusable node from the ZRDR free-node list.
  */
-extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNode(
-    int allowGrow
-) {
-    zArchiveList *pool = g_zUtil_ZRDR_FreePool;
+extern "C" zArchiveListNode* __fastcall zUtil_ZRDR_AllocNode(int allowGrow)
+{
+    zArchiveList* pool = g_zUtil_ZRDR_FreePool;
     if (pool->count == 0) {
         if (allowGrow != 0) {
             zRdrGrowNodePool();
@@ -152,7 +149,7 @@ extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNode(
             return 0;
         }
     }
-    zArchiveListNode *head = pool->head;
+    zArchiveListNode* head = pool->head;
     if (pool->count == 1) {
         pool->head = 0;
     } else {
@@ -171,8 +168,9 @@ extern "C" zArchiveListNode *__fastcall zUtil_ZRDR_AllocNode(
  *
  * Purpose: allocate and initialize an empty circular archive list.
  */
-extern "C" zArchiveList *__cdecl zArchiveListNew() {
-    zArchiveList *result = (zArchiveList *)(malloc(sizeof(zArchiveList)));
+extern "C" zArchiveList* __cdecl zArchiveListNew()
+{
+    zArchiveList* result = (zArchiveList*)(malloc(sizeof(zArchiveList)));
     result->unknown_04 = 0;
     result->count = 0;
     result->unknown_08 = 0;
@@ -181,7 +179,6 @@ extern "C" zArchiveList *__cdecl zArchiveListNew() {
     return result;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-destroy
  * @recoil-artifact defines .text recoil:function:0x48c970: zArchiveListFree.
@@ -189,19 +186,16 @@ extern "C" zArchiveList *__cdecl zArchiveListNew() {
  *
  * Purpose: drain an archive-list container and release the list allocation.
  */
-extern "C" int __fastcall zArchiveListFree(
-    zArchiveList *list
-) {
+extern "C" int __fastcall zArchiveListFree(zArchiveList* list)
+{
     if (list != 0) {
-        while (zArchiveListRemoveHead(list) != 0) {
-        }
+        while (zArchiveListRemoveHead(list) != 0) { }
 
         free(list);
     }
 
     return 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-linknodebetween
@@ -210,17 +204,14 @@ extern "C" int __fastcall zArchiveListFree(
  *
  * Purpose: link a node between two existing circular-list neighbors.
  */
-extern "C" void __fastcall zArchiveListLink(
-    zArchiveListNode *after,
-    zArchiveListNode *newNode,
-    zArchiveListNode *before
-) {
+extern "C" void __fastcall
+zArchiveListLink(zArchiveListNode* after, zArchiveListNode* newNode, zArchiveListNode* before)
+{
     after->next = newNode;
     before->prev = newNode;
     newNode->next = before;
     newNode->prev = after;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-pushfrontpayload
@@ -229,16 +220,14 @@ extern "C" void __fastcall zArchiveListLink(
  *
  * Purpose: insert a payload node at the head of an archive list.
  */
-extern "C" int __fastcall zArchiveListAddHead(
-    zArchiveList *list,
-    void *payload
-) {
+extern "C" int __fastcall zArchiveListAddHead(zArchiveList* list, void* payload)
+{
     if (list == 0) {
         return -1;
     }
 
-    zArchiveListNode *newNode = zArchiveListAllocNode(payload);
-    zArchiveListNode *head = list->head;
+    zArchiveListNode* newNode = zArchiveListAllocNode(payload);
+    zArchiveListNode* head = list->head;
     if (head == 0) {
         list->head = newNode;
         newNode->next = newNode;
@@ -252,7 +241,6 @@ extern "C" int __fastcall zArchiveListAddHead(
     return list->count;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-allocnodewithpayload
  * @recoil-artifact defines .text recoil:function:0x48ca10: zArchiveListAllocNode.
@@ -260,14 +248,12 @@ extern "C" int __fastcall zArchiveListAddHead(
  *
  * Purpose: allocate a list node and attach the supplied payload pointer.
  */
-extern "C" zArchiveListNode *__fastcall zArchiveListAllocNode(
-    void *payload
-) {
-    zArchiveListNode *result = zUtil_ZRDR_AllocNode(1);
+extern "C" zArchiveListNode* __fastcall zArchiveListAllocNode(void* payload)
+{
+    zArchiveListNode* result = zUtil_ZRDR_AllocNode(1);
     result->payload = payload;
     return result;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-pushbackpayload
@@ -276,16 +262,14 @@ extern "C" zArchiveListNode *__fastcall zArchiveListAllocNode(
  *
  * Purpose: insert a payload node at the tail of an archive list.
  */
-extern "C" int __fastcall zArchiveListAddTail(
-    zArchiveList *list,
-    void *payload
-) {
+extern "C" int __fastcall zArchiveListAddTail(zArchiveList* list, void* payload)
+{
     if (list == 0) {
         return -1;
     }
 
-    zArchiveListNode *newNode = zArchiveListAllocNode(payload);
-    zArchiveListNode *head = list->head;
+    zArchiveListNode* newNode = zArchiveListAllocNode(payload);
+    zArchiveListNode* head = list->head;
     if (head == 0) {
         list->head = newNode;
         newNode->next = newNode;
@@ -305,10 +289,8 @@ extern "C" int __fastcall zArchiveListAddTail(
  * Purpose: remove a matching payload node from a circular archive list and
  * return the remaining node count.
  */
-extern "C" int __fastcall zArchiveListRemove(
-    zArchiveList *list,
-    void *payload
-) {
+extern "C" int __fastcall zArchiveListRemove(zArchiveList* list, void* payload)
+{
     if (list == 0) {
         return -1;
     }
@@ -316,7 +298,7 @@ extern "C" int __fastcall zArchiveListRemove(
         return -1;
     }
 
-    zArchiveListNode *const node = zArchiveListFindNode(list, payload);
+    zArchiveListNode* const node = zArchiveListFindNode(list, payload);
     if (node == 0) {
         return -1;
     }
@@ -339,7 +321,6 @@ extern "C" int __fastcall zArchiveListRemove(
     return list->count;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-freenode
  * @recoil-artifact defines .text recoil:function:0x48cae0: zArchiveListFreeNode.
@@ -348,14 +329,13 @@ extern "C" int __fastcall zArchiveListRemove(
  * Purpose: return one archive-list node to the shared node pool and return its
  * payload pointer.
  */
-extern "C" void *__fastcall zArchiveListFreeNode(
-    zArchiveListNode *node
-) {
+extern "C" void* __fastcall zArchiveListFreeNode(zArchiveListNode* node)
+{
     if (node == 0) {
         return 0;
     }
 
-    void *payload = node->payload;
+    void* payload = node->payload;
     zRdrFreeNode(node);
     return payload;
 }
@@ -366,16 +346,14 @@ extern "C" void *__fastcall zArchiveListFreeNode(
  *
  * Purpose: find the circular-list node that owns a specific payload pointer.
  */
-extern "C" zArchiveListNode *__fastcall zArchiveListFindNode(
-    zArchiveList *list,
-    void *payload
-) {
+extern "C" zArchiveListNode* __fastcall zArchiveListFindNode(zArchiveList* list, void* payload)
+{
     if (list == 0 || list->count == 0) {
         return 0;
     }
 
-    zArchiveListNode *node = list->head;
-    zArchiveListNode *const head = list->head;
+    zArchiveListNode* node = list->head;
+    zArchiveListNode* const head = list->head;
     while (node->payload != payload) {
         node = node->next;
         if (node == head) {
@@ -391,10 +369,8 @@ extern "C" zArchiveListNode *__fastcall zArchiveListFindNode(
  *
  * Purpose: return the payload at a zero-based archive-list index.
  */
-extern "C" void *__fastcall zArchiveListGet(
-    zArchiveList *list,
-    int index
-) {
+extern "C" void* __fastcall zArchiveListGet(zArchiveList* list, int index)
+{
     if (list == 0) {
         return 0;
     }
@@ -407,8 +383,8 @@ extern "C" void *__fastcall zArchiveListGet(
     }
 
     int i = 1;
-    zArchiveListNode *head = list->head;
-    zArchiveListNode *node = head->next;
+    zArchiveListNode* head = list->head;
+    zArchiveListNode* node = head->next;
     while (node != head && i != index) {
         node = node->next;
         ++i;
@@ -423,9 +399,8 @@ extern "C" void *__fastcall zArchiveListGet(
  *
  * Purpose: unlink the head node from an archive list and return its payload.
  */
-extern "C" void *__fastcall zArchiveListRemoveHead(
-    zArchiveList *list
-) {
+extern "C" void* __fastcall zArchiveListRemoveHead(zArchiveList* list)
+{
     if (list == 0) {
         return 0;
     }
@@ -434,7 +409,7 @@ extern "C" void *__fastcall zArchiveListRemoveHead(
         return 0;
     }
 
-    zArchiveListNode *head = list->head;
+    zArchiveListNode* head = list->head;
     if (list->count == 1) {
         list->head = 0;
     } else {
@@ -452,16 +427,13 @@ extern "C" void *__fastcall zArchiveListRemoveHead(
  *
  * Purpose: find the first item for which the caller-supplied comparison returns zero.
  */
-extern "C" void *__fastcall zArchiveListFindCompare(
-    zArchiveList *list,
-    zArchiveListCompare compare,
-    void *userData
-) {
+extern "C" void* __fastcall zArchiveListFindCompare(zArchiveList* list, zArchiveListCompare compare, void* userData)
+{
     if (list == 0 || list->count == 0) {
         return 0;
     }
 
-    zArchiveListNode *node = list->head;
+    zArchiveListNode* node = list->head;
     while (compare(node->payload, userData) != 0) {
         node = node->next;
         if (node == list->head) {
@@ -478,17 +450,15 @@ extern "C" void *__fastcall zArchiveListFindCompare(
  * Purpose: find the first payload whose leading dword equals the requested
  * value.
  */
-extern "C" void *__fastcall zArchiveListFindKey(
-    zArchiveList *list,
-    unsigned int value
-) {
+extern "C" void* __fastcall zArchiveListFindKey(zArchiveList* list, unsigned int value)
+{
     if (list == 0 || list->count == 0) {
         return 0;
     }
 
-    zArchiveListNode *node = list->head;
-    zArchiveListNode *const head = list->head;
-    while (*(unsigned int *)(node->payload) != value) {
+    zArchiveListNode* node = list->head;
+    zArchiveListNode* const head = list->head;
+    while (*(unsigned int*)(node->payload) != value) {
         node = node->next;
         if (node == head) {
             return 0;
@@ -497,7 +467,6 @@ extern "C" void *__fastcall zArchiveListFindKey(
     return node->payload;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-findpayloadbypredicate-thunk
  * @recoil-artifact defines .text recoil:function:0x48cc50: zArchiveListFind.
@@ -505,14 +474,10 @@ extern "C" void *__fastcall zArchiveListFindKey(
  *
  * Purpose: expose the comparison-based list search through the public entry point.
  */
-extern "C" void *__fastcall zArchiveListFind(
-    zArchiveList *list,
-    zArchiveListCompare compare,
-    void *userData
-) {
+extern "C" void* __fastcall zArchiveListFind(zArchiveList* list, zArchiveListCompare compare, void* userData)
+{
     return zArchiveListFindCompare(list, compare, userData);
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zarchivelist-getcount
@@ -521,16 +486,14 @@ extern "C" void *__fastcall zArchiveListFind(
  *
  * Purpose: return the number of payload nodes in an archive list.
  */
-extern "C" int __fastcall zArchiveListCount(
-    zArchiveList *list
-) {
+extern "C" int __fastcall zArchiveListCount(zArchiveList* list)
+{
     if (list == 0) {
         return 0;
     }
 
     return list->count;
 }
-
 
 namespace zUtil {
 /**
@@ -540,9 +503,8 @@ namespace zUtil {
  *
  * Purpose: initialize ZRDR search-path and node-pool state.
  */
-int __fastcall zRdrInit(
-    const char *pathText
-) {
+int __fastcall zRdrInit(const char* pathText)
+{
     if (g_zArchive_MountedList == 0) {
         g_zArchive_MountedList = zArchiveListNew();
         zRdrSetPath(pathText);
@@ -553,7 +515,6 @@ int __fastcall zRdrInit(
 }
 } // namespace zUtil
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-setsearchpath
  * @recoil-artifact defines .text recoil:function:0x48cca0: zRdrSetPath.
@@ -561,9 +522,8 @@ int __fastcall zRdrInit(
  *
  * Purpose: replace the current ZRDR search path list.
  */
-extern "C" int __fastcall zRdrSetPath(
-    const char *pathText
-) {
+extern "C" int __fastcall zRdrSetPath(const char* pathText)
+{
     if (g_zRdr_SearchPathList == 0) {
         g_zRdr_SearchPathList = zRdrCreateSearchPathList(pathText);
         return 0;
@@ -574,7 +534,6 @@ extern "C" int __fastcall zRdrSetPath(
     return 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-appendsearchpath
  * @recoil-artifact defines .text recoil:function:0x48cce0: zRdrAddPath.
@@ -582,9 +541,8 @@ extern "C" int __fastcall zRdrSetPath(
  *
  * Purpose: append additional paths to the current ZRDR search path list.
  */
-extern "C" int __fastcall zRdrAddPath(
-    const char *pathText
-) {
+extern "C" int __fastcall zRdrAddPath(const char* pathText)
+{
     if (g_zRdr_SearchPathList == 0) {
         g_zRdr_SearchPathList = zRdrCreateSearchPathList(pathText);
         return 0;
@@ -594,7 +552,6 @@ extern "C" int __fastcall zRdrAddPath(
     return 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zutil-zrdr-shutdown
  * @recoil-artifact defines .text recoil:function:0x48cd10: zRdrExit.
@@ -602,7 +559,8 @@ extern "C" int __fastcall zRdrAddPath(
  *
  * Purpose: shut down ZRDR path state, mounted archives, and node pools.
  */
-extern "C" int __cdecl zRdrExit() {
+extern "C" int __cdecl zRdrExit()
+{
     zRdrFreeSearchPathList(g_zRdr_SearchPathList);
     zRdrUnmount(1);
     zArchiveListFree(g_zArchive_MountedList);
@@ -618,18 +576,16 @@ namespace zReader {
  *
  * Purpose: resolve a filename through mounted archives and search paths.
  */
-const char *__fastcall FindFile(
-    const char *filename,
-    const char *extraSearchPath
-) {
-    const char *result = 0;
+const char* __fastcall FindFile(const char* filename, const char* extraSearchPath)
+{
+    const char* result = 0;
     if (FileExists(filename) != 0) {
         result = filename;
     }
 
     if (result == 0) {
         if (extraSearchPath != 0 && strlen(extraSearchPath) != 0) {
-            zArchiveList *const searchPathList = zRdrCreateSearchPathList(extraSearchPath);
+            zArchiveList* const searchPathList = zRdrCreateSearchPathList(extraSearchPath);
             result = zRdrResolvePathInSearchPathList(searchPathList, filename);
             zRdrFreeSearchPathList(searchPathList);
         }
@@ -643,7 +599,6 @@ const char *__fastcall FindFile(
 }
 } // namespace zReader
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-allocatenode
  * @recoil-artifact defines .text recoil:function:0x48cda0: zRdrAllocNode (GameZRecoil/zReader/zreader.cpp).
@@ -651,11 +606,9 @@ const char *__fastcall FindFile(
  *
  * Purpose: Allocates a zReader node array and stores the serialized header word in the first node.
  */
-extern "C" zReader::Node *__fastcall zRdrAllocNode(
-    int headerWord,
-    int fieldCount
-) {
-    zReader::Node *result = (zReader::Node *)(malloc((size_t)(fieldCount) * sizeof(zReader::Node)));
+extern "C" zReader::Node* __fastcall zRdrAllocNode(int headerWord, int fieldCount)
+{
+    zReader::Node* result = (zReader::Node*)(malloc((size_t)(fieldCount) * sizeof(zReader::Node)));
     result->type = headerWord;
     return result;
 }
@@ -667,16 +620,13 @@ namespace zReader {
  *
  * Purpose: Reduces a path to its basename, opens the mounted archive member, and parses a zReader node tree.
  */
-Node *__fastcall Load(
-    const char *path,
-    const char *,
-    int
-) {
-    Node *outNode = 0;
+Node* __fastcall Load(const char* path, const char*, int)
+{
+    Node* outNode = 0;
     _splitpath(path, 0, 0, g_zReader_FileNameBuf, g_zReader_FileExtBuf);
     strcat(g_zReader_FileNameBuf, g_zReader_FileExtBuf);
 
-    void *hFile = zRdrOpenFile(g_zReader_FileNameBuf);
+    void* hFile = zRdrOpenFile(g_zReader_FileNameBuf);
     if (hFile != INVALID_HANDLE_VALUE) {
         outNode = zRdrAllocNode(ZRDR_NODE_ARRAY, 1);
         zRdrRead(hFile, outNode);
@@ -686,7 +636,6 @@ Node *__fastcall Load(
 }
 } // namespace zReader
 
-
 namespace zReader {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-freeloadedtree
@@ -695,9 +644,8 @@ namespace zReader {
  *
  * Purpose: Releases a loaded zReader tree root and all recursive payload storage.
  */
-int __fastcall Free(
-    Node *loaded
-) {
+int __fastcall Free(Node* loaded)
+{
     if (loaded != 0) {
         zRdrFreeContents(loaded);
         free(loaded);
@@ -707,7 +655,6 @@ int __fastcall Free(
 }
 } // namespace zReader
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-freenoderecursive
  * @recoil-artifact defines .text recoil:function:0x48ce60: zRdrFreeContents (GameZRecoil/zReader/zreader.cpp).
@@ -715,9 +662,8 @@ int __fastcall Free(
  *
  * Purpose: free string and array contents recursively, leaving the supplied node allocated.
  */
-extern "C" void __fastcall zRdrFreeContents(
-    zReader::Node *node
-) {
+extern "C" void __fastcall zRdrFreeContents(zReader::Node* node)
+{
     if (node->type == zReader::ZRDR_NODE_STRING) {
         free(node->value.str);
         node->value.str = 0;
@@ -742,31 +688,27 @@ extern "C" void __fastcall zRdrFreeContents(
  *
  * Purpose: Recursively finds a named zReader child and returns the value node adjacent to the matching name string.
  */
-extern "C" zReader::Node *__fastcall zRdrFindNode(
-    zReader::Node *node,
-    const char *searchName,
-    int startIndex
-) {
+extern "C" zReader::Node* __fastcall zRdrFindNode(zReader::Node* node, const char* searchName, int startIndex)
+{
     if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
     }
 
-    zReader::Node *arrayBase = node->value.nodes;
+    zReader::Node* arrayBase = node->value.nodes;
     int index = startIndex;
     if (startIndex >= arrayBase->value.i32) {
         return 0;
     }
 
     while (index < node->value.nodes->value.i32) {
-        zReader::Node *child = &node->value.nodes[index];
+        zReader::Node* child = &node->value.nodes[index];
         int childType = child->type;
         if (childType == zReader::ZRDR_NODE_ARRAY) {
-            zReader::Node *result = zRdrFindNode(child, searchName, 1);
+            zReader::Node* result = zRdrFindNode(child, searchName, 1);
             if (result != 0) {
                 return result;
             }
-        } else if (childType == zReader::ZRDR_NODE_STRING &&
-                   strcmp(child->value.str, searchName) == 0) {
+        } else if (childType == zReader::ZRDR_NODE_STRING && strcmp(child->value.str, searchName) == 0) {
             return &child[1];
         }
 
@@ -776,7 +718,6 @@ extern "C" zReader::Node *__fastcall zRdrFindNode(
     return 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-getnamednode
  * @recoil-artifact defines .text recoil:function:0x48cf70: zRdrGetNode (GameZRecoil/zReader/zreader.cpp).
@@ -784,13 +725,10 @@ extern "C" zReader::Node *__fastcall zRdrFindNode(
  *
  * Purpose: Starts the recursive named-node lookup at the first payload child of an array node.
  */
-extern "C" zReader::Node *__fastcall zRdrGetNode(
-    zReader::Node *parentNode,
-    const char *name
-) {
+extern "C" zReader::Node* __fastcall zRdrGetNode(zReader::Node* parentNode, const char* name)
+{
     return zRdrFindNode(parentNode, name, 1);
 }
-
 
 namespace zReader {
 /**
@@ -801,11 +739,9 @@ namespace zReader {
  * Purpose: read a named string value from a node or the first payload item of a
  * named array node.
  */
-const char *__fastcall GetString(
-    Node *parentNode,
-    const char *name
-) {
-    Node *node = zRdrGetNode(parentNode, name);
+const char* __fastcall GetString(Node* parentNode, const char* name)
+{
+    Node* node = zRdrGetNode(parentNode, name);
     if (node == 0) {
         return 0;
     }
@@ -815,7 +751,7 @@ const char *__fastcall GetString(
     }
 
     if (node->type == ZRDR_NODE_ARRAY) {
-        Node *arrayBase = node->value.nodes;
+        Node* arrayBase = node->value.nodes;
         if (arrayBase[1].type == ZRDR_NODE_STRING) {
             return arrayBase[1].value.str;
         }
@@ -834,12 +770,9 @@ namespace zReader {
  * Purpose: read a named float value, accepting integer nodes as float-compatible
  * values when the source data stores the number as an int.
  */
-int __fastcall GetFloat(
-    Node *parentNode,
-    const char *name,
-    float *outValue
-) {
-    Node *node = zRdrGetNode(parentNode, name);
+int __fastcall GetFloat(Node* parentNode, const char* name, float* outValue)
+{
+    Node* node = zRdrGetNode(parentNode, name);
     if (node == 0) {
         return 0;
     }
@@ -855,16 +788,15 @@ int __fastcall GetFloat(
     }
 
     if (node->type == ZRDR_NODE_ARRAY) {
-        Node *arrayBase = node->value.nodes;
+        Node* arrayBase = node->value.nodes;
         if (arrayBase[1].type == ZRDR_NODE_FLOAT) {
             *outValue = arrayBase[1].value.f32;
             return 1;
         }
-
     }
 
     if (node->type == ZRDR_NODE_ARRAY) {
-        Node *arrayBase = node->value.nodes;
+        Node* arrayBase = node->value.nodes;
         if (arrayBase[1].type == ZRDR_NODE_INT) {
             *outValue = (float)(arrayBase[1].value.i32);
             return 1;
@@ -875,7 +807,6 @@ int __fastcall GetFloat(
 }
 } // namespace zReader
 
-
 namespace zReader {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-readnamedint
@@ -885,12 +816,9 @@ namespace zReader {
  * Purpose: read a named integer value from a node or the first payload item of
  * a named array node.
  */
-int __fastcall GetInt(
-    Node *parentNode,
-    const char *name,
-    int *outValue
-) {
-    Node *node = zRdrGetNode(parentNode, name);
+int __fastcall GetInt(Node* parentNode, const char* name, int* outValue)
+{
+    Node* node = zRdrGetNode(parentNode, name);
     if (node == 0) {
         return 0;
     }
@@ -901,7 +829,7 @@ int __fastcall GetInt(
     }
 
     if (node->type == ZRDR_NODE_ARRAY) {
-        Node *arrayBase = node->value.nodes;
+        Node* arrayBase = node->value.nodes;
         if (arrayBase[1].type == ZRDR_NODE_INT) {
             *outValue = arrayBase[1].value.i32;
             return 1;
@@ -918,10 +846,8 @@ int __fastcall GetInt(
  *
  * Purpose: Reads one serialized zReader node, including recursive array children and scalar/string payloads.
  */
-extern "C" int __fastcall zRdrRead(
-    void *hFile,
-    zReader::Node *outNode
-) {
+extern "C" int __fastcall zRdrRead(void* hFile, zReader::Node* outNode)
+{
     DWORD bytesRead;
     ReadFile((HANDLE)(hFile), outNode, 4, &bytesRead, 0);
     int result = (int)(bytesRead);
@@ -932,8 +858,7 @@ extern "C" int __fastcall zRdrRead(
         ReadFile((HANDLE)(hFile), &nodeCount, 4, &bytesRead, 0);
         result += (int)(bytesRead);
 
-        outNode->value.nodes =
-            (zReader::Node *)(malloc((size_t)(nodeCount) * sizeof(zReader::Node)));
+        outNode->value.nodes = (zReader::Node*)(malloc((size_t)(nodeCount) * sizeof(zReader::Node)));
         outNode->value.nodes[0].value.i32 = nodeCount;
         outNode->value.nodes[0].type = zReader::ZRDR_NODE_INT;
 
@@ -977,7 +902,6 @@ extern "C" int __fastcall zRdrRead(
     return result;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-openfilefrommountedarchives
  * @recoil-artifact defines .text recoil:function:0x48d1c0: zRdrOpenFile (GameZRecoil/zReader/zreader.cpp).
@@ -985,18 +909,16 @@ extern "C" int __fastcall zRdrRead(
  *
  * Purpose: Searches mounted index archives for a member file and returns the first opened handle.
  */
-extern "C" void *__fastcall zRdrOpenFile(
-    const char *path
-) {
+extern "C" void* __fastcall zRdrOpenFile(const char* path)
+{
     if (g_zArchive_MountedList == 0) {
         return INVALID_HANDLE_VALUE;
     }
 
     int index = 0;
     while (index < zArchiveListCount(g_zArchive_MountedList)) {
-        zIndexArchive *archive =
-            (zIndexArchive *)(zArchiveListGet(g_zArchive_MountedList, index));
-        void *result = archive->OpenFileByName(path, 0);
+        zIndexArchive* archive = (zIndexArchive*)(zArchiveListGet(g_zArchive_MountedList, index));
+        void* result = archive->OpenFileByName(path, 0);
         if (result != INVALID_HANDLE_VALUE) {
             return result;
         }
@@ -1014,11 +936,9 @@ namespace zArchive {
  *
  * Purpose: allocate, initialize, and register a mounted index archive.
  */
-int __fastcall Mount(
-    const char *path,
-    int setCurrent
-) {
-    zIndexArchive *payload = new zIndexArchive;
+int __fastcall Mount(const char* path, int setCurrent)
+{
+    zIndexArchive* payload = new zIndexArchive;
 
     if (payload->Init(path) != 0) {
         if (setCurrent != 0) {
@@ -1041,13 +961,11 @@ int __fastcall Mount(
  *
  * Purpose: destroy mounted archives while optionally preserving the current archive.
  */
-extern "C" void __fastcall zRdrUnmount(
-    int destroyCurrentToo
-) {
-    zIndexArchive *archive =
-        (zIndexArchive *)(zArchiveListRemoveHead(g_zArchive_MountedList));
+extern "C" void __fastcall zRdrUnmount(int destroyCurrentToo)
+{
+    zIndexArchive* archive = (zIndexArchive*)(zArchiveListRemoveHead(g_zArchive_MountedList));
     while (archive != 0) {
-        zIndexArchive *const current = g_zArchive_Current;
+        zIndexArchive* const current = g_zArchive_Current;
         if (destroyCurrentToo != 0 || archive != current) {
             if (current == archive) {
                 g_zArchive_Current = 0;
@@ -1057,12 +975,10 @@ extern "C" void __fastcall zRdrUnmount(
             delete archive;
         }
 
-        archive = (zIndexArchive *)(zArchiveListRemoveHead(g_zArchive_MountedList));
+        archive = (zIndexArchive*)(zArchiveListRemoveHead(g_zArchive_MountedList));
     }
 
     if (destroyCurrentToo == 0 && g_zArchive_Current != 0) {
         zArchiveListAddTail(g_zArchive_MountedList, g_zArchive_Current);
     }
-
-
 }

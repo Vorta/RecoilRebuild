@@ -22,10 +22,8 @@ const unsigned int kCueChunkMagic = 0x20657563;
  * Purpose: initialize a WAV data record from a path and optionally load and
  * parse it immediately.
  */
-zSndWaveData::zSndWaveData(
-    const char *path,
-    int loadNow
-) {
+zSndWaveData::zSndWaveData(const char* path, int loadNow)
+{
     nameOrPath = _strdup(path);
     fileData = 0;
     pcmData = 0;
@@ -48,7 +46,8 @@ zSndWaveData::zSndWaveData(
  *
  * Purpose: reset parsed WAV state and release the duplicated path string.
  */
-zSndWaveData::~zSndWaveData() {
+zSndWaveData::~zSndWaveData()
+{
     Reset();
     if (nameOrPath != 0) {
         free(nameOrPath);
@@ -63,8 +62,9 @@ zSndWaveData::~zSndWaveData() {
  * Purpose: scan a loaded RIFF/WAVE buffer and cache its fmt, data, and cue
  * chunk records.
  */
-int zSndWaveData::ParseLoadedWaveFile() {
-    unsigned char *chunk = (unsigned char *)(fileData);
+int zSndWaveData::ParseLoadedWaveFile()
+{
+    unsigned char* chunk = (unsigned char*)(fileData);
     if (chunk == 0) {
         return 0;
     }
@@ -73,19 +73,19 @@ int zSndWaveData::ParseLoadedWaveFile() {
     pcmData = 0;
     pcmByteCount = 0;
 
-    const unsigned int riffMagic = *((unsigned int *)(chunk));
+    const unsigned int riffMagic = *((unsigned int*)(chunk));
     chunk += 4;
-    const unsigned int riffPayloadBytes = *((unsigned int *)(chunk));
+    const unsigned int riffPayloadBytes = *((unsigned int*)(chunk));
     chunk += 4;
-    const unsigned int waveMagic = *((unsigned int *)(chunk));
+    const unsigned int waveMagic = *((unsigned int*)(chunk));
     chunk += 4;
     if (riffMagic == kRiffMagic && waveMagic == kWaveMagic) {
-        unsigned char *const riffEnd = chunk + riffPayloadBytes - 4;
+        unsigned char* const riffEnd = chunk + riffPayloadBytes - 4;
         int invalidFmtChunk = 0;
         while (chunk < riffEnd && invalidFmtChunk == 0) {
-            const unsigned int chunkId = *((unsigned int *)(chunk));
+            const unsigned int chunkId = *((unsigned int*)(chunk));
             chunk += 4;
-            const unsigned int chunkSize = *((unsigned int *)(chunk));
+            const unsigned int chunkSize = *((unsigned int*)(chunk));
             chunk += 4;
 
             if (chunkId != kCueChunkMagic) {
@@ -99,7 +99,7 @@ int zSndWaveData::ParseLoadedWaveFile() {
                 } else {
                     if (fmt == 0) {
                         if (chunkSize >= 0x0e) {
-                            fmt = (WAVEFORMATEX *)(chunk);
+                            fmt = (WAVEFORMATEX*)(chunk);
                         } else {
                             invalidFmtChunk = 1;
                         }
@@ -107,8 +107,8 @@ int zSndWaveData::ParseLoadedWaveFile() {
                 }
             } else {
                 if (cuePoints == 0 || cuePointCount == 0) {
-                    cuePointCount = (int)(*((unsigned int *)(chunk)));
-                    cuePoints = (zSndCuePoint *)(chunk + 4);
+                    cuePointCount = (int)(*((unsigned int*)(chunk)));
+                    cuePoints = (zSndCuePoint*)(chunk + 4);
                 }
             }
 
@@ -128,7 +128,8 @@ int zSndWaveData::ParseLoadedWaveFile() {
  *
  * Purpose: load a named WAV file from disk once and cache its parsed data.
  */
-int zSndWaveData::LoadAndParseIfNeeded() {
+int zSndWaveData::LoadAndParseIfNeeded()
+{
     if (parsedOk != 0) {
         return 1;
     }
@@ -137,7 +138,7 @@ int zSndWaveData::LoadAndParseIfNeeded() {
         return 0;
     }
 
-    FILE *const file = fopen(nameOrPath, "rb");
+    FILE* const file = fopen(nameOrPath, "rb");
     if (file == 0) {
         return 0;
     }
@@ -158,7 +159,8 @@ int zSndWaveData::LoadAndParseIfNeeded() {
  *
  * Purpose: free loaded WAV file storage and clear cached parse fields.
  */
-int zSndWaveData::Reset() {
+int zSndWaveData::Reset()
+{
     if (parsedOk != 0) {
         if (fileData != 0) {
             free(fileData);
@@ -184,16 +186,15 @@ int zSndWaveData::Reset() {
  *
  * Purpose: load a named WAV payload from an index archive once and cache its parsed data.
  */
-int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(
-    zIndexArchive *archive
-) {
+int zSndWaveData::LoadAndParseFromIndexArchiveIfNeeded(zIndexArchive* archive)
+{
     if (parsedOk != 0) {
         return 1;
     }
 
     unsigned int archiveFileSize = 0;
     archive->ReadFileByName(nameOrPath, 0, &archiveFileSize);
-    unsigned int *const fileSizeOut = (unsigned int *)(&fileSize);
+    unsigned int* const fileSizeOut = (unsigned int*)(&fileSize);
     *fileSizeOut = archiveFileSize;
     if (archiveFileSize > 0) {
         fileData = calloc(archiveFileSize, 1);

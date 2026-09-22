@@ -29,17 +29,17 @@ struct Node;
 
 extern "C" {
 extern int g_Player_HudCounterValue;
-extern zVec3 *g_Player_LocalFxOffsetWorldPtr;
-extern zUtil_SaveGameState *g_LocalPlayerSaveState;
-extern zUtil_SaveGameState *g_Player2SaveState;
-extern zUtil_SaveGameState *g_CurrentPlayerSaveState;
+extern zVec3* g_Player_LocalFxOffsetWorldPtr;
+extern zUtil_SaveGameState* g_LocalPlayerSaveState;
+extern zUtil_SaveGameState* g_Player2SaveState;
+extern zUtil_SaveGameState* g_CurrentPlayerSaveState;
 extern zTag4Partial g_Player_LastValidCameraVariantTag;
 extern float g_Player_ThirdPersonCameraSideProbeOffsetScale;
 extern int g_Player_CameraVariantUpdatedThisTick;
 extern int g_Player_RebuildCameraDirFlatFromCurrentTarget;
 extern zVec3 g_Player_AmphibBasisUpRef;
 extern float g_Player_AmphibSteerBasisLerpRate;
-extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
+extern zInput_GameStateOrMapTablePartial* g_GameStateOrMapTable;
 extern int g_Player_NextOrdinal;
 extern int g_Player_AiMode2State1Finalized;
 extern float g_Player_AiMode2_PathFollowPitchInputScale;
@@ -71,26 +71,26 @@ extern float g_Player_QuicksandSinkRate;
 extern float g_Player_LavaSinkRate;
 extern float g_Player_MaxSlope;
 extern float g_Player_CollisionContactResolveScale;
-extern OptCatalogEntryDef *g_Player_MakeHotOptEntry;
-extern OptCatalogEntryDef *g_Player_MakeColdOptEntry;
-extern zEffectAnimEntry *g_Player_BftSplashAnimEntry;
-extern zEffectAnimEntry *g_Player_ActiveDebugScriptAsyncEntry;
+extern OptCatalogEntryDef* g_Player_MakeHotOptEntry;
+extern OptCatalogEntryDef* g_Player_MakeColdOptEntry;
+extern zEffectAnimEntry* g_Player_BftSplashAnimEntry;
+extern zEffectAnimEntry* g_Player_ActiveDebugScriptAsyncEntry;
 extern int g_Player_HorizonNodeFollowCameraEnabled;
-extern CZNodePartial *g_Player_HorizonNode;
+extern CZNodePartial* g_Player_HorizonNode;
 extern int g_PlayerPrevCameraState;
 extern int g_PlayerPrevSteeringMode;
 extern int g_Player_SavedSteeringMode;
-extern CZNodePartial *g_Player_CopterHealthyNode1;
-extern CZNodePartial *g_Player_CopterHealthyNode2;
-extern CZNodePartial *g_Player_CopterSndNode1;
-extern CZNodePartial *g_Player_CopterSndNode2;
-extern zSndSample *g_Player_CopterSndSample;
+extern CZNodePartial* g_Player_CopterHealthyNode1;
+extern CZNodePartial* g_Player_CopterHealthyNode2;
+extern CZNodePartial* g_Player_CopterSndNode1;
+extern CZNodePartial* g_Player_CopterSndNode2;
+extern zSndSample* g_Player_CopterSndSample;
 extern int g_PlayerEnvProbeSampleCount;
 extern int g_PlayerEnvProbe_AboveGroundFlags[10];
 extern int g_PlayerEnvProbe_AboveGroundIndices[10];
 extern zVec3 g_PlayerEnvProbeWorldPoints[7];
 extern int g_PlayerEnvProbe_AboveGroundCount;
-extern zEffectAnimEntry *g_PlayerRecentHitFxAnimEntry;
+extern zEffectAnimEntry* g_PlayerRecentHitFxAnimEntry;
 }
 
 /**
@@ -119,7 +119,7 @@ extern HudUiPanel g_Player_TopMsgPanel2;
 }
 
 struct PlayerMasterWeaponSpec {
-    PlayerMasterWeaponSpec *next;
+    PlayerMasterWeaponSpec* next;
     char optCatalogName[0x50];
     int missionRequirementOrGateId;
     int mountLayoutFlags;
@@ -137,14 +137,14 @@ struct PlayerAiRuntimePartial {
 };
 
 struct PlayerMasterCommonData {
-    PlayerMasterCommonData *next;
+    PlayerMasterCommonData* next;
     char vehicleName[0x50];
     int modalCount;
     char modalNames[8][0x50];
     int naniteBuildRate;
     int naniteSpawnCounter;
     int naniteMaxLevel;
-    zSndSample *sfxWeaponUp[4];
+    zSndSample* sfxWeaponUp[4];
     float activationRangeSq;
     float notPursuitDwellTime;
     float returnRangeSq;
@@ -169,14 +169,14 @@ struct PlayerMasterCommonData {
     int pickupType;
     int pickupCapacity;
     int weaponSpecListAux;
-    PlayerMasterWeaponSpec *weaponSpecHead;
-    PlayerMasterWeaponSpec *weaponSpecTail;
+    PlayerMasterWeaponSpec* weaponSpecHead;
+    PlayerMasterWeaponSpec* weaponSpecTail;
     int weaponSpecCount;
     int weaponNodeCount;
 };
 
 struct PlayerMasterModalData {
-    PlayerMasterModalData *next;
+    PlayerMasterModalData* next;
     char modalName[0x50];
     char modeName[0x50];
     int masterType;
@@ -221,17 +221,17 @@ struct PlayerMasterModalData {
     float hoverRollYawCoupleScale;
     float collisionDampingA;
     float collisionDampingB;
-    zEffectAnimEntry *fxList_fromTrackToAmphib[2];
-    zEffectAnimEntry *fxList_fromAmphibToTrack[2];
-    zEffectAnimEntry *fxList_fromTrackToHover[2];
-    zEffectAnimEntry *fxList_fromHoverToTrack[2];
-    zEffectAnimEntry *fxList_fromSubToAmphib[2];
-    zEffectAnimEntry *fxList_fromAmphibToSub[2];
-    zEffectAnimEntry *fxList_fromHoverToAmphib[2];
-    zEffectAnimEntry *fxList_fromAmphibToHover[2];
-    zSndSample *sfxEngine[4];
-    zSndSample *sfxCollide;
-    zSndSample *sfxLand;
+    zEffectAnimEntry* fxList_fromTrackToAmphib[2];
+    zEffectAnimEntry* fxList_fromAmphibToTrack[2];
+    zEffectAnimEntry* fxList_fromTrackToHover[2];
+    zEffectAnimEntry* fxList_fromHoverToTrack[2];
+    zEffectAnimEntry* fxList_fromSubToAmphib[2];
+    zEffectAnimEntry* fxList_fromAmphibToSub[2];
+    zEffectAnimEntry* fxList_fromHoverToAmphib[2];
+    zEffectAnimEntry* fxList_fromAmphibToHover[2];
+    zSndSample* sfxEngine[4];
+    zSndSample* sfxCollide;
+    zSndSample* sfxLand;
     float sfxPitchScale;
     float sfxVolumeScale;
 };
@@ -247,7 +247,7 @@ struct PlayerEnvProbeResult {
     float minProbeDepth;
     int preferAttachmentSlot1;
     int attachmentCandidateCount;
-    CZNodePartial *attachmentNode;
+    CZNodePartial* attachmentNode;
     int impactSlotBySample[9];
     PlayerProbeTypeHistogram hitHistogram;
     PlayerProbeSampleCandidateBuffer candidateBuffers[7];
@@ -268,9 +268,9 @@ struct PlayerMissionSaveTimedHitStatus {
     unsigned int savedHitSourceEntryId;
     float currentLevel;
     float targetLevel;
-    CZNodePartial *lightNode;
+    CZNodePartial* lightNode;
     float nextUpdateTime;
-    CZNodePartial *lightParentNode;
+    CZNodePartial* lightParentNode;
 };
 
 struct PlayerMissionSaveData {
@@ -333,14 +333,13 @@ struct PlayerMineSaveEntry {
 };
 
 struct PlayerNodeFlagRestoreEntry {
-    CZNodePartial *node;
+    CZNodePartial* node;
     int wasCellPickable;
     int wasRaycastable;
     int wasPickable;
 };
 
-typedef std::vector<PlayerNodeFlagRestoreEntry>
-    PlayerNodeFlagRestoreEntryVector;
+typedef std::vector<PlayerNodeFlagRestoreEntry> PlayerNodeFlagRestoreEntryVector;
 
 extern PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
 
@@ -349,14 +348,14 @@ extern PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
  * This state-only template and spelling are provisional: retail proves the
  * repeated layout and initialization, not an original template identity.
  */
-template<class Node>
-struct CPlayerListState {
+template <class Node> struct CPlayerListState {
     int listAux;
-    Node *head;
-    Node *tail;
+    Node* head;
+    Node* tail;
     int count;
 
-    CPlayerListState() {
+    CPlayerListState()
+    {
         listAux = 0;
         tail = 0;
         head = 0;
@@ -403,23 +402,16 @@ extern float g_Player_CameraHeadingLerpBaseWhenFlagSet;
 
 namespace Checkpoint {
 void __cdecl InstantiateNamedObjects();
-void __fastcall UpdatePlayerLapProgressAndNotifyNet(
-    zUtil_SaveGameState *saveState,
-    int checkpointIndex
-);
+void __fastcall UpdatePlayerLapProgressAndNotifyNet(zUtil_SaveGameState* saveState, int checkpointIndex);
 } // namespace Checkpoint
 
 namespace PlayerPickupContact {
-int __fastcall PassesCollectionTest(
-    zUtil_SaveGameState *saveState,
-    PlayerPendingContact *contact
-);
+int __fastcall PassesCollectionTest(zUtil_SaveGameState* saveState, PlayerPendingContact* contact);
 } // namespace PlayerPickupContact
 
 namespace zVehicle {
-const char *__fastcall SelectZrdByDifficulty(const char *extraSearchPath);
+const char* __fastcall SelectZrdByDifficulty(const char* extraSearchPath);
 } // namespace zVehicle
-
 
 namespace Player {
 enum PlayerLifecycleState {
@@ -431,1415 +423,462 @@ enum PlayerLifecycleState {
     kPlayerLifecycleState6Inactive = 6
 };
 
-enum PlayerOptCatalogFlags {
-    kOptCatalogFlagAltDispatchLatch = 0x02
-};
+enum PlayerOptCatalogFlags { kOptCatalogFlagAltDispatchLatch = 0x02 };
 
-const char *__cdecl GetAivZrdPath();
-void __fastcall ExtractVehicleNameFromAivName(
-    const char *aivName,
-    char *outVehicleName
-);
-CZNodePartial *__fastcall CloneType6NodeFromTemplateAndRename(
-    const char *templateName,
-    const char *newName
-);
+const char* __cdecl GetAivZrdPath();
+void __fastcall ExtractVehicleNameFromAivName(const char* aivName, char* outVehicleName);
+CZNodePartial* __fastcall CloneType6NodeFromTemplateAndRename(const char* templateName, const char* newName);
 int __fastcall CreateFromNamesAtPose(
-    const zVec3 *spawnPos,
+    const zVec3* spawnPos,
     int aiNetId,
     float yawDeg,
-    const char *templateName,
-    const char *objectName
+    const char* templateName,
+    const char* objectName
 );
-zUtil_SaveGameState *__fastcall CreateFromNamesAtPoseGetState(
-    const zVec3 *spawnPos,
-    const char *templateName,
-    float yawDeg,
-    const char *objectName
-);
-zUtil_SaveGameState *__cdecl GetSaveStateListHead();
+zUtil_SaveGameState* __fastcall
+CreateFromNamesAtPoseGetState(const zVec3* spawnPos, const char* templateName, float yawDeg, const char* objectName);
+zUtil_SaveGameState* __cdecl GetSaveStateListHead();
 void UnbindCurrentSaveStateIfSinglePlayer();
 void BindActiveGameStateAsCurrentSaveState();
 void __cdecl SyncLocalPoseFromRootNode();
-void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall CacheGunHardpointsAndDetachDisplays(
-    zUtil_SaveGameState *saveState,
-    int detachDisplays
-);
+void __fastcall CaptureCurrentObjectPoseAsRestartAnchor(zUtil_SaveGameState* saveState);
+void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveState, int detachDisplays);
 void __fastcall InitStateFromNameAndMasterCommonData(
-    zUtil_SaveGameState *saveState,
-    const char *objectName,
-    const char *masterCommonDataName
+    zUtil_SaveGameState* saveState,
+    const char* objectName,
+    const char* masterCommonDataName
 );
 void __fastcall AddScaledHudCounterValue(float value);
-void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall SetWorldPoseAndRestartAnchor(
-    zUtil_SaveGameState *saveState,
-    const zVec3 *position,
-    float yawRad
-);
-void __fastcall ResetMouseControlStateAndRecenterCursor(
-    zUtil_SaveGameState *saveState
-);
+void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(zUtil_SaveGameState* saveState);
+void __fastcall SetWorldPoseAndRestartAnchor(zUtil_SaveGameState* saveState, const zVec3* position, float yawRad);
+void __fastcall ResetMouseControlStateAndRecenterCursor(zUtil_SaveGameState* saveState);
 void __cdecl TickAllPlayers();
-void __fastcall AsyncCommandCallback(
-    zEffectAnimEntry *animEntry,
-    void *callbackContext,
-    int eventCode
-);
-void __fastcall TickLocalPlayerControls(zUtil_SaveGameState *saveState);
+void __fastcall AsyncCommandCallback(zEffectAnimEntry* animEntry, void* callbackContext, int eventCode);
+void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState);
 void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects();
-void __fastcall TickActiveCameraState(zUtil_SaveGameState *saveState);
+void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState);
 /** Inferred camera-state handler; the original spelling and body location are unknown. */
-void __fastcall UpdateCameraState5(zUtil_SaveGameState *saveState);
-void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState *saveState);
-void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState *saveState);
-void __fastcall UpdateFirstPersonCameraFromInput(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateCameraFromStoredTargetTowardPlayer(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall RestoreThirdPersonCameraFromObstructionState(
-    zUtil_SaveGameState *saveState
-);
+void __fastcall UpdateCameraState5(zUtil_SaveGameState* saveState);
+void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState* saveState);
+void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState* saveState);
+void __fastcall UpdateFirstPersonCameraFromInput(zUtil_SaveGameState* saveState);
+void __fastcall UpdateCameraFromStoredTargetTowardPlayer(zUtil_SaveGameState* saveState);
+void __fastcall RestoreThirdPersonCameraFromObstructionState(zUtil_SaveGameState* saveState);
 void UpdateCameraWeatherFxEmitterVisibility();
 void ToggleSteeringModeAndResetMouseLook();
-void __fastcall ResetMotionTransientState(zUtil_SaveGameState *saveState);
-void __fastcall UpdateBankVelocityFromSteerInput(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateAutoTurnAndSteerFromTarget(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall IntegrateYawAndWrapFromYawVelocity(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall RebuildSteerBasisFromMotionBasis(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall RebuildSteerBasisRawFromRef(zUtil_SaveGameState *saveState);
-void __fastcall RebuildMotionBasisFromSteerBasis(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall RebuildSteerBasisFromMotionAxes(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ClearPendingContactQueues(zUtil_SaveGameState *saveState);
-void __fastcall FilterCameraProbeBlockingHits(
-    PlayerProbeSampleCandidateBuffer *batches,
-    int batchCount
-);
+void __fastcall ResetMotionTransientState(zUtil_SaveGameState* saveState);
+void __fastcall UpdateBankVelocityFromSteerInput(zUtil_SaveGameState* saveState);
+void __fastcall UpdateAutoTurnAndSteerFromTarget(zUtil_SaveGameState* saveState);
+void __fastcall IntegrateYawAndWrapFromYawVelocity(zUtil_SaveGameState* saveState);
+void __fastcall RebuildSteerBasisFromMotionBasis(zUtil_SaveGameState* saveState);
+void __fastcall RebuildSteerBasisRawFromRef(zUtil_SaveGameState* saveState);
+void __fastcall RebuildMotionBasisFromSteerBasis(zUtil_SaveGameState* saveState);
+void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState);
+void __fastcall ClearPendingContactQueues(zUtil_SaveGameState* saveState);
+void __fastcall FilterCameraProbeBlockingHits(PlayerProbeSampleCandidateBuffer* batches, int batchCount);
 int __fastcall FindNearestThirdPersonCameraProbePoint(
-    PlayerProbeSampleCandidateBuffer *batches,
+    PlayerProbeSampleCandidateBuffer* batches,
     int batchCount,
-    const zVec3 *referencePos,
-    zVec3 *outHitPos
+    const zVec3* referencePos,
+    zVec3* outHitPos
 );
-int __fastcall AdjustSubCameraFocusForObstruction(
-    zUtil_SaveGameState *saveState,
-    zVec3 *focusPos
-);
-int __fastcall AdjustThirdPersonCameraByOffsetProbes(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos,
-    const zVec3 *sideDir
-);
+int __fastcall AdjustSubCameraFocusForObstruction(zUtil_SaveGameState* saveState, zVec3* focusPos);
+int __fastcall
+AdjustThirdPersonCameraByOffsetProbes(zUtil_SaveGameState* saveState, zVec3* cameraPos, const zVec3* sideDir);
 int __fastcall AdjustThirdPersonCameraBySideProbes(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos,
-    const zVec3 *focusPos,
-    zVec3 *cameraDirNext
+    zUtil_SaveGameState* saveState,
+    zVec3* cameraPos,
+    const zVec3* focusPos,
+    zVec3* cameraDirNext
 );
 void __fastcall UpdateCameraVariantFromAnchor(
-    PlayerProbeSampleCandidateBuffer *candidates,
-    zVec3 *cameraPos,
+    PlayerProbeSampleCandidateBuffer* candidates,
+    zVec3* cameraPos,
     int selectedCandidateIndex
 );
-void __fastcall UpdateCameraVariantFromCameraPos(
-    zUtil_SaveGameState *saveState,
-    zVec3 *cameraPos
-);
+void __fastcall UpdateCameraVariantFromCameraPos(zUtil_SaveGameState* saveState, zVec3* cameraPos);
 void __fastcall ClassifyPendingContactsForSegment(
-    zUtil_SaveGameState *saveState,
-    PlayerProbeSampleCandidateBuffer *sceneResults,
-    const zVec3 *segmentStart,
-    const zVec3 *segmentEnd,
+    zUtil_SaveGameState* saveState,
+    PlayerProbeSampleCandidateBuffer* sceneResults,
+    const zVec3* segmentStart,
+    const zVec3* segmentEnd,
     int segmentTag
 );
 int __fastcall CollectPendingContactsForSegments(
-    zUtil_SaveGameState *saveState,
-    CZDisplayInstanceSegmentEndpoints *segmentPairs,
+    zUtil_SaveGameState* saveState,
+    CZDisplayInstanceSegmentEndpoints* segmentPairs,
     int endpointCount,
-    int *segmentTags
+    int* segmentTags
 );
-int __fastcall CollectPendingCollisionContactsForQuadProbe(
-    zUtil_SaveGameState *saveState,
-    float expandRadius
-);
-void __fastcall BuildPendingContactQueues(zUtil_SaveGameState *saveState);
-void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState *saveState);
-void __fastcall ApplyPendingCollisionProbeVelocity(
-    zUtil_SaveGameState *saveState
-);
-int __fastcall TryResolvePendingCollisionProbeSweep(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall PreparePendingWorldCollisionResponse(
-    zUtil_SaveGameState *saveState,
-    PlayerPendingContact *worldContacts
-);
-void __fastcall ResolvePendingWorldCollisionContact(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ResolvePendingCollisionContact(
-    zUtil_SaveGameState *saveState,
-    PlayerPendingContact *contact
-);
-void __fastcall ResolvePendingPlayerCollisionContact(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ProcessTransferContactQueue(zUtil_SaveGameState *saveState);
-void __fastcall ProcessPendingContactQueues(zUtil_SaveGameState *saveState);
-void __fastcall SelectAndResolvePreferredPendingCollisionContact(
-    zUtil_SaveGameState *saveState
-);
+int __fastcall CollectPendingCollisionContactsForQuadProbe(zUtil_SaveGameState* saveState, float expandRadius);
+void __fastcall BuildPendingContactQueues(zUtil_SaveGameState* saveState);
+void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState* saveState);
+void __fastcall ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState* saveState);
+int __fastcall TryResolvePendingCollisionProbeSweep(zUtil_SaveGameState* saveState);
+void __fastcall
+PreparePendingWorldCollisionResponse(zUtil_SaveGameState* saveState, PlayerPendingContact* worldContacts);
+void __fastcall ResolvePendingWorldCollisionContact(zUtil_SaveGameState* saveState);
+void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, PlayerPendingContact* contact);
+void __fastcall ResolvePendingPlayerCollisionContact(zUtil_SaveGameState* saveState);
+void __fastcall ProcessTransferContactQueue(zUtil_SaveGameState* saveState);
+void __fastcall ProcessPendingContactQueues(zUtil_SaveGameState* saveState);
+void __fastcall SelectAndResolvePreferredPendingCollisionContact(zUtil_SaveGameState* saveState);
 void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
-    zUtil_SaveGameState *saveState,
-    const zVec3 *direction,
+    zUtil_SaveGameState* saveState,
+    const zVec3* direction,
     float angleScale,
     float velocityScale
 );
-void __fastcall RecordRecentHitFeedback(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *hitSource,
-    float damage
-);
-float __fastcall UpdateTimedHitStatusFromHitSource(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *hitSource,
-    float damage
-);
+void __fastcall RecordRecentHitFeedback(zUtil_SaveGameState* saveState, OptCatalogEntryDef* hitSource, float damage);
+float __fastcall
+UpdateTimedHitStatusFromHitSource(zUtil_SaveGameState* saveState, OptCatalogEntryDef* hitSource, float damage);
 int __fastcall HitCallbackRecordNetContextAndTimedStatus(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *hitSource,
-    void *hitRenderPointEntry,
+    zUtil_SaveGameState* saveState,
+    OptCatalogEntryDef* hitSource,
+    void* hitRenderPointEntry,
     float damage
 );
-void __fastcall ClearDestroyedRespawnEffectHandleCallback(
-    zEffectAnimEntry *entry,
-    zUtil_SaveGameState *saveState,
-    int value
-);
+void __fastcall
+ClearDestroyedRespawnEffectHandleCallback(zEffectAnimEntry* entry, zUtil_SaveGameState* saveState, int value);
 void __cdecl DestroyedStateResetLocalFinalize();
-void __fastcall DestroyedStateResetFinalizeCallback(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall DestroyedStateResetCallback(
-    zEffectAnimEntry *entry,
-    zUtil_SaveGameState *saveState,
-    int value
-);
-void __fastcall EnterLocalInactiveDestroyedLifecycle(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ClearRespawnTransitionFlagCallback(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall DestroyedStateRespawnCallback(
-    zEffectAnimEntry *entry,
-    zUtil_SaveGameState *saveState,
-    int value
-);
+void __fastcall DestroyedStateResetFinalizeCallback(zUtil_SaveGameState* saveState);
+void __fastcall DestroyedStateResetCallback(zEffectAnimEntry* entry, zUtil_SaveGameState* saveState, int value);
+void __fastcall EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState* saveState);
+void __fastcall ClearRespawnTransitionFlagCallback(zUtil_SaveGameState* saveState);
+void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry* entry, zUtil_SaveGameState* saveState, int value);
 int __fastcall EnterDestroyedState(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *hitSource,
-    OptCatalogHitEventPartial *hitRenderPoint,
+    zUtil_SaveGameState* saveState,
+    OptCatalogEntryDef* hitSource,
+    OptCatalogHitEventPartial* hitRenderPoint,
     float damage
 );
-int __fastcall ApplyDamageLocal(zUtil_SaveGameState *saveState);
-void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState *saveState);
+int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState);
+void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState);
 int __fastcall HitCallbackRecordContextAndTimedStatus(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *hitSource,
-    void *hitRenderPointEntry,
+    zUtil_SaveGameState* saveState,
+    OptCatalogEntryDef* hitSource,
+    void* hitRenderPointEntry,
     float damage
 );
-void __fastcall RecordNodeFlagsForRestore(CZNodePartial *node);
-void __fastcall BuildMissionSaveData(PlayerMissionSaveData *outData);
-void __fastcall ApplyMissionSaveData(PlayerMissionSaveData *saveData);
+void __fastcall RecordNodeFlagsForRestore(CZNodePartial* node);
+void __fastcall BuildMissionSaveData(PlayerMissionSaveData* outData);
+void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData);
 void __cdecl RestoreRecordedNodeFlags();
 void __fastcall zZarReadMissionSaveDataSection(
-    zZbdSectionCallbackCtx *reader,
-    const char *sectionToken,
-    PlayerMissionSaveData *saveData,
+    zZbdSectionCallbackCtx* reader,
+    const char* sectionToken,
+    PlayerMissionSaveData* saveData,
     unsigned int byteCount,
-    void *userData
+    void* userData
 );
 void __cdecl zZarRegisterSections();
-int __fastcall zZarWriteMissionSaveDataSection(
-    zZbdSectionCallbackCtx *writer,
-    void *userData
-);
+int __fastcall zZarWriteMissionSaveDataSection(zZbdSectionCallbackCtx* writer, void* userData);
 void __fastcall zZarReadVehicleListSection(
-    zZbdSectionCallbackCtx *reader,
-    const char *sectionToken,
-    PlayerVehicleListSaveEntry *saveData,
+    zZbdSectionCallbackCtx* reader,
+    const char* sectionToken,
+    PlayerVehicleListSaveEntry* saveData,
     unsigned int byteCount,
-    void *userData
+    void* userData
 );
-int __fastcall zZarWriteVehicleListSection(
-    zZbdSectionCallbackCtx *writer,
-    void *userData
-);
+int __fastcall zZarWriteVehicleListSection(zZbdSectionCallbackCtx* writer, void* userData);
 void __fastcall MinesZARReadEntryOrReset(
-    zZbdSectionCallbackCtx *reader,
-    const char *sectionToken,
-    PlayerMineSaveEntry *mineData,
+    zZbdSectionCallbackCtx* reader,
+    const char* sectionToken,
+    PlayerMineSaveEntry* mineData,
     unsigned int byteCount,
-    void *userData
+    void* userData
 );
-int __fastcall WriteMinesZarSection(
-    zZbdSectionCallbackCtx *writer,
-    void *userData
-);
-void __fastcall UpdateDebugOverlayHud(
-    zUtil_SaveGameState *saveState,
-    int unusedActiveMode2Count,
-    int unusedTotalMode2Count
-);
-void __fastcall RefreshHudFromState(zUtil_SaveGameState *saveState);
-void __fastcall ApplyStatusMeterChange(
-    zUtil_SaveGameState *saveState,
-    int mode,
-    float delta
-);
-int __fastcall UpdateStatusMeter(
-    zUtil_SaveGameState *saveState,
-    int mode,
-    float delta
-);
+int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userData);
+void __fastcall
+UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count, int unusedTotalMode2Count);
+void __fastcall RefreshHudFromState(zUtil_SaveGameState* saveState);
+void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, int mode, float delta);
+int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float delta);
 int __fastcall IsMissionProbeType1EnabledById(int missionId);
-void __fastcall InitMissionRuntimeFromWorldAndCamera(
-    CZNodePartial *worldNode,
-    CZNodePartial *cameraNode
-);
-void __fastcall LoadMasterCommonDataFromNode(
-    PlayerMasterCommonData *commonData,
-    zReader::Node *vehicleNode,
-    const char *vehicleName
-);
-void __fastcall LoadMasterModalDataFromNode(
-    PlayerMasterModalData *modalData,
-    zReader::Node *modalNode,
-    const char *modalName
-);
-int __fastcall BuildCollisionPointsFromModel(
-    zUtil_SaveGameState *saveState,
-    CZNodePartial *modelNode
-);
-int __fastcall BuildSupportPointsFromModel(
-    zUtil_SaveGameState *saveState,
-    CZNodePartial *modelNode
-);
+void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, CZNodePartial* cameraNode);
+void __fastcall
+LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* vehicleNode, const char* vehicleName);
+void __fastcall
+LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* modalNode, const char* modalName);
+int __fastcall BuildCollisionPointsFromModel(zUtil_SaveGameState* saveState, CZNodePartial* modelNode);
+int __fastcall BuildSupportPointsFromModel(zUtil_SaveGameState* saveState, CZNodePartial* modelNode);
 void __fastcall BindModalStateFromMasterModalData(
-    zUtil_SaveGameState *saveState,
-    PlayerModalState *modalState,
-    const char *objectName,
-    const char *modalName
+    zUtil_SaveGameState* saveState,
+    PlayerModalState* modalState,
+    const char* objectName,
+    const char* modalName
 );
-void __fastcall InitSpawnStateFromPrimaryModalData(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall SampleGroundAndAlignRootToSurface(
-    zUtil_SaveGameState *saveState,
-    int updateRotation
-);
-void __fastcall FreeAltWeaponTrailRuntimeStates(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall LoadWeaponBanksAndSelectDefaults(
-    zUtil_SaveGameState *saveState
-);
+void __fastcall InitSpawnStateFromPrimaryModalData(zUtil_SaveGameState* saveState);
+void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState, int updateRotation);
+void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState);
+void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState);
 void __fastcall CheckMissionWeaponAvailability(
-    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState* saveState,
     int missionThreshold,
     int packedWeaponSlotId,
-    int *availableOut
+    int* availableOut
 );
 int __stdcall FloatSign(float value);
-void __fastcall StartSlipSfx(zUtil_SaveGameState *saveState);
-void __fastcall StopSlipSfx(zUtil_SaveGameState *saveState);
+void __fastcall StartSlipSfx(zUtil_SaveGameState* saveState);
+void __fastcall StopSlipSfx(zUtil_SaveGameState* saveState);
 void __cdecl CacheDisableCopterSndNodesAndStopSample();
 void __cdecl ReactivateCopterSndNodesIfHealthy();
-void __fastcall StopBftBubbleFxHandle(zUtil_SaveGameState *saveState);
-int __fastcall TransitionToMasterTypeFly(
-    zUtil_SaveGameState *saveState,
-    int flags
-);
-int __fastcall TransitionToMasterTypeTrack(
-    zUtil_SaveGameState *saveState,
-    int flags
-);
-int __fastcall TransitionToMasterTypeAmphib(
-    zUtil_SaveGameState *saveState,
-    int transitionFlags,
-    int extraFlags
-);
-int __fastcall TransitionToMasterTypeSub(
-    zUtil_SaveGameState *saveState,
-    int flags
-);
-int __fastcall TransitionToMasterTypeHover(
-    zUtil_SaveGameState *saveState,
-    int flags
-);
-int __fastcall ApplyMasterTypeTransition(
-    zUtil_SaveGameState *saveState,
-    int masterType,
-    int flags
-);
-float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState *saveState);
-int __fastcall Vec3FastNormalize(zVec3 *vec);
-void __fastcall ConstrainToUnitDistanceFrom(
-    zVec3 *pos,
-    const zVec3 *center
-);
-void __fastcall ComputeTurnSlipDelta(zUtil_SaveGameState *saveState);
-void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState *saveState);
-void __fastcall UpdateSubVerticalDamping(zUtil_SaveGameState *saveState);
-void __fastcall UpdateYawVelocityFromSteerInput(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ApplyAmphibSpeedOscillation(
-    zUtil_SaveGameState *saveState,
-    zVec3 *inOutUpVector,
-    int includeYawCoupling
-);
-void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState *saveState);
-void __fastcall UpdateMasterTypeSub(zUtil_SaveGameState *saveState);
-void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState *saveState);
-PlayerGunFireController *__fastcall FindAltGunFireControllerForWeaponId(
-    zUtil_SaveGameState *saveState,
-    int weaponId
-);
-int __fastcall IsAltWeaponAllowedInCurrentMasterMode(
-    zUtil_SaveGameState *saveState,
-    OptCatalogEntryDef *entry
-);
-void __fastcall AutoSwitchToNextUsableAltWeapon(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState *saveState);
-void __fastcall UpdateGunAndTurretAimNodes(
-    const zVec3 *aimDirection,
-    CZNodePartial *gunNode,
-    CZNodePartial *turretNode
-);
-void __fastcall ApplyAimPitchToDirection(
-    zVec3 *direction,
-    float pitchY
-);
+void __fastcall StopBftBubbleFxHandle(zUtil_SaveGameState* saveState);
+int __fastcall TransitionToMasterTypeFly(zUtil_SaveGameState* saveState, int flags);
+int __fastcall TransitionToMasterTypeTrack(zUtil_SaveGameState* saveState, int flags);
+int __fastcall TransitionToMasterTypeAmphib(zUtil_SaveGameState* saveState, int transitionFlags, int extraFlags);
+int __fastcall TransitionToMasterTypeSub(zUtil_SaveGameState* saveState, int flags);
+int __fastcall TransitionToMasterTypeHover(zUtil_SaveGameState* saveState, int flags);
+int __fastcall ApplyMasterTypeTransition(zUtil_SaveGameState* saveState, int masterType, int flags);
+float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState);
+int __fastcall Vec3FastNormalize(zVec3* vec);
+void __fastcall ConstrainToUnitDistanceFrom(zVec3* pos, const zVec3* center);
+void __fastcall ComputeTurnSlipDelta(zUtil_SaveGameState* saveState);
+void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState* saveState);
+void __fastcall UpdateSubVerticalDamping(zUtil_SaveGameState* saveState);
+void __fastcall UpdateYawVelocityFromSteerInput(zUtil_SaveGameState* saveState);
+void __fastcall
+ApplyAmphibSpeedOscillation(zUtil_SaveGameState* saveState, zVec3* inOutUpVector, int includeYawCoupling);
+void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeSub(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState);
+PlayerGunFireController* __fastcall FindAltGunFireControllerForWeaponId(zUtil_SaveGameState* saveState, int weaponId);
+int __fastcall IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState* saveState, OptCatalogEntryDef* entry);
+void __fastcall AutoSwitchToNextUsableAltWeapon(zUtil_SaveGameState* saveState);
+void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState);
+void __fastcall
+UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePartial* gunNode, CZNodePartial* turretNode);
+void __fastcall ApplyAimPitchToDirection(zVec3* direction, float pitchY);
 void __fastcall ApplyPrimaryWeaponSwitch(
-    zUtil_SaveGameState *saveState,
-    PlayerGunFireController *previousController,
-    PlayerGunFireController *newController
+    zUtil_SaveGameState* saveState,
+    PlayerGunFireController* previousController,
+    PlayerGunFireController* newController
 );
 void __fastcall ApplyAltWeaponSwitch(
-    zUtil_SaveGameState *saveState,
-    PlayerGunFireController *previousController,
-    PlayerGunFireController *newController
+    zUtil_SaveGameState* saveState,
+    PlayerGunFireController* previousController,
+    PlayerGunFireController* newController
 );
 void __fastcall HandleAltWeaponBankSelectInput(int inputCode);
 void __fastcall HandlePrimaryWeaponVariantToggleInput(int keyCode);
-void __fastcall ResetDamageStateAndTimedHitStatus(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ResetDamageVisualsAndTimedStatus(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ResetAltGunDoorAnimationState(zUtil_SaveGameState *saveState);
-void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState *saveState);
-void __fastcall RemoveAllDeployedMines(zUtil_SaveGameState *saveState);
-void __fastcall StartDestroyedStateVehicleEffect(
-    zUtil_SaveGameState *saveState,
-    void *respawnCallback
-);
-void __fastcall UpdateThirdPersonCamera(zUtil_SaveGameState *saveState);
+void __fastcall ResetDamageStateAndTimedHitStatus(zUtil_SaveGameState* saveState);
+void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState);
+void __fastcall ResetAltGunDoorAnimationState(zUtil_SaveGameState* saveState);
+void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState* saveState);
+void __fastcall RemoveAllDeployedMines(zUtil_SaveGameState* saveState);
+void __fastcall StartDestroyedStateVehicleEffect(zUtil_SaveGameState* saveState, void* respawnCallback);
+void __fastcall UpdateThirdPersonCamera(zUtil_SaveGameState* saveState);
 void __fastcall ApplyCameraState(int newState);
-void __fastcall SetAutoTurnTargetDirFromWorldPoint(
-    zUtil_SaveGameState *saveState,
-    const zVec3 *worldPoint
-);
+void __fastcall SetAutoTurnTargetDirFromWorldPoint(zUtil_SaveGameState* saveState, const zVec3* worldPoint);
 float __fastcall SelectProbeSampleHeightFromCandidates(
-    PlayerProbeSampleCandidateBuffer *candidateBuffer,
-    int *outBestCandidateIndex,
+    PlayerProbeSampleCandidateBuffer* candidateBuffer,
+    int* outBestCandidateIndex,
     float sampleHeight,
     float maxRiseWindow,
     int preferAttachmentSlot1,
-    int *outSelectedImpactSlot,
-    float *outTaggedHeight
+    int* outSelectedImpactSlot,
+    float* outTaggedHeight
 );
 void __fastcall ProbeModalSampleHeights(
-    zUtil_SaveGameState *saveState,
-    float *outSampleHeightByPoint,
-    float *outBestHeight,
+    zUtil_SaveGameState* saveState,
+    float* outSampleHeightByPoint,
+    float* outBestHeight,
     int preferAttachmentSlot1,
-    PlayerProbeTypeHistogram *outTypeHistogram,
-    int *outAttachmentCandidateCount,
-    CZNodePartial **outAttachmentNode
+    PlayerProbeTypeHistogram* outTypeHistogram,
+    int* outAttachmentCandidateCount,
+    CZNodePartial** outAttachmentNode
 );
-void __fastcall BuildEnvironmentProbeResult(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *outProbe
-);
-int __fastcall ApplyEnvironmentProbeResult(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *envProbe
-);
-float __fastcall SolveHeightOnSurface(
-    zUtil_SaveGameState *saveState,
-    float supportPlaneDot
-);
-void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall ApplyTerrainTilt(
-    zUtil_SaveGameState *saveState,
-    const zVec3 *tiltVector,
-    float tiltScale
-);
-void __fastcall ComputeTriangleNormal(
-    zUtil_SaveGameState *saveState,
-    const zVec3 *pointA,
-    const zVec3 *pointB,
-    const zVec3 *pointC
-);
-void __fastcall ComputeSurfaceFrom1Probe(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall ComputeSurfaceFrom2Probes(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-int __fastcall CheckProbeSampleMaskOverlap(
-    int sampleIndexA,
-    int sampleIndexB,
-    int sampleIndexC
-);
+void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* outProbe);
+int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* envProbe);
+float __fastcall SolveHeightOnSurface(zUtil_SaveGameState* saveState, float supportPlaneDot);
+void __fastcall ResetTerrainContactImpulsesAndPlayImpactSfx(zUtil_SaveGameState* saveState);
+void __fastcall ApplyTerrainTilt(zUtil_SaveGameState* saveState, const zVec3* tiltVector, float tiltScale);
+void __fastcall
+ComputeTriangleNormal(zUtil_SaveGameState* saveState, const zVec3* pointA, const zVec3* pointB, const zVec3* pointC);
+void __fastcall ComputeSurfaceFrom1Probe(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall ComputeSurfaceFrom2Probes(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+int __fastcall CheckProbeSampleMaskOverlap(int sampleIndexA, int sampleIndexB, int sampleIndexC);
 void __fastcall RebuildAboveGroundIndices();
-void __fastcall SelectBestProbesByDotProduct(
-    const zVec3 *referenceNormal,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall ComputeSurfaceFrom3Probes(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall UpdatePostMoveEnvironment(
-    zUtil_SaveGameState *saveState,
-    int probeSampleCount
-);
-void __fastcall ProcessEnvProbeResults(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState *saveState);
-void __fastcall FindThirdProbeAndComputeNormal(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall AccumulateSlopeForces(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall UpdateVerticalVelocityAndTransform(
-    zUtil_SaveGameState *saveState,
-    PlayerEnvProbeResult *probeResult
-);
-void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateMasterTypeHoverFromModalProbe(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState *saveState);
-void __fastcall UpdateMasterTypeAmphibFromModalProbe(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState *saveState);
-void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState *saveState);
-void __fastcall BuildGunFireTransform(zUtil_SaveGameState *saveState);
-void __fastcall UpdateAltGunAimBasisOrigin(
-    zUtil_SaveGameState *saveState,
-    zVec3 *outBasisOrigin
-);
-void __fastcall ComposeAimBasisWorldMatrix(
-    zUtil_SaveGameState *saveState,
-    zMat4x3 *outMatrix34
-);
-void __fastcall DecayAndApplyAltFireSlotOffsetToNode(
-    PlayerGunFireSlot *slot,
-    CZNodePartial *slotNode,
-    float slotAimY,
-    int applyMatrix
-);
-void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState *saveState);
-void __fastcall SelectAltGunFirePointAndSlot(
-    zUtil_SaveGameState *saveState,
-    PlayerGunFireSlot **outActiveFireSlotPtr
-);
-void __fastcall SelectPrimaryGunFirePointAndSlot(
-    zUtil_SaveGameState *saveState,
-    PlayerGunFireSlot **outActiveFireSlotPtr
-);
-void __fastcall UpdateContinuousAltGunFireController(
-    zUtil_SaveGameState *saveState
-);
-int __fastcall EnsureGunAuxEffectActive(
-    zUtil_SaveGameState *saveState,
-    PlayerGunFireController *gunController,
-    zVec3 *effectPos
-);
-int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState *saveState);
-int __fastcall AltGunFireSimpleProjectile(zUtil_SaveGameState *saveState);
-void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState *saveState);
-void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState *saveState);
-void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState *saveState);
-void __fastcall DestroySaveGameState(zUtil_SaveGameState *saveState);
+void __fastcall SelectBestProbesByDotProduct(const zVec3* referenceNormal, PlayerEnvProbeResult* probeResult);
+void __fastcall ComputeSurfaceFrom3Probes(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall UpdatePostMoveEnvironment(zUtil_SaveGameState* saveState, int probeSampleCount);
+void __fastcall ProcessEnvProbeResults(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState);
+void __fastcall FindThirdProbeAndComputeNormal(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall AccumulateSlopeForces(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall UpdateVerticalVelocityAndTransform(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult);
+void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState);
+void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState);
+void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState);
+void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3* outBasisOrigin);
+void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4x3* outMatrix34);
+void __fastcall
+DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, CZNodePartial* slotNode, float slotAimY, int applyMatrix);
+void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState);
+void __fastcall SelectAltGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSlot** outActiveFireSlotPtr);
+void __fastcall
+SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSlot** outActiveFireSlotPtr);
+void __fastcall UpdateContinuousAltGunFireController(zUtil_SaveGameState* saveState);
+int __fastcall
+EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController* gunController, zVec3* effectPos);
+int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState* saveState);
+int __fastcall AltGunFireSimpleProjectile(zUtil_SaveGameState* saveState);
+void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState);
+void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState* saveState);
+void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState);
+void __fastcall DestroySaveGameState(zUtil_SaveGameState* saveState);
 void __cdecl ShutdownMissionRuntime();
 } // namespace Player
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        optCatalogName
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        missionRequirementOrGateId
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        mountLayoutFlags
-    ) == 0x58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        startAmmoOrCharge
-    ) == 0x5c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        dispatchRepeatDelay
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        aiAttackRangeMin
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        aiAttackRangeMax
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        fireSlotRecoilFlags
-    ) == 0x6c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterWeaponSpec,
-        initialHardpointSelectState
-    ) == 0x70
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, optCatalogName) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, missionRequirementOrGateId) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, mountLayoutFlags) == 0x58);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, startAmmoOrCharge) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, dispatchRepeatDelay) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, aiAttackRangeMin) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, aiAttackRangeMax) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, fireSlotRecoilFlags) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, initialHardpointSelectState) == 0x70);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterWeaponSpec) == 0x74);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerAiRuntimePartial,
-        attackBuddyNetId
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        vehicleName
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        modalCount
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        naniteBuildRate
-    ) == 0x2d8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        naniteSpawnCounter
-    ) == 0x2dc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        naniteMaxLevel
-    ) == 0x2e0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        sfxWeaponUp
-    ) == 0x2e4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        activationRangeSq
-    ) == 0x2f4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        notPursuitDwellTime
-    ) == 0x2f8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        returnRangeSq
-    ) == 0x2fc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        startAnimsName
-    ) == 0x300
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cameraBackOffset.x
-    ) == 0x350
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cameraBackOffset.y
-    ) == 0x354
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cameraBackOffset.z
-    ) == 0x358
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackSide1
-    ) == 0x35c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackBase1
-    ) == 0x360
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackDist1
-    ) == 0x364
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackSide2
-    ) == 0x368
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackBase2
-    ) == 0x36c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cambackDist2
-    ) == 0x370
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        aimYawRate
-    ) == 0x374
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        aimYawMax
-    ) == 0x378
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        cameraUdSwing
-    ) == 0x37c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        pickupType
-    ) == 0x3a0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        trackSwitchDist0
-    ) == 0x38c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        trackSwitchDist1
-    ) == 0x390
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        trackSwitchDist2
-    ) == 0x394
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        maxHealth
-    ) == 0x398
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        invMaxHealth
-    ) == 0x39c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        pickupCapacity
-    ) == 0x3a4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        weaponSpecListAux
-    ) == 0x3a8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        weaponSpecHead
-    ) == 0x3ac
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        weaponSpecTail
-    ) == 0x3b0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        weaponSpecCount
-    ) == 0x3b4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterCommonData,
-        weaponNodeCount
-    ) == 0x3b8
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerAiRuntimePartial, attackBuddyNetId) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, vehicleName) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, modalCount) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteBuildRate) == 0x2d8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteSpawnCounter) == 0x2dc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, naniteMaxLevel) == 0x2e0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, sfxWeaponUp) == 0x2e4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, activationRangeSq) == 0x2f4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, notPursuitDwellTime) == 0x2f8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, returnRangeSq) == 0x2fc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, startAnimsName) == 0x300);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.x) == 0x350);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.y) == 0x354);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.z) == 0x358);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide1) == 0x35c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase1) == 0x360);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist1) == 0x364);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide2) == 0x368);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase2) == 0x36c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist2) == 0x370);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawRate) == 0x374);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawMax) == 0x378);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraUdSwing) == 0x37c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, pickupType) == 0x3a0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist0) == 0x38c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist1) == 0x390);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist2) == 0x394);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, maxHealth) == 0x398);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, invMaxHealth) == 0x39c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, pickupCapacity) == 0x3a4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecListAux) == 0x3a8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecHead) == 0x3ac);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecTail) == 0x3b0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecCount) == 0x3b4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponNodeCount) == 0x3b8);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterCommonData) == 0x3bc);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        modalName
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        modeName
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        masterType
-    ) == 0xa4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        accelRate
-    ) == 0xa8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        maxSpeed
-    ) == 0xac
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        yawAccel
-    ) == 0xb0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        yawRateMax
-    ) == 0xb4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        yawDamping
-    ) == 0xb8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        rateDampingAccel
-    ) == 0xbc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        rateDampingDecel
-    ) == 0xc0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        gunPitchRate
-    ) == 0xc4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        gunPitchMin
-    ) == 0xc8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        frictionStatic
-    ) == 0xcc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        frictionDynamic
-    ) == 0xd0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        frictionSlide
-    ) == 0xd4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        stoppingForce
-    ) == 0xd8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisSmoothFactor
-    ) == 0xdc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisPitchRate
-    ) == 0xe0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisPitchMax
-    ) == 0xe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisPitchDamping
-    ) == 0xe8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisRollRate
-    ) == 0xec
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisRollMax
-    ) == 0xf0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        chassisRollDamping
-    ) == 0xf4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        quicksandSlowdown
-    ) == 0xf8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        lavaSlowdown
-    ) == 0xfc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        probePoints
-    ) == 0x100
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        probePointCount
-    ) == 0x214
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        platformPointCount
-    ) == 0x218
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        mass
-    ) == 0x21c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        invMass
-    ) == 0x220
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        aDamping
-    ) == 0x224
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        modeAltTransitionTime
-    ) == 0x228
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverLiftDampingRate
-    ) == 0x22c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverLiftScale
-    ) == 0x230
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverNormalLerpRate
-    ) == 0x234
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverPitchWaveBaseRate
-    ) == 0x238
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverPitchWaveSpeedRate
-    ) == 0x23c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverPitchWaveAmplitude
-    ) == 0x240
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverRollWaveBaseRate
-    ) == 0x244
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverRollWaveSpeedRate
-    ) == 0x248
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverRollWaveAmplitude
-    ) == 0x24c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        hoverRollYawCoupleScale
-    ) == 0x250
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        collisionDampingA
-    ) == 0x254
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        collisionDampingB
-    ) == 0x258
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromTrackToAmphib
-    ) == 0x25c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromAmphibToTrack
-    ) == 0x264
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromTrackToHover
-    ) == 0x26c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromHoverToTrack
-    ) == 0x274
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromSubToAmphib
-    ) == 0x27c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromAmphibToSub
-    ) == 0x284
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromHoverToAmphib
-    ) == 0x28c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        fxList_fromAmphibToHover
-    ) == 0x294
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        sfxEngine
-    ) == 0x29c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        sfxCollide
-    ) == 0x2ac
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        sfxLand
-    ) == 0x2b0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        sfxPitchScale
-    ) == 0x2b4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMasterModalData,
-        sfxVolumeScale
-    ) == 0x2b8
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modalName) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modeName) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, masterType) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, accelRate) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, maxSpeed) == 0xac);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawAccel) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawRateMax) == 0xb4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, yawDamping) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, rateDampingAccel) == 0xbc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, rateDampingDecel) == 0xc0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, gunPitchRate) == 0xc4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, gunPitchMin) == 0xc8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionStatic) == 0xcc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionDynamic) == 0xd0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, frictionSlide) == 0xd4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, stoppingForce) == 0xd8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisSmoothFactor) == 0xdc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchRate) == 0xe0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchMax) == 0xe4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisPitchDamping) == 0xe8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollRate) == 0xec);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollMax) == 0xf0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, chassisRollDamping) == 0xf4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, quicksandSlowdown) == 0xf8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, lavaSlowdown) == 0xfc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, probePoints) == 0x100);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, probePointCount) == 0x214);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, platformPointCount) == 0x218);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, mass) == 0x21c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, invMass) == 0x220);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, aDamping) == 0x224);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, modeAltTransitionTime) == 0x228);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverLiftDampingRate) == 0x22c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverLiftScale) == 0x230);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverNormalLerpRate) == 0x234);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveBaseRate) == 0x238);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveSpeedRate) == 0x23c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverPitchWaveAmplitude) == 0x240);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveBaseRate) == 0x244);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveSpeedRate) == 0x248);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollWaveAmplitude) == 0x24c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, hoverRollYawCoupleScale) == 0x250);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, collisionDampingA) == 0x254);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, collisionDampingB) == 0x258);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromTrackToAmphib) == 0x25c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToTrack) == 0x264);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromTrackToHover) == 0x26c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromHoverToTrack) == 0x274);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromSubToAmphib) == 0x27c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToSub) == 0x284);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromHoverToAmphib) == 0x28c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, fxList_fromAmphibToHover) == 0x294);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxEngine) == 0x29c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxCollide) == 0x2ac);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxLand) == 0x2b0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxPitchScale) == 0x2b4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, sfxVolumeScale) == 0x2b8);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterModalData) == 0x2bc);
 RECOIL_STATIC_ASSERT(sizeof(PlayerProbeTypeHistogram) == 0x190);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        candidateScoreBySample
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        highestSelectedHitY
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        minProbeDepth
-    ) == 0x4c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        preferAttachmentSlot1
-    ) == 0x50
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        attachmentCandidateCount
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        attachmentNode
-    ) == 0x58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        impactSlotBySample
-    ) == 0x5c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        hitHistogram
-    ) == 0x80
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerEnvProbeResult,
-        candidateBuffers
-    ) == 0x210
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, candidateScoreBySample) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, highestSelectedHitY) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, minProbeDepth) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, preferAttachmentSlot1) == 0x50);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, attachmentCandidateCount) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, attachmentNode) == 0x58);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, impactSlotBySample) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, hitHistogram) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(PlayerEnvProbeResult, candidateBuffers) == 0x210);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveWeaponSide) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveWeaponBank) == 0x14);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        weaponBank
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        playerStatusMeterRatio
-    ) == 0xdc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        playerMasterType
-    ) == 0x104
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        cameraTarget
-    ) == 0x108
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        cameraPosition
-    ) == 0x114
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMissionSaveData,
-        timedHitStatus
-    ) == 0x124
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, weaponBank) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, playerStatusMeterRatio) == 0xdc);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, playerMasterType) == 0x104);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraTarget) == 0x108);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, cameraPosition) == 0x114);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMissionSaveData, timedHitStatus) == 0x124);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMissionSaveData) == 0x140);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        worldPos
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiNetId
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiAttackRadiusSq
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiRestoreTarget
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiDynamicOffsetDir
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiActivationRadiusSq
-    ) == 0x4c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        aiActive
-    ) == 0x5c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        masterType
-    ) == 0x6c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerVehicleListSaveEntry,
-        localMasterType
-    ) == 0x7c
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, worldPos) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiNetId) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiAttackRadiusSq) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiRestoreTarget) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiDynamicOffsetDir) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActivationRadiusSq) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActive) == 0x5c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, masterType) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, localMasterType) == 0x7c);
 RECOIL_STATIC_ASSERT(sizeof(PlayerVehicleListSaveEntry) == 0x80);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMineSaveEntry,
-        optCatalogName
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMineSaveEntry,
-        spawnPos
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMineSaveEntry,
-        scale
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerMineSaveEntry,
-        ownerNodeName
-    ) == 0x3c
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, optCatalogName) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, spawnPos) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, scale) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, ownerNodeName) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMineSaveEntry) == 0x60);
 RECOIL_STATIC_ASSERT(sizeof(PlayerNodeFlagRestoreEntry) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerNodeFlagRestoreEntry,
-        node
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerNodeFlagRestoreEntry,
-        wasCellPickable
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerNodeFlagRestoreEntry,
-        wasRaycastable
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerNodeFlagRestoreEntry,
-        wasPickable
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, node) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasCellPickable) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasRaycastable) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PlayerNodeFlagRestoreEntry, wasPickable) == 0x0c);
 
 #endif // BATTLESPORT_PLAYER_H

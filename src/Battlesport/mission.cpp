@@ -8,29 +8,29 @@ namespace Mission {
  * Purpose: initialize the global HUD sensor objective tracker and register its
  * process-exit cleanup hook.
  */
-void __cdecl InitObjectives() {
+void __cdecl InitObjectives()
+{
     HudSensorTracker::ConstructGlobal();
     HudSensorTracker::RegisterGlobalOnExit();
 }
 } // namespace Mission
 
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *MissionCrtInitializerFn)();
+typedef void(__cdecl* MissionCrtInitializerFn)();
 /* VC5 emits this mission-objectives startup callback as a direct .CRT$XCU row. */
 #pragma data_seg(".CRT$XCU")
-MissionCrtInitializerFn s_MissionCrtInit_Objectives =
-    Mission::InitObjectives;
+MissionCrtInitializerFn s_MissionCrtInit_Objectives = Mission::InitObjectives;
 #pragma data_seg()
 #endif
 #include "Battlesport/hud_sensor_tracker.h"
 
 #include "Battlesport/game_net.h"
-#include "Battlesport/recoil_app.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
+#include "Battlesport/recoil_app.h"
 #include "Battlesport/recoil_state_main_menu_transition.h"
-#include "GameZRecoil/zTime/time.h"
+#include "Battlesport/turret.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zDEClient/zdec.h"
@@ -45,7 +45,7 @@ MissionCrtInitializerFn s_MissionCrtInit_Objectives =
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "Battlesport/turret.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
 
@@ -158,9 +158,8 @@ extern "C" const char kHudSensorTrackerRaceZrdrSearchPathFmt[];
  * Purpose: store second values in the integer-backed timer fields used by the
  * original HUD mission runtime layout.
  */
-inline int FloatToRawSeconds(
-    float value
-) {
+inline int FloatToRawSeconds(float value)
+{
     int rawValue;
     memcpy(&rawValue, &value, sizeof(rawValue));
     return rawValue;
@@ -174,9 +173,8 @@ inline int FloatToRawSeconds(
  * fields as seconds values without changing their stored bit pattern.
  * Purpose: read integer-backed HUD timer fields as float seconds.
  */
-inline float RawSecondsToFloat(
-    int rawValue
-) {
+inline float RawSecondsToFloat(int rawValue)
+{
     float value;
     memcpy(&value, &rawValue, sizeof(value));
     return value;
@@ -189,10 +187,8 @@ inline float RawSecondsToFloat(
  * the reconstructed pickup info source cluster.
  * Purpose: append one pickup feature label to the HUD feature text buffer.
  */
-inline void AppendPickupFeature(
-    char *featureText,
-    const char *feature
-) {
+inline void AppendPickupFeature(char* featureText, const char* feature)
+{
     strcat(featureText, feature);
 }
 
@@ -203,14 +199,11 @@ inline void AppendPickupFeature(
  * child-node walk, and original mission.cpp error reporting pattern.
  * Purpose: resolve an objective ZRD node path to a zClass node.
  */
-inline CZNodePartial *ResolveObjectiveNodePath(
-    zReader::Node *pathNode,
-    int objectiveIndex,
-    const char *missingFormat,
-    int sourceLine
-) {
-    zReader::Node *const pathFields = pathNode->value.nodes;
-    CZNodePartial *resolvedNode = CZClass::FindByTypeAndName(6, pathFields[1].value.str);
+inline CZNodePartial*
+ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char* missingFormat, int sourceLine)
+{
+    zReader::Node* const pathFields = pathNode->value.nodes;
+    CZNodePartial* resolvedNode = CZClass::FindByTypeAndName(6, pathFields[1].value.str);
     if (resolvedNode == 0) {
         zError::ReportOld(
             0x400,
@@ -238,7 +231,8 @@ inline CZNodePartial *ResolveObjectiveNodePath(
  * g_HudSensorTracker.
  * Purpose: Construct and return the global HUD sensor tracker instance.
  */
-HudSensorTracker *__cdecl HudSensorTracker::ConstructGlobal() {
+HudSensorTracker* __cdecl HudSensorTracker::ConstructGlobal()
+{
     return g_HudSensorTracker.Constructor();
 }
 
@@ -247,7 +241,8 @@ HudSensorTracker *__cdecl HudSensorTracker::ConstructGlobal() {
  * Touched data: registers ShutdownGlobal as the CRT atexit callback.
  * Purpose: Schedule HUD sensor tracker shutdown during process exit.
  */
-void __cdecl HudSensorTracker::RegisterGlobalOnExit() {
+void __cdecl HudSensorTracker::RegisterGlobalOnExit()
+{
     atexit(&HudSensorTracker::ShutdownGlobal);
 }
 
@@ -257,7 +252,8 @@ void __cdecl HudSensorTracker::RegisterGlobalOnExit() {
  * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
  * Purpose: Run tracker cleanup for the singleton registered with atexit.
  */
-void __cdecl HudSensorTracker::ShutdownGlobal() {
+void __cdecl HudSensorTracker::ShutdownGlobal()
+{
     g_HudSensorTracker.Shutdown();
 }
 
@@ -268,7 +264,8 @@ void __cdecl HudSensorTracker::ShutdownGlobal() {
  * mission state through ResetMissionState.
  * Purpose: Construct the tracker singleton storage before mission/map runtime use.
  */
-HudSensorTracker * HudSensorTracker::Constructor() {
+HudSensorTracker* HudSensorTracker::Constructor()
+{
     InitNoBounds();
     missionDataPath.CString::CString();
     zbdPath.CString::CString();
@@ -288,10 +285,9 @@ HudSensorTracker * HudSensorTracker::Constructor() {
  * flags, and the provider-owned difficulty option.
  * Purpose: Serialize HUD mission state into the MissionData ZAR section.
  */
-int HudSensorTracker::WriteMissionDataSection(
-    zZbdSectionCallbackCtx *writer
-) {
-    HudSensorTrackerMissionData missionData = {0};
+int HudSensorTracker::WriteMissionDataSection(zZbdSectionCallbackCtx* writer)
+{
+    HudSensorTrackerMissionData missionData = { 0 };
     missionData.missionId = missionId;
     missionData.missionFlags = missionFlags;
     missionData.currentObjectiveIndex = currentObjectiveIndex;
@@ -326,14 +322,9 @@ int HudSensorTracker::WriteMissionDataSection(
  * objective completion flags, and provider-owned difficulty option.
  * Purpose: Apply saved HUD mission state and reload mission resources when needed.
  */
-int HudSensorTracker::ApplyMissionDataAndReload(
-    void *,
-    const char *,
-    const void *missionDataBlob,
-    unsigned int
-) {
-    const HudSensorTrackerMissionData *const missionData =
-        (const HudSensorTrackerMissionData *)(missionDataBlob);
+int HudSensorTracker::ApplyMissionDataAndReload(void*, const char*, const void* missionDataBlob, unsigned int)
+{
+    const HudSensorTrackerMissionData* const missionData = (const HudSensorTrackerMissionData*)(missionDataBlob);
 
     pendingPlayerSave.skipTimerResetOnStart = 1;
     completedObjectiveCount = missionData->completedObjectiveCount;
@@ -377,10 +368,7 @@ int HudSensorTracker::ApplyMissionDataAndReload(
         objectiveSlots[objectiveIndex].completedFlag = completedFlag;
         if (completedFlag != 0) {
             SetObjectiveMarkerEnabledAndColor(objectiveIndex, 0, 0);
-            SetObjectiveMarkerColorBlink(
-                objectiveIndex,
-                g_HudSensorTracker_ObjectiveBlinkColorRedRgb24
-            );
+            SetObjectiveMarkerColorBlink(objectiveIndex, g_HudSensorTracker_ObjectiveBlinkColorRedRgb24);
         }
     }
 
@@ -393,7 +381,8 @@ int HudSensorTracker::ApplyMissionDataAndReload(
  * MissionLate sections.
  * Purpose: Install HUD mission save/load section handlers.
  */
-void HudSensorTracker::RegisterMissionSectionHandlers() {
+void HudSensorTracker::RegisterMissionSectionHandlers()
+{
     zUtil_ZAR::RegisterSectionHandler(
         "Mission",
         (zZbdSectionCallback)(&HudSensorTracker::ZarMissionSaveCallback),
@@ -415,10 +404,8 @@ void HudSensorTracker::RegisterMissionSectionHandlers() {
  * Touched data: serializes the callback tracker through WriteMissionDataSection.
  * Purpose: Forward Mission section save requests to the tracker serializer.
  */
-int __fastcall HudSensorTracker::ZarMissionSaveCallback(
-    zZbdSectionCallbackCtx *writer,
-    HudSensorTracker *self
-) {
+int __fastcall HudSensorTracker::ZarMissionSaveCallback(zZbdSectionCallbackCtx* writer, HudSensorTracker* self)
+{
     return self->WriteMissionDataSection(writer);
 }
 
@@ -428,12 +415,13 @@ int __fastcall HudSensorTracker::ZarMissionSaveCallback(
  * Purpose: Forward Mission section restore payloads to the tracker restore helper.
  */
 int __fastcall HudSensorTracker::ZarMissionRestoreCallback(
-    void *reader,
-    const char *token,
-    const void *missionData,
+    void* reader,
+    const char* token,
+    const void* missionData,
     unsigned int dataSize,
-    HudSensorTracker *self
-) {
+    HudSensorTracker* self
+)
+{
     self->ApplyMissionDataAndReload(reader, token, missionData, dataSize);
     return 1;
 }
@@ -443,17 +431,10 @@ int __fastcall HudSensorTracker::ZarMissionRestoreCallback(
  * Touched data: writes a one-word LateMissionData marker payload.
  * Purpose: Emit the late mission marker section used during saved-game restore.
  */
-void __fastcall HudSensorTracker::ZarMissionLateSaveCallback(
-    zZbdSectionCallbackCtx *writer,
-    HudSensorTracker *
-) {
+void __fastcall HudSensorTracker::ZarMissionLateSaveCallback(zZbdSectionCallbackCtx* writer, HudSensorTracker*)
+{
     unsigned int lateMissionData = 1;
-    zUtil_ZAR::WriteSectionBlob(
-        writer,
-        "LateMissionData",
-        &lateMissionData,
-        sizeof(lateMissionData)
-    );
+    zUtil_ZAR::WriteSectionBlob(writer, "LateMissionData", &lateMissionData, sizeof(lateMissionData));
 }
 
 /**
@@ -462,12 +443,13 @@ void __fastcall HudSensorTracker::ZarMissionLateSaveCallback(
  * Purpose: Resume mission start animations after late mission data is restored.
  */
 void __fastcall HudSensorTracker::ZarMissionLateRestoreCallback(
-    void *,
-    const char *,
-    const void *,
+    void*,
+    const char*,
+    const void*,
     unsigned int,
-    HudSensorTracker *self
-) {
+    HudSensorTracker* self
+)
+{
     self->RunStartAnimsFromZrd("StartAnims.zrd", "LOAD_GAME_START");
 }
 
@@ -482,19 +464,20 @@ void __fastcall HudSensorTracker::ZarMissionLateRestoreCallback(
  * Purpose: reset per-mission HUD tracker state and delete any active weather
  * FX emitter.
  */
-int HudSensorTracker::ResetMissionState() {
+int HudSensorTracker::ResetMissionState()
+{
     missionLoaded = 0;
     missionId = 0;
     missionDataPath.Empty();
     zbdPath.Empty();
-    HudUiElement *const fxElement = fxPass3Obj;
+    HudUiElement* const fxElement = fxPass3Obj;
     worldNode = 0;
     missionFlags = 1;
     objectiveCount = 0;
 
     if (fxElement != 0) {
         fxElement->SetVisible(0);
-        ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxElement);
+        ((HudUiContainer*)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxElement);
 
         if (fxPass3Obj != 0) {
             delete fxPass3Obj;
@@ -511,10 +494,8 @@ int HudSensorTracker::ResetMissionState() {
  * Purpose: store the current mission id and flags, clearing the ZBD override
  * path when a nonzero mission id is supplied.
  */
-int HudSensorTracker::InitMissionIdAndFlags(
-    int newMissionId,
-    int flags
-) {
+int HudSensorTracker::InitMissionIdAndFlags(int newMissionId, int flags)
+{
     missionFlags = flags;
     missionId = newMissionId;
     if (newMissionId != 0) {
@@ -527,9 +508,8 @@ int HudSensorTracker::InitMissionIdAndFlags(
 /**
  * Purpose: apply the recovered HUD state change handled by HudSensorTracker::SetMissionId.
  */
-int HudSensorTracker::SetMissionId(
-    int newMissionId
-) {
+int HudSensorTracker::SetMissionId(int newMissionId)
+{
     missionId = newMissionId;
     if (newMissionId != 0) {
         zbdPath.Empty();
@@ -542,9 +522,8 @@ int HudSensorTracker::SetMissionId(
  * Provisional source-placement hypothesis: GameZRecoil/HudSensorTracker.cpp.
  * Purpose: replace or clear the explicit mission ZBD path override.
  */
-int HudSensorTracker::SetZbdPath(
-    const char *path
-) {
+int HudSensorTracker::SetZbdPath(const char* path)
+{
     if (path != 0) {
         zbdPath = path;
     } else {
@@ -557,7 +536,8 @@ int HudSensorTracker::SetZbdPath(
 /**
  * Purpose: Return the mission id currently owned by the HUD sensor tracker.
  */
-int HudSensorTracker::GetMissionId() {
+int HudSensorTracker::GetMissionId()
+{
     return missionId;
 }
 
@@ -566,7 +546,8 @@ int HudSensorTracker::GetMissionId() {
  * Purpose: load the core mission script/resources, bind world/camera/window
  * nodes, and activate the render/display/camera sections.
  */
-int HudSensorTracker::LoadMissionCoreResources() {
+int HudSensorTracker::LoadMissionCoreResources()
+{
     CString scriptPath;
     zImg::Init();
 
@@ -581,7 +562,7 @@ int HudSensorTracker::LoadMissionCoreResources() {
     CZClass::Init();
     zModel::Init();
 
-    if (((const char *)zbdPath)[0] == '\0') {
+    if (((const char*)zbdPath)[0] == '\0') {
         if (missionFlags != 0) {
             zbdPath.Format(g_HudSensorTracker_MissionZbdGsFmt, missionId);
         } else {
@@ -621,7 +602,8 @@ int HudSensorTracker::LoadMissionCoreResources() {
  * player runtime, networking, objectives, weather FX, map overlay, and final
  * HUD state refresh.
  */
-int HudSensorTracker::InitMissionGameplaySystems() {
+int HudSensorTracker::InitMissionGameplaySystems()
+{
     missionStat0 = 0;
     missionStat1 = 0;
     primaryGunDispatchCount = 0;
@@ -634,8 +616,7 @@ int HudSensorTracker::InitMissionGameplaySystems() {
     LoadMissionMapAndSfx(missionId);
     mapWorldNode = worldNode;
 
-    zInputCommandCallbackFn objectiveCommandCallback =
-        (zInputCommandCallbackFn)(HudSensorTracker::OnObjectiveCommand);
+    zInputCommandCallbackFn objectiveCommandCallback = (zInputCommandCallbackFn)(HudSensorTracker::OnObjectiveCommand);
     zInput::BindMapCurrentSetCommandCallback(27, objectiveCommandCallback);
     if (zOpt::GetNetworkEnabled() == 0) {
         zInput::BindMapCurrentSetCommandCallback(28, objectiveCommandCallback);
@@ -666,16 +647,12 @@ int HudSensorTracker::InitMissionGameplaySystems() {
     PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(g_HudSensorTracker_DefaultAirdropCarrierNodeName);
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10b));
 
-    HudUiMgr::ActivateHud(
-        (const HudUiRect *)zOpt::GetDisplaySection(),
-        (const HudUiRect *)zOpt::GetWindowSection()
-    );
+    HudUiMgr::ActivateHud((const HudUiRect*)zOpt::GetDisplaySection(), (const HudUiRect*)zOpt::GetWindowSection());
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x10c));
     Player::InitMissionRuntimeFromWorldAndCamera(worldNode, cameraNode);
 
     if (hasPendingPlayerSave != 0) {
-        g_LocalPlayerSaveState->playerState->nanitePanelLevel =
-            pendingPlayerSave.savedNanitePanelLevel;
+        g_LocalPlayerSaveState->playerState->nanitePanelLevel = pendingPlayerSave.savedNanitePanelLevel;
         Player::ApplyMissionSaveData(&pendingPlayerSave.playerSaveData);
         g_PlayerStatusMeterRatio = 1.0f;
         hasPendingPlayerSave = 0;
@@ -701,7 +678,7 @@ int HudSensorTracker::InitMissionGameplaySystems() {
         zModel_MatlBuffer::ReleaseTextureSurfaces();
     }
 
-    Player::RefreshHudFromState((zUtil_SaveGameState *)g_GameStateOrMapTable);
+    Player::RefreshHudFromState((zUtil_SaveGameState*)g_GameStateOrMapTable);
     return 1;
 }
 
@@ -710,15 +687,12 @@ int HudSensorTracker::InitMissionGameplaySystems() {
  * Purpose: dispatch bound HUD objective/map command ids to the global
  * HudSensorTracker while honoring network map and objective-command gates.
  */
-void __fastcall HudSensorTracker::OnObjectiveCommand(
-    int commandId
-) {
+void __fastcall HudSensorTracker::OnObjectiveCommand(int commandId)
+{
     switch (commandId) {
     case 0x1b:
         if (zOpt::GetNetworkEnabled() == 0 || GameNet::GetStatusBitAllowMaps() != 0) {
-            g_HudSensorTracker.MapOverlayRefToggle(
-                g_HudSensorTracker.mapScaleLerpActive == 0 ? 1 : 0
-            );
+            g_HudSensorTracker.MapOverlayRefToggle(g_HudSensorTracker.mapScaleLerpActive == 0 ? 1 : 0);
         }
         break;
 
@@ -758,7 +732,8 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(
  * Purpose: shut down mission gameplay/HUD systems, release mission resources,
  * clear core node refs, and return the tracker to reset mission state.
  */
-int HudSensorTracker::ShutdownMissionGameplaySystems() {
+int HudSensorTracker::ShutdownMissionGameplaySystems()
+{
     if (missionLoaded == 0) {
         return 1;
     }
@@ -770,7 +745,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     HudUiAuxOverlay::ClearTextLines();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
-    zSndPlayHandleSnapshot *const soundSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    zSndPlayHandleSnapshot* const soundSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
     soundSnapshot->StopAllIfPlaying();
     CZCamera::gwCameraSetFlagBit0(cameraNode, 0);
     MapShutdownAndReset();
@@ -810,11 +785,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
     zModel_Display::Shutdown();
     zImage::Shutdown();
 
-    sprintf(
-        g_HudSensor_MissionSoundSetName + 16,
-        g_HudSensorTracker_MissionSoundSetNameFmt,
-        missionId
-    );
+    sprintf(g_HudSensor_MissionSoundSetName + 16, g_HudSensorTracker_MissionSoundSetNameFmt, missionId);
     zSndSampleSetDestroyByName(g_HudSensor_MissionSoundSetName + 16);
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_MissionUnloadedMsg);
@@ -834,7 +805,8 @@ int HudSensorTracker::ShutdownMissionGameplaySystems() {
  * Purpose: reset loaded objective slots in single-player mode and free the
  * loaded objective ZRD tree.
  */
-int HudSensorTracker::UnloadObjectives() {
+int HudSensorTracker::UnloadObjectives()
+{
     if (zOpt::GetNetworkEnabled() == 0) {
         {
             for (int index = 0; index < objectiveCount; ++index) {
@@ -863,8 +835,9 @@ int HudSensorTracker::UnloadObjectives() {
  * Purpose: clear objective text/status fields and drop the retained objective
  * image reference.
  */
-void HudSensorObjectiveSlot::Reset() {
-    zVidImagePartial *const image = objectiveImage;
+void HudSensorObjectiveSlot::Reset()
+{
+    zVidImagePartial* const image = objectiveImage;
     objectiveTitle[0] = '\0';
     objectiveDesc[0] = '\0';
     objectiveSummary[0] = '\0';
@@ -879,10 +852,9 @@ void HudSensorObjectiveSlot::Reset() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
  */
-int HudSensorTracker::LoadObjectivesFromPath(
-    const char *path
-) {
-    zReader::Node *rootNode = zReader::Load(path, 0, 0);
+int HudSensorTracker::LoadObjectivesFromPath(const char* path)
+{
+    zReader::Node* rootNode = zReader::Load(path, 0, 0);
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
@@ -904,29 +876,21 @@ int HudSensorTracker::LoadObjectivesFromPath(
     objectiveReadTimeSecRaw = 4.0f;
     objectiveReadSoundDelaySecRaw = FloatToRawSeconds(2.0f);
 
-    zReader::Node *readTimeNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReadTime);
+    zReader::Node* readTimeNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReadTime);
     if (readTimeNode != 0) {
-        objectiveReadTimeSecRaw =
-            (float)(readTimeNode->value.nodes[1].value.i32);
+        objectiveReadTimeSecRaw = (float)(readTimeNode->value.nodes[1].value.i32);
     }
 
-    zReader::Node *reviewDelayNode = zRdrGetNode(
-        rootNode,
-        g_HudSensorTracker_ObjectiveNode_ReviewDelay
-    );
+    zReader::Node* reviewDelayNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReviewDelay);
     if (reviewDelayNode != 0) {
-        objectiveReviewDelaySecRaw =
-            (float)(reviewDelayNode->value.nodes[1].value.i32);
+        objectiveReviewDelaySecRaw = (float)(reviewDelayNode->value.nodes[1].value.i32);
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
         return 0;
     }
 
-    zReader::Node *finalMissionNode = zRdrGetNode(
-        rootNode,
-        g_HudSensorTracker_ObjectiveNode_FinalMission
-    );
+    zReader::Node* finalMissionNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_FinalMission);
     if (finalMissionNode != 0) {
         finalMissionFlag = finalMissionNode->value.nodes[1].value.i32;
     } else {
@@ -939,16 +903,16 @@ int HudSensorTracker::LoadObjectivesFromPath(
         char objectiveName[0x20];
         sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
 
-        zReader::Node *objectiveNode = zRdrGetNode(rootNode, objectiveName);
+        zReader::Node* objectiveNode = zRdrGetNode(rootNode, objectiveName);
         if (objectiveNode == 0) {
             break;
         }
 
         lastObjectiveIndex = objectiveNumber - 1;
-        HudSensorObjectiveSlot &slot = objectiveSlots[lastObjectiveIndex];
-        zReader::Node *objectiveFields = objectiveNode->value.nodes;
+        HudSensorObjectiveSlot& slot = objectiveSlots[lastObjectiveIndex];
+        zReader::Node* objectiveFields = objectiveNode->value.nodes;
 
-        const char *imagePath = objectiveFields[1].value.str;
+        const char* imagePath = objectiveFields[1].value.str;
         slot.objectiveImage = zImage::TexDirFindOrCreateByPath(imagePath);
         if (slot.objectiveImage == 0) {
             zError::ReportOld(
@@ -962,25 +926,13 @@ int HudSensorTracker::LoadObjectivesFromPath(
             return 1;
         }
 
-        strncpy(
-            slot.objectiveTitle,
-            zLoc::ResolveMessageKeyOrFallback(objectiveFields[2].value.str),
-            0x100
-        );
+        strncpy(slot.objectiveTitle, zLoc::ResolveMessageKeyOrFallback(objectiveFields[2].value.str), 0x100);
         slot.objectiveTitle[0xff] = '\0';
 
-        strncpy(
-            slot.objectiveDesc,
-            zLoc::ResolveMessageKeyOrFallback(objectiveFields[3].value.str),
-            0x100
-        );
+        strncpy(slot.objectiveDesc, zLoc::ResolveMessageKeyOrFallback(objectiveFields[3].value.str), 0x100);
         slot.objectiveDesc[0xff] = '\0';
 
-        strncpy(
-            slot.objectiveSummary,
-            zLoc::ResolveMessageKeyOrFallback(objectiveFields[4].value.str),
-            0x100
-        );
+        strncpy(slot.objectiveSummary, zLoc::ResolveMessageKeyOrFallback(objectiveFields[4].value.str), 0x100);
         slot.objectiveSummary[0xff] = '\0';
 
         slot.completedFlag = 0;
@@ -1011,13 +963,9 @@ int HudSensorTracker::LoadObjectivesFromPath(
  * Purpose: bind objective sounds and node paths from the loaded objective ZRD,
  * then select the first incomplete objective for the HUD.
  */
-int HudSensorTracker::LoadObjectivesFromZrd(
-    const char *
-) {
-    zReader::Node *reviewSoundNode = zRdrGetNode(
-        objectivesRootNode,
-        g_HudSensorTracker_ObjectiveNode_ReviewSound
-    );
+int HudSensorTracker::LoadObjectivesFromZrd(const char*)
+{
+    zReader::Node* reviewSoundNode = zRdrGetNode(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ReviewSound);
     if (reviewSoundNode != 0) {
         objectiveReviewSfx = zSnd::FindSampleByName(reviewSoundNode->value.nodes[1].value.str);
     }
@@ -1030,14 +978,11 @@ int HudSensorTracker::LoadObjectivesFromZrd(
     int objectiveNumber = 1;
     sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
 
-    zReader::Node *objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
+    zReader::Node* objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
     while (objectiveNode != 0) {
-        HudSensorObjectiveSlot &slot = objectiveSlots[objectiveNumber - 1];
+        HudSensorObjectiveSlot& slot = objectiveSlots[objectiveNumber - 1];
 
-        zReader::Node *activeNode = zRdrGetNode(
-            objectiveNode,
-            g_HudSensorTracker_ObjectiveNode_Active
-        );
+        zReader::Node* activeNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Active);
         if (activeNode != 0) {
             slot.activationNode = ResolveObjectiveNodePath(
                 activeNode,
@@ -1047,10 +992,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(
             );
             slot.inactivationNode = 0;
         } else {
-            zReader::Node *inactiveNode = zRdrGetNode(
-                objectiveNode,
-                g_HudSensorTracker_ObjectiveNode_Inactive
-            );
+            zReader::Node* inactiveNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Inactive);
             if (inactiveNode != 0) {
                 slot.activationNode = 0;
                 slot.inactivationNode = ResolveObjectiveNodePath(
@@ -1066,12 +1008,9 @@ int HudSensorTracker::LoadObjectivesFromZrd(
         }
 
         slot.objectiveReadFlag = 0;
-        zReader::Node *readSoundNode = zRdrGetNode(
-            objectiveNode,
-            g_HudSensorTracker_ObjectiveNode_ReadSound
-        );
+        zReader::Node* readSoundNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_ReadSound);
         if (readSoundNode != 0) {
-            zReader::Node *const readSoundFields = readSoundNode->value.nodes;
+            zReader::Node* const readSoundFields = readSoundNode->value.nodes;
             slot.readSoundSample = zSnd::FindSampleByName(readSoundFields[1].value.str);
             if (slot.readSoundSample != 0) {
                 slot.readSoundSample->SetPlaybackEventHandler(OnObjectiveReadSoundEvent);
@@ -1086,10 +1025,8 @@ int HudSensorTracker::LoadObjectivesFromZrd(
         objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
     }
 
-    zReader::Node *objectiveSoundNode = zRdrGetNode(
-        objectivesRootNode,
-        g_HudSensorTracker_ObjectiveNode_ObjectiveSound
-    );
+    zReader::Node* objectiveSoundNode
+        = zRdrGetNode(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ObjectiveSound);
     if (objectiveSoundNode != 0) {
         objectiveCompleteSfx = zSnd::FindSampleByName(objectiveSoundNode->value.nodes[1].value.str);
     }
@@ -1104,7 +1041,8 @@ int HudSensorTracker::LoadObjectivesFromZrd(
  * Purpose: advance objective review/readout flow and transition HUD sound
  * ducking state.
  */
-void HudSensorTracker::AdvanceObjectiveState() {
+void HudSensorTracker::AdvanceObjectiveState()
+{
     const int flowState = objectiveFlowState;
     if (flowState != 0x6b && flowState != 0x67 && flowState != 0x64) {
         if (objectiveUiMode != 1) {
@@ -1126,14 +1064,13 @@ void HudSensorTracker::AdvanceObjectiveState() {
         HudUi::PlayPowerupSfx(0);
     }
 
-    HudSensorObjectiveSlot &firstIncompleteSlot = objectiveSlots[firstIncompleteObjectiveIndex];
+    HudSensorObjectiveSlot& firstIncompleteSlot = objectiveSlots[firstIncompleteObjectiveIndex];
     if (firstIncompleteObjectiveIndex == currentObjectiveIndex + 1) {
         SetObjectivePanelVisible(1);
         currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
         currentObjectiveReadSound->PlayA3DSimple(1.0f);
         objectiveFlowState = 0x68;
-        objectiveFlowDeadlineSecRaw =
-            objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
+        objectiveFlowDeadlineSecRaw = objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
     } else {
         currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
         currentObjectiveReadSound->PlayDirectSound(0, 1.0f, 0x3e7);
@@ -1149,22 +1086,16 @@ void HudSensorTracker::AdvanceObjectiveState() {
  * Purpose: show or hide the objective review panel and restore HUD sound state
  * when the review closes.
  */
-int HudSensorTracker::SetObjectiveReviewVisible(
-    int visible
-) {
+int HudSensorTracker::SetObjectiveReviewVisible(int visible)
+{
     objectiveFlowState = 0x65;
     if (visible != 0) {
         objectiveUiMode = 1;
         if (firstIncompleteObjectiveIndex < objectiveCount) {
-            HudSensorObjectiveSlot &slot = objectiveSlots[firstIncompleteObjectiveIndex];
-            HudUiMgrObjective::Show(
-                slot.objectiveImage,
-                slot.objectiveTitle,
-                slot.objectiveDesc,
-                0.0f
-            );
+            HudSensorObjectiveSlot& slot = objectiveSlots[firstIncompleteObjectiveIndex];
+            HudUiMgrObjective::Show(slot.objectiveImage, slot.objectiveTitle, slot.objectiveDesc, 0.0f);
         } else {
-            HudSensorObjectiveSlot &slot = objectiveSlots[currentObjectiveIndex];
+            HudSensorObjectiveSlot& slot = objectiveSlots[currentObjectiveIndex];
             HudUiMgrObjective::Show(slot.objectiveImage, zLoc::GetMessageString(0xf0f), 0, 0.0f);
         }
 
@@ -1183,11 +1114,12 @@ int HudSensorTracker::SetObjectiveReviewVisible(
  */
 int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
     int objectiveIndex,
-    char **outSummary,
-    char **outDesc,
-    zVidImagePartial **outImageRef
-) {
-    HudSensorObjectiveSlot &slot = objectiveSlots[objectiveIndex];
+    char** outSummary,
+    char** outDesc,
+    zVidImagePartial** outImageRef
+)
+{
+    HudSensorObjectiveSlot& slot = objectiveSlots[objectiveIndex];
     *outSummary = slot.objectiveTitle;
     *outDesc = slot.objectiveDesc;
     *outImageRef = slot.objectiveImage;
@@ -1199,7 +1131,8 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
  * Purpose: play the objective review click and toggle the objective summary
  * panel.
  */
-void HudSensorTracker::CommandToggleObjectivePanel() {
+void HudSensorTracker::CommandToggleObjectivePanel()
+{
     objectiveReviewSfx->PlayA3DSimple(1.0f);
     SetObjectivePanelVisible(objectiveUiMode != 2 ? 1 : 0);
 }
@@ -1209,75 +1142,42 @@ void HudSensorTracker::CommandToggleObjectivePanel() {
  * Purpose: show or hide the objective summary panel and format the mission
  * status text displayed in it.
  */
-void HudSensorTracker::SetObjectivePanelVisible(
-    int visible
-) {
+void HudSensorTracker::SetObjectivePanelVisible(int visible)
+{
     if (visible != 0) {
         objectiveUiMode = 2;
 
-    float damageRatio = 1.0f;
-    if (primaryGunDispatchCount > 0) {
-        damageRatio =
-            (float)(g_OptCatalog_DamageFeedbackHitCount) / (float)(primaryGunDispatchCount);
-    }
-    const int damagePercent = (int)(damageRatio * 100.0f);
+        float damageRatio = 1.0f;
+        if (primaryGunDispatchCount > 0) {
+            damageRatio = (float)(g_OptCatalog_DamageFeedbackHitCount) / (float)(primaryGunDispatchCount);
+        }
+        const int damagePercent = (int)(damageRatio * 100.0f);
 
-    char objectiveLine[0x80];
-    zLoc::FormatMessage(
-        objectiveLine,
-        0x40,
-        0x116,
-        completedObjectiveCount,
-        objectiveCount,
-        damagePercent
-    );
+        char objectiveLine[0x80];
+        zLoc::FormatMessage(objectiveLine, 0x40, 0x116, completedObjectiveCount, objectiveCount, damagePercent);
 
-    int cappedStat0 = missionStat0;
-    if (cappedStat0 > missionStat1) {
-        cappedStat0 = missionStat1;
-    }
+        int cappedStat0 = missionStat0;
+        if (cappedStat0 > missionStat1) {
+            cappedStat0 = missionStat1;
+        }
 
-    char statLine[0x80];
-    zLoc::FormatMessage(
-        statLine,
-        0x40,
-        0x117,
-        cappedStat0,
-        missionStat1,
-        missionStat3,
-        weaponsFoundMask
-    );
+        char statLine[0x80];
+        zLoc::FormatMessage(statLine, 0x40, 0x117, cappedStat0, missionStat1, missionStat3, weaponsFoundMask);
 
-    const int elapsedSeconds = (int)(objectiveMeterSeconds);
-    char timeLine[0x80];
-    zLoc::FormatMessage(timeLine, 0x40, 0x118, elapsedSeconds / 60, elapsedSeconds % 60);
+        const int elapsedSeconds = (int)(objectiveMeterSeconds);
+        char timeLine[0x80];
+        zLoc::FormatMessage(timeLine, 0x40, 0x118, elapsedSeconds / 60, elapsedSeconds % 60);
 
-    sprintf(
-        objectiveSummaryText,
-        g_HudSensorTracker_ObjectivePanelThreeLineFmt,
-        objectiveLine,
-        statLine,
-        timeLine
-    );
+        sprintf(objectiveSummaryText, g_HudSensorTracker_ObjectivePanelThreeLineFmt, objectiveLine, statLine, timeLine);
 
-    if (currentObjectiveIndex < 0) {
-        HudSensorObjectiveSlot &firstSlot = objectiveSlots[0];
-        HudUiMgrObjective::Show(
-            firstSlot.objectiveImage,
-            firstSlot.objectiveTitle,
-            objectiveSummaryText,
-            0.0f
-        );
-        return;
-    }
+        if (currentObjectiveIndex < 0) {
+            HudSensorObjectiveSlot& firstSlot = objectiveSlots[0];
+            HudUiMgrObjective::Show(firstSlot.objectiveImage, firstSlot.objectiveTitle, objectiveSummaryText, 0.0f);
+            return;
+        }
 
-        HudSensorObjectiveSlot &slot = objectiveSlots[currentObjectiveIndex];
-        HudUiMgrObjective::Show(
-            slot.objectiveImage,
-            slot.objectiveSummary,
-            objectiveSummaryText,
-            0.0f
-        );
+        HudSensorObjectiveSlot& slot = objectiveSlots[currentObjectiveIndex];
+        HudUiMgrObjective::Show(slot.objectiveImage, slot.objectiveSummary, objectiveSummaryText, 0.0f);
         return;
     }
 
@@ -1290,12 +1190,12 @@ void HudSensorTracker::SetObjectivePanelVisible(
  * Purpose: play the objective review click and toggle pickup information for
  * the local player's active alternate weapon.
  */
-void HudSensorTracker::CommandShowObjectivePickupInfo() {
+void HudSensorTracker::CommandShowObjectivePickupInfo()
+{
     objectiveReviewSfx->PlayA3DSimple(1.0f);
 
     const int visible = (objectiveUiMode == 3 || objectiveUiMode == 4) ? 0 : 1;
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
     ShowObjectivePickupInfo(visible, 0, playerState->activeAltGunController->optCatalogEntry);
 }
 
@@ -1304,83 +1204,77 @@ void HudSensorTracker::CommandShowObjectivePickupInfo() {
  * Purpose: show or hide active-pickup information and format the weapon stat
  * text for the objective HUD panel.
  */
-void HudSensorTracker::ShowObjectivePickupInfo(
-    int visible,
-    int startAutoAdvance,
-    OptCatalogEntryDef *optEntry
-) {
+void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance, OptCatalogEntryDef* optEntry)
+{
     if (visible != 0) {
 
-    char featureText[0x40];
-    strcpy(featureText, g_HudUiWeaponFeaturesLabel);
+        char featureText[0x40];
+        strcpy(featureText, g_HudUiWeaponFeaturesLabel);
 
-    const unsigned int flags = optEntry->flags;
-    if ((flags & 0x00080000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Remote);
-    }
-    if ((flags & 0x00200000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Thermal);
-    }
-    if ((flags & 0x00010000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Multi);
-    }
-    if ((flags & 0x00100000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Tether);
-    } else if ((flags & 0x00004000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_LockOn);
-    }
-    if ((flags & 0x00000002) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Beam);
-    }
-    if ((flags & 0x00002000) != 0) {
-        AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Mine);
-    }
+        const unsigned int flags = optEntry->flags;
+        if ((flags & 0x00080000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Remote);
+        }
+        if ((flags & 0x00200000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Thermal);
+        }
+        if ((flags & 0x00010000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Multi);
+        }
+        if ((flags & 0x00100000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Tether);
+        } else if ((flags & 0x00004000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_LockOn);
+        }
+        if ((flags & 0x00000002) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Beam);
+        }
+        if ((flags & 0x00002000) != 0) {
+            AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Mine);
+        }
 
-    if (featureText[0x0c] == '\0') {
-        strcpy(featureText, "\n");
-    }
+        if (featureText[0x0c] == '\0') {
+            strcpy(featureText, "\n");
+        }
 
-    char weaponStatsText[0x200];
-    if (optEntry->impactProximity > 0.0f) {
-        const int fireRatePerMinute =
-            (int)(60.0f / optEntry->fireRateInterval + 0.5f);
-        const int maxRange = (int)(optEntry->range);
-        sprintf(
+        char weaponStatsText[0x200];
+        if (optEntry->impactProximity > 0.0f) {
+            const int fireRatePerMinute = (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+            const int maxRange = (int)(optEntry->range);
+            sprintf(
+                weaponStatsText,
+                g_HudUiWeaponStatsFmt_Proximity,
+                fireRatePerMinute,
+                maxRange,
+                (double)(optEntry->damage),
+                (int)(optEntry->impactProximity),
+                featureText
+            );
+        } else {
+            const int fireRatePerMinute = (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+            const int maxRange = (int)(optEntry->range);
+            sprintf(
+                weaponStatsText,
+                g_HudUiWeaponStatsFmt_Basic,
+                fireRatePerMinute,
+                maxRange,
+                (double)(optEntry->damage),
+                featureText
+            );
+        }
+
+        HudUiMgrObjective::Show(
+            Pickup::FindOptMetaImageByOptEntry(optEntry),
+            optEntry->description,
             weaponStatsText,
-            g_HudUiWeaponStatsFmt_Proximity,
-            fireRatePerMinute,
-            maxRange,
-            (double)(optEntry->damage),
-            (int)(optEntry->impactProximity),
-            featureText
+            0.0f
         );
-    } else {
-        const int fireRatePerMinute =
-            (int)(60.0f / optEntry->fireRateInterval + 0.5f);
-        const int maxRange = (int)(optEntry->range);
-        sprintf(
-            weaponStatsText,
-            g_HudUiWeaponStatsFmt_Basic,
-            fireRatePerMinute,
-            maxRange,
-            (double)(optEntry->damage),
-            featureText
-        );
-    }
 
-    HudUiMgrObjective::Show(
-        Pickup::FindOptMetaImageByOptEntry(optEntry),
-        optEntry->description,
-        weaponStatsText,
-        0.0f
-    );
-
-    if (startAutoAdvance != 0) {
-        objectiveUiMode = 4;
-        objectiveFlowDeadlineSecRaw =
-            objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
-        return;
-    }
+        if (startAutoAdvance != 0) {
+            objectiveUiMode = 4;
+            objectiveFlowDeadlineSecRaw = objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
+            return;
+        }
 
         objectiveUiMode = 3;
         return;
@@ -1395,18 +1289,15 @@ void HudSensorTracker::ShowObjectivePickupInfo(
  * Purpose: find the first active incomplete objective and enable its blue map
  * marker.
  */
-int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
+int HudSensorTracker::FindAndHighlightFirstIncompleteObjective()
+{
     int objectiveIndex = 0;
     while (objectiveIndex < objectiveCount && objectiveSlots[objectiveIndex].completedFlag != 0) {
         ++objectiveIndex;
     }
 
     if (objectiveIndex < objectiveCount) {
-        SetObjectiveMarkerEnabledAndColor(
-            objectiveIndex,
-            1,
-            g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24
-        );
+        SetObjectiveMarkerEnabledAndColor(objectiveIndex, 1, g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24);
     }
 
     return objectiveIndex;
@@ -1420,7 +1311,8 @@ int HudSensorTracker::FindAndHighlightFirstIncompleteObjective() {
  * Purpose: reset objective/timer flow for a mission start and restore network
  * HUD presentation when multiplayer is active.
  */
-void HudSensorTracker::ResetHudForMissionStart() {
+void HudSensorTracker::ResetHudForMissionStart()
+{
     objectiveMeterSeconds = 0.0f;
     HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
 
@@ -1431,12 +1323,8 @@ void HudSensorTracker::ResetHudForMissionStart() {
             HudUiMgr::EnableHud();
         }
 
-        zUtil_PlayerStateStorage *const playerState =
-            (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
-        HudUi::ShowTopMessageLine(
-            playerState->activeAltGunController->optCatalogEntry->description,
-            5.0f
-        );
+        zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
+        HudUi::ShowTopMessageLine(playerState->activeAltGunController->optCatalogEntry->description, 5.0f);
         HudUiTimerPanel::SetRunning(1);
         HudUiMgr::TriggerCurrentLayoutOnActivated();
         HudUiMgr::UpdateTargetReticleFromCursor(1, 0.5f, 0.5f, 0);
@@ -1454,25 +1342,24 @@ void HudSensorTracker::ResetHudForMissionStart() {
     objectiveUiMode = 0;
     currentObjectiveReadSound = 0;
     pendingPlayerSave.skipTimerResetOnStart = 0;
-    objectiveFlowDeadlineSecRaw =
-        readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec;
+    objectiveFlowDeadlineSecRaw = readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec;
 }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: Advance mission objective UI state, timers, and post-read transitions.
  */
-int HudSensorTracker::UpdateObjectiveFlow() {
+int HudSensorTracker::UpdateObjectiveFlow()
+{
     objectiveMeterSeconds = HudUiTimerPanel::GetSeconds();
 
     if (zOpt::GetNetworkEnabled() == 0) {
         firstIncompleteObjectiveIndex = FindAndHighlightFirstIncompleteObjective();
 
-        if (menuTransitionDelaySec > 0.0f &&
-            objectiveReadTimeSecRaw + menuTransitionDelaySec <=
-                g_Time_AccumulatedTimeSec) {
-            zUtil_PlayerStateStorage *const playerState =
-                (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+        if (menuTransitionDelaySec > 0.0f
+            && objectiveReadTimeSecRaw + menuTransitionDelaySec <= g_Time_AccumulatedTimeSec) {
+            zUtil_PlayerStateStorage* const playerState
+                = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
             if (playerState->lifecycleState == 4) {
                 RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
             }
@@ -1482,7 +1369,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
 
         {
             for (int objectiveIndex = 0; objectiveIndex < objectiveCount; ++objectiveIndex) {
-                HudSensorObjectiveSlot &slot = objectiveSlots[objectiveIndex];
+                HudSensorObjectiveSlot& slot = objectiveSlots[objectiveIndex];
                 if (slot.completedFlag != 0) {
                     continue;
                 }
@@ -1502,9 +1389,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
                 ++completedObjectiveCount;
                 objectiveFlowState = 0x67;
                 currentObjectiveIndex = objectiveIndex;
-                objectiveFlowDeadlineSecRaw =
-                    objectiveReviewDelaySecRaw +
-                    g_Time_UnscaledAccumulatedTimeSec;
+                objectiveFlowDeadlineSecRaw = objectiveReviewDelaySecRaw + g_Time_UnscaledAccumulatedTimeSec;
                 SetObjectiveMarkerEnabledAndColor(firstIncompleteObjectiveIndex, 0, 0);
                 SetObjectiveMarkerColorBlink(
                     firstIncompleteObjectiveIndex,
@@ -1518,8 +1403,7 @@ int HudSensorTracker::UpdateObjectiveFlow() {
                     HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
                     SetObjectivePanelVisible(1);
                     objectiveFlowState = 0x68;
-                    objectiveFlowDeadlineSecRaw =
-                        g_Time_UnscaledAccumulatedTimeSec + 60.0f;
+                    objectiveFlowDeadlineSecRaw = g_Time_UnscaledAccumulatedTimeSec + 60.0f;
                 }
 
                 break;
@@ -1551,10 +1435,8 @@ int HudSensorTracker::UpdateObjectiveFlow() {
         }
     }
 
-    if (objectiveUiMode == 4 &&
-        g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
-        zUtil_PlayerStateStorage *const playerState =
-            (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+    if (objectiveUiMode == 4 && g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
+        zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
         ShowObjectivePickupInfo(0, 1, playerState->activeAltGunController->optCatalogEntry);
     }
 
@@ -1565,13 +1447,14 @@ int HudSensorTracker::UpdateObjectiveFlow() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: preserve the recovered HUD behavior for HudSensorTracker::SaveAndQueueMissionState.
  */
-void HudSensorTracker::SaveAndQueueMissionState() {
+void HudSensorTracker::SaveAndQueueMissionState()
+{
     if (finalMissionFlag != 0) {
         g_RecoilApp_QuitAfterCredits = 1;
         return;
     }
 
-    zUtil_PlayerStateStorage *const playerState = g_LocalPlayerSaveState->playerState;
+    zUtil_PlayerStateStorage* const playerState = g_LocalPlayerSaveState->playerState;
     Player::BuildMissionSaveData(&pendingPlayerSave.playerSaveData);
     pendingPlayerSave.savedNanitePanelLevel = playerState->nanitePanelLevel;
     hasPendingPlayerSave = 1;
@@ -1582,9 +1465,8 @@ void HudSensorTracker::SaveAndQueueMissionState() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\recoilapp.cpp.
  * Purpose: queue the recovered HUD application-state transition for HudSensorTracker::QueueMissionFmvStateForMissionId.
  */
-int HudSensorTracker::QueueMissionFmvStateForMissionId(
-    int missionId
-) {
+int HudSensorTracker::QueueMissionFmvStateForMissionId(int missionId)
+{
     g_RecoilApp.m_missionFmvState.SetMissionId(missionId);
     g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState, 0);
@@ -1599,10 +1481,9 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(
  * Purpose: parse Weather.zrd, construct the requested weather emitter, apply
  * optional tuning fields, and attach it to the global pass-3 HUD container.
  */
-void HudSensorTracker::LoadMissionWeatherFx(
-    const char *zrdPath
-) {
-    zReader::Node *rootNode = zReader::Load(zrdPath, 0, 0);
+void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
+{
+    zReader::Node* rootNode = zReader::Load(zrdPath, 0, 0);
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
@@ -1616,17 +1497,17 @@ void HudSensorTracker::LoadMissionWeatherFx(
 
     char missionNodeName[0x40];
     sprintf(missionNodeName, g_HudWeatherFx_MissionNodeNameFmt, missionId);
-    zReader::Node *missionNode = zRdrGetNode(rootNode, missionNodeName);
+    zReader::Node* missionNode = zRdrGetNode(rootNode, missionNodeName);
     if (missionNode != 0) {
         int particleCount = 100;
-        zReader::Node *particleNode = zRdrGetNode(missionNode, g_HudWeatherFx_ParticlesNodeName);
+        zReader::Node* particleNode = zRdrGetNode(missionNode, g_HudWeatherFx_ParticlesNodeName);
         if (particleNode != 0) {
             particleCount = particleNode->value.i32;
         }
 
-        zReader::Node *typeNode = zRdrGetNode(missionNode, g_HudWeatherFx_TypeNodeName);
+        zReader::Node* typeNode = zRdrGetNode(missionNode, g_HudWeatherFx_TypeNodeName);
         if (typeNode != 0) {
-            const char *const weatherType = typeNode->value.str;
+            const char* const weatherType = typeNode->value.str;
             if (strcmp(weatherType, g_HudWeatherFx_TypeValue_Snow) == 0) {
                 fxPass3Obj = new HudWeatherFxSnow(particleCount);
             } else if (strcmp(weatherType, g_HudWeatherFx_TypeValue_Rain) == 0) {
@@ -1635,50 +1516,38 @@ void HudSensorTracker::LoadMissionWeatherFx(
         }
 
         if (fxPass3Obj != 0) {
-            HudWeatherFx *const weatherFx = (HudWeatherFx *)(fxPass3Obj);
+            HudWeatherFx* const weatherFx = (HudWeatherFx*)(fxPass3Obj);
 
-            zReader::Node *colorNode = zRdrGetNode(missionNode, "COLOR");
+            zReader::Node* colorNode = zRdrGetNode(missionNode, "COLOR");
             if (colorNode != 0) {
-                zReader::Node *const colorFields = colorNode->value.nodes;
-                weatherFx->packedColor16 = zVidPackColorRGB(
-                    colorFields[1].value.i32,
-                    colorFields[2].value.i32,
-                    colorFields[3].value.i32
-                );
+                zReader::Node* const colorFields = colorNode->value.nodes;
+                weatherFx->packedColor16
+                    = zVidPackColorRGB(colorFields[1].value.i32, colorFields[2].value.i32, colorFields[3].value.i32);
             }
 
-            zReader::Node *windDirNode = zRdrGetNode(
-                missionNode,
-                g_HudWeatherFx_WindDirectionNodeName
-            );
+            zReader::Node* windDirNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindDirectionNodeName);
             if (windDirNode != 0) {
                 weatherFx->windDirection = windDirNode->value.f32;
             }
 
-            zReader::Node *windVelNode = zRdrGetNode(
-                missionNode,
-                g_HudWeatherFx_WindVelocityNodeName
-            );
+            zReader::Node* windVelNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindVelocityNodeName);
             if (windVelNode != 0) {
                 weatherFx->windVelocity = windVelNode->value.f32;
             }
 
-            zReader::Node *gravityNode = zRdrGetNode(missionNode, "GRAVITY");
+            zReader::Node* gravityNode = zRdrGetNode(missionNode, "GRAVITY");
             if (gravityNode != 0) {
                 weatherFx->gravity = gravityNode->value.f32;
             }
 
-            zReader::Node *alphaGradientNode = zRdrGetNode(
-                missionNode,
-                g_HudWeatherFx_AlphaGradientNodeName
-            );
+            zReader::Node* alphaGradientNode = zRdrGetNode(missionNode, g_HudWeatherFx_AlphaGradientNodeName);
             if (alphaGradientNode != 0) {
-                zReader::Node *const alphaFields = alphaGradientNode->value.nodes;
+                zReader::Node* const alphaFields = alphaGradientNode->value.nodes;
                 weatherFx->alphaStartScale = alphaFields[1].value.f32;
                 weatherFx->alphaEndScale = alphaFields[2].value.f32;
             }
 
-            ((HudUiContainer *)(&g_zVideo_FxPass3ConfigLocal))->AddChild(fxPass3Obj);
+            ((HudUiContainer*)(&g_zVideo_FxPass3ConfigLocal))->AddChild(fxPass3Obj);
         }
     }
 
@@ -1693,15 +1562,13 @@ void HudSensorTracker::LoadMissionWeatherFx(
  * Purpose: run named mission start animations from a ZRD list outside network
  * mode.
  */
-void HudSensorTracker::RunStartAnimsFromZrd(
-    const char *zrdPath,
-    const char *namedNodeName
-) {
+void HudSensorTracker::RunStartAnimsFromZrd(const char* zrdPath, const char* namedNodeName)
+{
     if (zOpt::GetNetworkEnabled() != 0) {
         return;
     }
 
-    zReader::Node *rootNode = zReader::Load(zrdPath, 0, 0);
+    zReader::Node* rootNode = zReader::Load(zrdPath, 0, 0);
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
@@ -1713,15 +1580,14 @@ void HudSensorTracker::RunStartAnimsFromZrd(
         return;
     }
 
-    zReader::Node *startAnimList = zRdrGetNode(rootNode, namedNodeName);
+    zReader::Node* startAnimList = zRdrGetNode(rootNode, namedNodeName);
     if (startAnimList != 0) {
-        zReader::Node *startAnimFields = startAnimList->value.nodes;
+        zReader::Node* startAnimFields = startAnimList->value.nodes;
         const int startAnimCount = startAnimFields[0].value.i32 - 1;
         {
             for (int startAnimIndex = 0; startAnimIndex < startAnimCount; ++startAnimIndex) {
-                zReader::Node *startAnimEntry = startAnimFields[startAnimIndex + 1].value.nodes;
-                zEffectAnimEntry *effectAnim =
-                    zEffectAnim::FindEntryByName(startAnimEntry[1].value.str);
+                zReader::Node* startAnimEntry = startAnimFields[startAnimIndex + 1].value.nodes;
+                zEffectAnimEntry* effectAnim = zEffectAnim::FindEntryByName(startAnimEntry[1].value.str);
                 if (effectAnim != 0) {
                     zEffectAnim::ResetActivationPrereqCount(effectAnim);
                     zEffectAnim::SetVelocityThunk(effectAnim, 0, 0.0f, 0.0f, 0.0f);
@@ -1738,9 +1604,8 @@ void HudSensorTracker::RunStartAnimsFromZrd(
  * Purpose: handle objective read-sound events that open or close the review UI
  * and restore HUD sound state when playback completes.
  */
-void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
-    int eventCode
-) {
+void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(int eventCode)
+{
     if (eventCode == 2) {
         zSnd::SetGlobalVolumeScale(g_HudSensorTracker.hudScale);
         zSnd::SetFlag10PlaybackEnabled(1);
@@ -1764,21 +1629,15 @@ void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(
  * Purpose: load mission race checkpoint metadata and publish timer/count state
  * when a cp_count node is present.
  */
-int HudSensorTracker::LoadRaceCheckpointMeta() {
+int HudSensorTracker::LoadRaceCheckpointMeta()
+{
     CString raceZrdrSearchPath;
     raceZrdrSearchPath.Format(kHudSensorTrackerRaceZrdrSearchPathFmt, missionId);
 
     int raceCheckpointMode = 0;
-    zReader::Node *raceRoot = zReader::Load(
-        kHudSensorTrackerRaceCheckpointArchiveName,
-        raceZrdrSearchPath,
-        0
-    );
+    zReader::Node* raceRoot = zReader::Load(kHudSensorTrackerRaceCheckpointArchiveName, raceZrdrSearchPath, 0);
     if (raceRoot != 0) {
-        zReader::Node *cpCountNode = zRdrGetNode(
-            raceRoot,
-            kHudSensorTrackerRaceCheckpointCountNodeName
-        );
+        zReader::Node* cpCountNode = zRdrGetNode(raceRoot, kHudSensorTrackerRaceCheckpointCountNodeName);
         if (cpCountNode != 0) {
             raceCheckpointMode = 1;
             runtimeTimerSecRaw = FloatToRawSeconds(20.0f);
@@ -1794,10 +1653,8 @@ int HudSensorTracker::LoadRaceCheckpointMeta() {
 /**
  * Purpose: Store the runtime timer seconds payload and mission goal value.
  */
-void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
-    int timerSecRaw,
-    int goalValue
-) {
+void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue)
+{
     runtimeGoalValue = goalValue;
     runtimeTimerSecRaw = timerSecRaw;
 }
@@ -1810,17 +1667,17 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(
  * resets map runtime state through MapShutdownAndResetThunk.
  * Purpose: release mission/map path state when the tracker shuts down.
  */
-void HudSensorTracker::Shutdown() {
+void HudSensorTracker::Shutdown()
+{
     missionGsPath.~CString();
     zbdPath.~CString();
     missionDataPath.~CString();
     MapShutdownAndResetThunk();
 }
 
-#include "Battlesport/recoil_app.h"
-#include "Battlesport/hud_ui_mp_exit_dialog.h"
 #include "Battlesport/hud.h"
-#include "GameZRecoil/zTime/time.h"
+#include "Battlesport/hud_ui_mp_exit_dialog.h"
+#include "Battlesport/recoil_app.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zLoc/zloc.h"
@@ -1828,6 +1685,7 @@ void HudSensorTracker::Shutdown() {
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
+#include "GameZRecoil/zTime/time.h"
 
 #include <new>
 #include <stdio.h>
@@ -1841,16 +1699,18 @@ extern "C" HWND g_RecoilApp_hWndMain;
  * @recoil-artifact defines .data recoil:data:0x4f329c: g_HudUiMpExitDialog.
  * Purpose: preserve the recovered HUD global storage for g_HudUiMpExitDialog.
  */
-HudUiMpExitDialog *g_HudUiMpExitDialog = 0;
+HudUiMpExitDialog* g_HudUiMpExitDialog = 0;
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
- * Purpose: capture and blur the current surface, load the MPEXIT dialog layout, and configure button or network-message state.
+ * Purpose: capture and blur the current surface, load the MPEXIT dialog layout, and configure button or network-message
+ * state.
  */
-void HudUiMpExitDialog::LoadLayout() {
+void HudUiMpExitDialog::LoadLayout()
+{
     m_mpNewGameButtonMode = HudUiMgr::IsLocalPlayerFirstInStatsList();
 
-    zVidImagePartial *const image = zVideobuffCaptureSurfaceToImage(1);
+    zVidImagePartial* const image = zVideobuffCaptureSurfaceToImage(1);
     m_capturedBackgroundImage = image;
     const int imageWidth = image->width;
     zVideo::FxSetSurfaceState(image->pixels, imageWidth, image->height, imageWidth * 2);
@@ -1860,7 +1720,7 @@ void HudUiMpExitDialog::LoadLayout() {
 
     HudScoreboard::SetScaleAndRebuild(0.0f);
 
-    zReader::Node *const loadedSection = LoadFromZrd("dialog.zrd", "MPEXIT", 1);
+    zReader::Node* const loadedSection = LoadFromZrd("dialog.zrd", "MPEXIT", 1);
     if (loadedSection != 0) {
         if (m_mpNewGameButtonMode >= 0) {
             BindWidgetByName(loadedSection, &m_mpNewGameButton, "MPNEWGAME");
@@ -1871,7 +1731,7 @@ void HudUiMpExitDialog::LoadLayout() {
 
     SetChildFlags(0);
     if (m_mpNewGameButtonMode >= 0) {
-        HudUiZrdWidget *const newGameButton = &m_mpNewGameButton;
+        HudUiZrdWidget* const newGameButton = &m_mpNewGameButton;
         newGameButton->modeOrEnabled = m_mpNewGameButtonMode;
         newGameButton->RefreshState();
     } else {
@@ -1893,26 +1753,24 @@ void HudUiMpExitDialog::LoadLayout() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: disable and unload the multiplayer exit dialog presentation state and release its captured background image.
  */
-void HudUiMpExitDialog::UnloadLayout() {
+void HudUiMpExitDialog::UnloadLayout()
+{
     SetEnabled(0);
     UpdateAll(0.0f);
     HudScoreboard::SetScaleAndRebuild(0.0f);
     g_HudUiTopMessageStack->Clear();
     if (m_capturedBackgroundImage != 0) {
-        m_capturedBackgroundImage =
-            zVid_Image::ReleaseIfNotDefault(
-                m_capturedBackgroundImage
-            );
+        m_capturedBackgroundImage = zVid_Image::ReleaseIfNotDefault(m_capturedBackgroundImage);
     }
 }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
- * Purpose: advance the multiplayer exit fade/update path and restore the captured background through the video postprocess pass.
+ * Purpose: advance the multiplayer exit fade/update path and restore the captured background through the video
+ * postprocess pass.
  */
-void HudUiMpExitDialog::Update(
-    float deltaSeconds
-) {
+void HudUiMpExitDialog::Update(float deltaSeconds)
+{
     if (m_mpNewGameButtonMode >= 0) {
         const float fadeElapsedSeconds = m_fadeElapsedSeconds + deltaSeconds;
         m_fadeElapsedSeconds = fadeElapsedSeconds;
@@ -1930,18 +1788,19 @@ void HudUiMpExitDialog::Update(
     }
 
     zVideo::DispatchUnlockPrimarySurfaceState();
-    zOpt_ViewRectSection *const dstRect = zOpt::GetWindowSection();
-    zOpt_ViewRectSection *const srcRect = zOpt::GetWindowSection();
-    zVideo::AdjustSurfacesIfEnabled((zVidRect32 *)srcRect, (zVidRect32 *)dstRect, 0, 1);
+    zOpt_ViewRectSection* const dstRect = zOpt::GetWindowSection();
+    zOpt_ViewRectSection* const srcRect = zOpt::GetWindowSection();
+    zVideo::AdjustSurfacesIfEnabled((zVidRect32*)srcRect, (zVidRect32*)dstRect, 0, 1);
 }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: lazily construct the multiplayer exit dialog singleton and load its layout in software video mode.
  */
-void RecoilApp_MpExitDialogState::OnEnter() {
+void RecoilApp_MpExitDialogState::OnEnter()
+{
     if (g_HudUiMpExitDialog == 0) {
-        HudUiMpExitDialog *dialog = new HudUiMpExitDialog;
+        HudUiMpExitDialog* dialog = new HudUiMpExitDialog;
         g_HudUiMpExitDialog = dialog;
     }
 
@@ -1954,7 +1813,8 @@ void RecoilApp_MpExitDialogState::OnEnter() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: queue the intro FMV and multiplayer setup reconfiguration when the new-game button is activated.
  */
-void CHudUiMpExitDialogNewGameButton::OnActivate() {
+void CHudUiMpExitDialogNewGameButton::OnActivate()
+{
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_introFmvState, 0);
     HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(1);
     HudUiZrdWidget::OnActivate();
@@ -1964,7 +1824,8 @@ void CHudUiMpExitDialogNewGameButton::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: run the base widget activation and queue the leave-network state.
  */
-void CHudUiMpExitDialogExitButton::OnActivate() {
+void CHudUiMpExitDialogExitButton::OnActivate()
+{
     HudUiZrdWidget::OnActivate();
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState, 0);
 }
@@ -1973,14 +1834,14 @@ void CHudUiMpExitDialogExitButton::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
  */
-HudUiMpExitDialog::~HudUiMpExitDialog() {
-}
+HudUiMpExitDialog::~HudUiMpExitDialog() { }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: configure render, sound, and input state before entering the multiplayer exit dialog.
  */
-int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
+int RecoilApp_MpExitDialogState::OnTryBecomeCurrent()
+{
     zVideo::SetHalfResAdjustMode(0);
     HudUi::SetInvalidateMode(0);
 
@@ -2006,10 +1867,11 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: unload, destroy, and clear the multiplayer exit dialog and restore input, sound, and scoreboard state.
  */
-void RecoilApp_MpExitDialogState::OnDeactivate() {
+void RecoilApp_MpExitDialogState::OnDeactivate()
+{
     g_HudUiMpExitDialog->UnloadLayout();
 
-    HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
+    HudUiMpExitDialog* const dialog = g_HudUiMpExitDialog;
     if (dialog != 0) {
         delete dialog;
     }
@@ -2025,12 +1887,13 @@ void RecoilApp_MpExitDialogState::OnDeactivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: poll input, tick/update the dialog, and run the fatal timeout shutdown path after a long stalled fade.
  */
-int RecoilApp_MpExitDialogState::OnUpdateShouldQuit() {
+int RecoilApp_MpExitDialogState::OnUpdateShouldQuit()
+{
     zInput::PollActiveDevices(0);
     Time::Tick();
 
-    HudUiMpExitDialog *const dialog = g_HudUiMpExitDialog;
-    ((HudUiContainer *)dialog)->UpdateAll(g_FrameDeltaTimeSec);
+    HudUiMpExitDialog* const dialog = g_HudUiMpExitDialog;
+    ((HudUiContainer*)dialog)->UpdateAll(g_FrameDeltaTimeSec);
 
     if (g_HudUiMpExitDialog->m_fadeElapsedSeconds > 600.0f) {
         char caption[128];
@@ -2081,7 +1944,8 @@ extern "C" const char kClampedIntTextInputAcceptedRawKeyChars[];
  * claimed for this input-owned operation.
  * Purpose: set the active signed range used by this input's value operations.
  */
-inline void HudUiClampedIntTextInput::SetRange(int minimum, int maximum) {
+inline void HudUiClampedIntTextInput::SetRange(int minimum, int maximum)
+{
     minValue = minimum;
     maxValue = maximum;
 }
@@ -2091,10 +1955,8 @@ inline void HudUiClampedIntTextInput::SetRange(int minimum, int maximum) {
  * This models the repeated target/step pairs; no original method spelling or
  * standalone retail body is claimed.
  */
-inline void HudUiClampedIntStepButton::SetTarget(
-    HudUiClampedIntTextInput *input,
-    int step
-) {
+inline void HudUiClampedIntStepButton::SetTarget(HudUiClampedIntTextInput* input, int step)
+{
     targetInput = input;
     stepDelta = step;
 }
@@ -2105,7 +1967,8 @@ inline void HudUiClampedIntStepButton::SetTarget(
  * SetValue is a same-engine naming default, not an original Recoil spelling.
  * Purpose: Display an integer constrained to this input's active bounds.
  */
-inline void HudUiClampedIntTextInput::SetValue(int value) {
+inline void HudUiClampedIntTextInput::SetValue(int value)
+{
     if (value < minValue) {
         value = minValue;
     }
@@ -2122,7 +1985,8 @@ inline void HudUiClampedIntTextInput::SetValue(int value) {
  * SetEnabled follows the existing UI family spelling, not a recovered symbol.
  * Purpose: Store the enabled flag and refresh the ZRD widget state.
  */
-inline void HudUiZrdWidget::SetEnabled(int enabled) {
+inline void HudUiZrdWidget::SetEnabled(int enabled)
+{
     modeOrEnabled = enabled;
     RefreshState();
 }
@@ -2134,11 +1998,9 @@ namespace {
  * 0x41a820/0x41a9c0.
  * Purpose: Dispatch a widget visibility change through its installed table.
  */
-inline void SetWidgetVisible(
-    HudUiWidget *widget,
-    int visible
-) {
-    ((HudUiElement *)(widget))->SetVisible(visible);
+inline void SetWidgetVisible(HudUiWidget* widget, int visible)
+{
+    ((HudUiElement*)(widget))->SetVisible(visible);
 }
 
 } // namespace
@@ -2146,43 +2008,34 @@ inline void SetWidgetVisible(
 /**
  * Purpose: Initialize the network game setup panel controls and default session options.
  */
-HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
-    int reconfigureExistingSessionValue
-) : HudUiBackground(),
-    playButton(),
-    cancelButton(),
-    gameNameInput(),
-    worldSelector(),
-    nextWorldButton(),
-    prevWorldButton(),
-    timeLimitInput(),
-    incTimeLimitButton(),
-    decTimeLimitButton(),
-    killsInput(),
-    incKillsButton(),
-    decKillsButton(),
-    maxPlayersInput(),
-    incMaxPlayersButton(),
-    decMaxPlayersButton(),
-    allowMapsToggle(),
-    nameTagsToggle(),
-    killsSwitch(0),
-    lapsSwitch(0) {
+HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(int reconfigureExistingSessionValue)
+    : HudUiBackground()
+    , playButton()
+    , cancelButton()
+    , gameNameInput()
+    , worldSelector()
+    , nextWorldButton()
+    , prevWorldButton()
+    , timeLimitInput()
+    , incTimeLimitButton()
+    , decTimeLimitButton()
+    , killsInput()
+    , incKillsButton()
+    , decKillsButton()
+    , maxPlayersInput()
+    , incMaxPlayersButton()
+    , decMaxPlayersButton()
+    , allowMapsToggle()
+    , nameTagsToggle()
+    , killsSwitch(0)
+    , lapsSwitch(0)
+{
     reconfigureExistingSession = reconfigureExistingSessionValue;
-    zReader::Node *const loadedSection =
-        HudUiBackground::LoadFromZrd("dialog.zrd", "MP_NEW_GAME", 0);
+    zReader::Node* const loadedSection = HudUiBackground::LoadFromZrd("dialog.zrd", "MP_NEW_GAME", 0);
 
     if (loadedSection != 0) {
-        HudUiBackground::BindPrimitiveNodeToElement(
-            loadedSection,
-            (HudUiElement *)(&killsSwitch),
-            "KILLS_SWITCH"
-        );
-        HudUiBackground::BindPrimitiveNodeToElement(
-            loadedSection,
-            (HudUiElement *)(&lapsSwitch),
-            "LAPS_SWITCH"
-        );
+        HudUiBackground::BindPrimitiveNodeToElement(loadedSection, (HudUiElement*)(&killsSwitch), "KILLS_SWITCH");
+        HudUiBackground::BindPrimitiveNodeToElement(loadedSection, (HudUiElement*)(&lapsSwitch), "LAPS_SWITCH");
         HudUiBackground::BindWidgetByName(loadedSection, &playButton, "PLAY");
         HudUiBackground::BindWidgetByName(loadedSection, &cancelButton, "CANCEL");
         HudUiBackground::BindWidgetByName(loadedSection, &gameNameInput, "GAME_NAME");
@@ -2207,7 +2060,7 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
     SetWidgetVisible(&lapsSwitch, 0);
     worldSelector.SetIndexClamped(0);
     currentFocusWidget = 0;
-    char *const playerName = zOptGetPlayerName();
+    char* const playerName = zOptGetPlayerName();
     char playerNameText[24];
     sprintf(playerNameText, "%.21s", playerName);
     gameNameInput.Update(playerNameText);
@@ -2247,7 +2100,8 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(
 /**
  * Purpose: Leave the network setup state when the cancel button is activated.
  */
-void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
+void HudUiNetGameSetupPanel_CancelButton::OnActivate()
+{
     g_RecoilApp.QueueExitCurrentState(0);
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState, 0);
     HudUiZrdWidget::OnActivate();
@@ -2261,9 +2115,9 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate() {
  * Purpose: Construct the network text-input layer with its requested buffer,
  * clear the display text, and leave keyboard input inactive.
  */
-inline HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(
-    unsigned int bufferSize
-) : HudUiNumericTextInput() {
+inline HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(unsigned int bufferSize)
+    : HudUiNumericTextInput()
+{
     textInput.AllocTextBuffer(bufferSize);
     Update("");
     SetInputActive(0);
@@ -2273,9 +2127,9 @@ inline HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(
  * Purpose: constructs the numeric input base, allocates a digit buffer, clears
  * the display, disables capture, and initializes the signed 32-bit clamp range.
  */
-HudUiClampedIntTextInput::HudUiClampedIntTextInput(
-    unsigned int maxDigits
-) : HudUiNetGameSetupTextInput(maxDigits + 1) {
+HudUiClampedIntTextInput::HudUiClampedIntTextInput(unsigned int maxDigits)
+    : HudUiNetGameSetupTextInput(maxDigits + 1)
+{
     minValue = -2147483647 - 1;
     maxValue = 2147483647;
 }
@@ -2283,16 +2137,16 @@ HudUiClampedIntTextInput::HudUiClampedIntTextInput(
 /**
  * Purpose: commit the clamped value when the text editor accepts its input.
  */
-void HudUiClampedIntTextInput::OnAccept() {
+void HudUiClampedIntTextInput::OnAccept()
+{
     CommitAndGetValue();
 }
 
 /**
  * Purpose: handle the recovered HUD event path for HudUiClampedIntTextInput::OnRawKeyboardChar.
  */
-int HudUiClampedIntTextInput::OnRawKeyboardChar(
-    int key
-) {
+int HudUiClampedIntTextInput::OnRawKeyboardChar(int key)
+{
     if (strchr(kClampedIntTextInputAcceptedRawKeyChars, key) != 0) {
         textInput.DispatchKeyAction(key);
     }
@@ -2303,8 +2157,9 @@ int HudUiClampedIntTextInput::OnRawKeyboardChar(
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiClampedIntTextInput::CommitAndGetValue.
  */
-int HudUiClampedIntTextInput::CommitAndGetValue() {
-    char *const text = GetBuffer();
+int HudUiClampedIntTextInput::CommitAndGetValue()
+{
+    char* const text = GetBuffer();
     int value;
 
     if (text == 0 || *text == 0) {
@@ -2332,7 +2187,8 @@ int HudUiClampedIntTextInput::CommitAndGetValue() {
  * Purpose: commit the linked clamped integer input, apply this button's step,
  * clamp/display the result, invalidate the input, and run base activation.
  */
-void HudUiClampedIntStepButton::OnActivate() {
+void HudUiClampedIntStepButton::OnActivate()
+{
     if (targetInput != 0) {
         targetInput->SetValue(stepDelta + targetInput->CommitAndGetValue());
         targetInput->Invalidate();
@@ -2344,14 +2200,14 @@ void HudUiClampedIntStepButton::OnActivate() {
 /**
  * Purpose: Tear down the panel-owned controls before destroying the background base.
  */
-HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel() {
-}
+HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel() { }
 
 /**
  * Purpose: Commit setup values and start or reconfigure the network game session.
  */
-void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
-    HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
+void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
+{
+    HudUiNetGameSetupPanel* const ownerPanel = (HudUiNetGameSetupPanel*)(owner);
     int statusFlags = 0;
     HudUiZrdWidget::OnActivate();
 
@@ -2362,7 +2218,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
         statusFlags |= 2;
     }
 
-    HudUiClampedIntTextInput *const killsInput = &ownerPanel->killsInput;
+    HudUiClampedIntTextInput* const killsInput = &ownerPanel->killsInput;
     if (zOpt::GetNetworkModemEnabled() == 0 && ownerPanel->reconfigureExistingSession == 0) {
         zNetworkSessionDescStatusFields statusFields;
         statusFields.eventCode = ownerPanel->worldSelector.selectedIndex + 1;
@@ -2406,14 +2262,11 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
     union TimerSecondsRaw {
         float seconds;
         int raw;
-    } timerSeconds = {(float)(timeLimitMinutes) * 60.0f};
+    } timerSeconds = { (float)(timeLimitMinutes) * 60.0f };
     g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, goalValue);
 
-    CZRecoilFrame *const mainWnd = (CZRecoilFrame *)((unsigned int)(g_RecoilApp.GetMainWnd()));
-    g_HudSensorTracker.InitMissionIdAndFlags(
-        ownerPanel->worldSelector.selectedIndex + 7,
-        mainWnd->m_useArchiveBanks
-    );
+    CZRecoilFrame* const mainWnd = (CZRecoilFrame*)((unsigned int)(g_RecoilApp.GetMainWnd()));
+    g_HudSensorTracker.InitMissionIdAndFlags(ownerPanel->worldSelector.selectedIndex + 7, mainWnd->m_useArchiveBanks);
     g_RecoilApp.QueueExitCurrentState(0);
 }
 
@@ -2430,11 +2283,10 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate() {
  * owner's current focus again after the virtual call.
  *
  */
-void HudUiNetGameSetupTextInput::OnActivate() {
-    HudUiNetGameSetupPanel *const ownerPanel =
-        (HudUiNetGameSetupPanel *)HudUiZrdWidget::owner;
-    HudUiNetGameSetupTextInput **const focusTextInputSlot =
-        &ownerPanel->currentFocusWidget;
+void HudUiNetGameSetupTextInput::OnActivate()
+{
+    HudUiNetGameSetupPanel* const ownerPanel = (HudUiNetGameSetupPanel*)HudUiZrdWidget::owner;
+    HudUiNetGameSetupTextInput** const focusTextInputSlot = &ownerPanel->currentFocusWidget;
     if (*focusTextInputSlot != 0) {
         (*focusTextInputSlot)->CommitAndGetValue();
         (*focusTextInputSlot)->SetRawKeyboardCapture(0);
@@ -2449,11 +2301,12 @@ void HudUiNetGameSetupTextInput::OnActivate() {
 /**
  * Purpose: Advance the selected world and apply the related setup side effects.
  */
-void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
-    HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
+void HudUiNetGameSetupPanel_NextWorldButton::OnActivate()
+{
+    HudUiNetGameSetupPanel* const ownerPanel = (HudUiNetGameSetupPanel*)(owner);
     ownerPanel->worldSelector.SetIndexClamped(ownerPanel->worldSelector.selectedIndex + 1);
 
-    HudUiClampedIntTextInput *killsInput;
+    HudUiClampedIntTextInput* killsInput;
     if (ownerPanel->worldSelector.selectedIndex == 2) {
         SetWidgetVisible(&ownerPanel->killsSwitch, 0);
         SetWidgetVisible(&ownerPanel->lapsSwitch, 1);
@@ -2488,11 +2341,12 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate() {
 /**
  * Purpose: Move to the previous world and apply the related setup side effects.
  */
-void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate() {
-    HudUiNetGameSetupPanel *const ownerPanel = (HudUiNetGameSetupPanel *)(owner);
+void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate()
+{
+    HudUiNetGameSetupPanel* const ownerPanel = (HudUiNetGameSetupPanel*)(owner);
     ownerPanel->worldSelector.SetIndexClamped(ownerPanel->worldSelector.selectedIndex - 1);
 
-    HudUiClampedIntTextInput *killsInput;
+    HudUiClampedIntTextInput* killsInput;
     if (ownerPanel->worldSelector.selectedIndex == 2) {
         SetWidgetVisible(&ownerPanel->killsSwitch, 0);
         SetWidgetVisible(&ownerPanel->lapsSwitch, 1);
@@ -2540,7 +2394,8 @@ HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
  * no pending reconfigure request.
  */
 HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
-    : m_reconfigureExistingSession(0) {
+    : m_reconfigureExistingSession(0)
+{
     m_dialog = 0;
 }
 
@@ -2551,12 +2406,13 @@ HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
  * Purpose: disable and delete any live multiplayer setup panel before clearing
  * the owner singleton's panel pointer.
  */
-HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
-    HudUiNetGameSetupPanel *panel = (HudUiNetGameSetupPanel *)m_dialog;
+HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner()
+{
+    HudUiNetGameSetupPanel* panel = (HudUiNetGameSetupPanel*)m_dialog;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = (HudUiNetGameSetupPanel *)m_dialog;
+        panel = (HudUiNetGameSetupPanel*)m_dialog;
         if (panel != 0) {
             delete panel;
         }
@@ -2570,24 +2426,19 @@ HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner() {
  * Purpose: configure HUD video and dialog audio state, create and enable the
  * network setup panel, then start the menu CD track when enabled.
  */
-int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
+int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent()
+{
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
     const int pitchBytes = zVideo::GetPrimarySurfacePitch();
     const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-    zOpt_ViewRectSection *const activeRegionRect = zOpt::GetWindowSection();
-    zRndr::SetFrameBufferRegion(
-        zVideo::GetPrimarySurfacePixels(),
-        activeRegionRect,
-        bitsPerPixel,
-        pitchBytes
-    );
+    zOpt_ViewRectSection* const activeRegionRect = zOpt::GetWindowSection();
+    zRndr::SetFrameBufferRegion(zVideo::GetPrimarySurfacePixels(), activeRegionRect, bitsPerPixel, pitchBytes);
 
     zSndSampleSetInitByName("DIALOG");
 
-    HudUiNetGameSetupPanel *panel =
-        (HudUiNetGameSetupPanel *) ::operator new(sizeof(HudUiNetGameSetupPanel));
+    HudUiNetGameSetupPanel* panel = (HudUiNetGameSetupPanel*)::operator new(sizeof(HudUiNetGameSetupPanel));
     if (panel != 0) {
         panel = new (panel) HudUiNetGameSetupPanel(m_reconfigureExistingSession);
     }
@@ -2607,24 +2458,25 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent() {
  * Purpose: tear down dialog audio and the active setup panel while restoring
  * the primary surface after the multiplayer setup overlay exits.
  */
-void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
+void HudUiNetGameSetupOverlayOwner::OnDeactivate()
+{
     Sleep(1000);
     zSndSampleSetDestroyByName("DIALOG");
 
-    HudUiNetGameSetupPanel *panel = (HudUiNetGameSetupPanel *)m_dialog;
+    HudUiNetGameSetupPanel* panel = (HudUiNetGameSetupPanel*)m_dialog;
     if (panel == 0) {
         return;
     }
 
     zVideo::RunPostprocessOnPrimaryBuffer();
 
-    panel = (HudUiNetGameSetupPanel *)m_dialog;
+    panel = (HudUiNetGameSetupPanel*)m_dialog;
     panel->SetEnabled(0);
 
-    ((HudUiDialogController *)m_dialog)->BlitOwnedSurfaceToPrimary();
+    ((HudUiDialogController*)m_dialog)->BlitOwnedSurfaceToPrimary();
     zVideo::DispatchUnlockPrimarySurfaceState();
 
-    panel = (HudUiNetGameSetupPanel *)m_dialog;
+    panel = (HudUiNetGameSetupPanel*)m_dialog;
     if (panel != 0) {
         delete panel;
     }
@@ -2637,24 +2489,23 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate() {
  * Purpose: store the requested reconfigure mode on the static overlay owner
  * and queue that owner as the next application state.
  */
-void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
-    int reconfigureExistingSession
-) {
+void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(int reconfigureExistingSession)
+{
     g_HudUiNetGameSetupOverlayOwner.m_reconfigureExistingSession = reconfigureExistingSession;
-    g_RecoilApp.QueuePushState((RecoilApp_IState *)&g_HudUiNetGameSetupOverlayOwner, 0);
+    g_RecoilApp.QueuePushState((RecoilApp_IState*)&g_HudUiNetGameSetupOverlayOwner, 0);
 }
 #include "Battlesport/game_net.h"
 
-#include "Battlesport/briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/briefing.h"
 #include "Battlesport/hud_sensor_tracker.h"
+#include "Battlesport/mission.h"
 #include "Battlesport/net_ui.h"
-#include "Battlesport/recoil_app.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zTime/time.h"
+#include "Battlesport/recoil_app.h"
+#include "Battlesport/turret.h"
 #include "GameZRecoil/include/opt_catalog.h"
-#include "Battlesport/mission.h"
 #include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zGame/zgame.h"
@@ -2666,7 +2517,7 @@ void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "Battlesport/turret.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
@@ -2680,8 +2531,7 @@ void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(
  * Purpose: Construct embedded MFC42 spin-button controls with provider inline
  * behavior for NetSessionConfigDialog.
  */
-inline CSpinButtonCtrl::CSpinButtonCtrl() {
-}
+inline CSpinButtonCtrl::CSpinButtonCtrl() { }
 #endif
 
 #include <shellapi.h>
@@ -2693,14 +2543,13 @@ inline CSpinButtonCtrl::CSpinButtonCtrl() {
 #include <new>
 #endif
 
-
 /**
  * Provider-boundary accessor for imported MFC42 CDialog metadata; this does not reimplement
  * CDialog behavior.
  */
 class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
-  public:
-    static const AFX_MSGMAP *__stdcall GetMessageMap();
+public:
+    static const AFX_MSGMAP* __stdcall GetMessageMap();
 };
 
 /**
@@ -2708,41 +2557,17 @@ class NetSessionBrowserCDialogMessageMapAccessor : public CDialog {
  * CDialog behavior.
  */
 class NetSessionConfigCDialogMessageMapAccessor : public CDialog {
-  public:
-    static const AFX_MSGMAP *__stdcall GetMessageMap();
+public:
+    static const AFX_MSGMAP* __stdcall GetMessageMap();
 };
 
-void __stdcall DDX_Control(
-    CDataExchange *dataExchange,
-    int controlId,
-    CWnd &control
-);
-void __stdcall DDX_Text(
-    CDataExchange *dataExchange,
-    int controlId,
-    CString &value
-);
-void __stdcall DDX_Text(
-    CDataExchange *dataExchange,
-    int controlId,
-    unsigned int &value
-);
-void __stdcall DDX_Check(
-    CDataExchange *dataExchange,
-    int controlId,
-    int &value
-);
-void __stdcall DDV_MaxChars(
-    CDataExchange *dataExchange,
-    const CString &value,
-    int maxChars
-);
-void __stdcall DDV_MinMaxUInt(
-    CDataExchange *dataExchange,
-    unsigned int value,
-    unsigned int minValue,
-    unsigned int maxValue
-);
+void __stdcall DDX_Control(CDataExchange* dataExchange, int controlId, CWnd& control);
+void __stdcall DDX_Text(CDataExchange* dataExchange, int controlId, CString& value);
+void __stdcall DDX_Text(CDataExchange* dataExchange, int controlId, unsigned int& value);
+void __stdcall DDX_Check(CDataExchange* dataExchange, int controlId, int& value);
+void __stdcall DDV_MaxChars(CDataExchange* dataExchange, const CString& value, int maxChars);
+void __stdcall
+DDV_MinMaxUInt(CDataExchange* dataExchange, unsigned int value, unsigned int minValue, unsigned int maxValue);
 
 RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
@@ -2766,14 +2591,14 @@ char g_Hud_TripleStringFmt[9] = "%s %s %s";
  * Purpose: Owns the multiplayer player-row linked-list header for active
  * local and remote network participants.
  */
-GameNetPlayerRowListState g_GameNetPlayerRowList = {0, 0, 0, 0};
+GameNetPlayerRowListState g_GameNetPlayerRowList = { 0, 0, 0, 0 };
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetspawnpointlist
  * @recoil-artifact defines .data recoil:data:0x4f3f78: g_GameNetSpawnPointList.
  * Purpose: Owns the multiplayer spawn-point linked-list header loaded from
  * net.zrd during network mission startup.
  */
-GameNetSpawnPointListState g_GameNetSpawnPointList = {0, 0, 0, 0};
+GameNetSpawnPointListState g_GameNetSpawnPointList = { 0, 0, 0, 0 };
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetplayerrowstylecolors-00rrggbb
  * @recoil-artifact defines .data recoil:data:0x4dcd88: g_GameNetPlayerRowStyleColors_00RRGGBB.
@@ -2797,7 +2622,7 @@ unsigned int g_GameNetPlayerRowStyleColors_00RRGGBB[9] = {
  * Purpose: Stores replicated multiplayer HUD timer state and resend/warning
  * flags shared by GameNet timer packet handlers.
  */
-HudTimerPanelNetState g_HudTimerPanelNetState = {0};
+HudTimerPanelNetState g_HudTimerPanelNetState = { 0 };
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0c-hudtimerstatusbitsbuf
  * @recoil-artifact defines .data recoil:data:0x4dce88: g_NetPkt0C_HudTimerStatusBitsBuf.
@@ -2805,7 +2630,7 @@ HudTimerPanelNetState g_HudTimerPanelNetState = {0};
  * replication.
  */
 NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
-    {0x0c, sizeof(NetPkt0C_HudTimerStatusBits), 0},
+    { 0x0c, sizeof(NetPkt0C_HudTimerStatusBits), 0 },
     0.0f,
     0,
     0,
@@ -2818,7 +2643,7 @@ NetPkt0C_HudTimerStatusBits g_NetPkt0C_HudTimerStatusBitsBuf = {
  * replication.
  */
 NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
-    {0x0d, sizeof(NetPkt0D_HudTimerPanelState), 0},
+    { 0x0d, sizeof(NetPkt0D_HudTimerPanelState), 0 },
     0.0f,
     0,
     0,
@@ -2830,7 +2655,7 @@ NetPkt0D_HudTimerPanelState g_NetPkt0D_HudTimerPanelStateBuf = {
  * flag synchronization.
  */
 NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
-    {0x14, sizeof(NetPkt14_HudTimerAndFlagsSync), 0},
+    { 0x14, sizeof(NetPkt14_HudTimerAndFlagsSync), 0 },
     0,
     0,
     0,
@@ -2843,10 +2668,10 @@ NetPkt14_HudTimerAndFlagsSync g_NetPkt14_HudTimerAndFlagsSyncBuf = {
  * removal events.
  */
 NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
-    {0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0},
+    { 0x0a, sizeof(NetPkt0A_RemoveRuntimeRelay), 0 },
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
     0,
 };
 /**
@@ -2855,11 +2680,11 @@ NetPkt0A_RemoveRuntimeRelay g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf = {
  * Purpose: Stores g NetPkt07 AltGunDispatchBuf data used by network_online.gamenet_pkt07_packet_buffer_data.
  */
 NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
-    {0x07, sizeof(NetPkt07_AltGunDispatch), 0},
+    { 0x07, sizeof(NetPkt07_AltGunDispatch), 0 },
     0,
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
 };
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt06-playerstatesnapshotbuf
@@ -2868,7 +2693,7 @@ NetPkt07_AltGunDispatch g_NetPkt07_AltGunDispatchBuf = {
  * replication.
  */
 NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf = {
-    {0x06, 0, 0},
+    { 0x06, 0, 0 },
 };
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-netpkt0f-cratereventrelaybuf
@@ -2877,10 +2702,10 @@ NetPkt06_PlayerStateSnapshot g_NetPkt06_PlayerStateSnapshotBuf = {
  * before host relay or reliable send.
  */
 NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
-    {0x0f, sizeof(NetPkt0F_CraterEvent), 0},
+    { 0x0f, sizeof(NetPkt0F_CraterEvent), 0 },
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
 /**
@@ -2890,10 +2715,10 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
  * events.
  */
 NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
-    {0x0f, sizeof(NetPkt0F_CraterEvent), 0},
+    { 0x0f, sizeof(NetPkt0F_CraterEvent), 0 },
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
 /**
@@ -2903,10 +2728,10 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
  * relay before host callback or reliable send.
  */
 NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
-    {0x10, sizeof(NetPkt10_QSandEvent), 0},
+    { 0x10, sizeof(NetPkt10_QSandEvent), 0 },
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
 /**
@@ -2916,10 +2741,10 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
  * events.
  */
 NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
-    {0x10, sizeof(NetPkt10_QSandEvent), 0},
+    { 0x10, sizeof(NetPkt10_QSandEvent), 0 },
     0,
     0,
-    {0.0f, 0.0f, 0.0f},
+    { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
 /**
@@ -3078,7 +2903,8 @@ const int kNetSessionBrowserModemMaxPlayers = 2;
  * Provider-boundary accessor for imported MFC42 CDialog message-map metadata.
  * Purpose: Return the provider CDialog message map for the browser dialog chain.
  */
-const AFX_MSGMAP *__stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP* __stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap()
+{
     return &CDialog::messageMap;
 }
 
@@ -3087,32 +2913,33 @@ const AFX_MSGMAP *__stdcall NetSessionBrowserCDialogMessageMapAccessor::GetMessa
  * tables reference this base-map accessor for NetSessionBrowserDialog.
  * Purpose: Return the browser dialog base message map.
  */
-const AFX_MSGMAP *__stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP* __stdcall NetSessionBrowserDialog::GetBaseMessageMapForMfc()
+{
     return NetSessionBrowserCDialogMessageMapAccessor::GetMessageMap();
 }
 
 AFX_MSGMAP_ENTRY const NetSessionBrowserDialog::messageEntries[] = {
-    {WM_COMMAND,
+    { WM_COMMAND,
         CBN_CLOSEUP,
         kNetSessionBrowserProviderComboId,
         kNetSessionBrowserProviderComboId,
         12,
-        (AFX_PMSG)&NetSessionBrowserDialog::ConnectSelectedProvider},
-    {WM_COMMAND,
+        (AFX_PMSG)&NetSessionBrowserDialog::ConnectSelectedProvider },
+    { WM_COMMAND,
         BN_CLICKED,
         kNetSessionBrowserCreateSessionButtonId,
         kNetSessionBrowserCreateSessionButtonId,
         12,
-        (AFX_PMSG)&NetSessionBrowserDialog::OnCreateSession},
-    {WM_TIMER, 0, 0, 0, 13, (AFX_PMSG)&NetSessionBrowserDialog::OnTimer},
-    {WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionBrowserDialog::OnDestroy},
-    {WM_COMMAND,
+        (AFX_PMSG)&NetSessionBrowserDialog::OnCreateSession },
+    { WM_TIMER, 0, 0, 0, 13, (AFX_PMSG)&NetSessionBrowserDialog::OnTimer },
+    { WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionBrowserDialog::OnDestroy },
+    { WM_COMMAND,
         BN_CLICKED,
         kNetSessionBrowserHelpButtonId,
         kNetSessionBrowserHelpButtonId,
         12,
-        (AFX_PMSG)&NetSessionBrowserDialog::OnHelpDocs},
-    {0, 0, 0, 0, 0, 0},
+        (AFX_PMSG)&NetSessionBrowserDialog::OnHelpDocs },
+    { 0, 0, 0, 0, 0, 0 },
 };
 
 const AFX_MSGMAP NetSessionBrowserDialog::messageMap = {
@@ -3124,7 +2951,8 @@ const AFX_MSGMAP NetSessionBrowserDialog::messageMap = {
  * Provider-boundary accessor for imported MFC42 CDialog message-map metadata.
  * Purpose: Return the provider CDialog message map for the config dialog chain.
  */
-const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP* __stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessageMap()
+{
     return &CDialog::messageMap;
 }
 
@@ -3133,19 +2961,20 @@ const AFX_MSGMAP *__stdcall NetSessionConfigCDialogMessageMapAccessor::GetMessag
  * tables reference this base-map accessor for NetSessionConfigDialog.
  * Purpose: Return the config dialog base message map.
  */
-const AFX_MSGMAP *__stdcall NetSessionConfigDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP* __stdcall NetSessionConfigDialog::GetBaseMessageMapForMfc()
+{
     return NetSessionConfigCDialogMessageMapAccessor::GetMessageMap();
 }
 
 AFX_MSGMAP_ENTRY const NetSessionConfigDialog::messageEntries[] = {
-    {WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionConfigDialog::OnDestroy},
-    {WM_COMMAND,
+    { WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&NetSessionConfigDialog::OnDestroy },
+    { WM_COMMAND,
         CBN_SELCHANGE,
         kNetSessionConfigMapComboId,
         kNetSessionConfigMapComboId,
         12,
-        (AFX_PMSG)&NetSessionConfigDialog::OnMapChanged},
-    {0, 0, 0, 0, 0, 0},
+        (AFX_PMSG)&NetSessionConfigDialog::OnMapChanged },
+    { 0, 0, 0, 0, 0, 0 },
 };
 
 const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
@@ -3156,19 +2985,14 @@ const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
 /**
  * Purpose: Construct the multiplayer session browser dialog and child controls.
  */
-NetSessionBrowserDialog::NetSessionBrowserDialog(
-    CWnd *parentWnd
-) :
-    CDialog(
-        kNetSessionBrowserDialogResourceId,
-        parentWnd
-    ),
-    m_playerNameEdit(),
-    m_okButton(),
-    m_createSessionButton(),
-    m_sessionList(),
-    m_providerCombo(),
-    m_playerName()
+NetSessionBrowserDialog::NetSessionBrowserDialog(CWnd* parentWnd)
+    : CDialog(kNetSessionBrowserDialogResourceId, parentWnd)
+    , m_playerNameEdit()
+    , m_okButton()
+    , m_createSessionButton()
+    , m_sessionList()
+    , m_providerCombo()
+    , m_playerName()
 {
     m_playerName = "";
 }
@@ -3176,18 +3000,13 @@ NetSessionBrowserDialog::NetSessionBrowserDialog(
 /**
  * Purpose: Bind browser dialog controls and validate the player-name field.
  */
-void NetSessionBrowserDialog::DoDataExchange(
-    CDataExchange *dataExchange
-) {
-    DDX_Control(dataExchange, kNetSessionBrowserPlayerNameEditId, *((CWnd *)&m_playerNameEdit));
-    DDX_Control(dataExchange, kNetSessionBrowserOkButtonId, *((CWnd *)&m_okButton));
-    DDX_Control(
-        dataExchange,
-        kNetSessionBrowserCreateSessionButtonId,
-        *((CWnd *)&m_createSessionButton)
-    );
-    DDX_Control(dataExchange, kNetSessionBrowserSessionListId, *((CWnd *)&m_sessionList));
-    DDX_Control(dataExchange, kNetSessionBrowserProviderComboId, *((CWnd *)&m_providerCombo));
+void NetSessionBrowserDialog::DoDataExchange(CDataExchange* dataExchange)
+{
+    DDX_Control(dataExchange, kNetSessionBrowserPlayerNameEditId, *((CWnd*)&m_playerNameEdit));
+    DDX_Control(dataExchange, kNetSessionBrowserOkButtonId, *((CWnd*)&m_okButton));
+    DDX_Control(dataExchange, kNetSessionBrowserCreateSessionButtonId, *((CWnd*)&m_createSessionButton));
+    DDX_Control(dataExchange, kNetSessionBrowserSessionListId, *((CWnd*)&m_sessionList));
+    DDX_Control(dataExchange, kNetSessionBrowserProviderComboId, *((CWnd*)&m_providerCombo));
     DDX_Text(dataExchange, kNetSessionBrowserPlayerNameEditId, m_playerName);
     DDV_MaxChars(dataExchange, m_playerName, kNetSessionBrowserPlayerNameMaxChars);
 }
@@ -3195,33 +3014,33 @@ void NetSessionBrowserDialog::DoDataExchange(
 /**
  * Purpose: Return the browser dialog MFC message map.
  */
-const AFX_MSGMAP * NetSessionBrowserDialog::GetMessageMap() const {
+const AFX_MSGMAP* NetSessionBrowserDialog::GetMessageMap() const
+{
     return &NetSessionBrowserDialog::messageMap;
 }
 
 /**
  * Purpose: Initialize the multiplayer session browser controls and providers.
  */
-BOOL NetSessionBrowserDialog::OnInitDialog() {
-    ((CDialog *)this)->CDialog::OnInitDialog();
+BOOL NetSessionBrowserDialog::OnInitDialog()
+{
+    ((CDialog*)this)->CDialog::OnInitDialog();
     m_playerName = zOptGetPlayerName();
     m_shouldEnterHostSetup = FALSE;
     m_sessionCount = 0;
 
-    zNetworkServiceProviderListVec *const providerList =
-        zNetworkDPlay::RefreshAndGetServiceProviderList();
+    zNetworkServiceProviderListVec* const providerList = zNetworkDPlay::RefreshAndGetServiceProviderList();
     const int providerCount = (int)providerList->size();
 
     HWND providerComboHwnd = m_providerCombo.m_hWnd;
     int providerIndex;
     for (providerIndex = 0; providerIndex < providerCount; ++providerIndex) {
-        zNetworkDPlayServiceProviderInfo *const providerInfo = (*providerList)[providerIndex];
-        char *const displayName = providerInfo->displayName;
-        if (strstr(displayName, g_zNetwork_ProviderName_Ipx) != 0 ||
-            strstr(displayName, g_zNetwork_ProviderName_TcpIp) != 0 ||
-            strstr(displayName, g_zNetwork_ProviderName_Modem) != 0) {
-            const LRESULT comboIndex =
-                ::SendMessageA(providerComboHwnd, CB_ADDSTRING, 0, (LPARAM)displayName);
+        zNetworkDPlayServiceProviderInfo* const providerInfo = (*providerList)[providerIndex];
+        char* const displayName = providerInfo->displayName;
+        if (strstr(displayName, g_zNetwork_ProviderName_Ipx) != 0
+            || strstr(displayName, g_zNetwork_ProviderName_TcpIp) != 0
+            || strstr(displayName, g_zNetwork_ProviderName_Modem) != 0) {
+            const LRESULT comboIndex = ::SendMessageA(providerComboHwnd, CB_ADDSTRING, 0, (LPARAM)displayName);
             ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, comboIndex, (LPARAM)providerInfo);
         }
     }
@@ -3234,23 +3053,23 @@ BOOL NetSessionBrowserDialog::OnInitDialog() {
     );
     ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, noProviderIndex, 0);
     ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
-    ((CWnd *)&m_okButton)
-        ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
-    ((CWnd *)this)->UpdateData(FALSE);
+    ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+    ((CWnd*)this)->UpdateData(FALSE);
     return TRUE;
 }
 
 /**
  * Purpose: Refresh and restore the visible DirectPlay session list.
  */
-int NetSessionBrowserDialog::RefreshSessionList() {
+int NetSessionBrowserDialog::RefreshSessionList()
+{
     CString selectedSessionText;
     m_sessionCount = zNetwork_DPlay::EnumSessions();
 
     HWND sessionListHwnd = m_sessionList.m_hWnd;
     const int selectedIndex = (int)(::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0));
     if (selectedIndex != LB_ERR) {
-        ((CListBox *)&m_sessionList)->GetText(selectedIndex, selectedSessionText);
+        ((CListBox*)&m_sessionList)->GetText(selectedIndex, selectedSessionText);
     }
 
     ::SendMessageA(sessionListHwnd, LB_RESETCONTENT, 0, 0);
@@ -3269,8 +3088,7 @@ int NetSessionBrowserDialog::RefreshSessionList() {
             currentPlayers
         );
 
-        const int rowIndex =
-            (int)(::SendMessageA(sessionListHwnd, LB_ADDSTRING, 0, (LPARAM)sessionText));
+        const int rowIndex = (int)(::SendMessageA(sessionListHwnd, LB_ADDSTRING, 0, (LPARAM)sessionText));
         ::SendMessageA(sessionListHwnd, LB_SETITEMDATA, rowIndex, index);
     }
 
@@ -3279,17 +3097,17 @@ int NetSessionBrowserDialog::RefreshSessionList() {
             sessionListHwnd,
             LB_FINDSTRINGEXACT,
             (WPARAM)-1,
-            (LPARAM)((const char *)selectedSessionText)
+            (LPARAM)((const char*)selectedSessionText)
         ));
         if (restoredIndex != LB_ERR) {
             ::SendMessageA(sessionListHwnd, LB_SETCURSEL, restoredIndex, 0);
-            ((CWnd *)&m_okButton)->EnableWindow(TRUE);
+            ((CWnd*)&m_okButton)->EnableWindow(TRUE);
         }
     } else if (m_sessionCount > 0) {
         ::SendMessageA(sessionListHwnd, LB_SETCURSEL, 0, 0);
-        ((CWnd *)&m_okButton)->EnableWindow(TRUE);
+        ((CWnd*)&m_okButton)->EnableWindow(TRUE);
     } else if (zOpt::GetNetworkModemEnabled() == 0) {
-        ((CWnd *)&m_okButton)->EnableWindow(FALSE);
+        ((CWnd*)&m_okButton)->EnableWindow(FALSE);
     }
 
     return m_sessionCount;
@@ -3298,7 +3116,8 @@ int NetSessionBrowserDialog::RefreshSessionList() {
 /**
  * Purpose: Connect to the selected provider and update browser dialog actions.
  */
-void NetSessionBrowserDialog::ConnectSelectedProvider() {
+void NetSessionBrowserDialog::ConnectSelectedProvider()
+{
     ::KillTimer(m_hWnd, 2);
 
     HWND providerComboHwnd = m_providerCombo.m_hWnd;
@@ -3307,33 +3126,32 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
         return;
     }
 
-    zNetworkDPlayServiceProviderInfo *providerInfo = (zNetworkDPlayServiceProviderInfo
-            *)(::SendMessageA(providerComboHwnd, CB_GETITEMDATA, selectedProviderIndex, 0));
+    zNetworkDPlayServiceProviderInfo* providerInfo = (zNetworkDPlayServiceProviderInfo*)(::SendMessageA(
+        providerComboHwnd,
+        CB_GETITEMDATA,
+        selectedProviderIndex,
+        0
+    ));
     if (providerInfo == 0) {
-        ((CWnd *)&m_okButton)->EnableWindow(FALSE);
-        ((CWnd *)&m_createSessionButton)->EnableWindow(FALSE);
+        ((CWnd*)&m_okButton)->EnableWindow(FALSE);
+        ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
         return;
     }
 
-    if (strstr(
-        providerInfo->displayName,
-        g_zNetwork_ProviderName_TcpIp
-    ) != 0 && g_NetUiTcpIpProviderWarningShown == 0) {
+    if (strstr(providerInfo->displayName, g_zNetwork_ProviderName_TcpIp) != 0
+        && g_NetUiTcpIpProviderWarningShown == 0) {
         g_NetUiTcpIpProviderWarningShown = 1;
 
         char caption[256];
         strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningCaptionMessageId));
 
         char messageFormat[256];
-        strcpy(
-            messageFormat,
-            zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId)
-        );
+        strcpy(messageFormat, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId));
 
         if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
             ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
-            ((CWnd *)&m_okButton)->EnableWindow(FALSE);
-            ((CWnd *)&m_createSessionButton)->EnableWindow(FALSE);
+            ((CWnd*)&m_okButton)->EnableWindow(FALSE);
+            ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
             return;
         }
     }
@@ -3344,20 +3162,18 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
             ::SetTimer(m_hWnd, 2, 1000, 0);
         }
 
-        ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
-        ((CWnd *)&m_okButton)
-            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
-        ((CWnd *)&m_createSessionButton)
+        ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
+        ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+        ((CWnd*)&m_createSessionButton)
             ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
         m_selectedProviderIsModem = FALSE;
     } else {
         ::SendMessageA(m_sessionList.m_hWnd, LB_RESETCONTENT, 0, 0);
-        ((CWnd *)&m_okButton)->EnableWindow(TRUE);
-        ((CWnd *)&m_okButton)
-            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemOkButtonMessageId));
-        ((CWnd *)&m_createSessionButton)
+        ((CWnd*)&m_okButton)->EnableWindow(TRUE);
+        ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemOkButtonMessageId));
+        ((CWnd*)&m_createSessionButton)
             ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemCreateButtonMessageId));
-        ((CWnd *)&m_createSessionButton)->EnableWindow(TRUE);
+        ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
         m_selectedProviderIsModem = TRUE;
     }
 }
@@ -3365,7 +3181,8 @@ void NetSessionBrowserDialog::ConnectSelectedProvider() {
 /**
  * Purpose: Join or initialize the selected multiplayer provider/session.
  */
-void NetSessionBrowserDialog::OnOK() {
+void NetSessionBrowserDialog::OnOK()
+{
     int canCloseDialog = FALSE;
     if (ValidatePlayerName() == 0) {
         return;
@@ -3378,8 +3195,7 @@ void NetSessionBrowserDialog::OnOK() {
         HWND sessionListHwnd = m_sessionList.m_hWnd;
         const LRESULT selectedSessionRow = ::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0);
         if (selectedSessionRow != LB_ERR) {
-            m_selectedSessionIndex =
-                (int)(::SendMessageA(sessionListHwnd, LB_GETITEMDATA, selectedSessionRow, 0));
+            m_selectedSessionIndex = (int)(::SendMessageA(sessionListHwnd, LB_GETITEMDATA, selectedSessionRow, 0));
             canCloseDialog = TRUE;
         }
     } else {
@@ -3398,7 +3214,8 @@ void NetSessionBrowserDialog::OnOK() {
 /**
  * Purpose: Enter host setup or create a modem session from browser state.
  */
-void NetSessionBrowserDialog::OnCreateSession() {
+void NetSessionBrowserDialog::OnCreateSession()
+{
     if (ValidatePlayerName() == 0) {
         return;
     }
@@ -3431,9 +3248,8 @@ void NetSessionBrowserDialog::OnCreateSession() {
 /**
  * Purpose: Poll for updated DirectPlay sessions while the browser is open.
  */
-void NetSessionBrowserDialog::OnTimer(
-    UINT_PTR
-) {
+void NetSessionBrowserDialog::OnTimer(UINT_PTR)
+{
     RefreshSessionList();
     CWnd::Default();
 }
@@ -3441,7 +3257,8 @@ void NetSessionBrowserDialog::OnTimer(
 /**
  * Purpose: Forward browser dialog destruction and stop session polling.
  */
-void NetSessionBrowserDialog::OnDestroy() {
+void NetSessionBrowserDialog::OnDestroy()
+{
     CWnd::OnDestroy();
     ::KillTimer(m_hWnd, 2);
 }
@@ -3449,11 +3266,12 @@ void NetSessionBrowserDialog::OnDestroy() {
 /**
  * Purpose: Trim, validate, and prompt for the multiplayer player name.
  */
-int NetSessionBrowserDialog::ValidatePlayerName() {
-    ((CWnd *)this)->UpdateData(TRUE);
+int NetSessionBrowserDialog::ValidatePlayerName()
+{
+    ((CWnd*)this)->UpdateData(TRUE);
     m_playerName.TrimLeft();
     m_playerName.TrimRight();
-    ((CWnd *)this)->UpdateData(FALSE);
+    ((CWnd*)this)->UpdateData(FALSE);
 
     if (!m_playerName.IsEmpty()) {
         return TRUE;
@@ -3465,8 +3283,8 @@ int NetSessionBrowserDialog::ValidatePlayerName() {
     char messageText[128];
     strcpy(messageText, zLoc::GetMessageString(kNetSessionBrowserPlayerNameRequiredMessageId));
 
-    ((CWnd *)this)->MessageBoxA(messageText, caption, MB_ICONHAND);
-    ((CWnd *)&m_playerNameEdit)->SetFocus();
+    ((CWnd*)this)->MessageBoxA(messageText, caption, MB_ICONHAND);
+    ((CWnd*)&m_playerNameEdit)->SetFocus();
     return FALSE;
 }
 
@@ -3477,7 +3295,8 @@ int NetSessionBrowserDialog::ValidatePlayerName() {
  * @recoil-artifact emits .text recoil:data:0x41b8ac: VC5-generated FindExecutableA result classifier table.
  * Purpose: Open the bundled help document or show the matching shell error.
  */
-void NetSessionBrowserDialog::OnHelpDocs() {
+void NetSessionBrowserDialog::OnHelpDocs()
+{
     char caption[128];
     strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserHelpCaptionMessageId));
 
@@ -3487,7 +3306,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
     if (resultCode <= 31) {
         switch (resultCode) {
         case 0:
-            ((CWnd *)this)
+            ((CWnd*)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpNoAssociationMessageId),
                     caption,
@@ -3497,7 +3316,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
 
         case 2:
         case 3:
-            ((CWnd *)this)
+            ((CWnd*)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpFileNotFoundMessageId),
                     caption,
@@ -3506,7 +3325,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
             return;
 
         case 11:
-            ((CWnd *)this)
+            ((CWnd*)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpAssociationIncompleteMessageId),
                     caption,
@@ -3515,7 +3334,7 @@ void NetSessionBrowserDialog::OnHelpDocs() {
             return;
 
         case 31:
-            ((CWnd *)this)
+            ((CWnd*)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpNoDdeAssociationMessageId),
                     caption,
@@ -3537,10 +3356,9 @@ namespace Player {
  * Source owner: battlesport_gameplay.player_remote_network_tick.
  * Purpose: Ticks a remote network player from received network state and updates its gameplay presentation.
  */
-void __fastcall TickRemoteNetworkPlayer(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     if (playerState->netUpdateReceived != 0) {
         SampleGroundAndAlignRootToSurface(saveState, 0);
@@ -3595,15 +3413,13 @@ void __fastcall TickRemoteNetworkPlayer(
  * Purpose: reimplement Player::UpdateGunDispatchRequestsFromTriggerLatches from the recovered
  * Battlesport gameplay source file.
  */
-void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     if (playerState->netInputBit16Latch == 0) {
         playerState->altGunDispatchRequested = 0;
-    } else if ((playerState->activeAltGunController->optCatalogEntry->flags &
-                   kOptCatalogFlagAltDispatchLatch) != 0) {
+    } else if ((playerState->activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagAltDispatchLatch) != 0) {
         playerState->altGunDispatchRequested = 1;
     }
 
@@ -3612,13 +3428,12 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
         return;
     }
 
-    PlayerGunFireController *const activePrimaryGunController =
-        playerState->activePrimaryGunController;
-    if (g_Player_TotalTimeSecScaled >= activePrimaryGunController->nextDispatchTime &&
-        (playerState->altGunTransitionState & 0x180) == 0) {
+    PlayerGunFireController* const activePrimaryGunController = playerState->activePrimaryGunController;
+    if (g_Player_TotalTimeSecScaled >= activePrimaryGunController->nextDispatchTime
+        && (playerState->altGunTransitionState & 0x180) == 0) {
         playerState->primaryGunDispatchRequested = 1;
-        activePrimaryGunController->nextDispatchTime =
-            activePrimaryGunController->dispatchRepeatDelay + g_Player_TotalTimeSecScaled;
+        activePrimaryGunController->nextDispatchTime
+            = activePrimaryGunController->dispatchRepeatDelay + g_Player_TotalTimeSecScaled;
     }
 }
 
@@ -3633,35 +3448,29 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(
  * the destroyed-respawn async action callback when present, and restores
  * damage, selection, and health fields.
  */
-void __fastcall DestroyedStateRespawnCallback(
-    zEffectAnimEntry *,
-    zUtil_SaveGameState *saveState,
-    int
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry*, zUtil_SaveGameState* saveState, int)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     CZObject3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
     CZObject3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
     CZObject3DModelRefLerpQueue::Add(
         playerState->rootNode,
         saveState,
-        (void *)(&ClearRespawnTransitionFlagCallback),
+        (void*)(&ClearRespawnTransitionFlagCallback),
         0.0f,
         1.0f,
         5.0f
     );
 
-    CZNodePartial *const healthyNode =
-        CZClass::FindNodeRecursiveByName(playerState->rootNode, g_Player_HealthySubNodeName);
+    CZNodePartial* const healthyNode
+        = CZClass::FindNodeRecursiveByName(playerState->rootNode, g_Player_HealthySubNodeName);
     if (healthyNode != 0) {
         CZObject3D::gwObject3DSetPosition(healthyNode, 0.0f, 0.0f, 0.0f);
         CZObject3D::gwObject3DSetRotation(healthyNode, 0.0f, 0.0f, 0.0f);
     }
 
     if (playerState->destroyedRespawnAsyncHandle != 0) {
-        zEffect_Anim::NodeActionCallback(
-            playerState->destroyedRespawnAsyncHandle,
-            playerState->rootNode
-        );
+        zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnAsyncHandle, playerState->rootNode);
     }
 
     ResetDamageStateAndTimedHitStatus(saveState);
@@ -3681,12 +3490,9 @@ void __fastcall DestroyedStateRespawnCallback(
  * uses destroyed-respawn effect data, root-node visual flags, model-ref lerp
  * queue callback 0x41bca0, network respawn/drop handling, and weapon/HUD reset.
  */
-void __fastcall DestroyedStateResetCallback(
-    zEffectAnimEntry *,
-    zUtil_SaveGameState *saveState,
-    int
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameState* saveState, int)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry, playerState->rootNode);
     ResetDamageStateAndTimedHitStatus(saveState);
 
@@ -3696,7 +3502,7 @@ void __fastcall DestroyedStateResetCallback(
     CZObject3DModelRefLerpQueue::Add(
         playerState->rootNode,
         saveState,
-        (void *)(&DestroyedStateResetFinalizeCallback),
+        (void*)(&DestroyedStateResetFinalizeCallback),
         0.0f,
         1.0f,
         1.0f
@@ -3724,19 +3530,18 @@ void __fastcall DestroyedStateResetCallback(
  * nearest other player at the spawn point before optional network respawn/drop
  * handling, then calls the local finalize helper and restores player fields.
  */
-void __fastcall DestroyedStateResetFinalizeCallback(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_SaveGameState *nearestSaveState = saveState;
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterCommonData *const masterCommonData = playerState->masterCommonData;
+void __fastcall DestroyedStateResetFinalizeCallback(zUtil_SaveGameState* saveState)
+{
+    zUtil_SaveGameState* nearestSaveState = saveState;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
     const float nearestDistanceSq = GameNet::GetNearestOtherPlayerDistanceToSpawnPoint(
-        (GameNetSpawnPoint *)&playerState->worldPos,
-        (GameNetPlayerSaveState **)&nearestSaveState
+        (GameNetSpawnPoint*)&playerState->worldPos,
+        (GameNetPlayerSaveState**)&nearestSaveState
     );
-    if (nearestDistanceSq < 20.0f && saveState->netPlayerRow->playerColorIndex <
-                                         nearestSaveState->netPlayerRow->playerColorIndex) {
+    if (nearestDistanceSq < 20.0f
+        && saveState->netPlayerRow->playerColorIndex < nearestSaveState->netPlayerRow->playerColorIndex) {
         GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(saveState, 0);
     }
 
@@ -3755,9 +3560,8 @@ void __fastcall DestroyedStateResetFinalizeCallback(
  * Evidence: model-ref lerp callback ABI receives the save state and the body
  * only clears the save-state player's camera transition timer.
  */
-void __fastcall ClearRespawnTransitionFlagCallback(
-    zUtil_SaveGameState *saveState
-) {
+void __fastcall ClearRespawnTransitionFlagCallback(zUtil_SaveGameState* saveState)
+{
     saveState->playerState->cameraTransitionTimer = 0;
 }
 
@@ -3771,9 +3575,10 @@ void __fastcall ClearRespawnTransitionFlagCallback(
  * touches only the active global save-state player's destroyed lifecycle,
  * steering/camera restoration, damage reset, and pickup effect dispatch.
  */
-void __cdecl DestroyedStateResetLocalFinalize() {
-    zUtil_SaveGameState *const saveState = (zUtil_SaveGameState *)g_GameStateOrMapTable;
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __cdecl DestroyedStateResetLocalFinalize()
+{
+    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
         playerState->lifecycleState = kPlayerLifecycleLocal;
         zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
@@ -3790,8 +3595,8 @@ void __cdecl DestroyedStateResetLocalFinalize() {
 #include "Battlesport/hud_ui_net_exit_panel.h"
 
 #include "Battlesport/recoil_app.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zInput/zinput.h"
+#include "GameZRecoil/zTime/time.h"
 
 #include <new>
 
@@ -3802,14 +3607,14 @@ extern "C" {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: hold the process-global network exit panel singleton.
  */
-HudUiNetExitPanel *g_HudUiNetExitPanel = 0;
+HudUiNetExitPanel* g_HudUiNetExitPanel = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-huduinetexitpanel-savedinputfocus
  * @recoil-artifact defines .data recoil:data:0x4f32bc: g_HudUiNetExitPanel_SavedInputFocus.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: preserve the prior HUD input focus while the network exit panel owns input capture.
  */
-HudUiElement *g_HudUiNetExitPanel_SavedInputFocus = 0;
+HudUiElement* g_HudUiNetExitPanel_SavedInputFocus = 0;
 }
 
 /**
@@ -3818,12 +3623,13 @@ HudUiElement *g_HudUiNetExitPanel_SavedInputFocus = 0;
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: initialize the network exit panel, bind its exit and resume widgets, and capture input focus state.
  */
-HudUiNetExitPanel::HudUiNetExitPanel() {
+HudUiNetExitPanel::HudUiNetExitPanel()
+{
     resumeWidget.previewInputCaptureActive = 0;
 
     exitWidget.previewInputCaptureActive = 0;
 
-    zReader::Node *const loadedSection = LoadFromZrd("dialog.zrd", "NETEXIT", 1);
+    zReader::Node* const loadedSection = LoadFromZrd("dialog.zrd", "NETEXIT", 1);
     if (loadedSection != 0) {
         BindWidgetByName(loadedSection, &exitWidget, "EXIT");
         BindWidgetByName(loadedSection, &resumeWidget, "RESUME");
@@ -3836,7 +3642,7 @@ HudUiNetExitPanel::HudUiNetExitPanel() {
     }
 
     SetChildFlags(0);
-    HudUiContainer *const panelContainer = this;
+    HudUiContainer* const panelContainer = this;
     panelContainer->SetEnabled(0);
 }
 
@@ -3845,9 +3651,8 @@ HudUiNetExitPanel::HudUiNetExitPanel() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: forward panel enabled-state changes through the HudUiBackground base implementation.
  */
-void HudUiNetExitPanel::SetEnabled(
-    int enabled
-) {
+void HudUiNetExitPanel::SetEnabled(int enabled)
+{
     HudUiBackground::SetEnabled(enabled);
 }
 
@@ -3855,7 +3660,8 @@ void HudUiNetExitPanel::SetEnabled(
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: queue the leave-network app state when the exit button is activated.
  */
-void HudUiNetExitPanel_ExitButton::OnActivate() {
+void HudUiNetExitPanel_ExitButton::OnActivate()
+{
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_leaveNetworkState, 0);
 }
 
@@ -3864,14 +3670,14 @@ void HudUiNetExitPanel_ExitButton::OnActivate() {
  * Purpose: let VC5 emit the panel's virtual derived-to-base destruction path
  * after the two embedded network-exit widgets.
  */
-HudUiNetExitPanel::~HudUiNetExitPanel() {
-}
+HudUiNetExitPanel::~HudUiNetExitPanel() { }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: close the preview, hide the network exit panel, and dispatch normal ZRD activation.
  */
-void CHudUiNetExitPanelResumeWidget::OnActivate() {
+void CHudUiNetExitPanelResumeWidget::OnActivate()
+{
     HidePreview();
     g_HudUiNetExitPanel->SetEnabled(0);
     HudUiMgr::TriggerCurrentLayoutOnActivated();
@@ -3882,7 +3688,8 @@ void CHudUiNetExitPanelResumeWidget::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: push preview input capture, restore saved focus for mouse mode, and show the resume preview.
  */
-void CHudUiNetExitPanelResumeWidget::ShowPreview() {
+void CHudUiNetExitPanelResumeWidget::ShowPreview()
+{
     if (previewInputCaptureActive == 0) {
         zInput::BindMapContextPush(0);
         zInput::BindMapCurrentSetMouseBinding(1, 0);
@@ -3890,9 +3697,9 @@ void CHudUiNetExitPanelResumeWidget::ShowPreview() {
         if (zInp::GetJoystickOption() == 0) {
             HudUiMgr::UpdateTargetReticleFromCursor(0, 0.0f, 0.0f, 0);
 
-            HudUiElement *const focus = g_HudUiNetExitPanel_SavedInputFocus;
+            HudUiElement* const focus = g_HudUiNetExitPanel_SavedInputFocus;
             if (focus != 0) {
-                ((HudUiBackgroundContainer *)(owner))->SetInputFocus(focus);
+                ((HudUiBackgroundContainer*)(owner))->SetInputFocus(focus);
             }
         }
 
@@ -3906,13 +3713,14 @@ void CHudUiNetExitPanelResumeWidget::ShowPreview() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: pop preview input capture, save current focus for mouse mode, and hide the resume preview.
  */
-void CHudUiNetExitPanelResumeWidget::HidePreview() {
+void CHudUiNetExitPanelResumeWidget::HidePreview()
+{
     if (previewInputCaptureActive != 0) {
         zInput::BindMapContextPop();
 
         if (zInp::GetJoystickOption() == 0) {
             HudUiMgr::UpdateTargetReticleFromCursor(1, 0.0f, 0.0f, 0);
-            HudUiBackgroundContainer *const backgroundOwner = (HudUiBackgroundContainer *)(owner);
+            HudUiBackgroundContainer* const backgroundOwner = (HudUiBackgroundContainer*)(owner);
             g_HudUiNetExitPanel_SavedInputFocus = backgroundOwner->GetInputFocus();
             backgroundOwner->SetInputFocus(0);
         }
@@ -3929,7 +3737,8 @@ void CHudUiNetExitPanelResumeWidget::HidePreview() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
  */
-HudUiNetExitPanel *__cdecl HudUiNetExitPanel::CreateGlobal() {
+HudUiNetExitPanel* __cdecl HudUiNetExitPanel::CreateGlobal()
+{
     g_HudUiNetExitPanel = new HudUiNetExitPanel;
     return g_HudUiNetExitPanel;
 }
@@ -3938,7 +3747,8 @@ HudUiNetExitPanel *__cdecl HudUiNetExitPanel::CreateGlobal() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: enable the process-global network exit panel.
  */
-void __cdecl HudUiNetExitPanel::Show() {
+void __cdecl HudUiNetExitPanel::Show()
+{
     g_HudUiNetExitPanel->SetEnabled(1);
 }
 
@@ -3946,7 +3756,8 @@ void __cdecl HudUiNetExitPanel::Show() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: tick the process-global network exit panel with the frame delta.
  */
-int __cdecl HudUiNetExitPanel::Tick() {
+int __cdecl HudUiNetExitPanel::Tick()
+{
     g_HudUiNetExitPanel->UpdateAll(g_FrameDeltaTimeSec);
     return 0;
 }
@@ -3955,8 +3766,9 @@ int __cdecl HudUiNetExitPanel::Tick() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: destroy and release the process-global network exit panel singleton.
  */
-void __cdecl HudUiNetExitPanel::DestroyGlobal() {
-    HudUiNetExitPanel *const panel = g_HudUiNetExitPanel;
+void __cdecl HudUiNetExitPanel::DestroyGlobal()
+{
+    HudUiNetExitPanel* const panel = g_HudUiNetExitPanel;
     if (panel != 0) {
         delete panel;
         g_HudUiNetExitPanel = 0;
@@ -4010,15 +3822,16 @@ char g_AiPropertyDlg_LabelMinPursuitRange[] = "Min Pursuit Rng";
  * CDialog behavior.
  */
 class AiPropertyDlgCDialogMessageMapAccessor : public CDialog {
-  public:
-    static const AFX_MSGMAP *__stdcall GetMessageMap();
+public:
+    static const AFX_MSGMAP* __stdcall GetMessageMap();
 };
 
 /**
  * MFC provider-boundary accessor for imported CDialog message-map metadata.
  * Purpose: Exposes CDialog::messageMap through the callback shape expected by the derived map.
  */
-const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP* __stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap()
+{
     return &CDialog::messageMap;
 }
 
@@ -4026,19 +3839,20 @@ const AFX_MSGMAP *__stdcall AiPropertyDlgCDialogMessageMapAccessor::GetMessageMa
  * MFC provider-boundary accessor for AiPropertyDlg's base message-map callback.
  * Purpose: Returns the provider-owned CDialog base message map for MFC dispatch chaining.
  */
-const AFX_MSGMAP *__stdcall AiPropertyDlg::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP* __stdcall AiPropertyDlg::GetBaseMessageMapForMfc()
+{
     return AiPropertyDlgCDialogMessageMapAccessor::GetMessageMap();
 }
 
 AFX_MSGMAP_ENTRY const AiPropertyDlg::messageEntries[] = {
-    {WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&AiPropertyDlg::OnDestroy},
-    {WM_COMMAND,
+    { WM_DESTROY, 0, 0, 0, 12, (AFX_PMSG)&AiPropertyDlg::OnDestroy },
+    { WM_COMMAND,
         CBN_SELCHANGE,
         kAiPropertyDlgBehaviorComboId,
         kAiPropertyDlgBehaviorComboId,
         12,
-        (AFX_PMSG)&AiPropertyDlg::OnSelChange},
-    {0, 0, 0, 0, 0, 0},
+        (AFX_PMSG)&AiPropertyDlg::OnSelChange },
+    { 0, 0, 0, 0, 0, 0 },
 };
 
 const AFX_MSGMAP AiPropertyDlg::messageMap = {
@@ -4050,25 +3864,23 @@ const AFX_MSGMAP AiPropertyDlg::messageMap = {
  * MFC provider-boundary message-map accessor for AiPropertyDlg.
  * Purpose: Returns the authored dialog message-map table used by MFC command routing.
  */
-const AFX_MSGMAP * AiPropertyDlg::GetMessageMap() const {
+const AFX_MSGMAP* AiPropertyDlg::GetMessageMap() const
+{
     return &AiPropertyDlg::messageMap;
 }
 
 /**
  * Purpose: Saves combo-box selections when the AI property dialog closes and hides the cursor.
  */
-void AiPropertyDlg::OnDestroy() {
+void AiPropertyDlg::OnDestroy()
+{
     CWnd::OnDestroy();
 
-    const LRESULT selectedPropertyComboIndex =
-        ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedPropertyIndex =
-        ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETITEMDATA, selectedPropertyComboIndex, 0);
+    const LRESULT selectedPropertyComboIndex = ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETCURSEL, 0, 0);
+    m_selectedPropertyIndex = ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETITEMDATA, selectedPropertyComboIndex, 0);
 
-    const LRESULT selectedBehaviorComboIndex =
-        ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedBehaviorIndex =
-        ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETITEMDATA, selectedBehaviorComboIndex, 0);
+    const LRESULT selectedBehaviorComboIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETCURSEL, 0, 0);
+    m_selectedBehaviorIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETITEMDATA, selectedBehaviorComboIndex, 0);
 
     ::ShowCursor(FALSE);
 }
@@ -4076,18 +3888,18 @@ void AiPropertyDlg::OnDestroy() {
 /**
  * Purpose: Updates the selected AI behavior and refreshes the property labels.
  */
-void AiPropertyDlg::OnSelChange() {
-    const LRESULT selectedBehaviorComboIndex =
-        ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedBehaviorIndex =
-        ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETITEMDATA, selectedBehaviorComboIndex, 0);
+void AiPropertyDlg::OnSelChange()
+{
+    const LRESULT selectedBehaviorComboIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETCURSEL, 0, 0);
+    m_selectedBehaviorIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETITEMDATA, selectedBehaviorComboIndex, 0);
     UpdatePropertyLabels();
 }
 
 /**
  * Purpose: Chooses the two property label strings for the currently selected AI behavior.
  */
-void AiPropertyDlg::UpdatePropertyLabels() {
+void AiPropertyDlg::UpdatePropertyLabels()
+{
     CString firstLabel;
     CString secondLabel;
 
@@ -4118,8 +3930,8 @@ void AiPropertyDlg::UpdatePropertyLabels() {
         break;
     }
 
-    ((CWnd *)this)->SetDlgItemTextA(kAiPropertyDlgFirstPropertyLabelId, firstLabel);
-    ((CWnd *)this)->SetDlgItemTextA(kAiPropertyDlgSecondPropertyLabelId, secondLabel);
+    ((CWnd*)this)->SetDlgItemTextA(kAiPropertyDlgFirstPropertyLabelId, firstLabel);
+    ((CWnd*)this)->SetDlgItemTextA(kAiPropertyDlgSecondPropertyLabelId, secondLabel);
 }
 #include "Battlesport/hud.h"
 #include "GameZRecoil/include/opt_catalog.h"
@@ -4134,8 +3946,9 @@ void AiPropertyDlg::UpdatePropertyLabels() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Start the new game through the owning panel before normal widget activation.
  */
-void HudUiNewGamePanel_StartButton::OnActivate() {
-    HudUiNewGamePanel *const panel = (HudUiNewGamePanel *)(owner);
+void HudUiNewGamePanel_StartButton::OnActivate()
+{
+    HudUiNewGamePanel* const panel = (HudUiNewGamePanel*)(owner);
     if (panel != 0) {
         panel->StartGameFromFields();
     }
@@ -4148,9 +3961,9 @@ void HudUiNewGamePanel_StartButton::OnActivate() {
  * Purpose: Construct the panel, bind its ZRD widgets, and load the player name.
  */
 HudUiNewGamePanel::HudUiNewGamePanel()
-    : HudUiBackground() {
-    zReader::Node *const loadedSection =
-        HudUiBackground::LoadFromZrd("dialog.zrd", "NEWGAMEPANEL", 0);
+    : HudUiBackground()
+{
+    zReader::Node* const loadedSection = HudUiBackground::LoadFromZrd("dialog.zrd", "NEWGAMEPANEL", 0);
     if (loadedSection != 0) {
         HudUiBackground::BindWidgetByName(loadedSection, &backWidget, "BACK");
         HudUiBackground::BindWidgetByName(loadedSection, &startWidget, "START");
@@ -4166,7 +3979,8 @@ HudUiNewGamePanel::HudUiNewGamePanel()
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Refresh and activate the player-name input with raw keyboard capture.
  */
-void HudUiNewGamePanel_NameInput::OnActivate() {
+void HudUiNewGamePanel_NameInput::OnActivate()
+{
     textInput.AllocTextBuffer(21);
     HudUiNumericTextInput::Update(zOptGetPlayerName());
     HudUiNumericTextInput::OnActivate();
@@ -4177,14 +3991,14 @@ void HudUiNewGamePanel_NameInput::OnActivate() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Tear down the panel through ordinary reverse C++ member/base cleanup.
  */
-HudUiNewGamePanel::~HudUiNewGamePanel() {
-}
+HudUiNewGamePanel::~HudUiNewGamePanel() { }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Reflect the saved game difficulty in the panel selector.
  */
-void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
+void HudUiNewGamePanel::SyncIntensityFromDifficulty()
+{
     intensity.SetSelectedIndex(zOpt::GetGameDifficultyMode());
 }
 
@@ -4192,7 +4006,8 @@ void HudUiNewGamePanel::SyncIntensityFromDifficulty() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Commit new-game options and queue mission FMV startup.
  */
-void HudUiNewGamePanel::StartGameFromFields() {
+void HudUiNewGamePanel::StartGameFromFields()
+{
     HudCheat::ClearNanitePanelCheatSentinel();
     zOpt::SetPlayerName(nameInput.GetBuffer());
     zOpt::SetGameDifficultyMode(intensity.selectedIndex);
@@ -4206,11 +4021,12 @@ void HudUiNewGamePanel::StartGameFromFields() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Create, enable, and retain the new-game panel for the overlay state.
  */
-int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent() {
-    HudUiNewGamePanel *const panel = new HudUiNewGamePanel;
+int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent()
+{
+    HudUiNewGamePanel* const panel = new HudUiNewGamePanel;
     m_dialog = panel;
     panel->SyncIntensityFromDifficulty();
-    ((HudUiNewGamePanel *)m_dialog)->SetEnabled(1);
+    ((HudUiNewGamePanel*)m_dialog)->SetEnabled(1);
     return 1;
 }
 
@@ -4229,12 +4045,13 @@ HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Disable and destroy the active panel owned by this app state.
  */
-HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
-    HudUiNewGamePanel *panel = (HudUiNewGamePanel *)m_dialog;
+HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner()
+{
+    HudUiNewGamePanel* panel = (HudUiNewGamePanel*)m_dialog;
     if (panel != 0) {
         panel->SetEnabled(0);
 
-        panel = (HudUiNewGamePanel *)m_dialog;
+        panel = (HudUiNewGamePanel*)m_dialog;
         if (panel != 0) {
             delete panel;
         }
@@ -4247,25 +4064,21 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner() {
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Queue the global overlay owner as the next app state.
  */
-void __cdecl HudUiNewGamePanelOverlayOwner::QueueEnter() {
-    g_RecoilApp.QueuePushState((RecoilApp_IState *)&g_HudUiNewGamePanelOverlayOwner, 0);
+void __cdecl HudUiNewGamePanelOverlayOwner::QueueEnter()
+{
+    g_RecoilApp.QueuePushState((RecoilApp_IState*)&g_HudUiNewGamePanelOverlayOwner, 0);
 }
 
 /**
  * Purpose: Construct the multiplayer session configuration dialog controls.
  */
-NetSessionConfigDialog::NetSessionConfigDialog(
-    CWnd *parentWnd
-) :
-    CDialog(
-        kNetSessionConfigDialogResourceId,
-        parentWnd
-    ),
-    m_maxPlayersSpin(),
-    m_valueLimitSpin(),
-    m_timeLimitSpin(),
-    m_mapCombo(),
-    m_sessionName()
+NetSessionConfigDialog::NetSessionConfigDialog(CWnd* parentWnd)
+    : CDialog(kNetSessionConfigDialogResourceId, parentWnd)
+    , m_maxPlayersSpin()
+    , m_valueLimitSpin()
+    , m_timeLimitSpin()
+    , m_mapCombo()
+    , m_sessionName()
 {
     m_sessionName = "";
     m_valueLimit = 0;
@@ -4277,13 +4090,12 @@ NetSessionConfigDialog::NetSessionConfigDialog(
 /**
  * Purpose: Bind config dialog controls and validate session numeric fields.
  */
-void NetSessionConfigDialog::DoDataExchange(
-    CDataExchange *dataExchange
-) {
-    DDX_Control(dataExchange, kNetSessionConfigMaxPlayersSpinId, (CWnd &)m_maxPlayersSpin);
-    DDX_Control(dataExchange, kNetSessionConfigValueLimitSpinId, (CWnd &)m_valueLimitSpin);
-    DDX_Control(dataExchange, kNetSessionConfigTimeLimitSpinId, (CWnd &)m_timeLimitSpin);
-    DDX_Control(dataExchange, kNetSessionConfigMapComboId, (CWnd &)m_mapCombo);
+void NetSessionConfigDialog::DoDataExchange(CDataExchange* dataExchange)
+{
+    DDX_Control(dataExchange, kNetSessionConfigMaxPlayersSpinId, (CWnd&)m_maxPlayersSpin);
+    DDX_Control(dataExchange, kNetSessionConfigValueLimitSpinId, (CWnd&)m_valueLimitSpin);
+    DDX_Control(dataExchange, kNetSessionConfigTimeLimitSpinId, (CWnd&)m_timeLimitSpin);
+    DDX_Control(dataExchange, kNetSessionConfigMapComboId, (CWnd&)m_mapCombo);
     DDX_Text(dataExchange, kNetSessionConfigSessionNameEditId, m_sessionName);
     DDV_MaxChars(dataExchange, m_sessionName, kNetSessionConfigSessionNameMaxChars);
     DDX_Text(dataExchange, kNetSessionConfigValueLimitEditId, m_valueLimit);
@@ -4291,19 +4103,15 @@ void NetSessionConfigDialog::DoDataExchange(
     DDX_Text(dataExchange, kNetSessionConfigTimeLimitEditId, m_timeLimitMinutes);
     DDV_MinMaxUInt(dataExchange, m_timeLimitMinutes, 0, kNetSessionConfigLimitMax);
     DDX_Text(dataExchange, kNetSessionConfigMaxPlayersEditId, m_maxPlayers);
-    DDV_MinMaxUInt(
-        dataExchange,
-        m_maxPlayers,
-        kNetSessionConfigMaxPlayersMin,
-        kNetSessionConfigMaxPlayersMax
-    );
+    DDV_MinMaxUInt(dataExchange, m_maxPlayers, kNetSessionConfigMaxPlayersMin, kNetSessionConfigMaxPlayersMax);
     DDX_Check(dataExchange, kNetSessionConfigUnusedCheckboxId, m_unusedCheckboxEnabled);
 }
 
 /**
  * Purpose: Return the config dialog MFC message map.
  */
-const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
+const AFX_MSGMAP* NetSessionConfigDialog::GetMessageMap() const
+{
     return &NetSessionConfigDialog::messageMap;
 }
 
@@ -4318,16 +4126,15 @@ const AFX_MSGMAP * NetSessionConfigDialog::GetMessageMap() const {
  * Retail constructs seven adjacent four-byte CString objects and destroys them
  * through the compiler's array-destructor helper (count 7, stride 4).
  */
-CString g_NetSessionConfigDialog_MapNameStrings[7] = {
-    "RiverWorks", "Crater Chaos", "Beach Rally", "Clone City",
-    "Frozen Tundra", "Poison Valley", "New Clone City"
-};
+CString g_NetSessionConfigDialog_MapNameStrings[7]
+    = { "RiverWorks", "Crater Chaos", "Beach Rally", "Clone City", "Frozen Tundra", "Poison Valley", "New Clone City" };
 
 /**
  * Purpose: Initialize multiplayer session config fields, maps, and spin ranges.
  */
-BOOL NetSessionConfigDialog::OnInitDialog() {
-    ((CDialog *)this)->CDialog::OnInitDialog();
+BOOL NetSessionConfigDialog::OnInitDialog()
+{
+    ((CDialog*)this)->CDialog::OnInitDialog();
 
     m_sessionName.Format(kNetSessionConfigSessionNameFormat, m_defaultExerciseOrdinal);
 
@@ -4336,44 +4143,27 @@ BOOL NetSessionConfigDialog::OnInitDialog() {
             m_mapCombo.m_hWnd,
             CB_ADDSTRING,
             0,
-            (LPARAM)((const char *)g_NetSessionConfigDialog_MapNameStrings[mapIndex])
+            (LPARAM)((const char*)g_NetSessionConfigDialog_MapNameStrings[mapIndex])
         );
         ::SendMessageA(m_mapCombo.m_hWnd, CB_SETITEMDATA, comboItemIndex, mapIndex);
     }
 
     ::SendMessageA(m_mapCombo.m_hWnd, CB_SETCURSEL, 0, 0);
-    ::SendMessageA(
-        m_timeLimitSpin.m_hWnd,
-        kNetSessionConfigSpinSetRangeMessage,
-        0,
-        MAKELPARAM(360, 0)
-    );
-    ::SendMessageA(
-        m_valueLimitSpin.m_hWnd,
-        kNetSessionConfigSpinSetRangeMessage,
-        0,
-        MAKELPARAM(100, 0)
-    );
+    ::SendMessageA(m_timeLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, MAKELPARAM(360, 0));
+    ::SendMessageA(m_valueLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, MAKELPARAM(100, 0));
 
-    LPARAM maxPlayersRange =
-        MAKELPARAM(kNetSessionConfigMaxPlayersMax, kNetSessionConfigMaxPlayersMin);
+    LPARAM maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMax, kNetSessionConfigMaxPlayersMin);
     if (zOpt::GetNetworkModemEnabled() != 0) {
-        maxPlayersRange =
-            MAKELPARAM(kNetSessionConfigMaxPlayersMin, kNetSessionConfigMaxPlayersMin);
+        maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMin, kNetSessionConfigMaxPlayersMin);
     }
-    ::SendMessageA(
-        m_maxPlayersSpin.m_hWnd,
-        kNetSessionConfigSpinSetRangeMessage,
-        0,
-        maxPlayersRange
-    );
+    ::SendMessageA(m_maxPlayersSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, maxPlayersRange);
 
     m_valueLimit = kNetSessionConfigDefaultValueLimit;
     m_timeLimitMinutes = kNetSessionConfigDefaultTimeLimitMinutes;
     m_maxPlayers = kNetSessionConfigDefaultMaxPlayers;
     m_unusedCheckboxEnabled = 1;
-    ((CWnd *)this)->UpdateData(FALSE);
-    ((CWnd *)this)
+    ((CWnd*)this)->UpdateData(FALSE);
+    ((CWnd*)this)
         ->SetDlgItemTextA(
             kNetSessionConfigMaxPlayersLabelId,
             zLoc::GetMessageString(kNetSessionConfigMaxPlayersDefaultMessageId)
@@ -4384,26 +4174,25 @@ BOOL NetSessionConfigDialog::OnInitDialog() {
 /**
  * Purpose: Persist the selected map index as the config dialog closes.
  */
-void NetSessionConfigDialog::OnDestroy() {
+void NetSessionConfigDialog::OnDestroy()
+{
     CWnd::OnDestroy();
     const LRESULT selectedMapComboIndex = ::SendMessageA(m_mapCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedMapIndex =
-        (int) ::SendMessageA(m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
+    m_selectedMapIndex = (int)::SendMessageA(m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
 }
 
 /**
  * Purpose: Track map selection and refresh max-player label text.
  */
-void NetSessionConfigDialog::OnMapChanged() {
+void NetSessionConfigDialog::OnMapChanged()
+{
     const LRESULT selectedMapComboIndex = ::SendMessageA(m_mapCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    const LRESULT selectedMapIndex =
-        ::SendMessageA(m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
+    const LRESULT selectedMapIndex = ::SendMessageA(m_mapCombo.m_hWnd, CB_GETITEMDATA, selectedMapComboIndex, 0);
     m_selectedMapIndex = (int)selectedMapIndex;
 
     unsigned int messageId = kNetSessionConfigMaxPlayersSpecialMapMessageId;
     if (selectedMapIndex != kNetSessionConfigSpecialMapIndex) {
         messageId = kNetSessionConfigMaxPlayersDefaultMessageId;
     }
-    ((CWnd *)this)
-        ->SetDlgItemTextA(kNetSessionConfigMaxPlayersLabelId, zLoc::GetMessageString(messageId));
+    ((CWnd*)this)->SetDlgItemTextA(kNetSessionConfigMaxPlayersLabelId, zLoc::GetMessageString(messageId));
 }

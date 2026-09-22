@@ -13,12 +13,12 @@
  * MFC base behavior is not reimplemented here.
  */
 class CAboutDlg : public CDialog {
-  public:
+public:
     enum { IDD = IDD_RECOIL_DIALOG_103 };
 
-    CAboutDlg(CWnd *parentWnd = 0);
+    CAboutDlg(CWnd* parentWnd = 0);
 
-  protected:
+protected:
     DECLARE_MESSAGE_MAP()
 };
 

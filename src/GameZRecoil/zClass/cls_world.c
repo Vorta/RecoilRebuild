@@ -21,8 +21,8 @@ extern "C" {
  * Purpose: report a missing virtual-area partition grid during world
  * partition initialization.
  */
-char g_CZClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
-    "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n";
+char g_CZClass_LineErrorVirtualAreaPartitionNullFmt[0x5b]
+    = "%s: Line %d: ERROR initializing virtual area partition; NULL area partitions encountered.\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-partitionmaxdecfeaturecountoverflowfmt
  * @recoil-artifact defines .data recoil:data:0x4de2c0: g_CZClass_PartitionMaxDecFeatureCountOverflowFmt.
@@ -30,9 +30,8 @@ char g_CZClass_LineErrorVirtualAreaPartitionNullFmt[0x5b] =
  * Purpose: report clamping of the maximum DEC feature count to the byte-sized
  * partition storage limit.
  */
-char g_CZClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
-    "ERROR setting Partition Max DEC Feature count to %d:\n"
-    "overflow limit at 255.\n";
+char g_CZClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] = "ERROR setting Partition Max DEC Feature count to %d:\n"
+                                                              "overflow limit at 255.\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightworldnotfoundfmt
  * @recoil-artifact defines .data recoil:data:0x4de310: g_CZClass_LineErrorDeleteLightWorldNotFoundFmt.
@@ -40,18 +39,18 @@ char g_CZClass_PartitionMaxDecFeatureCountOverflowFmt[0x4d] =
  * Purpose: report that a light's attached-world list does not contain the
  * world being removed.
  */
-char g_CZClass_LineErrorDeleteLightWorldNotFoundFmt[0x72] =
-    "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
-    "        world_ptr = %x; light_ptr = %x\n";
+char g_CZClass_LineErrorDeleteLightWorldNotFoundFmt[0x72]
+    = "%s: Line %d: ERROR deleting light; world not found in light's world list.\n"
+      "        world_ptr = %x; light_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletelightnotfoundinworldlistfmt
  * @recoil-artifact defines .data recoil:data:0x4de384: g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a light node is absent from the world's light list.
  */
-char g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
-    "%s: Line %d: ERROR deleting light; not found in world list.\n"
-    "        world_ptr = %x; light_ptr = %x\n";
+char g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64]
+    = "%s: Line %d: ERROR deleting light; not found in world list.\n"
+      "        world_ptr = %x; light_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundworldnotfoundfmt
  * @recoil-artifact defines .data recoil:data:0x4de3e8: g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt.
@@ -59,28 +58,30 @@ char g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt[0x64] =
  * Purpose: report that a sound's attached-world list does not contain the
  * world being removed.
  */
-char g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72] =
-    "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
-    "        world_ptr = %x; sound_ptr = %x\n";
+char g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt[0x72]
+    = "%s: Line %d: ERROR deleting sound; world not found in sound's world list.\n"
+      "        world_ptr = %x; sound_ptr = %x\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.g-zclass-lineerrordeletesoundnotfoundinworldlistfmt
  * @recoil-artifact defines .data recoil:data:0x4de45c: g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt.
  * BN data inventory declares writable cls_world.c diagnostic literal char[0x64].
  * Purpose: report that a sound node is absent from the world's sound list.
  */
-char g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64] =
-    "%s: Line %d: ERROR deleting sound; not found in world list.\n"
-    "        world_ptr = %x; sound_ptr = %x\n";
+char g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt[0x64]
+    = "%s: Line %d: ERROR deleting sound; not found in world list.\n"
+      "        world_ptr = %x; sound_ptr = %x\n";
 }
 
-namespace {
+namespace
+{
 
     /**
      * Original static helper observed in CZWorld grid-coordinate callers
      * (D:\Proj\GameZRecoil\zClass\cls_world.c).
      * Purpose: truncate a floating-point world/grid coordinate to an integer cell coordinate.
      */
-    int TruncateToInt(float value) {
+    int TruncateToInt(float value)
+    {
         return (int)(value);
     }
 
@@ -91,7 +92,8 @@ namespace {
      * Purpose: approximate the square root of a squared range through its
      * floating-point exponent bits.
      */
-    float ApproximateSqrtFromRangeSq(float rangeSq) {
+    float ApproximateSqrtFromRangeSq(float rangeSq)
+    {
         int bits = 0;
         memcpy(&bits, &rangeSq, sizeof(bits));
         bits = (bits >> 1) + 0x1fc00000;
@@ -108,10 +110,8 @@ namespace {
      * sentinel write before and after partition inclusion checks.
      * Purpose: set grid column and row outputs to the invalid cell sentinel.
      */
-    void InvalidateGrid(
-        int *outGridCol,
-        int *outGridRow
-    ) {
+    void InvalidateGrid(int* outGridCol, int* outGridRow)
+    {
         *outGridCol = -1;
         *outGridRow = -1;
     }
@@ -124,34 +124,29 @@ namespace {
      * Evidence: grid add/remove source-cluster callers share area-grid indexing.
      * Purpose: return the world area record for a grid column and row.
      */
-    zWorldAreaPartial *AreaAt(
-        CZWorldDataPartial * data,
-        int gridCol,
-        int gridRow
-    ) {
+    zWorldAreaPartial* AreaAt(CZWorldDataPartial * data, int gridCol, int gridRow)
+    {
         return &data->areaGridRows[gridRow][gridCol];
     }
-
 }
 
-namespace CZWorld {
+namespace CZWorld
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.queueareaupdate
      * @recoil-artifact defines .text recoil:function:0x450030: CZWorld::QueueAreaUpdate
      * @recoil-match byte
      *
      * Evidence: retail literal-backed physical source block D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * Purpose: Queues a pending area update record, marks the area pending, and sets world update flags for later processing.
+     * Purpose: Queues a pending area update record, marks the area pending, and sets world update flags for later
+     * processing.
      */
-    int __fastcall QueueAreaUpdate(
-        CZNodePartial * world,
-        CZWorldDataPartial * worldData,
-        zWorldAreaPartial * area
-    ) {
+    int __fastcall QueueAreaUpdate(CZNodePartial * world, CZWorldDataPartial * worldData, zWorldAreaPartial * area)
+    {
         if (worldData->pendingAreaUpdateCount == worldData->pendingAreaUpdateCapacity) {
-            worldData->pendingAreaUpdates = (zWorldAreaPartial **)(realloc(
+            worldData->pendingAreaUpdates = (zWorldAreaPartial**)(realloc(
                 worldData->pendingAreaUpdates,
-                (worldData->pendingAreaUpdateCapacity + 1) * sizeof(zWorldAreaPartial *)
+                (worldData->pendingAreaUpdateCapacity + 1) * sizeof(zWorldAreaPartial*)
             ));
             ++worldData->pendingAreaUpdateCapacity;
         }
@@ -177,7 +172,8 @@ namespace CZWorld {
      * Purpose: recompute an area's active Y bounds and bounding sphere from
      * child world bounding boxes.
      */
-    int __fastcall RebuildAreaBounds(CZWorldDataPartial * /*worldData*/, zWorldAreaPartial * area) {
+    int __fastcall RebuildAreaBounds(CZWorldDataPartial* /*worldData*/, zWorldAreaPartial * area)
+    {
         const short childCount = area->childCount;
         // Recomputes bbox-present flag 0x100; ApplyPendingFogSettings clears
         // dirty flag 0x01 after this helper.
@@ -186,10 +182,10 @@ namespace CZWorld {
             return 0;
         }
 
-        zBBoxCorners corners = {0};
+        zBBoxCorners corners = { 0 };
         int childIndex = 0;
         for (; childIndex < childCount; ++childIndex) {
-            CZNodePartial *child = area->childList[childIndex];
+            CZNodePartial* child = area->childList[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
@@ -215,7 +211,7 @@ namespace CZWorld {
         }
 
         for (; childIndex < childCount; ++childIndex) {
-            CZNodePartial *child = area->childList[childIndex];
+            CZNodePartial* child = area->childList[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
@@ -231,11 +227,7 @@ namespace CZWorld {
             }
         }
 
-        CZBBox::MinMaxToBoundingSphere(
-            (const zBBox3f *)(area->bbox),
-            &area->bboxCenter,
-            &area->bboxRadius
-        );
+        CZBBox::MinMaxToBoundingSphere((const zBBox3f*)(area->bbox), &area->bboxCenter, &area->bboxRadius);
         return 0;
     }
 
@@ -246,12 +238,12 @@ namespace CZWorld {
      *
      * Purpose: allocate a world node and its class data, then add it to the world type list.
      */
-    CZNodePartial *__cdecl gwWorldNew() {
-        CZNodePartial *node = CZClass::gwNodeNew();
+    CZNodePartial* __cdecl gwWorldNew()
+    {
+        CZNodePartial* node = CZClass::gwNodeNew();
         node->classId = 2;
 
-        CZWorldDataPartial *data =
-            (CZWorldDataPartial *)(calloc(1, sizeof(CZWorldDataPartial)));
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(calloc(1, sizeof(CZWorldDataPartial)));
         node->classData = data;
         data->fogState = 0;
         data->lightCount = 0;
@@ -278,13 +270,14 @@ namespace CZWorld {
      * Purpose: release world-owned partition/light/sound/update lists and
      * return the world node to the shared zClass free-list machinery.
      */
-    int __fastcall DeleteNode(CZNodePartial * world) {
+    int __fastcall DeleteNode(CZNodePartial * world)
+    {
         const int freeResult = FreeVirtualAreaPartitions(world);
         if (freeResult != 0) {
             return freeResult;
         }
 
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data->lightNodes != 0) {
             free(data->lightNodes);
         }
@@ -311,8 +304,9 @@ namespace CZWorld {
      * Purpose: initialize virtual area partition edge cells by moving their
      * children into VAP_statics nodes.
      */
-    int __fastcall InitVirtualAreaPartitions(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall InitVirtualAreaPartitions(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data->areaGridRows == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
@@ -327,12 +321,12 @@ namespace CZWorld {
         CZTypeList::UpdateQueuedTrees();
 
         for (int col = 0; col < data->areaGridColCount; ++col) {
-            zWorldAreaPartial *area = &data->areaGridRows[0][col];
+            zWorldAreaPartial* area = &data->areaGridRows[0][col];
             if (area->childCount > 0) {
-                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial *child = area->childList[0];
+                    CZNodePartial* child = area->childList[0];
                     CZObject3D::gwObject3DAddChild(statics, child);
                     CZWorld::RemoveChildAtGrid(world, child);
                 }
@@ -341,14 +335,14 @@ namespace CZWorld {
             }
         }
 
-        zWorldAreaPartial *lastRow = data->areaGridRows[data->areaGridRowCount - 1];
+        zWorldAreaPartial* lastRow = data->areaGridRows[data->areaGridRowCount - 1];
         for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol) {
-            zWorldAreaPartial *area = &lastRow[lastCol];
+            zWorldAreaPartial* area = &lastRow[lastCol];
             if (area->childCount > 0) {
-                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial *child = area->childList[0];
+                    CZNodePartial* child = area->childList[0];
                     CZObject3D::gwObject3DAddChild(statics, child);
                     CZWorld::RemoveChildAtGrid(world, child);
                 }
@@ -358,12 +352,12 @@ namespace CZWorld {
         }
 
         for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
-            zWorldAreaPartial *area = &data->areaGridRows[firstEdgeRow][0];
+            zWorldAreaPartial* area = &data->areaGridRows[firstEdgeRow][0];
             if (area->childCount > 0) {
-                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial *child = area->childList[0];
+                    CZNodePartial* child = area->childList[0];
                     CZObject3D::gwObject3DAddChild(statics, child);
                     CZWorld::RemoveChildAtGrid(world, child);
                 }
@@ -373,13 +367,12 @@ namespace CZWorld {
         }
 
         for (int lastEdgeRow = 1; lastEdgeRow < data->areaGridRowCount - 1; ++lastEdgeRow) {
-            zWorldAreaPartial *area =
-                &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
+            zWorldAreaPartial* area = &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
             if (area->childCount > 0) {
-                CZNodePartial *statics = CZObject3D::gwObject3DInit();
+                CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial *child = area->childList[0];
+                    CZNodePartial* child = area->childList[0];
                     CZObject3D::gwObject3DAddChild(statics, child);
                     CZWorld::RemoveChildAtGrid(world, child);
                 }
@@ -401,11 +394,9 @@ namespace CZWorld {
      * Purpose: set the virtual-partition query flag and initialize partitions
      * when enabling the mode.
      */
-    SetVirtualPartition(
-        CZNodePartial * world,
-        int enabled
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    SetVirtualPartition(CZNodePartial * world, int enabled)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->clampQueriesToBounds = enabled;
         if (enabled != 0) {
             InitVirtualAreaPartitions(world);
@@ -420,8 +411,9 @@ namespace CZWorld {
      * Purpose: apply staged world fog changes and queued area-bound updates,
      * then clear the pending flags.
      */
-    int __fastcall ApplyPendingFogSettings(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall ApplyPendingFogSettings(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (CZTypeList::CountNodes(0x0d) > 1) {
             data->flags = 0x2f;
         }
@@ -474,9 +466,9 @@ namespace CZWorld {
         }
 
         if (data->pendingAreaUpdateCount > 0) {
-            zWorldAreaPartial **pendingAreaUpdates = data->pendingAreaUpdates;
+            zWorldAreaPartial** pendingAreaUpdates = data->pendingAreaUpdates;
             do {
-                zWorldAreaPartial *area = *pendingAreaUpdates;
+                zWorldAreaPartial* area = *pendingAreaUpdates;
                 RebuildAreaBounds(data, area);
                 ++pendingAreaUpdates;
                 area->areaFlags &= ~0x01;
@@ -492,19 +484,21 @@ namespace CZWorld {
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclampedex
      * @recoil-artifact defines .text recoil:function:0x450650: CZWorld::WorldToGridCoordsClampedEx.
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
-     * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates and an inside-bounds flag.
+     * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates
+     * and an inside-bounds flag.
      */
     int __fastcall WorldToGridCoordsClampedEx(
         CZNodePartial * world,
-        int *outGridCol,
+        int* outGridCol,
         float worldX,
         float worldZ,
-        int *outGridRow,
-        int *clampedGridColOut,
-        int *clampedGridRowOut,
-        int *insideBoundsOut
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        int* outGridRow,
+        int* clampedGridColOut,
+        int* clampedGridRowOut,
+        int* insideBoundsOut
+    )
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         float clampedX = worldX;
         float clampedZ = worldZ;
@@ -546,14 +540,10 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
      */
-    int __fastcall WorldToGridCoordsClamped(
-        CZNodePartial * world,
-        int *outGridCol,
-        float worldX,
-        float worldZ,
-        int *outGridRow
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall
+    WorldToGridCoordsClamped(CZNodePartial * world, int* outGridCol, float worldX, float worldZ, int* outGridRow)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         float clampedX;
         if (worldX < data->originX + 0.1) {
@@ -589,21 +579,22 @@ namespace CZWorld {
      */
     int __fastcall WorldRectToGridIndex(
         CZNodePartial * world,
-        int *outGridCol,
+        int* outGridCol,
         float minX,
         float maxX,
         float minZ,
         float maxZ,
-        int *outGridRow
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        int* outGridRow
+    )
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outGridCol = -1;
         *outGridRow = -1;
 
-        if (data->originX - data->partitionInclusionTolX > minX ||
-            maxX >= data->worldMaxX + data->partitionInclusionTolX ||
-            maxZ > data->originZ + data->partitionInclusionTolZ ||
-            minZ <= data->worldMaxZ - data->partitionInclusionTolZ) {
+        if (data->originX - data->partitionInclusionTolX > minX
+            || maxX >= data->worldMaxX + data->partitionInclusionTolX
+            || maxZ > data->originZ + data->partitionInclusionTolZ
+            || minZ <= data->worldMaxZ - data->partitionInclusionTolZ) {
             return 0;
         }
 
@@ -624,7 +615,7 @@ namespace CZWorld {
             *outGridRow = data->areaGridRowCount - 1;
         }
 
-        zWorldAreaPartial *gridCell = &data->areaGridRows[*outGridRow][*outGridCol];
+        zWorldAreaPartial* gridCell = &data->areaGridRows[*outGridRow][*outGridCol];
         const float cellMaxX = gridCell->cellMinX + data->areaCellSizeX;
         const float cellMaxZ = gridCell->cellMinZ + data->areaCellSizeZ;
 
@@ -637,8 +628,7 @@ namespace CZWorld {
         } else if (minZ < cellMaxZ && cellMaxZ - minZ > data->partitionInclusionTolZ) {
             *outGridCol = -1;
             *outGridRow = -1;
-        } else if (maxZ > gridCell->cellMinZ &&
-                   maxZ - gridCell->cellMinZ > data->partitionInclusionTolZ) {
+        } else if (maxZ > gridCell->cellMinZ && maxZ - gridCell->cellMinZ > data->partitionInclusionTolZ) {
             *outGridCol = -1;
             *outGridRow = -1;
         }
@@ -653,17 +643,14 @@ namespace CZWorld {
      * Purpose: validate the world node/data pointers and return the area
      * partition at a grid column and row.
      */
-    zWorldAreaPartial *__fastcall GetAreaPartitionAtGrid(
-        CZNodePartial * world,
-        int gridCol,
-        int gridRow
-    ) {
+    zWorldAreaPartial* __fastcall GetAreaPartitionAtGrid(CZNodePartial * world, int gridCol, int gridRow)
+    {
         if (world == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6d4, "Null node pointer.");
             return 0;
         }
 
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6d5, "Null class data pointer");
             return 0;
@@ -679,23 +666,20 @@ namespace CZWorld {
      * Purpose: ensure a grid cell is queued for display-position/bounds
      * refresh when it is not already pending.
      */
-    int __fastcall EnsureGridCellDisplayPosition(
-        CZNodePartial * world,
-        int gridCol,
-        int gridRow
-    ) {
+    int __fastcall EnsureGridCellDisplayPosition(CZNodePartial * world, int gridCol, int gridRow)
+    {
         if (world == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6f5, "Null node pointer.");
             return 5;
         }
 
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\cls_world.c", 0x6f6, "Null class data pointer");
             return 5;
         }
 
-        zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
+        zWorldAreaPartial* area = &data->areaGridRows[gridRow][gridCol];
         if ((area->areaFlags & 0x01) == 0) {
             return QueueAreaUpdate(world, data, area);
         }
@@ -712,11 +696,9 @@ namespace CZWorld {
      * Purpose: stage the pending fog enable/linear-mode state for the next
      * world fog application pass.
      */
-    int __fastcall SetPendingFogState(
-        CZNodePartial * world,
-        int fogState
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall SetPendingFogState(CZNodePartial * world, int fogState)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->fogState = fogState;
         data->flags |= 0x01;
         return 0;
@@ -729,13 +711,9 @@ namespace CZWorld {
      * Purpose: stage the pending fog RGB color values for the next world fog
      * application pass.
      */
-    int __fastcall SetPendingFogColorRgb01(
-        CZNodePartial * world,
-        float red,
-        float green,
-        float blue
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall SetPendingFogColorRgb01(CZNodePartial * world, float red, float green, float blue)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->ambientColor.red = red;
         data->ambientColor.green = green;
         data->ambientColor.blue = blue;
@@ -752,12 +730,9 @@ namespace CZWorld {
      * Purpose: stage the pending vertical fog altitude bounds for the next
      * world fog application pass.
      */
-    int __fastcall SetPendingFogAltitudeRange(
-        CZNodePartial * world,
-        float minAlt,
-        float maxAlt
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall SetPendingFogAltitudeRange(CZNodePartial * world, float minAlt, float maxAlt)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->fogHeightHigh = maxAlt;
         data->fogHeightLow = minAlt;
         data->flags |= 0x20;
@@ -773,12 +748,9 @@ namespace CZWorld {
      * Purpose: stage the pending near and far fog distance range for the next
      * world fog application pass.
      */
-    int __fastcall SetPendingFogRange(
-        CZNodePartial * world,
-        float nearRange,
-        float farRange
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall SetPendingFogRange(CZNodePartial * world, float nearRange, float farRange)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->fogDistanceStart = nearRange;
         data->fogDistanceEnd = farRange;
         data->flags |= 0x04;
@@ -794,11 +766,9 @@ namespace CZWorld {
      * Purpose: stage the pending fog density for the next world fog
      * application pass.
      */
-    int __fastcall SetPendingFogDensity(
-        CZNodePartial * world,
-        float density
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall SetPendingFogDensity(CZNodePartial * world, float density)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->fogDensity = density;
         data->flags |= 0x08;
         return 0;
@@ -812,11 +782,9 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog density value from the world data.
      */
-    int __fastcall GetPendingFogDensity(
-        CZNodePartial * world,
-        float *outDensity
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall GetPendingFogDensity(CZNodePartial * world, float* outDensity)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outDensity = data->fogDensity;
         return 0;
     }
@@ -829,11 +797,9 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog state from the world data.
      */
-    int __fastcall GetPendingFogState(
-        CZNodePartial * world,
-        int *outState
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall GetPendingFogState(CZNodePartial * world, int* outState)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outState = data->fogState;
         return 0;
     }
@@ -846,13 +812,9 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: return the staged fog RGB color values from the world data.
      */
-    int __fastcall GetPendingFogColorRgb01(
-        CZNodePartial * world,
-        float *outRed,
-        float *outGreen,
-        float *outBlue
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall GetPendingFogColorRgb01(CZNodePartial * world, float* outRed, float* outGreen, float* outBlue)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outRed = data->ambientColor.red;
         *outGreen = data->ambientColor.green;
         *outBlue = data->ambientColor.blue;
@@ -868,12 +830,9 @@ namespace CZWorld {
      * Purpose: return the staged near and far fog distance range from the
      * world data.
      */
-    int __fastcall GetPendingFogRange(
-        CZNodePartial * world,
-        float *outNearRange,
-        float *outFarRange
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall GetPendingFogRange(CZNodePartial * world, float* outNearRange, float* outFarRange)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outNearRange = data->fogDistanceStart;
         *outFarRange = data->fogDistanceEnd;
         return 0;
@@ -888,12 +847,9 @@ namespace CZWorld {
      * Purpose: return the staged vertical fog altitude bounds from the world
      * data.
      */
-    int __fastcall GetPendingFogAltitudeRange(
-        CZNodePartial * world,
-        float *outMinAlt,
-        float *outMaxAlt
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall GetPendingFogAltitudeRange(CZNodePartial * world, float* outMinAlt, float* outMaxAlt)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         *outMaxAlt = data->fogHeightHigh;
         *outMinAlt = data->fogHeightLow;
         return 0;
@@ -909,12 +865,9 @@ namespace CZWorld {
      * Purpose: set the world origin and update the derived maximum X/Z
      * bounds.
      */
-    gwWorldSetOrigin(
-        CZNodePartial * world,
-        float originX,
-        float originZ
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    gwWorldSetOrigin(CZNodePartial * world, float originX, float originZ)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->originX = originX;
         data->originZ = originZ;
         data->worldMaxX = data->worldSizeX + originX;
@@ -931,12 +884,9 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the world X/Z size and update the derived maximum bounds.
      */
-    gwWorldSetSize(
-        CZNodePartial * world,
-        float sizeX,
-        float sizeZ
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    gwWorldSetSize(CZNodePartial * world, float sizeX, float sizeZ)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->worldSizeX = sizeX;
         data->worldSizeZ = sizeZ;
         data->worldMaxX = data->originX + sizeX;
@@ -952,12 +902,9 @@ namespace CZWorld {
      * Purpose: allocate and initialize the virtual area partition grid and
      * its cell metrics from the configured world bounds.
      */
-    gwWorldSetVirtualAreaPartition(
-        CZNodePartial * world,
-        float cellSizeX,
-        float cellSizeZ
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    gwWorldSetVirtualAreaPartition(CZNodePartial * world, float cellSizeX, float cellSizeZ)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data->areaGridRows != 0) {
             FreeVirtualAreaPartitions(world);
         }
@@ -971,9 +918,9 @@ namespace CZWorld {
         data->areaInvSizeX = 1.0f / cellSizeX;
         data->areaInvSizeZ = 1.0f / cellSizeZ;
         float areaCellRangeSq = cellSizeX * cellSizeX + cellSizeZ * cellSizeZ;
-        int areaCellRangeBits = *(int *)(&areaCellRangeSq);
+        int areaCellRangeBits = *(int*)(&areaCellRangeSq);
         areaCellRangeBits = (areaCellRangeBits >> 1) + 0x1fc00000;
-        data->areaCellRadiusBias = *(float *)(&areaCellRangeBits) * -0.5f;
+        data->areaCellRadiusBias = *(float*)(&areaCellRangeBits) * -0.5f;
 
         int gridColCount = (int)(data->worldSizeX / data->areaCellSizeX);
         data->areaGridColCount = gridColCount;
@@ -989,17 +936,15 @@ namespace CZWorld {
             data->areaGridRowCount = gridRowCount;
         }
 
-        data->areaGridRows =
-            (zWorldAreaPartial **)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial *)));
+        data->areaGridRows = (zWorldAreaPartial**)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial*)));
         for (int row = 0; row < data->areaGridRowCount; ++row) {
-            data->areaGridRows[row] =
-                (zWorldAreaPartial *)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
+            data->areaGridRows[row] = (zWorldAreaPartial*)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
         }
 
         for (int initRow = 0; initRow < data->areaGridRowCount; ++initRow) {
             const float rowAsFloat = (float)(initRow);
             for (int col = 0; col < data->areaGridColCount; ++col) {
-                zWorldAreaPartial *area = &data->areaGridRows[initRow][col];
+                zWorldAreaPartial* area = &data->areaGridRows[initRow][col];
                 area->areaFlags |= 0x100;
                 area->cellMinX = (float)(col)*data->areaCellSizeX + data->originX;
                 area->cellMinZ = rowAsFloat * data->areaCellSizeZ + data->originZ;
@@ -1007,11 +952,7 @@ namespace CZWorld {
                 area->bbox[3] = area->cellMinX + data->areaCellSizeX;
                 area->bbox[5] = area->cellMinZ;
                 area->bbox[2] = area->cellMinZ + data->areaCellSizeZ;
-                CZBBox::MinMaxToBoundingSphere(
-                    (const zBBox3f *)(area->bbox),
-                    &area->bboxCenter,
-                    &area->bboxRadius
-                );
+                CZBBox::MinMaxToBoundingSphere((const zBBox3f*)(area->bbox), &area->bboxCenter, &area->bboxRadius);
                 area->areaIndex = -1;
             }
         }
@@ -1027,18 +968,19 @@ namespace CZWorld {
      * Purpose: release virtual-area child lists and owned grid storage, then
      * clear the installed partition metrics.
      */
-    int __fastcall FreeVirtualAreaPartitions(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall FreeVirtualAreaPartitions(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data->areaGridRows == 0) {
             return 0;
         }
 
         {
             int row = 0;
-            zWorldAreaPartial **rowCursor = data->areaGridRows;
+            zWorldAreaPartial** rowCursor = data->areaGridRows;
             if (data->areaGridRowCount > 0) {
                 do {
-                    zWorldAreaPartial *area = *rowCursor;
+                    zWorldAreaPartial* area = *rowCursor;
                     int col = 0;
                     if (data->areaGridColCount > 0) {
                         do {
@@ -1081,12 +1023,9 @@ namespace CZWorld {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: set the X/Z tolerances used when testing partition inclusion.
      */
-    int __fastcall gwWorldSetPartitionInclusionTolerance(
-        CZNodePartial * world,
-        float toleranceX,
-        float toleranceZ
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall gwWorldSetPartitionInclusionTolerance(CZNodePartial * world, float toleranceX, float toleranceZ)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         data->partitionInclusionTolX = toleranceX;
         data->partitionInclusionTolZ = toleranceZ;
         return 0;
@@ -1100,11 +1039,9 @@ namespace CZWorld {
      * Purpose: clamp and store the maximum DEC feature count for world
      * partitions.
      */
-    gwWorldSetMaxDecFeatures(
-        CZNodePartial * world,
-        int maxFeatures
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    gwWorldSetMaxDecFeatures(CZNodePartial * world, int maxFeatures)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (maxFeatures > 255) {
             zError::ReportOld(
                 0x200,
@@ -1129,16 +1066,12 @@ namespace CZWorld {
      * Purpose: add a child to either the overflow world list or a grid area
      * list while maintaining the child's listA parent ownership.
      */
-    int __fastcall AddChildToGridCell(
-        CZNodePartial * world,
-        CZNodePartial * child,
-        int gridCol,
-        int gridRow
-    ) {
+    int __fastcall AddChildToGridCell(CZNodePartial * world, CZNodePartial * child, int gridCol, int gridRow)
+    {
         int result;
-        CZWorldDataPartial *data;
+        CZWorldDataPartial* data;
 
-        data = (CZWorldDataPartial *)(world->classData);
+        data = (CZWorldDataPartial*)(world->classData);
         result = 0;
 
         if (gridCol >= 0 && gridRow >= 0) {
@@ -1150,33 +1083,33 @@ namespace CZWorld {
 
         if (gridCol < 0 || gridRow < 0) {
             int listCount = world->listCountB + 1;
-            int listBytes = listCount * sizeof(CZNodePartial *);
-            world->listB = (CZNodePartial **)(realloc(world->listB, listBytes));
+            int listBytes = listCount * sizeof(CZNodePartial*);
+            world->listB = (CZNodePartial**)(realloc(world->listB, listBytes));
             world->listB[listCount - 1] = child;
             ++world->listCountB;
             child->gridCol = -1;
             child->gridRow = -1;
             int parentCount = child->listCountA + 1;
-            int parentBytes = parentCount * sizeof(CZNodePartial *);
-            child->listA = (CZNodePartial **)(realloc(child->listA, parentBytes));
+            int parentBytes = parentCount * sizeof(CZNodePartial*);
+            child->listA = (CZNodePartial**)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
                 CZClass::SetSingleParentFlagRecursive(child, 0);
             }
         } else {
-            zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
+            zWorldAreaPartial* area = &data->areaGridRows[gridRow][gridCol];
             int areaCount = (int)(area->childCount) + 1;
-            int areaBytes = areaCount * sizeof(CZNodePartial *);
-            area->childList = (CZNodePartial **)(realloc(area->childList, areaBytes));
+            int areaBytes = areaCount * sizeof(CZNodePartial*);
+            area->childList = (CZNodePartial**)(realloc(area->childList, areaBytes));
             area->childList[areaCount - 1] = child;
             ++area->childCount;
 
             child->gridCol = gridCol;
             child->gridRow = gridRow;
             int parentCount = child->listCountA + 1;
-            int parentBytes = parentCount * sizeof(CZNodePartial *);
-            child->listA = (CZNodePartial **)(realloc(child->listA, parentBytes));
+            int parentBytes = parentCount * sizeof(CZNodePartial*);
+            child->listA = (CZNodePartial**)(realloc(child->listA, parentBytes));
             child->listA[parentCount - 1] = world;
             ++child->listCountA;
             if (child->listCountA > 1) {
@@ -1200,10 +1133,8 @@ namespace CZWorld {
      * Purpose: derive the child's world grid cell from bounds or world extent
      * and route insertion into the world child-link storage.
      */
-    int __fastcall AddChildAtGrid(
-        CZNodePartial * world,
-        CZNodePartial * child
-    ) {
+    int __fastcall AddChildAtGrid(CZNodePartial * world, CZNodePartial * child)
+    {
         int gridCol = -1;
         int gridRow = -1;
 
@@ -1214,7 +1145,7 @@ namespace CZWorld {
             float maxZ = 0.0f;
 
             if ((child->flags & 0x100) != 0) {
-                zBBoxCorners corners = {0};
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
                 minX = corners.corners[0].x;
                 maxX = corners.corners[0].x;
@@ -1237,7 +1168,7 @@ namespace CZWorld {
                     }
                 }
             } else {
-                CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+                CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
                 minX = data->originX;
                 minZ = data->originZ;
                 maxX = data->originX + data->worldSizeX;
@@ -1257,19 +1188,17 @@ namespace CZWorld {
      * Purpose: remove a child from the world overflow list or its grid area
      * list while clearing the child's parent/grid ownership state.
      */
-    int __fastcall RemoveChildAtGrid(
-        CZNodePartial * world,
-        CZNodePartial * child
-    ) {
+    int __fastcall RemoveChildAtGrid(CZNodePartial * world, CZNodePartial * child)
+    {
         const int gridCol = child->gridCol;
         const int gridRow = child->gridRow;
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         if (gridCol == -1 && gridRow == -1) {
             return CZClass::RemoveChildGeneric(world, child);
         }
 
-        zWorldAreaPartial *area = &data->areaGridRows[gridRow][gridCol];
+        zWorldAreaPartial* area = &data->areaGridRows[gridRow][gridCol];
         int childIndex = -1;
         for (int i = 0; i < area->childCount; ++i) {
             if (area->childList[i] == child) {
@@ -1327,25 +1256,22 @@ namespace CZWorld {
      * Purpose: append a light and its data to the world lists and attach the
      * world to the light's world list.
      */
-    AddLight(
-        CZNodePartial * world,
-        CZNodePartial * light
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
-        CZLightDataPartial *lightData = (CZLightDataPartial *)(light->classData);
+    AddLight(CZNodePartial * world, CZNodePartial * light)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        CZLightDataPartial* lightData = (CZLightDataPartial*)(light->classData);
 
-        const int lightListBytes = (data->lightCount + 1) * sizeof(CZNodePartial *);
-        data->lightNodes = (CZNodePartial **)(realloc(data->lightNodes, lightListBytes));
+        const int lightListBytes = (data->lightCount + 1) * sizeof(CZNodePartial*);
+        data->lightNodes = (CZNodePartial**)(realloc(data->lightNodes, lightListBytes));
         data->lightNodes[data->lightCount] = light;
 
-        data->lightDataList =
-            (CZLightDataPartial **)(realloc(data->lightDataList, lightListBytes));
+        data->lightDataList = (CZLightDataPartial**)(realloc(data->lightDataList, lightListBytes));
         data->lightDataList[data->lightCount] = lightData;
         ++data->lightCount;
 
-        lightData->attachedWorlds = (CZNodePartial **)(realloc(
+        lightData->attachedWorlds = (CZNodePartial**)(realloc(
             lightData->attachedWorlds,
-            (lightData->attachedWorldCount + 1) * sizeof(CZNodePartial *)
+            (lightData->attachedWorldCount + 1) * sizeof(CZNodePartial*)
         ));
         lightData->attachedWorlds[lightData->attachedWorldCount] = world;
         ++lightData->attachedWorldCount;
@@ -1360,11 +1286,9 @@ namespace CZWorld {
      * Purpose: remove a light from the world lists and remove the world from
      * the light's attached-world list.
      */
-    RemoveLight(
-        CZNodePartial * world,
-        CZNodePartial * light
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    RemoveLight(CZNodePartial * world, CZNodePartial * light)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         int lightIndex = -1;
         for (int i = 0; i < data->lightCount; ++i) {
@@ -1387,7 +1311,7 @@ namespace CZWorld {
             return 5;
         }
 
-        CZLightDataPartial *lightData = data->lightDataList[lightIndex];
+        CZLightDataPartial* lightData = data->lightDataList[lightIndex];
         for (int i_681 = lightIndex; i_681 < data->lightCount - 1; ++i_681) {
             data->lightNodes[i_681] = data->lightNodes[i_681 + 1];
             data->lightDataList[i_681] = data->lightDataList[i_681 + 1];
@@ -1430,13 +1354,10 @@ namespace CZWorld {
      *
      * Purpose: initialize model lighting from the world light nodes, data and count.
      */
-    int __fastcall InitLightPointInPolygonXZ(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
-        zModelLightPointInPolygonInitXZ(
-            data->lightNodes,
-            data->lightDataList,
-            data->lightCount
-        );
+    int __fastcall InitLightPointInPolygonXZ(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        zModelLightPointInPolygonInitXZ(data->lightNodes, data->lightDataList, data->lightCount);
         return 0;
     }
 
@@ -1449,8 +1370,9 @@ namespace CZWorld {
      * Purpose: iterate the world light nodes and call
      * CZLight::gwLightUpdate for each.
      */
-    int __fastcall UpdateAllLights(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall UpdateAllLights(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         for (int i = 0; i < data->lightCount; ++i) {
             CZLight::gwLightUpdate(data->lightNodes[i]);
@@ -1467,25 +1389,22 @@ namespace CZWorld {
      * Purpose: append a sound and its data to the world lists and attach the
      * world to the sound's world list.
      */
-    AddSound(
-        CZNodePartial * world,
-        CZNodePartial * sound
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
-        CZSoundDataPartial *soundData = (CZSoundDataPartial *)(sound->classData);
+    AddSound(CZNodePartial * world, CZNodePartial * sound)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        CZSoundDataPartial* soundData = (CZSoundDataPartial*)(sound->classData);
 
-        const int soundListBytes = (data->soundCount + 1) * sizeof(CZNodePartial *);
-        data->soundNodes = (CZNodePartial **)(realloc(data->soundNodes, soundListBytes));
+        const int soundListBytes = (data->soundCount + 1) * sizeof(CZNodePartial*);
+        data->soundNodes = (CZNodePartial**)(realloc(data->soundNodes, soundListBytes));
         data->soundNodes[data->soundCount] = sound;
 
-        data->soundDataList =
-            (CZSoundDataPartial **)(realloc(data->soundDataList, soundListBytes));
+        data->soundDataList = (CZSoundDataPartial**)(realloc(data->soundDataList, soundListBytes));
         data->soundDataList[data->soundCount] = soundData;
         ++data->soundCount;
 
-        soundData->attachedWorlds = (CZNodePartial **)(realloc(
+        soundData->attachedWorlds = (CZNodePartial**)(realloc(
             soundData->attachedWorlds,
-            (soundData->attachedWorldCount + 1) * sizeof(CZNodePartial *)
+            (soundData->attachedWorldCount + 1) * sizeof(CZNodePartial*)
         ));
         soundData->attachedWorlds[soundData->attachedWorldCount] = world;
         ++soundData->attachedWorldCount;
@@ -1500,11 +1419,9 @@ namespace CZWorld {
      * Purpose: remove a sound from the world lists and remove the world from
      * the sound's attached-world list.
      */
-    RemoveSound(
-        CZNodePartial * world,
-        CZNodePartial * sound
-    ) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    RemoveSound(CZNodePartial * world, CZNodePartial * sound)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         int soundIndex = -1;
         for (int i = 0; i < data->soundCount; ++i) {
@@ -1527,7 +1444,7 @@ namespace CZWorld {
             return 5;
         }
 
-        CZSoundDataPartial *soundData = data->soundDataList[soundIndex];
+        CZSoundDataPartial* soundData = data->soundDataList[soundIndex];
         for (int i_789 = soundIndex; i_789 < data->soundCount - 1; ++i_789) {
             data->soundNodes[i_789] = data->soundNodes[i_789 + 1];
             data->soundDataList[i_789] = data->soundDataList[i_789 + 1];
@@ -1572,8 +1489,9 @@ namespace CZWorld {
      * Purpose: iterate the world sound nodes and call
      * CZSound::UpdatePlayback for each.
      */
-    int __fastcall UpdateAllSounds(CZNodePartial * world) {
-        CZWorldDataPartial *data = (CZWorldDataPartial *)(world->classData);
+    int __fastcall UpdateAllSounds(CZNodePartial * world)
+    {
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
         for (int i = 0; i < data->soundCount; ++i) {
             CZSound::UpdatePlayback(data->soundNodes[i]);
@@ -1589,16 +1507,14 @@ namespace CZWorld {
      * Purpose: write each world node's pending fog settings as a ZBD settings
      * section blob.
      */
-    WriteSettingsSection(
-        zZbdSectionCallbackCtx * callbackCtx,
-        void *userData
-    ) {
+    WriteSettingsSection(zZbdSectionCallbackCtx * callbackCtx, void* userData)
+    {
         (void)userData;
 
         int result = 1;
-        CZTypeListLink *link = *g_CZTypeList_HeadSlotPtrs[13];
+        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[13];
         while (link != 0 && result != 0) {
-            CZNodePartial *world = link->node;
+            CZNodePartial* world = link->node;
             CZWorldSettingsSectionRecord settings;
             GetPendingFogDensity(world, &settings.fogDensity);
             GetPendingFogState(world, &settings.fogState);
@@ -1611,8 +1527,7 @@ namespace CZWorld {
             GetPendingFogRange(world, &settings.fogRangeNear, &settings.fogRangeFar);
             GetPendingFogAltitudeRange(world, &settings.fogAltitudeLow, &settings.fogAltitudeHigh);
             GetPendingFogDensity(world, &settings.fogDensity);
-            result =
-                zUtil_ZAR::WriteSectionBlob(callbackCtx, world->name, &settings, sizeof(settings));
+            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, world->name, &settings, sizeof(settings));
             link = link->next;
         }
 
@@ -1630,16 +1545,17 @@ namespace CZWorld {
      */
     void __fastcall ReadSettingsSection(
         zZbdSectionCallbackCtx * callbackCtx,
-        const char *worldName,
-        CZWorldSettingsSectionRecord *settings,
+        const char* worldName,
+        CZWorldSettingsSectionRecord* settings,
         unsigned int size,
-        void *userData
-    ) {
+        void* userData
+    )
+    {
         (void)callbackCtx;
         (void)size;
         (void)userData;
 
-        CZNodePartial *world = CZClass::FindByTypeAndName(13, worldName);
+        CZNodePartial* world = CZClass::FindByTypeAndName(13, worldName);
         if (world == 0) {
             return;
         }
@@ -1656,5 +1572,4 @@ namespace CZWorld {
         SetPendingFogAltitudeRange(world, settings->fogAltitudeLow, settings->fogAltitudeHigh);
         SetPendingFogDensity(world, settings->fogDensity);
     }
-
 }

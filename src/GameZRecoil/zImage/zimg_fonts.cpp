@@ -1,4 +1,6 @@
+// Initialize MFC before the graphics headers include Windows declarations.
 #include "GameZRecoil/zHud/zhud_ui.h"
+
 #include "GameZRecoil/include/zimage.h"
 
 #include "GameZRecoil/zError/zerr.h"
@@ -17,10 +19,9 @@
  * Evidence: BN performs one g_zImage_FontTable indexed load, tests it, and
  * loads g_zImage_FontTable[0] only on the null-slot path.
  */
-zImage_Font *__fastcall zImage_Font::GetByIndexOrDefault(
-    int fontIndex
-) {
-    zImage_Font *const font = g_zImage_FontTable[fontIndex];
+zImage_Font* __fastcall zImage_Font::GetByIndexOrDefault(int fontIndex)
+{
+    zImage_Font* const font = g_zImage_FontTable[fontIndex];
     if (font != 0) {
         return font;
     }
@@ -40,10 +41,9 @@ namespace zImage {
  * FONTS node lookup, per-font image load, alpha flag update, glyph build call,
  * and loaded-tree release.
  */
-int __fastcall FontsLoadFromPath(
-    const char *path
-) {
-    zReader::Node *tree = zReader::Load(path, 0, 0);
+int __fastcall FontsLoadFromPath(const char* path)
+{
+    zReader::Node* tree = zReader::Load(path, 0, 0);
     if (tree == 0) {
         zError::ReportOld(
             0x200,
@@ -56,26 +56,20 @@ int __fastcall FontsLoadFromPath(
     }
 
     zImageInitMissionResources("..\\data\\common\\fonts");
-    zReader::Node *fontsNode = zRdrGetNode(tree, g_HudCfgKey_Fonts);
+    zReader::Node* fontsNode = zRdrGetNode(tree, g_HudCfgKey_Fonts);
     if (fontsNode == 0) {
-        zError::ReportOld(
-            0x800,
-            "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp",
-            0x52,
-            "%s file empty",
-            path
-        );
+        zError::ReportOld(0x800, "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp", 0x52, "%s file empty", path);
         return -1;
     }
 
-    zReader::Node *fontArray = fontsNode->value.nodes;
+    zReader::Node* fontArray = fontsNode->value.nodes;
     const int count = fontArray[0].value.i32;
-    zImage_Font *font = (zImage_Font *)(malloc((size_t)(count - 1) * sizeof(zImage_Font)));
+    zImage_Font* font = (zImage_Font*)(malloc((size_t)(count - 1) * sizeof(zImage_Font)));
 
     for (int i = 1; i < count; ++i) {
-        zImage_Font **slot = &g_zImage_FontTable[i - 1];
+        zImage_Font** slot = &g_zImage_FontTable[i - 1];
         *slot = font;
-        const char *fontImagePath = fontArray[i].value.str;
+        const char* fontImagePath = fontArray[i].value.str;
         font->image = TexDirFindOrCreateByPath(fontImagePath);
         if (font->image != 0) {
             font->image->formatFlagsPacked |= 0x02;
@@ -111,14 +105,15 @@ int __fastcall FontsLoadFromPath(
  * IsImageColumnTransparent, fills glyph RECT bounds, and returns the glyph
  * count.
  */
-int zImage_Font::BuildGlyphRects() {
-    zVidImagePartial *image = this->image;
+int zImage_Font::BuildGlyphRects()
+{
+    zVidImagePartial* image = this->image;
     int x = 0;
     int result = 1;
     this->spaceWidth = image->width / 95 - 1;
 
     while (x < image->width) {
-        RECT *glyph = &this->glyphRects[result - 1];
+        RECT* glyph = &this->glyphRects[result - 1];
         glyph->top = 0;
         glyph->bottom = image->height - 1;
 
@@ -165,9 +160,9 @@ int zImage_Font::BuildGlyphRects() {
  * as transparent, then walks one 16-bit pixel per row using image width as the
  * row stride.
  */
-int __fastcall zImage_Font::IsImageColumnTransparent( zVidImagePartial *image, int columnX
-) {
-    unsigned short *column = (unsigned short *)image->pixels + columnX;
+int __fastcall zImage_Font::IsImageColumnTransparent(zVidImagePartial* image, int columnX)
+{
+    unsigned short* column = (unsigned short*)image->pixels + columnX;
     const int width = image->width;
     int result = 1;
     if (columnX >= width) {
@@ -195,13 +190,9 @@ int __fastcall zImage_Font::IsImageColumnTransparent( zVidImagePartial *image, i
  * line advance, treats space, carriage return, and newline specially, clamps
  * printable glyph indexes to the 95-glyph table, and writes both outputs.
  */
-void __fastcall zImage_Font::MeasureString(
-    const char *text,
-    int fontIndex,
-    int *outWidthPx,
-    int *outLineAdvance
-) {
-    zImage_Font *const font = GetByIndexOrDefault(fontIndex);
+void __fastcall zImage_Font::MeasureString(const char* text, int fontIndex, int* outWidthPx, int* outLineAdvance)
+{
+    zImage_Font* const font = GetByIndexOrDefault(fontIndex);
     if (font == 0) {
         return;
     }
@@ -211,7 +202,7 @@ void __fastcall zImage_Font::MeasureString(
     int maxLineWidth = 0;
     int totalLineAdvance = lineAdvance;
 
-    for (const char *cursor = text; *cursor != '\0'; ++cursor) {
+    for (const char* cursor = text; *cursor != '\0'; ++cursor) {
         const signed char ch = *cursor;
         if (ch == ' ') {
             currentLineWidth += font->spaceWidth;
@@ -229,7 +220,7 @@ void __fastcall zImage_Font::MeasureString(
                 glyphIndex = 0;
             }
 
-            const RECT &glyph = font->glyphRects[glyphIndex];
+            const RECT& glyph = font->glyphRects[glyphIndex];
             currentLineWidth += glyph.right - glyph.left;
         }
 

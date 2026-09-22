@@ -15,11 +15,11 @@ struct zClassDiPickCandidateEntry;
 struct zEffect_RuntimeManager {
     int initialized;
     int templateCount;
-    CZNodePartial *loadedTemplateTree;
-    zArchiveList *freeList;
-    zEffect_RuntimeEntry *templates;
-    CZNodePartial *parentNode;
-    CZNodePartial *listenerNode;
+    CZNodePartial* loadedTemplateTree;
+    zArchiveList* freeList;
+    zEffect_RuntimeEntry* templates;
+    CZNodePartial* parentNode;
+    CZNodePartial* listenerNode;
     int freshAllocCount;
     int activatedCount;
     int recycleCount;
@@ -27,10 +27,10 @@ struct zEffect_RuntimeManager {
 
 struct zEffect_RuntimeEntry {
     int effectIndex;
-    char *modelNodeName;
-    char *effectName;
-    CZNodePartial *effectNode;
-    void *effectGfxData;
+    char* modelNodeName;
+    char* effectName;
+    CZNodePartial* effectNode;
+    void* effectGfxData;
     float fadeInTimeSec;
     float fadeInScaleRate;
     float baseScale;
@@ -56,18 +56,14 @@ struct zEffectAnimSurfaceRuntime {
     float loopElapsedSec;
     unsigned short loopIterationCount;
     unsigned char unknown_32[0x02];
-    void *currentEvent;
-    void *eventStream;
+    void* currentEvent;
+    void* eventStream;
     int eventStreamSize;
 };
 
 struct zEffectAnimEntry;
 
-typedef void(__fastcall *zEffectAnimEventCallback)(
-    zEffectAnimEntry *self,
-    void *context,
-    int value
-);
+typedef void(__fastcall* zEffectAnimEventCallback)(zEffectAnimEntry* self, void* context, int value);
 
 struct zEffectAnimEventHeader {
     union {
@@ -461,24 +457,24 @@ struct zEffectAnimRefName {
 
 struct zEffectAnimTrackedNode {
     char trackedNodeName[0x24];
-    CZNodePartial *trackedNode;
+    CZNodePartial* trackedNode;
     zEffectAnimCapturedNodeState capturedState;
 };
 
 struct zEffectAnimNodeRef28 {
     zEffectAnimRefName name;
-    CZNodePartial *node;
+    CZNodePartial* node;
 };
 
 struct zEffectAnimRuntimeNodeRef {
     zEffectAnimRefName name;
-    CZNodePartial *runtimeNode;
+    CZNodePartial* runtimeNode;
     int isAttached;
 };
 
 struct zEffectAnimSampleRef {
     char name[0x20];
-    zSndSample *sample;
+    zSndSample* sample;
 };
 
 struct zEffectAnimTemplateIndexRef {
@@ -490,7 +486,7 @@ struct zEffectAnimRuntimeRef {
     char entryName[0x20];
     char spawnDescriptor[0x20];
     int stopCachedChildOnCleanup;
-    zEffectAnimEntry *cachedChildEntry;
+    zEffectAnimEntry* cachedChildEntry;
 };
 
 struct zEffectAnimActivationPrereq {
@@ -498,19 +494,19 @@ struct zEffectAnimActivationPrereq {
     unsigned char mode;
     unsigned char unknown_05[0x03];
     char targetName[0x20];
-    zEffectAnimEntry *targetEntry;
-    CZNodePartial *targetNode;
+    zEffectAnimEntry* targetEntry;
+    CZNodePartial* targetNode;
 };
 
 struct zEffectAnimEntry {
     char name[0x20];
     char rootNodeName[0x20];
-    CZNodePartial *boundNode;
+    CZNodePartial* boundNode;
     char attachNodeName[0x20];
-    CZNodePartial *callbackNode;
-    CZNodePartial *runtimeNode;
+    CZNodePartial* callbackNode;
+    CZNodePartial* runtimeNode;
     zEffectAnimEventCallback eventCallback;
-    void *eventCallbackContext;
+    void* eventCallbackContext;
     unsigned int resetScratch[8];
     unsigned int flags;
     unsigned char activationState;
@@ -526,7 +522,7 @@ struct zEffectAnimEntry {
     float velocityX;
     float velocityY;
     float velocityZ;
-    zEffectAnimSurfaceRuntime *runtimeList;
+    zEffectAnimSurfaceRuntime* runtimeList;
     zEffectAnimSurfaceRuntime surfacePrimary;
     unsigned char runtimeSequenceCount;
     unsigned char trackedNodeCount;
@@ -539,21 +535,17 @@ struct zEffectAnimEntry {
     unsigned char activationPrereqMinimumMatchCount;
     unsigned char runtimeRefCount;
     unsigned char unknown_10e[0x02];
-    zEffectAnimTrackedNode *trackedNodeList;
-    zEffectAnimNodeRef28 *nodeRefList;
-    zEffectAnimRuntimeNodeRef *lightRefList;
-    zEffectAnimRuntimeNodeRef *soundRefList;
-    zEffectAnimSampleRef *sampleRefList;
-    zEffectAnimTemplateIndexRef *effectTemplateRefList;
-    zEffectAnimActivationPrereq *activationPrereqList;
-    zEffectAnimRuntimeRef *runtimeRefList;
-    zEffectAnimEntry *runtimeSibling;
+    zEffectAnimTrackedNode* trackedNodeList;
+    zEffectAnimNodeRef28* nodeRefList;
+    zEffectAnimRuntimeNodeRef* lightRefList;
+    zEffectAnimRuntimeNodeRef* soundRefList;
+    zEffectAnimSampleRef* sampleRefList;
+    zEffectAnimTemplateIndexRef* effectTemplateRefList;
+    zEffectAnimActivationPrereq* activationPrereqList;
+    zEffectAnimRuntimeRef* runtimeRefList;
+    zEffectAnimEntry* runtimeSibling;
 
-    static void __fastcall SetOnStateDoneCallback(
-        zEffectAnimEntry *self,
-        void *callback,
-        void *user
-    );
+    static void __fastcall SetOnStateDoneCallback(zEffectAnimEntry* self, void* callback, void* user);
 };
 
 struct zEffectAnimTextIdEntry {
@@ -581,1261 +573,256 @@ struct zEffectAnimActivationRecord {
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zEffect_RuntimeManager) == 0x28);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffect_RuntimeManager,
-        freshAllocCount
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffect_RuntimeManager, freshAllocCount) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimSurfaceRuntime) == 0x40);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        runState
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        resetMode
-    ) == 0x21
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        sequenceElapsedSec
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        eventElapsedSec
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        loopElapsedSec
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        loopIterationCount
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        currentEvent
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        eventStream
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSurfaceRuntime,
-        eventStreamSize
-    ) == 0x3c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEventHeader,
-        byteSize
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEventHeader,
-        startThreshold
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, runState) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, resetMode) == 0x21);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, sequenceElapsedSec) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, eventElapsedSec) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, loopElapsedSec) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, loopIterationCount) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, currentEvent) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, eventStream) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSurfaceRuntime, eventStreamSize) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEventHeader, byteSize) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEventHeader, startThreshold) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimActivationPrereq) == 0x30);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationPrereq,
-        targetName
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationPrereq,
-        targetEntry
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationPrereq,
-        targetNode
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationPrereq, targetName) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationPrereq, targetEntry) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationPrereq, targetNode) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimEventValue) == 4);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        targetNodeRefIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        nodeAlphaStart
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        positionOrTargetStart
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        rotationOrCameraPosStart
-    ) == 0x44
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        scaleStart
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        scaleRate
-    ) == 0x80
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        endTimeSec
-    ) == 0x8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        runtimeVecA
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        targetName
-    ) == 0xd0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeAnimEvent,
-        runtimeElapsedSec
-    ) == 0xf8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLoopEvent,
-        stopModeFlags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLoopEvent,
-        stopValue
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEmitterEvent,
-        animName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEmitterEvent,
-        cachedEntryIndex
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimCallbackEvent,
-        value
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimRefOffsetEvent,
-        refIndex
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimRefOffsetEvent,
-        nodeRefIndex
-    ) == 0x0e
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimRefOffsetEvent,
-        offsetX
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        soundName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        soundRefIndex
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        fieldMask
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        activeState
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        parentNodeRefIndex
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSoundEvent,
-        offsetX
-    ) == 0x3c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        lightName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        lightRefIndex
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        fieldMask
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        activeState
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        mode
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        directional
-    ) == 0x3c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        basisNodeRefIndex
-    ) == 0x44
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        basisOrColorX
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        positionX
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        rangeInner
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        specularR
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        intensity
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimLightEvent,
-        falloff
-    ) == 0x78
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, targetNodeRefIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, nodeAlphaStart) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, positionOrTargetStart) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, rotationOrCameraPosStart) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, scaleStart) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, scaleRate) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, endTimeSec) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, runtimeVecA) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, targetName) == 0xd0);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeAnimEvent, runtimeElapsedSec) == 0xf8);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLoopEvent, stopModeFlags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLoopEvent, stopValue) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEmitterEvent, animName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEmitterEvent, cachedEntryIndex) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimCallbackEvent, value) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimRefOffsetEvent, refIndex) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimRefOffsetEvent, nodeRefIndex) == 0x0e);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimRefOffsetEvent, offsetX) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, soundName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, soundRefIndex) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, fieldMask) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, activeState) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, parentNodeRefIndex) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSoundEvent, offsetX) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, lightName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, lightRefIndex) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, fieldMask) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, activeState) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, mode) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, directional) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, basisNodeRefIndex) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, basisOrColorX) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, positionX) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, rangeInner) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, specularR) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, intensity) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimLightEvent, falloff) == 0x78);
 RECOIL_STATIC_ASSERT(sizeof(zEffectLightRangeSpecularAnimEvent) == 0x70);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectLightRangeSpecularAnimEvent,
-        lightName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectLightRangeSpecularAnimEvent,
-        lightRefIndex
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectLightRangeSpecularAnimEvent,
-        currentRangeInner
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectLightRangeSpecularAnimEvent,
-        currentSpecularR
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectLightRangeSpecularAnimEvent,
-        durationSec
-    ) == 0x6c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectLightRangeSpecularAnimEvent, lightName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectLightRangeSpecularAnimEvent, lightRefIndex) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectLightRangeSpecularAnimEvent, currentRangeInner) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zEffectLightRangeSpecularAnimEvent, currentSpecularR) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zEffectLightRangeSpecularAnimEvent, durationSec) == 0x6c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectFogEvent) == 0x50);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectFogEvent,
-        flags
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectFogEvent,
-        fogState
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectFogEvent,
-        fogColorR
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectFogEvent,
-        fogAltitudeMin
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectFogEvent,
-        fogRangeStart
-    ) == 0x48
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectFogEvent, flags) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectFogEvent, fogState) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectFogEvent, fogColorR) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectFogEvent, fogAltitudeMin) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zEffectFogEvent, fogRangeStart) == 0x48);
 RECOIL_STATIC_ASSERT(sizeof(zEffectCameraEvent) == 0x30);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraEvent,
-        targetNodeRefIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraEvent,
-        nearClip
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraEvent,
-        viewportSecondary
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraEvent, targetNodeRefIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraEvent, nearClip) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraEvent, viewportSecondary) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectCameraAnimEvent) == 0x6c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraAnimEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraAnimEvent,
-        nearClipStart
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraAnimEvent,
-        fovPrimaryStart
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraAnimEvent,
-        viewportSecondaryRate
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectCameraAnimEvent,
-        endTime
-    ) == 0x68
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraAnimEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraAnimEvent, nearClipStart) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraAnimEvent, fovPrimaryStart) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraAnimEvent, viewportSecondaryRate) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(zEffectCameraAnimEvent, endTime) == 0x68);
 RECOIL_STATIC_ASSERT(sizeof(zEffectTransformEvent) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformEvent,
-        vecX
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformEvent,
-        targetNodeRefIndex
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformEvent,
-        basisNodeRefIndex
-    ) == 0x1e
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformEvent, vecX) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformEvent, targetNodeRefIndex) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformEvent, basisNodeRefIndex) == 0x1e);
 RECOIL_STATIC_ASSERT(sizeof(zEffectNodeScaleEvent) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeScaleEvent,
-        scaleX
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectNodeScaleEvent,
-        targetNodeRefIndex
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeScaleEvent, scaleX) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodeScaleEvent, targetNodeRefIndex) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zEffectActivateEvent) == 0x14);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectActivateEvent,
-        activeValue
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectActivateEvent,
-        targetNodeRefIndex
-    ) == 0x10
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectActivateEvent, activeValue) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectActivateEvent, targetNodeRefIndex) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zEffectParentChildEvent) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectParentChildEvent,
-        parentNodeRefIndex
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectParentChildEvent,
-        childNodeRefIndex
-    ) == 0x0e
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectParentChildEvent, parentNodeRefIndex) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectParentChildEvent, childNodeRefIndex) == 0x0e);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAttachEvent) == 0x14);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAttachEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAttachEvent,
-        targetNodeRefIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAttachEvent,
-        variantIndex
-    ) == 0x12
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAttachEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAttachEvent, targetNodeRefIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAttachEvent, variantIndex) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zEffectSurfaceControlEvent) == 0x30);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceControlEvent,
-        sequenceName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceControlEvent,
-        surfaceSlotIndex
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceControlEvent, sequenceName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceControlEvent, surfaceSlotIndex) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectSurfaceRefEvent) == 0x50);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        sequenceName
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        runtimeState
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        boundNodeRefIndex
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        flags
-    ) == 0x2e
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        animEntryIndex
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        runtimeRefIndex
-    ) == 0x32
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        refNodeIndex
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        position
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectSurfaceRefEvent,
-        orientationOffset
-    ) == 0x44
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, sequenceName) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, runtimeState) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, boundNodeRefIndex) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, flags) == 0x2e);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, animEntryIndex) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, runtimeRefIndex) == 0x32);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, refNodeIndex) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, position) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectSurfaceRefEvent, orientationOffset) == 0x44);
 RECOIL_STATIC_ASSERT(sizeof(zEffectBeamDetachEvent) == 0x58);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        beamNodeRefIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        pointANodeRefIndex
-    ) == 0x12
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        pointBNodeRefIndex
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        pointA
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        pointB
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        segmentStartInitial
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        segmentEndInitial
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        endTimeSec
-    ) == 0x50
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectBeamDetachEvent,
-        lengthThreshold
-    ) == 0x54
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, beamNodeRefIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, pointANodeRefIndex) == 0x12);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, pointBNodeRefIndex) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, pointA) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, pointB) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, segmentStartInitial) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, segmentEndInitial) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, endTimeSec) == 0x50);
+RECOIL_STATIC_ASSERT(offsetof(zEffectBeamDetachEvent, lengthThreshold) == 0x54);
 RECOIL_STATIC_ASSERT(sizeof(zEffectKeyframeSampleHeader) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeSampleHeader,
-        startTimeSec
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeSampleHeader,
-        endTimeSec
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeSampleHeader, startTimeSec) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeSampleHeader, endTimeSec) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zEffectKeyframeSampleChannel) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeSampleChannel,
-        rate
-    ) == 0x10
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeSampleChannel, rate) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zEffectKeyframeEvent) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeEvent,
-        targetNodeRefIndex
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeEvent,
-        keyframeLocalTime
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeEvent,
-        currentKeyframeOffset
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectKeyframeEvent,
-        lookaheadAdvanceCount
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeEvent, targetNodeRefIndex) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeEvent, keyframeLocalTime) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeEvent, currentKeyframeOffset) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zEffectKeyframeEvent, lookaheadAdvanceCount) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectEvaluateKeyframeEvent) == 0x18);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectEvaluateKeyframeEvent,
-        litFlag
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectEvaluateKeyframeEvent,
-        alphaScale
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectEvaluateKeyframeEvent,
-        targetNodeRefIndex
-    ) == 0x14
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectEvaluateKeyframeEvent, litFlag) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectEvaluateKeyframeEvent, alphaScale) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectEvaluateKeyframeEvent, targetNodeRefIndex) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zEffectRunKeyframeEvent) == 0x24);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        targetNodeRefIndex
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        startLitFlag
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        startAlphaScale
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        endAlphaScale
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        alphaScaleRate
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectRunKeyframeEvent,
-        endTimeSec
-    ) == 0x20
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, targetNodeRefIndex) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, startLitFlag) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, startAlphaScale) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, endAlphaScale) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, alphaScaleRate) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, endTimeSec) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(zEffectScreenColorFxEvent) == 0x40);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenColorFxEvent,
-        redBase
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenColorFxEvent,
-        greenBase
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenColorFxEvent,
-        alphaBase
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenColorFxEvent,
-        blueBase
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenColorFxEvent,
-        endTimeSec
-    ) == 0x3c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, redBase) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, greenBase) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, alphaBase) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, blueBase) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, endTimeSec) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectScreenOverlayFxEvent) == 0x70);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        flagsAndAnchorNodePacked
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        worldAnchor
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        centerXBase
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        maxRadiusNearWorld
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        maxRadiusNearPixels
-    ) == 0x3c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        extentBase
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        sinFreqBase
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        sinPhaseBase
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectScreenOverlayFxEvent,
-        endTimeSec
-    ) == 0x6c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, flagsAndAnchorNodePacked) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, worldAnchor) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, centerXBase) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, maxRadiusNearWorld) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, maxRadiusNearPixels) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, extentBase) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, sinFreqBase) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, sinPhaseBase) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, endTimeSec) == 0x6c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectTransformRefsEvent) == 0x50);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        flags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        animName
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        animEntryIndex
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        refNodeAIndex
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        refPointA
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTransformRefsEvent,
-        refPointB
-    ) == 0x44
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, animName) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, animEntryIndex) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, refNodeAIndex) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, refPointA) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTransformRefsEvent, refPointB) == 0x44);
 RECOIL_STATIC_ASSERT(sizeof(zEffectConditionalEvent) == 0x18);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectConditionalEvent,
-        conditionMask
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectConditionalEvent,
-        nodeIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectConditionalEvent,
-        conditionThreshold
-    ) == 0x14
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectConditionalEvent, conditionMask) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectConditionalEvent, nodeIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectConditionalEvent, conditionThreshold) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zEffectTopMessageEvent) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectTopMessageEvent,
-        textIdIndex
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectTopMessageEvent, textIdIndex) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimCapturedNodeState) == 0x38);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimCapturedNodeState,
-        transformSnapshot
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimCapturedNodeState, transformSnapshot) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimTrackedNode) == 0x60);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimTrackedNode,
-        trackedNodeName
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimTrackedNode,
-        trackedNode
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimTrackedNode,
-        capturedState
-    ) == 0x28
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimTrackedNode, trackedNodeName) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimTrackedNode, trackedNode) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimTrackedNode, capturedState) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimNodeRef28) == 0x28);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimNodeRef28,
-        node
-    ) == 0x24
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimNodeRef28, node) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRuntimeNodeRef) == 0x2c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimRuntimeNodeRef,
-        runtimeNode
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimRuntimeNodeRef,
-        isAttached
-    ) == 0x28
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimRuntimeNodeRef, runtimeNode) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimRuntimeNodeRef, isAttached) == 0x28);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimSampleRef) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimTemplateIndexRef) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimRuntimeRef) == 0x48);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimTextIdEntry) == 0x24);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimTextIdEntry,
-        messageId
-    ) == 0x20
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimTextIdEntry, messageId) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimSourceFileStamp) == 0x54);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimSourceFileStamp,
-        fileMtime
-    ) == 0x50
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimSourceFileStamp, fileMtime) == 0x50);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimEntry) == 0x134);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        rootNodeName
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        boundNode
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        attachNodeName
-    ) == 0x44
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        callbackNode
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeNode
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        eventCallback
-    ) == 0x6c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        eventCallbackContext
-    ) == 0x70
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        resetScratch
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        flags
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationState
-    ) == 0x98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationMode
-    ) == 0x99
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        priority
-    ) == 0x9a
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        variantCycleDelay
-    ) == 0x9b
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        distRefMinSq
-    ) == 0x9c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        distRefMaxSq
-    ) == 0xa0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        triggerBaseValue
-    ) == 0xa4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        triggerCurrentValue
-    ) == 0xa8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        triggerContext
-    ) == 0xac
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationCountdown
-    ) == 0xb0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        velocityX
-    ) == 0xb4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        velocityY
-    ) == 0xb8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        velocityZ
-    ) == 0xbc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeList
-    ) == 0xc0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        surfacePrimary
-    ) == 0xc4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        surfacePrimary.eventStream
-    ) == 0xfc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeSequenceCount
-    ) == 0x104
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        trackedNodeCount
-    ) == 0x105
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        nodeRefCount
-    ) == 0x106
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        lightRefCount
-    ) == 0x107
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        soundRefCount
-    ) == 0x108
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        sampleRefCount
-    ) == 0x109
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        effectTemplateRefCount
-    ) == 0x10a
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationPrereqCount
-    ) == 0x10b
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationPrereqMinimumMatchCount
-    ) == 0x10c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeRefCount
-    ) == 0x10d
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        trackedNodeList
-    ) == 0x110
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        nodeRefList
-    ) == 0x114
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        lightRefList
-    ) == 0x118
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        soundRefList
-    ) == 0x11c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        sampleRefList
-    ) == 0x120
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        effectTemplateRefList
-    ) == 0x124
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        activationPrereqList
-    ) == 0x128
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeRefList
-    ) == 0x12c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimEntry,
-        runtimeSibling
-    ) == 0x130
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, rootNodeName) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, boundNode) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, attachNodeName) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, callbackNode) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeNode) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, eventCallback) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, eventCallbackContext) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, resetScratch) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, flags) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationState) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationMode) == 0x99);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, priority) == 0x9a);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, variantCycleDelay) == 0x9b);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, distRefMinSq) == 0x9c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, distRefMaxSq) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, triggerBaseValue) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, triggerCurrentValue) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, triggerContext) == 0xac);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationCountdown) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, velocityX) == 0xb4);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, velocityY) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, velocityZ) == 0xbc);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeList) == 0xc0);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, surfacePrimary) == 0xc4);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, surfacePrimary.eventStream) == 0xfc);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeSequenceCount) == 0x104);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, trackedNodeCount) == 0x105);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, nodeRefCount) == 0x106);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, lightRefCount) == 0x107);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, soundRefCount) == 0x108);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, sampleRefCount) == 0x109);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, effectTemplateRefCount) == 0x10a);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationPrereqCount) == 0x10b);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationPrereqMinimumMatchCount) == 0x10c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeRefCount) == 0x10d);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, trackedNodeList) == 0x110);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, nodeRefList) == 0x114);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, lightRefList) == 0x118);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, soundRefList) == 0x11c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, sampleRefList) == 0x120);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, effectTemplateRefList) == 0x124);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationPrereqList) == 0x128);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeRefList) == 0x12c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeSibling) == 0x130);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimActivationRecord) == 0x50);
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimActivationParam) == 4);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationRecord,
-        animName
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationRecord,
-        nodeToken
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zEffectAnimActivationRecord,
-        params
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationRecord, animName) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationRecord, nodeToken) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationRecord, params) == 0x2c);
 /** Live animation state read at 0x45f15f: exactly 0x3c bytes.
  * Names describe observed roles; the layout is checked below.
  */
 struct zEffectAnimState {
     int entriesInstantiated;
-    void *heapPtr;
+    void* heapPtr;
     short countsPackedLoWord;
     short entryCount;
-    zEffectAnimEntry *entryList;
+    zEffectAnimEntry* entryList;
     int textIdEntryCount;
-    zEffectAnimTextIdEntry *textIdEntryList;
-    CZNodePartial *worldNode;
+    zEffectAnimTextIdEntry* textIdEntryList;
+    CZNodePartial* worldNode;
     float defaultGravity;
     int conditionalRefPosEnabled;
     int variantOverrideEnabled;
@@ -1871,7 +858,7 @@ extern int g_zEffect_RandTableIndex;
 extern char g_zEffectAnim_ZbdFilename[0x80];
 extern zEffectAnimState g_zEffectAnim_State;
 extern int g_zEffectAnim_SourceFileStampCount;
-extern zEffectAnimSourceFileStamp *g_zEffectAnim_SourceFileStampList;
+extern zEffectAnimSourceFileStamp* g_zEffectAnim_SourceFileStampList;
 extern int g_zEffectAnim_CopyNodeMode;
 extern int g_zEffectAnim_CopyNodeArg1;
 extern int g_zEffectAnim_CopyNodeArg2;
@@ -1882,13 +869,11 @@ extern int g_zEffect_ConditionalEffectLevel;
 extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;
 extern int g_zEffect_Anim_DebugFrameTag;
-extern CZNodePartial *g_zEffect_ResourceNode;
-extern zEffectAnimActivationRecord *g_zEffectAnim_ActivationRecordTable;
+extern CZNodePartial* g_zEffect_ResourceNode;
+extern zEffectAnimActivationRecord* g_zEffectAnim_ActivationRecordTable;
 extern int g_zEffectAnim_ActivationRecordCapacity;
 extern int g_zEffectAnim_ActivationRecordCount;
-extern void(__fastcall *g_zEffectAnim_ActivationDispatchCallback)(
-    zEffectAnimActivationRecord *record
-);
+extern void(__fastcall* g_zEffectAnim_ActivationDispatchCallback)(zEffectAnimActivationRecord* record);
 extern unsigned int g_zEffectAnim_ActivationDispatchTagHigh;
 extern int g_zEffectAnim_RecordQueueEnabled;
 extern int g_zEffectAnim_DispatchEnabled;
@@ -1925,155 +910,87 @@ int __cdecl Init();
 int __cdecl Shutdown();
 int __cdecl ShutdownIfLoaded();
 void __cdecl ClearActivationRecords();
-int __fastcall HasActivationRecord(zEffectAnimActivationRecord *record);
-zEffectAnimActivationRecord *__cdecl AllocActivationRecord();
+int __fastcall HasActivationRecord(zEffectAnimActivationRecord* record);
+zEffectAnimActivationRecord* __cdecl AllocActivationRecord();
 int __cdecl GetActivationRecordCount();
-zEffectAnimActivationRecord *__fastcall GetActivationRecordAt(int index);
-int __fastcall SaveActivationRecords(zZbdSectionCallbackCtx *callbackCtx);
-void __fastcall LoadActivationRecords(
-    void *unused,
-    const char *sectionToken,
-    void *data,
-    int dataSize,
-    void *extraCtx
-);
+zEffectAnimActivationRecord* __fastcall GetActivationRecordAt(int index);
+int __fastcall SaveActivationRecords(zZbdSectionCallbackCtx* callbackCtx);
+void __fastcall LoadActivationRecords(void* unused, const char* sectionToken, void* data, int dataSize, void* extraCtx);
 int __fastcall SaveRunningAnimRecord(
-    zZbdSectionCallbackCtx *callbackCtx,
-    zEffectAnimEntry *entry,
+    zZbdSectionCallbackCtx* callbackCtx,
+    zEffectAnimEntry* entry,
     int runningIndex,
     int includePrimaryEntry
 );
-int __fastcall SaveRunningAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
-void __fastcall LoadRunningAnimRecords(
-    void *unused,
-    const char *sectionToken,
-    void *data,
-    int dataSize,
-    void *extraCtx
-);
-int __fastcall SaveAnimRecords(zZbdSectionCallbackCtx *callbackCtx);
-void __fastcall LoadAnimRecords(
-    void *unused,
-    const char *sectionToken,
-    void *data,
-    int dataSize,
-    void *extraCtx
-);
-void __fastcall ResetFromActivationRecord(zEffectAnimActivationRecord *record);
-zEffectAnimEntry *__fastcall ProcessActivationRecord(
-    zEffectAnimActivationRecord *record
-);
-int __fastcall CaptureNodeStates(zEffectAnimEntry *self);
-int __fastcall RestoreNodeStates(zEffectAnimEntry *self);
+int __fastcall SaveRunningAnimRecords(zZbdSectionCallbackCtx* callbackCtx);
+void __fastcall
+LoadRunningAnimRecords(void* unused, const char* sectionToken, void* data, int dataSize, void* extraCtx);
+int __fastcall SaveAnimRecords(zZbdSectionCallbackCtx* callbackCtx);
+void __fastcall LoadAnimRecords(void* unused, const char* sectionToken, void* data, int dataSize, void* extraCtx);
+void __fastcall ResetFromActivationRecord(zEffectAnimActivationRecord* record);
+zEffectAnimEntry* __fastcall ProcessActivationRecord(zEffectAnimActivationRecord* record);
+int __fastcall CaptureNodeStates(zEffectAnimEntry* self);
+int __fastcall RestoreNodeStates(zEffectAnimEntry* self);
 int __fastcall AdvanceKeyframeSample(
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectKeyframeEvent *keyframeEvent,
-    zEffectKeyframeSampleHeader *sampleHeader
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectKeyframeEvent* keyframeEvent,
+    zEffectKeyframeSampleHeader* sampleHeader
 );
 float __fastcall AnimateKeyframeSample(
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectKeyframeEvent *keyframeEvent,
-    CZNodePartial *targetNode,
-    zEffectKeyframeSampleHeader *sampleHeader,
-    float *deltaTime
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectKeyframeEvent* keyframeEvent,
+    CZNodePartial* targetNode,
+    zEffectKeyframeSampleHeader* sampleHeader,
+    float* deltaTime
 );
 int __fastcall AdvanceKeyframe(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectKeyframeEvent *keyframeEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectKeyframeEvent* keyframeEvent
 );
-int __fastcall EvaluateKeyframe(
-    zEffectAnimEntry *self,
-    zEffectEvaluateKeyframeEvent *keyframeEvent
-);
+int __fastcall EvaluateKeyframe(zEffectAnimEntry* self, zEffectEvaluateKeyframeEvent* keyframeEvent);
 int __fastcall RunKeyframes(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectRunKeyframeEvent *keyframeEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectRunKeyframeEvent* keyframeEvent
 );
-int __fastcall RunSequenceEvents(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime
-);
-int __fastcall RunSequence(CZNodePartial *node);
-int __fastcall NodeActionCallback(
-    zEffectAnimEntry *self,
-    CZNodePartial *rootNode
-);
-int __fastcall GetActivationRecordPackedSize(
-    zEffectAnimActivationRecord *record
-);
+int __fastcall RunSequenceEvents(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime);
+int __fastcall RunSequence(CZNodePartial* node);
+int __fastcall NodeActionCallback(zEffectAnimEntry* self, CZNodePartial* rootNode);
+int __fastcall GetActivationRecordPackedSize(zEffectAnimActivationRecord* record);
 void __cdecl DiscardLastActivationRecord();
-void __fastcall SetZbdFilename(const char *filename);
+void __fastcall SetZbdFilename(const char* filename);
 int __cdecl LoadZbd();
 int __cdecl LoadAndInstantiate();
-void __fastcall SetActivationDispatchContext(
-    void(__fastcall *callback)(zEffectAnimActivationRecord *record),
-    int context
-);
+void __fastcall
+SetActivationDispatchContext(void(__fastcall* callback)(zEffectAnimActivationRecord* record), int context);
 } // namespace zEffect_Anim
 
 namespace zEffectAnim {
-zEffectAnimEntry *__fastcall FindEntryByName(const char *name);
-zEffectAnimEntry *__fastcall FindNextAsyncEntry(
-    zEffectAnimEntry *currentEntry
-);
-CZNodePartial *__fastcall FindNodeRecursiveByName(
-    CZNodePartial *rootNode,
-    const char *name
-);
-int __fastcall FindSoundRefIndexByName(
-    zEffectAnimEntry *self,
-    const char *name
-);
-int __fastcall FindLightRefIndexByName(
-    zEffectAnimEntry *self,
-    const char *name
-);
-int __fastcall FindOrCreateSoundRef(
-    zEffectAnimEntry *self,
-    const char *name
-);
-int __fastcall FindOrCreateLightRef(
-    zEffectAnimEntry *self,
-    const char *name
-);
-CZNodePartial *__fastcall ResolveNodeByName(
-    zEffectAnimEntry *self,
-    const char *name
-);
-zEffectAnimEntry *__fastcall RebindEntryToNode(
-    zEffectAnimEntry *self,
-    CZNodePartial *node
-);
-int __fastcall EnsureCopiedRootTree(
-    zEffectAnimEntry *self,
-    CZNodePartial *sourceRoot
-);
-zEffectAnimEntry *__fastcall CloneEntryForNode(
-    zEffectAnimEntry *self,
-    CZNodePartial *node
-);
-CZNodePartial *__fastcall GetRootNodeOrNull(zEffectAnimEntry *self);
-void __fastcall ResetActivationPrereqCount(zEffectAnimEntry *self);
-int __fastcall CheckActivationPrereqs(zEffectAnimEntry *self);
-int __fastcall ResetForNode(zEffectAnimEntry *self);
-int __fastcall Stop(zEffectAnimEntry *self);
-int __fastcall FinalizeStop(zEffectAnimEntry *self);
-int __fastcall RunStopDelayCallback(CZNodePartial *node);
-int __fastcall RunStopSequenceCallback(CZNodePartial *node);
-int __fastcall StopAndCleanup(
-    zEffectAnimEntry *self,
-    CZNodePartial *targetNode,
-    int immediateCleanup
-);
-zEffectAnimEntry *__fastcall ActivateRuntime(
-    zEffectAnimEntry *self,
-    CZNodePartial *targetNode
-);
-zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
+zEffectAnimEntry* __fastcall FindEntryByName(const char* name);
+zEffectAnimEntry* __fastcall FindNextAsyncEntry(zEffectAnimEntry* currentEntry);
+CZNodePartial* __fastcall FindNodeRecursiveByName(CZNodePartial* rootNode, const char* name);
+int __fastcall FindSoundRefIndexByName(zEffectAnimEntry* self, const char* name);
+int __fastcall FindLightRefIndexByName(zEffectAnimEntry* self, const char* name);
+int __fastcall FindOrCreateSoundRef(zEffectAnimEntry* self, const char* name);
+int __fastcall FindOrCreateLightRef(zEffectAnimEntry* self, const char* name);
+CZNodePartial* __fastcall ResolveNodeByName(zEffectAnimEntry* self, const char* name);
+zEffectAnimEntry* __fastcall RebindEntryToNode(zEffectAnimEntry* self, CZNodePartial* node);
+int __fastcall EnsureCopiedRootTree(zEffectAnimEntry* self, CZNodePartial* sourceRoot);
+zEffectAnimEntry* __fastcall CloneEntryForNode(zEffectAnimEntry* self, CZNodePartial* node);
+CZNodePartial* __fastcall GetRootNodeOrNull(zEffectAnimEntry* self);
+void __fastcall ResetActivationPrereqCount(zEffectAnimEntry* self);
+int __fastcall CheckActivationPrereqs(zEffectAnimEntry* self);
+int __fastcall ResetForNode(zEffectAnimEntry* self);
+int __fastcall Stop(zEffectAnimEntry* self);
+int __fastcall FinalizeStop(zEffectAnimEntry* self);
+int __fastcall RunStopDelayCallback(CZNodePartial* node);
+int __fastcall RunStopSequenceCallback(CZNodePartial* node);
+int __fastcall StopAndCleanup(zEffectAnimEntry* self, CZNodePartial* targetNode, int immediateCleanup);
+zEffectAnimEntry* __fastcall ActivateRuntime(zEffectAnimEntry* self, CZNodePartial* targetNode);
+zEffectAnimEntry* __fastcall SetTransformRotAndVelocity(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2084,9 +1001,9 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocity(
     float velocityY,
     float velocityZ
 );
-zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
+zEffectAnimEntry* __fastcall SetTransformRotAndVelocityThunk(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2097,53 +1014,43 @@ zEffectAnimEntry *__fastcall SetTransformRotAndVelocityThunk(
     float velocityY,
     float velocityZ
 );
-zEffectAnimEntry *__fastcall SetVelocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    float velocityX,
-    float velocityY,
-    float velocityZ
+zEffectAnimEntry* __fastcall
+SetVelocity(zEffectAnimEntry* self, CZNodePartial* boundNode, float velocityX, float velocityY, float velocityZ);
+zEffectAnimEntry* __fastcall
+SetVelocityThunk(zEffectAnimEntry* self, CZNodePartial* boundNode, float velocityX, float velocityY, float velocityZ);
+zEffectAnimEntry* __fastcall SetPositionRefAndVelocity(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNode,
+    const zVec3* refVec,
+    const zVec3* velocityVec
 );
-zEffectAnimEntry *__fastcall SetVelocityThunk(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    float velocityX,
-    float velocityY,
-    float velocityZ
+zEffectAnimEntry* __fastcall SetPositionRefAndVelocityThunk(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNode,
+    const zVec3* refVec,
+    const zVec3* velocityVec
 );
-zEffectAnimEntry *__fastcall SetPositionRefAndVelocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNode,
-    const zVec3 *refVec,
-    const zVec3 *velocityVec
+zEffectAnimEntry* __fastcall SetTransformRefs(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNodeA,
+    const zVec3* refVecA,
+    CZNodePartial* refNodeB,
+    const zVec3* refVecB
 );
-zEffectAnimEntry *__fastcall SetPositionRefAndVelocityThunk(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNode,
-    const zVec3 *refVec,
-    const zVec3 *velocityVec
+zEffectAnimEntry* __fastcall SetTransformRefsThunk(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNodeA,
+    const zVec3* refVecA,
+    CZNodePartial* refNodeB,
+    const zVec3* refVecB
 );
-zEffectAnimEntry *__fastcall SetTransformRefs(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNodeA,
-    const zVec3 *refVecA,
-    CZNodePartial *refNodeB,
-    const zVec3 *refVecB
-);
-zEffectAnimEntry *__fastcall SetTransformRefsThunk(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNodeA,
-    const zVec3 *refVecA,
-    CZNodePartial *refNodeB,
-    const zVec3 *refVecB
-);
-zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
+zEffectAnimActivationRecord* __fastcall QueueCmdType1TransformRotVelocity(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
     float posX,
     float posY,
     float posZ,
@@ -2154,245 +1061,128 @@ zEffectAnimActivationRecord *__fastcall QueueCmdType1TransformRotVelocity(
     float velocityY,
     float velocityZ
 );
-zEffectAnimActivationRecord *__fastcall QueueCmdType2Velocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
+zEffectAnimActivationRecord* __fastcall QueueCmdType2Velocity(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
     float velocityX,
     float velocityY,
     float velocityZ
 );
-zEffectAnimActivationRecord *__fastcall QueueCmdType3PositionRefAndVelocity(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNode,
-    const zVec3 *refVec,
-    const zVec3 *velocityVec
+zEffectAnimActivationRecord* __fastcall QueueCmdType3PositionRefAndVelocity(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNode,
+    const zVec3* refVec,
+    const zVec3* velocityVec
 );
-zEffectAnimActivationRecord *__fastcall QueueCmdType4TransformRefs(
-    zEffectAnimEntry *self,
-    CZNodePartial *boundNode,
-    CZNodePartial *refNodeA,
-    const zVec3 *refVecA,
-    CZNodePartial *refNodeB,
-    const zVec3 *refVecB
+zEffectAnimActivationRecord* __fastcall QueueCmdType4TransformRefs(
+    zEffectAnimEntry* self,
+    CZNodePartial* boundNode,
+    CZNodePartial* refNodeA,
+    const zVec3* refVecA,
+    CZNodePartial* refNodeB,
+    const zVec3* refVecB
 );
-int __fastcall ShutdownEntry(zEffectAnimEntry *self);
+int __fastcall ShutdownEntry(zEffectAnimEntry* self);
 } // namespace zEffectAnim
 
 namespace zEffect {
 int __cdecl Init();
-int __fastcall InitFromPath(
-    CZNodePartial *worldNode,
-    CZNodePartial *cameraNode,
-    const char *path
-);
-void __fastcall SetWorldNode(CZNodePartial *worldNode);
-void __fastcall SetResourceNode(CZNodePartial *resourceNode);
-float __fastcall TickResetDelayOnTimer(
-    zEffectAnimEntry *self,
-    float deltaSec
-);
-int __fastcall TickResetDelayOnHit(
-    zEffectAnimEntry *self,
-    CZNodePartial *hitNode,
-    int unused,
-    float damageAmount
-);
-void __fastcall SetConditionalRefPos(const zVec3 *position);
+int __fastcall InitFromPath(CZNodePartial* worldNode, CZNodePartial* cameraNode, const char* path);
+void __fastcall SetWorldNode(CZNodePartial* worldNode);
+void __fastcall SetResourceNode(CZNodePartial* resourceNode);
+float __fastcall TickResetDelayOnTimer(zEffectAnimEntry* self, float deltaSec);
+int __fastcall TickResetDelayOnHit(zEffectAnimEntry* self, CZNodePartial* hitNode, int unused, float damageAmount);
+void __fastcall SetConditionalRefPos(const zVec3* position);
 void __fastcall SetConditionalEffectLevel(int level);
-void __fastcall SetVariantOverridePackedIdsIfComplete(
-    const zTag4Partial *packedIds
-);
+void __fastcall SetVariantOverridePackedIdsIfComplete(const zTag4Partial* packedIds);
 int __cdecl SetAnimDebugFrameTag();
-float __fastcall GetConditionalRefPosDistanceSq(CZNodePartial *node);
+float __fastcall GetConditionalRefPosDistanceSq(CZNodePartial* node);
 int __fastcall TraceUpwardHitFromNodeOrPos(
-    CZNodePartial *nodeOrNull,
-    const zVec3 *positionOrNull,
-    const float *rayHeight,
-    int *outHit
+    CZNodePartial* nodeOrNull,
+    const zVec3* positionOrNull,
+    const float* rayHeight,
+    int* outHit
 );
-void *__fastcall FindNodeUserDataRecursive(CZNodePartial *node);
-int __fastcall SpawnRuntimeInstanceAt(
-    int effectIndex,
-    const zVec3 *worldPos
-);
-int __fastcall ActivateRuntimeEntryAtPosition(
-    zEffect_RuntimeEntry *runtimeEntry,
-    const zVec3 *worldPos
-);
-float __fastcall ComputeDistanceSqToListener(const zVec3 *worldPos);
-zEffect_RuntimeEntry *__fastcall AcquireRuntimeEntryByIndex(int effectIndex);
-zEffect_RuntimeEntry *__fastcall CloneRuntimeEntryFromTemplate(
-    int effectIndex
-);
-int __fastcall FindTemplateIndexByName(const char *name);
-int __fastcall RuntimeNodeActionCallback(CZNodePartial *node);
-int __fastcall HandleEffectTemplateOffsetEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimRefOffsetEvent *event
-);
-float __fastcall UpdateBeamNodeBetweenPoints(
-    CZNodePartial *obj3d,
-    const zVec3 *srcPos,
-    const zVec3 *destPos
-);
-float __fastcall UpdateBeamNodeBetweenFractions(
-    CZNodePartial *obj3d,
-    const zVec3 *srcPos,
-    float t0,
-    const zVec3 *destPos,
-    float t1
-);
-int __fastcall HandleSampleRefOffsetEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimRefOffsetEvent *event
-);
-int __fastcall HandleSoundEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSoundEvent *event
-);
-int __fastcall HandleLightEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimLightEvent *event
-);
+void* __fastcall FindNodeUserDataRecursive(CZNodePartial* node);
+int __fastcall SpawnRuntimeInstanceAt(int effectIndex, const zVec3* worldPos);
+int __fastcall ActivateRuntimeEntryAtPosition(zEffect_RuntimeEntry* runtimeEntry, const zVec3* worldPos);
+float __fastcall ComputeDistanceSqToListener(const zVec3* worldPos);
+zEffect_RuntimeEntry* __fastcall AcquireRuntimeEntryByIndex(int effectIndex);
+zEffect_RuntimeEntry* __fastcall CloneRuntimeEntryFromTemplate(int effectIndex);
+int __fastcall FindTemplateIndexByName(const char* name);
+int __fastcall RuntimeNodeActionCallback(CZNodePartial* node);
+int __fastcall HandleEffectTemplateOffsetEvent(zEffectAnimEntry* self, zEffectAnimRefOffsetEvent* event);
+float __fastcall UpdateBeamNodeBetweenPoints(CZNodePartial* obj3d, const zVec3* srcPos, const zVec3* destPos);
+float __fastcall
+UpdateBeamNodeBetweenFractions(CZNodePartial* obj3d, const zVec3* srcPos, float t0, const zVec3* destPos, float t1);
+int __fastcall HandleSampleRefOffsetEvent(zEffectAnimEntry* self, zEffectAnimRefOffsetEvent* event);
+int __fastcall HandleSoundEvent(zEffectAnimEntry* self, zEffectAnimSoundEvent* event);
+int __fastcall HandleLightEvent(zEffectAnimEntry* self, zEffectAnimLightEvent* event);
 int __fastcall HandleLightAnimEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectLightRangeSpecularAnimEvent *animEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectLightRangeSpecularAnimEvent* animEvent
 );
-int __fastcall HandleFogEvent(
-    zEffectAnimEntry *self,
-    zEffectFogEvent *event
-);
-int __fastcall HandleCameraParamsEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectCameraEvent *event
-);
+int __fastcall HandleFogEvent(zEffectAnimEntry* self, zEffectFogEvent* event);
+int __fastcall
+HandleCameraParamsEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectCameraEvent* event);
 int __fastcall AnimateCameraParamsOverTime(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectCameraAnimEvent *animEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectCameraAnimEvent* animEvent
 );
-int __fastcall FindNearestPickCandidateBelowPoint(
-    const zVec3 *point,
-    zClassDiPickCandidateEntry *outCandidate
-);
+int __fastcall FindNearestPickCandidateBelowPoint(const zVec3* point, zClassDiPickCandidateEntry* outCandidate);
 int __fastcall HandleNodeAnimEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectNodeAnimEvent *nodeAnimEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectNodeAnimEvent* nodeAnimEvent
 );
 int __fastcall AnimateNodeOverTime(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectNodeAnimEvent *nodeAnimEvent
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectNodeAnimEvent* nodeAnimEvent
 );
-int __fastcall HandleActivateEvent(
-    zEffectAnimEntry *self,
-    zEffectActivateEvent *event
-);
-int __fastcall HandlePositionEvent(
-    zEffectAnimEntry *self,
-    zEffectTransformEvent *event
-);
-int __fastcall HandleNodeScaleEvent(
-    zEffectAnimEntry *self,
-    zEffectNodeScaleEvent *event
-);
-int __fastcall HandleRotationEvent(
-    zEffectAnimEntry *self,
-    zEffectTransformEvent *event
-);
-int __fastcall HandleAddChildEvent(
-    zEffectAnimEntry *self,
-    zEffectParentChildEvent *event
-);
-int __fastcall HandleRemoveChildEvent(
-    zEffectAnimEntry *self,
-    zEffectParentChildEvent *event
-);
-int __fastcall HandleAttachEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectAttachEvent *event
-);
-int __fastcall HandleSurfaceStopEvent(
-    zEffectAnimEntry *self,
-    zEffectSurfaceControlEvent *event
-);
-int __fastcall HandleSurfacePlayEvent(
-    zEffectAnimEntry *self,
-    zEffectSurfaceControlEvent *event
-);
-int __fastcall HandleSurfaceRefEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    zEffectSurfaceRefEvent *event
-);
-int __fastcall HandleDetachEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    zEffectBeamDetachEvent *event
-);
+int __fastcall HandleActivateEvent(zEffectAnimEntry* self, zEffectActivateEvent* event);
+int __fastcall HandlePositionEvent(zEffectAnimEntry* self, zEffectTransformEvent* event);
+int __fastcall HandleNodeScaleEvent(zEffectAnimEntry* self, zEffectNodeScaleEvent* event);
+int __fastcall HandleRotationEvent(zEffectAnimEntry* self, zEffectTransformEvent* event);
+int __fastcall HandleAddChildEvent(zEffectAnimEntry* self, zEffectParentChildEvent* event);
+int __fastcall HandleRemoveChildEvent(zEffectAnimEntry* self, zEffectParentChildEvent* event);
+int __fastcall
+HandleAttachEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectAttachEvent* event);
+int __fastcall HandleSurfaceStopEvent(zEffectAnimEntry* self, zEffectSurfaceControlEvent* event);
+int __fastcall HandleSurfacePlayEvent(zEffectAnimEntry* self, zEffectSurfaceControlEvent* event);
+int __fastcall
+HandleSurfaceRefEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, zEffectSurfaceRefEvent* event);
+int __fastcall
+HandleDetachEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, zEffectBeamDetachEvent* event);
 int __fastcall HandleScreenColorFxEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectScreenColorFxEvent *event
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectScreenColorFxEvent* event
 );
 int __fastcall HandleScreenOverlayFxEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *sequenceRuntime,
-    zEffectScreenOverlayFxEvent *event
+    zEffectAnimEntry* self,
+    zEffectAnimSurfaceRuntime* sequenceRuntime,
+    zEffectScreenOverlayFxEvent* event
 );
-int __fastcall HandleTransformRefsEvent(
-    zEffectAnimEntry *self,
-    zEffectTransformRefsEvent *event
-);
-int __fastcall HandleNamedAnimStopEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimEmitterEvent *event
-);
-int __fastcall HandleEmitterPlayEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimEmitterEvent *event
-);
-int __fastcall HandleConditionalChainEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    zEffectConditionalEvent *event
-);
-int __fastcall HandleEmitterResetEvent(zEffectAnimSurfaceRuntime *runtime);
-int __fastcall HandleEmitterLoopEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    zEffectAnimLoopEvent *loopEvent
-);
-int __fastcall HandleEmitterStopEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimEmitterEvent *event
-);
-int __fastcall SkipConditionalChainToEnd(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    void *event
-);
-int __fastcall HandleNoOpMarkerEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    void *event
-);
-int __fastcall HandleCallbackEvent(
-    zEffectAnimEntry *self,
-    zEffectAnimSurfaceRuntime *runtime,
-    zEffectAnimCallbackEvent *event
-);
-int __fastcall HandleTopMessageEvent(
-    zEffectAnimEntry *self,
-    zEffectTopMessageEvent *event
-);
-int __fastcall CleanupLightRefs(zEffectAnimEntry *self);
-int __fastcall CleanupSoundRefs(zEffectAnimEntry *self);
+int __fastcall HandleTransformRefsEvent(zEffectAnimEntry* self, zEffectTransformRefsEvent* event);
+int __fastcall HandleNamedAnimStopEvent(zEffectAnimEntry* self, zEffectAnimEmitterEvent* event);
+int __fastcall HandleEmitterPlayEvent(zEffectAnimEntry* self, zEffectAnimEmitterEvent* event);
+int __fastcall
+HandleConditionalChainEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, zEffectConditionalEvent* event);
+int __fastcall HandleEmitterResetEvent(zEffectAnimSurfaceRuntime* runtime);
+int __fastcall
+HandleEmitterLoopEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, zEffectAnimLoopEvent* loopEvent);
+int __fastcall HandleEmitterStopEvent(zEffectAnimEntry* self, zEffectAnimEmitterEvent* event);
+int __fastcall SkipConditionalChainToEnd(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, void* event);
+int __fastcall HandleNoOpMarkerEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, void* event);
+int __fastcall
+HandleCallbackEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, zEffectAnimCallbackEvent* event);
+int __fastcall HandleTopMessageEvent(zEffectAnimEntry* self, zEffectTopMessageEvent* event);
+int __fastcall CleanupLightRefs(zEffectAnimEntry* self);
+int __fastcall CleanupSoundRefs(zEffectAnimEntry* self);
 int __cdecl Reset();
 int __cdecl ShutdownAll();
 } // namespace zEffect

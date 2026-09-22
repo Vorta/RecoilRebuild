@@ -5,12 +5,12 @@
 
 #include "Battlesport/player.h"
 #include "GameZRecoil/include/zDi.h"
+#include "GameZRecoil/include/zclip_alt.h"
+#include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGeometry/zgeo.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "GameZRecoil/include/zclip_alt.h"
-#include "GameZRecoil/include/zclip_rect.h"
 
 #include <malloc.h>
 #include <math.h>
@@ -31,7 +31,7 @@ int g_zModel_DiPoolCapacity = 0;
  * Authored zModel display-instance pool global.
  * Purpose: point at the allocated display-instance pool storage.
  */
-zDiPartial *g_zModel_DiPoolBase = 0;
+zDiPartial* g_zModel_DiPoolBase = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576208
  * @recoil-artifact defines .data recoil:data:0x576208: Symbol.
@@ -57,8 +57,7 @@ int g_zModel_DiPoolFreeHeadIndex = 0;
  * Retail 0x4e13a0: initialized .data char[0x28] literal
  * "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c".
  */
-char g_zModel_SourceFile_GmodConstC[0x28] =
-    "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c";
+char g_zModel_SourceFile_GmodConstC[0x28] = "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c";
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodConstC) == 0x28);
 
 /*
@@ -70,148 +69,130 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_SourceFile_GmodConstC) == 0x28);
  * @recoil-artifact defines .data recoil:data:0x4e13c8: g_zModel_WriteModel3dBufferErrorMsg.
  * Purpose: store the writable Model3D buffer write failure diagnostic.
  */
-char g_zModel_WriteModel3dBufferErrorMsg[0x1e] =
-    "Error writing model3d buffer.";
+char g_zModel_WriteModel3dBufferErrorMsg[0x1e] = "Error writing model3d buffer.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dbufferdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e13e8: g_zModel_ReadModel3dBufferDataErrorMsg.
  * Purpose: store the writable Model3D buffer read failure diagnostic.
  */
-char g_zModel_ReadModel3dBufferDataErrorMsg[0x29] =
-    "Error reading GameZ Model3D buffer data.";
+char g_zModel_ReadModel3dBufferDataErrorMsg[0x29] = "Error reading GameZ Model3D buffer data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dbufferheadererrormsg
  * @recoil-artifact defines .data recoil:data:0x4e1414: g_zModel_ReadModel3dBufferHeaderErrorMsg.
  * Purpose: store the writable Model3D buffer header read failure diagnostic.
  */
-char g_zModel_ReadModel3dBufferHeaderErrorMsg[0x30] =
-    "Error reading GameZ Model3D buffer header data.";
+char g_zModel_ReadModel3dBufferHeaderErrorMsg[0x30] = "Error reading GameZ Model3D buffer header data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolytexvertdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e1444: g_zModel_ReadModel3dPolyTexVertDataErrorMsg.
  * Purpose: store the writable Model3D polygon texture-vertex read diagnostic.
  */
-char g_zModel_ReadModel3dPolyTexVertDataErrorMsg[0x39] =
-    "Error reading GameZ Model3D polygon texture vertex data.";
+char g_zModel_ReadModel3dPolyTexVertDataErrorMsg[0x39] = "Error reading GameZ Model3D polygon texture vertex data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolyvertnormalindexerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e1480: g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg.
  * Purpose: store the writable Model3D polygon normal-index read diagnostic.
  */
-char g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg[0x39] =
-    "Error reading GameZ Model3D polygon vertex normal index.";
+char g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg[0x39] = "Error reading GameZ Model3D polygon vertex normal index.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolyvertindexerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e14bc: g_zModel_ReadModel3dPolyVertIndexErrorMsg.
  * Purpose: store the writable Model3D polygon vertex-index read diagnostic.
  */
-char g_zModel_ReadModel3dPolyVertIndexErrorMsg[0x32] =
-    "Error reading GameZ Model3D polygon vertex index.";
+char g_zModel_ReadModel3dPolyVertIndexErrorMsg[0x32] = "Error reading GameZ Model3D polygon vertex index.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpolygonbuffererrormsg
  * @recoil-artifact defines .data recoil:data:0x4e14f0: g_zModel_ReadModel3dPolygonBufferErrorMsg.
  * Purpose: store the writable Model3D polygon-buffer read diagnostic.
  */
-char g_zModel_ReadModel3dPolygonBufferErrorMsg[0x2c] =
-    "Error reading GameZ Model3D polygon buffer.";
+char g_zModel_ReadModel3dPolygonBufferErrorMsg[0x2c] = "Error reading GameZ Model3D polygon buffer.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dpointlightdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e151c: g_zModel_ReadModel3dPointLightDataErrorMsg.
  * Purpose: store the writable Model3D point-light data read diagnostic.
  */
-char g_zModel_ReadModel3dPointLightDataErrorMsg[0x2e] =
-    "Error reading GameZ Model3D point light data.";
+char g_zModel_ReadModel3dPointLightDataErrorMsg[0x2e] = "Error reading GameZ Model3D point light data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dmorphvertexdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e154c: g_zModel_ReadModel3dMorphVertexDataErrorMsg.
  * Purpose: store the writable Model3D morph-vertex read diagnostic.
  */
-char g_zModel_ReadModel3dMorphVertexDataErrorMsg[0x2f] =
-    "Error reading GameZ Model3D morph vertex data.";
+char g_zModel_ReadModel3dMorphVertexDataErrorMsg[0x2f] = "Error reading GameZ Model3D morph vertex data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dvertexnormaldataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e157c: g_zModel_ReadModel3dVertexNormalDataErrorMsg.
  * Purpose: store the writable Model3D vertex-normal read diagnostic.
  */
-char g_zModel_ReadModel3dVertexNormalDataErrorMsg[0x30] =
-    "Error reading GameZ Model3D vertex normal data.";
+char g_zModel_ReadModel3dVertexNormalDataErrorMsg[0x30] = "Error reading GameZ Model3D vertex normal data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-readmodel3dvertexdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e15ac: g_zModel_ReadModel3dVertexDataErrorMsg.
  * Purpose: store the writable Model3D vertex read diagnostic.
  */
-char g_zModel_ReadModel3dVertexDataErrorMsg[0x29] =
-    "Error reading GameZ Model3D vertex data.";
+char g_zModel_ReadModel3dVertexDataErrorMsg[0x29] = "Error reading GameZ Model3D vertex data.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-createmodel3dbufferfullerrormsg
  * @recoil-artifact defines .data recoil:data:0x4e15d8: g_zModel_CreateModel3dBufferFullErrorMsg.
  * Purpose: store the writable Model3D create-buffer-full diagnostic.
  */
-char g_zModel_CreateModel3dBufferFullErrorMsg[0x2c] =
-    "ERROR: Creating Model3D; model buffer full.";
+char g_zModel_CreateModel3dBufferFullErrorMsg[0x2c] = "ERROR: Creating Model3D; model buffer full.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-createmodel3dapproachinglimitfmt
  * @recoil-artifact defines .data recoil:data:0x4e1604: g_zModel_CreateModel3dApproachingLimitFmt.
  * Purpose: store the writable Model3D creation limit warning format.
  */
-char g_zModel_CreateModel3dApproachingLimitFmt[0x28] =
-    "         Approaching max allowable: %d\n";
+char g_zModel_CreateModel3dApproachingLimitFmt[0x28] = "         Approaching max allowable: %d\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-vertexcountwarningfmt
  * @recoil-artifact defines .data recoil:data:0x4e162c: g_zModel_VertexCountWarningFmt.
  * Purpose: store the writable model vertex-count warning format.
  */
-char g_zModel_VertexCountWarningFmt[0x2f] =
-    "%s: Line %d: WARNING: Model vertex count = %d\n";
+char g_zModel_VertexCountWarningFmt[0x2f] = "%s: Line %d: WARNING: Model vertex count = %d\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-normalcountwarningfmt
  * @recoil-artifact defines .data recoil:data:0x4e165c: g_zModel_NormalCountWarningFmt.
  * Purpose: store the writable model normal-count warning format.
  */
-char g_zModel_NormalCountWarningFmt[0x2f] =
-    "%s: Line %d: WARNING: Model normal count = %d\n";
+char g_zModel_NormalCountWarningFmt[0x2f] = "%s: Line %d: WARNING: Model normal count = %d\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addpolygontoofewvertsfmt
  * @recoil-artifact defines .data recoil:data:0x4e168c: g_zModel_AddPolygonTooFewVertsFmt.
  * Purpose: store the writable AddPolygon too-few-vertices diagnostic format.
  */
-char g_zModel_AddPolygonTooFewVertsFmt[0x2d] =
-    "Attempting to add polygon with only %d verts";
+char g_zModel_AddPolygonTooFewVertsFmt[0x2d] = "Attempting to add polygon with only %d verts";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addnonplanarpolygontriangulatingfmt
  * @recoil-artifact defines .data recoil:data:0x4e16bc: g_zModel_AddNonPlanarPolygonTriangulatingFmt.
  * Purpose: store the writable non-planar AddPolygon triangulation diagnostic.
  */
-char g_zModel_AddNonPlanarPolygonTriangulatingFmt[0x42] =
-    "Attempting to add non-planar polygon (%d verts), triangulating...";
+char g_zModel_AddNonPlanarPolygonTriangulatingFmt[0x42]
+    = "Attempting to add non-planar polygon (%d verts), triangulating...";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-discardpolygonaftercheckcolinearityfmt
  * @recoil-artifact defines .data recoil:data:0x4e1700: g_zModel_DiscardPolygonAfterCheckColinearityFmt.
  * Purpose: store the writable AddPolygon colinearity discard diagnostic.
  */
-char g_zModel_DiscardPolygonAfterCheckColinearityFmt[0x41] =
-    "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'";
+char g_zModel_DiscardPolygonAfterCheckColinearityFmt[0x41]
+    = "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-polyvertexcountapproachinglimitfmt
  * @recoil-artifact defines .data recoil:data:0x4e1744: g_zModel_PolyVertexCountApproachingLimitFmt.
  * Purpose: store the writable polygon vertex-count limit warning format.
  */
-char g_zModel_PolyVertexCountApproachingLimitFmt[0x2e] =
-    "Poly vertex count approaching limit (%d / %d)";
+char g_zModel_PolyVertexCountApproachingLimitFmt[0x2e] = "Poly vertex count approaching limit (%d / %d)";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-addpolygononlyvertserrorfmt
  * @recoil-artifact defines .data recoil:data:0x4e1774: g_zModel_AddPolygonOnlyVertsErrorFmt.
  * Purpose: store the writable AddPolygon only-vertices error format.
  */
-char g_zModel_AddPolygonOnlyVertsErrorFmt[0x3b] =
-    "ERROR: You're trying to add a Polygon with only (%d) verts";
+char g_zModel_AddPolygonOnlyVertsErrorFmt[0x3b] = "ERROR: You're trying to add a Polygon with only (%d) verts";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-setmodelcycletexturenullmodelfmt
  * @recoil-artifact defines .data recoil:data:0x4e17b0: g_zModel_SetModelCycleTextureNullModelFmt.
  * Purpose: store the writable SetModelCycleTexture null-model diagnostic.
  */
-char g_zModel_SetModelCycleTextureNullModelFmt[0x46] =
-    "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n";
+char g_zModel_SetModelCycleTextureNullModelFmt[0x46]
+    = "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n";
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_WriteModel3dBufferErrorMsg) == 0x1e);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dBufferDataErrorMsg) == 0x29);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_ReadModel3dBufferHeaderErrorMsg) == 0x30);
@@ -234,12 +215,12 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_PolyVertexCountApproachingLimitFmt) == 0x2e
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_AddPolygonOnlyVertsErrorFmt) == 0x3b);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetModelCycleTextureNullModelFmt) == 0x46);
 
-namespace {
+namespace
+{
     struct MaterialClonePair {
-        zModel_MaterialPartial *source;
-        zModel_MaterialPartial *clone;
+        zModel_MaterialPartial* source;
+        zModel_MaterialPartial* clone;
     };
-
 }
 
 /**
@@ -278,24 +259,16 @@ float g_zModel_UvQuantizeBias = -0.001953125f;
 float g_zModel_UvQuantizeScale = 256.0f;
 float g_zModel_UvQuantizeInvScale = 0.00390625f;
 
-namespace zModel_Const {
+namespace zModel_Const { }
 
-
-
-}
-
-namespace zModel_DiPool {
-
-
-
-
-}
+namespace zModel_DiPool { }
 
 /*
  * Address-backed gmod_const.c function contribution in natural retail order.
  */
-namespace {
-    const char *kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
+namespace
+{
+    const char* kClsDiSourceFile = "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c";
     const int kNodeClassCamera = 1;
     const int kNodeClassObject3D = 5;
     const int kNodeClassLod = 6;
@@ -324,7 +297,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: absolute float component for dominant-axis selection.
      */
-    float AbsFloat(float value) {
+    float AbsFloat(float value)
+    {
         return value < 0.0f ? -value : value;
     }
 
@@ -333,11 +307,12 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: read float sign bits for side-test rejection.
      */
-    unsigned int FloatBits(float value) {
+    unsigned int FloatBits(float value)
+    {
         union {
             float f;
             unsigned int u;
-        } bits = {value};
+        } bits = { value };
         return bits.u;
     }
 
@@ -346,10 +321,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: three-component dot product for plane side tests.
      */
-    float Dot3(
-        const zVec3 *a,
-        const zVec3 *b
-    ) {
+    float Dot3(const zVec3* a, const zVec3* b)
+    {
         return a->x * b->x + a->y * b->y + a->z * b->z;
     }
 
@@ -358,11 +331,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: build the segment endpoint delta used by plane tests.
      */
-    zVec3 Delta3(
-        const zVec3 *a,
-        const zVec3 *b
-    ) {
-        zVec3 result = {a->x - b->x, a->y - b->y, a->z - b->z};
+    zVec3 Delta3(const zVec3* a, const zVec3* b)
+    {
+        zVec3 result = { a->x - b->x, a->y - b->y, a->z - b->z };
         return result;
     }
 
@@ -371,22 +342,18 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: projected 2D edge cross product for winding tests.
      */
-    double ProjectedEdgeCross(
-        const zVec3 *edgeStart,
-        const zVec3 *edgeEnd,
-        const zVec3 *point,
-        int axis
-    ) {
+    double ProjectedEdgeCross(const zVec3* edgeStart, const zVec3* edgeEnd, const zVec3* point, int axis)
+    {
         switch (axis) {
         case 0:
-            return (edgeEnd->y - edgeStart->y) * (point->z - edgeStart->z) -
-                   (edgeEnd->z - edgeStart->z) * (point->y - edgeStart->y);
+            return (edgeEnd->y - edgeStart->y) * (point->z - edgeStart->z)
+                - (edgeEnd->z - edgeStart->z) * (point->y - edgeStart->y);
         case 1:
-            return (edgeEnd->x - edgeStart->x) * (point->z - edgeStart->z) -
-                   (edgeEnd->z - edgeStart->z) * (point->x - edgeStart->x);
+            return (edgeEnd->x - edgeStart->x) * (point->z - edgeStart->z)
+                - (edgeEnd->z - edgeStart->z) * (point->x - edgeStart->x);
         default:
-            return (edgeEnd->x - edgeStart->x) * (point->y - edgeStart->y) -
-                   (edgeEnd->y - edgeStart->y) * (point->x - edgeStart->x);
+            return (edgeEnd->x - edgeStart->x) * (point->y - edgeStart->y)
+                - (edgeEnd->y - edgeStart->y) * (point->x - edgeStart->x);
         }
     }
 
@@ -395,7 +362,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the dominant normal component for 2D projection.
      */
-    int DominantAxis(const zVec3 *normal) {
+    int DominantAxis(const zVec3* normal)
+    {
         int axis = 0;
         float maxAbs = AbsFloat(normal->x);
         const float absY = AbsFloat(normal->y);
@@ -415,10 +383,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: read the normal component selected by DominantAxis.
      */
-    float DominantAxisComponent(
-        const zVec3 *normal,
-        int axis
-    ) {
+    float DominantAxisComponent(const zVec3* normal, int axis)
+    {
         if (axis == 0) {
             return normal->x;
         }
@@ -433,10 +399,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: orient projected polygon winding against the dominant axis.
      */
-    int ProjectedWindingSign(
-        const zVec3 *normal,
-        int axis
-    ) {
+    int ProjectedWindingSign(const zVec3* normal, int axis)
+    {
         const int componentIsNegative = DominantAxisComponent(normal, axis) < 0.0f ? 1 : 0;
         if (axis == 1) {
             return componentIsNegative != 0 ? 1 : -1;
@@ -449,21 +413,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether the projected segment-plane hit lies inside the polygon.
      */
-    bool PointInProjectedPolygon(
-        const zVec3 *polygonVertices,
-        int vertexCount,
-        const zVec3 *point,
-        const zVec3 *normal
-    ) {
+    bool PointInProjectedPolygon(const zVec3* polygonVertices, int vertexCount, const zVec3* point, const zVec3* normal)
+    {
         const int axis = DominantAxis(normal);
         const int windingSign = ProjectedWindingSign(normal, axis);
 
         {
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-                const double edgeValue =
-                    (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
+                const zVec3* edgeStart = &polygonVertices[edgeIndex];
+                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                const double edgeValue = (double)(windingSign)*ProjectedEdgeCross(edgeStart, edgeEnd, point, axis);
                 if (edgeValue <= kPickEdgeInsideEpsilon) {
                     return false;
                 }
@@ -480,13 +439,14 @@ namespace {
      */
     bool BuildPickCandidateForSegmentVsPolygonCore(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
-        const zVec3 *polygonVertices,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
+        const zVec3* polygonVertices,
         int vertexCount,
         int cullBackface,
-        int *outDominantAxis
-    ) {
+        int* outDominantAxis
+    )
+    {
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -517,12 +477,7 @@ namespace {
             *outDominantAxis = dominantAxis;
         }
 
-        return PointInProjectedPolygon(
-            polygonVertices,
-            vertexCount,
-            &candidate->hitPos,
-            &candidate->surfaceNormal
-        );
+        return PointInProjectedPolygon(polygonVertices, vertexCount, &candidate->hitPos, &candidate->surfaceNormal);
     }
 
     /**
@@ -532,11 +487,12 @@ namespace {
      */
     bool BuildBatchSegmentPlaneHit(
         zClassDiPickCandidateEntry * candidate,
-        const CZDisplayInstanceSegmentEndpoints *segment,
-        const zVec3 *polygonVertices,
-        const zVec3 *normal,
+        const CZDisplayInstanceSegmentEndpoints* segment,
+        const zVec3* polygonVertices,
+        const zVec3* normal,
         int cullBackface
-    ) {
+    )
+    {
         const zVec3 endDelta = Delta3(&segment->end, &polygonVertices[0]);
         const float endSide = Dot3(&endDelta, normal);
         if (cullBackface == 0 && endSide >= 0.0f) {
@@ -565,14 +521,15 @@ namespace {
     void AppendBatchPolygonCandidate(
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * buffer,
-        const zVec3 *normal,
-        const zModel_PickFaceEntry *faceEntry
-    ) {
+        const zVec3* normal,
+        const zModel_PickFaceEntry* faceEntry
+    )
+    {
         if (buffer->candidateCount >= kMaxPickCandidates) {
             return;
         }
 
-        zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+        zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
         entry->surfaceNormal = *normal;
         entry->node = candidateOwner;
         entry->scenePayload = faceEntry->scenePayload;
@@ -585,12 +542,13 @@ namespace {
      * Purpose: solve hit UV coordinates in the dominant projected plane.
      */
     void SolvePickCandidateUvForProjectedPlane(
-        const zClassDiPickCandidateEntry *candidate,
-        const zVec3 *polygonVertices,
-        const zModel_PickFaceUvData *faceUvData,
-        zVec2 *outUv,
+        const zClassDiPickCandidateEntry* candidate,
+        const zVec3* polygonVertices,
+        const zModel_PickFaceUvData* faceUvData,
+        zVec2* outUv,
         int dominantAxis
-    ) {
+    )
+    {
         float uGrad0;
         float uGrad1;
         float vGrad0;
@@ -624,10 +582,10 @@ namespace {
                 faceUvData->uvs[2].y
             );
 
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
             return;
         }
 
@@ -659,10 +617,10 @@ namespace {
                 faceUvData->uvs[2].y
             );
 
-            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
             return;
         }
 
@@ -693,10 +651,10 @@ namespace {
             faceUvData->uvs[2].y
         );
 
-        outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1 +
-                   (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-        outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1 +
-                   (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+        outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1
+            + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+        outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1
+            + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
     }
 
     /**
@@ -706,8 +664,9 @@ namespace {
      * Purpose: return the current model matrix used by cls_di point and normal
      * transforms.
      */
-    const zMat4x3 *CurrentMatrix() {
-        return (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+    const zMat4x3* CurrentMatrix()
+    {
+        return (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
     }
 
     /**
@@ -715,15 +674,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: transform a world-space query point into the active model matrix space.
      */
-    zVec3 TransformWorldPointToModel(const zVec3 *point) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformWorldPointToModel(const zVec3* point)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
         const float x = point->x - matrix->posX;
         const float y = point->y - matrix->posY;
         const float z = point->z - matrix->posZ;
 
-        zVec3 result = {x * matrix->xx + y * matrix->xy + z * matrix->xz,
+        zVec3 result = { x * matrix->xx + y * matrix->xy + z * matrix->xz,
             x * matrix->yx + y * matrix->yy + z * matrix->yz,
-            x * matrix->zx + y * matrix->zy + z * matrix->zz};
+            x * matrix->zx + y * matrix->zy + z * matrix->zz };
         return result;
     }
 
@@ -732,13 +692,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: transform a model-space hit point into world space.
      */
-    zVec3 TransformModelPointToWorld(const zVec3 *point) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformModelPointToWorld(const zVec3* point)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
 
-        zVec3 result = {point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx +
-                            matrix->posX,
+        zVec3 result = { point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX,
             point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY,
-            point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ};
+            point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ };
         return result;
     }
 
@@ -747,12 +707,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: rotate a model-space surface normal into world space.
      */
-    zVec3 TransformModelVectorToWorld(const zVec3 *vec) {
-        const zMat4x3 *matrix = CurrentMatrix();
+    zVec3 TransformModelVectorToWorld(const zVec3* vec)
+    {
+        const zMat4x3* matrix = CurrentMatrix();
 
-        zVec3 result = {vec->x * matrix->xx + vec->y * matrix->yx + vec->z * matrix->zx,
+        zVec3 result = { vec->x * matrix->xx + vec->y * matrix->yx + vec->z * matrix->zx,
             vec->x * matrix->xy + vec->y * matrix->yy + vec->z * matrix->zy,
-            vec->x * matrix->xz + vec->y * matrix->yz + vec->z * matrix->zz};
+            vec->x * matrix->xz + vec->y * matrix->yz + vec->z * matrix->zz };
         return result;
     }
 
@@ -761,11 +722,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: gather indexed face vertices into the four-entry DI scratch buffer.
      */
-    void CopyFaceVerticesToScratch(
-        const zVec3 *vertices,
-        const int *vertexIndices,
-        unsigned int vertexCount
-    ) {
+    void CopyFaceVerticesToScratch(const zVec3* vertices, const int* vertexIndices, unsigned int vertexCount)
+    {
         for (unsigned int i = 0; i < vertexCount; ++i) {
             g_CZClass_DiFaceVertexScratch4[i] = vertices[vertexIndices[i]];
         }
@@ -777,8 +735,9 @@ namespace {
      * 0x445b20, and 0x445c20 as the typed mesh face payload access.
      * Purpose: view the node DI payload as polygon/mesh pick face data.
      */
-    zModel_PickFaceData *NodePickFaceData(CZNodePartial * node) {
-        return (zModel_PickFaceData *)((unsigned int)(node->userDataOrDiRef));
+    zModel_PickFaceData* NodePickFaceData(CZNodePartial * node)
+    {
+        return (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
     }
 
     /**
@@ -786,7 +745,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the current node to the active pick-candidate cursor.
      */
-    void AppendCurrentCandidateNode(CZNodePartial * node) {
+    void AppendCurrentCandidateNode(CZNodePartial * node)
+    {
         g_DiPickCandidateCursor->node = node;
         ++g_DiPickCandidateCursor;
         ++g_DiPickCandidateBuffer->candidateCount;
@@ -797,7 +757,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether traversal should stop after the first accepted candidate.
      */
-    bool BreakOnFirstCandidateHit() {
+    bool BreakOnFirstCandidateHit()
+    {
         return g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0;
     }
 
@@ -806,7 +767,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: convert the active candidate count into the original no-hit return value.
      */
-    int NoCandidatesReturn() {
+    int NoCandidatesReturn()
+    {
         return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
     }
 
@@ -815,10 +777,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the smaller floating-point segment bound.
      */
-    float MinFloat(
-        float a,
-        float b
-    ) {
+    float MinFloat(float a, float b)
+    {
         return a < b ? a : b;
     }
 
@@ -827,10 +787,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the larger floating-point segment bound.
      */
-    float MaxFloat(
-        float a,
-        float b
-    ) {
+    float MaxFloat(float a, float b)
+    {
         return a > b ? a : b;
     }
 
@@ -839,10 +797,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: expand a bounding box into the local eight-corner scratch order.
      */
-    void CopyBBoxToCornersLocal(
-        const zBBox3f *bbox,
-        zBBoxCorners *outCorners
-    ) {
+    void CopyBBoxToCornersLocal(const zBBox3f* bbox, zBBoxCorners* outCorners)
+    {
         const float minX = bbox->min.x;
         const float minY = bbox->min.y;
         const float minZ = bbox->min.z;
@@ -850,7 +806,7 @@ namespace {
         const float maxY = bbox->max.y;
         const float maxZ = bbox->max.z;
 
-        zVec3 *vertices = outCorners->corners;
+        zVec3* vertices = outCorners->corners;
         vertices[0].x = minX;
         vertices[0].y = minY;
         vertices[0].z = maxZ;
@@ -882,8 +838,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: apply the optional node-name prefix filter for region hits.
      */
-    int FilterRegionNodeNameAllowed(CZNodePartial * node) {
-        const char *prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
+    int FilterRegionNodeNameAllowed(CZNodePartial * node)
+    {
+        const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
         if (prefix == 0) {
             return 1;
         }
@@ -896,17 +853,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: compute squared clearance outside the active filter sphere.
      */
-    float FilterRegionClearanceDistanceSq(
-        const zVec3 *boundsCenter,
-        float boundsRadius
-    ) {
+    float FilterRegionClearanceDistanceSq(const zVec3* boundsCenter, float boundsRadius)
+    {
         if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck == 0) {
             return 0.0f;
         }
 
-        float clearance =
-            zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, boundsCenter) -
-            boundsRadius;
+        float clearance = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, boundsCenter) - boundsRadius;
         if (clearance < 0.0f) {
             return 0.0f;
         }
@@ -919,20 +872,18 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: reject nodes whose bounds center is hidden by the active world raycast.
      */
-    int FilterRegionLineOfSightBlocked(
-        CZNodePartial * node,
-        const zVec3 *boundsCenter
-    ) {
-        CZNodePartial *world = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
+    int FilterRegionLineOfSightBlocked(CZNodePartial * node, const zVec3* boundsCenter)
+    {
+        CZNodePartial* world = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
         if (world == 0 || (node->flags & kNodeFlagRequiresLineOfSight) == 0) {
             return 0;
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = {0};
+        PlayerProbeSampleCandidateBuffer rayData = { 0 };
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZClass::gwNodeSetRaycastable(node, 0);
-        zVec3 *center = g_CZDisplayInstance_FilterRegions_Center;
+        zVec3* center = g_CZDisplayInstance_FilterRegions_Center;
         const int result = CZDisplayInstance::RaycastFindClosest(
             world,
             &rayData,
@@ -954,13 +905,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append one filter-region hit entry to the active raycast hit list.
      */
-    void AppendFilterRegionHit(
-        CZNodePartial * node,
-        const zVec3 *hitPos,
-        float distanceSq
-    ) {
-        OptCatalogRaycastHitList *hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
-        OptCatalogRaycastHitEntry *entry = &hitList->hits[hitList->hitCount];
+    void AppendFilterRegionHit(CZNodePartial * node, const zVec3* hitPos, float distanceSq)
+    {
+        OptCatalogRaycastHitList* hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
+        OptCatalogRaycastHitEntry* entry = &hitList->hits[hitList->hitCount];
         entry->hitNode = node;
         entry->pos = *hitPos;
         entry->surfaceRef = 0;
@@ -973,7 +921,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: choose the signed grid step direction for a ray delta.
      */
-    int RayGridStep(float delta) {
+    int RayGridStep(float delta)
+    {
         if (delta > 0.0f) {
             return 1;
         }
@@ -988,14 +937,16 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the node when its pick-face data produces a segment hit.
      */
-    void AppendNodeFaceCandidateIfHit(CZNodePartial * node) {
-        zModel_PickFaceData *faceData = NodePickFaceData(node);
-        if (faceData != 0 && CZDisplayInstance::AppendPickCandidatesForFace(
-                                 faceData,
-                                 g_DiPickCandidateCursor,
-                                 &g_DiPickQueryPoint,
-                                 &g_DiSegmentEnd
-                             ) != 0) {
+    void AppendNodeFaceCandidateIfHit(CZNodePartial * node)
+    {
+        zModel_PickFaceData* faceData = NodePickFaceData(node);
+        if (faceData != 0
+            && CZDisplayInstance::AppendPickCandidatesForFace(
+                   faceData,
+                   g_DiPickCandidateCursor,
+                   &g_DiPickQueryPoint,
+                   &g_DiSegmentEnd
+               ) != 0) {
             AppendCurrentCandidateNode(node);
         }
     }
@@ -1005,10 +956,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: shift the active ray packet into or out of a world-area cell.
      */
-    void OffsetActiveRayPacket(
-        float offsetX,
-        float offsetZ
-    ) {
+    void OffsetActiveRayPacket(float offsetX, float offsetZ)
+    {
         g_DiPickQueryPoint.x += offsetX;
         g_DiPickQueryPoint.z += offsetZ;
         g_DiSegmentEnd.x += offsetX;
@@ -1029,7 +978,8 @@ namespace {
         int firstCandidate,
         float offsetX,
         float offsetZ
-    ) {
+    )
+    {
         for (int i = firstCandidate; i < rayData->candidateCount; ++i) {
             rayData->entries[i].hitPos.x -= offsetX;
             rayData->entries[i].hitPos.z -= offsetZ;
@@ -1041,12 +991,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: scan one world-area cell for raycastable segment children.
      */
-    void ProcessWorldAreaPickCell(
-        zWorldAreaPartial * area,
-        int nodeCountHint
-    ) {
+    void ProcessWorldAreaPickCell(zWorldAreaPartial * area, int nodeCountHint)
+    {
         for (int i = 0; i < area->childCount; ++i) {
-            CZNodePartial *node = area->childList[i];
+            CZNodePartial* node = area->childList[i];
             const int flags = node->flags;
             if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
                 CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(node, nodeCountHint);
@@ -1063,20 +1011,14 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children with optional enabled/raycastable filtering.
      */
-    void RecurseListBChildren(
-        CZNodePartial * node,
-        bool requireEnabledRaycastFlags
-    ) {
+    void RecurseListBChildren(CZNodePartial * node, bool requireEnabledRaycastFlags)
+    {
         {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
-                CZNodePartial *child = node->listB[childIndex];
-                if (!requireEnabledRaycastFlags ||
-                    ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                        (child->flags & kNodeFlagRaycastable) != 0)) {
-                    CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(
-                        child,
-                        node->listCountB
-                    );
+                CZNodePartial* child = node->listB[childIndex];
+                if (!requireEnabledRaycastFlags
+                    || ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0)) {
+                    CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback(child, node->listCountB);
                 }
 
                 if (BreakOnFirstCandidateHit()) {
@@ -1092,15 +1034,16 @@ namespace {
      * Purpose: compute min/max extents from the eight transformed bbox corners.
      */
     void ComputeBBoxExtents(
-        const zBBoxCorners *corners,
-        float *outMinX,
-        float *outMaxX,
-        float *outMinY,
-        float *outMaxY,
-        float *outMinZ,
-        float *outMaxZ
-    ) {
-        const zVec3 *vertices = corners->corners;
+        const zBBoxCorners* corners,
+        float* outMinX,
+        float* outMaxX,
+        float* outMinY,
+        float* outMaxY,
+        float* outMinZ,
+        float* outMaxZ
+    )
+    {
+        const zVec3* vertices = corners->corners;
         *outMinX = vertices[0].x;
         *outMaxX = vertices[0].x;
         *outMinY = vertices[0].y;
@@ -1109,7 +1052,7 @@ namespace {
         *outMaxZ = vertices[0].z;
 
         for (int i = 1; i < 8; ++i) {
-            const zVec3 *corner = &vertices[i];
+            const zVec3* corner = &vertices[i];
             if (corner->x < *outMinX) {
                 *outMinX = corner->x;
             } else if (corner->x > *outMaxX) {
@@ -1133,13 +1076,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy one bbox corner into the DI four-vertex scratch polygon.
      */
-    void CopyBBoxCornerToScratch(
-        const zBBoxCorners *bboxCorners,
-        int sourceCorner,
-        int scratchCorner
-    ) {
-        const zVec3 *src = &bboxCorners->corners[sourceCorner];
-        zVec3 *dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
+    void CopyBBoxCornerToScratch(const zBBoxCorners* bboxCorners, int sourceCorner, int scratchCorner)
+    {
+        const zVec3* src = &bboxCorners->corners[sourceCorner];
+        zVec3* dst = &g_CZClass_DiFaceVertexScratch4[scratchCorner];
         dst->x = src->x;
         dst->y = src->y;
         dst->z = src->z;
@@ -1152,14 +1092,15 @@ namespace {
      */
     bool TestBBoxFace(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
         int corner0,
         int corner1,
         int corner2,
         int corner3,
-        const zBBoxCorners *bboxCorners
-    ) {
+        const zBBoxCorners* bboxCorners
+    )
+    {
         CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
         CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
         CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
@@ -1171,7 +1112,8 @@ namespace {
                    g_CZClass_DiFaceVertexScratch4,
                    4,
                    0
-               ) != 0;
+               )
+            != 0;
     }
 
     /**
@@ -1183,15 +1125,16 @@ namespace {
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        const zBBoxCorners *bboxCorners,
-        zModel_PickFaceEntry *faceEntry,
+        const zBBoxCorners* bboxCorners,
+        zModel_PickFaceEntry* faceEntry,
         int corner0,
         int corner1,
         int corner2,
         int corner3
-    ) {
+    )
+    {
         CopyBBoxCornerToScratch(bboxCorners, corner0, 0);
         CopyBBoxCornerToScratch(bboxCorners, corner1, 1);
         CopyBBoxCornerToScratch(bboxCorners, corner2, 2);
@@ -1214,8 +1157,9 @@ namespace {
      * Purpose: reinterpret the active pick point array as segment endpoint
      * pairs for batched segment traversal.
      */
-    CZDisplayInstanceSegmentEndpoints *SegmentEndpointBatchFromPickPointArray() {
-        return (CZDisplayInstanceSegmentEndpoints *)((void *)(g_DiPickPointArray));
+    CZDisplayInstanceSegmentEndpoints* SegmentEndpointBatchFromPickPointArray()
+    {
+        return (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray));
     }
 
     /**
@@ -1224,16 +1168,17 @@ namespace {
      * Purpose: reject segment bounds that do not overlap a candidate box.
      */
     bool SegmentBoundsOverlapBox(
-        const CZDisplayInstanceSegmentBounds *bounds,
+        const CZDisplayInstanceSegmentBounds* bounds,
         float minX,
         float maxX,
         float minY,
         float maxY,
         float minZ,
         float maxZ
-    ) {
-        return bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY &&
-               bounds->minY < maxY && bounds->maxZ > minZ && bounds->minZ < maxZ;
+    )
+    {
+        return bounds->maxX > minX && bounds->minX < maxX && bounds->maxY > minY && bounds->minY < maxY
+            && bounds->maxZ > minZ && bounds->minZ < maxZ;
     }
 
     /**
@@ -1241,10 +1186,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy the per-segment active mask for recursive filtering.
      */
-    void CopySegmentActiveMask(
-        int *dst,
-        const int *src
-    ) {
+    void CopySegmentActiveMask(int* dst, const int* src)
+    {
         memcpy(dst, src, (size_t)(g_DiPickPointCount) * sizeof(int));
     }
 
@@ -1253,11 +1196,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: convert a world coordinate to a grid cell coordinate.
      */
-    int GridCoordFromWorld(
-        float value,
-        float origin,
-        float invCellSize
-    ) {
+    int GridCoordFromWorld(float value, float origin, float invCellSize)
+    {
         return (int)(floor((value - origin) * invCellSize));
     }
 
@@ -1266,10 +1206,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: clamp a grid coordinate into the world-area grid range.
      */
-    int ClampGridCoord(
-        int coord,
-        int count
-    ) {
+    int ClampGridCoord(int coord, int count)
+    {
         if (coord < 0) {
             return 0;
         }
@@ -1284,11 +1222,9 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: shift all active segment endpoints and bounds in the XZ plane.
      */
-    void OffsetSegmentBatchXZ(
-        float offsetX,
-        float offsetZ
-    ) {
-        CZDisplayInstanceSegmentEndpoints *segments = SegmentEndpointBatchFromPickPointArray();
+    void OffsetSegmentBatchXZ(float offsetX, float offsetZ)
+    {
+        CZDisplayInstanceSegmentEndpoints* segments = SegmentEndpointBatchFromPickPointArray();
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             segments[i].start.x += offsetX;
             segments[i].start.z += offsetZ;
@@ -1307,7 +1243,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: snapshot candidate counts before processing a clamped grid cell.
      */
-    void SaveSegmentCandidateCounts(int *candidateCounts) {
+    void SaveSegmentCandidateCounts(int* candidateCounts)
+    {
         for (int i = 0; i < g_DiPickPointCount; ++i) {
             candidateCounts[i] = g_DiPickCandidateBuffer[i].candidateCount;
         }
@@ -1318,13 +1255,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: restore new candidate positions from clamped cell space to world space.
      */
-    void RestoreClampedSegmentCandidatePositions(
-        const int *firstNewCandidate,
-        float offsetX,
-        float offsetZ
-    ) {
+    void RestoreClampedSegmentCandidatePositions(const int* firstNewCandidate, float offsetX, float offsetZ)
+    {
         for (int i = 0; i < g_DiPickPointCount; ++i) {
-            PlayerProbeSampleCandidateBuffer *buffer = &g_DiPickCandidateBuffer[i];
+            PlayerProbeSampleCandidateBuffer* buffer = &g_DiPickCandidateBuffer[i];
             for (int j = firstNewCandidate[i]; j < buffer->candidateCount; ++j) {
                 buffer->entries[j].hitPos.x -= offsetX;
                 buffer->entries[j].hitPos.z -= offsetZ;
@@ -1338,9 +1272,10 @@ namespace {
      * Purpose: build axis-aligned segment bounds from start and end points.
      */
     void BuildSegmentBoundsFromEndpoints(
-        const CZDisplayInstanceSegmentEndpoints *segments,
-        CZDisplayInstanceSegmentBounds *bounds
-    ) {
+        const CZDisplayInstanceSegmentEndpoints* segments,
+        CZDisplayInstanceSegmentBounds* bounds
+    )
+    {
         bounds->minX = segments->start.x < segments->end.x ? segments->start.x : segments->end.x;
         bounds->maxX = segments->start.x < segments->end.x ? segments->end.x : segments->start.x;
         bounds->minY = segments->start.y < segments->end.y ? segments->start.y : segments->end.y;
@@ -1354,26 +1289,22 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test whether segment bounds overlap the world grid in XZ.
      */
-    bool SegmentBoundsOverlapWorldXZ(
-        const CZDisplayInstanceSegmentBounds *bounds,
-        const CZWorldDataPartial *worldData
-    ) {
-        return bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX &&
-               bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ;
+    bool SegmentBoundsOverlapWorldXZ(const CZDisplayInstanceSegmentBounds* bounds, const CZWorldDataPartial* worldData)
+    {
+        return bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX
+            && bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ;
     }
 
-    zDiPartial *NodeDiRef(CZNodePartial * node);
+    zDiPartial* NodeDiRef(CZNodePartial * node);
 
     /**
      * Original static helper observed in cls_di segment-batch traversal callers
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: filter the current node's pick faces against the active segment batch.
      */
-    void FilterCurrentSegmentRegions(
-        CZNodePartial * node,
-        int *activeMask
-    ) {
-        zModel_PickFaceData *faceData = (zModel_PickFaceData *)((void *)(NodeDiRef(node)));
+    void FilterCurrentSegmentRegions(CZNodePartial * node, int* activeMask)
+    {
+        zModel_PickFaceData* faceData = (zModel_PickFaceData*)((void*)(NodeDiRef(node)));
         if (faceData != 0) {
             CZDisplayInstance::FilterRegionsAgainstPolygon(
                 node,
@@ -1391,20 +1322,13 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active segment batch.
      */
-    void RecurseSegmentBatchChildren(
-        CZNodePartial * node,
-        int *activeMask,
-        bool requirePickFlags
-    ) {
+    void RecurseSegmentBatchChildren(CZNodePartial * node, int* activeMask, bool requirePickFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
-            if (!requirePickFlags || ((child->flags & kNodeFlagEnabledForPick) != 0 &&
-                                         (child->flags & kNodeFlagRaycastable) != 0)) {
-                CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive(
-                    child,
-                    node->listCountB,
-                    activeMask
-                );
+            CZNodePartial* child = node->listB[i];
+            if (!requirePickFlags
+                || ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0)) {
+                CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, activeMask);
             }
 
             if (BreakOnFirstCandidateHit()) {
@@ -1420,8 +1344,9 @@ namespace {
      * Purpose: view the node payload pointer as a zDi record for point and
      * segment pick tests.
      */
-    zDiPartial *NodeDiRef(CZNodePartial * node) {
-        return (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+    zDiPartial* NodeDiRef(CZNodePartial * node)
+    {
+        return (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
     }
 
     /**
@@ -1429,7 +1354,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: apply the optional variant id gate for point-query nodes.
      */
-    bool NodePassesQueryVariant(CZNodePartial * node) {
+    bool NodePassesQueryVariant(CZNodePartial * node)
+    {
         return (node->flags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0;
     }
 
@@ -1438,7 +1364,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: test the node flags required for point-query candidates.
      */
-    bool NodePassesQueryFlags(CZNodePartial * node) {
+    bool NodePassesQueryFlags(CZNodePartial * node)
+    {
         return (node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0;
     }
 
@@ -1447,14 +1374,15 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: append the node when its DI payload accepts the active query point.
      */
-    void AppendQueryPointCandidateIfHit(CZNodePartial * node) {
-        zDiPartial *di = NodeDiRef(node);
+    void AppendQueryPointCandidateIfHit(CZNodePartial * node)
+    {
+        zDiPartial* di = NodeDiRef(node);
         if (di == 0) {
             return;
         }
 
-        PlayerProbeSampleCandidateBuffer *buffer = g_DiPickCandidateBuffer;
-        zClassDiPickCandidateEntry *outCandidate = &buffer->entries[buffer->candidateCount];
+        PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
+        zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
         if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
             AppendCurrentCandidateNode(node);
         }
@@ -1465,13 +1393,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active single point query.
      */
-    void RecurseQueryPointChildren(
-        CZNodePartial * node,
-        int cullCount,
-        bool requireQueryFlags
-    ) {
+    void RecurseQueryPointChildren(CZNodePartial * node, int cullCount, bool requireQueryFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
+            CZNodePartial* child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
                 CZDisplayInstance::BuildPickCandidateList(child, cullCount);
             }
@@ -1483,14 +1408,10 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: recurse over list-B children for the active point batch query.
      */
-    void RecursePointBatchChildren(
-        CZNodePartial * node,
-        int depth,
-        int *hitFlags,
-        bool requireQueryFlags
-    ) {
+    void RecursePointBatchChildren(CZNodePartial * node, int depth, int* hitFlags, bool requireQueryFlags)
+    {
         for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
+            CZNodePartial* child = node->listB[i];
             if (!requireQueryFlags || NodePassesQueryFlags(child)) {
                 CZDisplayInstance::BuildPickCandidatesForPoints(child, depth, hitFlags);
             }
@@ -1502,10 +1423,8 @@ namespace {
      * (D:\Proj\GameZRecoil\zClass\cls_di.c).
      * Purpose: copy or transform model vertices into the shared world-space scratch buffer.
      */
-    void TransformVerticesToSharedScratch(
-        const zVec3 *vertices,
-        int vertexCount
-    ) {
+    void TransformVerticesToSharedScratch(const zVec3* vertices, int vertexCount)
+    {
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(vertexCount) * sizeof(zVec3));
             return;
@@ -1517,8 +1436,8 @@ namespace {
     }
 }
 
-
-namespace zModel_Const {
+namespace zModel_Const
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getvertexmergeepsilon
      * @recoil-artifact defines .text recoil:function:0x481530: zModel_Const::GetVertexMergeEpsilon
@@ -1526,12 +1445,14 @@ namespace zModel_Const {
      *
      * Purpose: return the global vertex-merge epsilon.
      */
-    float __cdecl GetVertexMergeEpsilon() {
+    float __cdecl GetVertexMergeEpsilon()
+    {
         return g_zModel_ConstVertexMergeEpsilon;
     }
 } // namespace zModel_Const
 
-namespace zModel_Const {
+namespace zModel_Const
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setvertexmergeepsilon
      * @recoil-artifact defines .text recoil:function:0x481540: zModel_Const::SetVertexMergeEpsilon
@@ -1539,105 +1460,97 @@ namespace zModel_Const {
      *
      * Purpose: set the global vertex-merge epsilon using the original bit-preserving copy.
      */
-    void __stdcall SetVertexMergeEpsilon(float epsilon) {
+    void __stdcall SetVertexMergeEpsilon(float epsilon)
+    {
         unsigned int bits;
         memcpy(&bits, &epsilon, sizeof(bits));
         memcpy(&g_zModel_ConstVertexMergeEpsilon, &bits, sizeof(bits));
     }
 } // namespace zModel_Const
 
-namespace zModel_Const {
+namespace zModel_Const
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcoplanartolerance
      * @recoil-artifact defines .text recoil:function:0x481550: zModel_Const::SetCoplanarTolerance
      * Purpose: set the global coplanar polygon tolerance.
      */
-    void __stdcall SetCoplanarTolerance(float tolerance) {
+    void __stdcall SetCoplanarTolerance(float tolerance)
+    {
         g_zModel_CoplanarTolerance = tolerance;
     }
 } // namespace zModel_Const
 
-namespace zModel_Const {
+namespace zModel_Const
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcolineartolerance
      * @recoil-artifact defines .text recoil:function:0x481560: zModel_Const::SetColinearTolerance
      * Purpose: set the global colinear polygon tolerance.
      */
-    void __stdcall SetColinearTolerance(float tolerance) {
+    void __stdcall SetColinearTolerance(float tolerance)
+    {
         g_zModel_ColinearTolerance = tolerance;
     }
 } // namespace zModel_Const
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ptrtoindexorminus1
- * @recoil-artifact defines .text recoil:function:0x481570: zDi::PtrToIndexOrMinus1
- * @recoil-match byte
- *
- * Purpose: convert a display-instance pool pointer to its pool index, or -1 for null.
- */
-int __fastcall PtrToIndexOrMinus1(
-    zDiPartial *self
-) {
-    if (self == 0) {
-        return -1;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ptrtoindexorminus1
+     * @recoil-artifact defines .text recoil:function:0x481570: zDi::PtrToIndexOrMinus1
+     * @recoil-match byte
+     *
+     * Purpose: convert a display-instance pool pointer to its pool index, or -1 for null.
+     */
+    int __fastcall PtrToIndexOrMinus1(zDiPartial * self)
+    {
+        if (self == 0) {
+            return -1;
+        }
 
-    return (int)(self - g_zModel_DiPoolBase);
-}
+        return (int)(self - g_zModel_DiPoolBase);
+    }
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.indextoptrornull
- * @recoil-artifact defines .text recoil:function:0x4815a0: zDi::IndexToPtrOrNull
- * @recoil-match byte
- *
- * Purpose: convert a non-negative display-instance pool index to its entry pointer.
- */
-zDiPartial *__fastcall IndexToPtrOrNull(
-    int index
-) {
-    if (index < 0) {
-        return 0;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.indextoptrornull
+     * @recoil-artifact defines .text recoil:function:0x4815a0: zDi::IndexToPtrOrNull
+     * @recoil-match byte
+     *
+     * Purpose: convert a non-negative display-instance pool index to its entry pointer.
+     */
+    zDiPartial* __fastcall IndexToPtrOrNull(int index)
+    {
+        if (index < 0) {
+            return 0;
+        }
 
-    return &g_zModel_DiPoolBase[index];
-}
+        return &g_zModel_DiPoolBase[index];
+    }
 } // namespace zDi
 
-namespace zModel_DiPool {
+namespace zModel_DiPool
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.writetostream
      * @recoil-artifact defines .text recoil:function:0x4815c0: zModel_DiPool::WriteToStream
      * Purpose: serialize the display-instance pool and its dynamic arrays to a stream.
      */
-    int __fastcall WriteToStream(void *stream) {
-        FILE *const file = (FILE *)(stream);
+    int __fastcall WriteToStream(void* stream)
+    {
+        FILE* const file = (FILE*)(stream);
 
         if (fwrite(&g_zModel_DiPoolCapacity, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x141,
-                g_zModel_WriteModel3dBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x141, g_zModel_WriteModel3dBufferErrorMsg);
         }
         if (fwrite(&g_zModel_DiPoolInUseCount, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x14e,
-                g_zModel_WriteModel3dBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x14e, g_zModel_WriteModel3dBufferErrorMsg);
         }
         if (fwrite(&g_zModel_DiPoolFreeHeadIndex, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x15b,
-                g_zModel_WriteModel3dBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x15b, g_zModel_WriteModel3dBufferErrorMsg);
         }
 
         const int capacity = g_zModel_DiPoolCapacity;
@@ -1649,19 +1562,14 @@ namespace zModel_DiPool {
         const long tableOffset = ftell(file);
         const int tableBytes = capacity * (int)(sizeof(zDiPartial));
         if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x172,
-                g_zModel_WriteModel3dBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x172, g_zModel_WriteModel3dBufferErrorMsg);
             result = 0;
         }
 
         {
             for (int diIndex = 0; diIndex < result; ++diIndex) {
                 const long dynamicOffset = ftell(file);
-                zDiPartial *const di = &g_zModel_DiPoolBase[diIndex];
+                zDiPartial* const di = &g_zModel_DiPoolBase[diIndex];
                 bool wroteDynamicData = false;
 
                 if (di->vertCount > 0) {
@@ -1680,8 +1588,7 @@ namespace zModel_DiPool {
 
                 if (di->normalCount > 0) {
                     wroteDynamicData = true;
-                    if (fwrite(di->normals, 0x0c, di->normalCount, file) !=
-                        (size_t)(di->normalCount)) {
+                    if (fwrite(di->normals, 0x0c, di->normalCount, file) != (size_t)(di->normalCount)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -1695,8 +1602,7 @@ namespace zModel_DiPool {
 
                 if (di->blendVertCount > 0) {
                     wroteDynamicData = true;
-                    if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) !=
-                        (size_t)(di->blendVertCount)) {
+                    if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) != (size_t)(di->blendVertCount)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -1710,12 +1616,8 @@ namespace zModel_DiPool {
 
                 if (di->pointCount > 0) {
                     wroteDynamicData = true;
-                    if (fwrite(
-                            di->pointEntries,
-                            sizeof(zModel_PointEntryPartial),
-                            di->pointCount,
-                            file
-                        ) != (size_t)(di->pointCount)) {
+                    if (fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount, file)
+                        != (size_t)(di->pointCount)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
@@ -1728,13 +1630,10 @@ namespace zModel_DiPool {
 
                     {
                         for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
-                            zModel_PointEntryPartial *const point = &di->pointEntries[pointIndex];
-                            if (point->pointCamCount > 0 && fwrite(
-                                                                point->pointCamList,
-                                                                sizeof(zVec3),
-                                                                point->pointCamCount,
-                                                                file
-                                                            ) != (size_t)(point->pointCamCount)) {
+                            zModel_PointEntryPartial* const point = &di->pointEntries[pointIndex];
+                            if (point->pointCamCount > 0
+                                && fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file)
+                                    != (size_t)(point->pointCamCount)) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1751,16 +1650,15 @@ namespace zModel_DiPool {
                 if (di->entryCount > 0) {
                     wroteDynamicData = true;
                     const int entryBytes = di->entryCount * (int)(sizeof(zDiEntryPartial));
-                    zDiEntryPartial *serializedEntries = (zDiEntryPartial *)(malloc(entryBytes));
+                    zDiEntryPartial* serializedEntries = (zDiEntryPartial*)(malloc(entryBytes));
                     memcpy(serializedEntries, di->entries, entryBytes);
 
                     {
                         for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
                             const int materialIndex = zModel_MatlSlot::IndexFromPtrOrMinus1(
-                                (zModel_MaterialSlot *)(serializedEntries[entryIndex].material)
+                                (zModel_MaterialSlot*)(serializedEntries[entryIndex].material)
                             );
-                            serializedEntries[entryIndex].material =
-                                (zModel_MaterialPartial *)((int)(materialIndex));
+                            serializedEntries[entryIndex].material = (zModel_MaterialPartial*)((int)(materialIndex));
                         }
                     }
 
@@ -1778,11 +1676,10 @@ namespace zModel_DiPool {
                     bool entryWriteFailed = false;
                     {
                         for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
-                            zDiEntryPartial *const entry = &serializedEntries[entryIndex];
+                            zDiEntryPartial* const entry = &serializedEntries[entryIndex];
                             const unsigned int indexCount = entry->flagsAndIndexCount & 0xff;
 
-                            if (indexCount != 0 &&
-                                fwrite(entry->vertexIndices, 4, indexCount, file) != indexCount) {
+                            if (indexCount != 0 && fwrite(entry->vertexIndices, 4, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1794,9 +1691,8 @@ namespace zModel_DiPool {
                                 break;
                             }
 
-                            if ((entry->flagsAndIndexCount & 0x0200) != 0 &&
-                                entry->normalIndices != 0 &&
-                                fwrite(entry->normalIndices, 4, indexCount, file) != indexCount) {
+                            if ((entry->flagsAndIndexCount & 0x0200) != 0 && entry->normalIndices != 0
+                                && fwrite(entry->normalIndices, 4, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1808,9 +1704,9 @@ namespace zModel_DiPool {
                                 break;
                             }
 
-                            const zDiEntryPartial *const liveEntry = &di->entries[entryIndex];
-                            if ((liveEntry->material->flags & 0x0100) != 0 &&
-                                fwrite(entry->uvPairs, 8, indexCount, file) != indexCount) {
+                            const zDiEntryPartial* const liveEntry = &di->entries[entryIndex];
+                            if ((liveEntry->material->flags & 0x0100) != 0
+                                && fwrite(entry->uvPairs, 8, indexCount, file) != indexCount) {
                                 zError::ReportOld(
                                     0x200,
                                     g_zModel_SourceFile_GmodConstC,
@@ -1840,12 +1736,7 @@ namespace zModel_DiPool {
         const long endOffset = ftell(file);
         fseek(file, tableOffset, SEEK_SET);
         if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x263,
-                g_zModel_WriteModel3dBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x263, g_zModel_WriteModel3dBufferErrorMsg);
             result = 0;
         }
         fseek(file, endOffset, SEEK_SET);
@@ -1853,33 +1744,22 @@ namespace zModel_DiPool {
     }
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
+namespace zModel_DiPool
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrybyindexfromstream
      * @recoil-artifact defines .text recoil:function:0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
      * Purpose: load one serialized display-instance entry by pool index.
      */
-    RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
-        void *stream,
-        int index
-    ) {
-        FILE *const file = (FILE *)(stream);
+    RECOIL_NO_GS zDiPartial* __fastcall ReadEntryByIndexFromStream(void* stream, int index)
+    {
+        FILE* const file = (FILE*)(stream);
 
         int serializedCapacity;
         int serializedInUseCount;
         int serializedFreeHeadIndex;
-        if (ReadHeaderFromStream(
-                file,
-                &serializedCapacity,
-                &serializedInUseCount,
-                &serializedFreeHeadIndex
-            ) != 0) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x401,
-                g_zModel_ReadModel3dBufferHeaderErrorMsg
-            );
+        if (ReadHeaderFromStream(file, &serializedCapacity, &serializedInUseCount, &serializedFreeHeadIndex) != 0) {
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x401, g_zModel_ReadModel3dBufferHeaderErrorMsg);
             return 0;
         }
 
@@ -1895,16 +1775,11 @@ namespace zModel_DiPool {
 
         zDiPartial serializedEntry;
         if (fread(&serializedEntry, sizeof(zDiPartial), 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x41a,
-                g_zModel_ReadModel3dBufferDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x41a, g_zModel_ReadModel3dBufferDataErrorMsg);
             return 0;
         }
 
-        zDiPartial *const entry = AllocFromFreeList();
+        zDiPartial* const entry = AllocFromFreeList();
         if (entry == 0) {
             return 0;
         }
@@ -1920,45 +1795,27 @@ namespace zModel_DiPool {
     }
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
+namespace zModel_DiPool
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readheaderfromstream
      * @recoil-artifact defines .text recoil:function:0x481bc0: zModel_DiPool::ReadHeaderFromStream
      * Purpose: read display-instance pool header fields from a stream.
      */
-    int __fastcall ReadHeaderFromStream(
-        void *stream,
-        int *outCapacity,
-        int *outInUseCount,
-        int *outFreeHeadIndex
-    ) {
-        FILE *const file = (FILE *)(stream);
+    int __fastcall ReadHeaderFromStream(void* stream, int* outCapacity, int* outInUseCount, int* outFreeHeadIndex)
+    {
+        FILE* const file = (FILE*)(stream);
 
         if (fread(outCapacity, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x28b,
-                g_zModel_ReadModel3dBufferDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x28b, g_zModel_ReadModel3dBufferDataErrorMsg);
             return -1;
         }
         if (fread(outInUseCount, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x298,
-                g_zModel_ReadModel3dBufferDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x298, g_zModel_ReadModel3dBufferDataErrorMsg);
             return -1;
         }
         if (fread(outFreeHeadIndex, 4, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x2a5,
-                g_zModel_ReadModel3dBufferDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x2a5, g_zModel_ReadModel3dBufferDataErrorMsg);
             return -1;
         }
 
@@ -1966,35 +1823,29 @@ namespace zModel_DiPool {
     }
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
+namespace zModel_DiPool
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrydynamicdatafromstream
      * @recoil-artifact defines .text recoil:function:0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
      * Purpose: read one display-instance entry's dynamic arrays and repair material pointers.
      */
-    int __fastcall ReadEntryDynamicDataFromStream(
-        void *stream,
-        zDiPartial *entry
-    ) {
-        FILE *const file = (FILE *)(stream);
+    int __fastcall ReadEntryDynamicDataFromStream(void* stream, zDiPartial* entry)
+    {
+        FILE* const file = (FILE*)(stream);
 
         if (entry->vertCount > 0) {
             const int byteCount = entry->vertCount * (int)(sizeof(zVec3));
-            entry->verts = (zVec3 *)(malloc(byteCount));
+            entry->verts = (zVec3*)(malloc(byteCount));
             if (fread(entry->verts, byteCount, 1, file) != 1) {
-                zError::ReportOld(
-                    0x200,
-                    g_zModel_SourceFile_GmodConstC,
-                    0x31c,
-                    g_zModel_ReadModel3dVertexDataErrorMsg
-                );
+                zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x31c, g_zModel_ReadModel3dVertexDataErrorMsg);
                 return -1;
             }
         }
 
         if (entry->normalCount > 0) {
             const int byteCount = entry->normalCount * (int)(sizeof(zVec3));
-            entry->normals = (zVec3 *)(malloc(byteCount));
+            entry->normals = (zVec3*)(malloc(byteCount));
             if (fread(entry->normals, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
@@ -2008,7 +1859,7 @@ namespace zModel_DiPool {
 
         if (entry->blendVertCount > 0) {
             const int byteCount = entry->blendVertCount * (int)(sizeof(zVec3));
-            entry->blendVerts = (zVec3 *)(malloc(byteCount));
+            entry->blendVerts = (zVec3*)(malloc(byteCount));
             if (fread(entry->blendVerts, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
@@ -2022,7 +1873,7 @@ namespace zModel_DiPool {
 
         if (entry->pointCount > 0) {
             const int byteCount = entry->pointCount * (int)(sizeof(zModel_PointEntryPartial));
-            entry->pointEntries = (zModel_PointEntryPartial *)(malloc(byteCount));
+            entry->pointEntries = (zModel_PointEntryPartial*)(malloc(byteCount));
             if (fread(entry->pointEntries, byteCount, 1, file) != 1) {
                 zError::ReportOld(
                     0x200,
@@ -2035,7 +1886,7 @@ namespace zModel_DiPool {
 
             {
                 for (int pointIndex = 0; pointIndex < entry->pointCount; ++pointIndex) {
-                    zModel_PointEntryPartial *const point = &entry->pointEntries[pointIndex];
+                    zModel_PointEntryPartial* const point = &entry->pointEntries[pointIndex];
                     const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
                         (unsigned char)((int)(point->colorB + 0.5f)),
                         (unsigned char)((int)(point->colorG + 0.5f)),
@@ -2045,7 +1896,7 @@ namespace zModel_DiPool {
 
                     if (point->pointCamCount > 0) {
                         const int pointCamBytes = point->pointCamCount * (int)(sizeof(zVec3));
-                        point->pointCamList = (zVec3 *)(malloc(pointCamBytes));
+                        point->pointCamList = (zVec3*)(malloc(pointCamBytes));
                         if (fread(point->pointCamList, pointCamBytes, 1, file) != 1) {
                             zError::ReportOld(
                                 0x200,
@@ -2065,29 +1916,23 @@ namespace zModel_DiPool {
         }
 
         const int entryBytes = entry->entryCount * (int)(sizeof(zDiEntryPartial));
-        entry->entries = (zDiEntryPartial *)(malloc(entryBytes));
+        entry->entries = (zDiEntryPartial*)(malloc(entryBytes));
         if (fread(entry->entries, entryBytes, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x38f,
-                g_zModel_ReadModel3dPolygonBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x38f, g_zModel_ReadModel3dPolygonBufferErrorMsg);
             return -1;
         }
 
         {
             for (int entryIndex = 0; entryIndex < entry->entryCount; ++entryIndex) {
-                zDiEntryPartial *const diEntry = &entry->entries[entryIndex];
-                diEntry->material = (zModel_MaterialPartial *)(zModel_Matl::GetPoolEntry(
-                    (int)((int)(diEntry->material))
-                ));
+                zDiEntryPartial* const diEntry = &entry->entries[entryIndex];
+                diEntry->material
+                    = (zModel_MaterialPartial*)(zModel_Matl::GetPoolEntry((int)((int)(diEntry->material))));
             }
         }
 
         {
             for (int entryIndex = 0; entryIndex < entry->entryCount; ++entryIndex) {
-                zDiEntryPartial *const diEntry = &entry->entries[entryIndex];
+                zDiEntryPartial* const diEntry = &entry->entries[entryIndex];
                 const unsigned int indexCount = diEntry->flagsAndIndexCount & 0xff;
                 if (indexCount != 0) {
                     const unsigned int indexBytes = indexCount * 4;
@@ -2137,14 +1982,16 @@ namespace zModel_DiPool {
     }
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
+namespace zModel_DiPool
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readfromstream
      * @recoil-artifact defines .text recoil:function:0x481fa0: zModel_DiPool::ReadFromStream
      * Purpose: read the display-instance pool and all dynamic entry payloads from a stream.
      */
-    int __fastcall ReadFromStream(void *stream) {
-        FILE *const file = (FILE *)(stream);
+    int __fastcall ReadFromStream(void* stream)
+    {
+        FILE* const file = (FILE*)(stream);
         const int oldCapacity = g_zModel_DiPoolCapacity;
 
         if (ReadHeaderFromStream(
@@ -2152,13 +1999,9 @@ namespace zModel_DiPool {
                 &g_zModel_DiPoolCapacity,
                 &g_zModel_DiPoolInUseCount,
                 &g_zModel_DiPoolFreeHeadIndex
-            ) != 0) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x45b,
-                g_zModel_ReadModel3dBufferHeaderErrorMsg
-            );
+            )
+            != 0) {
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x45b, g_zModel_ReadModel3dBufferHeaderErrorMsg);
             return -1;
         }
 
@@ -2168,18 +2011,13 @@ namespace zModel_DiPool {
 
         const int poolBytes = g_zModel_DiPoolCapacity * (int)(sizeof(zDiPartial));
         if (g_zModel_DiPoolBase == 0) {
-            g_zModel_DiPoolBase = (zDiPartial *)(malloc(poolBytes));
+            g_zModel_DiPoolBase = (zDiPartial*)(malloc(poolBytes));
         } else if (g_zModel_DiPoolCapacity > oldCapacity) {
-            g_zModel_DiPoolBase = (zDiPartial *)(realloc(g_zModel_DiPoolBase, poolBytes));
+            g_zModel_DiPoolBase = (zDiPartial*)(realloc(g_zModel_DiPoolBase, poolBytes));
         }
 
         if (fread(g_zModel_DiPoolBase, poolBytes, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodConstC,
-                0x476,
-                g_zModel_ReadModel3dBufferDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x476, g_zModel_ReadModel3dBufferDataErrorMsg);
             return -1;
         }
 
@@ -2193,76 +2031,80 @@ namespace zModel_DiPool {
     }
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.allocfromfreelist
- * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
- * Purpose: allocate and initialize a display-instance pool entry from the free list.
- */
-zDiPartial *__cdecl AllocFromFreeList() {
-    const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
-    if (slotIndex < 0) {
-        zError::ReportOld(
-            0x400,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0x4a1,
-            "ERROR: Creating Model3D; model buffer full."
-        );
+namespace zModel_DiPool
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.allocfromfreelist
+     * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
+     * Purpose: allocate and initialize a display-instance pool entry from the free list.
+     */
+    zDiPartial* __cdecl AllocFromFreeList()
+    {
+        const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
+        if (slotIndex < 0) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0x4a1,
+                "ERROR: Creating Model3D; model buffer full."
+            );
+            return 0;
+        }
+
+        zDiPartial* const entry = &g_zModel_DiPoolBase[slotIndex];
+        g_zModel_DiPoolFreeHeadIndex = entry->nextFreeIndex;
+        g_zModel_DiPoolInUseCount += 1;
+        memset(entry, 0, offsetof(zDiPartial, nextFreeIndex));
+        entry->flags = (entry->flags & 0xffffffdf) | 0x03;
+        return entry;
+    }
+} // namespace zModel_DiPool
+
+namespace zModel_DiPool
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freeifunreferenced
+     * @recoil-artifact defines .text recoil:function:0x4820f0: zModel_DiPool::FreeIfUnreferenced
+     * @recoil-match byte
+     *
+     * Purpose: release an unreferenced display-instance entry back to the pool free list.
+     */
+    int __fastcall FreeIfUnreferenced(zDiPartial * di)
+    {
+        if (di == 0) {
+            return 5;
+        }
+
+        if (di->refCount != 0) {
+            return 1;
+        }
+
+        zDi::FreeContents(di);
+        memset(di, 0, offsetof(zDiPartial, nextFreeIndex));
+
+        const ptrdiff_t slotIndex = di - g_zModel_DiPoolBase;
+        g_zModel_DiPoolBase[slotIndex].nextFreeIndex = g_zModel_DiPoolFreeHeadIndex;
+        --g_zModel_DiPoolInUseCount;
+        g_zModel_DiPoolFreeHeadIndex = (int)(slotIndex);
         return 0;
     }
-
-    zDiPartial *const entry = &g_zModel_DiPoolBase[slotIndex];
-    g_zModel_DiPoolFreeHeadIndex = entry->nextFreeIndex;
-    g_zModel_DiPoolInUseCount += 1;
-    memset(entry, 0, offsetof(zDiPartial, nextFreeIndex));
-    entry->flags = (entry->flags & 0xffffffdf) | 0x03;
-    return entry;
-}
 } // namespace zModel_DiPool
 
-namespace zModel_DiPool {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freeifunreferenced
- * @recoil-artifact defines .text recoil:function:0x4820f0: zModel_DiPool::FreeIfUnreferenced
- * @recoil-match byte
- *
- * Purpose: release an unreferenced display-instance entry back to the pool free list.
- */
-int __fastcall FreeIfUnreferenced(
-    zDiPartial *di
-) {
-    if (di == 0) {
-        return 5;
-    }
-
-    if (di->refCount != 0) {
-        return 1;
-    }
-
-    zDi::FreeContents(di);
-    memset(di, 0, offsetof(zDiPartial, nextFreeIndex));
-
-    const ptrdiff_t slotIndex = di - g_zModel_DiPoolBase;
-    g_zModel_DiPoolBase[slotIndex].nextFreeIndex = g_zModel_DiPoolFreeHeadIndex;
-    --g_zModel_DiPoolInUseCount;
-    g_zModel_DiPoolFreeHeadIndex = (int)(slotIndex);
-    return 0;
-}
-} // namespace zModel_DiPool
-
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freecontents
      * @recoil-artifact defines .text recoil:function:0x482160: zDi::FreeContents
      * Purpose: release all heap-owned arrays and materials held by a display instance.
      */
-    int __fastcall FreeContents(zDiPartial * self) {
+    int __fastcall FreeContents(zDiPartial * self)
+    {
         if (self == 0) {
             return 5;
         }
 
         for (int i = 0; i < self->entryCount; ++i) {
-            zDiEntryPartial &entry = self->entries[i];
+            zDiEntryPartial& entry = self->entries[i];
             if (entry.vertexIndices != 0) {
                 free(entry.vertexIndices);
                 entry.vertexIndices = 0;
@@ -2310,22 +2152,20 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.clonetoinstance
      * @recoil-artifact defines .text recoil:function:0x482270: zDi::CloneToInstance
      * Purpose: clone a display instance, optionally cloning or sharing its material references.
      */
-    zDiPartial *__fastcall CloneToInstance(
-        zDiPartial * self,
-        int cloneMaterials,
-        int cloneAuxOnly
-    ) {
+    zDiPartial* __fastcall CloneToInstance(zDiPartial * self, int cloneMaterials, int cloneAuxOnly)
+    {
         if (self == 0) {
             return 0;
         }
 
-        zDiPartial *const clone = zModel_DiPool::AllocFromFreeList();
+        zDiPartial* const clone = zModel_DiPool::AllocFromFreeList();
         if (clone == 0) {
             return 0;
         }
@@ -2345,65 +2185,55 @@ namespace zDi {
 
         clone->pointCount = self->pointCount;
         if (self->pointCount > 0) {
-            clone->pointEntries = (zModel_PointEntryPartial *)(malloc(
-                (size_t)(self->pointCount) * sizeof(zModel_PointEntryPartial)
-            ));
+            clone->pointEntries
+                = (zModel_PointEntryPartial*)(malloc((size_t)(self->pointCount) * sizeof(zModel_PointEntryPartial)));
             for (int i = 0; i < self->pointCount; ++i) {
                 clone->pointEntries[i] = self->pointEntries[i];
                 if (self->pointEntries[i].pointCamCount > 0) {
-                    const size_t pointCamBytes =
-                        (size_t)(self->pointEntries[i].pointCamCount) * sizeof(zVec3);
-                    clone->pointEntries[i].pointCamList =
-                        (zVec3 *)(malloc(pointCamBytes));
-                    memcpy(
-                        clone->pointEntries[i].pointCamList,
-                        self->pointEntries[i].pointCamList,
-                        pointCamBytes
-                    );
+                    const size_t pointCamBytes = (size_t)(self->pointEntries[i].pointCamCount) * sizeof(zVec3);
+                    clone->pointEntries[i].pointCamList = (zVec3*)(malloc(pointCamBytes));
+                    memcpy(clone->pointEntries[i].pointCamList, self->pointEntries[i].pointCamList, pointCamBytes);
                 }
             }
         }
 
         clone->blendVertCount = self->blendVertCount;
         if (self->blendVertCount > 0) {
-            const size_t blendVertBytes =
-                (size_t)(self->blendVertCount) * sizeof(zVec3);
-            clone->blendVerts = (zVec3 *)(malloc(blendVertBytes));
+            const size_t blendVertBytes = (size_t)(self->blendVertCount) * sizeof(zVec3);
+            clone->blendVerts = (zVec3*)(malloc(blendVertBytes));
             memcpy(clone->blendVerts, self->blendVerts, blendVertBytes);
         }
 
         clone->vertCount = self->vertCount;
         if (self->vertCount > 0) {
             const size_t vertBytes = (size_t)(self->vertCount) * sizeof(zVec3);
-            clone->verts = (zVec3 *)(malloc(vertBytes));
+            clone->verts = (zVec3*)(malloc(vertBytes));
             memcpy(clone->verts, self->verts, vertBytes);
         }
 
         clone->normalCount = self->normalCount;
         if (self->normalCount > 0) {
-            const size_t normalBytes =
-                (size_t)(self->normalCount) * sizeof(zVec3);
-            clone->normals = (zVec3 *)(malloc(normalBytes));
+            const size_t normalBytes = (size_t)(self->normalCount) * sizeof(zVec3);
+            clone->normals = (zVec3*)(malloc(normalBytes));
             memcpy(clone->normals, self->normals, normalBytes);
         }
 
         clone->entryCount = self->entryCount;
         if (self->entryCount > 0) {
-            clone->entries =
-                (zDiEntryPartial *)(calloc((size_t)(self->entryCount), sizeof(zDiEntryPartial)));
+            clone->entries = (zDiEntryPartial*)(calloc((size_t)(self->entryCount), sizeof(zDiEntryPartial)));
         }
 
-        MaterialClonePair *materialPairs = 0;
+        MaterialClonePair* materialPairs = 0;
         int materialPairCount = 0;
         for (int i = 0; i < self->entryCount; ++i) {
-            const zDiEntryPartial &sourceEntry = self->entries[i];
-            zDiEntryPartial &destEntry = clone->entries[i];
+            const zDiEntryPartial& sourceEntry = self->entries[i];
+            zDiEntryPartial& destEntry = clone->entries[i];
 
             destEntry.drawFlags = sourceEntry.drawFlags;
             destEntry.flagsAndIndexCount = sourceEntry.flagsAndIndexCount & 0x00000300;
             memcpy(&destEntry.variantTagInitialized, &sourceEntry.variantTagInitialized, 4);
 
-            zModel_MaterialPartial *material = sourceEntry.material;
+            zModel_MaterialPartial* material = sourceEntry.material;
             if (cloneMaterials != 0) {
                 if (cloneAuxOnly == 0 || zModel_Material::HasAuxData(sourceEntry.material) != 0) {
                     material = 0;
@@ -2418,7 +2248,7 @@ namespace zDi {
 
                     if (material == 0) {
                         material = zModel_Material::Clone(sourceEntry.material);
-                        materialPairs = (MaterialClonePair *)(realloc(
+                        materialPairs = (MaterialClonePair*)(realloc(
                             materialPairs,
                             (size_t)(materialPairCount + 1) * sizeof(MaterialClonePair)
                         ));
@@ -2436,8 +2266,7 @@ namespace zDi {
                 destEntry.vertexIndices = malloc(indexBytes);
                 memcpy(destEntry.vertexIndices, sourceEntry.vertexIndices, indexBytes);
             }
-            if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 &&
-                sourceEntry.normalIndices != 0) {
+            if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 && sourceEntry.normalIndices != 0) {
                 destEntry.normalIndices = malloc(indexBytes);
                 memcpy(destEntry.normalIndices, sourceEntry.normalIndices, indexBytes);
             }
@@ -2458,23 +2287,23 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zUtil {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.storeint32
- * @recoil-artifact defines .text recoil:function:0x4826a0: zUtil::StoreInt32.
- * @recoil-match byte
- *
- * Purpose: Stores the supplied 32-bit integer through the destination pointer.
- */
-void __fastcall StoreInt32(
-    int *outValue,
-    int value
-) {
-    *outValue = value;
-}
+namespace zUtil
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.storeint32
+     * @recoil-artifact defines .text recoil:function:0x4826a0: zUtil::StoreInt32.
+     * @recoil-match byte
+     *
+     * Purpose: Stores the supplied 32-bit integer through the destination pointer.
+     */
+    void __fastcall StoreInt32(int* outValue, int value)
+    {
+        *outValue = value;
+    }
 } // namespace zUtil
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setclonedflag
      * @recoil-artifact defines .text recoil:function:0x4826b0: zDi::SetClonedFlag
@@ -2482,17 +2311,16 @@ namespace zDi {
      *
      * Purpose: update the display-instance cloned flag bit.
      */
-    void __fastcall SetClonedFlag(
-        zDiPartial * self,
-        int isCloned
-    ) {
+    void __fastcall SetClonedFlag(zDiPartial * self, int isCloned)
+    {
         if (self != 0) {
             self->flags = (self->flags & ~0x02) | ((isCloned & 1) << 1);
         }
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setflagbit0
      * @recoil-artifact defines .text recoil:function:0x4826d0: zDi::SetFlagBit0
@@ -2500,17 +2328,16 @@ namespace zDi {
      *
      * Purpose: update display-instance flag bit 0 while preserving other flags.
      */
-    void __fastcall SetFlagBit0(
-        zDiPartial * self,
-        int enabled
-    ) {
+    void __fastcall SetFlagBit0(zDiPartial * self, int enabled)
+    {
         if (self != 0) {
             self->flags = ((enabled ^ self->flags) & 1) ^ self->flags;
         }
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addref
      * @recoil-artifact defines .text recoil:function:0x4826f0: zDi::AddRef
@@ -2518,13 +2345,15 @@ namespace zDi {
      *
      * Purpose: increment a display-instance reference count.
      */
-    int __fastcall AddRef(zDiPartial * self) {
+    int __fastcall AddRef(zDiPartial * self)
+    {
         ++self->refCount;
         return 0;
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.release
      * @recoil-artifact defines .text recoil:function:0x482700: zDi::Release
@@ -2532,13 +2361,15 @@ namespace zDi {
      *
      * Purpose: decrement a display-instance reference count.
      */
-    int __fastcall Release(zDiPartial * self) {
+    int __fastcall Release(zDiPartial * self)
+    {
         --self->refCount;
         return 0;
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.getrefcount
      * @recoil-artifact defines .text recoil:function:0x482710: zDi::GetRefCount
@@ -2546,807 +2377,791 @@ namespace zDi {
      *
      * Purpose: return a display-instance reference count.
      */
-    int __fastcall GetRefCount(zDiPartial * self) {
+    int __fastcall GetRefCount(zDiPartial * self)
+    {
         return self->refCount;
     }
 } // namespace zDi
 
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertex
- * @recoil-artifact defines .text recoil:function:0x482720: zModel_Const::AddOrMergeVertex
- * Purpose: find an existing nearby vertex or append a new display-instance vertex.
- */
-int __fastcall AddOrMergeVertex(
-    zDiPartial *self,
-    zVec3 *point
-) {
-    for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-        const zVec3 *const existingPoint = &self->verts[vertexIndex];
-        if (fabs(existingPoint->x - point->x) <= g_zModel_ConstVertexMergeEpsilon &&
-            fabs(existingPoint->y - point->y) <= g_zModel_ConstVertexMergeEpsilon &&
-            fabs(existingPoint->z - point->z) <= g_zModel_ConstVertexMergeEpsilon) {
-            return vertexIndex;
-        }
-    }
-
-    if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
-        sprintf(
-            g_zError_DebugMsgBuffer,
-            "%s: Line %d: WARNING: Model vertex count = %d\n",
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            1783,
-            self->vertCount
-        );
-        sprintf(
-            g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-            "         Approaching max allowable: %d\n",
-            1024
-        );
-        zError::EmitDebugBuffer(1);
-        return -1;
-    }
-
-    const int appendedVertexIndex = self->vertCount;
-    self->verts =
-        (zVec3 *)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-    self->verts[appendedVertexIndex] = *point;
-    self->vertCount = appendedVertexIndex + 1;
-    return appendedVertexIndex;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertexandnormal
- * @recoil-artifact defines .text recoil:function:0x482860: zModel_Const::AddOrMergeVertexAndNormal
- * Purpose: find or append a vertex plus its blend-normal delta.
- */
-int __fastcall AddOrMergeVertexAndNormal(
-    zDiPartial *self,
-    zVec3 *point,
-    zVec3 *normal
-) {
-    zVec3 blendNormalDelta;
-    blendNormalDelta.x = normal->x - point->x;
-    blendNormalDelta.y = normal->y - point->y;
-    blendNormalDelta.z = normal->z - point->z;
-
-    for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-        const zVec3 *const existingPoint = &self->verts[vertexIndex];
-        const zVec3 *const existingBlend = &self->blendVerts[vertexIndex];
-        if (existingPoint->x == point->x && existingPoint->y == point->y &&
-            existingPoint->z == point->z && existingBlend->x == blendNormalDelta.x &&
-            existingBlend->y == blendNormalDelta.y && existingBlend->z == blendNormalDelta.z) {
-            return vertexIndex;
-        }
-    }
-
-    const int appendedVertexIndex = self->vertCount;
-    self->verts =
-        (zVec3 *)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-    self->verts[appendedVertexIndex] = *point;
-
-    self->blendVerts =
-        (zVec3 *)(realloc(self->blendVerts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-    self->blendVerts[appendedVertexIndex] = blendNormalDelta;
-
-    self->vertCount = appendedVertexIndex + 1;
-    self->blendVertCount = self->vertCount;
-    if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
-        sprintf(
-            g_zError_DebugMsgBuffer,
-            "%s: Line %d: WARNING: Model vertex count = %d\n",
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            1896,
-            self->vertCount
-        );
-        sprintf(
-            g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-            "         Approaching max allowable: %d\n",
-            1024
-        );
-        zError::EmitDebugBuffer(1);
-        return -1;
-    }
-
-    return appendedVertexIndex;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.findorappendnormalindex
- * @recoil-artifact defines .text recoil:function:0x482a10: zModel_Const::FindOrAppendNormalIndex
- * Purpose: find an existing nearby normal or append a new normal.
- */
-int __fastcall FindOrAppendNormalIndex(
-    zDiPartial *self,
-    zVec3 *normal
-) {
-    for (int normalIndex = 0; normalIndex < self->normalCount; ++normalIndex) {
-        const zVec3 *const existingNormal = &self->normals[normalIndex];
-        if (fabs(existingNormal->x - normal->x) < g_zModel_NormalMergeEpsilon &&
-            fabs(existingNormal->y - normal->y) < g_zModel_NormalMergeEpsilon &&
-            fabs(existingNormal->z - normal->z) < g_zModel_NormalMergeEpsilon) {
-            return normalIndex;
-        }
-    }
-
-    const int appendedNormalIndex = self->normalCount;
-    self->normals =
-        (zVec3 *)(realloc(self->normals, (size_t)(appendedNormalIndex + 1) * sizeof(zVec3)));
-    self->normals[appendedNormalIndex] = *normal;
-    self->normalCount = appendedNormalIndex + 1;
-    if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
-        sprintf(
-            g_zError_DebugMsgBuffer,
-            "%s: Line %d: WARNING: Model normal count = %d\n",
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            1972,
-            self->normalCount
-        );
-        sprintf(
-            g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-            "         Approaching max allowable: %d\n",
-            1024
-        );
-        zError::EmitDebugBuffer(1);
-        return -1;
-    }
-
-    return appendedNormalIndex;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
- * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::check_colinearity
- * Purpose: remove colinear vertices from a polygon point array in place.
- */
-int __fastcall check_colinearity(
-    int *vertexCount,
-    zVec3 *points,
-    zClipUV *,
-    zVec3 *,
-    zClipUV *
-) {
-    int removedAnyVertices = 0;
-    int removedVertexThisPass;
-
-    do {
-        removedVertexThisPass = 0;
-
-        if (*vertexCount >= 2) {
-            int nextIndex = 2;
-            int vertexIndex = 1;
-            int scannedVertexCount = 2;
-            zVec3 *currentVertex = &points[1];
-
-            do {
-                zVec3 outNormal;
-                zVec3 *const normal = SetNormalizedCrossFromVertexTriplet(
-                    currentVertex - 1,
-                    currentVertex,
-                    &outNormal,
-                    &points[nextIndex]
-                );
-
-                if (fabs(normal->x) < g_zModel_ColinearTolerance &&
-                    fabs(normal->y) < g_zModel_ColinearTolerance &&
-                    fabs(normal->z) < g_zModel_ColinearTolerance) {
-                    removedAnyVertices = 1;
-                    removedVertexThisPass = 1;
-
-                    if (vertexIndex < *vertexCount - 1) {
-                        zVec3 *write = &points[vertexIndex];
-                        do {
-                            *write = write[1];
-                            ++write;
-                            ++vertexIndex;
-                        } while (vertexIndex < *vertexCount - 1);
-                    }
-
-                    --*vertexCount;
-                    break;
-                }
-
-                ++vertexIndex;
-                ++currentVertex;
-                ++scannedVertexCount;
-                nextIndex = (nextIndex + 1) % *vertexCount;
-            } while (scannedVertexCount <= *vertexCount);
-        }
-    } while (removedVertexThisPass != 0);
-
-    return removedAnyVertices;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
- * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
- * Purpose: compute and normalize the cross product from three polygon vertices.
- */
-zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
-    zVec3 *vertex0,
-    zVec3 *vertex1,
-    zVec3 *outNormal,
-    zVec3 *vertex2
-) {
-    const float edge0X = vertex0->x - vertex1->x;
-    const float edge0Y = vertex0->y - vertex1->y;
-    const float edge0Z = vertex0->z - vertex1->z;
-    const float edge2X = vertex2->x - vertex1->x;
-    const float edge2Y = vertex2->y - vertex1->y;
-    const float edge2Z = vertex2->z - vertex1->z;
-
-    const float normalX = edge0Z * edge2Y - edge0Y * edge2Z;
-    const float normalY = edge0X * edge2Z - edge0Z * edge2X;
-    const float normalZ = edge0Y * edge2X - edge0X * edge2Y;
-
-    double length = 0.0;
-    if (fabs(normalX) > g_zModel_ColinearTolerance || fabs(normalY) > g_zModel_ColinearTolerance ||
-        fabs(normalZ) > g_zModel_ColinearTolerance) {
-        length = sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
-    }
-
-    double scale = 0.0;
-    if (fabs(length) > g_zModel_ColinearTolerance) {
-        scale = 1.0 / length;
-    }
-
-    outNormal->x = (float)(normalX * scale);
-    outNormal->y = (float)(normalY * scale);
-    outNormal->z = (float)(normalZ * scale);
-    return outNormal;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
- * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
- * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
- */
-int __fastcall IsPolygonCoplanar(
-    int vertexCount,
-    zVec3 *vertices
-) {
-    zGeometry_PlaneEquationPartial plane;
-    ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
-
-    if (vertexCount <= 0) {
-        return 1;
-    }
-
-    for (int i = 0; i < vertexCount; ++i) {
-        const zVec3 *const vertex = &vertices[i];
-        const double distance =
-            vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
-        if (fabs(distance) > g_zModel_CoplanarTolerance) {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
- * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
- * Purpose: compute a normalized plane equation for a polygon.
- */
-zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
-    int vertexCount,
-    zVec3 *vertices,
-    zGeometry_PlaneEquationPartial *outPlane
-) {
-    float normalX = 0.0f;
-    float normalY = 0.0f;
-    float normalZ = 0.0f;
-    float sumX = 0.0f;
-    float sumY = 0.0f;
-    float sumZ = 0.0f;
-
-    for (int i = 0; i < vertexCount; ++i) {
-        zVec3 *const vertex = &vertices[i];
-        zVec3 *const next = &vertices[(i + 1) % vertexCount];
-
-        normalX += (vertex->y - next->y) * (vertex->z + next->z);
-        normalY += (vertex->z - next->z) * (vertex->x + next->x);
-        normalZ += (vertex->x - next->x) * (vertex->y + next->y);
-
-        sumX += vertex->x;
-        sumY += vertex->y;
-        sumZ += vertex->z;
-    }
-
-    float normalLength = 0.0f;
-    if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
-        normalLength = (float)(sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ));
-    }
-
-    float inverseNormalLength = 0.0f;
-    if (normalLength != 0.0f) {
-        inverseNormalLength = 1.0f / normalLength;
-    }
-
-    outPlane->a = normalX * inverseNormalLength;
-    outPlane->b = normalY * inverseNormalLength;
-    outPlane->c = normalZ * inverseNormalLength;
-    outPlane->d =
-        -((sumX * normalX + sumY * normalY + sumZ * normalZ) / ((float)(vertexCount)*normalLength));
-    return outPlane;
-}
-} // namespace zModel_Const
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.splitpolygonchunkedbyvertexlimit
- * @recoil-artifact defines .text recoil:function:0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
- * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
- */
-void __fastcall SplitPolygonChunkedByVertexLimit(
-    zDiPartial *self,
-    int totalVertexCount,
-    zVec3 *points,
-    zVec3 *entryNormals,
-    zClipUV *uvPairsA,
-    zVec3 *normalsA,
-    zVec3 *normalsBInput,
-    zClipUV *uvPairsBInput,
-    zModel_MaterialPartial *material,
-    unsigned int drawFlags,
-    int flagBit8,
-    const int *userTag
-) {
-    zVec3 trianglePoints[3];
-    zVec3 triangleEntryNormals[3];
-    zClipUV triangleUvPairsA[3];
-    zVec3 triangleNormalsB[3];
-    zClipUV triangleUvPairsB[3];
-
-    trianglePoints[0] = points[0];
-    if (entryNormals != 0) {
-        triangleEntryNormals[0] = entryNormals[0];
-    }
-
-    const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
-    if (hasSecondaryUvSet) {
-        triangleUvPairsA[0] = uvPairsA[0];
-    }
-
-    if (normalsA != 0) {
-        triangleNormalsB[0] = normalsBInput[0];
-        if (hasSecondaryUvSet) {
-            triangleUvPairsB[0] = uvPairsBInput[0];
-        }
-    }
-
-    if (totalVertexCount <= 2) {
-        return;
-    }
-
-    for (int vertexIndex = 2; vertexIndex < totalVertexCount; ++vertexIndex) {
-        for (int triangleIndex = 1; triangleIndex < 3; ++triangleIndex) {
-            const int sourceIndex = vertexIndex - 2 + triangleIndex;
-            trianglePoints[triangleIndex] = points[sourceIndex];
-            if (entryNormals != 0) {
-                triangleEntryNormals[triangleIndex] = entryNormals[sourceIndex];
-            }
-            if (hasSecondaryUvSet) {
-                triangleUvPairsA[triangleIndex] = uvPairsA[sourceIndex];
-            }
-            if (normalsA != 0) {
-                triangleNormalsB[triangleIndex] = normalsBInput[sourceIndex];
-                if (hasSecondaryUvSet) {
-                    triangleUvPairsB[triangleIndex] = uvPairsBInput[sourceIndex];
-                }
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertex
+     * @recoil-artifact defines .text recoil:function:0x482720: zModel_Const::AddOrMergeVertex
+     * Purpose: find an existing nearby vertex or append a new display-instance vertex.
+     */
+    int __fastcall AddOrMergeVertex(zDiPartial * self, zVec3 * point)
+    {
+        for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
+            const zVec3* const existingPoint = &self->verts[vertexIndex];
+            if (fabs(existingPoint->x - point->x) <= g_zModel_ConstVertexMergeEpsilon
+                && fabs(existingPoint->y - point->y) <= g_zModel_ConstVertexMergeEpsilon
+                && fabs(existingPoint->z - point->z) <= g_zModel_ConstVertexMergeEpsilon) {
+                return vertexIndex;
             }
         }
 
-        zDi::AddPolygonEx(
-            self,
-            3,
-            trianglePoints,
-            entryNormals != 0 ? triangleEntryNormals : 0,
-            triangleUvPairsA,
-            normalsA,
-            triangleNormalsB,
-            triangleUvPairsB,
-            material,
-            drawFlags,
-            flagBit8,
-            userTag
-        );
-    }
-}
-} // namespace zModel_Const
-
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
- * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
- * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
- */
-void __fastcall AddPolygonSplitByVertexLimit(
-    zDiPartial *self,
-    int totalVertexCount,
-    zVec3 *points,
-    zVec3 *entryNormals,
-    zClipUV *uvPairsA,
-    zVec3 *normalsA,
-    zVec3 *normalsBInput,
-    zClipUV *uvPairsBInput,
-    zModel_MaterialPartial *material,
-    unsigned int drawFlags,
-    int flagBit8,
-    const int *userTag,
-    int maxChunkVertexCount
-) {
-    zVec3 chunkPoints[4];
-    zVec3 chunkEntryNormals[4];
-    zClipUV chunkUvPairsA[4];
-    zVec3 chunkNormalsB[4];
-    zClipUV chunkUvPairsB[4];
-
-    int clampedChunkVertexCount = maxChunkVertexCount;
-    if (clampedChunkVertexCount > 4) {
-        clampedChunkVertexCount = 4;
-    }
-
-    chunkPoints[0] = points[0];
-    if (entryNormals != 0) {
-        chunkEntryNormals[0] = entryNormals[0];
-    }
-
-    const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
-    if (hasSecondaryUvSet) {
-        chunkUvPairsA[0] = uvPairsA[0];
-    }
-
-    if (normalsA != 0) {
-        chunkNormalsB[0] = normalsBInput[0];
-        if (hasSecondaryUvSet) {
-            chunkUvPairsB[0] = uvPairsBInput[0];
-        }
-    }
-
-    int chunkStartVertexIndex = 1;
-    if (totalVertexCount - 1 <= 1) {
-        return;
-    }
-
-    do {
-        int vertexCount = clampedChunkVertexCount;
-        if (chunkStartVertexIndex + vertexCount > totalVertexCount + 1) {
-            vertexCount = totalVertexCount - chunkStartVertexIndex + 1;
-        }
-
-        if (vertexCount > 1) {
-            for (int chunkVertexIndex = 1; chunkVertexIndex < vertexCount; ++chunkVertexIndex) {
-                const int sourceIndex = chunkStartVertexIndex + chunkVertexIndex - 1;
-                chunkPoints[chunkVertexIndex] = points[sourceIndex];
-                if (entryNormals != 0) {
-                    chunkEntryNormals[chunkVertexIndex] = entryNormals[sourceIndex];
-                }
-                if (hasSecondaryUvSet) {
-                    chunkUvPairsA[chunkVertexIndex] = uvPairsA[sourceIndex];
-                }
-                if (normalsA != 0) {
-                    chunkNormalsB[chunkVertexIndex] = normalsBInput[sourceIndex];
-                    if (hasSecondaryUvSet) {
-                        chunkUvPairsB[chunkVertexIndex] = uvPairsBInput[sourceIndex];
-                    }
-                }
-            }
-        }
-
-        if (vertexCount < 3) {
-            zError::ReportOld(
-                0x400,
+        if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model vertex count = %d\n",
                 "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-                0xa16,
-                "Attempting to add polygon with only %d verts",
-                vertexCount
+                1783,
+                self->vertCount
             );
+            sprintf(
+                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n",
+                1024
+            );
+            zError::EmitDebugBuffer(1);
+            return -1;
         }
 
-        AddPolygonEx(
-            self,
-            vertexCount,
-            chunkPoints,
-            entryNormals != 0 ? chunkEntryNormals : 0,
-            chunkUvPairsA,
-            normalsA,
-            chunkNormalsB,
-            chunkUvPairsB,
-            material,
-            drawFlags,
-            flagBit8,
-            userTag
-        );
-        chunkStartVertexIndex += vertexCount - 2;
-    } while (chunkStartVertexIndex < totalVertexCount - 1);
-}
-} // namespace zDi
-
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.quantizeandnormalizeuvpairs
- * @recoil-artifact defines .text recoil:function:0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
- * Purpose: quantize UV pairs and normalize them to a local tile origin.
- */
-void __fastcall QuantizeAndNormalizeUvPairs(
-    int vertexCount,
-    zClipUV *uvPairs
-) {
-    if (vertexCount > 0) {
-        for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-            zClipUV *const uv = &uvPairs[vertexIndex];
-            const int uFixed = (int)((uv->u - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
-            uv->u = (float)(uFixed)*g_zModel_UvQuantizeInvScale;
-
-            const int vFixed = (int)((uv->v - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
-            uv->v = (float)(vFixed)*g_zModel_UvQuantizeInvScale;
-        }
+        const int appendedVertexIndex = self->vertCount;
+        self->verts = (zVec3*)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
+        self->verts[appendedVertexIndex] = *point;
+        self->vertCount = appendedVertexIndex + 1;
+        return appendedVertexIndex;
     }
-
-    float minU = uvPairs[0].u;
-    float minV = uvPairs[0].v;
-    for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
-        if (uvPairs[vertexIndex].u < minU) {
-            minU = uvPairs[vertexIndex].u;
-        }
-        if (uvPairs[vertexIndex].v < minV) {
-            minV = uvPairs[vertexIndex].v;
-        }
-    }
-
-    const float baseU = (float)(floor(minU));
-    const float baseV = (float)(floor(minV));
-    for (int normalizeIndex = 0; normalizeIndex < vertexCount; ++normalizeIndex) {
-        uvPairs[normalizeIndex].u -= baseU;
-        uvPairs[normalizeIndex].v -= baseV;
-    }
-}
 } // namespace zModel_Const
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygon
- * @recoil-artifact defines .text recoil:function:0x483610: zDi::AddPolygon
- * @recoil-match byte
- *
- * Purpose: add a polygon entry without explicit per-entry normals.
- */
-int __fastcall AddPolygon(
-    zDiPartial *self,
-    int pointCount,
-    zVec3 *points,
-    zClipUV *uvPairsA,
-    zVec3 *normalsA,
-    zVec3 *normalsB,
-    zClipUV *uvPairsB,
-    zModel_MaterialPartial *material,
-    unsigned int drawFlags,
-    int flagBit8,
-    const int *userTag
-) {
-    return AddPolygonEx(
-        self,
-        pointCount,
-        points,
-        0,
-        uvPairsA,
-        normalsA,
-        normalsB,
-        uvPairsB,
-        material,
-        drawFlags,
-        flagBit8,
-        userTag
-    );
-}
-} // namespace zDi
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertexandnormal
+     * @recoil-artifact defines .text recoil:function:0x482860: zModel_Const::AddOrMergeVertexAndNormal
+     * Purpose: find or append a vertex plus its blend-normal delta.
+     */
+    int __fastcall AddOrMergeVertexAndNormal(zDiPartial * self, zVec3 * point, zVec3 * normal)
+    {
+        zVec3 blendNormalDelta;
+        blendNormalDelta.x = normal->x - point->x;
+        blendNormalDelta.y = normal->y - point->y;
+        blendNormalDelta.z = normal->z - point->z;
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
- * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
- * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
- */
-int __fastcall AddPolygonEx(
-    zDiPartial *self,
-    int vertexCount,
-    zVec3 *points,
-    zVec3 *entryNormals,
-    zClipUV *uvPairsA,
-    zVec3 *normalsA,
-    zVec3 *normalsB,
-    zClipUV *uvPairsB,
-    zModel_MaterialPartial *material,
-    unsigned int drawFlags,
-    int flagBit8,
-    const int *userTag
-) {
-    if (vertexCount < 3) {
-        zError::ReportOld(
-            0x200,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0xae4,
-            "ERROR: You're trying to add a Polygon with only (%d) verts",
-            vertexCount
-        );
-        return 1;
-    }
-
-    if (vertexCount >= 58) {
-        zError::ReportOld(
-            0x200,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0xaed,
-            "Poly vertex count approaching limit (%d / %d)",
-            vertexCount,
-            0x40
-        );
-        return 1;
-    }
-
-    const int originalVertexCount = vertexCount;
-    if (zModel_Const::check_colinearity(
-            &vertexCount,
-            points,
-            uvPairsA,
-            normalsB,
-            uvPairsB
-        ) != 0 &&
-        vertexCount < 3) {
-        zError::ReportOld(
-            0x100,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0xb0d,
-            "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'",
-            vertexCount,
-            originalVertexCount
-        );
-        return 1;
-    }
-
-    if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(vertexCount, points) == 0) {
-        zError::ReportOld(
-            0x100,
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0xb19,
-            "Attempting to add non-planar polygon (%d verts), triangulating...",
-            vertexCount
-        );
-        zModel_Const::SplitPolygonChunkedByVertexLimit(
-            self,
-            originalVertexCount,
-            points,
-            entryNormals,
-            uvPairsA,
-            normalsA,
-            normalsB,
-            uvPairsB,
-            material,
-            drawFlags,
-            flagBit8,
-            userTag
-        );
-        return 2;
-    }
-
-    if (vertexCount > g_zModel_MaxPolygonVertexCountBeforeSplit) {
-        AddPolygonSplitByVertexLimit(
-            self,
-            originalVertexCount,
-            points,
-            entryNormals,
-            uvPairsA,
-            normalsA,
-            normalsB,
-            uvPairsB,
-            material,
-            drawFlags,
-            flagBit8,
-            userTag,
-            g_zModel_MaxPolygonVertexCountBeforeSplit
-        );
-        return 2;
-    }
-
-    zDiEntryPartial *entries = (zDiEntryPartial *)(realloc(
-        self->entries,
-        (size_t)(self->entryCount + 1) * sizeof(zDiEntryPartial)
-    ));
-    self->entries = entries;
-
-    zDiEntryPartial *const entry = &entries[self->entryCount];
-    memset(entry, 0, sizeof(zDiEntryPartial));
-    entry->flagsAndIndexCount =
-        (unsigned int)(vertexCount & 0xff) | ((unsigned int)(flagBit8 & 1) << 8);
-    if (entryNormals != 0) {
-        entry->flagsAndIndexCount |= 0x200;
-    }
-    entry->drawFlags = drawFlags;
-    entry->vertexIndices = malloc((size_t)(vertexCount) * sizeof(int));
-    if (entryNormals != 0) {
-        entry->normalIndices = malloc((size_t)(vertexCount) * sizeof(int));
-    }
-
-    int *vertexIndices = (int *)(entry->vertexIndices);
-    int *normalIndices = (int *)(entry->normalIndices);
-    zVec3 *pointCursor = points;
-    zVec3 *normalBCursor = normalsB;
-    zVec3 *entryNormalCursor = entryNormals;
-    for (int i = 0; i < vertexCount; ++i) {
-        if (normalsA != 0) {
-            vertexIndices[i] =
-                zModel_Const::AddOrMergeVertexAndNormal(self, pointCursor, normalBCursor);
-            ++normalBCursor;
-        } else {
-            vertexIndices[i] = zModel_Const::AddOrMergeVertex(self, pointCursor);
+        for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
+            const zVec3* const existingPoint = &self->verts[vertexIndex];
+            const zVec3* const existingBlend = &self->blendVerts[vertexIndex];
+            if (existingPoint->x == point->x && existingPoint->y == point->y && existingPoint->z == point->z
+                && existingBlend->x == blendNormalDelta.x && existingBlend->y == blendNormalDelta.y
+                && existingBlend->z == blendNormalDelta.z) {
+                return vertexIndex;
+            }
         }
-        if (vertexIndices[i] < 0) {
+
+        const int appendedVertexIndex = self->vertCount;
+        self->verts = (zVec3*)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
+        self->verts[appendedVertexIndex] = *point;
+
+        self->blendVerts = (zVec3*)(realloc(self->blendVerts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
+        self->blendVerts[appendedVertexIndex] = blendNormalDelta;
+
+        self->vertCount = appendedVertexIndex + 1;
+        self->blendVertCount = self->vertCount;
+        if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model vertex count = %d\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                1896,
+                self->vertCount
+            );
+            sprintf(
+                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n",
+                1024
+            );
+            zError::EmitDebugBuffer(1);
+            return -1;
+        }
+
+        return appendedVertexIndex;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.findorappendnormalindex
+     * @recoil-artifact defines .text recoil:function:0x482a10: zModel_Const::FindOrAppendNormalIndex
+     * Purpose: find an existing nearby normal or append a new normal.
+     */
+    int __fastcall FindOrAppendNormalIndex(zDiPartial * self, zVec3 * normal)
+    {
+        for (int normalIndex = 0; normalIndex < self->normalCount; ++normalIndex) {
+            const zVec3* const existingNormal = &self->normals[normalIndex];
+            if (fabs(existingNormal->x - normal->x) < g_zModel_NormalMergeEpsilon
+                && fabs(existingNormal->y - normal->y) < g_zModel_NormalMergeEpsilon
+                && fabs(existingNormal->z - normal->z) < g_zModel_NormalMergeEpsilon) {
+                return normalIndex;
+            }
+        }
+
+        const int appendedNormalIndex = self->normalCount;
+        self->normals = (zVec3*)(realloc(self->normals, (size_t)(appendedNormalIndex + 1) * sizeof(zVec3)));
+        self->normals[appendedNormalIndex] = *normal;
+        self->normalCount = appendedNormalIndex + 1;
+        if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: WARNING: Model normal count = %d\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                1972,
+                self->normalCount
+            );
+            sprintf(
+                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                "         Approaching max allowable: %d\n",
+                1024
+            );
+            zError::EmitDebugBuffer(1);
+            return -1;
+        }
+
+        return appendedNormalIndex;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
+     * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::check_colinearity
+     * Purpose: remove colinear vertices from a polygon point array in place.
+     */
+    int __fastcall check_colinearity(int* vertexCount, zVec3* points, zClipUV*, zVec3*, zClipUV*)
+    {
+        int removedAnyVertices = 0;
+        int removedVertexThisPass;
+
+        do {
+            removedVertexThisPass = 0;
+
+            if (*vertexCount >= 2) {
+                int nextIndex = 2;
+                int vertexIndex = 1;
+                int scannedVertexCount = 2;
+                zVec3* currentVertex = &points[1];
+
+                do {
+                    zVec3 outNormal;
+                    zVec3* const normal = SetNormalizedCrossFromVertexTriplet(
+                        currentVertex - 1,
+                        currentVertex,
+                        &outNormal,
+                        &points[nextIndex]
+                    );
+
+                    if (fabs(normal->x) < g_zModel_ColinearTolerance && fabs(normal->y) < g_zModel_ColinearTolerance
+                        && fabs(normal->z) < g_zModel_ColinearTolerance) {
+                        removedAnyVertices = 1;
+                        removedVertexThisPass = 1;
+
+                        if (vertexIndex < *vertexCount - 1) {
+                            zVec3* write = &points[vertexIndex];
+                            do {
+                                *write = write[1];
+                                ++write;
+                                ++vertexIndex;
+                            } while (vertexIndex < *vertexCount - 1);
+                        }
+
+                        --*vertexCount;
+                        break;
+                    }
+
+                    ++vertexIndex;
+                    ++currentVertex;
+                    ++scannedVertexCount;
+                    nextIndex = (nextIndex + 1) % *vertexCount;
+                } while (scannedVertexCount <= *vertexCount);
+            }
+        } while (removedVertexThisPass != 0);
+
+        return removedAnyVertices;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
+     * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
+     * Purpose: compute and normalize the cross product from three polygon vertices.
+     */
+    zVec3* __fastcall
+    SetNormalizedCrossFromVertexTriplet(zVec3 * vertex0, zVec3 * vertex1, zVec3 * outNormal, zVec3 * vertex2)
+    {
+        const float edge0X = vertex0->x - vertex1->x;
+        const float edge0Y = vertex0->y - vertex1->y;
+        const float edge0Z = vertex0->z - vertex1->z;
+        const float edge2X = vertex2->x - vertex1->x;
+        const float edge2Y = vertex2->y - vertex1->y;
+        const float edge2Z = vertex2->z - vertex1->z;
+
+        const float normalX = edge0Z * edge2Y - edge0Y * edge2Z;
+        const float normalY = edge0X * edge2Z - edge0Z * edge2X;
+        const float normalZ = edge0Y * edge2X - edge0X * edge2Y;
+
+        double length = 0.0;
+        if (fabs(normalX) > g_zModel_ColinearTolerance || fabs(normalY) > g_zModel_ColinearTolerance
+            || fabs(normalZ) > g_zModel_ColinearTolerance) {
+            length = sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        }
+
+        double scale = 0.0;
+        if (fabs(length) > g_zModel_ColinearTolerance) {
+            scale = 1.0 / length;
+        }
+
+        outNormal->x = (float)(normalX * scale);
+        outNormal->y = (float)(normalY * scale);
+        outNormal->z = (float)(normalZ * scale);
+        return outNormal;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
+     * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
+     * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
+     */
+    int __fastcall IsPolygonCoplanar(int vertexCount, zVec3* vertices)
+    {
+        zGeometry_PlaneEquationPartial plane;
+        ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
+
+        if (vertexCount <= 0) {
             return 1;
         }
 
-        if (entryNormals != 0) {
-            normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
-            ++entryNormalCursor;
-        }
-        ++pointCursor;
-    }
-
-    if ((material->flags & 0x0100) != 0) {
-        entry->uvPairs = malloc((size_t)(vertexCount) * sizeof(zClipUV));
-        memcpy(entry->uvPairs, uvPairsA, (size_t)(vertexCount) * sizeof(zClipUV));
-        zClipUV *const entryUvPairs = (zClipUV *)(entry->uvPairs);
-        float minU = entryUvPairs[0].u;
-        float minV = entryUvPairs[0].v;
-        for (int i = 1; i < vertexCount; ++i) {
-            if (entryUvPairs[i].u < minU) {
-                minU = entryUvPairs[i].u;
+        for (int i = 0; i < vertexCount; ++i) {
+            const zVec3* const vertex = &vertices[i];
+            const double distance = vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
+            if (fabs(distance) > g_zModel_CoplanarTolerance) {
+                return 0;
             }
-            if (entryUvPairs[i].v < minV) {
-                minV = entryUvPairs[i].v;
+        }
+
+        return 1;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
+     * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
+     * Purpose: compute a normalized plane equation for a polygon.
+     */
+    zGeometry_PlaneEquationPartial* __fastcall ComputePolygonPlaneEquation(
+        int vertexCount,
+        zVec3* vertices,
+        zGeometry_PlaneEquationPartial* outPlane
+    )
+    {
+        float normalX = 0.0f;
+        float normalY = 0.0f;
+        float normalZ = 0.0f;
+        float sumX = 0.0f;
+        float sumY = 0.0f;
+        float sumZ = 0.0f;
+
+        for (int i = 0; i < vertexCount; ++i) {
+            zVec3* const vertex = &vertices[i];
+            zVec3* const next = &vertices[(i + 1) % vertexCount];
+
+            normalX += (vertex->y - next->y) * (vertex->z + next->z);
+            normalY += (vertex->z - next->z) * (vertex->x + next->x);
+            normalZ += (vertex->x - next->x) * (vertex->y + next->y);
+
+            sumX += vertex->x;
+            sumY += vertex->y;
+            sumZ += vertex->z;
+        }
+
+        float normalLength = 0.0f;
+        if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
+            normalLength = (float)(sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ));
+        }
+
+        float inverseNormalLength = 0.0f;
+        if (normalLength != 0.0f) {
+            inverseNormalLength = 1.0f / normalLength;
+        }
+
+        outPlane->a = normalX * inverseNormalLength;
+        outPlane->b = normalY * inverseNormalLength;
+        outPlane->c = normalZ * inverseNormalLength;
+        outPlane->d = -((sumX * normalX + sumY * normalY + sumZ * normalZ) / ((float)(vertexCount)*normalLength));
+        return outPlane;
+    }
+} // namespace zModel_Const
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.splitpolygonchunkedbyvertexlimit
+     * @recoil-artifact defines .text recoil:function:0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
+     * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
+     */
+    void __fastcall SplitPolygonChunkedByVertexLimit(
+        zDiPartial * self,
+        int totalVertexCount,
+        zVec3* points,
+        zVec3* entryNormals,
+        zClipUV* uvPairsA,
+        zVec3* normalsA,
+        zVec3* normalsBInput,
+        zClipUV* uvPairsBInput,
+        zModel_MaterialPartial* material,
+        unsigned int drawFlags,
+        int flagBit8,
+        const int* userTag
+    )
+    {
+        zVec3 trianglePoints[3];
+        zVec3 triangleEntryNormals[3];
+        zClipUV triangleUvPairsA[3];
+        zVec3 triangleNormalsB[3];
+        zClipUV triangleUvPairsB[3];
+
+        trianglePoints[0] = points[0];
+        if (entryNormals != 0) {
+            triangleEntryNormals[0] = entryNormals[0];
+        }
+
+        const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
+        if (hasSecondaryUvSet) {
+            triangleUvPairsA[0] = uvPairsA[0];
+        }
+
+        if (normalsA != 0) {
+            triangleNormalsB[0] = normalsBInput[0];
+            if (hasSecondaryUvSet) {
+                triangleUvPairsB[0] = uvPairsBInput[0];
+            }
+        }
+
+        if (totalVertexCount <= 2) {
+            return;
+        }
+
+        for (int vertexIndex = 2; vertexIndex < totalVertexCount; ++vertexIndex) {
+            for (int triangleIndex = 1; triangleIndex < 3; ++triangleIndex) {
+                const int sourceIndex = vertexIndex - 2 + triangleIndex;
+                trianglePoints[triangleIndex] = points[sourceIndex];
+                if (entryNormals != 0) {
+                    triangleEntryNormals[triangleIndex] = entryNormals[sourceIndex];
+                }
+                if (hasSecondaryUvSet) {
+                    triangleUvPairsA[triangleIndex] = uvPairsA[sourceIndex];
+                }
+                if (normalsA != 0) {
+                    triangleNormalsB[triangleIndex] = normalsBInput[sourceIndex];
+                    if (hasSecondaryUvSet) {
+                        triangleUvPairsB[triangleIndex] = uvPairsBInput[sourceIndex];
+                    }
+                }
+            }
+
+            zDi::AddPolygonEx(
+                self,
+                3,
+                trianglePoints,
+                entryNormals != 0 ? triangleEntryNormals : 0,
+                triangleUvPairsA,
+                normalsA,
+                triangleNormalsB,
+                triangleUvPairsB,
+                material,
+                drawFlags,
+                flagBit8,
+                userTag
+            );
+        }
+    }
+} // namespace zModel_Const
+
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
+     * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
+     * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
+     */
+    void __fastcall AddPolygonSplitByVertexLimit(
+        zDiPartial * self,
+        int totalVertexCount,
+        zVec3* points,
+        zVec3* entryNormals,
+        zClipUV* uvPairsA,
+        zVec3* normalsA,
+        zVec3* normalsBInput,
+        zClipUV* uvPairsBInput,
+        zModel_MaterialPartial* material,
+        unsigned int drawFlags,
+        int flagBit8,
+        const int* userTag,
+        int maxChunkVertexCount
+    )
+    {
+        zVec3 chunkPoints[4];
+        zVec3 chunkEntryNormals[4];
+        zClipUV chunkUvPairsA[4];
+        zVec3 chunkNormalsB[4];
+        zClipUV chunkUvPairsB[4];
+
+        int clampedChunkVertexCount = maxChunkVertexCount;
+        if (clampedChunkVertexCount > 4) {
+            clampedChunkVertexCount = 4;
+        }
+
+        chunkPoints[0] = points[0];
+        if (entryNormals != 0) {
+            chunkEntryNormals[0] = entryNormals[0];
+        }
+
+        const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
+        if (hasSecondaryUvSet) {
+            chunkUvPairsA[0] = uvPairsA[0];
+        }
+
+        if (normalsA != 0) {
+            chunkNormalsB[0] = normalsBInput[0];
+            if (hasSecondaryUvSet) {
+                chunkUvPairsB[0] = uvPairsBInput[0];
+            }
+        }
+
+        int chunkStartVertexIndex = 1;
+        if (totalVertexCount - 1 <= 1) {
+            return;
+        }
+
+        do {
+            int vertexCount = clampedChunkVertexCount;
+            if (chunkStartVertexIndex + vertexCount > totalVertexCount + 1) {
+                vertexCount = totalVertexCount - chunkStartVertexIndex + 1;
+            }
+
+            if (vertexCount > 1) {
+                for (int chunkVertexIndex = 1; chunkVertexIndex < vertexCount; ++chunkVertexIndex) {
+                    const int sourceIndex = chunkStartVertexIndex + chunkVertexIndex - 1;
+                    chunkPoints[chunkVertexIndex] = points[sourceIndex];
+                    if (entryNormals != 0) {
+                        chunkEntryNormals[chunkVertexIndex] = entryNormals[sourceIndex];
+                    }
+                    if (hasSecondaryUvSet) {
+                        chunkUvPairsA[chunkVertexIndex] = uvPairsA[sourceIndex];
+                    }
+                    if (normalsA != 0) {
+                        chunkNormalsB[chunkVertexIndex] = normalsBInput[sourceIndex];
+                        if (hasSecondaryUvSet) {
+                            chunkUvPairsB[chunkVertexIndex] = uvPairsBInput[sourceIndex];
+                        }
+                    }
+                }
+            }
+
+            if (vertexCount < 3) {
+                zError::ReportOld(
+                    0x400,
+                    "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                    0xa16,
+                    "Attempting to add polygon with only %d verts",
+                    vertexCount
+                );
+            }
+
+            AddPolygonEx(
+                self,
+                vertexCount,
+                chunkPoints,
+                entryNormals != 0 ? chunkEntryNormals : 0,
+                chunkUvPairsA,
+                normalsA,
+                chunkNormalsB,
+                chunkUvPairsB,
+                material,
+                drawFlags,
+                flagBit8,
+                userTag
+            );
+            chunkStartVertexIndex += vertexCount - 2;
+        } while (chunkStartVertexIndex < totalVertexCount - 1);
+    }
+} // namespace zDi
+
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.quantizeandnormalizeuvpairs
+     * @recoil-artifact defines .text recoil:function:0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
+     * Purpose: quantize UV pairs and normalize them to a local tile origin.
+     */
+    void __fastcall QuantizeAndNormalizeUvPairs(int vertexCount, zClipUV* uvPairs)
+    {
+        if (vertexCount > 0) {
+            for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+                zClipUV* const uv = &uvPairs[vertexIndex];
+                const int uFixed = (int)((uv->u - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
+                uv->u = (float)(uFixed)*g_zModel_UvQuantizeInvScale;
+
+                const int vFixed = (int)((uv->v - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
+                uv->v = (float)(vFixed)*g_zModel_UvQuantizeInvScale;
+            }
+        }
+
+        float minU = uvPairs[0].u;
+        float minV = uvPairs[0].v;
+        for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
+            if (uvPairs[vertexIndex].u < minU) {
+                minU = uvPairs[vertexIndex].u;
+            }
+            if (uvPairs[vertexIndex].v < minV) {
+                minV = uvPairs[vertexIndex].v;
             }
         }
 
         const float baseU = (float)(floor(minU));
         const float baseV = (float)(floor(minV));
-        for (int i_107 = 0; i_107 < vertexCount; ++i_107) {
-            entryUvPairs[i_107].u -= baseU;
-            entryUvPairs[i_107].v -= baseV;
+        for (int normalizeIndex = 0; normalizeIndex < vertexCount; ++normalizeIndex) {
+            uvPairs[normalizeIndex].u -= baseU;
+            uvPairs[normalizeIndex].v -= baseV;
         }
     }
+} // namespace zModel_Const
 
-    entry->material = material;
-    RebuildGeneratedUvPairsForEntry(self, self->entryCount);
-    if ((material->flags & 0x0100) != 0) {
-        zModel_Const::QuantizeAndNormalizeUvPairs(vertexCount, (zClipUV *)(entry->uvPairs));
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygon
+     * @recoil-artifact defines .text recoil:function:0x483610: zDi::AddPolygon
+     * @recoil-match byte
+     *
+     * Purpose: add a polygon entry without explicit per-entry normals.
+     */
+    int __fastcall AddPolygon(
+        zDiPartial * self,
+        int pointCount,
+        zVec3* points,
+        zClipUV* uvPairsA,
+        zVec3* normalsA,
+        zVec3* normalsB,
+        zClipUV* uvPairsB,
+        zModel_MaterialPartial* material,
+        unsigned int drawFlags,
+        int flagBit8,
+        const int* userTag
+    )
+    {
+        return AddPolygonEx(
+            self,
+            pointCount,
+            points,
+            0,
+            uvPairsA,
+            normalsA,
+            normalsB,
+            uvPairsB,
+            material,
+            drawFlags,
+            flagBit8,
+            userTag
+        );
     }
-    memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
-
-    ++self->entryCount;
-    return 0;
-}
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
+     * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
+     * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
+     */
+    int __fastcall AddPolygonEx(
+        zDiPartial * self,
+        int vertexCount,
+        zVec3* points,
+        zVec3* entryNormals,
+        zClipUV* uvPairsA,
+        zVec3* normalsA,
+        zVec3* normalsB,
+        zClipUV* uvPairsB,
+        zModel_MaterialPartial* material,
+        unsigned int drawFlags,
+        int flagBit8,
+        const int* userTag
+    )
+    {
+        if (vertexCount < 3) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0xae4,
+                "ERROR: You're trying to add a Polygon with only (%d) verts",
+                vertexCount
+            );
+            return 1;
+        }
+
+        if (vertexCount >= 58) {
+            zError::ReportOld(
+                0x200,
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0xaed,
+                "Poly vertex count approaching limit (%d / %d)",
+                vertexCount,
+                0x40
+            );
+            return 1;
+        }
+
+        const int originalVertexCount = vertexCount;
+        if (zModel_Const::check_colinearity(&vertexCount, points, uvPairsA, normalsB, uvPairsB) != 0
+            && vertexCount < 3) {
+            zError::ReportOld(
+                0x100,
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0xb0d,
+                "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'",
+                vertexCount,
+                originalVertexCount
+            );
+            return 1;
+        }
+
+        if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(vertexCount, points) == 0) {
+            zError::ReportOld(
+                0x100,
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0xb19,
+                "Attempting to add non-planar polygon (%d verts), triangulating...",
+                vertexCount
+            );
+            zModel_Const::SplitPolygonChunkedByVertexLimit(
+                self,
+                originalVertexCount,
+                points,
+                entryNormals,
+                uvPairsA,
+                normalsA,
+                normalsB,
+                uvPairsB,
+                material,
+                drawFlags,
+                flagBit8,
+                userTag
+            );
+            return 2;
+        }
+
+        if (vertexCount > g_zModel_MaxPolygonVertexCountBeforeSplit) {
+            AddPolygonSplitByVertexLimit(
+                self,
+                originalVertexCount,
+                points,
+                entryNormals,
+                uvPairsA,
+                normalsA,
+                normalsB,
+                uvPairsB,
+                material,
+                drawFlags,
+                flagBit8,
+                userTag,
+                g_zModel_MaxPolygonVertexCountBeforeSplit
+            );
+            return 2;
+        }
+
+        zDiEntryPartial* entries
+            = (zDiEntryPartial*)(realloc(self->entries, (size_t)(self->entryCount + 1) * sizeof(zDiEntryPartial)));
+        self->entries = entries;
+
+        zDiEntryPartial* const entry = &entries[self->entryCount];
+        memset(entry, 0, sizeof(zDiEntryPartial));
+        entry->flagsAndIndexCount = (unsigned int)(vertexCount & 0xff) | ((unsigned int)(flagBit8 & 1) << 8);
+        if (entryNormals != 0) {
+            entry->flagsAndIndexCount |= 0x200;
+        }
+        entry->drawFlags = drawFlags;
+        entry->vertexIndices = malloc((size_t)(vertexCount) * sizeof(int));
+        if (entryNormals != 0) {
+            entry->normalIndices = malloc((size_t)(vertexCount) * sizeof(int));
+        }
+
+        int* vertexIndices = (int*)(entry->vertexIndices);
+        int* normalIndices = (int*)(entry->normalIndices);
+        zVec3* pointCursor = points;
+        zVec3* normalBCursor = normalsB;
+        zVec3* entryNormalCursor = entryNormals;
+        for (int i = 0; i < vertexCount; ++i) {
+            if (normalsA != 0) {
+                vertexIndices[i] = zModel_Const::AddOrMergeVertexAndNormal(self, pointCursor, normalBCursor);
+                ++normalBCursor;
+            } else {
+                vertexIndices[i] = zModel_Const::AddOrMergeVertex(self, pointCursor);
+            }
+            if (vertexIndices[i] < 0) {
+                return 1;
+            }
+
+            if (entryNormals != 0) {
+                normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
+                ++entryNormalCursor;
+            }
+            ++pointCursor;
+        }
+
+        if ((material->flags & 0x0100) != 0) {
+            entry->uvPairs = malloc((size_t)(vertexCount) * sizeof(zClipUV));
+            memcpy(entry->uvPairs, uvPairsA, (size_t)(vertexCount) * sizeof(zClipUV));
+            zClipUV* const entryUvPairs = (zClipUV*)(entry->uvPairs);
+            float minU = entryUvPairs[0].u;
+            float minV = entryUvPairs[0].v;
+            for (int i = 1; i < vertexCount; ++i) {
+                if (entryUvPairs[i].u < minU) {
+                    minU = entryUvPairs[i].u;
+                }
+                if (entryUvPairs[i].v < minV) {
+                    minV = entryUvPairs[i].v;
+                }
+            }
+
+            const float baseU = (float)(floor(minU));
+            const float baseV = (float)(floor(minV));
+            for (int i_107 = 0; i_107 < vertexCount; ++i_107) {
+                entryUvPairs[i_107].u -= baseU;
+                entryUvPairs[i_107].v -= baseV;
+            }
+        }
+
+        entry->material = material;
+        RebuildGeneratedUvPairsForEntry(self, self->entryCount);
+        if ((material->flags & 0x0100) != 0) {
+            zModel_Const::QuantizeAndNormalizeUvPairs(vertexCount, (zClipUV*)(entry->uvPairs));
+        }
+        memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
+
+        ++self->entryCount;
+        return 0;
+    }
+} // namespace zDi
+
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.hasspecialflagsorauxmaterialdata
      * @recoil-artifact defines .text recoil:function:0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
      * Purpose: test whether a display instance needs special render/material handling.
      */
-    int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self) {
+    int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self)
+    {
         if (self == 0) {
             return 0;
         }
@@ -3365,16 +3180,15 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildbounds
      * @recoil-artifact defines .text recoil:function:0x483ad0: zDi::RebuildBounds
      * Purpose: rebuild display-instance bounds, center, and approximate bounding radius.
      */
-    void __fastcall RebuildBounds(
-        zDiPartial * self,
-        zBoundsMinMaxPartial * outBoundsMinMax
-    ) {
+    void __fastcall RebuildBounds(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
+    {
         if (self == 0 || outBoundsMinMax == 0) {
             return;
         }
@@ -3401,16 +3215,15 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildaabb
      * @recoil-artifact defines .text recoil:function:0x483b80: zDi::BuildAabb
      * Purpose: build a display-instance axis-aligned bounds box from vertices and point data.
      */
-    void __fastcall BuildAabb(
-        zDiPartial * self,
-        zBoundsMinMaxPartial * outBoundsMinMax
-    ) {
+    void __fastcall BuildAabb(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
+    {
         int i;
         int j;
 
@@ -3423,9 +3236,9 @@ namespace zDi {
         }
 
         for (i = 0; i < self->pointCount; ++i) {
-            zModel_PointEntryPartial *entry = &self->pointEntries[i];
+            zModel_PointEntryPartial* entry = &self->pointEntries[i];
             for (j = 0; j < entry->pointCamCount; ++j) {
-                const zVec3 *const point = &entry->pointCamList[j];
+                const zVec3* const point = &entry->pointCamList[j];
                 if (point->x < outBoundsMinMax->min.x) {
                     outBoundsMinMax->min.x = point->x;
                 }
@@ -3448,7 +3261,7 @@ namespace zDi {
         }
 
         for (i = 1; i < self->vertCount; ++i) {
-            const zVec3 *const point = &self->verts[i];
+            const zVec3* const point = &self->verts[i];
             if (point->x < outBoundsMinMax->min.x) {
                 outBoundsMinMax->min.x = point->x;
             }
@@ -3478,7 +3291,7 @@ namespace zDi {
                 1.0f
             );
             for (i = 0; i < self->blendVertCount; ++i) {
-                const zVec3 *const point = &g_zModel_SharedVec3ScratchA[i];
+                const zVec3* const point = &g_zModel_SharedVec3ScratchA[i];
                 if (point->x < outBoundsMinMax->min.x) {
                     outBoundsMinMax->min.x = point->x;
                 }
@@ -3502,16 +3315,15 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildoriginsymmetricaabb
      * @recoil-artifact defines .text recoil:function:0x483e60: zDi::BuildOriginSymmetricAabb
      * Purpose: symmetrize display-instance bounds around the origin according to mode flags.
      */
-    void __fastcall BuildOriginSymmetricAabb(
-        zDiPartial * self,
-        zBoundsMinMaxPartial * outBoundsMinMax
-    ) {
+    void __fastcall BuildOriginSymmetricAabb(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
+    {
         BuildAabb(self, outBoundsMinMax);
 
         float extentX = (float)fabs(outBoundsMinMax->min.x);
@@ -3559,126 +3371,125 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
- * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
- * Retail 0x4c4228..0x4c4241 passes self in ECX, exclusions in EDX,
- * and blendY on the stack. VC5 skips floating-point fastcall arguments when
- * assigning registers: the source order is self, blendY, exclusions. This
- * order reproduces the complete caller while leaving this callee unchanged.
- * Purpose: build blend-vertex offsets from connectivity and exclusion rules.
- */
-void __fastcall BuildBlendVertsFromConnectivity(
-    zDiPartial *self,
-    float blendY,
-    int *excludedVertexIndices,
-    int excludedVertexCount,
-    int minSharedVertexCount
-) {
-    const int vertCount = self->vertCount;
-    self->blendVerts = (zVec3 *)(realloc(self->blendVerts, (size_t)(vertCount) * sizeof(zVec3)));
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
+     * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
+     * Retail 0x4c4228..0x4c4241 passes self in ECX, exclusions in EDX,
+     * and blendY on the stack. VC5 skips floating-point fastcall arguments when
+     * assigning registers: the source order is self, blendY, exclusions. This
+     * order reproduces the complete caller while leaving this callee unchanged.
+     * Purpose: build blend-vertex offsets from connectivity and exclusion rules.
+     */
+    void __fastcall BuildBlendVertsFromConnectivity(
+        zDiPartial * self,
+        float blendY,
+        int* excludedVertexIndices,
+        int excludedVertexCount,
+        int minSharedVertexCount
+    )
+    {
+        const int vertCount = self->vertCount;
+        self->blendVerts = (zVec3*)(realloc(self->blendVerts, (size_t)(vertCount) * sizeof(zVec3)));
 
-    int *const blendDisabledMask = (int *)(malloc((size_t)(vertCount) * sizeof(int)));
-    int *const vertexReferenceCounts = (int *)(malloc((size_t)(vertCount) * sizeof(int)));
+        int* const blendDisabledMask = (int*)(malloc((size_t)(vertCount) * sizeof(int)));
+        int* const vertexReferenceCounts = (int*)(malloc((size_t)(vertCount) * sizeof(int)));
 
-    for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
-        blendDisabledMask[vertexIndex] = 0;
-        vertexReferenceCounts[vertexIndex] = 0;
-    }
-
-    for (int excludeIndex = 0; excludeIndex < excludedVertexCount; ++excludeIndex) {
-        blendDisabledMask[excludedVertexIndices[excludeIndex]] = 1;
-    }
-
-    for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
-        zDiEntryPartial *const entry = &self->entries[entryIndex];
-        const unsigned int entryVertexCount = entry->flagsAndIndexCount & 0xff;
-        int *const vertexIndices = (int *)(entry->vertexIndices);
-        for (unsigned int entryVertexIndex = 0; entryVertexIndex < entryVertexCount;
-            ++entryVertexIndex) {
-            ++vertexReferenceCounts[vertexIndices[entryVertexIndex]];
-        }
-    }
-
-    if (minSharedVertexCount > 0) {
         for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
-            if (vertexReferenceCounts[vertexIndex] < minSharedVertexCount) {
-                blendDisabledMask[vertexIndex] = 1;
+            blendDisabledMask[vertexIndex] = 0;
+            vertexReferenceCounts[vertexIndex] = 0;
+        }
+
+        for (int excludeIndex = 0; excludeIndex < excludedVertexCount; ++excludeIndex) {
+            blendDisabledMask[excludedVertexIndices[excludeIndex]] = 1;
+        }
+
+        for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
+            zDiEntryPartial* const entry = &self->entries[entryIndex];
+            const unsigned int entryVertexCount = entry->flagsAndIndexCount & 0xff;
+            int* const vertexIndices = (int*)(entry->vertexIndices);
+            for (unsigned int entryVertexIndex = 0; entryVertexIndex < entryVertexCount; ++entryVertexIndex) {
+                ++vertexReferenceCounts[vertexIndices[entryVertexIndex]];
             }
         }
-    }
 
-    for (int blendVertexIndex = 0; blendVertexIndex < vertCount; ++blendVertexIndex) {
-        int enableBlendY = 1;
-        for (int excludeIndex = 0; enableBlendY != 0 && excludeIndex < excludedVertexCount;
-            ++excludeIndex) {
-            if (excludedVertexIndices[excludeIndex] == blendVertexIndex) {
+        if (minSharedVertexCount > 0) {
+            for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+                if (vertexReferenceCounts[vertexIndex] < minSharedVertexCount) {
+                    blendDisabledMask[vertexIndex] = 1;
+                }
+            }
+        }
+
+        for (int blendVertexIndex = 0; blendVertexIndex < vertCount; ++blendVertexIndex) {
+            int enableBlendY = 1;
+            for (int excludeIndex = 0; enableBlendY != 0 && excludeIndex < excludedVertexCount; ++excludeIndex) {
+                if (excludedVertexIndices[excludeIndex] == blendVertexIndex) {
+                    enableBlendY = 0;
+                }
+            }
+            if (blendDisabledMask[blendVertexIndex] == 1) {
                 enableBlendY = 0;
             }
+
+            self->blendVerts[blendVertexIndex].x = 0.0f;
+            self->blendVerts[blendVertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
+            self->blendVerts[blendVertexIndex].z = 0.0f;
         }
-        if (blendDisabledMask[blendVertexIndex] == 1) {
-            enableBlendY = 0;
+
+        if (blendDisabledMask != 0) {
+            free(blendDisabledMask);
+        }
+        if (vertexReferenceCounts != 0) {
+            free(vertexReferenceCounts);
         }
 
-        self->blendVerts[blendVertexIndex].x = 0.0f;
-        self->blendVerts[blendVertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
-        self->blendVerts[blendVertexIndex].z = 0.0f;
+        self->flags |= 0x08;
+        self->blendScale = 1.0f;
+        self->blendVertCount = self->vertCount;
     }
-
-    if (blendDisabledMask != 0) {
-        free(blendDisabledMask);
-    }
-    if (vertexReferenceCounts != 0) {
-        free(vertexReferenceCounts);
-    }
-
-    self->flags |= 0x08;
-    self->blendScale = 1.0f;
-    self->blendVertCount = self->vertCount;
-}
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setentryvalueforallentries
- * @recoil-artifact defines .text recoil:function:0x484140: zDi::SetEntryValueForAllEntries
- * @recoil-match byte
- *
- * Purpose: set the draw-flags value for every display-instance polygon entry.
- */
-void __fastcall SetEntryValueForAllEntries(
-    zDiPartial *self,
-    unsigned int entryValue
-) {
-    if (self == 0) {
-        return;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setentryvalueforallentries
+     * @recoil-artifact defines .text recoil:function:0x484140: zDi::SetEntryValueForAllEntries
+     * @recoil-match byte
+     *
+     * Purpose: set the draw-flags value for every display-instance polygon entry.
+     */
+    void __fastcall SetEntryValueForAllEntries(zDiPartial * self, unsigned int entryValue)
+    {
+        if (self == 0) {
+            return;
+        }
 
-    for (int i = 0; i < self->entryCount; ++i) {
-        self->entries[i].drawFlags = entryValue;
+        for (int i = 0; i < self->entryCount; ++i) {
+            self->entries[i].drawFlags = entryValue;
+        }
     }
-}
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setshowbackfaceforallentries
- * @recoil-artifact defines .text recoil:function:0x484170: zDi::SetShowBackFaceForAllEntries
- * Purpose: update the show-backface bit on every display-instance polygon entry.
- */
-void __fastcall SetShowBackFaceForAllEntries(
-    zDiPartial *self,
-    int enabled
-) {
-    for (int i = 0; i < self->entryCount; ++i) {
-        self->entries[i].flagsAndIndexCount =
-            (self->entries[i].flagsAndIndexCount & ~0x0100u) | ((enabled & 1) << 8);
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setshowbackfaceforallentries
+     * @recoil-artifact defines .text recoil:function:0x484170: zDi::SetShowBackFaceForAllEntries
+     * Purpose: update the show-backface bit on every display-instance polygon entry.
+     */
+    void __fastcall SetShowBackFaceForAllEntries(zDiPartial * self, int enabled)
+    {
+        for (int i = 0; i < self->entryCount; ++i) {
+            self->entries[i].flagsAndIndexCount
+                = (self->entries[i].flagsAndIndexCount & ~0x0100u) | ((enabled & 1) << 8);
+        }
     }
-}
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setmaterialflagbit9forflagbit0entries
      * @recoil-artifact defines .text recoil:function:0x4841b0: zDi::SetMaterialFlagBit9ForFlagBit0Entries
@@ -3687,12 +3498,10 @@ namespace zDi {
      * Purpose: set material flag bit 9 for display-instance materials whose
      * flag bit 8 (0x0100) is set.
      */
-    void __fastcall SetMaterialFlagBit9ForFlagBit0Entries(
-        zDiPartial *self,
-        int enabled
-    ) {
+    void __fastcall SetMaterialFlagBit9ForFlagBit0Entries(zDiPartial * self, int enabled)
+    {
         for (int i = 0; i < self->entryCount; ++i) {
-            zModel_MaterialPartial *material = self->entries[i].material;
+            zModel_MaterialPartial* material = self->entries[i].material;
             if ((material->flags & 0x0100) != 0) {
                 zModel_Material::SetFlagBit9(material, enabled);
             }
@@ -3700,7 +3509,8 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.invalidateimagesforflagbit8materials
      * @recoil-artifact defines .text recoil:function:0x4841f0: zDi::InvalidateImagesForFlagBit8Materials
@@ -3708,9 +3518,10 @@ namespace zDi {
      *
      * Purpose: invalidate eligible images for display-instance materials selected by flag bit 0.
      */
-    void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self) {
+    void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial * self)
+    {
         for (int i = 0; i < self->entryCount; ++i) {
-            zModel_MaterialPartial *material = self->entries[i].material;
+            zModel_MaterialPartial* material = self->entries[i].material;
             if ((material->flags & 0x0100) != 0) {
                 zModel_Material::InvalidateImagesIfEligible(material);
             }
@@ -3718,345 +3529,335 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.resetcurrentvariant
- * @recoil-artifact defines .text recoil:function:0x484230: zDi::ResetCurrentVariant
- * Purpose: reset the current material cycle frame on the first entry.
- */
-void __fastcall ResetCurrentVariant(
-    zDiPartial *self
-) {
-    zModel_MaterialPartial *const material = self->entries->material;
-    if (material->cycle != 0) {
-        material->cycle->currentFrame = 0.0f;
-        material->currentTextureDirectoryEntry = material->cycle->frameTable[0];
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.resetcurrentvariant
+     * @recoil-artifact defines .text recoil:function:0x484230: zDi::ResetCurrentVariant
+     * Purpose: reset the current material cycle frame on the first entry.
+     */
+    void __fastcall ResetCurrentVariant(zDiPartial * self)
+    {
+        zModel_MaterialPartial* const material = self->entries->material;
+        if (material->cycle != 0) {
+            material->cycle->currentFrame = 0.0f;
+            material->currentTextureDirectoryEntry = material->cycle->frameTable[0];
+        }
     }
-}
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturecount
- * @recoil-artifact defines .text recoil:function:0x484250: zDi::SetCurrentVariantCycleTextureCount
- * Purpose: configure the current material cycle texture count.
- */
-int __fastcall SetCurrentVariantCycleTextureCount(
-    zDiPartial *self,
-    int textureCount
-) {
-    if (self == 0) {
-        sprintf(
-            g_zError_DebugMsgBuffer,
-            "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n",
-            "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-            0xf3f
-        );
-        fprintf(stderr, g_zError_DebugMsgBuffer);
-        return -1;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturecount
+     * @recoil-artifact defines .text recoil:function:0x484250: zDi::SetCurrentVariantCycleTextureCount
+     * Purpose: configure the current material cycle texture count.
+     */
+    int __fastcall SetCurrentVariantCycleTextureCount(zDiPartial * self, int textureCount)
+    {
+        if (self == 0) {
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n",
+                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                0xf3f
+            );
+            fprintf(stderr, g_zError_DebugMsgBuffer);
+            return -1;
+        }
 
-    zModel_MaterialPartial *const material = self->entries->material;
-    if (material != 0) {
-        zModel_Material::SetCycleTextureCount(material, textureCount);
+        zModel_MaterialPartial* const material = self->entries->material;
+        if (material != 0) {
+            zModel_Material::SetCycleTextureCount(material, textureCount);
+            return 0;
+        }
+
+        // Original code reaches this only for a null material pointer and then
+        // dereferences it while clearing the cycle-texture flag.
+        material->flags = (unsigned short)(material->flags & 0xfbff);
         return 0;
     }
-
-    // Original code reaches this only for a null material pointer and then
-    // dereferences it while clearing the cycle-texture flag.
-    material->flags = (unsigned short)(material->flags & 0xfbff);
-    return 0;
-}
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariant
- * @recoil-artifact defines .text recoil:function:0x4842b0: zDi::SetCurrentVariant
- * @recoil-match byte
- *
- * Purpose: select the current texture-cycle variant frame.
- */
-void __fastcall SetCurrentVariant(
-    zDiPartial *self,
-    int variantIndex
-) {
-    zModel_MaterialPartial *const material = self->entries->material;
-    zModel_MaterialCyclePartial *const cycle = material->cycle;
-    if (cycle == 0) {
-        return;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariant
+     * @recoil-artifact defines .text recoil:function:0x4842b0: zDi::SetCurrentVariant
+     * @recoil-match byte
+     *
+     * Purpose: select the current texture-cycle variant frame.
+     */
+    void __fastcall SetCurrentVariant(zDiPartial * self, int variantIndex)
+    {
+        zModel_MaterialPartial* const material = self->entries->material;
+        zModel_MaterialCyclePartial* const cycle = material->cycle;
+        if (cycle == 0) {
+            return;
+        }
 
-    const int frameCount = cycle->frameCount;
-    if (variantIndex >= frameCount) {
-        variantIndex %= frameCount;
-    } else if (variantIndex < 0) {
-        variantIndex = 0;
-    }
+        const int frameCount = cycle->frameCount;
+        if (variantIndex >= frameCount) {
+            variantIndex %= frameCount;
+        } else if (variantIndex < 0) {
+            variantIndex = 0;
+        }
 
-    material->currentTextureDirectoryEntry = cycle->frameTable[variantIndex];
-    cycle->currentFrame = (float)(variantIndex);
-}
+        material->currentTextureDirectoryEntry = cycle->frameTable[variantIndex];
+        cycle->currentFrame = (float)(variantIndex);
+    }
 } // namespace zDi
 
-namespace zModel_Instance {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcycletextureloop
- * @recoil-artifact defines .text recoil:function:0x4842f0: zModel_Instance::SetCycleTextureLoop
- * @recoil-match byte
- *
- * Purpose: set the cycle loop flag on an instance's first material entry.
- */
-int __fastcall SetCycleTextureLoop(
-    zDiPartial *instance,
-    int loopEnabled
-) {
-    if (instance == 0) {
-        return 0;
-    }
+namespace zModel_Instance
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcycletextureloop
+     * @recoil-artifact defines .text recoil:function:0x4842f0: zModel_Instance::SetCycleTextureLoop
+     * @recoil-match byte
+     *
+     * Purpose: set the cycle loop flag on an instance's first material entry.
+     */
+    int __fastcall SetCycleTextureLoop(zDiPartial * instance, int loopEnabled)
+    {
+        if (instance == 0) {
+            return 0;
+        }
 
-    return zModel_Material::SetCycleTextureLoop(instance->entries->material, loopEnabled);
-}
+        return zModel_Material::SetCycleTextureLoop(instance->entries->material, loopEnabled);
+    }
 } // namespace zModel_Instance
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturespeed
- * @recoil-artifact defines .text recoil:function:0x484310: zDi::SetCurrentVariantCycleTextureSpeed
- * @recoil-match byte
- *
- * Purpose: set the cycle speed for the current material variant.
- */
-int __fastcall SetCurrentVariantCycleTextureSpeed(
-    zDiPartial *self,
-    float cycleSpeed
-) {
-    if (self == 0) {
-        return 0;
-    }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturespeed
+     * @recoil-artifact defines .text recoil:function:0x484310: zDi::SetCurrentVariantCycleTextureSpeed
+     * @recoil-match byte
+     *
+     * Purpose: set the cycle speed for the current material variant.
+     */
+    int __fastcall SetCurrentVariantCycleTextureSpeed(zDiPartial * self, float cycleSpeed)
+    {
+        if (self == 0) {
+            return 0;
+        }
 
-    return zModel_Material::SetCycleTextureSpeed(self->entries->material, cycleSpeed);
-}
+        return zModel_Material::SetCycleTextureSpeed(self->entries->material, cycleSpeed);
+    }
 } // namespace zDi
 
-namespace zModel_Instance {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addcycletexture
- * @recoil-artifact defines .text recoil:function:0x484330: zModel_Instance::AddCycleTexture
- * @recoil-match byte
- *
- * Purpose: add a cycle texture to an instance's first material entry.
- */
-int __fastcall AddCycleTexture(
-    zDiPartial *instance,
-    zImage_TexDirEntryPartial *textureDirectoryEntry
-) {
-    if (instance == 0) {
-        return 0;
-    }
+namespace zModel_Instance
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addcycletexture
+     * @recoil-artifact defines .text recoil:function:0x484330: zModel_Instance::AddCycleTexture
+     * @recoil-match byte
+     *
+     * Purpose: add a cycle texture to an instance's first material entry.
+     */
+    int __fastcall AddCycleTexture(zDiPartial * instance, zImage_TexDirEntryPartial * textureDirectoryEntry)
+    {
+        if (instance == 0) {
+            return 0;
+        }
 
-    return zModel_Material::AddCycleTexture(instance->entries->material, textureDirectoryEntry);
-}
+        return zModel_Material::AddCycleTexture(instance->entries->material, textureDirectoryEntry);
+    }
 } // namespace zModel_Instance
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setobject3dcolormodeformaterials
- * @recoil-artifact defines .text recoil:function:0x484350: zDi::SetObject3DColorModeForMaterials
- * Purpose: apply an object3D color mode to untextured materials.
- */
-void __fastcall SetObject3DColorModeForMaterials(
-    zDiPartial *self,
-    int colorMode
-) {
-    zDiEntryPartial *entry = self->entries;
-    for (int i = 0; i < self->entryCount; ++i, ++entry) {
-        zModel_MaterialPartial *material = entry->material;
-        if ((material->flags & 0x0100) != 0) {
-            continue;
-        }
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setobject3dcolormodeformaterials
+     * @recoil-artifact defines .text recoil:function:0x484350: zDi::SetObject3DColorModeForMaterials
+     * Purpose: apply an object3D color mode to untextured materials.
+     */
+    void __fastcall SetObject3DColorModeForMaterials(zDiPartial * self, int colorMode)
+    {
+        zDiEntryPartial* entry = self->entries;
+        for (int i = 0; i < self->entryCount; ++i, ++entry) {
+            zModel_MaterialPartial* material = entry->material;
+            if ((material->flags & 0x0100) != 0) {
+                continue;
+            }
 
-        material->colorRgb.red = (float)(colorMode);
-        material->colorRgb.green = 0.0f;
-        material->colorRgb.blue = 0.0f;
-        material->packedColor = (unsigned short)((material->packedColor & 0x00ff) |
-                                                 (((unsigned int)(colorMode) & 0xff) << 8));
-        material->colorScalar = 1.0f;
+            material->colorRgb.red = (float)(colorMode);
+            material->colorRgb.green = 0.0f;
+            material->colorRgb.blue = 0.0f;
+            material->packedColor
+                = (unsigned short)((material->packedColor & 0x00ff) | (((unsigned int)(colorMode) & 0xff) << 8));
+            material->colorScalar = 1.0f;
+        }
     }
-}
 } // namespace zDi
 
-namespace zDi {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
- * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
- * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
- */
-void __fastcall RebuildGeneratedUvPairsForEntry(
-    zDiPartial *self,
-    int entryIndex
-) {
-    zDiEntryPartial *const entry = &self->entries[entryIndex];
-    const int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-    if (entry->material == 0 || (entry->material->flags & 0x0100) == 0 || vertexCount <= 3) {
-        return;
-    }
-
-    int *const vertexIndices = (int *)(entry->vertexIndices);
-    zClipUV *const uvPairs = (zClipUV *)(entry->uvPairs);
-    const zVec3 *const vertex0 = &self->verts[vertexIndices[0]];
-    const zVec3 *const vertex1 = &self->verts[vertexIndices[1]];
-    const zVec3 *const vertex2 = &self->verts[vertexIndices[2]];
-
-    zVec3 triangleNormal;
-    zMathVec3TriangleNormal(vertex0, vertex1, vertex2, &triangleNormal);
-    zMath::Vec3Normalize(&triangleNormal);
-
-    const float absX = (float)(fabs(triangleNormal.x));
-    const float absY = (float)(fabs(triangleNormal.y));
-    const float absZ = (float)(fabs(triangleNormal.z));
-
-    if (absX >= absY && absX >= absZ) {
-        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->y,
-            vertex0->z,
-            vertex1->y,
-            vertex1->z,
-            vertex2->y,
-            vertex2->z,
-            uvPairs[0].u,
-            uvPairs[1].u,
-            uvPairs[2].u
-        );
-        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->y,
-            vertex0->z,
-            vertex1->y,
-            vertex1->z,
-            vertex2->y,
-            vertex2->z,
-            uvPairs[0].v,
-            uvPairs[1].v,
-            uvPairs[2].v
-        );
-
-        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
-            const float deltaA = vertex->y - vertex0->y;
-            const float deltaB = vertex->z - vertex0->z;
-            uvPairs[vertexIndex].u =
-                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-            uvPairs[vertexIndex].v =
-                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+namespace zDi
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
+     * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
+     * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
+     */
+    void __fastcall RebuildGeneratedUvPairsForEntry(zDiPartial * self, int entryIndex)
+    {
+        zDiEntryPartial* const entry = &self->entries[entryIndex];
+        const int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
+        if (entry->material == 0 || (entry->material->flags & 0x0100) == 0 || vertexCount <= 3) {
+            return;
         }
-    } else if (absY >= absX && absY >= absZ) {
-        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->z,
-            vertex0->x,
-            vertex1->z,
-            vertex1->x,
-            vertex2->z,
-            vertex2->x,
-            uvPairs[0].u,
-            uvPairs[1].u,
-            uvPairs[2].u
-        );
-        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->z,
-            vertex0->x,
-            vertex1->z,
-            vertex1->x,
-            vertex2->z,
-            vertex2->x,
-            uvPairs[0].v,
-            uvPairs[1].v,
-            uvPairs[2].v
-        );
 
-        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
-            const float deltaA = vertex->z - vertex0->z;
-            const float deltaB = vertex->x - vertex0->x;
-            uvPairs[vertexIndex].u =
-                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-            uvPairs[vertexIndex].v =
-                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
-        }
-    } else {
-        const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->x,
-            vertex0->y,
-            vertex1->x,
-            vertex1->y,
-            vertex2->x,
-            vertex2->y,
-            uvPairs[0].u,
-            uvPairs[1].u,
-            uvPairs[2].u
-        );
-        const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-            vertex0->x,
-            vertex0->y,
-            vertex1->x,
-            vertex1->y,
-            vertex2->x,
-            vertex2->y,
-            uvPairs[0].v,
-            uvPairs[1].v,
-            uvPairs[2].v
-        );
+        int* const vertexIndices = (int*)(entry->vertexIndices);
+        zClipUV* const uvPairs = (zClipUV*)(entry->uvPairs);
+        const zVec3* const vertex0 = &self->verts[vertexIndices[0]];
+        const zVec3* const vertex1 = &self->verts[vertexIndices[1]];
+        const zVec3* const vertex2 = &self->verts[vertexIndices[2]];
 
-        for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-            const zVec3 *const vertex = &self->verts[vertexIndices[vertexIndex]];
-            const float deltaA = vertex->x - vertex0->x;
-            const float deltaB = vertex->y - vertex0->y;
-            uvPairs[vertexIndex].u =
-                uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-            uvPairs[vertexIndex].v =
-                uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+        zVec3 triangleNormal;
+        zMathVec3TriangleNormal(vertex0, vertex1, vertex2, &triangleNormal);
+        zMath::Vec3Normalize(&triangleNormal);
+
+        const float absX = (float)(fabs(triangleNormal.x));
+        const float absY = (float)(fabs(triangleNormal.y));
+        const float absZ = (float)(fabs(triangleNormal.z));
+
+        if (absX >= absY && absX >= absZ) {
+            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->y,
+                vertex0->z,
+                vertex1->y,
+                vertex1->z,
+                vertex2->y,
+                vertex2->z,
+                uvPairs[0].u,
+                uvPairs[1].u,
+                uvPairs[2].u
+            );
+            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->y,
+                vertex0->z,
+                vertex1->y,
+                vertex1->z,
+                vertex2->y,
+                vertex2->z,
+                uvPairs[0].v,
+                uvPairs[1].v,
+                uvPairs[2].v
+            );
+
+            for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
+                const float deltaA = vertex->y - vertex0->y;
+                const float deltaB = vertex->z - vertex0->z;
+                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+            }
+        } else if (absY >= absX && absY >= absZ) {
+            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->z,
+                vertex0->x,
+                vertex1->z,
+                vertex1->x,
+                vertex2->z,
+                vertex2->x,
+                uvPairs[0].u,
+                uvPairs[1].u,
+                uvPairs[2].u
+            );
+            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->z,
+                vertex0->x,
+                vertex1->z,
+                vertex1->x,
+                vertex2->z,
+                vertex2->x,
+                uvPairs[0].v,
+                uvPairs[1].v,
+                uvPairs[2].v
+            );
+
+            for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
+                const float deltaA = vertex->z - vertex0->z;
+                const float deltaB = vertex->x - vertex0->x;
+                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+            }
+        } else {
+            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->x,
+                vertex0->y,
+                vertex1->x,
+                vertex1->y,
+                vertex2->x,
+                vertex2->y,
+                uvPairs[0].u,
+                uvPairs[1].u,
+                uvPairs[2].u
+            );
+            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
+                vertex0->x,
+                vertex0->y,
+                vertex1->x,
+                vertex1->y,
+                vertex2->x,
+                vertex2->y,
+                uvPairs[0].v,
+                uvPairs[1].v,
+                uvPairs[2].v
+            );
+
+            for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
+                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
+                const float deltaA = vertex->x - vertex0->x;
+                const float deltaB = vertex->y - vertex0->y;
+                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
+                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+            }
         }
     }
-}
 } // namespace zDi
 
-namespace zModel_Const {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
- * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
- * Purpose: solve the 2D scalar gradient over a triangle.
- */
-zClipUV __stdcall SolveTriScalarGradient2D(
-    float vertex0A,
-    float vertex0B,
-    float vertex1A,
-    float vertex1B,
-    float vertex2A,
-    float vertex2B,
-    float value0,
-    float value1,
-    float value2
-) {
-    const float edge20A = vertex2A - vertex1A;
-    const float edge20B = vertex2B - vertex1B;
-    const float edge10A = vertex0A - vertex1A;
-    const float edge10B = vertex0B - vertex1B;
-    const float value20 = value2 - value1;
-    const float value10 = value0 - value1;
-    const float determinant = edge20B * edge10A - edge20A * edge10B;
+namespace zModel_Const
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
+     * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
+     * Purpose: solve the 2D scalar gradient over a triangle.
+     */
+    zClipUV __stdcall SolveTriScalarGradient2D(
+        float vertex0A,
+        float vertex0B,
+        float vertex1A,
+        float vertex1B,
+        float vertex2A,
+        float vertex2B,
+        float value0,
+        float value1,
+        float value2
+    )
+    {
+        const float edge20A = vertex2A - vertex1A;
+        const float edge20B = vertex2B - vertex1B;
+        const float edge10A = vertex0A - vertex1A;
+        const float edge10B = vertex0B - vertex1B;
+        const float value20 = value2 - value1;
+        const float value10 = value0 - value1;
+        const float determinant = edge20B * edge10A - edge20A * edge10B;
 
-    zClipUV gradient = {0};
-    if (determinant == 0.0f) {
+        zClipUV gradient = { 0 };
+        if (determinant == 0.0f) {
+            return gradient;
+        }
+
+        const float inverseDeterminant = 1.0f / determinant;
+        gradient.u = -((value20 * edge10B - edge20B * value10) * inverseDeterminant);
+        gradient.v = -((edge20A * value10 - value20 * edge10A) * inverseDeterminant);
         return gradient;
     }
-
-    const float inverseDeterminant = 1.0f / determinant;
-    gradient.u = -((value20 * edge10B - edge20B * value10) * inverseDeterminant);
-    gradient.v = -((edge20A * value10 - value20 * edge10A) * inverseDeterminant);
-    return gradient;
-}
 } // namespace zModel_Const
 
-namespace zDi {
+namespace zDi
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforquerypoint
      * @recoil-artifact defines .text recoil:function:0x484960: zDi::BuildPickCandidateForQueryPoint.
@@ -4067,13 +3868,14 @@ namespace zDi {
     int __fastcall BuildPickCandidateForQueryPoint(
         zDiPartial * self,
         zClassDiPickCandidateEntry * outCandidate,
-        const zVec3 *queryPoint
-    ) {
+        const zVec3* queryPoint
+    )
+    {
         if (self == 0 || self->entryCount == 0) {
             return 0;
         }
 
-        const zVec3 *vertices = self->verts;
+        const zVec3* vertices = self->verts;
         if ((self->flags & 0x08) != 0 && self->blendScale != 0.0f && self->blendVertCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
@@ -4086,37 +3888,29 @@ namespace zDi {
         }
 
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(
-                g_zModel_SharedVec3ScratchB,
-                vertices,
-                (size_t)(self->vertCount) * sizeof(zVec3)
-            );
+            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(self->vertCount) * sizeof(zVec3));
         } else {
-            const zMat4x3 *const matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-                const zVec3 *const vertex = &vertices[vertexIndex];
-                zVec3 *const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
-                transformed->x =
-                    vertex->x * matrix->xx + vertex->y * matrix->yx +
-                    vertex->z * matrix->zx + matrix->posX;
-                transformed->y =
-                    vertex->x * matrix->xy + vertex->y * matrix->yy +
-                    vertex->z * matrix->zy + matrix->posY;
-                transformed->z =
-                    vertex->x * matrix->xz + vertex->y * matrix->yz +
-                    vertex->z * matrix->zz + matrix->posZ;
+                const zVec3* const vertex = &vertices[vertexIndex];
+                zVec3* const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
+                transformed->x
+                    = vertex->x * matrix->xx + vertex->y * matrix->yx + vertex->z * matrix->zx + matrix->posX;
+                transformed->y
+                    = vertex->x * matrix->xy + vertex->y * matrix->yy + vertex->z * matrix->zy + matrix->posY;
+                transformed->z
+                    = vertex->x * matrix->xz + vertex->y * matrix->yz + vertex->z * matrix->zz + matrix->posZ;
             }
         }
 
         {
             for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
-                zDiEntryPartial *entry = &self->entries[entryIndex];
+                zDiEntryPartial* entry = &self->entries[entryIndex];
                 const int vertexCount = (int)(entry->flagsAndIndexCount & 0xffu);
-                const int *vertexIndices = (const int *)(entry->vertexIndices);
+                const int* vertexIndices = (const int*)(entry->vertexIndices);
                 for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                    g_CZClass_DiFaceVertexScratch4[vertexIndex] =
-                        g_zModel_SharedVec3ScratchB[vertexIndices[vertexIndex]];
+                    g_CZClass_DiFaceVertexScratch4[vertexIndex]
+                        = g_zModel_SharedVec3ScratchB[vertexIndices[vertexIndex]];
                 }
 
                 if (CZDisplayInstance::TryGetPolygonHitAtQueryXZ(
@@ -4125,13 +3919,9 @@ namespace zDi {
                         queryPoint->x,
                         queryPoint->z,
                         vertexCount
-                    ) != 0 &&
-                    outCandidate->hitPos.y <= queryPoint->y) {
-                    memcpy(
-                        &outCandidate->variantTag,
-                        &entry->variantTagInitialized,
-                        sizeof(outCandidate->variantTag)
-                    );
+                    ) != 0
+                    && outCandidate->hitPos.y <= queryPoint->y) {
+                    memcpy(&outCandidate->variantTag, &entry->variantTagInitialized, sizeof(outCandidate->variantTag));
                     outCandidate->scenePayload = entry->material;
                     return 1;
                 }
@@ -4142,7 +3932,8 @@ namespace zDi {
     }
 } // namespace zDi
 
-namespace zModelConst {
+namespace zModelConst
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addfacetoplayerprobesamplebuckets
      * @recoil-artifact defines .text recoil:function:0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
@@ -4153,20 +3944,16 @@ namespace zModelConst {
     void __fastcall AddFaceToPlayerProbeSampleBuckets(
         CZNodePartial * node,
         PlayerProbeSampleCandidateBuffer * outputBuckets,
-        const zVec3 *samplePoints,
-        const int *sampleMaskSeeds,
+        const zVec3* samplePoints,
+        const int* sampleMaskSeeds,
         int samplePointCount,
         float maxProjectedY,
-        const zVec3 *polygonVertices,
-        const zModel_PickFaceEntry *faceEntry
-    ) {
+        const zVec3* polygonVertices,
+        const zModel_PickFaceEntry* faceEntry
+    )
+    {
         zVec3 normal;
-        zMathVec3TriangleNormal(
-            &polygonVertices[0],
-            &polygonVertices[1],
-            &polygonVertices[2],
-            &normal
-        );
+        zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
         if (normal.y <= 0.0f) {
             return;
         }
@@ -4180,15 +3967,15 @@ namespace zModelConst {
         const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
         for (int edgeEnd = vertexCount - 1; edgeEnd >= 0 && anyActive != 0; --edgeEnd) {
             const int edgeStart = edgeEnd == vertexCount - 1 ? 0 : edgeEnd + 1;
-            const zVec3 *start = &polygonVertices[edgeStart];
-            const zVec3 *end = &polygonVertices[edgeEnd];
+            const zVec3* start = &polygonVertices[edgeStart];
+            const zVec3* end = &polygonVertices[edgeEnd];
             const float dx = end->x - start->x;
             const float dz = start->z - end->z;
 
             anyActive = 0;
             for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
                 if (activeFlags[sampleIndex] != 0) {
-                    const zVec3 *point = &samplePoints[sampleIndex];
+                    const zVec3* point = &samplePoints[sampleIndex];
                     const float edgeTest = (point->x - end->x) * dz + (point->z - end->z) * dx;
                     activeFlags[sampleIndex] = edgeTest > -0.0001f ? 1 : 0;
                     if (activeFlags[sampleIndex] != 0) {
@@ -4207,14 +3994,12 @@ namespace zModelConst {
         const float zSlope = -normal.z * invNormalY;
         for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
             if (activeFlags[sampleIndex] != 0) {
-                PlayerProbeSampleCandidateBuffer *bucket = &outputBuckets[sampleIndex];
+                PlayerProbeSampleCandidateBuffer* bucket = &outputBuckets[sampleIndex];
                 if (bucket->candidateCount < 0x20) {
-                    zClassDiPickCandidateEntry *entry = &bucket->entries[bucket->candidateCount];
+                    zClassDiPickCandidateEntry* entry = &bucket->entries[bucket->candidateCount];
                     entry->surfaceNormal = normal;
-                    entry->hitPos.y =
-                        (samplePoints[sampleIndex].z - polygonVertices[0].z) * zSlope +
-                        (samplePoints[sampleIndex].x - polygonVertices[0].x) * xSlope +
-                        polygonVertices[0].y;
+                    entry->hitPos.y = (samplePoints[sampleIndex].z - polygonVertices[0].z) * zSlope
+                        + (samplePoints[sampleIndex].x - polygonVertices[0].x) * xSlope + polygonVertices[0].y;
                     if (entry->hitPos.y <= maxProjectedY) {
                         entry->node = node;
                         entry->variantTag = faceEntry->variantTag;
@@ -4227,7 +4012,8 @@ namespace zModelConst {
     }
 } // namespace zModelConst
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.picktestmeshatqueryxz
      * @recoil-artifact defines .text recoil:function:0x484e00: CZDisplayInstance::PickTestMeshAtQueryXZ.
@@ -4238,19 +4024,19 @@ namespace CZDisplayInstance {
     void __fastcall PickTestMeshAtQueryXZ(
         CZNodePartial * node,
         zModel_PickFaceData * faceData,
-        const zVec3 *samplePoints,
-        const int *sampleMaskSeeds,
+        const zVec3* samplePoints,
+        const int* sampleMaskSeeds,
         int samplePointCount,
         float maxProjectedY,
-        PlayerProbeSampleCandidateBuffer *outputBuckets
-    ) {
+        PlayerProbeSampleCandidateBuffer* outputBuckets
+    )
+    {
         if (faceData == 0 || faceData->faceCount == 0) {
             return;
         }
 
-        const zVec3 *vertices = faceData->baseVertices;
-        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
-            faceData->morphVertexCount != 0) {
+        const zVec3* vertices = faceData->baseVertices;
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
@@ -4262,35 +4048,27 @@ namespace CZDisplayInstance {
         }
 
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(
-                g_zModel_SharedVec3ScratchB,
-                vertices,
-                (size_t)(faceData->vertexCount) * sizeof(zVec3)
-            );
+            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(faceData->vertexCount) * sizeof(zVec3));
         } else {
-            const zMat4x3 *const matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             for (int vertexIndex = 0; vertexIndex < faceData->vertexCount; ++vertexIndex) {
-                const zVec3 *const vertex = &vertices[vertexIndex];
-                zVec3 *const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
-                transformed->x =
-                    vertex->x * matrix->xx + vertex->y * matrix->yx +
-                    vertex->z * matrix->zx + matrix->posX;
-                transformed->y =
-                    vertex->x * matrix->xy + vertex->y * matrix->yy +
-                    vertex->z * matrix->zy + matrix->posY;
-                transformed->z =
-                    vertex->x * matrix->xz + vertex->y * matrix->yz +
-                    vertex->z * matrix->zz + matrix->posZ;
+                const zVec3* const vertex = &vertices[vertexIndex];
+                zVec3* const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
+                transformed->x
+                    = vertex->x * matrix->xx + vertex->y * matrix->yx + vertex->z * matrix->zx + matrix->posX;
+                transformed->y
+                    = vertex->x * matrix->xy + vertex->y * matrix->yy + vertex->z * matrix->zy + matrix->posY;
+                transformed->z
+                    = vertex->x * matrix->xz + vertex->y * matrix->yz + vertex->z * matrix->zz + matrix->posZ;
             }
         }
 
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            const zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
+            const zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
             const int vertexCount = (int)(face->flagsAndVertexCount & 0xffu);
             for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                g_CZClass_DiFaceVertexScratch4[vertexIndex] =
-                    g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex]];
+                g_CZClass_DiFaceVertexScratch4[vertexIndex]
+                    = g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex]];
             }
             zModelConst::AddFaceToPlayerProbeSampleBuckets(
                 node,
@@ -4306,7 +4084,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.appendpickcandidatesforface
      * @recoil-artifact defines .text recoil:function:0x484fc0: CZDisplayInstance::AppendPickCandidatesForFace.
@@ -4315,18 +4094,18 @@ namespace CZDisplayInstance {
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
     int __fastcall AppendPickCandidatesForFace(
-        const zModel_PickFaceData *faceData,
-        zClassDiPickCandidateEntry *candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd
-    ) {
+        const zModel_PickFaceData* faceData,
+        zClassDiPickCandidateEntry* candidate,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd
+    )
+    {
         if (faceData == 0 || faceData->faceCount == 0) {
             return 0;
         }
 
-        const zVec3 *vertices = faceData->baseVertices;
-        if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0f &&
-            faceData->morphVertexCount != 0) {
+        const zVec3* vertices = faceData->baseVertices;
+        if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
@@ -4337,14 +4116,13 @@ namespace CZDisplayInstance {
             vertices = g_zModel_SharedVec3ScratchA;
         }
 
-        zVec3 queryPoint = {0};
-        zVec3 localSegmentEnd = {0};
+        zVec3 queryPoint = { 0 };
+        zVec3 localSegmentEnd = { 0 };
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
             queryPoint = *segmentStart;
             localSegmentEnd = *segmentEnd;
         } else {
-            const zMat4x3 *const matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             const float startX = segmentStart->x - matrix->posX;
             const float startY = segmentStart->y - matrix->posY;
             const float startZ = segmentStart->z - matrix->posZ;
@@ -4362,18 +4140,17 @@ namespace CZDisplayInstance {
 
         {
             for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-                const zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
+                const zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
                 const unsigned int flagsAndVertexCount = face->flagsAndVertexCount;
                 const unsigned int vertexCount = flagsAndVertexCount & 0xffu;
                 for (unsigned int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                    g_CZClass_DiFaceVertexScratch4[vertexIndex] =
-                        vertices[face->vertexIndices[vertexIndex]];
+                    g_CZClass_DiFaceVertexScratch4[vertexIndex] = vertices[face->vertexIndices[vertexIndex]];
                 }
 
                 const int cullBackface = (int)((flagsAndVertexCount >> 8) & 1u);
                 int hit = 0;
                 if ((face->scenePayload->flags & kPickFaceTexturedDamageMaskFlag) != 0) {
-                    zVec2 outUv = {0};
+                    zVec2 outUv = { 0 };
                     hit = BuildPickCandidateForSegmentVsPolygonWithUv(
                         candidate,
                         &queryPoint,
@@ -4401,29 +4178,22 @@ namespace CZDisplayInstance {
 
                 candidate->scenePayload = face->scenePayload;
                 if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-                    const zMat4x3 *const matrix =
-                        (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+                    const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
                     const zVec3 modelHitPos = candidate->hitPos;
-                    candidate->hitPos.x =
-                        modelHitPos.x * matrix->xx + modelHitPos.y * matrix->yx +
-                        modelHitPos.z * matrix->zx + matrix->posX;
-                    candidate->hitPos.y =
-                        modelHitPos.x * matrix->xy + modelHitPos.y * matrix->yy +
-                        modelHitPos.z * matrix->zy + matrix->posY;
-                    candidate->hitPos.z =
-                        modelHitPos.x * matrix->xz + modelHitPos.y * matrix->yz +
-                        modelHitPos.z * matrix->zz + matrix->posZ;
+                    candidate->hitPos.x = modelHitPos.x * matrix->xx + modelHitPos.y * matrix->yx
+                        + modelHitPos.z * matrix->zx + matrix->posX;
+                    candidate->hitPos.y = modelHitPos.x * matrix->xy + modelHitPos.y * matrix->yy
+                        + modelHitPos.z * matrix->zy + matrix->posY;
+                    candidate->hitPos.z = modelHitPos.x * matrix->xz + modelHitPos.y * matrix->yz
+                        + modelHitPos.z * matrix->zz + matrix->posZ;
 
                     const zVec3 modelNormal = candidate->surfaceNormal;
-                    candidate->surfaceNormal.x =
-                        modelNormal.x * matrix->xx + modelNormal.y * matrix->yx +
-                        modelNormal.z * matrix->zx;
-                    candidate->surfaceNormal.y =
-                        modelNormal.x * matrix->xy + modelNormal.y * matrix->yy +
-                        modelNormal.z * matrix->zy;
-                    candidate->surfaceNormal.z =
-                        modelNormal.x * matrix->xz + modelNormal.y * matrix->yz +
-                        modelNormal.z * matrix->zz;
+                    candidate->surfaceNormal.x
+                        = modelNormal.x * matrix->xx + modelNormal.y * matrix->yx + modelNormal.z * matrix->zx;
+                    candidate->surfaceNormal.y
+                        = modelNormal.x * matrix->xy + modelNormal.y * matrix->yy + modelNormal.z * matrix->zy;
+                    candidate->surfaceNormal.z
+                        = modelNormal.x * matrix->xz + modelNormal.y * matrix->yz + modelNormal.z * matrix->zz;
                 }
 
                 return 1;
@@ -4434,7 +4204,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentvsbboxfaces
      * @recoil-artifact defines .text recoil:function:0x485380: CZDisplayInstance::BuildPickCandidatesForSegmentVsBBoxFaces.
@@ -4443,94 +4214,101 @@ namespace CZDisplayInstance {
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
     int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
-        const zBBoxCorners *bboxCorners,
-        zClassDiPickCandidateEntry *candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd
-    ) {
+        const zBBoxCorners* bboxCorners,
+        zClassDiPickCandidateEntry* candidate,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd
+    )
+    {
         candidate->scenePayload = 0;
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[0];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[4];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[7];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[3];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[4];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[7];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[3];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[0];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[1];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[5];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[4];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[5];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[4];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[5];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[1];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[2];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[6];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[5];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[6];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[7];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[6];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[2];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[3];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[7];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[6];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[3];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[0];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[3];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[2];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[1];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[3];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[1];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] =
-            bboxCorners->corners[4];
-        g_CZClass_DiFaceVertexScratch4[1] =
-            bboxCorners->corners[5];
-        g_CZClass_DiFaceVertexScratch4[2] =
-            bboxCorners->corners[6];
-        g_CZClass_DiFaceVertexScratch4[3] =
-            bboxCorners->corners[7];
+        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[4];
+        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[5];
+        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[6];
+        g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[7];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
-                candidate, segmentStart, segmentEnd,
-                g_CZClass_DiFaceVertexScratch4, 4, 0)) {
+                candidate,
+                segmentStart,
+                segmentEnd,
+                g_CZClass_DiFaceVertexScratch4,
+                4,
+                0
+            )) {
             return 1;
         }
 
@@ -4538,7 +4316,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.trygetpolygonhitatqueryxz
      * @recoil-artifact defines .text recoil:function:0x4856d0: CZDisplayInstance::TryGetPolygonHitAtQueryXZ.
@@ -4548,18 +4327,19 @@ namespace CZDisplayInstance {
      */
     int __fastcall TryGetPolygonHitAtQueryXZ(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *polygonVertices,
+        const zVec3* polygonVertices,
         float queryX,
         float queryZ,
         int vertexCount
-    ) {
+    )
+    {
         {
             for (int currentIndex = 0; currentIndex < vertexCount; ++currentIndex) {
                 const int previousIndex = currentIndex == 0 ? vertexCount - 1 : currentIndex - 1;
-                const zVec3 *previous = &polygonVertices[previousIndex];
-                const zVec3 *current = &polygonVertices[currentIndex];
-                const float edge = (queryX - previous->x) * (current->z - previous->z) +
-                                   (queryZ - previous->z) * (previous->x - current->x);
+                const zVec3* previous = &polygonVertices[previousIndex];
+                const zVec3* current = &polygonVertices[currentIndex];
+                const float edge = (queryX - previous->x) * (current->z - previous->z)
+                    + (queryZ - previous->z) * (previous->x - current->x);
                 if (edge <= -0.0001f) {
                     return 0;
                 }
@@ -4578,15 +4358,16 @@ namespace CZDisplayInstance {
             return 1;
         }
 
-        candidate->hitPos.y = polygonVertices[0].y -
-                              ((queryX - polygonVertices[0].x) * candidate->surfaceNormal.x +
-                                  (queryZ - polygonVertices[0].z) * candidate->surfaceNormal.z) /
-                                  candidate->surfaceNormal.y;
+        candidate->hitPos.y = polygonVertices[0].y
+            - ((queryX - polygonVertices[0].x) * candidate->surfaceNormal.x
+                  + (queryZ - polygonVertices[0].z) * candidate->surfaceNormal.z)
+                / candidate->surfaceNormal.y;
         return 1;
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygon
      * @recoil-artifact defines .text recoil:function:0x4857f0: CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon.
@@ -4596,12 +4377,13 @@ namespace CZDisplayInstance {
      */
     int __fastcall BuildPickCandidateForSegmentVsPolygon(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
-        const zVec3 *polygonVertices,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
+        const zVec3* polygonVertices,
         int vertexCount,
         int cullBackface
-    ) {
+    )
+    {
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -4609,28 +4391,20 @@ namespace CZDisplayInstance {
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = {
-            segmentEnd->x - polygonVertices[0].x,
+        const zVec3 endDelta = { segmentEnd->x - polygonVertices[0].x,
             segmentEnd->y - polygonVertices[0].y,
-            segmentEnd->z - polygonVertices[0].z
-        };
-        const float endSide =
-            endDelta.x * candidate->surfaceNormal.x +
-            endDelta.y * candidate->surfaceNormal.y +
-            endDelta.z * candidate->surfaceNormal.z;
+            segmentEnd->z - polygonVertices[0].z };
+        const float endSide = endDelta.x * candidate->surfaceNormal.x + endDelta.y * candidate->surfaceNormal.y
+            + endDelta.z * candidate->surfaceNormal.z;
         if (cullBackface == 0 && endSide >= 0.0f) {
             return 0;
         }
 
-        const zVec3 startDelta = {
-            segmentStart->x - polygonVertices[0].x,
+        const zVec3 startDelta = { segmentStart->x - polygonVertices[0].x,
             segmentStart->y - polygonVertices[0].y,
-            segmentStart->z - polygonVertices[0].z
-        };
-        const float startSide =
-            startDelta.x * candidate->surfaceNormal.x +
-            startDelta.y * candidate->surfaceNormal.y +
-            startDelta.z * candidate->surfaceNormal.z;
+            segmentStart->z - polygonVertices[0].z };
+        const float startSide = startDelta.x * candidate->surfaceNormal.x + startDelta.y * candidate->surfaceNormal.y
+            + startDelta.z * candidate->surfaceNormal.z;
         union {
             float f;
             unsigned int u;
@@ -4642,38 +4416,27 @@ namespace CZDisplayInstance {
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = {
-            segmentEnd->x - segmentStart->x,
-            segmentEnd->y - segmentStart->y,
-            segmentEnd->z - segmentStart->z
-        };
+        const zVec3 segmentDelta
+            = { segmentEnd->x - segmentStart->x, segmentEnd->y - segmentStart->y, segmentEnd->z - segmentStart->z };
         candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
         candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
         candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
 
         int dominantAxis = 0;
-        float maxAbs = candidate->surfaceNormal.x < 0.0f
-                           ? -candidate->surfaceNormal.x
-                           : candidate->surfaceNormal.x;
-        const float absY = candidate->surfaceNormal.y < 0.0f
-                               ? -candidate->surfaceNormal.y
-                               : candidate->surfaceNormal.y;
+        float maxAbs = candidate->surfaceNormal.x < 0.0f ? -candidate->surfaceNormal.x : candidate->surfaceNormal.x;
+        const float absY = candidate->surfaceNormal.y < 0.0f ? -candidate->surfaceNormal.y : candidate->surfaceNormal.y;
         if (absY > maxAbs) {
             maxAbs = absY;
             dominantAxis = 1;
         }
-        const float absZ = candidate->surfaceNormal.z < 0.0f
-                               ? -candidate->surfaceNormal.z
-                               : candidate->surfaceNormal.z;
+        const float absZ = candidate->surfaceNormal.z < 0.0f ? -candidate->surfaceNormal.z : candidate->surfaceNormal.z;
         if (absZ > maxAbs) {
             dominantAxis = 2;
         }
 
         const float dominantComponent = dominantAxis == 0
-                                            ? candidate->surfaceNormal.x
-                                            : (dominantAxis == 1
-                                                   ? candidate->surfaceNormal.y
-                                                   : candidate->surfaceNormal.z);
+            ? candidate->surfaceNormal.x
+            : (dominantAxis == 1 ? candidate->surfaceNormal.y : candidate->surfaceNormal.z);
         int windingSign;
         if (dominantAxis == 1) {
             windingSign = dominantComponent < 0.0f ? 1 : -1;
@@ -4682,21 +4445,18 @@ namespace CZDisplayInstance {
         }
 
         for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-            const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-            const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+            const zVec3* edgeStart = &polygonVertices[edgeIndex];
+            const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
             double edgeCross;
             if (dominantAxis == 0) {
-                edgeCross =
-                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z) -
-                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
+                edgeCross = (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z)
+                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
             } else if (dominantAxis == 1) {
-                edgeCross =
-                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z) -
-                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
+                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z)
+                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
             } else {
-                edgeCross =
-                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y) -
-                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
+                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
+                    - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
             }
             if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
                 return 0;
@@ -4707,7 +4467,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygonwithuv
      * @recoil-artifact defines .text recoil:function:0x485d10: CZDisplayInstance::BuildPickCandidateForSegmentVsPolygonWithUv.
@@ -4717,14 +4478,15 @@ namespace CZDisplayInstance {
      */
     int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
         zClassDiPickCandidateEntry * candidate,
-        const zVec3 *segmentStart,
-        const zVec3 *segmentEnd,
-        const zVec3 *polygonVertices,
-        const zModel_PickFaceUvData *faceUvData,
-        zVec2 *outUv,
+        const zVec3* segmentStart,
+        const zVec3* segmentEnd,
+        const zVec3* polygonVertices,
+        const zModel_PickFaceUvData* faceUvData,
+        zVec2* outUv,
         int vertexCount,
         int cullBackface
-    ) {
+    )
+    {
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -4732,28 +4494,20 @@ namespace CZDisplayInstance {
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = {
-            segmentEnd->x - polygonVertices[0].x,
+        const zVec3 endDelta = { segmentEnd->x - polygonVertices[0].x,
             segmentEnd->y - polygonVertices[0].y,
-            segmentEnd->z - polygonVertices[0].z
-        };
-        const float endSide =
-            endDelta.x * candidate->surfaceNormal.x +
-            endDelta.y * candidate->surfaceNormal.y +
-            endDelta.z * candidate->surfaceNormal.z;
+            segmentEnd->z - polygonVertices[0].z };
+        const float endSide = endDelta.x * candidate->surfaceNormal.x + endDelta.y * candidate->surfaceNormal.y
+            + endDelta.z * candidate->surfaceNormal.z;
         if (cullBackface == 0 && endSide >= 0.0f) {
             return 0;
         }
 
-        const zVec3 startDelta = {
-            segmentStart->x - polygonVertices[0].x,
+        const zVec3 startDelta = { segmentStart->x - polygonVertices[0].x,
             segmentStart->y - polygonVertices[0].y,
-            segmentStart->z - polygonVertices[0].z
-        };
-        const float startSide =
-            startDelta.x * candidate->surfaceNormal.x +
-            startDelta.y * candidate->surfaceNormal.y +
-            startDelta.z * candidate->surfaceNormal.z;
+            segmentStart->z - polygonVertices[0].z };
+        const float startSide = startDelta.x * candidate->surfaceNormal.x + startDelta.y * candidate->surfaceNormal.y
+            + startDelta.z * candidate->surfaceNormal.z;
         union {
             float f;
             unsigned int u;
@@ -4765,38 +4519,27 @@ namespace CZDisplayInstance {
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta = {
-            segmentEnd->x - segmentStart->x,
-            segmentEnd->y - segmentStart->y,
-            segmentEnd->z - segmentStart->z
-        };
+        const zVec3 segmentDelta
+            = { segmentEnd->x - segmentStart->x, segmentEnd->y - segmentStart->y, segmentEnd->z - segmentStart->z };
         candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
         candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
         candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
 
         int dominantAxis = 0;
-        float maxAbs = candidate->surfaceNormal.x < 0.0f
-                           ? -candidate->surfaceNormal.x
-                           : candidate->surfaceNormal.x;
-        const float absY = candidate->surfaceNormal.y < 0.0f
-                               ? -candidate->surfaceNormal.y
-                               : candidate->surfaceNormal.y;
+        float maxAbs = candidate->surfaceNormal.x < 0.0f ? -candidate->surfaceNormal.x : candidate->surfaceNormal.x;
+        const float absY = candidate->surfaceNormal.y < 0.0f ? -candidate->surfaceNormal.y : candidate->surfaceNormal.y;
         if (absY > maxAbs) {
             maxAbs = absY;
             dominantAxis = 1;
         }
-        const float absZ = candidate->surfaceNormal.z < 0.0f
-                               ? -candidate->surfaceNormal.z
-                               : candidate->surfaceNormal.z;
+        const float absZ = candidate->surfaceNormal.z < 0.0f ? -candidate->surfaceNormal.z : candidate->surfaceNormal.z;
         if (absZ > maxAbs) {
             dominantAxis = 2;
         }
 
         const float dominantComponent = dominantAxis == 0
-                                            ? candidate->surfaceNormal.x
-                                            : (dominantAxis == 1
-                                                   ? candidate->surfaceNormal.y
-                                                   : candidate->surfaceNormal.z);
+            ? candidate->surfaceNormal.x
+            : (dominantAxis == 1 ? candidate->surfaceNormal.y : candidate->surfaceNormal.z);
         int windingSign;
         if (dominantAxis == 1) {
             windingSign = dominantComponent < 0.0f ? 1 : -1;
@@ -4805,21 +4548,18 @@ namespace CZDisplayInstance {
         }
 
         for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-            const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-            const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+            const zVec3* edgeStart = &polygonVertices[edgeIndex];
+            const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
             double edgeCross;
             if (dominantAxis == 0) {
-                edgeCross =
-                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z) -
-                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
+                edgeCross = (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z)
+                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
             } else if (dominantAxis == 1) {
-                edgeCross =
-                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z) -
-                    (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
+                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z)
+                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
             } else {
-                edgeCross =
-                    (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y) -
-                    (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
+                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
+                    - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
             }
             if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
                 return 0;
@@ -4857,10 +4597,10 @@ namespace CZDisplayInstance {
                 faceUvData->uvs[1].y,
                 faceUvData->uvs[2].y
             );
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0 +
-                       (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0
+                + (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
         } else if (dominantAxis == 1) {
             zMathSolveLinearGradient2D(
                 &uGrad0,
@@ -4888,10 +4628,10 @@ namespace CZDisplayInstance {
                 faceUvData->uvs[1].y,
                 faceUvData->uvs[2].y
             );
-            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
         } else {
             zMathSolveLinearGradient2D(
                 &uGrad0,
@@ -4919,10 +4659,10 @@ namespace CZDisplayInstance {
                 faceUvData->uvs[1].y,
                 faceUvData->uvs[2].y
             );
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1 +
-                       (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
+            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1
+                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
         }
 
         OptCatalogSetDamageMaskUv(outUv->x, outUv->y);
@@ -4930,7 +4670,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentbatchvspolygon
      * @recoil-artifact defines .text recoil:function:0x486290: CZDisplayInstance::BuildPickCandidatesForSegmentBatchVsPolygon.
@@ -4942,23 +4683,19 @@ namespace CZDisplayInstance {
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        zVec3 *polygonVertices,
-        zModel_PickFaceEntry *faceEntry
-    ) {
+        zVec3* polygonVertices,
+        zModel_PickFaceEntry* faceEntry
+    )
+    {
         int localActive[24];
         for (int i = 0; i < segmentCount; ++i) {
             localActive[i] = activeMask[i];
         }
 
         zVec3 normal;
-        zMathVec3TriangleNormal(
-            &polygonVertices[0],
-            &polygonVertices[1],
-            &polygonVertices[2],
-            &normal
-        );
+        zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
 
         const int cullBackface = (int)((faceEntry->flagsAndVertexCount >> 8) & 1u);
         int anyActive = 0;
@@ -4967,33 +4704,27 @@ namespace CZDisplayInstance {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[planeIndex];
             if (buffer->candidateCount >= kMaxPickCandidates) {
                 localActive[planeIndex] = 0;
                 continue;
             }
 
-            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            const CZDisplayInstanceSegmentEndpoints *segment = &segmentEndpointsByBatch[planeIndex];
-            const zVec3 endDelta = {
-                segment->end.x - polygonVertices[0].x,
+            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
+            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpointsByBatch[planeIndex];
+            const zVec3 endDelta = { segment->end.x - polygonVertices[0].x,
                 segment->end.y - polygonVertices[0].y,
-                segment->end.z - polygonVertices[0].z
-            };
-            const float endSide =
-                endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
+                segment->end.z - polygonVertices[0].z };
+            const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
             if (cullBackface == 0 && endSide >= 0.0f) {
                 localActive[planeIndex] = 0;
                 continue;
             }
 
-            const zVec3 startDelta = {
-                segment->start.x - polygonVertices[0].x,
+            const zVec3 startDelta = { segment->start.x - polygonVertices[0].x,
                 segment->start.y - polygonVertices[0].y,
-                segment->start.z - polygonVertices[0].z
-            };
-            const float startSide =
-                startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
+                segment->start.z - polygonVertices[0].z };
+            const float startSide = startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
             union {
                 float f;
                 unsigned int u;
@@ -5027,9 +4758,7 @@ namespace CZDisplayInstance {
         if (absZ > maxAbs) {
             dominantAxis = 2;
         }
-        const float dominantComponent = dominantAxis == 0
-                                            ? normal.x
-                                            : (dominantAxis == 1 ? normal.y : normal.z);
+        const float dominantComponent = dominantAxis == 0 ? normal.x : (dominantAxis == 1 ? normal.y : normal.z);
         int windingSign;
         if (dominantAxis == 1) {
             windingSign = dominantComponent < 0.0f ? 1 : -1;
@@ -5043,24 +4772,21 @@ namespace CZDisplayInstance {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[polygonIndex];
-            const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[polygonIndex];
+            const zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                const zVec3* edgeStart = &polygonVertices[edgeIndex];
+                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
                 double edgeCross;
                 if (dominantAxis == 0) {
-                    edgeCross =
-                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z) -
-                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
+                    edgeCross = (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z)
+                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
                 } else if (dominantAxis == 1) {
-                    edgeCross =
-                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z) -
-                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
+                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z)
+                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
                 } else {
-                    edgeCross =
-                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y) -
-                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
+                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
+                        - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
                 }
                 if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
                     localActive[polygonIndex] = 0;
@@ -5073,10 +4799,9 @@ namespace CZDisplayInstance {
         for (int appendIndex = 0; appendIndex < segmentCount; ++appendIndex) {
             if (localActive[appendIndex] != 0) {
                 anyActive = 1;
-                PlayerProbeSampleCandidateBuffer *buffer =
-                    &outCandidateBuffersBySegment[appendIndex];
+                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[appendIndex];
                 if (buffer->candidateCount < kMaxPickCandidates) {
-                    zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                    zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
                     entry->surfaceNormal = normal;
                     entry->node = candidateOwner;
                     entry->scenePayload = faceEntry->scenePayload;
@@ -5089,7 +4814,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * Function modeled here:
      * CZDisplayInstance::BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv.
@@ -5101,25 +4827,21 @@ namespace CZDisplayInstance {
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        zVec3 *polygonVertices,
-        zModel_PickFaceUvData *faceUvData,
-        zVec2 *scratchUv,
-        zModel_PickFaceEntry *faceEntry
-    ) {
+        zVec3* polygonVertices,
+        zModel_PickFaceUvData* faceUvData,
+        zVec2* scratchUv,
+        zModel_PickFaceEntry* faceEntry
+    )
+    {
         int localActive[24];
         for (int i = 0; i < segmentCount; ++i) {
             localActive[i] = activeMask[i];
         }
 
         zVec3 normal;
-        zMathVec3TriangleNormal(
-            &polygonVertices[0],
-            &polygonVertices[1],
-            &polygonVertices[2],
-            &normal
-        );
+        zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
 
         const int cullBackface = (int)((faceEntry->flagsAndVertexCount >> 8) & 1u);
         int anyActive = 0;
@@ -5128,32 +4850,26 @@ namespace CZDisplayInstance {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[planeIndex];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[planeIndex];
             if (buffer->candidateCount >= kMaxPickCandidates) {
                 localActive[planeIndex] = 0;
                 continue;
             }
 
-            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
-            const CZDisplayInstanceSegmentEndpoints *segment = &segmentEndpointsByBatch[planeIndex];
-            const zVec3 endDelta = {
-                segment->end.x - polygonVertices[0].x,
+            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
+            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpointsByBatch[planeIndex];
+            const zVec3 endDelta = { segment->end.x - polygonVertices[0].x,
                 segment->end.y - polygonVertices[0].y,
-                segment->end.z - polygonVertices[0].z
-            };
-            const float endSide =
-                endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
+                segment->end.z - polygonVertices[0].z };
+            const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
             if (cullBackface == 0 && endSide >= 0.0f) {
                 localActive[planeIndex] = 0;
                 continue;
             }
-            const zVec3 startDelta = {
-                segment->start.x - polygonVertices[0].x,
+            const zVec3 startDelta = { segment->start.x - polygonVertices[0].x,
                 segment->start.y - polygonVertices[0].y,
-                segment->start.z - polygonVertices[0].z
-            };
-            const float startSide =
-                startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
+                segment->start.z - polygonVertices[0].z };
+            const float startSide = startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
             union {
                 float f;
                 unsigned int u;
@@ -5186,9 +4902,7 @@ namespace CZDisplayInstance {
         if (absZ > maxAbs) {
             dominantAxis = 2;
         }
-        const float dominantComponent = dominantAxis == 0
-                                            ? normal.x
-                                            : (dominantAxis == 1 ? normal.y : normal.z);
+        const float dominantComponent = dominantAxis == 0 ? normal.x : (dominantAxis == 1 ? normal.y : normal.z);
         int windingSign;
         if (dominantAxis == 1) {
             windingSign = dominantComponent < 0.0f ? 1 : -1;
@@ -5202,24 +4916,21 @@ namespace CZDisplayInstance {
                 continue;
             }
 
-            PlayerProbeSampleCandidateBuffer *buffer = &outCandidateBuffersBySegment[polygonIndex];
-            const zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[polygonIndex];
+            const zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
             for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3 *edgeStart = &polygonVertices[edgeIndex];
-                const zVec3 *edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
+                const zVec3* edgeStart = &polygonVertices[edgeIndex];
+                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
                 double edgeCross;
                 if (dominantAxis == 0) {
-                    edgeCross =
-                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z) -
-                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
+                    edgeCross = (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z)
+                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
                 } else if (dominantAxis == 1) {
-                    edgeCross =
-                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z) -
-                        (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
+                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z)
+                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
                 } else {
-                    edgeCross =
-                        (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y) -
-                        (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
+                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
+                        - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
                 }
                 if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
                     localActive[polygonIndex] = 0;
@@ -5236,18 +4947,30 @@ namespace CZDisplayInstance {
         if (dominantAxis == 2) {
             if (OptCatalogIsDamageMaskEnabled() != 0) {
                 zMathSolveLinearGradient2D(
-                    &uGrad0, &uGrad1,
-                    polygonVertices[0].x, polygonVertices[0].y,
-                    polygonVertices[1].x, polygonVertices[1].y,
-                    polygonVertices[2].x, polygonVertices[2].y,
-                    faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+                    &uGrad0,
+                    &uGrad1,
+                    polygonVertices[0].x,
+                    polygonVertices[0].y,
+                    polygonVertices[1].x,
+                    polygonVertices[1].y,
+                    polygonVertices[2].x,
+                    polygonVertices[2].y,
+                    faceUvData->uvs[0].x,
+                    faceUvData->uvs[1].x,
+                    faceUvData->uvs[2].x
                 );
                 zMathSolveLinearGradient2D(
-                    &vGrad0, &vGrad1,
-                    polygonVertices[0].x, polygonVertices[0].y,
-                    polygonVertices[1].x, polygonVertices[1].y,
-                    polygonVertices[2].x, polygonVertices[2].y,
-                    faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+                    &vGrad0,
+                    &vGrad1,
+                    polygonVertices[0].x,
+                    polygonVertices[0].y,
+                    polygonVertices[1].x,
+                    polygonVertices[1].y,
+                    polygonVertices[2].x,
+                    polygonVertices[2].y,
+                    faceUvData->uvs[0].y,
+                    faceUvData->uvs[1].y,
+                    faceUvData->uvs[2].y
                 );
             }
             anyActive = 0;
@@ -5255,19 +4978,16 @@ namespace CZDisplayInstance {
                 if (localActive[damageMaskIndex] == 0) {
                     continue;
                 }
-                PlayerProbeSampleCandidateBuffer *buffer =
-                    &outCandidateBuffersBySegment[damageMaskIndex];
+                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex];
                 if (buffer->candidateCount >= kMaxPickCandidates) {
                     continue;
                 }
-                zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
                 if (OptCatalogIsDamageMaskEnabled() != 0) {
-                    scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad1 +
-                                   (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
-                                   faceUvData->uvs[0].x;
-                    scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad1 +
-                                   (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
-                                   faceUvData->uvs[0].y;
+                    scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad1
+                        + (entry->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+                    scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad1
+                        + (entry->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
                     OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
                 }
                 entry->surfaceNormal = normal;
@@ -5282,40 +5002,47 @@ namespace CZDisplayInstance {
         if (dominantAxis == 1) {
             if (OptCatalogIsDamageMaskEnabled() != 0) {
                 zMathSolveLinearGradient2D(
-                    &uGrad0, &uGrad1,
-                    polygonVertices[0].x, polygonVertices[0].z,
-                    polygonVertices[1].x, polygonVertices[1].z,
-                    polygonVertices[2].x, polygonVertices[2].z,
-                    faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+                    &uGrad0,
+                    &uGrad1,
+                    polygonVertices[0].x,
+                    polygonVertices[0].z,
+                    polygonVertices[1].x,
+                    polygonVertices[1].z,
+                    polygonVertices[2].x,
+                    polygonVertices[2].z,
+                    faceUvData->uvs[0].x,
+                    faceUvData->uvs[1].x,
+                    faceUvData->uvs[2].x
                 );
                 zMathSolveLinearGradient2D(
-                    &vGrad0, &vGrad1,
-                    polygonVertices[0].x, polygonVertices[0].z,
-                    polygonVertices[1].x, polygonVertices[1].z,
-                    polygonVertices[2].x, polygonVertices[2].z,
-                    faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+                    &vGrad0,
+                    &vGrad1,
+                    polygonVertices[0].x,
+                    polygonVertices[0].z,
+                    polygonVertices[1].x,
+                    polygonVertices[1].z,
+                    polygonVertices[2].x,
+                    polygonVertices[2].z,
+                    faceUvData->uvs[0].y,
+                    faceUvData->uvs[1].y,
+                    faceUvData->uvs[2].y
                 );
             }
             anyActive = 0;
-            for (int damageMaskIndex_1 = 0;
-                 damageMaskIndex_1 < segmentCount;
-                 ++damageMaskIndex_1) {
+            for (int damageMaskIndex_1 = 0; damageMaskIndex_1 < segmentCount; ++damageMaskIndex_1) {
                 if (localActive[damageMaskIndex_1] == 0) {
                     continue;
                 }
-                PlayerProbeSampleCandidateBuffer *buffer =
-                    &outCandidateBuffersBySegment[damageMaskIndex_1];
+                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex_1];
                 if (buffer->candidateCount >= kMaxPickCandidates) {
                     continue;
                 }
-                zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+                zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
                 if (OptCatalogIsDamageMaskEnabled() != 0) {
-                    scratchUv->x = (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
-                                   (entry->hitPos.x - polygonVertices[0].x) * uGrad0 +
-                                   faceUvData->uvs[0].x;
-                    scratchUv->y = (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
-                                   (entry->hitPos.x - polygonVertices[0].x) * vGrad0 +
-                                   faceUvData->uvs[0].y;
+                    scratchUv->x = (entry->hitPos.z - polygonVertices[0].z) * uGrad1
+                        + (entry->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
+                    scratchUv->y = (entry->hitPos.z - polygonVertices[0].z) * vGrad1
+                        + (entry->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
                     OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
                 }
                 entry->surfaceNormal = normal;
@@ -5329,40 +5056,47 @@ namespace CZDisplayInstance {
 
         if (OptCatalogIsDamageMaskEnabled() != 0) {
             zMathSolveLinearGradient2D(
-                &uGrad0, &uGrad1,
-                polygonVertices[0].y, polygonVertices[0].z,
-                polygonVertices[1].y, polygonVertices[1].z,
-                polygonVertices[2].y, polygonVertices[2].z,
-                faceUvData->uvs[0].x, faceUvData->uvs[1].x, faceUvData->uvs[2].x
+                &uGrad0,
+                &uGrad1,
+                polygonVertices[0].y,
+                polygonVertices[0].z,
+                polygonVertices[1].y,
+                polygonVertices[1].z,
+                polygonVertices[2].y,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].x,
+                faceUvData->uvs[1].x,
+                faceUvData->uvs[2].x
             );
             zMathSolveLinearGradient2D(
-                &vGrad0, &vGrad1,
-                polygonVertices[0].y, polygonVertices[0].z,
-                polygonVertices[1].y, polygonVertices[1].z,
-                polygonVertices[2].y, polygonVertices[2].z,
-                faceUvData->uvs[0].y, faceUvData->uvs[1].y, faceUvData->uvs[2].y
+                &vGrad0,
+                &vGrad1,
+                polygonVertices[0].y,
+                polygonVertices[0].z,
+                polygonVertices[1].y,
+                polygonVertices[1].z,
+                polygonVertices[2].y,
+                polygonVertices[2].z,
+                faceUvData->uvs[0].y,
+                faceUvData->uvs[1].y,
+                faceUvData->uvs[2].y
             );
         }
         anyActive = 0;
-        for (int damageMaskIndex_2 = 0;
-             damageMaskIndex_2 < segmentCount;
-             ++damageMaskIndex_2) {
+        for (int damageMaskIndex_2 = 0; damageMaskIndex_2 < segmentCount; ++damageMaskIndex_2) {
             if (localActive[damageMaskIndex_2] == 0) {
                 continue;
             }
-            PlayerProbeSampleCandidateBuffer *buffer =
-                &outCandidateBuffersBySegment[damageMaskIndex_2];
+            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex_2];
             if (buffer->candidateCount >= kMaxPickCandidates) {
                 continue;
             }
-            zClassDiPickCandidateEntry *entry = &buffer->entries[buffer->candidateCount];
+            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
             if (OptCatalogIsDamageMaskEnabled() != 0) {
-                scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad0 +
-                               (entry->hitPos.z - polygonVertices[0].z) * uGrad1 +
-                               faceUvData->uvs[0].x;
-                scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad0 +
-                               (entry->hitPos.z - polygonVertices[0].z) * vGrad1 +
-                               faceUvData->uvs[0].y;
+                scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad0
+                    + (entry->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
+                scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad0
+                    + (entry->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
                 OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
             }
             entry->surfaceNormal = normal;
@@ -5375,7 +5109,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygon
      * @recoil-artifact defines .text recoil:function:0x487350: CZDisplayInstance::FilterRegionsAgainstPolygon.
@@ -5387,17 +5122,17 @@ namespace CZDisplayInstance {
         CZNodePartial * candidateOwner,
         zModel_PickFaceData * faceData,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        PlayerProbeSampleCandidateBuffer *outCandidateBuffersBySegment
-    ) {
+        PlayerProbeSampleCandidateBuffer* outCandidateBuffersBySegment
+    )
+    {
         if (faceData == 0 || faceData->faceCount == 0) {
             return;
         }
 
-        const zVec3 *vertices = faceData->baseVertices;
-        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f &&
-            faceData->morphVertexCount != 0) {
+        const zVec3* vertices = faceData->baseVertices;
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
@@ -5409,39 +5144,27 @@ namespace CZDisplayInstance {
         }
 
         if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(
-                g_zModel_SharedVec3ScratchB,
-                vertices,
-                (size_t)(faceData->vertexCount) * sizeof(zVec3)
-            );
+            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(faceData->vertexCount) * sizeof(zVec3));
         } else {
-            const zMat4x3 *matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-            for (int vertexIndex = 0;
-                 vertexIndex < faceData->vertexCount;
-                 ++vertexIndex) {
-                const zVec3 *point = &vertices[vertexIndex];
-                g_zModel_SharedVec3ScratchB[vertexIndex].x =
-                    point->x * matrix->xx + point->y * matrix->yx +
-                    point->z * matrix->zx + matrix->posX;
-                g_zModel_SharedVec3ScratchB[vertexIndex].y =
-                    point->x * matrix->xy + point->y * matrix->yy +
-                    point->z * matrix->zy + matrix->posY;
-                g_zModel_SharedVec3ScratchB[vertexIndex].z =
-                    point->x * matrix->xz + point->y * matrix->yz +
-                    point->z * matrix->zz + matrix->posZ;
+            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
+            for (int vertexIndex = 0; vertexIndex < faceData->vertexCount; ++vertexIndex) {
+                const zVec3* point = &vertices[vertexIndex];
+                g_zModel_SharedVec3ScratchB[vertexIndex].x
+                    = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
+                g_zModel_SharedVec3ScratchB[vertexIndex].y
+                    = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
+                g_zModel_SharedVec3ScratchB[vertexIndex].z
+                    = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
             }
         }
 
-        zVec2 scratchUv = {0.0f, 0.0f};
+        zVec2 scratchUv = { 0.0f, 0.0f };
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            zModel_PickFaceEntry *face = &faceData->faces[faceIndex];
+            zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
             const unsigned int vertexCount = face->flagsAndVertexCount & 0xffu;
-            for (unsigned int vertexIndex_1 = 0;
-                 vertexIndex_1 < vertexCount;
-                 ++vertexIndex_1) {
-                g_CZClass_DiFaceVertexScratch4[vertexIndex_1] =
-                    g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex_1]];
+            for (unsigned int vertexIndex_1 = 0; vertexIndex_1 < vertexCount; ++vertexIndex_1) {
+                g_CZClass_DiFaceVertexScratch4[vertexIndex_1]
+                    = g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex_1]];
             }
 
             if ((face->scenePayload->flags & kPickFaceBatchDamageMaskUvFlag) != 0) {
@@ -5471,7 +5194,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygonwithdamagemaskuv
      * @recoil-artifact defines .text recoil:function:0x487540: CZDisplayInstance::FilterRegionsAgainstPolygonWithDamageMaskUv.
@@ -5483,10 +5207,11 @@ namespace CZDisplayInstance {
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
-        int *activeMask,
+        int* activeMask,
         int segmentCount,
-        const zBBoxCorners *bboxCorners
-    ) {
+        const zBBoxCorners* bboxCorners
+    )
+    {
         zModel_PickFaceEntry faceEntry;
         memset(&faceEntry, 0, sizeof(faceEntry));
         faceEntry.flagsAndVertexCount = 4;
@@ -5504,7 +5229,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5520,7 +5246,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5536,7 +5263,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5552,7 +5280,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5568,7 +5297,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5584,7 +5314,8 @@ namespace CZDisplayInstance {
                 segmentCount,
                 g_CZClass_DiFaceVertexScratch4,
                 &faceEntry
-            ) != 0) {
+            )
+            != 0) {
             result = 1;
         }
 
@@ -5592,7 +5323,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstmeshfaces
      * @recoil-artifact defines .text recoil:function:0x487900: CZDisplayInstance::FilterRegionsAgainstMeshFaces.
@@ -5600,10 +5332,8 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FilterRegionsAgainstMeshFaces(
-        zVec3 * meshVertices,
-        int faceCount
-    ) {
+    int __fastcall FilterRegionsAgainstMeshFaces(zVec3 * meshVertices, int faceCount)
+    {
         g_zModel_PointInPolygonVertexCount = 0;
         if (faceCount > 0x40) {
             return 0;
@@ -5615,7 +5345,7 @@ namespace CZDisplayInstance {
                     const int nextIndex = vertexIndex == faceCount - 1 ? 0 : vertexIndex + 1;
                     g_zModel_PointInPolygonVertices[vertexIndex] = meshVertices[vertexIndex];
 
-                    zVec3 *edgeNormal = &g_zModel_PointInPolygonEdgeNormals[vertexIndex];
+                    zVec3* edgeNormal = &g_zModel_PointInPolygonEdgeNormals[vertexIndex];
                     edgeNormal->x = meshVertices[nextIndex].z - meshVertices[vertexIndex].z;
                     edgeNormal->y = 0.0f;
                     edgeNormal->z = meshVertices[vertexIndex].x - meshVertices[nextIndex].x;
@@ -5629,7 +5359,8 @@ namespace CZDisplayInstance {
     }
 } // namespace CZDisplayInstance
 
-namespace CZDisplayInstance {
+namespace CZDisplayInstance
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainsthexahedronfaces
      * @recoil-artifact defines .text recoil:function:0x4879c0: CZDisplayInstance::FilterRegionsAgainstHexahedronFaces.
@@ -5637,16 +5368,14 @@ namespace CZDisplayInstance {
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    int __fastcall FilterRegionsAgainstHexahedronFaces(
-        zVec3 * center,
-        float radius
-    ) {
-        zVec3 *vertex = g_zModel_PointInPolygonVertices;
-        zVec3 *edgeNormal = g_zModel_PointInPolygonEdgeNormals;
+    int __fastcall FilterRegionsAgainstHexahedronFaces(zVec3 * center, float radius)
+    {
+        zVec3* vertex = g_zModel_PointInPolygonVertices;
+        zVec3* edgeNormal = g_zModel_PointInPolygonEdgeNormals;
 
-        for (int vertexIndex = 0; vertexIndex < g_zModel_PointInPolygonVertexCount; ++vertexIndex, ++vertex, ++edgeNormal) {
-            const float distance =
-                (center->x - vertex->x) * edgeNormal->x + (center->z - vertex->z) * edgeNormal->z;
+        for (int vertexIndex = 0; vertexIndex < g_zModel_PointInPolygonVertexCount;
+            ++vertexIndex, ++vertex, ++edgeNormal) {
+            const float distance = (center->x - vertex->x) * edgeNormal->x + (center->z - vertex->z) * edgeNormal->z;
             if (distance < radius) {
                 return 0;
             }

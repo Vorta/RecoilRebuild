@@ -30,11 +30,8 @@ namespace zSnd {
  * @recoil-artifact defines .text recoil:function:0x4a3ea0: zSnd::ReportMciError.
  * Purpose: print a formatted MCI error message for a source-file line.
  */
-RECOIL_NO_GS int __fastcall ReportMciError(
-    unsigned int mciError,
-    const char *sourceFile,
-    int lineNumber
-) {
+RECOIL_NO_GS int __fastcall ReportMciError(unsigned int mciError, const char* sourceFile, int lineNumber)
+{
     char errorText[0x100];
     mciGetErrorStringA(mciError, errorText, sizeof(errorText));
     fprintf(stderr, "%s(%d): MCIError [%s]\n", sourceFile, lineNumber, errorText);
@@ -48,11 +45,8 @@ RECOIL_NO_GS int __fastcall ReportMciError(
  * Purpose: translate an A3D provider error code into the original diagnostic
  * text and report it through zError.
  */
-int __fastcall ReportA3DError(
-    int a3dError,
-    const char *sourceFile,
-    int sourceLine
-) {
+int __fastcall ReportA3DError(int a3dError, const char* sourceFile, int sourceLine)
+{
     char errorNameStorage[0x100];
     if (a3dError <= 0) {
         if (a3dError != 0) {
@@ -250,11 +244,8 @@ int __fastcall ReportA3DError(
  * Purpose: translate a DirectSound provider error code into the original
  * diagnostic text and report it through zError.
  */
-int __fastcall ReportDirectSoundError(
-    int directSoundError,
-    const char *sourceFile,
-    int sourceLine
-) {
+int __fastcall ReportDirectSoundError(int directSoundError, const char* sourceFile, int sourceLine)
+{
     char errorNameStorage[0x100];
     switch ((HRESULT)(directSoundError)) {
     case DSERR_GENERIC:

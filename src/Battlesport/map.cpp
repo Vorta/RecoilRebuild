@@ -1,12 +1,12 @@
 #include "Battlesport/hud_sensor_tracker.h"
 
 #include "Battlesport/game_net.h"
-#include "Battlesport/recoil_app.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/pickup.h"
 #include "Battlesport/player.h"
+#include "Battlesport/recoil_app.h"
 #include "Battlesport/recoil_state_main_menu_transition.h"
-#include "GameZRecoil/zTime/time.h"
+#include "Battlesport/turret.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zDEClient/zdec.h"
@@ -21,7 +21,7 @@
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "Battlesport/turret.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
 
@@ -106,10 +106,10 @@ extern "C" const char kHudSensorTrackerRaceZrdrSearchPathFmt[];
 extern "C" int g_HudSensorTracker_ObjectiveCommandLocked = 0;
 extern "C" int g_Hud_MapOverlayRefCount = 0;
 extern "C" int g_RecoilApp_QuitAfterCredits = 0;
-extern "C" char g_HudSensor_MissionSoundSetName[0x20] = {0};
-extern "C" zVec3 g_HudSensor_ProjectScratch[0x400] = {0};
-extern "C" zVec3 g_HudSensor_ClipSegmentStart = {0};
-extern "C" zVec3 g_HudSensor_ClipSegmentEnd = {0};
+extern "C" char g_HudSensor_MissionSoundSetName[0x20] = { 0 };
+extern "C" zVec3 g_HudSensor_ProjectScratch[0x400] = { 0 };
+extern "C" zVec3 g_HudSensor_ClipSegmentStart = { 0 };
+extern "C" zVec3 g_HudSensor_ClipSegmentEnd = { 0 };
 extern "C" float g_HudLineClip_CurrentLeft = 0.0f;
 extern "C" float g_HudLineClip_CurrentTop = 0.0f;
 extern "C" float g_HudLineClip_CurrentRight = 0.0f;
@@ -167,13 +167,13 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_MissionMapPathFmt) == 0x10);
 /**
  * Purpose: supply the RGB24 red objective-marker blink color with VC5 four-byte storage.
  */
-extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4] = {0xff, 0x00, 0x00, 0x00};
+extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4] = { 0xff, 0x00, 0x00, 0x00 };
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveBlinkColorRedRgb24) == 4);
 
 /**
  * Purpose: supply the RGB24 blue objective-marker color with VC5 four-byte storage.
  */
-extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = {0x00, 0x00, 0xff, 0x00};
+extern "C" const unsigned char g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24[4] = { 0x00, 0x00, 0xff, 0x00 };
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24) == 4);
 
 } // namespace
@@ -194,7 +194,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ZarSectionName_MissionData) == 0x
  */
 char g_HudSensorTracker_ObjectivesZrdPath[0x0f] = "objectives.zrd";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesZrdPath) == 0x0f);
-
 }
 
 namespace {
@@ -341,14 +340,13 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_UnloadingMissionMsg) == 0x15);
 /**
  * Purpose: format the missing objective image diagnostic during objective ZRD load.
  */
-extern "C" char g_HudSensorTracker_ObjectiveImageMissingFmt[0x2b] =
-    "Cannot find objective %d's image file - %s";
+extern "C" char g_HudSensorTracker_ObjectiveImageMissingFmt[0x2b] = "Cannot find objective %d's image file - %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveImageMissingFmt) == 0x2b);
 /**
  * Purpose: format the mission objective array-capacity diagnostic.
  */
-extern "C" char g_HudSensorTracker_ObjectivesArrayOverflowFmt[0x36] =
-    "Mission objectives array overflow; MAX allowable = %d";
+extern "C" char g_HudSensorTracker_ObjectivesArrayOverflowFmt[0x36]
+    = "Mission objectives array overflow; MAX allowable = %d";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivesArrayOverflowFmt) == 0x36);
 /**
  * Purpose: name the objective autoplay flag node in objectives.zrd.
@@ -404,8 +402,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_ReadSound) == 0x0b)
 /**
  * Purpose: format the missing objective inactivation-node diagnostic.
  */
-extern "C" char g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt[0x31] =
-    "Cannot find Objective %d's inactivation node: %s";
+extern "C" char g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt[0x31]
+    = "Cannot find Objective %d's inactivation node: %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt) == 0x31);
 /**
  * Purpose: name the objective inactivation path node in objectives.zrd.
@@ -415,8 +413,8 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveNode_Inactive) == 0x09);
 /**
  * Purpose: format the missing objective activation-node diagnostic.
  */
-extern "C" char g_HudSensorTracker_ObjectiveActivationNodeMissingFmt[0x2f] =
-    "Cannot find Objective %d's activation node: %s";
+extern "C" char g_HudSensorTracker_ObjectiveActivationNodeMissingFmt[0x2f]
+    = "Cannot find Objective %d's activation node: %s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectiveActivationNodeMissingFmt) == 0x2f);
 /**
  * Purpose: name the objective activation path node in objectives.zrd.
@@ -436,15 +434,13 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudSensorTracker_ObjectivePanelThreeLineFmt) == 0x
 /**
  * Purpose: format active pickup weapon stats when no proximity value is shown.
  */
-extern "C" char g_HudUiWeaponStatsFmt_Basic[0x3f] =
-    "Fire Rate: %d rds/min   Max. Range: %d m\nDamage Power: %.1f\n%s";
+extern "C" char g_HudUiWeaponStatsFmt_Basic[0x3f] = "Fire Rate: %d rds/min   Max. Range: %d m\nDamage Power: %.1f\n%s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Basic) == 0x3f);
 /**
  * Purpose: format active pickup weapon stats when proximity damage is shown.
  */
-extern "C" char g_HudUiWeaponStatsFmt_Proximity[0x5b] =
-    "Fire Rate: %d rds/min   Max. Range: %d m\n"
-    "Damage Power: %.1f      Damage Proximity: %d m\n%s";
+extern "C" char g_HudUiWeaponStatsFmt_Proximity[0x5b] = "Fire Rate: %d rds/min   Max. Range: %d m\n"
+                                                        "Damage Power: %.1f      Damage Proximity: %d m\n%s";
 RECOIL_STATIC_ASSERT(sizeof(g_HudUiWeaponStatsFmt_Proximity) == 0x5b);
 /**
  * Purpose: append the mine feature label to active pickup feature text.
@@ -544,9 +540,8 @@ extern "C" const char kHudSensorTrackerRaceZrdrSearchPathFmt[] = "..\\data\\m%d\
  * Evidence: caller recoil:function:0x416f10 inlines this approximation at [0x416f87,0x416f97).
  * Purpose: preserve the recovered HUD behavior for ApproxSqrtScaleFromBits.
  */
-static inline float ApproxSqrtScaleFromBits(
-    float value
-) {
+static inline float ApproxSqrtScaleFromBits(float value)
+{
     int bits;
     memcpy(&bits, &value, sizeof(bits));
     bits = (bits >> 1) + 0x1fc00000;
@@ -561,12 +556,10 @@ static inline float ApproxSqrtScaleFromBits(
  * Evidence: caller recoil:function:0x416f10 inlines this rectangle test.
  * Purpose: preserve the recovered HUD behavior for IsPointStrictlyInsideRect.
  */
-static inline bool IsPointStrictlyInsideRect(
-    const HudUiRect &rect,
-    const zVec3 &point
-) {
-    return (float)(rect.left) < point.x && (float)(rect.right) > point.x &&
-           (float)(rect.top) < point.y && (float)(rect.bottom) > point.y;
+static inline bool IsPointStrictlyInsideRect(const HudUiRect& rect, const zVec3& point)
+{
+    return (float)(rect.left) < point.x && (float)(rect.right) > point.x && (float)(rect.top) < point.y
+        && (float)(rect.bottom) > point.y;
 }
 
 } // namespace
@@ -578,7 +571,8 @@ static inline bool IsPointStrictlyInsideRect(
  *
  * Purpose: Apply map-node defaults and return this node.
  */
-HudSensorMapNode * HudSensorMapNode::Init() {
+HudSensorMapNode* HudSensorMapNode::Init()
+{
     InitDefaults();
     return this;
 }
@@ -590,7 +584,8 @@ HudSensorMapNode * HudSensorMapNode::Init() {
  *
  * Purpose: Release the dynamically loaded map point array when present.
  */
-void HudSensorMapNode::FreePointArray() {
+void HudSensorMapNode::FreePointArray()
+{
     if (points != 0) {
         free(points);
     }
@@ -603,9 +598,8 @@ void HudSensorMapNode::FreePointArray() {
  *
  * Purpose: Toggle marker visibility, refreshing color state and clearing point selection.
  */
-int HudSensorMapNode::SetEnabled(
-    int enabled
-) {
+int HudSensorMapNode::SetEnabled(int enabled)
+{
     if (isEnabled == enabled) {
         return 0;
     }
@@ -623,9 +617,8 @@ int HudSensorMapNode::SetEnabled(
  *
  * Purpose: Select an in-range path point or clear the active selection.
  */
-HudSensorMapPoint * HudSensorMapNode::SelectPoint(
-    int pointIndex
-) {
+HudSensorMapPoint* HudSensorMapNode::SelectPoint(int pointIndex)
+{
     if (pointIndex >= 0 && pointIndex < pointCount) {
         selectedPointIndex = pointIndex;
         return &points[pointIndex];
@@ -640,7 +633,8 @@ HudSensorMapPoint * HudSensorMapNode::SelectPoint(
  * @recoil-artifact defines .text recoil:function:0x415b40: HudSensorMapNode::InitDefaults
  * Purpose: Initialize map-node links, point storage, marker state, and default color fields.
  */
-int HudSensorMapNode::InitDefaults() {
+int HudSensorMapNode::InitDefaults()
+{
     colorRgb[0] = (char)(0xff);
     colorRgb[1] = (char)(0xff);
     colorRgb[2] = (char)(0xff);
@@ -660,9 +654,8 @@ int HudSensorMapNode::InitDefaults() {
  * @recoil-artifact defines .text recoil:function:0x415b70: HudSensorMapNode::SetColorRgb
  * Purpose: Optionally copy RGB bytes and rebuild the full/half-intensity packed color pair.
  */
-int HudSensorMapNode::SetColorRgb(
-    const unsigned char *rgbOrNull
-) {
+int HudSensorMapNode::SetColorRgb(const unsigned char* rgbOrNull)
+{
     if (rgbOrNull != 0) {
         colorRgb[0] = (char)(rgbOrNull[0]);
         colorRgb[1] = (char)(rgbOrNull[1]);
@@ -689,9 +682,8 @@ int HudSensorMapNode::SetColorRgb(
  *
  * Purpose: Load color, points, and objective binding from a sensor-map stream.
  */
-int HudSensorMapNode::LoadFromStream(
-    FILE *stream
-) {
+int HudSensorMapNode::LoadFromStream(FILE* stream)
+{
     if (stream == 0) {
         return 0;
     }
@@ -705,10 +697,9 @@ int HudSensorMapNode::LoadFromStream(
     }
 
     const size_t byteCount = (size_t)(pointCount) * sizeof(HudSensorMapPoint);
-    points = (HudSensorMapPoint *)(malloc(byteCount));
+    points = (HudSensorMapPoint*)(malloc(byteCount));
 
-    if (fread(points, sizeof(HudSensorMapPoint), (size_t)(pointCount), stream) !=
-        (size_t)(pointCount)) {
+    if (fread(points, sizeof(HudSensorMapPoint), (size_t)(pointCount), stream) != (size_t)(pointCount)) {
         return 0;
     }
 
@@ -726,15 +717,14 @@ int HudSensorMapNode::LoadFromStream(
  * @recoil-artifact defines .text recoil:function:0x415c90: HudSensorMapNode::UpdateCachedBounds
  * Purpose: Copy cached bounds or recompute X/Z extents from the loaded point array.
  */
-int HudSensorMapNode::UpdateCachedBounds(
-    HudSensorMapBounds *outBoundsOrNull
-) {
+int HudSensorMapNode::UpdateCachedBounds(HudSensorMapBounds* outBoundsOrNull)
+{
     if (outBoundsOrNull != 0) {
         *outBoundsOrNull = cachedBounds;
         return 1;
     }
 
-    HudSensorMapPoint *point = points;
+    HudSensorMapPoint* point = points;
     cachedBounds.minX = point->x;
     cachedBounds.maxX = point->x;
     cachedBounds.minY = 0.0f;
@@ -770,10 +760,8 @@ int HudSensorMapNode::UpdateCachedBounds(
  * @recoil-artifact defines .text recoil:function:0x415d30: HudSensorMapNode::DrawOnTracker
  * Purpose: Draw this map node on the tracker, including blink state and selected-point marker.
  */
-int HudSensorMapNode::DrawOnTracker(
-    HudSensorTracker *tracker,
-    const zVec3 *drawPathWorldPos
-) {
+int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* drawPathWorldPos)
+{
     if (isEnabled != 0) {
         blinkTimerSec -= 0.075000003f;
         if (blinkTimerSec <= 0.0f) {
@@ -784,11 +772,7 @@ int HudSensorMapNode::DrawOnTracker(
     }
 
     zVec3 projectedPathPointBuffer[0x401];
-    tracker->ProjectWorldPointsToOverlay(
-        (const zVec3 *)(points),
-        projectedPathPointBuffer,
-        pointCount
-    );
+    tracker->ProjectWorldPointsToOverlay((const zVec3*)(points), projectedPathPointBuffer, pointCount);
     projectedPathPointBuffer[pointCount] = projectedPathPointBuffer[0];
 
     for (int i = 0; i < pointCount; ++i) {
@@ -797,18 +781,13 @@ int HudSensorMapNode::DrawOnTracker(
         int point0Clipped;
         int point1Clipped;
 
-        HudLineClip::SetCurrentBoundsFromRectI((const HudRectI *)(&tracker->outerRect));
-        if (HudLineClip::ClipSegmentToCurrentBounds(
-                &segmentStart,
-                &segmentEnd,
-                &point0Clipped,
-                &point1Clipped
-            ) == 0) {
+        HudLineClip::SetCurrentBoundsFromRectI((const HudRectI*)(&tracker->outerRect));
+        if (HudLineClip::ClipSegmentToCurrentBounds(&segmentStart, &segmentEnd, &point0Clipped, &point1Clipped) == 0) {
             continue;
         }
 
-        const int splitResult = ((HudRectI *)(&tracker->innerRectExpanded))
-                                    ->ClipOrSplitSegment(&segmentStart, &segmentEnd);
+        const int splitResult
+            = ((HudRectI*)(&tracker->innerRectExpanded))->ClipOrSplitSegment(&segmentStart, &segmentEnd);
         if (splitResult == 0) {
             continue;
         }
@@ -835,11 +814,7 @@ int HudSensorMapNode::DrawOnTracker(
 
     if (selectedPointIndex != -1) {
         zVec3 selectedPoint;
-        tracker->ProjectWorldPointsToOverlay(
-            (const zVec3 *)(&points[selectedPointIndex]),
-            &selectedPoint,
-            1
-        );
+        tracker->ProjectWorldPointsToOverlay((const zVec3*)(&points[selectedPointIndex]), &selectedPoint, 1);
         HudSensorTracker::DrawDiamondMarker(
             (int)(selectedPoint.x),
             (int)(selectedPoint.y),
@@ -868,8 +843,9 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
     int halfWidth,
     int halfHeight,
     int markerColor,
-    HudSensorTracker *tracker
-) {
+    HudSensorTracker* tracker
+)
+{
     zRndr_LinePoint2I points[5];
 
     points[0].x = centerX - halfWidth;
@@ -891,10 +867,8 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
  * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
-int HudRectI::ClipOrSplitSegment(
-    zVec3 *segmentStart,
-    zVec3 *segmentEnd
-) {
+int HudRectI::ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd)
+{
     if (left == right) {
         return 1;
     }
@@ -910,7 +884,7 @@ int HudRectI::ClipOrSplitSegment(
 
     if ((startOutcode == 0) != (endOutcode == 0)) {
         if (startOutcode != 0) {
-            zVec3 *const oldStart = segmentStart;
+            zVec3* const oldStart = segmentStart;
             segmentStart = segmentEnd;
             segmentEnd = oldStart;
             endOutcode = startOutcode;
@@ -920,16 +894,13 @@ int HudRectI::ClipOrSplitSegment(
         if (SegmentIntersectsEdge(8, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToY(segmentEnd, segmentStart, (float)(top));
             return 1;
-        }
-        else if (SegmentIntersectsEdge(4, segmentStart, segmentEnd) != 0) {
+        } else if (SegmentIntersectsEdge(4, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
             return 1;
-        }
-        else if (SegmentIntersectsEdge(1, segmentStart, segmentEnd) != 0) {
+        } else if (SegmentIntersectsEdge(1, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
             return 1;
-        }
-        else if (SegmentIntersectsEdge(2, segmentStart, segmentEnd) != 0) {
+        } else if (SegmentIntersectsEdge(2, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
             return 1;
         }
@@ -938,15 +909,14 @@ int HudRectI::ClipOrSplitSegment(
 
     g_HudSensor_ClipSegmentStart = *segmentStart;
     g_HudSensor_ClipSegmentEnd = *segmentEnd;
-    if ((SegmentIntersectsEdge(8, segmentStart, segmentEnd) |
-            SegmentIntersectsEdge(4, segmentStart, segmentEnd) |
-            SegmentIntersectsEdge(1, segmentStart, segmentEnd) |
-            SegmentIntersectsEdge(2, segmentStart, segmentEnd)) == 0) {
+    if ((SegmentIntersectsEdge(8, segmentStart, segmentEnd) | SegmentIntersectsEdge(4, segmentStart, segmentEnd)
+            | SegmentIntersectsEdge(1, segmentStart, segmentEnd) | SegmentIntersectsEdge(2, segmentStart, segmentEnd))
+        == 0) {
         return 1;
     }
 
     if (IsCornerOutcode(startOutcode) != 0) {
-        zVec3 *const oldStart = segmentStart;
+        zVec3* const oldStart = segmentStart;
         segmentStart = segmentEnd;
         segmentEnd = oldStart;
         const int oldStartOutcode = startOutcode;
@@ -967,31 +937,15 @@ int HudRectI::ClipOrSplitSegment(
     }
 
     if ((endOutcode & 1) != 0) {
-        HudLineClip::ClipEndpointToX(
-            &g_HudSensor_ClipSegmentStart,
-            &g_HudSensor_ClipSegmentEnd,
-            (float)(left)
-        );
+        HudLineClip::ClipEndpointToX(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd, (float)(left));
     } else if ((endOutcode & 2) != 0) {
-        HudLineClip::ClipEndpointToX(
-            &g_HudSensor_ClipSegmentStart,
-            &g_HudSensor_ClipSegmentEnd,
-            (float)(right)
-        );
+        HudLineClip::ClipEndpointToX(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd, (float)(right));
     }
 
     if ((endOutcode & 8) != 0) {
-        HudLineClip::ClipEndpointToY(
-            &g_HudSensor_ClipSegmentStart,
-            &g_HudSensor_ClipSegmentEnd,
-            (float)(top)
-        );
+        HudLineClip::ClipEndpointToY(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd, (float)(top));
     } else if ((endOutcode & 4) != 0) {
-        HudLineClip::ClipEndpointToY(
-            &g_HudSensor_ClipSegmentStart,
-            &g_HudSensor_ClipSegmentEnd,
-            (float)(bottom)
-        );
+        HudLineClip::ClipEndpointToY(&g_HudSensor_ClipSegmentStart, &g_HudSensor_ClipSegmentEnd, (float)(bottom));
     }
 
     return 2;
@@ -1002,9 +956,8 @@ int HudRectI::ClipOrSplitSegment(
  * @recoil-artifact defines .text recoil:function:0x416240: HudRectI::CalcOutcode
  * Purpose: Build the rectangle outside-code bits for a point.
  */
-int HudRectI::CalcOutcode(
-    const zVec3 *point
-) {
+int HudRectI::CalcOutcode(const zVec3* point)
+{
     int outcode = 0;
     if (point->x < (float)(left)) {
         outcode = 1;
@@ -1028,9 +981,8 @@ int HudRectI::CalcOutcode(
  *
  * Purpose: Identify outside-code combinations that lie beyond a rectangle corner.
  */
-int __fastcall HudRectI::IsCornerOutcode(
-    int outcode
-) {
+int __fastcall HudRectI::IsCornerOutcode(int outcode)
+{
     return outcode == 9 || outcode == 10 || outcode == 5 || outcode == 6 ? 1 : 0;
 }
 
@@ -1039,13 +991,10 @@ int __fastcall HudRectI::IsCornerOutcode(
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */
-int HudRectI::SegmentIntersectsEdge(
-    int edgeCode,
-    const zVec3 *segmentStart,
-    const zVec3 *segmentEnd
-) {
-    zVec3 edgeStart = {0};
-    zVec3 edgeEnd = {0};
+int HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd)
+{
+    zVec3 edgeStart = { 0 };
+    zVec3 edgeEnd = { 0 };
 
     switch (edgeCode) {
     case 1:
@@ -1076,14 +1025,10 @@ int HudRectI::SegmentIntersectsEdge(
         return 0;
     }
 
-    const int edgeStartSide =
-        HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart);
-    const int edgeEndSide =
-        HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd);
-    const int segEdgeStartSide =
-        HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart);
-    const int segEdgeEndSide =
-        HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd);
+    const int edgeStartSide = HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart);
+    const int edgeEndSide = HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd);
+    const int segEdgeStartSide = HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart);
+    const int segEdgeEndSide = HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd);
 
     if (edgeStartSide * edgeEndSide <= 0 && segEdgeStartSide * segEdgeEndSide <= 0) {
         return edgeCode;
@@ -1098,10 +1043,11 @@ int HudRectI::SegmentIntersectsEdge(
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */
 int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
-    const zVec3 *segmentStart,
-    const zVec3 *segmentEnd,
-    const zVec3 *point
-) {
+    const zVec3* segmentStart,
+    const zVec3* segmentEnd,
+    const zVec3* point
+)
+{
     const float dx = segmentEnd->x - segmentStart->x;
     const float dy = segmentEnd->y - segmentStart->y;
     const float px = point->x - segmentStart->x;
@@ -1131,31 +1077,30 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
  * @recoil-artifact defines .text recoil:function:0x416480: HudSensorMapNode::DrawProjectedPath
  * Purpose: Draw the camera-projected sensor-map path with clipped immediate line strips.
  */
-int HudSensorMapNode::DrawProjectedPath(
-    HudSensorTracker *tracker
-) {
+int HudSensorMapNode::DrawProjectedPath(HudSensorTracker* tracker)
+{
     if (pointCount == 0) {
         return 1;
     }
 
     zMat4x3 cameraScratchMatrix;
-    zMath::MatStackPushPtr((float *)(&cameraScratchMatrix));
+    zMath::MatStackPushPtr((float*)(&cameraScratchMatrix));
     zMath::MatLoadCameraScratchB();
 
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         memcpy(g_HudSensor_ProjectScratch, points, (size_t)(pointCount) * sizeof(zVec3));
     } else {
-        const zMat4x3 *const matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+        const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
         for (int i = 0; i < pointCount; ++i) {
-            const HudSensorMapPoint *const sourcePoint = &points[i];
-            zVec3 *const projectedPoint = &g_HudSensor_ProjectScratch[i];
+            const HudSensorMapPoint* const sourcePoint = &points[i];
+            zVec3* const projectedPoint = &g_HudSensor_ProjectScratch[i];
 
-            projectedPoint->x = sourcePoint->x * matrix->xx + sourcePoint->y * matrix->yx +
-                                sourcePoint->z * matrix->zx + matrix->posX;
-            projectedPoint->z = sourcePoint->x * matrix->xz + sourcePoint->y * matrix->yz +
-                                sourcePoint->z * matrix->zz + matrix->posZ;
-            projectedPoint->y = sourcePoint->x * matrix->xy + sourcePoint->y * matrix->yy +
-                                sourcePoint->z * matrix->zy + matrix->posY;
+            projectedPoint->x = sourcePoint->x * matrix->xx + sourcePoint->y * matrix->yx + sourcePoint->z * matrix->zx
+                + matrix->posX;
+            projectedPoint->z = sourcePoint->x * matrix->xz + sourcePoint->y * matrix->yz + sourcePoint->z * matrix->zz
+                + matrix->posZ;
+            projectedPoint->y = sourcePoint->x * matrix->xy + sourcePoint->y * matrix->yy + sourcePoint->z * matrix->zy
+                + matrix->posY;
         }
     }
 
@@ -1172,7 +1117,7 @@ int HudSensorMapNode::DrawProjectedPath(
             continue;
         }
 
-        zMath::ProjectPointBatch(segmentPoints, (zProjectedPoint *)(segmentPoints), 2);
+        zMath::ProjectPointBatch(segmentPoints, (zProjectedPoint*)(segmentPoints), 2);
 
         zRndr_LinePoint2I linePoints[2];
         linePoints[0].x = (int)(segmentPoints[0].x) << 1;
@@ -1180,12 +1125,7 @@ int HudSensorMapNode::DrawProjectedPath(
         linePoints[1].x = (int)(segmentPoints[1].x) << 1;
         linePoints[1].y = (int)(segmentPoints[1].y) << 1;
 
-        zRndrDrawClippedImmediateLineStrip(
-            linePoints,
-            1,
-            tracker,
-            (unsigned int)(packedColor565Pair) >> 16
-        );
+        zRndrDrawClippedImmediateLineStrip(linePoints, 1, tracker, (unsigned int)(packedColor565Pair) >> 16);
     }
 
     return 1;
@@ -1198,7 +1138,8 @@ int HudSensorMapNode::DrawProjectedPath(
  *
  * Purpose: Initialize tracker state without replacing the existing map bounds.
  */
-HudSensorTracker * HudSensorTracker::InitNoBounds() {
+HudSensorTracker* HudSensorTracker::InitNoBounds()
+{
     Init(0);
     return this;
 }
@@ -1210,9 +1151,8 @@ HudSensorTracker * HudSensorTracker::InitNoBounds() {
  *
  * Purpose: Initialize map bounds, save-state marker state, and map runtime defaults.
  */
-void HudSensorTracker::Init(
-    const HudUiRect *outerRectOrNull
-) {
+void HudSensorTracker::Init(const HudUiRect* outerRectOrNull)
+{
     mapFileVersion = 5;
     mapHeaderDword = 0;
     mapBoundsMaxZ = 0.0f;
@@ -1241,10 +1181,8 @@ void HudSensorTracker::Init(
  * @recoil-artifact defines .text recoil:function:0x4166e0: HudSensorTracker::SetBounds
  * Purpose: Copy HUD map bounds and cache the overlay center from the outer rect.
  */
-void HudSensorTracker::SetBounds(
-    const HudUiRect *outerRectIn,
-    const HudUiRect *innerRectOrNull
-) {
+void HudSensorTracker::SetBounds(const HudUiRect* outerRectIn, const HudUiRect* innerRectOrNull)
+{
     if (outerRectIn == 0) {
         return;
     }
@@ -1274,7 +1212,8 @@ void HudSensorTracker::SetBounds(
  *
  * Purpose: Tail-call the shared map shutdown and reset routine.
  */
-int HudSensorTracker::MapShutdownAndResetThunk() {
+int HudSensorTracker::MapShutdownAndResetThunk()
+{
     return MapShutdownAndReset();
 }
 
@@ -1285,7 +1224,8 @@ int HudSensorTracker::MapShutdownAndResetThunk() {
  *
  * Purpose: End the overlay, remove loaded map nodes, free the map path, and reset map state.
  */
-int HudSensorTracker::MapShutdownAndReset() {
+int HudSensorTracker::MapShutdownAndReset()
+{
     MapOverlayEndShow();
     while (mapNodeListHead != 0) {
         MapRemoveNode(mapNodeListHead);
@@ -1304,10 +1244,9 @@ int HudSensorTracker::MapShutdownAndReset() {
  * @recoil-artifact defines .text recoil:function:0x4167e0: HudSensorTracker::MapRemoveNode
  * Purpose: Unlink the requested map node from the tracker list and release head-node storage.
  */
-int HudSensorTracker::MapRemoveNode(
-    HudSensorMapNode *mapNode
-) {
-    HudSensorMapNode *head = mapNodeListHead;
+int HudSensorTracker::MapRemoveNode(HudSensorMapNode* mapNode)
+{
+    HudSensorMapNode* head = mapNodeListHead;
     if (mapNode == head) {
         mapNodeListHead = head->next;
         if (mapNode != 0) {
@@ -1344,9 +1283,8 @@ int HudSensorTracker::MapRemoveNode(
  *
  * Purpose: Insert a map node at the list head and grow the tracker bounds from its cached extent.
  */
-int HudSensorTracker::MapInsertNodeAndGrowBounds(
-    HudSensorMapNode *mapNode
-) {
+int HudSensorTracker::MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode)
+{
     if (mapNode == 0) {
         return 0;
     }
@@ -1378,9 +1316,8 @@ int HudSensorTracker::MapInsertNodeAndGrowBounds(
  * @recoil-artifact defines .text recoil:function:0x4168d0: HudSensorTracker::LoadMapFromStream
  * Purpose: Read a versioned map stream into tracker bounds and linked map nodes.
  */
-int HudSensorTracker::LoadMapFromStream(
-    FILE *stream
-) {
+int HudSensorTracker::LoadMapFromStream(FILE* stream)
+{
     if (stream == 0) {
         return 0;
     }
@@ -1402,7 +1339,7 @@ int HudSensorTracker::LoadMapFromStream(
     fread(&mapBoundsMinX, sizeof(HudSensorMapBounds), 1, stream);
 
     for (;;) {
-        HudSensorMapNode *mapNode = (HudSensorMapNode *)(::operator new(sizeof(HudSensorMapNode)));
+        HudSensorMapNode* mapNode = (HudSensorMapNode*)(::operator new(sizeof(HudSensorMapNode)));
         mapNode = mapNode != 0 ? mapNode->Init() : 0;
         if (mapNode->LoadFromStream(stream) == 0) {
             if (mapNode != 0) {
@@ -1424,14 +1361,13 @@ int HudSensorTracker::LoadMapFromStream(
  * @recoil-artifact defines .text recoil:function:0x4169d0: HudSensorTracker::LoadMapFromPath
  * Purpose: Open a map file path, remember it, and load the tracker map from the stream.
  */
-int HudSensorTracker::LoadMapFromPath(
-    const char *path
-) {
+int HudSensorTracker::LoadMapFromPath(const char* path)
+{
     if (path == 0) {
         return 0;
     }
 
-    FILE *const stream = fopen(path, "rb");
+    FILE* const stream = fopen(path, "rb");
     if (stream == 0) {
         return 0;
     }
@@ -1447,7 +1383,8 @@ int HudSensorTracker::LoadMapFromPath(
  * @recoil-artifact defines .text recoil:function:0x416a30: HudSensorTracker::MapOverlayBeginShow
  * Purpose: Begin the map overlay scale lerp from the current scale to the fitted map bounds scale.
  */
-int HudSensorTracker::MapOverlayBeginShow() {
+int HudSensorTracker::MapOverlayBeginShow()
+{
     if (mapScaleLerpActive != 0) {
         return 0;
     }
@@ -1476,7 +1413,8 @@ int HudSensorTracker::MapOverlayBeginShow() {
  * @recoil-artifact defines .text recoil:function:0x416ad0: HudSensorTracker::MapOverlayEndShow
  * Purpose: Stop the active map overlay lerp and queue the deterministic map-off sound path.
  */
-void HudSensorTracker::MapOverlayEndShow() {
+void HudSensorTracker::MapOverlayEndShow()
+{
     if (mapScaleLerpActive == 0) {
         return;
     }
@@ -1502,9 +1440,8 @@ void HudSensorTracker::MapOverlayEndShow() {
  *
  * Purpose: Reference-count map overlay visibility requests and route transitions through begin/end show.
  */
-int HudSensorTracker::MapOverlayRefToggle(
-    int enable
-) {
+int HudSensorTracker::MapOverlayRefToggle(int enable)
+{
     if (enable != 0) {
         ++g_Hud_MapOverlayRefCount;
         if (g_Hud_MapOverlayRefCount > 0) {
@@ -1526,7 +1463,8 @@ int HudSensorTracker::MapOverlayRefToggle(
  * @recoil-artifact defines .text recoil:function:0x416b80: HudSensorTracker::MapZoomIn
  * Purpose: Increase the active overlay zoom and play the map click sound while the overlay is shown.
  */
-void HudSensorTracker::MapZoomIn() {
+void HudSensorTracker::MapZoomIn()
+{
     if (mapScaleLerpActive != 0) {
         mapZoom *= 1.10000002f;
         mapSndClick->PlayA3DSimple(1.0f);
@@ -1538,7 +1476,8 @@ void HudSensorTracker::MapZoomIn() {
  * @recoil-artifact defines .text recoil:function:0x416bb0: HudSensorTracker::MapZoomOut
  * Purpose: Decrease the active overlay zoom and play the map click sound while the overlay is shown.
  */
-void HudSensorTracker::MapZoomOut() {
+void HudSensorTracker::MapZoomOut()
+{
     if (mapScaleLerpActive != 0) {
         mapZoom *= 0.899999976f;
         mapSndClick->PlayA3DSimple(1.0f);
@@ -1550,7 +1489,8 @@ void HudSensorTracker::MapZoomOut() {
  * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTracker::UpdateMapScaleLerp
  * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
  */
-int HudSensorTracker::UpdateMapScaleLerp() {
+int HudSensorTracker::UpdateMapScaleLerp()
+{
     if (mapScaleLerpRunning != 0) {
         mapScaleLerpT += mapScaleLerpStep;
         if (mapScaleLerpT >= 1.0f) {
@@ -1573,25 +1513,23 @@ int HudSensorTracker::UpdateMapScaleLerp() {
  * Purpose: Project world-space map points into overlay coordinates using the tracked origin and forward vector.
  */
 int HudSensorTracker::ProjectWorldPointsToOverlay(
-    const zVec3 *inputWorldPoints,
-    zVec3 *projectedOverlayPoints,
+    const zVec3* inputWorldPoints,
+    zVec3* projectedOverlayPoints,
     int pointCount
-) {
-    const zVec3 *const trackedPos = trackedWorldOriginPtr;
-    const zVec3 *const trackedForward = trackedForwardVecPtr;
+)
+{
+    const zVec3* const trackedPos = trackedWorldOriginPtr;
+    const zVec3* const trackedForward = trackedForwardVecPtr;
 
     {
         for (int index = 0; index < pointCount; ++index) {
-            const float deltaX =
-                (inputWorldPoints[index].x - trackedPos->x) * mapZoom * mapScaleCurrent.x;
-            const float deltaZ =
-                (inputWorldPoints[index].z - trackedPos->z) * mapScaleCurrent.z * mapZoom;
+            const float deltaX = (inputWorldPoints[index].x - trackedPos->x) * mapZoom * mapScaleCurrent.x;
+            const float deltaZ = (inputWorldPoints[index].z - trackedPos->z) * mapScaleCurrent.z * mapZoom;
 
-            projectedOverlayPoints[index].x = (float)(mapOverlayCenterX) +
-                                              trackedForward->x * deltaZ -
-                                              trackedForward->z * deltaX;
-            projectedOverlayPoints[index].y =
-                (float)(mapOverlayCenterY)-trackedForward->x * deltaX - trackedForward->z * deltaZ;
+            projectedOverlayPoints[index].x
+                = (float)(mapOverlayCenterX) + trackedForward->x * deltaZ - trackedForward->z * deltaX;
+            projectedOverlayPoints[index].y
+                = (float)(mapOverlayCenterY)-trackedForward->x * deltaX - trackedForward->z * deltaZ;
         }
     }
 
@@ -1603,30 +1541,19 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
  * @recoil-artifact defines .text recoil:function:0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
  * Purpose: Draw the cross marker for the currently tracked save-state at its projected map position.
  */
-int HudSensorTracker::DrawTrackedSaveStateMarker() {
+int HudSensorTracker::DrawTrackedSaveStateMarker()
+{
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
-        zUtil_SaveGameState *const gameState = (zUtil_SaveGameState *)(g_GameStateOrMapTable);
-        markerColor =
-            (unsigned short)(zVidPackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
+        zUtil_SaveGameState* const gameState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
+        markerColor = (unsigned short)(zVidPackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
     } else {
         markerColor = (unsigned short)(zVidPackColorRGB(0, 0xff, 0));
     }
 
     zVec3 projectedScreenPoint;
-    ProjectWorldPointsToOverlay(
-        &trackedSaveStateSelection->playerState->worldPos,
-        &projectedScreenPoint,
-        1
-    );
-    DrawMarkerCross(
-        (int)(projectedScreenPoint.x),
-        (int)(projectedScreenPoint.y),
-        3,
-        3,
-        markerColor,
-        this
-    );
+    ProjectWorldPointsToOverlay(&trackedSaveStateSelection->playerState->worldPos, &projectedScreenPoint, 1);
+    DrawMarkerCross((int)(projectedScreenPoint.x), (int)(projectedScreenPoint.y), 3, 3, markerColor, this);
     return 1;
 }
 
@@ -1641,8 +1568,9 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
     int armHalfWidth,
     int armHalfHeight,
     int markerColor,
-    HudSensorTracker *tracker
-) {
+    HudSensorTracker* tracker
+)
+{
     zRndr_LinePoint2I points[2];
     const int color16 = markerColor & 0xffff;
 
@@ -1665,21 +1593,21 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
  * Purpose: Compute the flat relative vector and squared or true distance to a save-state marker.
  */
 float HudSensorTracker::GetSaveStateRelativeVectorLen(
-    zUtil_SaveGameState *saveState,
-    zVec3 *relativeDelta,
+    zUtil_SaveGameState* saveState,
+    zVec3* relativeDelta,
     int takeSqrt
-) {
-    const zVec3 *const saveStatePos = &saveState->playerState->worldPos;
-    const zVec3 *const trackedOrigin = trackedWorldOriginPtr;
+)
+{
+    const zVec3* const saveStatePos = &saveState->playerState->worldPos;
+    const zVec3* const trackedOrigin = trackedWorldOriginPtr;
 
     relativeDelta->x = saveStatePos->x - trackedOrigin->x;
     relativeDelta->y = saveStatePos->y - trackedOrigin->y;
     relativeDelta->z = saveStatePos->z - trackedOrigin->z;
     relativeDelta->y = 0.0f;
 
-    const float lengthSq = relativeDelta->x * relativeDelta->x +
-                           relativeDelta->y * relativeDelta->y +
-                           relativeDelta->z * relativeDelta->z;
+    const float lengthSq = relativeDelta->x * relativeDelta->x + relativeDelta->y * relativeDelta->y
+        + relativeDelta->z * relativeDelta->z;
     if (takeSqrt != 0) {
         return sqrt(lengthSq);
     }
@@ -1687,16 +1615,15 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
     return lengthSq;
 }
 
- /**
-  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setsavestatemarkermaxdistance
-  * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
-  * @recoil-match byte
-  *
-  * Purpose: Store the squared maximum distance for drawing save-state markers.
-  */
-int HudSensorTracker::SetSaveStateMarkerMaxDistance(
-    float maxDist
-) {
+/**
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setsavestatemarkermaxdistance
+ * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
+ * @recoil-match byte
+ *
+ * Purpose: Store the squared maximum distance for drawing save-state markers.
+ */
+int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
+{
     saveStateMarkerMaxDistSq = maxDist * maxDist;
     return 1;
 }
@@ -1706,10 +1633,9 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(
  * @recoil-artifact defines .text recoil:function:0x416f10: HudSensorTracker::DrawSaveStateMarker
  * Purpose: Draw one non-tracked save-state marker or its edge-clamped network marker.
  */
-int HudSensorTracker::DrawSaveStateMarker(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+int HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (playerState->lifecycleState == 4 || saveState == trackedSaveStateSelection) {
         return 0;
     }
@@ -1732,15 +1658,14 @@ int HudSensorTracker::DrawSaveStateMarker(
         relativeDelta.y *= edgeScale;
         relativeDelta.z *= edgeScale;
 
-        const zVec3 *const localWorldPos =
-            &((zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState))->worldPos;
+        const zVec3* const localWorldPos = &((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->worldPos;
         markerPoint.x = localWorldPos->x + relativeDelta.x;
         markerPoint.y = localWorldPos->y + relativeDelta.y;
         markerPoint.z = localWorldPos->z + relativeDelta.z;
         ProjectWorldPointsToOverlay(&markerPoint, &markerPoint, 1);
 
-        const unsigned short markerColor =
-            (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
+        const unsigned short markerColor
+            = (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
         if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
             DrawMarkerCross((int)(markerPoint.x), (int)(markerPoint.y), 3, 3, markerColor, this);
         }
@@ -1752,8 +1677,7 @@ int HudSensorTracker::DrawSaveStateMarker(
 
     unsigned short markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
-        markerColor =
-            (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
+        markerColor = (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
     } else {
         markerColor = (unsigned short)(zVidPackColorRGB(0xff, 0, 0));
     }
@@ -1770,7 +1694,8 @@ int HudSensorTracker::DrawSaveStateMarker(
  * @recoil-artifact defines .text recoil:function:0x417130: HudSensorTracker::Update
  * Purpose: Advance map interpolation, draw map nodes, and draw save-state tracker markers.
  */
-void HudSensorTracker::Update() {
+void HudSensorTracker::Update()
+{
     mapScaleLerpStep = 0.150000006f;
     if (mapScaleLerpActive == 0 && mapScaleLerpRunning == 0) {
         return;
@@ -1791,15 +1716,14 @@ void HudSensorTracker::Update() {
     }
 
     if (zOpt::GetNetworkEnabled() == 0) {
-        HudSensorMapNode *mapNode = mapNodeListHead;
+        HudSensorMapNode* mapNode = mapNodeListHead;
         while (mapNode != 0) {
             mapNode->DrawOnTracker(this, trackedWorldPosPtr);
             mapNode = mapNode->next;
         }
     }
 
-    zUtil_SaveGameState *saveState =
-        g_PlayerSaveStateList.head != 0 ? g_PlayerSaveStateList.head->next : 0;
+    zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head != 0 ? g_PlayerSaveStateList.head->next : 0;
     while (saveState != 0) {
         DrawSaveStateMarker(saveState);
         saveState = saveState != 0 ? saveState->next : 0;
@@ -1810,22 +1734,21 @@ void HudSensorTracker::Update() {
     }
 }
 
- /**
-  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-settrackedsavestate
-  * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTracker::SetTrackedSaveState
-  * @recoil-match byte
-  *
-  * Purpose: Select the save-state player pose used by the HUD map marker.
-  */
-int HudSensorTracker::SetTrackedSaveState(
-    zUtil_SaveGameState *saveState
-) {
-    zVec3 *trackedForwardVec = 0;
+/**
+ * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-settrackedsavestate
+ * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTracker::SetTrackedSaveState
+ * @recoil-match byte
+ *
+ * Purpose: Select the save-state player pose used by the HUD map marker.
+ */
+int HudSensorTracker::SetTrackedSaveState(zUtil_SaveGameState* saveState)
+{
+    zVec3* trackedForwardVec = 0;
     if (saveState == 0) {
         trackedSaveStateSelection = 0;
         trackedWorldOriginPtr = 0;
     } else {
-        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         trackedSaveStateSelection = saveState;
         trackedWorldOriginPtr = &playerState->worldPos;
         trackedForwardVec = &playerState->cameraBasisCache;
@@ -1841,9 +1764,8 @@ int HudSensorTracker::SetTrackedSaveState(
  * @recoil-artifact defines .text recoil:function:0x417260: HudSensorTracker::LoadMissionMapAndSfx
  * Purpose: Load the mission map path and resolve the map on, off, and click samples.
  */
-int HudSensorTracker::LoadMissionMapAndSfx(
-    int missionIdValue
-) {
+int HudSensorTracker::LoadMissionMapAndSfx(int missionIdValue)
+{
     char mapPath[0x40];
     sprintf(mapPath, g_HudSensorTracker_MissionMapPathFmt, missionIdValue);
 
@@ -1864,9 +1786,10 @@ int HudSensorTracker::LoadMissionMapAndSfx(
 int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
     int objectiveIndex,
     int enabled,
-    const unsigned char *colorRgb24
-) {
-    HudSensorMapNode *mapNode = mapNodeListHead;
+    const unsigned char* colorRgb24
+)
+{
+    HudSensorMapNode* mapNode = mapNodeListHead;
     while (mapNode != 0) {
         if (mapNode->objectiveIndex == objectiveIndex) {
             mapNode->SetColorRgb(colorRgb24);
@@ -1884,17 +1807,14 @@ int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
  * @recoil-artifact defines .text recoil:function:0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
  * Purpose: Recolor matching objective map nodes and swap their packed full/half 565 blink colors.
  */
-int HudSensorTracker::SetObjectiveMarkerColorBlink(
-    int objectiveIndex,
-    const unsigned char *colorRgb24
-) {
-    HudSensorMapNode *mapNode = mapNodeListHead;
+int HudSensorTracker::SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24)
+{
+    HudSensorMapNode* mapNode = mapNodeListHead;
     while (mapNode != 0) {
         if (mapNode->objectiveIndex == objectiveIndex) {
             mapNode->SetColorRgb(colorRgb24);
             const unsigned int packedColor = (unsigned int)(mapNode->packedColor565Pair);
-            mapNode->packedColor565Pair =
-                (int)((packedColor << 16) | ((packedColor >> 16) & 0xffff));
+            mapNode->packedColor565Pair = (int)((packedColor << 16) | ((packedColor >> 16) & 0xffff));
         }
 
         mapNode = mapNode->next;

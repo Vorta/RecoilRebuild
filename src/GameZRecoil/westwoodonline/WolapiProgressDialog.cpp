@@ -18,13 +18,8 @@ extern "C" HWND g_hWestwoodOnlineUpgradeProgressDialog;
  * destructor and scalar deleting-destructor are compiler-generated lifecycle
  * contributions, not authored wrapper methods.
  */
-WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
-    CWnd *parentWnd
-) :
-    CDialog(
-        kWestwoodOnlineUpgradeProgressDialog_ResourceId,
-        parentWnd
-    )
+WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(CWnd* parentWnd)
+    : CDialog(kWestwoodOnlineUpgradeProgressDialog_ResourceId, parentWnd)
 {
 }
 
@@ -33,12 +28,12 @@ WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog(
  * not reimplement CDialog behavior.
  */
 class WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor : public CDialog {
-  public:
-    static const AFX_MSGMAP *__stdcall GetMessageMap();
+public:
+    static const AFX_MSGMAP* __stdcall GetMessageMap();
 };
 
-const AFX_MSGMAP *__stdcall
-WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
+const AFX_MSGMAP* __stdcall WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap()
+{
     return &CDialog::messageMap;
 }
 
@@ -47,13 +42,13 @@ WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap() {
  * progress-dialog MFC message-map data.
  * Purpose: returns the provider CDialog base map.
  */
-const AFX_MSGMAP *__stdcall
-WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc() {
+const AFX_MSGMAP* __stdcall WestwoodOnlineUpgradeProgressDialog::GetBaseMessageMapForMfc()
+{
     return WestwoodOnlineUpgradeProgressCDialogMessageMapAccessor::GetMessageMap();
 }
 
 AFX_MSGMAP_ENTRY const WestwoodOnlineUpgradeProgressDialog::messageEntries[] = {
-    {0, 0, 0, 0, 0, 0},
+    { 0, 0, 0, 0, 0, 0 },
 };
 
 const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
@@ -67,7 +62,8 @@ const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
  * Purpose: returns the sentinel-only MFC message-map record for the raw dialog
  * proc.
  */
-const AFX_MSGMAP * WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
+const AFX_MSGMAP* WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const
+{
     return &WestwoodOnlineUpgradeProgressDialog::messageMap;
 }
 
@@ -77,10 +73,8 @@ const AFX_MSGMAP * WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const {
  * Purpose: formats text into the recovered 0x40-byte global buffer and writes
  * the progress status control.
  */
-BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(
-    const char *format,
-    ...
-) {
+BOOL WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt(const char* format, ...)
+{
     va_list args;
     va_start(args, format);
     vsprintf(g_WestwoodOnlineUpgradeProgressStatusTextBuffer, format, args);

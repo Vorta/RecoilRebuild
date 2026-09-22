@@ -6,18 +6,8 @@
 #include <windows.h>
 
 namespace zError {
-int __fastcall InitOutputContext(
-    void *hWnd,
-    int maxBytes,
-    const char *logFileName
-);
-void __cdecl ReportOld(
-    int flags,
-    const char *sourceFile,
-    int sourceLine,
-    const char *format,
-    ...
-);
+int __fastcall InitOutputContext(void* hWnd, int maxBytes, const char* logFileName);
+void __cdecl ReportOld(int flags, const char* sourceFile, int sourceLine, const char* format, ...);
 void __fastcall EmitDebugBuffer(int severity);
 } // namespace zError
 

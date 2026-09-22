@@ -7,7 +7,7 @@
 #include "recoil/recoil_callconv.h"
 
 namespace MfcCmdUI {
-void __stdcall EnableAlways(CCmdUI *cmdUi);
+void __stdcall EnableAlways(CCmdUI* cmdUi);
 }
 
 class RecoilApp;
@@ -49,7 +49,7 @@ struct CZRecoilFrame : CZGameFrame {
     void OnMenuSetVideoMode7();
     void OnMenuExitGame();
     void OnMenuToggleHud();
-    void OnUpdateHudCmdUI(CCmdUI *cmdUi);
+    void OnUpdateHudCmdUI(CCmdUI* cmdUi);
     void OnMenuToggleFullscreen();
     RECOIL_NO_GS void OnMenuOpenHelpDocs();
     RECOIL_NO_GS void OnMenuAbout();
@@ -63,169 +63,72 @@ struct CZRecoilFrame : CZGameFrame {
     RECOIL_NO_GS void OnMenuWestwoodOnlineUpgrade();
     void OnMenuToggleArchiveBanks();
     void OnMenuToggleTexturePacks();
-    void OnUpdateVideoMode2CmdUI(CCmdUI *cmdUi);
-    void OnUpdateVideoMode3CmdUI(CCmdUI *cmdUi);
-    void OnUpdateVideoMode4CmdUI(CCmdUI *cmdUi);
-    void OnUpdateVideoMode5CmdUI(CCmdUI *cmdUi);
-    void OnUpdateVideoMode6CmdUI(CCmdUI *cmdUi);
-    void OnUpdateVideoMode7CmdUI(CCmdUI *cmdUi);
+    void OnUpdateVideoMode2CmdUI(CCmdUI* cmdUi);
+    void OnUpdateVideoMode3CmdUI(CCmdUI* cmdUi);
+    void OnUpdateVideoMode4CmdUI(CCmdUI* cmdUi);
+    void OnUpdateVideoMode5CmdUI(CCmdUI* cmdUi);
+    void OnUpdateVideoMode6CmdUI(CCmdUI* cmdUi);
+    void OnUpdateVideoMode7CmdUI(CCmdUI* cmdUi);
     void OnMenuSelectHwApi0();
     void OnMenuSelectHwApi1();
     void OnMenuSelectHwApi2();
     void OnMenuSelectHwApi3();
-    RECOIL_NO_GS void UpdateHwApiMenuItem(
-        CCmdUI *cmdUi,
-        int apiIndex
-    );
-    void OnUpdateHwApi0CmdUI(CCmdUI *cmdUi);
-    void OnUpdateHwApi1CmdUI(CCmdUI *cmdUi);
-    void OnUpdateHwApi2CmdUI(CCmdUI *cmdUi);
-    void OnUpdateHwApi3CmdUI(CCmdUI *cmdUi);
-    void OnUpdateFullscreenCmdUI(CCmdUI *cmdUi);
-    void OnUpdateAlwaysEnabledCmdUI(CCmdUI *cmdUi);
+    RECOIL_NO_GS void UpdateHwApiMenuItem(CCmdUI* cmdUi, int apiIndex);
+    void OnUpdateHwApi0CmdUI(CCmdUI* cmdUi);
+    void OnUpdateHwApi1CmdUI(CCmdUI* cmdUi);
+    void OnUpdateHwApi2CmdUI(CCmdUI* cmdUi);
+    void OnUpdateHwApi3CmdUI(CCmdUI* cmdUi);
+    void OnUpdateFullscreenCmdUI(CCmdUI* cmdUi);
+    void OnUpdateAlwaysEnabledCmdUI(CCmdUI* cmdUi);
     /**
      * The address is a heterogeneous shared physical alias and does not imply
      * sole ownership of the group.
      * Purpose: leave the two mapped command-update states unchanged.
      */
-    afx_msg void OnUpdateNoOpCmdUI(CCmdUI *) {}
+    afx_msg void OnUpdateNoOpCmdUI(CCmdUI*) { }
     void OnMenuToggleCDAudio();
-    void OnUpdateCDAudioCmdUI(CCmdUI *cmdUi);
+    void OnUpdateCDAudioCmdUI(CCmdUI* cmdUi);
     void OnMenuToggleJoystick();
-    void OnUpdateJoystickCmdUI(CCmdUI *cmdUi);
+    void OnUpdateJoystickCmdUI(CCmdUI* cmdUi);
     void OnMenuSelectDirectSound();
-    void OnUpdateDirectSoundCmdUI(CCmdUI *cmdUi);
+    void OnUpdateDirectSoundCmdUI(CCmdUI* cmdUi);
     void OnMenuSelectA3D();
-    void OnUpdateA3DCmdUI(CCmdUI *cmdUi);
-    void OnSize(
-        unsigned int nType,
-        int cx,
-        int cy
-    );
+    void OnUpdateA3DCmdUI(CCmdUI* cmdUi);
+    void OnSize(unsigned int nType, int cx, int cy);
     void SetHwApiAndInitMode(int hwApiIndex);
     void InitFallbackMode();
     void EnsureHwApiInitialized(int hwApiSelector);
     void InitStartupHwApiFromOptions();
 
-  private:
+private:
     static const AFX_MSGMAP_ENTRY _messageEntries[];
 
-  protected:
+protected:
     static AFX_DATA const AFX_MSGMAP messageMap;
-    static const AFX_MSGMAP *PASCAL _GetBaseMessageMap();
+    static const AFX_MSGMAP* PASCAL _GetBaseMessageMap();
 
-  public:
-    virtual const AFX_MSGMAP *GetMessageMap() const;
+public:
+    virtual const AFX_MSGMAP* GetMessageMap() const;
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_app
-    ) == 0x0c0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_openZbdFilePath
-    ) == 0x0cc
-);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_app) == 0x0c0);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_openZbdFilePath) == 0x0cc);
 
 #if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CCmdUI,
-        m_pMenu
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(CCmdUI, m_pMenu) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(CZRecoilFrame) == 0x230);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_hWnd
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_openZbdFilePath
-    ) == 0xcc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_mainMenu
-    ) == 0x1d0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CMenu,
-        m_hMenu
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_useArchiveBanks
-    ) == 0x1d8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_cmdlineFlag
-    ) == 0x1dc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_videoModeCmdUiState
-    ) == 0x1e0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_acceptedD3DDeviceCount
-    ) == 0x1f8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_hwApiCmdUiState
-    ) == 0x1fc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_hwApiMenuCommandIds
-    ) == 0x20c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_videoModeIndex
-    ) == 0x21c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_fullscreenOption
-    ) == 0x220
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_vidMemTotalBytes
-    ) == 0x224
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_vidMemFreeBytes
-    ) == 0x228
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZRecoilFrame,
-        m_campaignsOnlyMode
-    ) == 0x22c
-);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_hWnd) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_openZbdFilePath) == 0xcc);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_mainMenu) == 0x1d0);
+RECOIL_STATIC_ASSERT(offsetof(CMenu, m_hMenu) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_useArchiveBanks) == 0x1d8);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_cmdlineFlag) == 0x1dc);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_videoModeCmdUiState) == 0x1e0);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_acceptedD3DDeviceCount) == 0x1f8);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_hwApiCmdUiState) == 0x1fc);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_hwApiMenuCommandIds) == 0x20c);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_videoModeIndex) == 0x21c);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_fullscreenOption) == 0x220);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_vidMemTotalBytes) == 0x224);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_vidMemFreeBytes) == 0x228);
+RECOIL_STATIC_ASSERT(offsetof(CZRecoilFrame, m_campaignsOnlyMode) == 0x22c);
 #endif

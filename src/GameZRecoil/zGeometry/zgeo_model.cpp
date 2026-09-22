@@ -18,24 +18,16 @@ const float kRandToDebugColorScale = 0.00778221991f;
  * diagnostic literal owner linked by geometry_model_assets.zgeometry_model_initialized_data.
  * Purpose: Preserve the writable source/error literals used by model clipping diagnostics.
  */
-char g_zGeometry_SourceFile_ZgeoModelCpp[0x2d] =
-    "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_model.cpp";
-char g_zGeometry_GeneratePolygonVertexCountFmt[0x32] =
-    "Attempting to generate polygon with (%d) vertices";
-char g_zGeometry_PolygonVertexBufferErrorMsg[0x30] =
-    "Error getting linear buffer of polygon vertices";
-char g_zGeometry_SkippingClipPolygonVertsFmt[0x29] =
-    "Skipping clip of polygon with (%d) verts";
-char g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt[0x4a] =
-    "Null Area Partition (0x%08x) or null Outline (0x%08x) passed to ClipPatch";
-char g_zGeometry_WeilerClipInSubjTraceMsg[0x32] =
-    "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n";
-char g_zGeometry_AddChildPolygonVertexCountFmt[0x33] =
-    "Attempting to add child polygon with (%d) vertices";
-char g_zGeometry_IntersectionFoundNoPolygonsMsg[0x23] =
-    "Intersection found, no polygons...";
-char g_zGeometry_WeilerAlgorithmClipErrorMsg[0x26] =
-    "Weiler algorithm clip error occurred.";
+char g_zGeometry_SourceFile_ZgeoModelCpp[0x2d] = "D:\\Proj\\GameZRecoil\\zGeometry\\zgeo_model.cpp";
+char g_zGeometry_GeneratePolygonVertexCountFmt[0x32] = "Attempting to generate polygon with (%d) vertices";
+char g_zGeometry_PolygonVertexBufferErrorMsg[0x30] = "Error getting linear buffer of polygon vertices";
+char g_zGeometry_SkippingClipPolygonVertsFmt[0x29] = "Skipping clip of polygon with (%d) verts";
+char g_zGeometry_NullAreaPartitionOrOutlineClipPatchFmt[0x4a]
+    = "Null Area Partition (0x%08x) or null Outline (0x%08x) passed to ClipPatch";
+char g_zGeometry_WeilerClipInSubjTraceMsg[0x32] = "\nWEILER_CLIP_IN_SUBJ\n\tclip.outside.num_polys = 0\n";
+char g_zGeometry_AddChildPolygonVertexCountFmt[0x33] = "Attempting to add child polygon with (%d) vertices";
+char g_zGeometry_IntersectionFoundNoPolygonsMsg[0x23] = "Intersection found, no polygons...";
+char g_zGeometry_WeilerAlgorithmClipErrorMsg[0x26] = "Weiler algorithm clip error occurred.";
 
 struct zGeometry_ClipPatchModelNodeBoundsView {
     CZNodePartial node;
@@ -47,37 +39,17 @@ struct zGeometry_ClipPatchModelNodeBoundsView {
     float boundsNegMinY;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zGeometry_ClipPatchModelNodeBoundsView,
-        boundsMinX
-    ) == 0x8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zGeometry_ClipPatchModelNodeBoundsView,
-        boundsNegMaxY
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zGeometry_ClipPatchModelNodeBoundsView,
-        boundsMaxX
-    ) == 0x98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zGeometry_ClipPatchModelNodeBoundsView,
-        boundsNegMinY
-    ) == 0xa0
-);
+RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsMinX) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegMaxY) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsMaxX) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegMinY) == 0xa0);
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-g-zgeometry-model-lastrandomdebugmaterial
  * @recoil-artifact defines .data recoil:data:0x53a73c: g_zGeometry_Model_LastRandomDebugMaterial.
  * Purpose: Remember the last randomized debug material cloned for generated model polygons.
  */
-zModel_MaterialPartial *g_zGeometry_Model_LastRandomDebugMaterial = 0;
+zModel_MaterialPartial* g_zGeometry_Model_LastRandomDebugMaterial = 0;
 } // namespace
 
 namespace zGeometry_Model {
@@ -86,7 +58,8 @@ namespace zGeometry_Model {
  * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */
-zModel_MaterialPartial *__cdecl FindOrCreateRandomDebugMaterial() {
+zModel_MaterialPartial* __cdecl FindOrCreateRandomDebugMaterial()
+{
     zModel_MaterialPartial material;
     zModel_Material::ResetDefaults(&material);
 
@@ -97,8 +70,8 @@ zModel_MaterialPartial *__cdecl FindOrCreateRandomDebugMaterial() {
     material.colorRgb.red = red;
     material.colorRgb.green = green;
     material.colorRgb.blue = blue;
-    material.packedColor = (unsigned short)((((int)(red) & 0x1f) << 11) |
-                                            (((int)(green) & 0x3f) << 5) | ((int)(blue) & 0x1f));
+    material.packedColor
+        = (unsigned short)((((int)(red) & 0x1f) << 11) | (((int)(green) & 0x3f) << 5) | ((int)(blue) & 0x1f));
 
     g_zGeometry_Model_LastRandomDebugMaterial = zModel_Material::FindOrClone(&material);
     return g_zGeometry_Model_LastRandomDebugMaterial;
@@ -110,13 +83,9 @@ zModel_MaterialPartial *__cdecl FindOrCreateRandomDebugMaterial() {
  * Purpose: validate a generated polygon, choose a debug material when needed,
  * and forward the point list to the DI polygon sink.
  */
-int __fastcall AddPolygonToDi(
-    zDiPartial *di,
-    int pointCount,
-    zVec3 *points,
-    zModel_MaterialPartial *material,
-    zClipUV *uvPairs
-) {
+int __fastcall
+AddPolygonToDi(zDiPartial* di, int pointCount, zVec3* points, zModel_MaterialPartial* material, zClipUV* uvPairs)
+{
     zTag4Partial localUserTag;
     zTag4::Clear(&localUserTag);
 
@@ -135,19 +104,7 @@ int __fastcall AddPolygonToDi(
         material = FindOrCreateRandomDebugMaterial();
     }
 
-    return zDi::AddPolygon(
-        di,
-        pointCount,
-        points,
-        uvPairs,
-        0,
-        0,
-        0,
-        material,
-        0,
-        0,
-        (const int *)(&localUserTag)
-    );
+    return zDi::AddPolygon(di, pointCount, points, uvPairs, 0, 0, 0, material, 0, 0, (const int*)(&localUserTag));
 }
 
 /**
@@ -155,18 +112,15 @@ int __fastcall AddPolygonToDi(
  * @recoil-artifact defines .text recoil:function:0x46a7f0: zGeometry_Model::BuildPolygonUvList
  * Purpose: Allocate and fill clipped polygon UVs from the source polygon UV basis.
  */
-zClipUV *__fastcall BuildPolygonUvList(
-    int pointCount,
-    zVec3 *points,
-    zModel_DrawBatchBasePartial *model,
-    zModel_PolygonPartial *polygon
-) {
-    const int *vertexIndices = polygon->vertexIndices;
-    zVec3 *const verts = model->verts;
-    zVec3 *const point0 = &verts[vertexIndices[0]];
-    zVec3 *const point1 = &verts[vertexIndices[1]];
-    zVec3 *const point2 = &verts[vertexIndices[2]];
-    zModel_PolygonUvBasis *const uvBasis = polygon->uvBasis;
+zClipUV* __fastcall
+BuildPolygonUvList(int pointCount, zVec3* points, zModel_DrawBatchBasePartial* model, zModel_PolygonPartial* polygon)
+{
+    const int* vertexIndices = polygon->vertexIndices;
+    zVec3* const verts = model->verts;
+    zVec3* const point0 = &verts[vertexIndices[0]];
+    zVec3* const point1 = &verts[vertexIndices[1]];
+    zVec3* const point2 = &verts[vertexIndices[2]];
+    zModel_PolygonUvBasis* const uvBasis = polygon->uvBasis;
 
     zVec2 uCoefficients;
     zGeometry_Polygon::SolveUvAxisCoefficientsXZ(
@@ -190,7 +144,7 @@ zClipUV *__fastcall BuildPolygonUvList(
         &vCoefficients
     );
 
-    zClipUV *const result = (zClipUV *)(malloc((size_t)(pointCount) * sizeof(zClipUV)));
+    zClipUV* const result = (zClipUV*)(malloc((size_t)(pointCount) * sizeof(zClipUV)));
     for (int i = 0; i < pointCount; ++i) {
         const float deltaX = points[i].x - point1->x;
         const float deltaZ = points[i].z - point1->z;
@@ -210,14 +164,15 @@ namespace zGeometry_Polygon {
  * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
  */
 void __fastcall SolveUvAxisCoefficientsXZ(
-    zVec3 *point0,
-    zVec3 *point1,
-    zVec3 *point2,
+    zVec3* point0,
+    zVec3* point1,
+    zVec3* point2,
     float value0,
     float value1,
     float value2,
-    zVec2 *outCoefficients
-) {
+    zVec2* outCoefficients
+)
+{
     const float x01 = point0->x - point1->x;
     const float z01 = point0->z - point1->z;
     const float x21 = point2->x - point1->x;
@@ -247,9 +202,8 @@ namespace zGeometry_Vec3Array {
  *
  * Purpose: Compute XY min/max bounds for a point array.
  */
-void __fastcall ComputeBoundsXY(zGeometry_BoundsXY *outBounds,
-    zVec3 *points,
-    int pointCount) {
+void __fastcall ComputeBoundsXY(zGeometry_BoundsXY* outBounds, zVec3* points, int pointCount)
+{
 
     outBounds->minX = outBounds->maxX = points->x;
     outBounds->maxY = outBounds->minY = points->y;
@@ -282,16 +236,14 @@ namespace zGeometry_ClipPolygon {
  *
  * Purpose: Allocate a clip polygon, rotate source points, and initialize bounds/state.
  */
-zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
-    int pointCount,
-    zVec3 *points
-) {
-    zGeometry_ClipPolygonPartial *result =
-        (zGeometry_ClipPolygonPartial *)(malloc(sizeof(zGeometry_ClipPolygonPartial)));
+zGeometry_ClipPolygonPartial* __fastcall CreateFromPointList(int pointCount, zVec3* points)
+{
+    zGeometry_ClipPolygonPartial* result
+        = (zGeometry_ClipPolygonPartial*)(malloc(sizeof(zGeometry_ClipPolygonPartial)));
     memset(result, 0, sizeof(zGeometry_ClipPolygonPartial));
 
     const size_t pointBytes = (size_t)(pointCount) * sizeof(zVec3);
-    result->points = (zVec3 *)(malloc(pointBytes));
+    result->points = (zVec3*)(malloc(pointBytes));
     memcpy(result->points, points, pointBytes);
 
     zGeometry_Vec3Array::RotatePos90AroundX(pointCount, result->points);
@@ -308,11 +260,11 @@ zGeometry_ClipPolygonPartial *__fastcall CreateFromPointList(
  *
  * Purpose: Copy clip polygon points to caller storage and restore model-space rotation.
  */
-int __fastcall CopyPointsOutRotatedBack(zGeometry_ClipPolygonPartial *clipPolygon,
-    int *outPointCount,
-    zVec3 **outPoints) {
+int __fastcall
+CopyPointsOutRotatedBack(zGeometry_ClipPolygonPartial* clipPolygon, int* outPointCount, zVec3** outPoints)
+{
     *outPointCount = clipPolygon->pointCount;
-    *outPoints = (zVec3 *)realloc(*outPoints, clipPolygon->pointCount * sizeof(zVec3));
+    *outPoints = (zVec3*)realloc(*outPoints, clipPolygon->pointCount * sizeof(zVec3));
     memcpy(*outPoints, clipPolygon->points, clipPolygon->pointCount * sizeof(zVec3));
 
     zGeometry_Vec3Array::RotateNeg90AroundX(*outPointCount, *outPoints);
@@ -326,9 +278,8 @@ int __fastcall CopyPointsOutRotatedBack(zGeometry_ClipPolygonPartial *clipPolygo
  *
  * Purpose: Release clip polygon point storage and associated Weiler state.
  */
-void __fastcall FinalizeAndDestroy(
-    zGeometry_ClipPolygonPartial *clipPolygon
-) {
+void __fastcall FinalizeAndDestroy(zGeometry_ClipPolygonPartial* clipPolygon)
+{
     if (clipPolygon->points != 0) {
         free(clipPolygon->points);
     }
@@ -344,9 +295,9 @@ void __fastcall FinalizeAndDestroy(
  *
  * Purpose: Find the first clip-polygon point whose XY coordinates match the candidate point within tolerance.
  */
-int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial *clipPolygon,
-    zVec3 *point) {
-    zVec3 *current = clipPolygon->points;
+int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial* clipPolygon, zVec3* point)
+{
+    zVec3* current = clipPolygon->points;
     for (int i = 0; i < clipPolygon->pointCount; ++current, ++i) {
         if (zGeometry_Vec3::IsNearEqualXY(current, point, 0.00999999978f)) {
             return i;
@@ -361,17 +312,14 @@ int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial *clipPolygon,
  * @recoil-artifact defines .text recoil:function:0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
  * Purpose: Update matching clip-polygon points and insert candidate points that lie on clip-polygon edges.
  */
-int __fastcall UpsertPointListXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    int pointCount,
-    zVec3 *points
-) {
+int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int pointCount, zVec3* points)
+{
     int result = 0;
     if (pointCount <= 0) {
         return result;
     }
 
-    zVec3 *point = points;
+    zVec3* point = points;
     {
         for (int remaining = pointCount; remaining != 0; --remaining) {
             const int existingIndex = zGeometry_ClipPolygon::FindPointIndexXY(clipPolygon, point);
@@ -379,14 +327,10 @@ int __fastcall UpsertPointListXY(
                 clipPolygon->points[existingIndex] = *point;
                 result = 1;
             } else {
-                const int edgeIndex =
-                    zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(clipPolygon, point);
+                const int edgeIndex = zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(clipPolygon, point);
                 if (edgeIndex != -1) {
                     const int oldPointCount = clipPolygon->pointCount;
-                    clipPolygon->points = (zVec3 *)(realloc(
-                        clipPolygon->points,
-                        (oldPointCount + 1) * sizeof(zVec3)
-                    ));
+                    clipPolygon->points = (zVec3*)(realloc(clipPolygon->points, (oldPointCount + 1) * sizeof(zVec3)));
 
                     if (edgeIndex != oldPointCount - 1) {
                         memmove(
@@ -414,16 +358,14 @@ int __fastcall UpsertPointListXY(
  * @recoil-artifact defines .text recoil:function:0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
  * Purpose: Find the clip-polygon edge that contains a candidate point in XY.
  */
-int __fastcall FindPointInsertionEdgeXYIndex(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zVec3 *point
-) {
+int __fastcall FindPointInsertionEdgeXYIndex(zGeometry_ClipPolygonPartial* clipPolygon, zVec3* point)
+{
     const float tolerance = 0.00999999978f;
-    zVec3 *current = clipPolygon->points;
+    zVec3* current = clipPolygon->points;
     const int pointCount = clipPolygon->pointCount;
 
     for (int i = 0; i < pointCount; ++i) {
-        zVec3 *const next = &clipPolygon->points[(i + 1) % pointCount];
+        zVec3* const next = &clipPolygon->points[(i + 1) % pointCount];
         const float edgeDx = next->x - current->x;
         const float edgeDy = next->y - current->y;
 
@@ -444,9 +386,9 @@ int __fastcall FindPointInsertionEdgeXYIndex(
         } else {
             const float tX = (point->x - current->x) / edgeDx;
             const float tY = (point->y - current->y) / edgeDy;
-            if (fabs(tX - tY) < tolerance && tY > 0.0f && tY < 1.0f && tX > 0.0f && tX < 1.0f &&
-                fabs(tX * edgeDx + current->x - point->x) <= tolerance &&
-                fabs(tY * edgeDy + current->y - point->y) <= tolerance) {
+            if (fabs(tX - tY) < tolerance && tY > 0.0f && tY < 1.0f && tX > 0.0f && tX < 1.0f
+                && fabs(tX * edgeDx + current->x - point->x) <= tolerance
+                && fabs(tY * edgeDy + current->y - point->y) <= tolerance) {
                 return i;
             }
         }
@@ -468,19 +410,19 @@ namespace zGeometry_ClipPatchOutput {
  * Purpose: publish generated display instances to their clip-patch nodes,
  * release replaced display instances, and clear consumed node/DI pairs.
  */
-int __fastcall ApplyNodeDiPairs(
-    zGeometry_ClipPatchOutputPartial *self) {
+int __fastcall ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial* self)
+{
     for (int partitionIndex = 0; partitionIndex < self->partitionCount; ++partitionIndex) {
         for (int i = 0; i < self->partitions[partitionIndex].nodeDiPairCount; ++i) {
             unsigned int oldDisplayInstanceValue;
-            CZClass::gwNodeGetUserData(
-                self->partitions[partitionIndex].nodeDiPairs[i].node, &oldDisplayInstanceValue);
+            CZClass::gwNodeGetUserData(self->partitions[partitionIndex].nodeDiPairs[i].node, &oldDisplayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(
                 self->partitions[partitionIndex].nodeDiPairs[i].node,
-                self->partitions[partitionIndex].nodeDiPairs[i].di);
+                self->partitions[partitionIndex].nodeDiPairs[i].di
+            );
 
             if (oldDisplayInstanceValue != 0) {
-                zModel_DiPool::FreeIfUnreferenced((zDiPartial *)oldDisplayInstanceValue);
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial*)oldDisplayInstanceValue);
             }
         }
 
@@ -502,9 +444,10 @@ int __fastcall ApplyNodeDiPairs(
  * Purpose: allocate an empty clip-patch output record for crater and quicksand
  * feature tessellation.
  */
-zGeometry_ClipPatchOutputPartial *__cdecl Create() {
-    zGeometry_ClipPatchOutputPartial *result =
-        (zGeometry_ClipPatchOutputPartial *)(malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
+zGeometry_ClipPatchOutputPartial* __cdecl Create()
+{
+    zGeometry_ClipPatchOutputPartial* result
+        = (zGeometry_ClipPatchOutputPartial*)(malloc(sizeof(zGeometry_ClipPatchOutputPartial)));
     memset(result, 0, sizeof(*result));
     return result;
 }
@@ -517,9 +460,8 @@ zGeometry_ClipPatchOutputPartial *__cdecl Create() {
  * Purpose: free the partition buffer owned by a clip-patch output record and
  * release the record itself.
  */
-void __fastcall Destroy(
-    zGeometry_ClipPatchOutputPartial *self
-) {
+void __fastcall Destroy(zGeometry_ClipPatchOutputPartial* self)
+{
     if (self->partitions != 0) {
         free(self->partitions);
     }
@@ -537,16 +479,17 @@ namespace zDEClient {
  * Purpose: allocate a feature child node and display instance for a clipped
  * partition while preserving the original node type and parent linkage.
  */
-zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
-    zGeometry_ClipPatchPartitionOutput *partitionOutput,
-    CZNodePartial *parentNode,
-    CZNodePartial **outNode
-) {
+zDiPartial* __fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
+    zGeometry_ClipPatchPartitionOutput* partitionOutput,
+    CZNodePartial* parentNode,
+    CZNodePartial** outNode
+)
+{
     if (partitionOutput == 0) {
         return 0;
     }
 
-    CZNodePartial *child = CZObject3D::gwObject3DInit();
+    CZNodePartial* child = CZObject3D::gwObject3DInit();
     if (child == 0) {
         if (outNode != 0) {
             *outNode = child;
@@ -562,7 +505,7 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
     CZClass::gwNodeSetNodeType(child, 0xff);
 
     for (int i = 0; i < partitionOutput->nodeDiPairCount; ++i) {
-        zGeometry_ClipPatchNodeView *const node = partitionOutput->nodeDiPairs[i].node;
+        zGeometry_ClipPatchNodeView* const node = partitionOutput->nodeDiPairs[i].node;
         if ((node->flags & 0x10000) == 0) {
             continue;
         }
@@ -577,7 +520,7 @@ zDiPartial *__fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
 
     CZClass::gwNodeSetFlag17(child, 1);
 
-    zDiPartial *const displayInstance = zModel_DiPool::AllocFromFreeList();
+    zDiPartial* const displayInstance = zModel_DiPool::AllocFromFreeList();
     if (displayInstance == 0) {
         if (outNode != 0) {
             *outNode = 0;
@@ -600,26 +543,22 @@ namespace zGeometry_ClipPolygon {
  * @recoil-artifact defines .text recoil:function:0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
  * Purpose: Snap clip polygon points to nearby model polygon edges in XY space.
  */
-int __fastcall SnapPointsNearNodeModelXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zGeometry_ClipPatchNodeView *node
-) {
-    zVec3 *linearPoints = 0;
+int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolygon, zGeometry_ClipPatchNodeView* node)
+{
+    zVec3* linearPoints = 0;
     int result = 0;
 
     if (clipPolygon == 0 || node == 0) {
         return 0;
     }
 
-    zModel_DrawBatchBasePartial *polygonSet =
-        (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
+    zModel_DrawBatchBasePartial* polygonSet = (zModel_DrawBatchBasePartial*)((unsigned int)(node->userDataOrDiRef));
     if (polygonSet == 0) {
         return result;
     }
 
     if ((node->flags & 0x200) != 0) {
-        zGeometry_ClipPatchModelNodeBoundsView *modelBounds =
-            (zGeometry_ClipPatchModelNodeBoundsView *)(node);
+        zGeometry_ClipPatchModelNodeBoundsView* modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
 
         if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
             return 0;
@@ -638,7 +577,7 @@ int __fastcall SnapPointsNearNodeModelXY(
         }
     }
 
-    zModel_PolygonPartial *face = polygonSet->faceList;
+    zModel_PolygonPartial* face = polygonSet->faceList;
     for (int i = 0; i < polygonSet->faceCount; ++i) {
         const unsigned int vertexCount = face->vertexCountAndFlags & 0xff;
         if (vertexCount < 3) {
@@ -650,8 +589,7 @@ int __fastcall SnapPointsNearNodeModelXY(
                 vertexCount
             );
         } else {
-            linearPoints =
-                zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
+            linearPoints = zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
             if (linearPoints == 0) {
                 zError::ReportOld(
                     0x400,
@@ -700,10 +638,11 @@ namespace zGeometry_Model {
  */
 int __fastcall ClipPatch(
     int pointCount,
-    zVec3 *points,
-    zDEClient_FeatureGridCell *featureGridCell,
-    zGeometry_ClipPatchOutputPartial *outClipPatchOutput
-) {
+    zVec3* points,
+    zDEClient_FeatureGridCell* featureGridCell,
+    zGeometry_ClipPatchOutputPartial* outClipPatchOutput
+)
+{
     if (featureGridCell == 0 || points == 0) {
         zError::ReportOld(
             0x100,
@@ -716,45 +655,41 @@ int __fastcall ClipPatch(
         return -1;
     }
 
-    zGeometry_ClipPolygonPartial *const clipPolygon =
-        zGeometry_ClipPolygon::CreateFromPointList(pointCount, points);
+    zGeometry_ClipPolygonPartial* const clipPolygon = zGeometry_ClipPolygon::CreateFromPointList(pointCount, points);
     if (clipPolygon == 0) {
         return -1;
     }
 
     const int oldPartitionCount = outClipPatchOutput->partitionCount;
-    outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput *)(realloc(
+    outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput*)(realloc(
         outClipPatchOutput->partitions,
         (size_t)(oldPartitionCount + 1) * sizeof(zGeometry_ClipPatchPartitionOutput)
     ));
     ++outClipPatchOutput->partitionCount;
 
-    zGeometry_ClipPatchPartitionOutput *const partitionOutput =
-        &outClipPatchOutput->partitions[oldPartitionCount];
+    zGeometry_ClipPatchPartitionOutput* const partitionOutput = &outClipPatchOutput->partitions[oldPartitionCount];
     partitionOutput->featureGridCell = featureGridCell;
 
     const int featureGridNodeCount = featureGridCell->nodeCount;
     partitionOutput->nodeDiPairCount = featureGridNodeCount;
-    partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair *)(calloc(
+    partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair*)(calloc(
         (size_t)(featureGridNodeCount),
         sizeof(zGeometry_ClipPatchNodeDiPair)
     ));
 
-    CZNodePartial *const cameraNode = zDEClient::GetCameraNode();
+    CZNodePartial* const cameraNode = zDEClient::GetCameraNode();
     const int candidateCapacity = cameraNode->listCountB + featureGridNodeCount;
-    zGeometry_ClipPatchNodeView **insideNodes = (zGeometry_ClipPatchNodeView **)(malloc(
-        (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)
-    ));
-    zGeometry_ClipPatchNodeView **clipNodes = (zGeometry_ClipPatchNodeView **)(malloc(
-        (size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView *)
-    ));
+    zGeometry_ClipPatchNodeView** insideNodes
+        = (zGeometry_ClipPatchNodeView**)(malloc((size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView*)));
+    zGeometry_ClipPatchNodeView** clipNodes
+        = (zGeometry_ClipPatchNodeView**)(malloc((size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView*)));
 
     int insideNodeCount = 0;
     int clipNodeCount = 0;
 
     {
         for (int nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
-            zGeometry_ClipPatchNodeView *const node = cameraNode->listB[nodeIndex];
+            zGeometry_ClipPatchNodeView* const node = cameraNode->listB[nodeIndex];
             if ((node->flags & 0x04) == 0) {
                 continue;
             }
@@ -773,7 +708,7 @@ int __fastcall ClipPatch(
 
     {
         for (int nodeIndex = 0; nodeIndex < featureGridNodeCount; ++nodeIndex) {
-            zGeometry_ClipPatchNodeView *const node = featureGridCell->nodes[nodeIndex];
+            zGeometry_ClipPatchNodeView* const node = featureGridCell->nodes[nodeIndex];
             if ((node->flags & 0x04) == 0) {
                 continue;
             }
@@ -792,10 +727,7 @@ int __fastcall ClipPatch(
 
     {
         for (int nodeIndex = 0; nodeIndex < clipNodeCount; ++nodeIndex) {
-            if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(
-                    clipPolygon,
-                    clipNodes[nodeIndex]
-                ) != 0) {
+            if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(clipPolygon, clipNodes[nodeIndex]) != 0) {
                 zGeometry_Vec3Array::ComputeBoundsXY(
                     &clipPolygon->bounds,
                     clipPolygon->points,
@@ -805,11 +737,10 @@ int __fastcall ClipPatch(
         }
     }
 
-    clipPolygon->weilerState =
-        zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
+    clipPolygon->weilerState = zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
 
     int result = 1;
-    zGeometry_ClipPatchNodeDiPair *nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
+    zGeometry_ClipPatchNodeDiPair* nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
 
     {
         for (int nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
@@ -845,7 +776,7 @@ int __fastcall ClipPatch(
     if (nodeDiPairCount != 0 && result != 0) {
         if (nodeDiPairCount != featureGridNodeCount) {
             partitionOutput->nodeDiPairCount = nodeDiPairCount;
-            partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair *)(realloc(
+            partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair*)(realloc(
                 partitionOutput->nodeDiPairs,
                 (size_t)(nodeDiPairCount) * sizeof(zGeometry_ClipPatchNodeDiPair)
             ));
@@ -871,10 +802,9 @@ int __fastcall ClipPatch(
             free(outClipPatchOutput->partitions);
             outClipPatchOutput->partitions = 0;
         } else {
-            outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput *)(realloc(
+            outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput*)(realloc(
                 outClipPatchOutput->partitions,
-                (size_t)(outClipPatchOutput->partitionCount) *
-                    sizeof(zGeometry_ClipPatchPartitionOutput)
+                (size_t)(outClipPatchOutput->partitionCount) * sizeof(zGeometry_ClipPatchPartitionOutput)
             ));
         }
 
@@ -903,28 +833,27 @@ namespace zGeometry_ClipPolygon {
  * Purpose: Process a node polygon set against the clip polygon in XY space.
  */
 int __fastcall ProcessNodePolygonSetXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zGeometry_ClipPatchNodeView *node,
-    zDiPartial **outDi
-) {
+    zGeometry_ClipPolygonPartial* clipPolygon,
+    zGeometry_ClipPatchNodeView* node,
+    zDiPartial** outDi
+)
+{
     if (clipPolygon == 0 || node == 0) {
         return 1;
     }
 
-    zModel_DrawBatchBasePartial *const model =
-        (zModel_DrawBatchBasePartial *)((unsigned int)(node->userDataOrDiRef));
+    zModel_DrawBatchBasePartial* const model = (zModel_DrawBatchBasePartial*)((unsigned int)(node->userDataOrDiRef));
     if (model == 0) {
         return 1;
     }
 
     const int flags = node->flags;
     if ((flags & 0x200) != 0) {
-        zGeometry_ClipPatchModelNodeBoundsView *const modelBounds =
-            (zGeometry_ClipPatchModelNodeBoundsView *)(node);
-        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f ||
-            modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f ||
-            clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY ||
-            clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
+        zGeometry_ClipPatchModelNodeBoundsView* const modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
+        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f
+            || modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f
+            || clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY
+            || clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
             return 1;
         }
     }
@@ -949,13 +878,11 @@ namespace zGeometry_Model {
  * @recoil-artifact defines .text recoil:function:0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
  * Purpose: Expand a model polygon's indexed vertices into a linear point buffer.
  */
-zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
-    zModel_DrawBatchBasePartial *model,
-    zModel_PolygonPartial *polygon,
-    zVec3 *points
-) {
+zVec3* __fastcall
+GetLinearBufferOfPolygonVertices(zModel_DrawBatchBasePartial* model, zModel_PolygonPartial* polygon, zVec3* points)
+{
     const unsigned int vertexCount = polygon->vertexCountAndFlags & 0xff;
-    zVec3 *result = (zVec3 *)(realloc(points, vertexCount * sizeof(zVec3)));
+    zVec3* result = (zVec3*)(realloc(points, vertexCount * sizeof(zVec3)));
 
     for (unsigned int i = 0; i < vertexCount; ++i) {
         const int vertexIndex = polygon->vertexIndices[i];
@@ -970,16 +897,14 @@ zVec3 *__fastcall GetLinearBufferOfPolygonVertices(
  * @recoil-artifact defines .text recoil:function:0x46b6d0: zGeometry_Model::ProcessClipPatchNode
  * Purpose: Clip one model node against the active patch polygon and return DI output.
  */
-int __fastcall ProcessClipPatchNode(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zModel_DrawBatchBasePartial *model,
-    zDiPartial **outDi
-) {
+int __fastcall
+ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatchBasePartial* model, zDiPartial** outDi)
+{
     if (model == 0 || clipPolygon == 0) {
         return 1;
     }
 
-    zDiPartial *di = zModel_DiPool::AllocFromFreeList();
+    zDiPartial* di = zModel_DiPool::AllocFromFreeList();
     if (di == 0) {
         return 0;
     }
@@ -988,8 +913,8 @@ int __fastcall ProcessClipPatchNode(
     memset(&clipOutput, 0, sizeof(clipOutput));
     zUtil::StoreInt32(&di->mode, 0);
 
-    zModel_PolygonPartial *polygon = model->faceList;
-    zVec3 *polygonPointsBuffer = 0;
+    zModel_PolygonPartial* polygon = model->faceList;
+    zVec3* polygonPointsBuffer = 0;
     int clipPolygonDirty = 0;
     int clipTouched = 0;
 
@@ -1006,8 +931,7 @@ int __fastcall ProcessClipPatchNode(
             continue;
         }
 
-        polygonPointsBuffer =
-            zGeometry_Model::GetLinearBufferOfPolygonVertices(model, polygon, polygonPointsBuffer);
+        polygonPointsBuffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(model, polygon, polygonPointsBuffer);
         if (polygonPointsBuffer == 0) {
             zError::ReportOld(
                 0x400,
@@ -1052,38 +976,32 @@ int __fastcall ProcessClipPatchNode(
             return 0;
 
         case 2: {
-            zGeometry_PolygonPointSpanPartial *const upsertPolygon =
-                clipOutput.polygonSetA.polygons;
+            zGeometry_PolygonPointSpanPartial* const upsertPolygon = clipOutput.polygonSetA.polygons;
             clipTouched = 1;
             if (zGeometry_ClipPolygon::UpsertPointListXY(
                     clipPolygon,
                     upsertPolygon->pointCount,
-                    (zVec3 *)((float *)(clipOutput.pointList.points) +
-                        upsertPolygon->pointDwordOffset)
-                ) != 0) {
+                    (zVec3*)((float*)(clipOutput.pointList.points) + upsertPolygon->pointDwordOffset)
+                )
+                != 0) {
                 clipPolygonDirty = 1;
             }
 
-            zGeometry_ConvexPolygonSetPartial *const convexSet = zGeometry_Polygon::convexify(
+            zGeometry_ConvexPolygonSetPartial* const convexSet = zGeometry_Polygon::convexify(
                 &clipOutput.polygonSetB,
                 clipOutput.pointList.pointCount,
                 clipOutput.pointList.points
             );
             if (convexSet != 0) {
-                zGeometry_Vec3Array::RotateNeg90AroundX(
-                    convexSet->totalPointCount,
-                    convexSet->points
-                );
+                zGeometry_Vec3Array::RotateNeg90AroundX(convexSet->totalPointCount, convexSet->points);
 
-                zGeometry_PolygonPointSpanPartial *convexPolygon = convexSet->polygons;
-                for (int convexIndex = 0; convexIndex < convexSet->polygonCount;
-                    ++convexIndex, ++convexPolygon) {
+                zGeometry_PolygonPointSpanPartial* convexPolygon = convexSet->polygons;
+                for (int convexIndex = 0; convexIndex < convexSet->polygonCount; ++convexIndex, ++convexPolygon) {
                     if (convexPolygon->pointCount >= 3) {
                         zGeometry_Model::AddPointListPolygonToDi(
                             di,
                             convexPolygon->pointCount,
-                            (zVec3 *)((float *)(convexSet->points) +
-                                convexPolygon->pointDwordOffset),
+                            (zVec3*)((float*)(convexSet->points) + convexPolygon->pointDwordOffset),
                             model,
                             polygon
                         );
@@ -1113,25 +1031,20 @@ int __fastcall ProcessClipPatchNode(
                 return 0;
             }
 
-            zVec3 *inputContourPoints = 0;
-            const int inputContourPointCount = zGeometry_Weiler::GetInputContourAPointList(
-                clipPolygon->weilerState,
-                &inputContourPoints
-            );
+            zVec3* inputContourPoints = 0;
+            const int inputContourPointCount
+                = zGeometry_Weiler::GetInputContourAPointList(clipPolygon->weilerState, &inputContourPoints);
             clipTouched = 1;
 
-            zGeometry_TriangleSoup *triangleSoup = zGeometry::TriangulatePolygonWithHole(
+            zGeometry_TriangleSoup* triangleSoup = zGeometry::TriangulatePolygonWithHole(
                 pointCount,
                 polygonPointsBuffer,
                 inputContourPointCount,
                 inputContourPoints
             );
 
-            if (zGeometry_ClipPolygon::UpsertPointListXY(
-                    clipPolygon,
-                    inputContourPointCount,
-                    inputContourPoints
-                ) != 0) {
+            if (zGeometry_ClipPolygon::UpsertPointListXY(clipPolygon, inputContourPointCount, inputContourPoints)
+                != 0) {
                 clipPolygonDirty = 1;
             }
 
@@ -1144,9 +1057,8 @@ int __fastcall ProcessClipPatchNode(
                 return 0;
             }
 
-            zVec3 *trianglePoints = triangleSoup->triangleVerts;
-            for (int triangleIndex = 0; triangleIndex < triangleSoup->triangleCount;
-                ++triangleIndex) {
+            zVec3* trianglePoints = triangleSoup->triangleVerts;
+            for (int triangleIndex = 0; triangleIndex < triangleSoup->triangleCount; ++triangleIndex) {
                 zGeometry_Vec3Array::EnsurePositiveCrossZ(3, trianglePoints, 1);
                 zGeometry_Vec3Array::RotateNeg90AroundX(3, trianglePoints);
                 zGeometry_Model::AddPointListPolygonToDi(di, 3, trianglePoints, model, polygon);
@@ -1188,12 +1100,13 @@ int __fastcall ProcessClipPatchNode(
  * model polygon when UV basis data is present.
  */
 int __fastcall AddPointListPolygonToDi(
-    zDiPartial *di,
+    zDiPartial* di,
     int pointCount,
-    zVec3 *points,
-    zModel_DrawBatchBasePartial *model,
-    zModel_PolygonPartial *polygon
-) {
+    zVec3* points,
+    zModel_DrawBatchBasePartial* model,
+    zModel_PolygonPartial* polygon
+)
+{
     if (pointCount < 3) {
         zError::ReportOld(
             0x800,
@@ -1205,8 +1118,8 @@ int __fastcall AddPointListPolygonToDi(
         return -1;
     }
 
-    zClipUV *uvPairs = 0;
-    zModel_MaterialPartial *material = 0;
+    zClipUV* uvPairs = 0;
+    zModel_MaterialPartial* material = 0;
     if (polygon->uvBasis != 0) {
         uvPairs = BuildPolygonUvList(pointCount, points, model, polygon);
         material = polygon->material;
@@ -1243,18 +1156,15 @@ int __fastcall AddPointListPolygonToDi(
  * Purpose: expand an indexed model polygon into a temporary point list and
  * submit it to the DI polygon sink with its source material, UVs, and tag.
  */
-int __fastcall AddIndexedPolygonToDi(
-    zDiPartial *di,
-    zModel_DrawBatchBasePartial *model,
-    zModel_PolygonPartial *polygon
-) {
-    zVec3 *polygonPointsBuffer = GetLinearBufferOfPolygonVertices(model, polygon, 0);
+int __fastcall AddIndexedPolygonToDi(zDiPartial* di, zModel_DrawBatchBasePartial* model, zModel_PolygonPartial* polygon)
+{
+    zVec3* polygonPointsBuffer = GetLinearBufferOfPolygonVertices(model, polygon, 0);
     const unsigned int vertexCountAndFlags = polygon->vertexCountAndFlags;
     const int result = zDi::AddPolygon(
         di,
         (int)(vertexCountAndFlags & 0xff),
         polygonPointsBuffer,
-        (zClipUV *)(polygon->uvBasis),
+        (zClipUV*)(polygon->uvBasis),
         0,
         0,
         0,
@@ -1276,11 +1186,9 @@ int __fastcall AddIndexedPolygonToDi(
  * @recoil-artifact defines .text recoil:function:0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
  * Purpose: Test whether every model polygon lies fully inside the clip polygon.
  */
-int __fastcall IsFullyInsideClipPolygonXY(
-    zGeometry_ClipPolygonPartial *clipPolygon,
-    zModel_DrawBatchBasePartial *model
-) {
-    zVec3 *polygonPointsBuffer = 0;
+int __fastcall IsFullyInsideClipPolygonXY(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatchBasePartial* model)
+{
+    zVec3* polygonPointsBuffer = 0;
 
     if (model == 0 || clipPolygon == 0) {
         return 0;
@@ -1289,7 +1197,7 @@ int __fastcall IsFullyInsideClipPolygonXY(
     zGeometry_WeilerClipOutputPartial clipOutput;
     memset(&clipOutput, 0, sizeof(clipOutput));
 
-    zModel_PolygonPartial *face = model->faceList;
+    zModel_PolygonPartial* face = model->faceList;
     {
         for (int polygonIndex = 0; polygonIndex < model->faceCount; ++polygonIndex, ++face) {
             const int pointCount = (int)(face->vertexCountAndFlags & 0xff);
@@ -1304,8 +1212,7 @@ int __fastcall IsFullyInsideClipPolygonXY(
                 continue;
             }
 
-            polygonPointsBuffer =
-                zGeometry_Model::GetLinearBufferOfPolygonVertices(model, face, polygonPointsBuffer);
+            polygonPointsBuffer = zGeometry_Model::GetLinearBufferOfPolygonVertices(model, face, polygonPointsBuffer);
             if (polygonPointsBuffer == 0) {
                 zError::ReportOld(
                     0x400,
@@ -1385,7 +1292,6 @@ int __fastcall IsFullyInsideClipPolygonXY(
 }
 
 } // namespace zGeometry_Model
-
 
 namespace zGeometry_Model {
 

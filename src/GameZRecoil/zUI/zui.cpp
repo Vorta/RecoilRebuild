@@ -2,16 +2,15 @@
 
 #include "GameZRecoil/zHud/zhud_ui.h"
 
-#include "Battlesport/briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
+#include "Battlesport/hud.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
-#include "Battlesport/recoil_state_credits.h"
-#include "Battlesport/hud.h"
 #include "Battlesport/player.h"
+#include "Battlesport/recoil_state_credits.h"
 #include "Battlesport/recoil_state_main_menu_transition.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/zimage.h"
@@ -24,11 +23,12 @@
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
+#include "Battlesport/turret.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "Battlesport/turret.h"
 #include "GameZRecoil/zUtil/zbd.h"
 
 #include <cctype>
@@ -43,15 +43,13 @@
 #include <string.h>
 #include <sys/stat.h>
 
-
 /**
  * Purpose: assign the existing panel and its seven flash-state fields without
  * changing its dynamic type. Retail 0x4bc3a0 uses the panel assignment body;
  * the separate range loop at 0x4bc320 is the provider's std::copy expansion.
  */
-HudUiTransitionTextPanel &HudUiTransitionTextPanel::operator=(
-    const HudUiTransitionTextPanel &source
-) {
+HudUiTransitionTextPanel& HudUiTransitionTextPanel::operator=(const HudUiTransitionTextPanel& source)
+{
     HudUiPanel::operator=(source);
     flashCountdown = source.flashCountdown;
     flashResetValue = source.flashResetValue;
@@ -68,16 +66,16 @@ HudUiTransitionTextPanel &HudUiTransitionTextPanel::operator=(
  * @recoil-artifact defines .text recoil:function:0x4bc410: HudUiTransitionTextPanel::HudUiTransitionTextPanel(const HudUiTransitionTextPanel &).
  * Purpose: copy-construct one composite-panel entry from another entry.
  */
-HudUiTransitionTextPanel::HudUiTransitionTextPanel(
-    const HudUiTransitionTextPanel &source
-) : HudUiPanel(source),
-    flashCountdown(source.flashCountdown),
-    flashResetValue(source.flashResetValue),
-    flashAltColor0(source.flashAltColor0),
-    flashAltColor1(source.flashAltColor1),
-    flashEnabled(source.flashEnabled),
-    flashMode(source.flashMode),
-    flashDirectionSign(source.flashDirectionSign) {
+HudUiTransitionTextPanel::HudUiTransitionTextPanel(const HudUiTransitionTextPanel& source)
+    : HudUiPanel(source)
+    , flashCountdown(source.flashCountdown)
+    , flashResetValue(source.flashResetValue)
+    , flashAltColor0(source.flashAltColor0)
+    , flashAltColor1(source.flashAltColor1)
+    , flashEnabled(source.flashEnabled)
+    , flashMode(source.flashMode)
+    , flashDirectionSign(source.flashDirectionSign)
+{
 }
 
 /**
@@ -91,16 +89,9 @@ HudUiTransitionTextPanel::HudUiTransitionTextPanel(
  * radiusSquared as radius * radius at 0x38, stores color565 at 0x3c, and
  * returns this.
  */
-HudUiCircle::HudUiCircle(
-    int x,
-    int y,
-    int circleRadius,
-    unsigned int circleColor565
-)
-    : HudUiElement(
-        x,
-        y
-    ) {
+HudUiCircle::HudUiCircle(int x, int y, int circleRadius, unsigned int circleColor565)
+    : HudUiElement(x, y)
+{
     radius = circleRadius;
     const unsigned int radiusBits = (unsigned int)(circleRadius);
     radiusSquared = (int)(radiusBits * radiusBits);
@@ -112,7 +103,8 @@ HudUiCircle::HudUiCircle(
  * @recoil-artifact defines .text recoil:function:0x4bc4c0: HudUiCircle::Draw.
  * Purpose: redraw the inherited base and circle outline for a dirty circle element.
  */
-void HudUiCircle::Draw() {
+void HudUiCircle::Draw()
+{
     DrawBase();
     zRndrDrawCircleOutline16Framebuffer(x, y, radius, color565, 0);
 }
@@ -122,10 +114,8 @@ void HudUiCircle::Draw() {
  * @recoil-artifact defines .text recoil:function:0x4bc4e0: HudUiCircle::HitTestCore.
  * Purpose: compare a point's squared distance against the circle radius.
  */
-unsigned char HudUiCircle::HitTestCore(
-    int px,
-    int py
-) {
+unsigned char HudUiCircle::HitTestCore(int px, int py)
+{
     const unsigned int dx = (unsigned int)(px) - (unsigned int)(x);
     const unsigned int dy = (unsigned int)(py) - (unsigned int)(y);
     const unsigned int distanceSquared = dx * dx + dy * dy;
@@ -139,7 +129,9 @@ unsigned char HudUiCircle::HitTestCore(
  *
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundContainer::HudUiBackgroundContainer.
  */
-HudUiBackgroundContainer::HudUiBackgroundContainer(int initFlag) : HudUiContainer() {
+HudUiBackgroundContainer::HudUiBackgroundContainer(int initFlag)
+    : HudUiContainer()
+{
     captureTransitionMask = initFlag;
     inputFocusElement = 0;
 }
@@ -149,17 +141,15 @@ HudUiBackgroundContainer::HudUiBackgroundContainer(int initFlag) : HudUiContaine
  * @recoil-artifact defines .text recoil:function:0x4bc540: HudUiBackgroundContainer::~HudUiBackgroundContainer.
  * Purpose: Restores the background-container base state and tears down the inherited container.
  */
-HudUiBackgroundContainer::~HudUiBackgroundContainer() {
-}
+HudUiBackgroundContainer::~HudUiBackgroundContainer() { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zui.hud-ui-background-container-set-enabled
  * @recoil-artifact defines .text recoil:logical-function:0x42ee40:hud-ui-background-container-set-enabled: HudUiBackgroundContainer::SetEnabled.
  * Purpose: Store whether the background container participates in HUD updates.
  */
-void HudUiBackgroundContainer::SetEnabled(
-    int enabledValue
-) {
+void HudUiBackgroundContainer::SetEnabled(int enabledValue)
+{
     enabled = enabledValue;
 }
 
@@ -168,9 +158,8 @@ void HudUiBackgroundContainer::SetEnabled(
  * @recoil-artifact defines .text recoil:function:0x4bc550: HudUiBackgroundContainer::SetInputFocus.
  * Purpose: Stores the child element that currently owns background input focus.
  */
-void HudUiBackgroundContainer::SetInputFocus(
-    HudUiElement *element
-) {
+void HudUiBackgroundContainer::SetInputFocus(HudUiElement* element)
+{
     inputFocusElement = element;
 }
 
@@ -179,7 +168,8 @@ void HudUiBackgroundContainer::SetInputFocus(
  * @recoil-artifact defines .text recoil:function:0x4bc560: HudUiBackgroundContainer::GetInputFocus.
  * Purpose: Returns the child element that currently owns background input focus.
  */
-HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
+HudUiElement* HudUiBackgroundContainer::GetInputFocus()
+{
     return inputFocusElement;
 }
 
@@ -188,18 +178,17 @@ HudUiElement * HudUiBackgroundContainer::GetInputFocus() {
  * @recoil-artifact defines .text recoil:function:0x4bc570: HudUiBackgroundContainer::UpdateAll.
  * Purpose: Dispatch background mouse input, update child widgets, and move the focus cursor.
  */
-void HudUiBackgroundContainer::UpdateAll(
-    float deltaSeconds
-) {
+void HudUiBackgroundContainer::UpdateAll(float deltaSeconds)
+{
     if (enabled == 0) {
         return;
     }
 
-    HudUiBackground *const background = (HudUiBackground *)this;
+    HudUiBackground* const background = (HudUiBackground*)this;
 
     memcpy(&mouseState, zInput::MouseGetStateSnapshotPtr(), sizeof(mouseState));
 
-    for (HudUiElement *widget = childHead; widget != 0; widget = widget->next) {
+    for (HudUiElement* widget = childHead; widget != 0; widget = widget->next) {
         const int hit = widget->HitTest(mouseState.cursorClientX, mouseState.cursorClientY);
         const int hovered = hit == 1 ? 1 : 0;
 
@@ -217,8 +206,7 @@ void HudUiBackgroundContainer::UpdateAll(
                     widget->OnHoverRepeat();
                 }
 
-                if ((mouseState.button1Transition & captureTransitionMask) != 0 &&
-                    (widget->state & 2) == 0) {
+                if ((mouseState.button1Transition & captureTransitionMask) != 0 && (widget->state & 2) == 0) {
                     widget->state = (unsigned short)(widget->state | 2);
                     widget->OnBeginCapture();
                 }
@@ -232,27 +220,20 @@ void HudUiBackgroundContainer::UpdateAll(
                 }
 
                 if ((mouseState.button1Transition & 3) != 0) {
-                    widget->OnPointerButtonState(
-                        mouseState.cursorClientX,
-                        mouseState.cursorClientY
-                    );
+                    widget->OnPointerButtonState(mouseState.cursorClientX, mouseState.cursorClientY);
                 }
 
                 if ((mouseState.button1Transition & 4) != 0 && (widget->state & 2) == 2) {
                     widget->OnCapturedPrimaryRelease();
                 }
             } else {
-                if ((mouseState.button1Transition & captureTransitionMask) != 0 &&
-                    (widget->state & 2) == 2) {
+                if ((mouseState.button1Transition & captureTransitionMask) != 0 && (widget->state & 2) == 2) {
                     widget->state = (unsigned short)(widget->state & 0xfffd);
                     widget->OnEndCapture();
                 }
 
                 if ((mouseState.button1Transition & 3) != 0 && (widget->state & 2) == 2) {
-                    widget->OnPointerButtonState(
-                        mouseState.cursorClientX,
-                        mouseState.cursorClientY
-                    );
+                    widget->OnPointerButtonState(mouseState.cursorClientX, mouseState.cursorClientY);
                 }
 
                 if ((widget->state & 1) == 1) {
@@ -265,14 +246,14 @@ void HudUiBackgroundContainer::UpdateAll(
         widget->AfterInputUpdate(background, hovered);
     }
 
-    HudUiElement *const focusBeforeUpdate = inputFocusElement;
+    HudUiElement* const focusBeforeUpdate = inputFocusElement;
     if (focusBeforeUpdate != 0) {
         focusBeforeUpdate->DrawBase();
     }
 
     HudUiContainer::UpdateAll(deltaSeconds);
 
-    HudUiElement *const focusAfterUpdate = inputFocusElement;
+    HudUiElement* const focusAfterUpdate = inputFocusElement;
     if (focusAfterUpdate != 0) {
         focusAfterUpdate->SetPos(mouseState.cursorClientX, mouseState.cursorClientY);
         focusAfterUpdate->Update(deltaSeconds);
@@ -284,9 +265,8 @@ void HudUiBackgroundContainer::UpdateAll(
  * @recoil-artifact defines .text recoil:function:0x4bc760: HudUi::SetInvalidateMode.
  * Purpose: apply the recovered HUD state change handled by HudUi::SetInvalidateMode.
  */
-void __fastcall HudUi::SetInvalidateMode(
-    int mode
-) {
+void __fastcall HudUi::SetInvalidateMode(int mode)
+{
     g_HudUi_InvalidateMask = mode != 0 ? 0x0c : 0x04;
 }
 
@@ -297,8 +277,9 @@ void __fastcall HudUi::SetInvalidateMode(
  *
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::HudUiContainer.
  */
-HudUiContainer::HudUiContainer() {
-    HudUiContainer *const container = this;
+HudUiContainer::HudUiContainer()
+{
+    HudUiContainer* const container = this;
     container->SetEnabled(0);
     childHead = 0;
     childTail = 0;
@@ -309,17 +290,15 @@ HudUiContainer::HudUiContainer() {
  * @recoil-artifact defines .text recoil:function:0x4bc7b0: HudUiContainer::~HudUiContainer.
  * Purpose: restore the container vptr during ordinary C++ teardown.
  */
-HudUiContainer::~HudUiContainer() {
-}
+HudUiContainer::~HudUiContainer() { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-addchild
  * @recoil-artifact defines .text recoil:function:0x4bc7c0: HudUiContainer::AddChild.
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::AddChild.
  */
-int HudUiContainer::AddChild(
-    HudUiElement *child
-) {
+int HudUiContainer::AddChild(HudUiElement* child)
+{
     if (childHead != 0 && childTail != 0) {
         childTail->next = child;
         childTail = child;
@@ -341,10 +320,8 @@ int HudUiContainer::AddChild(
  * Purpose: find a child in the container list and optionally report the
  * previous sibling.
  */
-int HudUiContainer::FindChildWithPrev(
-    HudUiElement *child,
-    HudUiElement **previousOut
-) {
+int HudUiContainer::FindChildWithPrev(HudUiElement* child, HudUiElement** previousOut)
+{
     if (childHead == 0) {
         return 0;
     }
@@ -354,8 +331,8 @@ int HudUiContainer::FindChildWithPrev(
         return 1;
     }
 
-    for (HudUiElement *previous = childHead; previous != 0; previous = previous->next) {
-        HudUiElement *const current = previous->next;
+    for (HudUiElement* previous = childHead; previous != 0; previous = previous->next) {
+        HudUiElement* const current = previous->next;
         if (current == child) {
             if (previousOut != 0) {
                 *previousOut = previous;
@@ -374,10 +351,9 @@ int HudUiContainer::FindChildWithPrev(
  * Purpose: unlink a child from this container and clear the child's owner
  * links.
  */
-int HudUiContainer::RemoveChild(
-    HudUiElement *child
-) {
-    HudUiElement *previous = child;
+int HudUiContainer::RemoveChild(HudUiElement* child)
+{
+    HudUiElement* previous = child;
     if (FindChildWithPrev(child, &previous) == 0) {
         return 0;
     }
@@ -410,10 +386,9 @@ int HudUiContainer::RemoveChild(
  * HudUiElement::next, writes childFlags directly when bit 0x10 is clear, and
  * writes childFlags|0x10 when the existing child flags preserve that bit.
  */
-void HudUiContainer::SetChildFlags(
-    unsigned int childFlags
-) {
-    for (HudUiElement *child = childHead; child != 0; child = child->next) {
+void HudUiContainer::SetChildFlags(unsigned int childFlags)
+{
+    for (HudUiElement* child = childHead; child != 0; child = child->next) {
         const unsigned int invertedFlags = ~child->flags;
         if ((invertedFlags & 0x10u) != 0) {
             child->flags = childFlags;
@@ -428,14 +403,13 @@ void HudUiContainer::SetChildFlags(
  * @recoil-artifact defines .text recoil:function:0x4bc900: HudUiContainer::UpdateAll.
  * Purpose: Dispatch per-frame updates to every child in an enabled container.
  */
-void HudUiContainer::UpdateAll(
-    float deltaSeconds
-) {
+void HudUiContainer::UpdateAll(float deltaSeconds)
+{
     if (enabled == 0) {
         return;
     }
 
-    for (HudUiElement *child = childHead; child != 0; child = child->next) {
+    for (HudUiElement* child = childHead; child != 0; child = child->next) {
         child->Update(deltaSeconds);
     }
 }
@@ -451,9 +425,8 @@ void HudUiContainer::UpdateAll(
  * flashRate*0.5 into flashResetValue when flashRate is positive, copies
  * flashResetValue into flashCountdown, and writes flashDirectionSign = 1.
  */
-void HudUiTransitionTextPanel::ResetFlashState(
-    float flashRate
-) {
+void HudUiTransitionTextPanel::ResetFlashState(float flashRate)
+{
     flashEnabled = 1;
     if (flashRate > 0.0f) {
         flashResetValue = flashRate * 0.5f;
@@ -473,9 +446,8 @@ void HudUiTransitionTextPanel::ResetFlashState(
  * Evidence: BN assembly at 0x4bc980 returns when flashMode is 1; otherwise it
  * calls ResetFlashState(flashRate) and stores flashMode = 1.
  */
-void HudUiTransitionTextPanel::SetFlashRate(
-    float flashRate
-) {
+void HudUiTransitionTextPanel::SetFlashRate(float flashRate)
+{
     if (flashMode == 1) {
         return;
     }
@@ -493,10 +465,8 @@ void HudUiTransitionTextPanel::SetFlashRate(
  * calls ResetFlashState, writes flashMode = 2, and stores the same alternate
  * color into both flash color fields.
  */
-void HudUiTransitionTextPanel::SetFlashColorAndRate(
-    unsigned int flashColor,
-    float flashRate
-) {
+void HudUiTransitionTextPanel::SetFlashColorAndRate(unsigned int flashColor, float flashRate)
+{
     if (flashMode == 2) {
         return;
     }
@@ -517,9 +487,8 @@ void HudUiTransitionTextPanel::SetFlashColorAndRate(
  * flashDirectionSign/textDirty, swaps text colors for color-flash modes, and
  * calls HudUiPanel::Draw on visible refresh paths.
  */
-void HudUiTransitionTextPanel::Update(
-    float deltaSeconds
-) {
+void HudUiTransitionTextPanel::Update(float deltaSeconds)
+{
     const unsigned int elementFlags = flags;
     if (((~elementFlags) & 0x10u) == 0) {
         return;
@@ -582,22 +551,16 @@ void HudUiTransitionTextPanel::Update(
  * @recoil-artifact defines .text recoil:function:0x4bcb50: HudUiTextLabel::HudUiTextLabel.
  * Purpose: initialize label text, position, font handle, and alignment state.
  */
-HudUiTextLabel::HudUiTextLabel(
-    const char *text,
-    int initX,
-    int initY,
-    int flags
-) : HudUiElement(
-        0,
-        0
-    ) {
+HudUiTextLabel::HudUiTextLabel(const char* text, int initX, int initY, int flags)
+    : HudUiElement(0, 0)
+{
     centerText = 0;
     SetTextFmt(text);
     x = initX;
     y = initY;
-    ((HudUiElement *)(this))->Invalidate();
+    ((HudUiElement*)(this))->Invalidate();
     fontHandle = flags;
-    ((HudUiElement *)(this))->Invalidate();
+    ((HudUiElement*)(this))->Invalidate();
     alignMode = 0;
 }
 
@@ -607,12 +570,8 @@ HudUiTextLabel::HudUiTextLabel(
  * the 0x4bcb50 address-backed constructor.
  * Purpose: construct a text label in caller-provided storage and return it.
  */
-HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
-    const char *text,
-    int initX,
-    int initY,
-    int flags
-) {
+HudUiTextLabel* HudUiTextLabel::ConstructorWithPosAndFlags(const char* text, int initX, int initY, int flags)
+{
     new (this) HudUiTextLabel(text, initX, initY, flags);
     return this;
 }
@@ -622,9 +581,9 @@ HudUiTextLabel * HudUiTextLabel::ConstructorWithPosAndFlags(
  * @recoil-artifact defines .text recoil:function:0x4bcbe0: HudUiTextLabel::HudUiTextLabel(const HudUiTextLabel &).
  * Purpose: Copy-construct a text label from an existing label, including its text buffer.
  */
-HudUiTextLabel::HudUiTextLabel(
-    const HudUiTextLabel &source
-) : HudUiElement(source) {
+HudUiTextLabel::HudUiTextLabel(const HudUiTextLabel& source)
+    : HudUiElement(source)
+{
     strncpy(textBuffer, source.textBuffer, sizeof(textBuffer));
     fontHandle = source.fontHandle;
     centerText = source.centerText;
@@ -636,15 +595,10 @@ HudUiTextLabel::HudUiTextLabel(
 /**
  * Purpose: Initialize this text label by copying the source label state.
  */
-HudUiTextLabel & HudUiTextLabel::operator=(
-    const HudUiTextLabel &source
-) {
+HudUiTextLabel& HudUiTextLabel::operator=(const HudUiTextLabel& source)
+{
     HudUiElement::operator=(source);
-    strncpy(
-        textBuffer,
-        source.textBuffer,
-        sizeof(textBuffer)
-    );
+    strncpy(textBuffer, source.textBuffer, sizeof(textBuffer));
     fontHandle = source.fontHandle;
     centerText = source.centerText;
     centerBoundsLeft = source.centerBoundsLeft;
@@ -659,10 +613,8 @@ HudUiTextLabel & HudUiTextLabel::operator=(
  * Purpose: format label text, refresh centered extents when needed, and
  * invalidate the element.
  */
-void __cdecl HudUiTextLabel::SetTextFmt(
-    const char *format,
-    ...
-) {
+void __cdecl HudUiTextLabel::SetTextFmt(const char* format, ...)
+{
     if (format == 0) {
         memset(textBuffer, 0, sizeof(textBuffer));
         return;
@@ -688,10 +640,8 @@ void __cdecl HudUiTextLabel::SetTextFmt(
  * Retail constructor 0x4bcb50 installs the table at 0x4d3c70, whose +0x18
  * slot selects this override. Panel and its derived classes inherit it.
  */
-void HudUiTextLabel::SetBltSourceAndClipRect(
-    void *bltSourceOrNull,
-    const HudUiRect *rectOrNull
-) {
+void HudUiTextLabel::SetBltSourceAndClipRect(void* bltSourceOrNull, const HudUiRect* rectOrNull)
+{
     bltSource = bltSourceOrNull;
     if (rectOrNull != 0) {
         clipRect = *rectOrNull;
@@ -705,7 +655,8 @@ void HudUiTextLabel::SetBltSourceAndClipRect(
  * @recoil-artifact defines .text recoil:function:0x4bcd80: HudUiTextLabel::RebuildTextBounds.
  * Purpose: rebuild the clip rectangle from the current formatted text size.
  */
-void HudUiTextLabel::RebuildTextBounds() {
+void HudUiTextLabel::RebuildTextBounds()
+{
     int widthPx;
     int lineAdvance;
     zImage_Font::MeasureString(textBuffer, fontHandle, &widthPx, &lineAdvance);
@@ -718,7 +669,8 @@ void HudUiTextLabel::RebuildTextBounds() {
  * @recoil-artifact defines .text recoil:function:0x4bcdc0: HudUiTextLabel::MeasureTextWidth.
  * Purpose: return the measured pixel width of the current label text.
  */
-int HudUiTextLabel::MeasureTextWidth() {
+int HudUiTextLabel::MeasureTextWidth()
+{
     int widthPx;
     int lineAdvance;
     zImage_Font::MeasureString(textBuffer, fontHandle, &widthPx, &lineAdvance);
@@ -731,7 +683,8 @@ int HudUiTextLabel::MeasureTextWidth() {
  * Purpose: recenter the label inside its stored bounds and refresh clip
  * extents when a blit source is active.
  */
-void HudUiTextLabel::UpdateTextExtents() {
+void HudUiTextLabel::UpdateTextExtents()
+{
     const int widthPx = MeasureTextWidth();
     x = centerBoundsLeft + (centerBoundsRight - widthPx - centerBoundsLeft) / 2;
 
@@ -747,7 +700,8 @@ void HudUiTextLabel::UpdateTextExtents() {
  * @recoil-artifact defines .text recoil:function:0x4bce30: HudUiTextLabel::OnDraw.
  * Purpose: draw non-empty label text with the recovered alignment handling.
  */
-void HudUiTextLabel::Draw() {
+void HudUiTextLabel::Draw()
+{
     DrawBase();
 
     if (textBuffer[0] == '\0') {
@@ -775,10 +729,8 @@ void HudUiTextLabel::Draw() {
  * Purpose: test coordinates against the visible text bounds unless input is
  * disabled.
  */
-int HudUiTextLabel::HitTest(
-    int px,
-    int py
-) {
+int HudUiTextLabel::HitTest(int px, int py)
+{
     if ((flags & 0x10u) != 0 || x > px || y > py) {
         return 0;
     }
@@ -799,10 +751,9 @@ int HudUiTextLabel::HitTest(
  * @recoil-artifact defines .text recoil:function:0x4bcf20: HudUiBar::HudUiBar.
  * Purpose: Constructs the HUD element base, clears bar point storage, and marks the bar dirty.
  */
-HudUiBar::HudUiBar() : HudUiElement(
-    0,
-    0
-) {
+HudUiBar::HudUiBar()
+    : HudUiElement(0, 0)
+{
     drawVertexCount = 0;
     memset(points, 0, sizeof(points));
     Invalidate();
@@ -816,11 +767,8 @@ HudUiBar::HudUiBar() : HudUiElement(
  * SetPos for point zero, and always invalidates the element.
  * Purpose: Update one bar point and keep the element position/count state dirty.
  */
-void HudUiBar::SetPointXY(
-    int pointIndex,
-    float x,
-    float y
-) {
+void HudUiBar::SetPointXY(int pointIndex, float x, float y)
+{
     if (pointIndex >= 0 && pointIndex < 21) {
         points[pointIndex].x = x;
         points[pointIndex].y = y;
@@ -845,10 +793,11 @@ void HudUiBar::SetPointXY(
  * only when at least one vertex is active.
  * Purpose: Draw the bar base and rasterize the populated point list.
  */
-void HudUiBar::Draw() {
+void HudUiBar::Draw()
+{
     DrawBase();
     if (drawVertexCount != 0) {
-        zRndrRasterizePoly((zVec3 *)(points), drawVertexCount, drawParam);
+        zRndrRasterizePoly((zVec3*)(points), drawVertexCount, drawParam);
     }
 }
 
@@ -859,10 +808,11 @@ void HudUiBar::Draw() {
  * Retail constructs the container and panel array in this body, before the
  * derived table write and row loop; there is no second constructor wrapper.
  */
-HudUiTopMessageStack::HudUiTopMessageStack() {
-    HudUiPanel *panel = lines;
+HudUiTopMessageStack::HudUiTopMessageStack()
+{
+    HudUiPanel* panel = lines;
     for (int y = 0x1e; y < 0x66; y += 0x12, ++panel) {
-        HudUiElement *const element = (HudUiElement *)(panel);
+        HudUiElement* const element = (HudUiElement*)(panel);
         AddChild(element);
         panel->SetFont(g_HudFontName_Arial, 0x0d, 0x258, 7, 0, 0, 2);
         panel->shadowOffsetX = -1;
@@ -879,14 +829,10 @@ HudUiTopMessageStack::HudUiTopMessageStack() {
  * @recoil-artifact defines .text recoil:function:0x4bd110: HudUiTextStack4::SetFontAll.
  * Purpose: apply one font definition to every row in the four-line stack.
  */
-void HudUiTextStack4::SetFontAll(
-    const char *faceName,
-    int height,
-    int weight,
-    int width
-) {
+void HudUiTextStack4::SetFontAll(const char* faceName, int height, int weight, int width)
+{
     for (int index = 3; index >= 0; --index) {
-        HudUiPanel *const panel = &lines[index];
+        HudUiPanel* const panel = &lines[index];
         panel->SetFont(faceName, height, weight, width, 0, 0, 2);
     }
 }
@@ -896,33 +842,30 @@ void HudUiTextStack4::SetFontAll(
  * @recoil-artifact defines .text recoil:function:0x4bd160: HudUiTextStack4::PushLine.
  * Purpose: push a visible timed message into the four-row text stack.
  */
-HudUiPanel * HudUiTextStack4::PushLine(
-    const char *message,
-    float duration
-) {
+HudUiPanel* HudUiTextStack4::PushLine(const char* message, float duration)
+{
     SetEnabled(1);
 
-    if (((~((HudUiElement *)(&lines[0]))->flags) & 0x10u) != 0 &&
-        strcmp(message, lines[0].GetLastTextPtr()) != 0) {
-        for (HudUiPanel *source = &lines[2]; source >= &lines[0]; --source) {
-            HudUiPanel *const dest = source + 1;
-            HudUiElement *const sourceElement = (HudUiElement *)(source);
+    if (((~((HudUiElement*)(&lines[0]))->flags) & 0x10u) != 0 && strcmp(message, lines[0].GetLastTextPtr()) != 0) {
+        for (HudUiPanel* source = &lines[2]; source >= &lines[0]; --source) {
+            HudUiPanel* const dest = source + 1;
+            HudUiElement* const sourceElement = (HudUiElement*)(source);
 
             if (((~sourceElement->flags) & 0x10u) != 0) {
                 source->SetVisible(0);
-                ((HudUiElement *)(dest))->SetTimer(((HudUiElement *)(source))->timer);
+                ((HudUiElement*)(dest))->SetTimer(((HudUiElement*)(source))->timer);
                 dest->SetTextFmt(source->GetLastTextPtr());
                 dest->textColor0 = source->textColor0;
                 dest->textColor1 = source->textColor1;
                 dest->textDirty = 1;
-                ((HudUiElement *)(dest))->SetVisible(1);
+                ((HudUiElement*)(dest))->SetVisible(1);
             }
         }
     }
 
-    ((HudUiElement *)(&lines[0]))->SetTimer(duration);
+    ((HudUiElement*)(&lines[0]))->SetTimer(duration);
     lines[0].SetTextFmt("%s", message);
-    ((HudUiElement *)(&lines[0]))->SetVisible(1);
+    ((HudUiElement*)(&lines[0]))->SetVisible(1);
     return &lines[0];
 }
 
@@ -932,10 +875,8 @@ namespace HudUi {
  * @recoil-artifact defines .text recoil:function:0x4bd280: HudUi::PushTopMessageLine.
  * Purpose: push a message directly into the global top-message stack.
  */
-void __fastcall PushTopMessageLine(
-    const char *message,
-    float duration
-) {
+void __fastcall PushTopMessageLine(const char* message, float duration)
+{
     g_HudUiTopMessageStack->PushLine(message, duration);
 }
 } // namespace HudUi
@@ -945,9 +886,10 @@ void __fastcall PushTopMessageLine(
  * @recoil-artifact defines .text recoil:function:0x4bd2a0: HudUiTextStack4::Clear.
  * Purpose: clear text and hide every row in the four-line stack.
  */
-void HudUiTextStack4::Clear() {
+void HudUiTextStack4::Clear()
+{
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = &lines[index];
+        HudUiPanel* const panel = &lines[index];
         panel->SetTextFmt("");
         panel->SetVisible(0);
     }
@@ -960,10 +902,11 @@ void HudUiTextStack4::Clear() {
  * As in the top-message constructor, VC5 owns base/member construction and
  * exception cleanup; the row configuration belongs to this constructor body.
  */
-HudUiChatMessageStack::HudUiChatMessageStack() {
-    HudUiPanel *panel = lines;
+HudUiChatMessageStack::HudUiChatMessageStack()
+{
+    HudUiPanel* panel = lines;
     for (int y = 0x159; y > 0x111; y -= 0x12, ++panel) {
-        HudUiElement *const element = (HudUiElement *)(panel);
+        HudUiElement* const element = (HudUiElement*)(panel);
         AddChild(element);
         panel->textColor0 = 0x00996a00;
         panel->textColor1 = 0x0095c7ff;
@@ -985,9 +928,9 @@ HudUiChatMessageStack::HudUiChatMessageStack() {
  *
  * Purpose: assign both text colors to every row in the four-line stack.
  */
-void HudUiTextStack4::SetTextColors( unsigned int color0, unsigned int color1
-) {
-    for (HudUiPanel *panel = &lines[3]; panel >= lines; --panel) {
+void HudUiTextStack4::SetTextColors(unsigned int color0, unsigned int color1)
+{
+    for (HudUiPanel* panel = &lines[3]; panel >= lines; --panel) {
         panel->textColor0 = color0;
         panel->textColor1 = color1;
         panel->textDirty = 1;
@@ -999,11 +942,10 @@ void HudUiTextStack4::SetTextColors( unsigned int color0, unsigned int color1
  * @recoil-artifact defines .text recoil:function:0x4bd410: HudUiTextStack4::SetXAll.
  * Purpose: move every row in the four-line stack to a shared x position.
  */
-void HudUiTextStack4::SetXAll(
-    int newX
-) {
+void HudUiTextStack4::SetXAll(int newX)
+{
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = &lines[index];
+        HudUiPanel* const panel = &lines[index];
         panel->SetX(newX);
     }
 }
@@ -1013,12 +955,11 @@ void HudUiTextStack4::SetXAll(
  * @recoil-artifact defines .text recoil:function:0x4bd440: HudUiTextStack4::SetYDescending.
  * Purpose: place every row in the four-line stack at descending y positions.
  */
-void HudUiTextStack4::SetYDescending(
-    int yStart
-) {
+void HudUiTextStack4::SetYDescending(int yStart)
+{
     int y = yStart;
     for (int index = 0; index < 4; ++index) {
-        HudUiPanel *const panel = &lines[index];
+        HudUiPanel* const panel = &lines[index];
         panel->SetY(y);
         y -= 0x12;
     }
@@ -1031,9 +972,10 @@ void HudUiTextStack4::SetYDescending(
  *
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RemoveFromActiveList.
  */
-void zTimedTask::RemoveFromActiveList() {
-    zTimedTask *node = g_zTimedTask_ActiveHead;
-    zTimedTask *previous = 0;
+void zTimedTask::RemoveFromActiveList()
+{
+    zTimedTask* node = g_zTimedTask_ActiveHead;
+    zTimedTask* previous = 0;
     while (node != 0) {
         if (this == node) {
             if (previous == 0) {
@@ -1060,30 +1002,21 @@ void zTimedTask::RemoveFromActiveList() {
  * @recoil-artifact defines .text recoil:function:0x4bd4d0: zTimedTask::RunImmediateAction.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RunImmediateAction.
  */
-void zTimedTask::RunImmediateAction() {
+void zTimedTask::RunImmediateAction()
+{
     switch (kind) {
     case 4: {
-        const char *text = (const char *)(&actionArg2) + 2;
+        const char* text = (const char*)(&actionArg2) + 2;
         if (*text != '\0') {
-            zImage_Font::BlitStringToActiveTarget(
-                text,
-                (short)(actionArg0),
-                (short)(actionArg1),
-                (short)(actionArg2)
-            );
+            zImage_Font::BlitStringToActiveTarget(text, (short)(actionArg0), (short)(actionArg1), (short)(actionArg2));
         }
         break;
     }
 
     case 5: {
-        const char *text = (const char *)(actionArg3);
+        const char* text = (const char*)(actionArg3);
         if (text != 0 && *text != '\0') {
-            zImage_Font::BlitStringToActiveTarget(
-                text,
-                (short)(actionArg0),
-                (short)(actionArg1),
-                (short)(actionArg2)
-            );
+            zImage_Font::BlitStringToActiveTarget(text, (short)(actionArg0), (short)(actionArg1), (short)(actionArg2));
         }
         break;
     }
@@ -1091,17 +1024,17 @@ void zTimedTask::RunImmediateAction() {
     case 1:
         if (actionArg2 != 0) {
             zVid_Image::BlitToActiveTarget(
-                (zVidImagePartial *)(actionArg2),
+                (zVidImagePartial*)(actionArg2),
                 actionArg0,
                 actionArg1,
                 (unsigned short)(actionArg3),
-                (zVidRect32 *)(actionArg4)
+                (zVidRect32*)(actionArg4)
             );
         }
         break;
 
     case 3:
-        zRndrRasterizePoly((zVec3 *)(&actionArg0), rasterVertexCount, rasterDrawParam);
+        zRndrRasterizePoly((zVec3*)(&actionArg0), rasterVertexCount, rasterDrawParam);
         break;
 
     case 2:
@@ -1118,19 +1051,8 @@ void zTimedTask::RunImmediateAction() {
         point1.x = (float)(actionArg2);
         point1.y = (float)(actionArg3);
 
-        if (HudLineClip::ClipSegmentToCurrentBounds(
-                &point0,
-                &point1,
-                &point0Clipped,
-                &point1Clipped
-            ) != 0) {
-            zRndrDrawImmediateLine(
-                (int)(point0.x),
-                (int)(point0.y),
-                (int)(point1.x),
-                (int)(point1.y),
-                actionArg4
-            );
+        if (HudLineClip::ClipSegmentToCurrentBounds(&point0, &point1, &point0Clipped, &point1Clipped) != 0) {
+            zRndrDrawImmediateLine((int)(point0.x), (int)(point0.y), (int)(point1.x), (int)(point1.y), actionArg4);
         }
         break;
     }
@@ -1141,9 +1063,9 @@ void zTimedTask::RunImmediateAction() {
 
     case 8:
         zRndrDrawClippedImmediateLineStrip(
-            (const zRndr_LinePoint2I *)(&actionArg0),
+            (const zRndr_LinePoint2I*)(&actionArg0),
             alphaPointCount - 1,
-            (void *)(alpha255),
+            (void*)(alpha255),
             alphaVariantIndex
         );
         break;
@@ -1158,8 +1080,9 @@ void zTimedTask::RunImmediateAction() {
  * @recoil-artifact defines .text recoil:function:0x4bd660: zTimedTask::TickActiveList.
  * Purpose: preserve the recovered HUD behavior for zTimedTask::TickActiveList.
  */
-void __cdecl zTimedTask::TickActiveList() {
-    zTimedTask *task = g_zTimedTask_ActiveHead;
+void __cdecl zTimedTask::TickActiveList()
+{
+    zTimedTask* task = g_zTimedTask_ActiveHead;
     while (task != 0) {
         if ((task->flags & 0x02) == 0) {
             task->RunImmediateAction();
@@ -1188,9 +1111,8 @@ void __cdecl zTimedTask::TickActiveList() {
  * @recoil-artifact defines .text recoil:function:0x4bd6f0: HudLineClip::SetCurrentBoundsFromRectI
  * Purpose: Copy integer rectangle edges into the current float clip bounds.
  */
-void __fastcall HudLineClip::SetCurrentBoundsFromRectI(
-    const HudRectI *rect
-) {
+void __fastcall HudLineClip::SetCurrentBoundsFromRectI(const HudRectI* rect)
+{
     g_HudLineClip_CurrentLeft = (float)(rect->left);
     g_HudLineClip_CurrentTop = (float)(rect->top);
     g_HudLineClip_CurrentRight = (float)(rect->right);
@@ -1207,10 +1129,8 @@ namespace zMath {
  * Data: reads g_zMath_ClipZLowerBound at 0x4e4880 and
  * g_zMath_ClipZUpperBound at 0x4e4890.
  */
-int __fastcall ClipLineSegmentToZRange(
-    zVec3 *pointA,
-    zVec3 *pointB
-) {
+int __fastcall ClipLineSegmentToZRange(zVec3* pointA, zVec3* pointB)
+{
     if (pointA->z > g_zMath_ClipZUpperBound && pointB->z > g_zMath_ClipZUpperBound) {
         return 0;
     }
@@ -1243,11 +1163,8 @@ int __fastcall ClipLineSegmentToZRange(
  * interpolating toward the other endpoint.
  * Data: writes only the caller-supplied endpoint and reads no authored globals.
  */
-void __fastcall ClipLineSegmentPointToZ(
-    zVec3 *pointToClip,
-    const zVec3 *otherPoint,
-    float clipZ
-) {
+void __fastcall ClipLineSegmentPointToZ(zVec3* pointToClip, const zVec3* otherPoint, float clipZ)
+{
     const float t = (clipZ - pointToClip->z) / (otherPoint->z - pointToClip->z);
 
     pointToClip->x = (otherPoint->x - pointToClip->x) * t + pointToClip->x;
@@ -1263,11 +1180,12 @@ void __fastcall ClipLineSegmentPointToZ(
  * Purpose: Clip a segment against the current X bounds, then the current Y bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
-    zVec3 *point0,
-    zVec3 *point1,
-    int *point0Clipped,
-    int *point1Clipped
-) {
+    zVec3* point0,
+    zVec3* point1,
+    int* point0Clipped,
+    int* point1Clipped
+)
+{
     const int result = ClipSegmentToCurrentXBounds(point0, point1, point0Clipped, point1Clipped);
     if (result == 0) {
         return 0;
@@ -1282,11 +1200,12 @@ int __fastcall HudLineClip::ClipSegmentToCurrentBounds(
  * Purpose: Reject or clamp a segment against the current left and right bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
-    zVec3 *point0,
-    zVec3 *point1,
-    int *point0Clipped,
-    int *point1Clipped
-) {
+    zVec3* point0,
+    zVec3* point1,
+    int* point0Clipped,
+    int* point1Clipped
+)
+{
     if (point0->x > g_HudLineClip_CurrentRight && point1->x > g_HudLineClip_CurrentRight) {
         *point0Clipped = 1;
         *point1Clipped = 1;
@@ -1324,11 +1243,10 @@ int __fastcall HudLineClip::ClipSegmentToCurrentXBounds(
  *
  * Purpose: Move one segment endpoint to an X clipping plane and interpolate Y.
  */
-void __fastcall HudLineClip::ClipEndpointToX( zVec3 *endpoint, const zVec3 *otherEndpoint,
-    float clipX
-) {
-    const float clippedY = (otherEndpoint->y - endpoint->y) * (clipX - endpoint->x) /
-        (otherEndpoint->x - endpoint->x) + endpoint->y;
+void __fastcall HudLineClip::ClipEndpointToX(zVec3* endpoint, const zVec3* otherEndpoint, float clipX)
+{
+    const float clippedY
+        = (otherEndpoint->y - endpoint->y) * (clipX - endpoint->x) / (otherEndpoint->x - endpoint->x) + endpoint->y;
     endpoint->x = clipX;
     endpoint->y = clippedY;
 }
@@ -1339,11 +1257,12 @@ void __fastcall HudLineClip::ClipEndpointToX( zVec3 *endpoint, const zVec3 *othe
  * Purpose: Reject or clamp a segment against the current top and bottom bounds.
  */
 int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
-    zVec3 *point0,
-    zVec3 *point1,
-    int *point0Clipped,
-    int *point1Clipped
-) {
+    zVec3* point0,
+    zVec3* point1,
+    int* point0Clipped,
+    int* point1Clipped
+)
+{
     if (point0->y > g_HudLineClip_CurrentBottom && point1->y > g_HudLineClip_CurrentBottom) {
         *point0Clipped = 1;
         *point1Clipped = 1;
@@ -1381,11 +1300,10 @@ int __fastcall HudLineClip::ClipSegmentToCurrentYBounds(
  *
  * Purpose: Move one segment endpoint to a Y clipping plane and interpolate X.
  */
-void __fastcall HudLineClip::ClipEndpointToY( zVec3 *endpoint, const zVec3 *otherEndpoint,
-    float clipY
-) {
-    const float clippedX = (otherEndpoint->x - endpoint->x) * (clipY - endpoint->y) /
-        (otherEndpoint->y - endpoint->y) + endpoint->x;
+void __fastcall HudLineClip::ClipEndpointToY(zVec3* endpoint, const zVec3* otherEndpoint, float clipY)
+{
+    const float clippedX
+        = (otherEndpoint->x - endpoint->x) * (clipY - endpoint->y) / (otherEndpoint->y - endpoint->y) + endpoint->x;
     endpoint->y = clipY;
     endpoint->x = clippedX;
 }
@@ -1397,8 +1315,9 @@ void __fastcall HudLineClip::ClipEndpointToY( zVec3 *endpoint, const zVec3 *othe
  * element-specific pass callback once for each configured input rectangle.
  * Purpose: provide the recovered zVideoFxPass3Element::Draw behavior.
  */
-void zVideoFxPass3Element::Draw() {
-    zVideoFxPass3Config *const parentConfig = (zVideoFxPass3Config *)(parent);
+void zVideoFxPass3Element::Draw()
+{
+    zVideoFxPass3Config* const parentConfig = (zVideoFxPass3Config*)(parent);
     DrawBase();
 
     if (parentConfig != 0) {
@@ -1413,7 +1332,7 @@ void zVideoFxPass3Element::Draw() {
 
         int index;
         for (index = 0; index < 2; ++index) {
-            HudUiRect *const inputRect = parentConfig->inputRectsOrNull[index];
+            HudUiRect* const inputRect = parentConfig->inputRectsOrNull[index];
             if (inputRect != 0) {
                 clipRectOrNull = inputRect;
                 ApplyPass3();
@@ -1433,8 +1352,9 @@ void zVideoFxPass3Element::Draw() {
  * using the root element's recovered color and alpha.
  * Purpose: provide the recovered zVideoFxPass3RootElement::ApplyPass3 behavior.
  */
-void zVideoFxPass3RootElement::ApplyPass3() {
-    zRndrOverlayRectSubmit((unsigned int)(packedColor16), (zVidRect32 *)(clipRectOrNull), alpha);
+void zVideoFxPass3RootElement::ApplyPass3()
+{
+    zRndrOverlayRectSubmit((unsigned int)(packedColor16), (zVidRect32*)(clipRectOrNull), alpha);
 }
 
 /**
@@ -1443,10 +1363,9 @@ void zVideoFxPass3RootElement::ApplyPass3() {
  * Constructs the pass-3 slot element and clears the input clip consumed by
  * Purpose: provide the recovered zVideoFxPass3Slot constructor behavior.
  */
-zVideoFxPass3Slot::zVideoFxPass3Slot() : zVideoFxPass3Element(
-    0,
-    0
-) {
+zVideoFxPass3Slot::zVideoFxPass3Slot()
+    : zVideoFxPass3Element(0, 0)
+{
 }
 
 /**
@@ -1462,7 +1381,8 @@ void zVideoFxPass3Slot::SetRectAndPayload(
     int extentPixels,
     float sinFreqValue,
     float sinPhaseValue
-) {
+)
+{
     SetPos(rectLeftPixels, rectTopPixels);
 
     currentRadius = currentRadiusPixels;
@@ -1479,7 +1399,8 @@ void zVideoFxPass3Slot::SetRectAndPayload(
  * active input clip to the shared pass-3 radial warp routine.
  * Purpose: provide the recovered zVideoFxPass3Slot::ApplyPass3 behavior.
  */
-void zVideoFxPass3Slot::ApplyPass3() {
+void zVideoFxPass3Slot::ApplyPass3()
+{
     zVideo::FxPass3ApplyToCurrentSurface(
         x,
         y,
@@ -1488,7 +1409,7 @@ void zVideoFxPass3Slot::ApplyPass3() {
         extent,
         sinFreq,
         sinPhase,
-        (zVidRect32 *)(clipRectOrNull)
+        (zVidRect32*)(clipRectOrNull)
     );
 }
 
@@ -1496,17 +1417,15 @@ namespace {
 const int kHudWeatherFxRainSlantDelta = 1;
 const int kHudWeatherFxSnowTextureWidth = 16;
 const int kHudWeatherFxSnowTextureHeight = 8;
-const int kHudWeatherFxSnowTextureTexels =
-    kHudWeatherFxSnowTextureWidth * kHudWeatherFxSnowTextureHeight;
+const int kHudWeatherFxSnowTextureTexels = kHudWeatherFxSnowTextureWidth * kHudWeatherFxSnowTextureHeight;
 
 /**
  * Original inline helper; no standalone retail function exists.
  * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update and 0x4be880 HudWeatherFxRain::Update.
  * Purpose: Compute a weather particle velocity vector's squared length before normalization.
  */
-inline float HudWeatherFxVec3LengthSq(
-    const zVec3 *value
-) {
+inline float HudWeatherFxVec3LengthSq(const zVec3* value)
+{
     return value->x * value->x + value->y * value->y + value->z * value->z;
 }
 
@@ -1515,9 +1434,8 @@ inline float HudWeatherFxVec3LengthSq(
  * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update.
  * Purpose: Decide whether a snow particle left the visible weather cone and must respawn.
  */
-inline int HudWeatherFxSnowNeedsReset(
-    const zVec3 *position
-) {
+inline int HudWeatherFxSnowNeedsReset(const zVec3* position)
+{
     const float absZ = (float)(fabs(position->z));
     if ((float)(fabs(position->y)) > absZ) {
         return 1;
@@ -1545,23 +1463,13 @@ enum zVideoRendererBackend {
  * @recoil-artifact defines .data recoil:data:0x56bf48: g_HudWeatherFxSnow_LastCameraTarget.
  * Purpose: Retain the previous snow camera target coordinates for frame-to-frame drift.
  */
-HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = {
-    0.0f,
-    0.0f,
-    0.0f,
-    0.0f
-};
+HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-g-hudweatherfxrain-lastcameratarget
  * @recoil-artifact defines .data recoil:data:0x56bf58: g_HudWeatherFxRain_LastCameraTarget.
  * Purpose: Retain the previous rain camera target coordinates for frame-to-frame drift.
  */
-HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = {
-    0.0f,
-    0.0f,
-    0.0f,
-    0.0f
-};
+HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-f-0x56bf68
  * @recoil-artifact defines .data recoil:data:0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
@@ -1581,16 +1489,13 @@ float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
  * Purpose: Initialize the base weather particle emitter, allocate particle buffers, reset
  * particles, and create the hardware SnowFX texture resources when needed.
  */
-HudWeatherFx::HudWeatherFx(
-    int newParticleCount
-) {
+HudWeatherFx::HudWeatherFx(int newParticleCount)
+{
     HudUiElement::Constructor(0, 0);
     clipRectOrNull = 0;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
-    particleQuads = (HudWeatherFxParticleQuad *)(::operator new(
-        sizeof(HudWeatherFxParticleQuad) * newParticleCount
-    ));
+    particleQuads = (HudWeatherFxParticleQuad*)(::operator new(sizeof(HudWeatherFxParticleQuad) * newParticleCount));
 
     for (int index = 0; index < newParticleCount; ++index) {
         particleQuads[index].x = -1;
@@ -1608,8 +1513,8 @@ HudWeatherFx::HudWeatherFx(
     destBufferIndex = 1;
 
     const unsigned int positionBytes = sizeof(zVec3) * newParticleCount;
-    particlePositions[sourceBufferIndex] = (zVec3 *)(::operator new(positionBytes));
-    particlePositions[destBufferIndex] = (zVec3 *)(::operator new(positionBytes));
+    particlePositions[sourceBufferIndex] = (zVec3*)(::operator new(positionBytes));
+    particlePositions[destBufferIndex] = (zVec3*)(::operator new(positionBytes));
 
     for (int resetIndex = 0; resetIndex < newParticleCount; ++resetIndex) {
         ResetParticleSlot(resetIndex, 1);
@@ -1629,17 +1534,11 @@ HudWeatherFx::HudWeatherFx(
         textureName = "SnowFX";
         softwareImage = zVid_Image::Create();
         zVid_Image::SetFormatCode(softwareImage, 0x0b);
-        char *const alphaMap =
-            (char *)(malloc(kHudWeatherFxSnowTextureTexels));
-        void *const surfacePixels =
-            malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
+        char* const alphaMap = (char*)(malloc(kHudWeatherFxSnowTextureTexels));
+        void* const surfacePixels = malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
         zVidImageSetPixels(softwareImage, surfacePixels, alphaMap);
         softwareImage->formatFlagsPacked |= 0x20;
-        zVid_Image::SetSize(
-            softwareImage,
-            kHudWeatherFxSnowTextureWidth,
-            kHudWeatherFxSnowTextureHeight
-        );
+        zVid_Image::SetSize(softwareImage, kHudWeatherFxSnowTextureWidth, kHudWeatherFxSnowTextureHeight);
         textureRecord = g_zVideo_pfnCreateTextureRecord(
             textureName,
             softwareImage,
@@ -1648,7 +1547,6 @@ HudWeatherFx::HudWeatherFx(
             1
         );
     }
-
 }
 
 /**
@@ -1656,7 +1554,8 @@ HudWeatherFx::HudWeatherFx(
  * @recoil-artifact defines .text recoil:function:0x4bde40: HudWeatherFx::~HudWeatherFx.
  * Purpose: Release particle buffers and renderer-backed weather texture resources.
  */
-HudWeatherFx::~HudWeatherFx() {
+HudWeatherFx::~HudWeatherFx()
+{
     if (particleQuads != 0) {
         ::operator delete(particleQuads);
     }
@@ -1676,7 +1575,6 @@ HudWeatherFx::~HudWeatherFx() {
             softwareImage = 0;
         }
     }
-
 }
 
 /**
@@ -1686,12 +1584,10 @@ HudWeatherFx::~HudWeatherFx() {
  * @recoil-artifact defines .text recoil:function:0x4bdee0: HudWeatherFx::ResetParticleSlot.
  * Purpose: Respawn one particle in the weather cone and copy it into the destination buffer.
  */
-void HudWeatherFx::ResetParticleSlot(
-    int particleIndex,
-    int
-) {
-    zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-    zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
+void HudWeatherFx::ResetParticleSlot(int particleIndex, int)
+{
+    zVec3* const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
+    zVec3* const destPosition = &particlePositions[destBufferIndex][particleIndex];
 
     sourcePosition->z = 0.5f - (float)(rand()) * -0.0000152592547f;
 
@@ -1716,90 +1612,90 @@ void HudWeatherFx::ResetParticleSlot(
  * Purpose: Draw software weather lines or submit hardware textured weather quads
  * through the pass-3 HUD element callback.
  */
-void HudWeatherFx::ApplyPass3() {
+void HudWeatherFx::ApplyPass3()
+{
     if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
-    const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
-    if (swSurfaceWasLocked != 0) {
-        zVideo::DispatchUnlockSwSurfaceState();
-    }
-
-    unsigned short *surfacePixels = (unsigned short *)(softwareImage->pixels);
-    if (*surfacePixels != packedColor16) {
-        char *surfaceAlphaMap = softwareImage->alphaMap;
-        int alphaValue = 0;
-        while (alphaValue < 4080) {
-            *surfacePixels = packedColor16;
-            ++surfacePixels;
-            *surfaceAlphaMap = (char)(alphaValue >> 4);
-            ++surfaceAlphaMap;
-            alphaValue += 255;
-        }
-    }
-
-    g_zVideo_pfnTextureRecordFinalizeUpload(textureRecord, 0, softwareImage);
-    zVideoD3D::SceneEnter();
-
-    for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        HudWeatherFxParticleQuad *particleQuad = &particleQuads[particleIndex];
-        float xSlant = 0.0f;
-        float ySlant = 0.0f;
-        if (particleQuad->width > particleQuad->height) {
-            xSlant = (float)(particleQuad->slantOffset);
-        } else {
-            ySlant = (float)(particleQuad->slantOffset);
+        const int swSurfaceWasLocked = zVideo::GetSwSurfaceLockedFlag();
+        if (swSurfaceWasLocked != 0) {
+            zVideo::DispatchUnlockSwSurfaceState();
         }
 
-        const float depth = particlePositions[sourceBufferIndex][particleIndex].z;
-        zVideo_XyzVertex clipVerts[4];
-        zVideo_TexCoord texCoords[4];
-        clipVerts[0].x = (float)(particleQuad->x);
-        clipVerts[0].y = (float)(particleQuad->y);
-        clipVerts[0].z = depth;
-        texCoords[0].u = particleQuad->texCoordUStart;
-        texCoords[0].v = 0.0f;
-
-        clipVerts[1].x = (float)(particleQuad->x) + xSlant;
-        clipVerts[1].y = (float)(particleQuad->y) + ySlant;
-        clipVerts[1].z = depth;
-        texCoords[1].u = particleQuad->texCoordUStart;
-        texCoords[1].v = 0.0f;
-
-        clipVerts[2].x = (float)(particleQuad->x + particleQuad->width) + xSlant;
-        clipVerts[2].y = (float)(particleQuad->y + particleQuad->height) + ySlant;
-        clipVerts[2].z = depth;
-        texCoords[2].u = particleQuad->texCoordUEnd;
-        texCoords[2].v = 0.0f;
-
-        clipVerts[3].x = (float)(particleQuad->x + particleQuad->width);
-        clipVerts[3].y = (float)(particleQuad->y + particleQuad->height);
-        clipVerts[3].z = depth;
-        texCoords[3].u = particleQuad->texCoordUEnd;
-        texCoords[3].v = 0.0f;
-
-        if (((HudWeatherFxPointBatch *)(clipVerts))
-                ->ArePointBatchInsideRect(4, clipRectOrNull) != 0) {
-            g_zVideo_pfnSubmitPolyRenderClass(
-                clipVerts,
-                texCoords,
-                4,
-                (zVideo_RenderClass *)(textureRecord),
-                1,
-                1.0f,
-                0
-            );
+        unsigned short* surfacePixels = (unsigned short*)(softwareImage->pixels);
+        if (*surfacePixels != packedColor16) {
+            char* surfaceAlphaMap = softwareImage->alphaMap;
+            int alphaValue = 0;
+            while (alphaValue < 4080) {
+                *surfacePixels = packedColor16;
+                ++surfacePixels;
+                *surfaceAlphaMap = (char)(alphaValue >> 4);
+                ++surfaceAlphaMap;
+                alphaValue += 255;
+            }
         }
-    }
 
-    g_zVideo_pfnFlushSortedPolys();
-    zVideoD3D::SceneLeave();
-    if (swSurfaceWasLocked != 0) {
-        zVideo::RunPostprocessOnSwBuffer();
-    }
+        g_zVideo_pfnTextureRecordFinalizeUpload(textureRecord, 0, softwareImage);
+        zVideoD3D::SceneEnter();
+
+        for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
+            HudWeatherFxParticleQuad* particleQuad = &particleQuads[particleIndex];
+            float xSlant = 0.0f;
+            float ySlant = 0.0f;
+            if (particleQuad->width > particleQuad->height) {
+                xSlant = (float)(particleQuad->slantOffset);
+            } else {
+                ySlant = (float)(particleQuad->slantOffset);
+            }
+
+            const float depth = particlePositions[sourceBufferIndex][particleIndex].z;
+            zVideo_XyzVertex clipVerts[4];
+            zVideo_TexCoord texCoords[4];
+            clipVerts[0].x = (float)(particleQuad->x);
+            clipVerts[0].y = (float)(particleQuad->y);
+            clipVerts[0].z = depth;
+            texCoords[0].u = particleQuad->texCoordUStart;
+            texCoords[0].v = 0.0f;
+
+            clipVerts[1].x = (float)(particleQuad->x) + xSlant;
+            clipVerts[1].y = (float)(particleQuad->y) + ySlant;
+            clipVerts[1].z = depth;
+            texCoords[1].u = particleQuad->texCoordUStart;
+            texCoords[1].v = 0.0f;
+
+            clipVerts[2].x = (float)(particleQuad->x + particleQuad->width) + xSlant;
+            clipVerts[2].y = (float)(particleQuad->y + particleQuad->height) + ySlant;
+            clipVerts[2].z = depth;
+            texCoords[2].u = particleQuad->texCoordUEnd;
+            texCoords[2].v = 0.0f;
+
+            clipVerts[3].x = (float)(particleQuad->x + particleQuad->width);
+            clipVerts[3].y = (float)(particleQuad->y + particleQuad->height);
+            clipVerts[3].z = depth;
+            texCoords[3].u = particleQuad->texCoordUEnd;
+            texCoords[3].v = 0.0f;
+
+            if (((HudWeatherFxPointBatch*)(clipVerts))->ArePointBatchInsideRect(4, clipRectOrNull) != 0) {
+                g_zVideo_pfnSubmitPolyRenderClass(
+                    clipVerts,
+                    texCoords,
+                    4,
+                    (zVideo_RenderClass*)(textureRecord),
+                    1,
+                    1.0f,
+                    0
+                );
+            }
+        }
+
+        g_zVideo_pfnFlushSortedPolys();
+        zVideoD3D::SceneLeave();
+        if (swSurfaceWasLocked != 0) {
+            zVideo::RunPostprocessOnSwBuffer();
+        }
     } else {
         zVideo_FxSurface::DrawColoredLinesBatch(
-            (zVideoFxColoredLineRecord *)(particleQuads),
+            (zVideoFxColoredLineRecord*)(particleQuads),
             particleCount,
-            (zVidRect32 *)(clipRectOrNull)
+            (zVidRect32*)(clipRectOrNull)
         );
     }
 }
@@ -1811,8 +1707,8 @@ void HudWeatherFx::ApplyPass3() {
  *
  * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
  */
-int HudWeatherFxPointBatch::ArePointBatchInsideRect( int pointCount, const HudUiRect *viewportRect
-) {
+int HudWeatherFxPointBatch::ArePointBatchInsideRect(int pointCount, const HudUiRect* viewportRect)
+{
     if (viewportRect == 0) {
         return 1;
     }
@@ -1835,15 +1731,14 @@ int HudWeatherFxPointBatch::ArePointBatchInsideRect( int pointCount, const HudUi
     return 1;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-hudweatherfxsnow-0x4be280
  * @recoil-artifact defines .text recoil:function:0x4be280: HudWeatherFxSnow::HudWeatherFxSnow(int).
  * Purpose: Construct the shared weather emitter and initialize snow emitter defaults.
  */
-HudWeatherFxSnow::HudWeatherFxSnow(
-    int particleCount
-) : HudWeatherFx(particleCount) {
+HudWeatherFxSnow::HudWeatherFxSnow(int particleCount)
+    : HudWeatherFx(particleCount)
+{
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
@@ -1854,17 +1749,15 @@ HudWeatherFxSnow::HudWeatherFxSnow(
  * @recoil-artifact defines .text recoil:function:0x4be2e0: HudWeatherFxSnow::~HudWeatherFxSnow.
  * Purpose: Tear down the snow emitter and continue through the shared C++ base destructor.
  */
-HudWeatherFxSnow::~HudWeatherFxSnow() {
-}
+HudWeatherFxSnow::~HudWeatherFxSnow() { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-update
  * @recoil-artifact defines .text recoil:function:0x4be2f0: HudWeatherFxSnow::Update.
  * Purpose: Advance snow particles from camera drift, gravity, and wind, then project quads.
  */
-void HudWeatherFxSnow::Update(
-    float deltaSeconds
-) {
+void HudWeatherFxSnow::Update(float deltaSeconds)
+{
     if ((flags & 0x10) != 0) {
         return;
     }
@@ -1880,7 +1773,7 @@ void HudWeatherFxSnow::Update(
         viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
         viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
-        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+        const zVidRect32* const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
         viewportWidth = primaryRect->right - primaryRect->left;
         viewportHeight = primaryRect->bottom - primaryRect->top;
     }
@@ -1894,25 +1787,22 @@ void HudWeatherFxSnow::Update(
     CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
-    cameraTargetDrift.x =
-        (g_HudWeatherFxSnow_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y =
-        (g_HudWeatherFxSnow_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z =
-        (g_HudWeatherFxSnow_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    cameraTargetDrift.x = (g_HudWeatherFxSnow_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
+    cameraTargetDrift.y = (g_HudWeatherFxSnow_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
+    cameraTargetDrift.z = (g_HudWeatherFxSnow_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
     g_HudWeatherFxSnow_LastCameraTarget.x = cameraTarget.x;
     g_HudWeatherFxSnow_LastCameraTarget.y = cameraTarget.y;
     g_HudWeatherFxSnow_LastCameraTarget.z = cameraTarget.z;
 
     zMat4x3 slotBuffer;
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     zMath::MatRotateX(-cameraAngles.x);
     zMath::MatRotateY(-cameraAngles.y);
     zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
     zMath::MatStackPopPtr();
 
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     zMath::MatRotateZ(cameraAngles.z);
     zMath::MatRotateY(cameraAngles.y);
@@ -1950,8 +1840,8 @@ void HudWeatherFxSnow::Update(
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
+        const zVec3* const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
+        zVec3* const destPosition = &particlePositions[destBufferIndex][particleIndex];
         destPosition->x = sourcePosition->x + particleVelocity.x;
         destPosition->y = sourcePosition->y + particleVelocity.y;
         destPosition->z = sourcePosition->z + particleVelocity.z;
@@ -1963,26 +1853,17 @@ void HudWeatherFxSnow::Update(
 
         const float sourceDepthFactor = 1.5f - sourcePosition->z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
-                  viewportWidthF);
-        particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
-                  viewportHeightF);
-        particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
-                  viewportWidthF) -
-            particleQuad->x;
-        particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
-                  viewportHeightF) -
-            particleQuad->y;
+        HudWeatherFxParticleQuad* const particleQuad = &particleQuads[particleIndex];
+        particleQuad->x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
+        particleQuad->y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuad->width
+            = (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) * viewportWidthF) - particleQuad->x;
+        particleQuad->height
+            = (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) * viewportHeightF) - particleQuad->y;
         particleQuad->color16 = packedColor16;
         particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
         particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor *
-                                          3.5);
+        particleQuad->slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor * 3.5);
 
         if (HudWeatherFxSnowNeedsReset(destPosition) != 0) {
             ResetParticleSlot(particleIndex, 0);
@@ -2001,9 +1882,9 @@ void HudWeatherFxSnow::Update(
  * @recoil-artifact defines .text recoil:function:0x4be810: HudWeatherFxRain::HudWeatherFxRain(int).
  * Purpose: Construct the shared weather emitter and initialize rain emitter defaults.
  */
-HudWeatherFxRain::HudWeatherFxRain(
-    int particleCount
-) : HudWeatherFx(particleCount) {
+HudWeatherFxRain::HudWeatherFxRain(int particleCount)
+    : HudWeatherFx(particleCount)
+{
     emitEnabled = 1;
     emitRadius = 20.0f;
     emitDepth = 400.0f;
@@ -2014,17 +1895,15 @@ HudWeatherFxRain::HudWeatherFxRain(
  * @recoil-artifact defines .text recoil:function:0x4be870: HudWeatherFxRain::~HudWeatherFxRain.
  * Purpose: Tear down the rain emitter and continue through the shared C++ base destructor.
  */
-HudWeatherFxRain::~HudWeatherFxRain() {
-}
+HudWeatherFxRain::~HudWeatherFxRain() { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-update
  * @recoil-artifact defines .text recoil:function:0x4be880: HudWeatherFxRain::Update.
  * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
  */
-void HudWeatherFxRain::Update(
-    float deltaSeconds
-) {
+void HudWeatherFxRain::Update(float deltaSeconds)
+{
     if ((flags & 0x10) != 0) {
         return;
     }
@@ -2040,7 +1919,7 @@ void HudWeatherFxRain::Update(
         viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
         viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
-        const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+        const zVidRect32* const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
         viewportWidth = primaryRect->right - primaryRect->left;
         viewportHeight = primaryRect->bottom - primaryRect->top;
     }
@@ -2054,25 +1933,22 @@ void HudWeatherFxRain::Update(
     CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
-    cameraTargetDrift.x =
-        (g_HudWeatherFxRain_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y =
-        (g_HudWeatherFxRain_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z =
-        (g_HudWeatherFxRain_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    cameraTargetDrift.x = (g_HudWeatherFxRain_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
+    cameraTargetDrift.y = (g_HudWeatherFxRain_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
+    cameraTargetDrift.z = (g_HudWeatherFxRain_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
     g_HudWeatherFxRain_LastCameraTarget.x = cameraTarget.x;
     g_HudWeatherFxRain_LastCameraTarget.y = cameraTarget.y;
     g_HudWeatherFxRain_LastCameraTarget.z = cameraTarget.z;
 
     zMat4x3 slotBuffer;
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     zMath::MatRotateX(-cameraAngles.x);
     zMath::MatRotateY(-cameraAngles.y);
     zMath::MatTransformPointBatchInPlace(&cameraTargetDrift, 1);
     zMath::MatStackPopPtr();
 
-    zMath::MatStackPushPtr((float *)(&slotBuffer));
+    zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     zMath::MatRotateZ(cameraAngles.z);
     zMath::MatRotateY(cameraAngles.y);
@@ -2110,8 +1986,8 @@ void HudWeatherFxRain::Update(
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3 *const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3 *const destPosition = &particlePositions[destBufferIndex][particleIndex];
+        const zVec3* const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
+        zVec3* const destPosition = &particlePositions[destBufferIndex][particleIndex];
         destPosition->x = sourcePosition->x + particleVelocity.x;
         destPosition->y = sourcePosition->y + particleVelocity.y;
         destPosition->z = sourcePosition->z + particleVelocity.z;
@@ -2123,21 +1999,13 @@ void HudWeatherFxRain::Update(
 
         const float sourceDepthFactor = 1.5f - sourcePosition->z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad *const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x =
-            (int)(((probeDepthFactor * probePosition.x) - -0.5f) *
-                  viewportWidthF);
-        particleQuad->y =
-            (int)(((probeDepthFactor * probePosition.y) - -0.5f) *
-                  viewportHeightF);
-        particleQuad->width =
-            (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) *
-                  viewportWidthF) -
-            particleQuad->x;
-        particleQuad->height =
-            (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) *
-                  viewportHeightF) -
-            particleQuad->y;
+        HudWeatherFxParticleQuad* const particleQuad = &particleQuads[particleIndex];
+        particleQuad->x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
+        particleQuad->y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuad->width
+            = (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) * viewportWidthF) - particleQuad->x;
+        particleQuad->height
+            = (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) * viewportHeightF) - particleQuad->y;
         particleQuad->color16 = packedColor16;
         particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
         particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
@@ -2153,14 +2021,12 @@ void HudWeatherFxRain::Update(
     destBufferIndex = oldSourceBufferIndex;
 }
 
-
 /**
  * Purpose: update the pass-3 children and reset the queued-slot count.
  * Retail 0x4bed30 receives this in ECX and deltaTime on the stack.
  */
-void zVideoFxPass3Config::UpdateLocal(
-    float deltaTime
-) {
+void zVideoFxPass3Config::UpdateLocal(float deltaTime)
+{
     HudUiContainer::UpdateAll(deltaTime);
     slotWriteIndex = 0;
 }
@@ -2169,13 +2035,11 @@ void zVideoFxPass3Config::UpdateLocal(
  * Purpose: arm the root overlay with its packed color and alpha.
  * Retail 0x4bed50 receives this in ECX and both arguments on the stack.
  */
-void zVideoFxPass3Config::SetPrimaryElementParamsLocal(
-    unsigned short packedColor,
-    double primaryAlpha
-) {
+void zVideoFxPass3Config::SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha)
+{
     rootElement.packedColor16 = packedColor;
     rootElement.alpha = primaryAlpha;
-    HudUiElement *const element = &rootElement;
+    HudUiElement* const element = &rootElement;
     element->SetVisible(1);
     element->timer = 0.0f;
     element->flags |= 0x01u;
@@ -2193,9 +2057,10 @@ void zVideoFxPass3Config::QueueElementLocal(
     int extentPixels,
     float sinFreq,
     float sinPhase
-) {
+)
+{
     const int slotIndex = slotWriteIndex;
-    zVideoFxPass3Slot *const slot = &slots[slotIndex];
+    zVideoFxPass3Slot* const slot = &slots[slotIndex];
     if (slotIndex < 4) {
         slotWriteIndex = slotIndex + 1;
     }
@@ -2218,10 +2083,8 @@ void zVideoFxPass3Config::QueueElementLocal(
  * Purpose: store a provisional pass-3 input rectangle while retail source
  * placement remains unresolved.
  */
-void zVideoFxPass3Config::SetInputRectByIndex(
-    int index,
-    HudUiRect *rectOrNull
-) {
+void zVideoFxPass3Config::SetInputRectByIndex(int index, HudUiRect* rectOrNull)
+{
     if (index < 2) {
         inputRectsOrNull[index] = rectOrNull;
     }
@@ -2231,13 +2094,9 @@ void zVideoFxPass3Config::SetInputRectByIndex(
  * Purpose: store provisional raw pass-3 surface input while retail source
  * placement remains unresolved.
  */
-void zVideoFxPass3Config::QueuePrimitiveRaw(
-    void *primitive,
-    int width,
-    int height,
-    int pitchBytes
-) {
-    surfacePixels = (unsigned short *)(primitive);
+void zVideoFxPass3Config::QueuePrimitiveRaw(void* primitive, int width, int height, int pitchBytes)
+{
+    surfacePixels = (unsigned short*)(primitive);
     surfaceWidth = width;
     surfaceHeight = height;
     surfacePitchBytes = pitchBytes;
@@ -2247,8 +2106,7 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(
  * Purpose: provide the provisional pass-3 configuration destructor while
  * retail source placement remains unresolved.
  */
-zVideoFxPass3Config::~zVideoFxPass3Config() {
-}
+zVideoFxPass3Config::~zVideoFxPass3Config() { }
 
 namespace zVideo {
 
@@ -2256,10 +2114,8 @@ namespace zVideo {
  * Purpose: relay provisional local pass-3 primary-element state while retail
  * source placement remains unresolved.
  */
-void __fastcall FxPass3SetPrimaryElementParamsLocal(
-    unsigned short packedColor,
-    double primaryAlpha
-) {
+void __fastcall FxPass3SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha)
+{
     g_zVideo_FxPass3ConfigLocal.SetPrimaryElementParamsLocal(packedColor, primaryAlpha);
 }
 
@@ -2275,7 +2131,8 @@ void __fastcall FxPass3QueueElementLocal(
     int extentPixels,
     float sinFreq,
     float sinPhase
-) {
+)
+{
     g_zVideo_FxPass3ConfigLocal.QueueElementLocal(
         rectLeftPixels,
         rectTopPixels,
@@ -2291,10 +2148,8 @@ void __fastcall FxPass3QueueElementLocal(
  * Purpose: relay a provisional local pass-3 input rectangle while retail
  * source placement remains unresolved.
  */
-void __fastcall FxPass3SetInputRectByIndex(
-    int index,
-    HudUiRect *rectOrNull
-) {
+void __fastcall FxPass3SetInputRectByIndex(int index, HudUiRect* rectOrNull)
+{
     g_zVideo_FxPass3ConfigLocal.SetInputRectByIndex(index, rectOrNull);
 }
 
@@ -2302,12 +2157,8 @@ void __fastcall FxPass3SetInputRectByIndex(
  * Purpose: relay provisional raw pass-3 surface input while retail source
  * placement remains unresolved.
  */
-void __fastcall FxPass3QueuePrimitive(
-    void *primitive,
-    int width,
-    int height,
-    int pitchBytes
-) {
+void __fastcall FxPass3QueuePrimitive(void* primitive, int width, int height, int pitchBytes)
+{
     g_zVideo_FxPass3ConfigLocal.QueuePrimitiveRaw(primitive, width, height, pitchBytes);
 }
 
@@ -2315,9 +2166,8 @@ void __fastcall FxPass3QueuePrimitive(
  * Purpose: relay the provisional local pass-3 update while retail source
  * placement remains unresolved.
  */
-void __fastcall FxPass3UpdateLocal(
-    float deltaTime
-) {
+void __fastcall FxPass3UpdateLocal(float deltaTime)
+{
     g_zVideo_FxPass3ConfigLocal.UpdateLocal(deltaTime);
 }
 
@@ -2327,7 +2177,8 @@ void __fastcall FxPass3UpdateLocal(
  * Purpose: provide the provisional pass-3 configuration constructor while
  * retail source placement remains unresolved.
  */
-zVideoFxPass3Config::zVideoFxPass3Config() {
+zVideoFxPass3Config::zVideoFxPass3Config()
+{
     int slotIndex;
     inputRectsOrNull[0] = 0;
     inputRectsOrNull[1] = 0;
@@ -2335,16 +2186,16 @@ zVideoFxPass3Config::zVideoFxPass3Config() {
     surfaceWidth = 0;
     surfaceHeight = 0;
 
-    HudUiContainer::AddChild((HudUiElement *)(&rootElement));
+    HudUiContainer::AddChild((HudUiElement*)(&rootElement));
     rootElement.SetVisible(0);
 
     for (slotIndex = 0; slotIndex < 5; ++slotIndex) {
-        HudUiContainer::AddChild((HudUiElement *)(&slots[slotIndex]));
+        HudUiContainer::AddChild((HudUiElement*)(&slots[slotIndex]));
         slots[slotIndex].SetVisible(0);
     }
 
     slotWriteIndex = 0;
-    HudUiContainer *const container = this;
+    HudUiContainer* const container = this;
     container->SetEnabled(1);
 }
 
@@ -2359,10 +2210,8 @@ extern char k_msgBoxWidgetName_OK[6];
  * Purpose: divide signed fallback layout coordinates by a power of two with the
  * same toward-zero correction pattern emitted in the message-box constructor.
  */
-static inline int HudUiDialogSignedDivPow2(
-    int value,
-    int shift
-) {
+static inline int HudUiDialogSignedDivPow2(int value, int shift)
+{
     const int signMask = value >> 31;
     return (value + (signMask & ((1 << shift) - 1))) >> shift;
 }
@@ -2373,19 +2222,16 @@ static inline int HudUiDialogSignedDivPow2(
  * Purpose: allocate a 16-bit solid-color zVid image for the message-box
  * fallback path when no ZRD layout section is supplied.
  */
-static inline zVidImagePartial *HudUiMessageBoxCreateSolidImage(
-    int width,
-    int height,
-    unsigned short color565
-) {
-    zVidImagePartial *const image = zVid_Image::Create();
+static inline zVidImagePartial* HudUiMessageBoxCreateSolidImage(int width, int height, unsigned short color565)
+{
+    zVidImagePartial* const image = zVid_Image::Create();
     zVid_Image::SetFormatCode(image, 1);
     zVid_Image::SetSize(image, (short)(width), (short)(height));
 
-    void *const pixels = malloc(zVid_Image::QueryBytesPerPixel(image) * width * height);
+    void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(image) * width * height);
     zVidImageSetPixels(image, pixels, 0);
 
-    unsigned short *const pixelWords = (unsigned short *)(pixels);
+    unsigned short* const pixelWords = (unsigned short*)(pixels);
     for (int index = 0; index < image->pixelCount; ++index) {
         pixelWords[index] = color565;
     }
@@ -2403,16 +2249,15 @@ static inline zVidImagePartial *HudUiMessageBoxCreateSolidImage(
  * Touched data: owns runtime image pointers only; dialog/button table globals
  * are class identity evidence, not separately promoted data.
  */
-HudUiMessageBoxDialog::HudUiMessageBoxDialog(
-    const char *zrdPath,
-    const char *sectionName
-) : HudUiBackground(),
-    backdropWidget(0),
-    messagePanel(0, 0, 0),
-    titlePanel(0, 0, 0),
-    okButton(),
-    cancelButton() {
-    const zVidRect32 *const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
+HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* sectionName)
+    : HudUiBackground()
+    , backdropWidget(0)
+    , messagePanel(0, 0, 0)
+    , titlePanel(0, 0, 0)
+    , okButton()
+    , cancelButton()
+{
+    const zVidRect32* const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
     blitRect = *primaryRect;
 
     if (zrdPath != 0 && sectionName != 0) {
@@ -2420,7 +2265,7 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
         okButtonNormalImage = 0;
         okButtonPressedImage = 0;
 
-        zReader::Node *const loadedSection = LoadFromZrd(zrdPath, sectionName, 0);
+        zReader::Node* const loadedSection = LoadFromZrd(zrdPath, sectionName, 0);
         if (loadedSection != 0) {
             BindWidgetByName(loadedSection, &okButton, k_msgBoxWidgetName_OK);
             BindWidgetByName(loadedSection, &cancelButton, k_msgBoxWidgetName_Cancel);
@@ -2447,16 +2292,10 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
 
     const int buttonWidth = HudUiDialogSignedDivPow2(fallbackWidth, 2);
     const int buttonHeight = HudUiDialogSignedDivPow2(fallbackHeight, 2);
-    okButtonNormalImage = HudUiMessageBoxCreateSolidImage(
-        buttonWidth,
-        buttonHeight,
-        (unsigned short)(zVidPackColorRGB(192, 192, 192))
-    );
-    okButtonPressedImage = HudUiMessageBoxCreateSolidImage(
-        buttonWidth,
-        buttonHeight,
-        (unsigned short)(zVidPackColorRGB(160, 192, 160))
-    );
+    okButtonNormalImage
+        = HudUiMessageBoxCreateSolidImage(buttonWidth, buttonHeight, (unsigned short)(zVidPackColorRGB(192, 192, 192)));
+    okButtonPressedImage
+        = HudUiMessageBoxCreateSolidImage(buttonWidth, buttonHeight, (unsigned short)(zVidPackColorRGB(160, 192, 160)));
 
     backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
     messagePanel.SetTextFmt("");
@@ -2469,8 +2308,7 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
     titlePanel.SetPos(centerX - 140, centerY - 90);
     messagePanel.SetPos(centerX - 140, centerY - 70);
     okButton.SetPos(
-        centerX - 150 + HudUiDialogSignedDivPow2(fallbackWidth, 1) -
-            HudUiDialogSignedDivPow2(fallbackWidth, 3),
+        centerX - 150 + HudUiDialogSignedDivPow2(fallbackWidth, 1) - HudUiDialogSignedDivPow2(fallbackWidth, 3),
         centerY - 100 - HudUiDialogSignedDivPow2(fallbackHeight, 2) + fallbackHeight - 10
     );
 
@@ -2493,7 +2331,8 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(
  * the recovered member cleanup order.
  * Touched data: no authored globals; releases runtime-owned image storage.
  */
-HudUiMessageBoxDialog::~HudUiMessageBoxDialog() {
+HudUiMessageBoxDialog::~HudUiMessageBoxDialog()
+{
     if (backgroundImage != 0) {
         if (backgroundImage->pixels != 0) {
             free(backgroundImage->pixels);
@@ -2503,7 +2342,6 @@ HudUiMessageBoxDialog::~HudUiMessageBoxDialog() {
         zVid_Image::Destroy(backgroundImage);
         backgroundImage = 0;
     }
-
 }
 
 /**
@@ -2517,11 +2355,12 @@ HudUiMessageBoxDialog::~HudUiMessageBoxDialog() {
  * parent handoff; no dialog-owned plan-tracked data is promoted here.
  */
 int HudUiMessageBoxDialog::RunModal(
-    const char *messageText,
-    const char *titleText,
-    void *modalContext,
+    const char* messageText,
+    const char* titleText,
+    void* modalContext,
     float timeoutSeconds
-) {
+)
+{
     (void)modalContext;
     (void)timeoutSeconds;
 
@@ -2532,10 +2371,10 @@ int HudUiMessageBoxDialog::RunModal(
     const int previousHalfResMode = zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
-    zVidRect32 previousRegionRect = {0, 0, 0, 0};
+    zVidRect32 previousRegionRect = { 0, 0, 0, 0 };
     int previousBitsPerPixel = 0;
     int previousPitchBytes = 0;
-    void *const previousPixels = zRndr::GetActiveRegionState(
+    void* const previousPixels = zRndr::GetActiveRegionState(
         &previousRegionRect.right,
         &previousRegionRect.bottom,
         &previousBitsPerPixel,
@@ -2544,7 +2383,7 @@ int HudUiMessageBoxDialog::RunModal(
 
     int dialogPitchBytes;
     int dialogBitsPerPixel;
-    void *dialogPixels;
+    void* dialogPixels;
     if (g_zVideo_ActiveRendererPath != 0) {
         dialogPitchBytes = zVideo::GetPrimarySurfacePitch();
         dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
@@ -2555,12 +2394,7 @@ int HudUiMessageBoxDialog::RunModal(
         dialogPixels = zVideo::GetSwSurfacePixels();
     }
 
-    zRndr::SetFrameBufferRegion(
-        dialogPixels,
-        (zOpt_ViewRectSection *)(&blitRect),
-        dialogBitsPerPixel,
-        dialogPitchBytes
-    );
+    zRndr::SetFrameBufferRegion(dialogPixels, (zOpt_ViewRectSection*)(&blitRect), dialogBitsPerPixel, dialogPitchBytes);
 
     modalResult = 0;
     modalFrameCountdown = 100000;
@@ -2582,13 +2416,13 @@ int HudUiMessageBoxDialog::RunModal(
         modalFrameCountdown = framesRemaining - 1;
     }
 
-    ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
+    ((HudUiDialogController*)(this))->BlitOwnedSurfaceToPrimary();
     SetEnabled(0);
     zVideo::SetHalfResAdjustMode(previousHalfResMode);
     HudUi::SetInvalidateMode(previousHalfResMode);
     zRndr::SetFrameBufferRegion(
         previousPixels,
-        (zOpt_ViewRectSection *)(&previousRegionRect),
+        (zOpt_ViewRectSection*)(&previousRegionRect),
         previousBitsPerPixel,
         previousPitchBytes
     );
@@ -2602,7 +2436,8 @@ int HudUiMessageBoxDialog::RunModal(
  * Purpose: accept the modal dialog and force the modal loop to exit.
  * Touched data: no authored globals; writes dialog modal fields only.
  */
-void HudUiMessageBoxDialog::OnOk() {
+void HudUiMessageBoxDialog::OnOk()
+{
     modalResult = 1;
     modalFrameCountdown = 0;
 }
@@ -2614,7 +2449,8 @@ void HudUiMessageBoxDialog::OnOk() {
  * Purpose: cancel the modal dialog and force the modal loop to exit.
  * Touched data: no authored globals; writes dialog modal fields only.
  */
-void HudUiMessageBoxDialog::OnCancel() {
+void HudUiMessageBoxDialog::OnCancel()
+{
     modalResult = 2;
     modalFrameCountdown = 0;
 }
@@ -2629,8 +2465,9 @@ void HudUiMessageBoxDialog::OnCancel() {
  * Touched data: no authored globals; owner vptr dispatch reaches the dialog
  * table slot before HudUiZrdWidget::OnActivate.
  */
-void HudUiMessageBoxOkButton::OnActivate() {
-    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
+void HudUiMessageBoxOkButton::OnActivate()
+{
+    HudUiMessageBoxDialog* const dialog = (HudUiMessageBoxDialog*)(owner);
     dialog->OnOk();
 
     HudUiZrdWidget::OnActivate();
@@ -2646,8 +2483,9 @@ void HudUiMessageBoxOkButton::OnActivate() {
  * Touched data: no authored globals; owner vptr dispatch reaches the dialog
  * table slot before HudUiZrdWidget::OnActivate.
  */
-void HudUiMessageBoxCancelButton::OnActivate() {
-    HudUiMessageBoxDialog *const dialog = (HudUiMessageBoxDialog *)(owner);
+void HudUiMessageBoxCancelButton::OnActivate()
+{
+    HudUiMessageBoxDialog* const dialog = (HudUiMessageBoxDialog*)(owner);
     dialog->OnCancel();
 
     HudUiZrdWidget::OnActivate();
@@ -2659,10 +2497,8 @@ void HudUiMessageBoxCancelButton::OnActivate() {
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::HudUiPolyline.
  */
 HudUiPolyline::HudUiPolyline()
-    : HudUiElement(
-          0,
-          0
-      ) {
+    : HudUiElement(0, 0)
+{
     pointCount = 0;
     memset(points, 0, sizeof(points));
     Invalidate();
@@ -2674,11 +2510,8 @@ HudUiPolyline::HudUiPolyline()
  * @recoil-artifact defines .text recoil:function:0x4bf8b0: HudUiPolyline::SetPoint.
  * Purpose: apply the recovered HUD state change handled by HudUiPolyline::SetPoint.
  */
-void HudUiPolyline::SetPoint(
-    int index,
-    int pointX,
-    int pointY
-) {
+void HudUiPolyline::SetPoint(int index, int pointX, int pointY)
+{
     points[index].x = pointX;
     points[index].y = pointY;
 
@@ -2696,7 +2529,8 @@ void HudUiPolyline::SetPoint(
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
  */
-void HudUiPolyline::Draw() {
+void HudUiPolyline::Draw()
+{
     DrawBase();
 
     const int currentPointCount = pointCount;
@@ -2706,7 +2540,7 @@ void HudUiPolyline::Draw() {
 
     if (clipRect != 0) {
         zRndrDrawClippedImmediateLineStrip(
-            (const zRndr_LinePoint2I *)(points),
+            (const zRndr_LinePoint2I*)(points),
             currentPointCount - 1,
             clipRect,
             color565
@@ -2716,8 +2550,8 @@ void HudUiPolyline::Draw() {
 
     {
         for (int index = 0; index < currentPointCount - 1; ++index) {
-            const HudUiPolylinePoint &point = points[index];
-            const HudUiPolylinePoint &nextPoint = points[index + 1];
+            const HudUiPolylinePoint& point = points[index];
+            const HudUiPolylinePoint& nextPoint = points[index + 1];
             zRndrDrawImmediateLine(point.x, point.y, nextPoint.x, nextPoint.y, color565);
         }
     }
@@ -2730,8 +2564,9 @@ void HudUiPolyline::Draw() {
  *
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget.
  */
-HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
-    const char *imagePath, int initCaptureEnabled) : HudUiWidget(0) {
+HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(const char* imagePath, int initCaptureEnabled)
+    : HudUiWidget(0)
+{
     captureEnabled = initCaptureEnabled;
     capturedImage = 0;
     if (imagePath != 0) {
@@ -2748,7 +2583,8 @@ HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(
  * @recoil-artifact defines .text recoil:function:0x4bfa20: HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget.
  * Purpose: restore the cursor widget dispatch state, release a captured image, and tear down the widget base.
  */
-HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
+HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget()
+{
     if (capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
     }
@@ -2759,9 +2595,8 @@ HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget() {
  * @recoil-artifact defines .text recoil:function:0x4bfa50: HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh.
  */
-void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
-    const char *imagePath
-) {
+void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(const char* imagePath)
+{
     if (HudUiWidget::SetImageByPathOwned(imagePath) != 0) {
         SetImageBorrowedAndRefresh();
     }
@@ -2770,11 +2605,11 @@ void HudUiBackgroundCursorWidget::SetImageByPathOwnedAndRefresh(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimageborrowedandrefreshifchanged
  * @recoil-artifact defines .text recoil:function:0x4bfa70: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
- * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
+ * Purpose: apply the recovered HUD state change handled by
+ * HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged.
  */
-void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
-    zVidImagePartial *image
-) {
+void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(zVidImagePartial* image)
+{
     if (HudUiWidget::SetImageBorrowedAndInvalidate(image) != 0) {
         SetImageBorrowedAndRefresh();
     }
@@ -2785,9 +2620,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefreshIfChanged(
  * @recoil-artifact defines .text recoil:function:0x4bfa90: HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh.
  */
-void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
-    int newCaptureEnabled
-) {
+void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(int newCaptureEnabled)
+{
     captureEnabled = newCaptureEnabled;
     if (newCaptureEnabled == 0 && capturedImage != 0) {
         zVid_Image::Destroy(capturedImage);
@@ -2806,7 +2640,8 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(
  * @recoil-artifact defines .text recoil:function:0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
  */
-void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
+void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh()
+{
     if (captureEnabled == 0 || image == 0) {
         return;
     }
@@ -2821,7 +2656,7 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
     }
 
     zVid_Image::SetSize(capturedImage, image->width, image->height);
-    void *const pixels = malloc((size_t)(capturedImage->pixelCount) * sizeof(unsigned short));
+    void* const pixels = malloc((size_t)(capturedImage->pixelCount) * sizeof(unsigned short));
     zVidImageSetPixels(capturedImage, pixels, 0);
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
@@ -2835,10 +2670,8 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh() {
  * @recoil-artifact defines .text recoil:function:0x4bfb70: HudUiBackgroundCursorWidget::SetPos.
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetPos.
  */
-void HudUiBackgroundCursorWidget::SetPos(
-    int newX,
-    int newY
-) {
+void HudUiBackgroundCursorWidget::SetPos(int newX, int newY)
+{
     HudUiWidget::SetPos(newX, newY);
     RebuildCapturedImage(x, y);
 }
@@ -2848,10 +2681,8 @@ void HudUiBackgroundCursorWidget::SetPos(
  * @recoil-artifact defines .text recoil:function:0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::RebuildCapturedImage.
  */
-void HudUiBackgroundCursorWidget::RebuildCapturedImage(
-    int originX,
-    int originY
-) {
+void HudUiBackgroundCursorWidget::RebuildCapturedImage(int originX, int originY)
+{
     if (capturedImage == 0) {
         return;
     }
@@ -2862,12 +2693,11 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
     sourceRect.right = originX + image->width;
     sourceRect.bottom = originY + image->height;
 
-    if (zVideo_buff::CopySurfaceRectToImage(captureSourceSelector, &sourceRect, capturedImage) !=
-        0) {
-        const HudUiRect clipRect = {sourceRect.left - originX,
+    if (zVideo_buff::CopySurfaceRectToImage(captureSourceSelector, &sourceRect, capturedImage) != 0) {
+        const HudUiRect clipRect = { sourceRect.left - originX,
             sourceRect.top - originY,
             sourceRect.right - originX,
-            sourceRect.bottom - originY};
+            sourceRect.bottom - originY };
         SetBltSourceAndClipRect(capturedImage, &clipRect);
         return;
     }
@@ -2880,7 +2710,8 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(
  * @recoil-artifact defines .text recoil:function:0x4bfc50: HudUiBackgroundCursorWidget::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::Draw.
  */
-void HudUiBackgroundCursorWidget::Draw() {
+void HudUiBackgroundCursorWidget::Draw()
+{
     HudUiWidget::Draw();
 }
 
@@ -2889,15 +2720,10 @@ void HudUiBackgroundCursorWidget::Draw() {
  * @recoil-artifact defines .text recoil:function:0x4bfc60: HudUiBackgroundCursorWidget::DrawBase.
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::DrawBase.
  */
-inline void HudUiBackgroundCursorWidget::DrawBase() {
+inline void HudUiBackgroundCursorWidget::DrawBase()
+{
     if (bltSource != 0) {
-        zVid_Image::BlitToActiveTarget(
-            (zVidImagePartial *)(bltSource),
-            x,
-            y,
-            0,
-            (zVidRect32 *)(&clipRect)
-        );
+        zVid_Image::BlitToActiveTarget((zVidImagePartial*)(bltSource), x, y, 0, (zVidRect32*)(&clipRect));
     }
 }
 
@@ -2907,7 +2733,8 @@ inline void HudUiBackgroundCursorWidget::DrawBase() {
  * Purpose: Initializes the background video element state before a stream is assigned.
  */
 HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
-    : HudUiElement(0, 0) {
+    : HudUiElement(0, 0)
+{
     mediaPath[0] = '\0';
     stream = 0;
     elapsedTimeSec = 0.0f;
@@ -2918,8 +2745,9 @@ HudUiBackgroundVideoWidget::HudUiBackgroundVideoWidget()
  *
  * Purpose: destroy the owned movie stream and run the base widget teardown.
  */
-HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
-    zFMV_Stream *const oldStream = stream;
+HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget()
+{
+    zFMV_Stream* const oldStream = stream;
     if (oldStream != 0) {
         oldStream->Destructor();
         ::operator delete(oldStream);
@@ -2932,7 +2760,8 @@ HudUiBackgroundVideoWidget::~HudUiBackgroundVideoWidget() {
  * The virtual destructor above owns the retail body at 0x4bfcd0.
  *
  */
-void HudUiBackgroundVideoWidget::Destructor() {
+void HudUiBackgroundVideoWidget::Destructor()
+{
     this->~HudUiBackgroundVideoWidget();
 }
 
@@ -2941,14 +2770,13 @@ void HudUiBackgroundVideoWidget::Destructor() {
  * @recoil-artifact defines .text recoil:function:0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh.
  * Purpose: Stores the movie path, resolves missing media, opens the stream, and refreshes clipping.
  */
-void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
-    const char *path
-) {
+void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(const char* path)
+{
     strncpy(mediaPath, path, 0x104);
 
     struct _stat statBuffer;
     if (_stat(mediaPath, &statBuffer) == -1) {
-        char *const resolvedPath = zSys::FindFileOnDriveType(5, mediaPath, 0);
+        char* const resolvedPath = zSys::FindFileOnDriveType(5, mediaPath, 0);
         if (resolvedPath != 0) {
             strncpy(mediaPath, resolvedPath, 0x104);
         }
@@ -2959,8 +2787,8 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
         return;
     }
 
-    zFMV_Stream *const newStream = (zFMV_Stream *)(::operator new(sizeof(zFMV_Stream)));
-    zFMV_Stream *initializedStream = 0;
+    zFMV_Stream* const newStream = (zFMV_Stream*)(::operator new(sizeof(zFMV_Stream)));
+    zFMV_Stream* initializedStream = 0;
     if (newStream != 0) {
         initializedStream = newStream->Init(mediaPath, 0);
     }
@@ -2974,9 +2802,8 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(
  * @recoil-artifact defines .text recoil:function:0x4bfe20: HudUiBackgroundVideoWidget::SetColorKey565.
  * Purpose: Marks the active video stream format dirty and stores the 565 color key.
  */
-void HudUiBackgroundVideoWidget::SetColorKey565(
-    unsigned short colorKey
-) {
+void HudUiBackgroundVideoWidget::SetColorKey565(unsigned short colorKey)
+{
     if (stream != 0) {
         stream->formatFlagsPacked |= 0x02;
     }
@@ -2989,9 +2816,8 @@ void HudUiBackgroundVideoWidget::SetColorKey565(
  * @recoil-artifact defines .text recoil:function:0x4bfe40: HudUiBackgroundVideoWidget::Update.
  * Purpose: Advances decoded video frames while preserving the base element update behavior.
  */
-void HudUiBackgroundVideoWidget::Update(
-    float deltaSeconds
-) {
+void HudUiBackgroundVideoWidget::Update(float deltaSeconds)
+{
     if ((flags & 0x10u) != 0) {
         return;
     }
@@ -3010,11 +2836,12 @@ void HudUiBackgroundVideoWidget::Update(
  * @recoil-artifact defines .text recoil:function:0x4bfe90: HudUiBackgroundVideoWidget::Draw.
  * Purpose: Draws the background layer and blits the active stream with the stored color key.
  */
-void HudUiBackgroundVideoWidget::Draw() {
+void HudUiBackgroundVideoWidget::Draw()
+{
     DrawBase();
 
     if (stream != 0) {
-        zVid_Image::BlitToActiveTarget((zVidImagePartial *)(stream), x, y, colorKey565, 0);
+        zVid_Image::BlitToActiveTarget((zVidImagePartial*)(stream), x, y, colorKey565, 0);
     }
 }
 
@@ -3023,12 +2850,13 @@ void HudUiBackgroundVideoWidget::Draw() {
  * @recoil-artifact defines .text recoil:function:0x4bfec0: HudUiBackgroundVideoWidget::DrawBase.
  * Purpose: Blits the configured background source into the current clipped video area.
  */
-void HudUiBackgroundVideoWidget::DrawBase() {
-    zVidImagePartial *const bltSource = (zVidImagePartial *)(this->bltSource);
+void HudUiBackgroundVideoWidget::DrawBase()
+{
+    zVidImagePartial* const bltSource = (zVidImagePartial*)(this->bltSource);
     if (bltSource != 0) {
         const int dstX = x > 0 ? x : 0;
         const int dstY = y > 0 ? y : 0;
-        zVid_Image::BlitToActiveTarget(bltSource, dstX, dstY, 0, (zVidRect32 *)(&clipRect));
+        zVid_Image::BlitToActiveTarget(bltSource, dstX, dstY, 0, (zVidRect32*)(&clipRect));
     }
 }
 
@@ -3037,7 +2865,8 @@ void HudUiBackgroundVideoWidget::DrawBase() {
  * @recoil-artifact defines .text recoil:function:0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect.
  * Purpose: Recomputes the stream clip rectangle against the background blit source.
  */
-void HudUiBackgroundVideoWidget::RebuildBltRect() {
+void HudUiBackgroundVideoWidget::RebuildBltRect()
+{
     HudUiRect rect;
     rect.left = GetCenterX() > 0 ? GetCenterX() : 0;
     rect.top = GetCenterY() > 0 ? GetCenterY() : 0;
@@ -3049,7 +2878,7 @@ void HudUiBackgroundVideoWidget::RebuildBltRect() {
     const int streamRight = rect.left + stream->width;
     const int streamBottom = rect.top + stream->height;
 
-    zVidImagePartial *const bltSource = (zVidImagePartial *)(this->bltSource);
+    zVidImagePartial* const bltSource = (zVidImagePartial*)(this->bltSource);
     if (bltSource != 0) {
         rect.right = streamRight < bltSource->width ? streamRight : bltSource->width;
         rect.bottom = streamBottom < bltSource->height ? streamBottom : bltSource->height;
@@ -3066,12 +2895,8 @@ void HudUiBackgroundVideoWidget::RebuildBltRect() {
  * @recoil-artifact defines .text recoil:function:0x4bffb0: HudUiPrimitiveBindTarget::SetSegmentEndpoints.
  * Purpose: apply the recovered HUD state change handled by HudUiPrimitiveBindTarget::SetSegmentEndpoints.
  */
-void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
-    int startX,
-    int startY,
-    int newEndX,
-    int newEndY
-) {
+void HudUiPrimitiveBindTarget::SetSegmentEndpoints(int startX, int startY, int newEndX, int newEndY)
+{
     SetPos(startX, startY);
     endX = newEndX;
     endY = newEndY;
@@ -3083,14 +2908,15 @@ void HudUiPrimitiveBindTarget::SetSegmentEndpoints(
  * HudUiElement::GetCenterY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnHoverRepeat.
  */
-void HudUiElement::OnHoverRepeat() {}
+void HudUiElement::OnHoverRepeat() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: return the recovered HUD value exposed by HudUiElement::GetBoundsRectOrNull.
  */
-HudUiRect * HudUiElement::GetBoundsRectOrNull() {
+HudUiRect* HudUiElement::GetBoundsRectOrNull()
+{
     return 0;
 }
 
@@ -3099,69 +2925,64 @@ HudUiRect * HudUiElement::GetBoundsRectOrNull() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnActivate.
  */
-void HudUiElement::OnActivate() {}
+void HudUiElement::OnActivate() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnClearBinding.
  */
-void HudUiElement::OnClearBinding() {}
+void HudUiElement::OnClearBinding() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::ShowPreview.
  */
-void HudUiElement::ShowPreview() {}
+void HudUiElement::ShowPreview() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::HidePreview.
  */
-void HudUiElement::HidePreview() {}
+void HudUiElement::HidePreview() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnBeginCapture.
  */
-void HudUiElement::OnBeginCapture() {}
+void HudUiElement::OnBeginCapture() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnEndCapture.
  */
-void HudUiElement::OnEndCapture() {}
+void HudUiElement::OnEndCapture() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnPointerButtonState.
  */
-void HudUiElement::OnPointerButtonState(
-    int,
-    int
-) {}
+void HudUiElement::OnPointerButtonState(int, int) { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: handle the recovered HUD event path for HudUiElement::OnCapturedPrimaryRelease.
  */
-void HudUiElement::OnCapturedPrimaryRelease() {}
+void HudUiElement::OnCapturedPrimaryRelease() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::ShouldHandleInput.
  */
-int HudUiElement::ShouldHandleInput(
-    HudUiBackground *,
-    int
-) {
+int HudUiElement::ShouldHandleInput(HudUiBackground*, int)
+{
     return 1;
 }
 
@@ -3170,20 +2991,15 @@ int HudUiElement::ShouldHandleInput(
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::AfterInputUpdate.
  */
-void HudUiElement::AfterInputUpdate(
-    HudUiBackground *,
-    int
-) {}
+void HudUiElement::AfterInputUpdate(HudUiBackground*, int) { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::HitTest.
  */
-int HudUiElement::HitTest(
-    int px,
-    int py
-) {
+int HudUiElement::HitTest(int px, int py)
+{
     return HitTestTrue(px, py);
 }
 
@@ -3192,9 +3008,7 @@ int HudUiElement::HitTest(
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::EnableWordWrapWithRect.
  */
-void HudUiElement::EnableWordWrapWithRect(
-    const HudUiRect *
-) {}
+void HudUiElement::EnableWordWrapWithRect(const HudUiRect*) { }
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -3203,13 +3017,14 @@ void HudUiElement::EnableWordWrapWithRect(
  * numeric input adds raw-key virtuals.
  * Purpose: keep ZRD loading ownership on HudUiZrdWidget.
  */
-void HudUiZrdWidget::PostLoadFromZrd() {}
+void HudUiZrdWidget::PostLoadFromZrd() { }
 
 /**
  * Purpose: reset the scrolling-text owner fade when the widget is activated;
  * retail source placement remains unresolved.
  */
-void HudUiZrdScrollingText::OnActivate() {
+void HudUiZrdScrollingText::OnActivate()
+{
     OnActivateResetOwnerFade();
 }
 
@@ -3220,9 +3035,8 @@ void HudUiZrdScrollingText::OnActivate() {
 /**
  * Purpose: initialize the recovered HudUiWidget::Constructor state.
  */
-HudUiWidget * HudUiWidget::Constructor(
-    unsigned int initAlignFlags
-) {
+HudUiWidget* HudUiWidget::Constructor(unsigned int initAlignFlags)
+{
     new (this) HudUiWidget(initAlignFlags);
     return this;
 }
@@ -3239,7 +3053,8 @@ HudUiWidget * HudUiWidget::Constructor(
 /**
  * Purpose: initialize the recovered HudUiZrdWidget::Constructor state.
  */
-HudUiZrdWidget * HudUiZrdWidget::Constructor() {
+HudUiZrdWidget* HudUiZrdWidget::Constructor()
+{
     new (this) HudUiZrdWidget;
     return this;
 }
@@ -3263,7 +3078,8 @@ HudUiZrdWidget * HudUiZrdWidget::Constructor() {
  * DestructorCore in this reconstruction.
  * Purpose: release owned ZRD widget panels, alternate images, panel vectors, and the base widget.
  */
-void HudUiZrdWidget::DestructorCore() {
+void HudUiZrdWidget::DestructorCore()
+{
     this->~HudUiZrdWidget();
 }
 
@@ -3318,19 +3134,17 @@ void HudUiZrdWidget::DestructorCore() {
  * Purpose: keep command-binding vector cleanup source-shaped as typed STL
  * storage while matching the retail caller's erase dependency.
  */
-HudCmdBindingEntry **HudCmdBindingVector::erase(
-    HudCmdBindingEntry **eraseFirst,
-    HudCmdBindingEntry **eraseLast
-) {
-    HudCmdBindingEntry **write = eraseFirst;
-    HudCmdBindingEntry **read = eraseLast;
-    HudCmdBindingEntry **const oldEnd = last;
+HudCmdBindingEntry** HudCmdBindingVector::erase(HudCmdBindingEntry** eraseFirst, HudCmdBindingEntry** eraseLast)
+{
+    HudCmdBindingEntry** write = eraseFirst;
+    HudCmdBindingEntry** read = eraseLast;
+    HudCmdBindingEntry** const oldEnd = last;
     if (read != oldEnd) {
         do {
             *write++ = *read++;
         } while (read != oldEnd);
     }
-    ((StdPtrVector *)(this))->ClearNoOpDestroy((int *)(write), (int *)(oldEnd));
+    ((StdPtrVector*)(this))->ClearNoOpDestroy((int*)(write), (int*)(oldEnd));
     last = write;
     return eraseFirst;
 }
@@ -3375,9 +3189,8 @@ HudCmdBindingEntry **HudCmdBindingVector::erase(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40e910 HudUiTriplet::InterpolateLayout callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnPrintableKey.
  */
-void HudUiTextInput::OnPrintableKey(
-    int key
-) {
+void HudUiTextInput::OnPrintableKey(int key)
+{
     InsertCharAtCursor(key);
 }
 
@@ -3386,23 +3199,22 @@ void HudUiTextInput::OnPrintableKey(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40e910 HudUiTriplet::InterpolateLayout callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnAccept.
  */
-void HudUiTextInput::OnAccept() {
-}
+void HudUiTextInput::OnAccept() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnCancel.
  */
-void HudUiTextInput::OnCancel() {
-}
+void HudUiTextInput::OnCancel() { }
 
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnBackspace.
  */
-void HudUiTextInput::OnBackspace() {
+void HudUiTextInput::OnBackspace()
+{
     BackspaceDeleteChar();
 }
 
@@ -3411,7 +3223,8 @@ void HudUiTextInput::OnBackspace() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnDeleteForward.
  */
-void HudUiTextInput::OnDeleteForward() {
+void HudUiTextInput::OnDeleteForward()
+{
     DeleteCharForward();
 }
 
@@ -3420,7 +3233,8 @@ void HudUiTextInput::OnDeleteForward() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnMoveCursorLeft.
  */
-void HudUiTextInput::OnMoveCursorLeft() {
+void HudUiTextInput::OnMoveCursorLeft()
+{
     MoveCursorLeft();
 }
 
@@ -3429,7 +3243,8 @@ void HudUiTextInput::OnMoveCursorLeft() {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4b4370 HudUiTextInput::~HudUiTextInput callers.
  * Purpose: handle the recovered HUD event path for HudUiTextInput::OnMoveCursorRight.
  */
-void HudUiTextInput::OnMoveCursorRight() {
+void HudUiTextInput::OnMoveCursorRight()
+{
     MoveCursorRight();
 }
 
@@ -3438,8 +3253,7 @@ void HudUiTextInput::OnMoveCursorRight() {
  * source file.
  * Purpose: run the recovered HudUiTextInput::~HudUiTextInput teardown path.
  */
-void HudUiTextInput::OnOverflow() {
-}
+void HudUiTextInput::OnOverflow() { }
 
 /**
  * Current BN assembly resets the HudUiTextInput vptr, then deletes the owned
@@ -3455,7 +3269,8 @@ void HudUiTextInput::OnOverflow() {
  * Purpose: tail-call the recovered base text-input destructor from legacy
  * thunk entry points.
  */
-void HudUiTextInput::DestructorCore() {
+void HudUiTextInput::DestructorCore()
+{
     this->HudUiTextInput::~HudUiTextInput();
 }
 
@@ -3470,9 +3285,8 @@ void HudUiTextInput::DestructorCore() {
 /**
  * Purpose: apply the recovered HUD state change handled by HudUiTextInput::SetCursorPosition.
  */
-HudUiTextInput * HudUiTextInput::Constructor(
-    int bufferSize
-) {
+HudUiTextInput* HudUiTextInput::Constructor(int bufferSize)
+{
     new (this) HudUiTextInput(bufferSize);
     return this;
 }
@@ -3528,7 +3342,8 @@ HudUiTextInput * HudUiTextInput::Constructor(
  * Purpose: finish chat composition and relay the accepted text for sending;
  * retail source placement remains unresolved.
  */
-void HudUiChatComposeTextInput::OnAccept() {
+void HudUiChatComposeTextInput::OnAccept()
+{
     GameNet::EndChatComposeAndSendThunk();
 }
 
@@ -3538,16 +3353,16 @@ void HudUiChatComposeTextInput::OnAccept() {
  * Historical explicit versus implicit spelling and emission TU remain unresolved.
  * Purpose: construct the element at (0, 0) and the two embedded slot widgets.
  */
-HudUiSlot::HudUiSlot() : HudUiElement(
-        0,
-        0
-) {
+HudUiSlot::HudUiSlot()
+    : HudUiElement(0, 0)
+{
 }
 
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
  */
-HudUiPolyline * HudUiPolyline::Constructor() {
+HudUiPolyline* HudUiPolyline::Constructor()
+{
     new (this) HudUiPolyline;
     return this;
 }
@@ -3559,7 +3374,8 @@ HudUiPolyline * HudUiPolyline::Constructor() {
 /**
  * Purpose: advance the recovered HUD update path for HudUiSliderBorder::Update.
  */
-HudUiSliderBorder * HudUiSliderBorder::Constructor() {
+HudUiSliderBorder* HudUiSliderBorder::Constructor()
+{
     new (this) HudUiSliderBorder;
     return this;
 }
@@ -3606,7 +3422,8 @@ HudUiSliderBorder * HudUiSliderBorder::Constructor() {
  * destructor contributions.
  * Purpose: route compatibility calls through the recovered C++ destructor.
  */
-void HudUiNumericTextInput::Destructor() {
+void HudUiNumericTextInput::Destructor()
+{
     this->HudUiNumericTextInput::~HudUiNumericTextInput();
 }
 
@@ -3628,7 +3445,8 @@ void HudUiNumericTextInput::Destructor() {
  * @recoil-artifact defines .text recoil:function:0x4bd100: HudUiPanel::ConstructorDefaultThunk.
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.
  */
-HudUiPanel * HudUiPanel::ConstructorDefaultThunk() {
+HudUiPanel* HudUiPanel::ConstructorDefaultThunk()
+{
     return ConstructorDefault(0, 0, 0);
 }
 

@@ -23,7 +23,8 @@ struct DipropDwordInit {
  * Purpose: Convert the cached client mouse point to screen coordinates and
  * apply it through the Win32 cursor provider.
  */
-void __cdecl MouseApplyClientCursorPosToOS() {
+void __cdecl MouseApplyClientCursorPosToOS()
+{
     POINT point;
     point.x = g_zInput_MouseStateSnapshot.cursorClientX;
     point.y = g_zInput_MouseStateSnapshot.cursorClientY;
@@ -38,7 +39,8 @@ void __cdecl MouseApplyClientCursorPosToOS() {
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
  * scaling factors from the current input window client rectangle.
  */
-void __cdecl MouseUpdateClientRectAndCenter() {
+void __cdecl MouseUpdateClientRectAndCenter()
+{
     RECT rect;
     GetClientRect(g_zInput_hWnd, &rect);
     g_zInput_MouseClientWidth = rect.right;
@@ -53,10 +55,8 @@ void __cdecl MouseUpdateClientRectAndCenter() {
  * Purpose: Clamp normalized cursor coordinates, convert them to cached client
  * coordinates, and apply the cursor position to the OS.
  */
-void __stdcall MouseSetNormalizedCursorPos(
-    float normX,
-    float normY
-) {
+void __stdcall MouseSetNormalizedCursorPos(float normX, float normY)
+{
     if (normX > 1.0f) {
         normX = 1.0f;
     }
@@ -72,10 +72,10 @@ void __stdcall MouseSetNormalizedCursorPos(
 
     g_zInput_MouseStateSnapshot.cursorNormX = normX;
     g_zInput_MouseStateSnapshot.cursorNormY = normY;
-    g_zInput_MouseStateSnapshot.cursorClientX =
-        g_zInput_MouseClientCenterX + (int)(g_zInput_MouseClientCenterX * normX);
-    g_zInput_MouseStateSnapshot.cursorClientY =
-        g_zInput_MouseClientCenterY + (int)(g_zInput_MouseClientCenterY * normY);
+    g_zInput_MouseStateSnapshot.cursorClientX
+        = g_zInput_MouseClientCenterX + (int)(g_zInput_MouseClientCenterX * normX);
+    g_zInput_MouseStateSnapshot.cursorClientY
+        = g_zInput_MouseClientCenterY + (int)(g_zInput_MouseClientCenterY * normY);
     MouseApplyClientCursorPosToOS();
 }
 
@@ -86,7 +86,8 @@ void __stdcall MouseSetNormalizedCursorPos(
  * Purpose: Move the cached mouse cursor position to the client center and
  * apply the position to the OS cursor.
  */
-void __cdecl MouseRecenterCursor() {
+void __cdecl MouseRecenterCursor()
+{
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     g_zInput_MouseStateSnapshot.cursorClientY = g_zInput_MouseClientCenterY;
     g_zInput_MouseStateSnapshot.cursorNormX = 0.0f;
@@ -103,7 +104,8 @@ void __cdecl MouseRecenterCursor() {
  * Purpose: Recenter only the cached mouse client X coordinate before applying
  * the position to the OS cursor.
  */
-void __cdecl MouseRecenterCursorX() {
+void __cdecl MouseRecenterCursorX()
+{
     g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientCenterX;
     MouseApplyClientCursorPosToOS();
 }
@@ -114,7 +116,8 @@ void __cdecl MouseRecenterCursorX() {
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
  */
-int __cdecl MouseIsInitialized() {
+int __cdecl MouseIsInitialized()
+{
     return g_zInput_MouseInitialized;
 }
 
@@ -125,10 +128,8 @@ int __cdecl MouseIsInitialized() {
  * Purpose: Store explicit mouse client dimensions, signed center coordinates,
  * and inverse center scale factors.
  */
-void __fastcall MouseSetClientSizeAndCenter(
-    int width,
-    int height
-) {
+void __fastcall MouseSetClientSizeAndCenter(int width, int height)
+{
     g_zInput_MouseClientWidth = width;
     g_zInput_MouseClientHeight = height;
     g_zInput_MouseClientCenterX = (width - (width >> 31)) >> 1;
@@ -149,19 +150,17 @@ void __fastcall MouseSetClientSizeAndCenter(
  * g_zInput_MouseCoopLevelFlags, sets a 16-event buffer, marks mouse active and
  * initialized, and returns 1.
  */
-int __cdecl MouseInitDevice() {
-    DIDevice *baseDevice = 0;
-    g_zInput_GlobalState->CreateDevice(GUID_SysMouse, (LPDIRECTINPUTDEVICEA *)(&baseDevice), 0);
-    baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void **)(&g_zInput_MouseDevice));
+int __cdecl MouseInitDevice()
+{
+    DIDevice* baseDevice = 0;
+    g_zInput_GlobalState->CreateDevice(GUID_SysMouse, (LPDIRECTINPUTDEVICEA*)(&baseDevice), 0);
+    baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void**)(&g_zInput_MouseDevice));
     baseDevice->Release();
 
     g_zInput_MouseDevice->SetDataFormat(&c_dfDIMouse);
-    g_zInput_MouseDevice->SetCooperativeLevel(
-        g_zInput_hWnd,
-        (unsigned int)(g_zInput_MouseCoopLevelFlags)
-    );
+    g_zInput_MouseDevice->SetCooperativeLevel(g_zInput_hWnd, (unsigned int)(g_zInput_MouseCoopLevelFlags));
 
-    DipropDwordInit bufferSizeProp = {0x14, 0x10, 0, 0, 0x10};
+    DipropDwordInit bufferSizeProp = { 0x14, 0x10, 0, 0, 0x10 };
     g_zInput_MouseDevice->SetProperty(DIPROP_BUFFERSIZE, (LPCDIPROPHEADER)(&bufferSizeProp));
 
     g_zInput_MouseStateSnapshot.button1Transition = 0;
@@ -190,22 +189,18 @@ int __cdecl MouseInitDevice() {
  * treats button numbers as 1-based, returns 1 or 2 for down transitions and
  * held buttons, and uses the release-path neg/sbb idiom for result 4.
  */
-int __fastcall MouseGetButtonTransitionState(
-    int buttonNumber
-) {
-    const unsigned char *currentButtons =
-        (const unsigned char *)(&g_zInput_MouseCurrentState.rgbButtons);
+int __fastcall MouseGetButtonTransitionState(int buttonNumber)
+{
+    const unsigned char* currentButtons = (const unsigned char*)(&g_zInput_MouseCurrentState.rgbButtons);
 
     const unsigned char current = currentButtons[buttonNumber - 1];
     if (current != 0) {
-        const unsigned char *previousButtons =
-            (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
+        const unsigned char* previousButtons = (const unsigned char*)(&g_zInput_MousePreviousState.rgbButtons);
         const unsigned char previous = previousButtons[buttonNumber - 1];
         return (previous != 0 ? 1 : 0) + 1;
     }
 
-    const unsigned char *previousButtons =
-        (const unsigned char *)(&g_zInput_MousePreviousState.rgbButtons);
+    const unsigned char* previousButtons = (const unsigned char*)(&g_zInput_MousePreviousState.rgbButtons);
     const unsigned char previous = previousButtons[buttonNumber - 1];
     return previous != 0 ? 4 : 0;
 }
@@ -220,9 +215,10 @@ int __fastcall MouseGetButtonTransitionState(
  * calls DirectInput device vtable slot 0x1c for Acquire or slot 0x20 for
  * Unacquire, and treats DI_OK and DI_FALSE as non-failures.
  */
-void __cdecl MouseUpdateAcquireState() {
+void __cdecl MouseUpdateAcquireState()
+{
     if (g_zInput_MouseActive != 0) {
-        DIDevice *device = g_zInput_MouseDevice;
+        DIDevice* device = g_zInput_MouseDevice;
         if (device != 0) {
             const int result = device->Acquire();
             if (result != kDiOk && result != kDiFalse) {
@@ -230,7 +226,7 @@ void __cdecl MouseUpdateAcquireState() {
             }
         }
     } else {
-        DIDevice *device = g_zInput_MouseDevice;
+        DIDevice* device = g_zInput_MouseDevice;
         if (device != 0) {
             const int result = device->Unacquire();
             if (result != kDiOk && result != kDiFalse) {
@@ -251,11 +247,12 @@ void __cdecl MouseUpdateAcquireState() {
  * MouseUpdateAcquireState, conditionally releases g_zInput_MouseDevice, then
  * clears g_zInput_MouseDevice and g_zInput_MouseInitialized before returning 1.
  */
-int __cdecl MouseShutdownDevice() {
+int __cdecl MouseShutdownDevice()
+{
     g_zInput_MouseActive = 0;
     MouseUpdateAcquireState();
 
-    DIDevice *device = g_zInput_MouseDevice;
+    DIDevice* device = g_zInput_MouseDevice;
     if (device != 0) {
         device->Release();
     }
@@ -272,7 +269,8 @@ int __cdecl MouseShutdownDevice() {
  *
  * Purpose: Return the shared mouse state snapshot used by input consumers.
  */
-MouseStateSnapshot *__cdecl MouseGetStateSnapshotPtr() {
+MouseStateSnapshot* __cdecl MouseGetStateSnapshotPtr()
+{
     return &g_zInput_MouseStateSnapshot;
 }
 
@@ -283,9 +281,8 @@ MouseStateSnapshot *__cdecl MouseGetStateSnapshotPtr() {
  *
  * Purpose: Poll the mouse and store the latest DirectInput-style result code.
  */
-void __fastcall MousePollAndStoreState(
-    unsigned char dispatchCallbacks
-) {
+void __fastcall MousePollAndStoreState(unsigned char dispatchCallbacks)
+{
     g_zInputMouseLastPollResult = MousePollState(dispatchCallbacks);
 }
 
@@ -294,9 +291,8 @@ void __fastcall MousePollAndStoreState(
  * @recoil-artifact defines .text recoil:function:0x4703c0: zInput::MousePollState.
  * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
  */
-int __fastcall MousePollState(
-    unsigned char dispatchCallbacks
-) {
+int __fastcall MousePollState(unsigned char dispatchCallbacks)
+{
     g_zInput_MouseStateSnapshot.deltaX = 0;
     g_zInput_MouseStateSnapshot.deltaY = 0;
 
@@ -308,7 +304,7 @@ int __fastcall MousePollState(
         }
     }
 
-    DIDevice *device = g_zInput_MouseDevice;
+    DIDevice* device = g_zInput_MouseDevice;
     device->Poll();
     int result = device->GetDeviceState(sizeof(MouseDeviceState), &g_zInput_MouseRawDIState);
     if (result == kDiInputLost) {
@@ -347,11 +343,12 @@ int __fastcall MousePollState(
  * when g_zInput_Mouse_WrapModeFlag is clear, then writes cursor/delta normals
  * from the center and inverse-center globals.
  */
-void __cdecl MouseApplyAccumulatedDelta() {
-    g_zInput_MouseStateSnapshot.deltaX =
-        (int)((float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
-    g_zInput_MouseStateSnapshot.deltaY =
-        (int)((float)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
+void __cdecl MouseApplyAccumulatedDelta()
+{
+    g_zInput_MouseStateSnapshot.deltaX
+        = (int)((float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseSensitivityX);
+    g_zInput_MouseStateSnapshot.deltaY
+        = (int)((float)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
 
     int cursorX = g_zInput_MouseStateSnapshot.cursorClientX + g_zInput_MouseStateSnapshot.deltaX;
     int cursorY = g_zInput_MouseStateSnapshot.cursorClientY + g_zInput_MouseStateSnapshot.deltaY;
@@ -377,14 +374,14 @@ void __cdecl MouseApplyAccumulatedDelta() {
         }
     }
 
-    g_zInput_MouseStateSnapshot.cursorNormX =
-        (float)((double)(cursorX - g_zInput_MouseClientCenterX) * g_zInput_MouseInvClientCenterX);
-    g_zInput_MouseStateSnapshot.cursorNormY =
-        (float)((double)(cursorY - g_zInput_MouseClientCenterY) * g_zInput_MouseInvClientCenterY);
-    g_zInput_MouseStateSnapshot.deltaNormX =
-        (float)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX);
-    g_zInput_MouseStateSnapshot.deltaNormY =
-        (float)((double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
+    g_zInput_MouseStateSnapshot.cursorNormX
+        = (float)((double)(cursorX - g_zInput_MouseClientCenterX) * g_zInput_MouseInvClientCenterX);
+    g_zInput_MouseStateSnapshot.cursorNormY
+        = (float)((double)(cursorY - g_zInput_MouseClientCenterY) * g_zInput_MouseInvClientCenterY);
+    g_zInput_MouseStateSnapshot.deltaNormX
+        = (float)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX);
+    g_zInput_MouseStateSnapshot.deltaNormY
+        = (float)((double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
 }
 
 /**
@@ -396,9 +393,8 @@ void __cdecl MouseApplyAccumulatedDelta() {
  * Purpose: Copy the current derived mouse snapshot to the caller and return
  * the last DirectInput mouse poll result.
  */
-int __fastcall MouseGetStateSnapshot(
-    MouseStateSnapshot *outState
-) {
+int __fastcall MouseGetStateSnapshot(MouseStateSnapshot* outState)
+{
     if (outState != 0) {
         memcpy(outState, &g_zInput_MouseStateSnapshot, 0x2c);
     }
@@ -418,7 +414,8 @@ int __fastcall MouseGetStateSnapshot(
  * 0x561c90/0x561c94/0x561ca0/0x561ca4/0x561ca8, and tail-calls
  * MouseApplyAccumulatedDelta.
  */
-void __cdecl MouseResetTransitionState() {
+void __cdecl MouseResetTransitionState()
+{
     if (g_zInput_MouseInitialized != 1) {
         return;
     }
@@ -444,9 +441,8 @@ void __cdecl MouseResetTransitionState() {
  * Purpose: Replace the stored mouse DirectInput cooperative-level flags and
  * return the previous value.
  */
-int __fastcall MouseSetCooperativeLevelFlags(
-    int flags
-) {
+int __fastcall MouseSetCooperativeLevelFlags(int flags)
+{
     const int previousFlags = g_zInput_MouseCoopLevelFlags;
     g_zInput_MouseCoopLevelFlags = flags;
     return previousFlags;
@@ -461,9 +457,8 @@ int __fastcall MouseSetCooperativeLevelFlags(
  * Purpose: Poll mouse input until a newly pressed button is found or the
  * caller requests a single scan.
  */
-int __fastcall MouseWaitForButtonPress(
-    int pollUntilFound
-) {
+int __fastcall MouseWaitForButtonPress(int pollUntilFound)
+{
     int result = 0;
     do {
         MousePollState(1);

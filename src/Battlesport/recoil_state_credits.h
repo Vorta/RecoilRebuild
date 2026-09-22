@@ -13,7 +13,7 @@ struct HudUiCreditsPanel;
 struct RecoilStateCredits : RecoilStateDialogHost {
     RecoilStateCredits();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateCredits *StaticInit();
+    static RecoilStateCredits* StaticInit();
     static void RegisterAtExit();
     static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
@@ -21,12 +21,7 @@ struct RecoilStateCredits : RecoilStateDialogHost {
     static void QueuePush();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCredits) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateCredits,
-        m_dialog
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateCredits, m_dialog) == 0x04);
 
 union RecoilStateCreditsStorage {
     unsigned long align;
@@ -35,5 +30,4 @@ union RecoilStateCreditsStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCreditsStorage) == 0x08);
 
 extern RecoilStateCreditsStorage g_RecoilStateCredits;
-#define g_RecoilStateCredits \
-    (*(RecoilStateCredits *)&g_RecoilStateCredits)
+#define g_RecoilStateCredits (*(RecoilStateCredits*)&g_RecoilStateCredits)

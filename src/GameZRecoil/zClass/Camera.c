@@ -1,6 +1,5 @@
 #include "zclass.h"
 
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/zclip_alt.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/zError/zerr.h"
@@ -8,6 +7,7 @@
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include <math.h>
@@ -58,13 +58,13 @@ int g_CZClass_ObjectHseTestEnabled = 1;
  * @recoil-artifact defines .data recoil:data:0x4ddd34: g_CZClass_CurrentCamera.
  * Purpose: track the current active camera node.
  */
-CZNodePartial *g_CZClass_CurrentCamera = 0;
+CZNodePartial* g_CZClass_CurrentCamera = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-cameratargetnode
  * @recoil-artifact defines .data recoil:data:0x4ddd38: g_CZClass_CameraTargetNode.
  * Purpose: track the current camera target node.
  */
-CZNodePartial *g_CZClass_CameraTargetNode = 0;
+CZNodePartial* g_CZClass_CameraTargetNode = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-camera-prevlistenerposx
  * @recoil-artifact defines .data recoil:data:0x4f4988: g_Camera_PrevListenerPosX.
@@ -96,24 +96,21 @@ float g_Camera_PrevListenerPosZ = 0.0f;
  * Purpose: report the unexpected convex-hull exit path during frustum-grid
  * footprint construction.
  */
-char g_CZClass_FindConvexHullUnexpectedReturnMsg[0x37] =
-    "Returning from find_convex_hull_xz in unexpected line.";
+char g_CZClass_FindConvexHullUnexpectedReturnMsg[0x37] = "Returning from find_convex_hull_xz in unexpected line.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-diamondtilerneedmoreringsmsg
  * @recoil-artifact defines .data recoil:data:0x4dddf4: g_CZClass_DiamondTilerNeedMoreRingsMsg.
  * BN data inventory declares writable Camera.c diagnostic literal char[0x26].
  * Purpose: report overflow of camera frustum-grid diamond ring buckets.
  */
-char g_CZClass_DiamondTilerNeedMoreRingsMsg[0x26] =
-    "Error: Need more diamond tiler rings.";
+char g_CZClass_DiamondTilerNeedMoreRingsMsg[0x26] = "Error: Need more diamond tiler rings.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-diamondtilerneedmorecellsperringmsg
  * @recoil-artifact defines .data recoil:data:0x4dde1c: g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg.
  * BN data inventory declares writable Camera.c diagnostic literal char[0x2f].
  * Purpose: report overflow of a camera frustum-grid diamond ring's cell list.
  */
-char g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg[0x2f] =
-    "Error: Need more diamond tiler cells per ring.";
+char g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg[0x2f] = "Error: Need more diamond tiler cells per ring.";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-lineerrorpointinpolygoninitcamerafrustumfmt
  * @recoil-artifact defines .data recoil:data:0x4dde4c: g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt.
@@ -121,9 +118,9 @@ char g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg[0x2f] =
  * Purpose: format the camera frustum-footprint mesh-face filter failure
  * diagnostic with the legacy source file and line.
  */
-char g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt[0x53] =
-    "%s: Line %d: ERROR from gModDIPointInPolygonInit() for camera "
-    "frustrum footprint.\n";
+char g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt[0x53]
+    = "%s: Line %d: ERROR from gModDIPointInPolygonInit() for camera "
+      "frustrum footprint.\n";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-vapstaticsnodename
  * @recoil-artifact defines .data recoil:data:0x4ddea0: g_CZClass_VapStaticsNodeName.
@@ -141,7 +138,7 @@ char g_CZClass_VapStaticsNodeName[0x0c] = "VAP_statics";
  * grid-tile construction; BN bounds this zero-initialized array to five zVec3
  * entries, with the adjacent zero gaps outside this symbol.
  */
-zVec3 g_zCamera_FrustumFootprintPoints[5] = {0};
+zVec3 g_zCamera_FrustumFootprintPoints[5] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zcamera-frustumfootprintpointcount
  * @recoil-artifact defines .data recoil:data:0x56ccac: g_zCamera_FrustumFootprintPointCount.
@@ -154,10 +151,11 @@ int g_zCamera_FrustumFootprintPointCount = 0;
  * Purpose: cache up to 50 diamond-ring buckets of camera frustum grid tiles
  * for the scene render pass.
  */
-zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50] = {0};
+zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50] = { 0 };
 }
 
-namespace {
+namespace
+{
     const int kZClassNodeCamera = 1;
     const int kZClassNodeWorld = 2;
 
@@ -175,33 +173,28 @@ namespace {
      * Purpose: validate a camera node, recover its camera data pointer, and
      * preserve the caller-specific legacy source-line diagnostics.
      */
-#define ValidateCameraNode(node, outData, nullLine, dataLine, classLine) \
-    ((node) == 0 \
-        ? (zError::ReportOld( \
-              0x400, \
-              "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
-              (nullLine), \
-              "Null node pointer." \
-          ), 5) \
-        : ((node)->classData == 0 \
-              ? (zError::ReportOld( \
-                    0x400, \
-                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
-                    (dataLine), \
-                    "Null class data pointer" \
-                ), 5) \
-              : ((node)->classId != kZClassNodeCamera \
-                    ? (zError::ReportOld( \
-                          0x400, \
-                          "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", \
-                          (classLine), \
-                          "Bad Class Found.\n Wanted (%d)\n Found (%d)", \
-                          (node)->classId, \
-                          kZClassNodeCamera \
-                      ), 3) \
-                    : (*(outData) = \
-                           (CZCameraDataPartial *)((node)->classData), \
-                       0))))
+#define ValidateCameraNode(node, outData, nullLine, dataLine, classLine)                                               \
+    ((node) == 0                                                                                                       \
+            ? (zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", (nullLine), "Null node pointer."),  \
+                  5)                                                                                                   \
+            : ((node)->classData == 0 ? (zError::ReportOld(                                                            \
+                                             0x400,                                                                    \
+                                             "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",                                \
+                                             (dataLine),                                                               \
+                                             "Null class data pointer"                                                 \
+                                         ),                                                                            \
+                                            5)                                                                         \
+                                      : ((node)->classId != kZClassNodeCamera                                          \
+                                                ? (zError::ReportOld(                                                  \
+                                                       0x400,                                                          \
+                                                       "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",                      \
+                                                       (classLine),                                                    \
+                                                       "Bad Class Found.\n Wanted (%d)\n Found (%d)",                  \
+                                                       (node)->classId,                                                \
+                                                       kZClassNodeCamera                                               \
+                                                   ),                                                                  \
+                                                      3)                                                               \
+                                                : (*(outData) = (CZCameraDataPartial*)((node)->classData), 0))))
 
     /**
      * Original inline construct observed in camera target callers
@@ -209,23 +202,20 @@ namespace {
      * Purpose: select the active target vector field based on the camera flag
      * that switches between world target and Euler/target storage.
      */
-#define GetSelectedTargetVector(data) \
-    (((data)->cameraFlags & 0x02) != 0 \
-        ? &(data)->worldTarget \
-        : &(data)->targetOrEuler)
+#define GetSelectedTargetVector(data)                                                                                  \
+    (((data)->cameraFlags & 0x02) != 0 ? &(data)->worldTarget : &(data)->targetOrEuler)
 }
 
-namespace CZCamera {
+namespace CZCamera
+{
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.setviewdistance
      * @recoil-artifact defines .text recoil:function:0x449ba0: CZCamera::SetViewDistance.
      * Purpose: configure adaptive camera clip-distance scaling from view distance.
      */
-    void __fastcall SetViewDistance(
-        int enableAutoClip,
-        float distance
-    ) {
+    void __fastcall SetViewDistance(int enableAutoClip, float distance)
+    {
         g_CZClass_CameraAutoClipDistanceAdjustEnabled = enableAutoClip;
         if (distance == 0.0f) {
             g_CZClass_CameraAutoClipDistanceThreshold = 0.04f;
@@ -239,16 +229,16 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x449be0: CZCamera::gwCameraNew.
      * Purpose: allocate and initialize a camera node and its class data.
      */
-    CZNodePartial *__cdecl gwCameraNew() {
-        CZNodePartial *node = CZClass::gwNodeNew();
+    CZNodePartial* __cdecl gwCameraNew()
+    {
+        CZNodePartial* node = CZClass::gwNodeNew();
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x1e8, "Null node pointer.");
             return 0;
         }
 
         node->classId = kZClassNodeCamera;
-        CZCameraDataPartial *data =
-            (CZCameraDataPartial *)(calloc(1, sizeof(CZCameraDataPartial)));
+        CZCameraDataPartial* data = (CZCameraDataPartial*)(calloc(1, sizeof(CZCameraDataPartial)));
         node->classData = data;
         data->targetOrEuler.x = 0.0f;
         data->targetOrEuler.y = 0.0f;
@@ -274,10 +264,8 @@ namespace CZCamera {
      * Purpose: validate camera parent/child inputs before using the generic
      * zClass listA/listB child-link routine.
      */
-    int __fastcall gwCameraAddChild(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall gwCameraAddChild(CZNodePartial * parent, CZNodePartial * child)
+    {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x239, "Null node pointer.");
             return 5;
@@ -297,10 +285,8 @@ namespace CZCamera {
      * Purpose: validate camera parent/child inputs before using the generic
      * zClass listA/listB child-unlink routine.
      */
-    int __fastcall gwCameraRemoveChild(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall gwCameraRemoveChild(CZNodePartial * parent, CZNodePartial * child)
+    {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x251, "Null node pointer.");
             return 5;
@@ -320,10 +306,8 @@ namespace CZCamera {
      *
      * Purpose: route the camera active-state update through the generic node helper.
      */
-    int __fastcall gwCameraSetActive(
-        CZNodePartial * node,
-        int active
-    ) {
+    int __fastcall gwCameraSetActive(CZNodePartial * node, int active)
+    {
         return CZClass::gwNodeSetActive(node, active);
     }
     /**
@@ -333,11 +317,9 @@ namespace CZCamera {
      * BuildWorldTransform.
      * Purpose: validate a camera node and set or clear camera flag bit 0.
      */
-    int __fastcall gwCameraSetFlagBit0(
-        CZNodePartial * node,
-        int enabled
-    ) {
-        CZCameraDataPartial *data = 0;
+    int __fastcall gwCameraSetFlagBit0(CZNodePartial * node, int enabled)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(node, &data, 0x274, 0x275, 0x276);
         if (result != 0) {
             return result;
@@ -359,7 +341,8 @@ namespace CZCamera {
      *
      * Purpose: store the current global camera target node and report success.
      */
-    int __fastcall SetTargetNode(CZNodePartial * target) {
+    int __fastcall SetTargetNode(CZNodePartial * target)
+    {
         g_CZClass_CameraTargetNode = target;
         return 0;
     }
@@ -371,9 +354,8 @@ namespace CZCamera {
      *
      * Purpose: store the current global camera node and return it.
      */
-    CZNodePartial *__fastcall SetActiveCamera(
-        CZNodePartial * camera
-    ) {
+    CZNodePartial* __fastcall SetActiveCamera(CZNodePartial * camera)
+    {
         g_CZClass_CurrentCamera = camera;
         return camera;
     }
@@ -385,7 +367,8 @@ namespace CZCamera {
      *
      * Purpose: store the object HSE test enable flag and report success.
      */
-    int __fastcall SetObjectHseTestEnabled(int enabled) {
+    int __fastcall SetObjectHseTestEnabled(int enabled)
+    {
         g_CZClass_ObjectHseTestEnabled = enabled;
         return 0;
     }
@@ -396,10 +379,8 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x449dd0: CZCamera::gwCameraSetWorld.
      * Purpose: validate camera and world nodes before assigning the camera world.
      */
-    gwCameraSetWorld(
-        CZNodePartial * camera,
-        CZNodePartial * world
-    ) {
+    gwCameraSetWorld(CZNodePartial * camera, CZNodePartial * world)
+    {
         if (camera == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x2be, "Null node pointer.");
             return 5;
@@ -441,7 +422,7 @@ namespace CZCamera {
             return 3;
         }
 
-        ((CZCameraDataPartial *)(camera->classData))->worldNode = world;
+        ((CZCameraDataPartial*)(camera->classData))->worldNode = world;
         return 0;
     }
 
@@ -452,10 +433,9 @@ namespace CZCamera {
      *
      * Purpose: return the world node currently assigned to the camera.
      */
-    CZNodePartial *__fastcall gwCameraGetWorld(
-        CZNodePartial * camera
-    ) {
-        return ((CZCameraDataPartial *)(camera->classData))->worldNode;
+    CZNodePartial* __fastcall gwCameraGetWorld(CZNodePartial * camera)
+    {
+        return ((CZCameraDataPartial*)(camera->classData))->worldNode;
     }
 
     int __fastcall
@@ -466,11 +446,9 @@ namespace CZCamera {
      *
      * Purpose: assign the window node used by the camera view context.
      */
-    gwCameraSetWindow(
-        CZNodePartial * camera,
-        CZNodePartial * window
-    ) {
-        ((CZCameraDataPartial *)(camera->classData))->windowNode = window;
+    gwCameraSetWindow(CZNodePartial * camera, CZNodePartial * window)
+    {
+        ((CZCameraDataPartial*)(camera->classData))->windowNode = window;
         return 0;
     }
 
@@ -480,13 +458,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x449ea0: CZCamera::gwCameraSetPosition.
      * Purpose: set the camera position offset and dirty dependent transforms.
      */
-    gwCameraSetPosition(
-        CZNodePartial * camera,
-        float x,
-        float y,
-        float z
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetPosition(CZNodePartial * camera, float x, float y, float z)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x3a7, 0x3a8, 0x3a9);
         if (result != 0) {
             return result;
@@ -511,7 +485,8 @@ namespace CZCamera {
      *
      * Purpose: mark camera children dirty and register the active camera node.
      */
-    int __fastcall ActivateChildren(CZNodePartial *camera, CZCameraDataPartial *data) {
+    int __fastcall ActivateChildren(CZNodePartial * camera, CZCameraDataPartial * data)
+    {
         data->cameraFlags |= 0x04;
         if ((camera->flags & 0x01) == 0) {
             CZTypeList::Insert(7, camera);
@@ -534,13 +509,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x449fb0: CZCamera::gwCameraTranslate.
      * Purpose: translate the camera position offset and dirty dependent transforms.
      */
-    gwCameraTranslate(
-        CZNodePartial * camera,
-        float dx,
-        float dy,
-        float dz
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraTranslate(CZNodePartial * camera, float dx, float dy, float dz)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x3df, 0x3e0, 0x3e1);
         if (result != 0) {
             return result;
@@ -563,13 +534,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a060: CZCamera::gwCameraGetPosition.
      * Purpose: return the camera position offset components.
      */
-    gwCameraGetPosition(
-        CZNodePartial * camera,
-        float *outX,
-        float *outY,
-        float *outZ
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraGetPosition(CZNodePartial * camera, float* outX, float* outY, float* outZ)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x414, 0x415, 0x416);
         if (result != 0) {
             return result;
@@ -587,19 +554,15 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a0f0: CZCamera::gwCameraSetTarget.
      * Purpose: set the selected camera target vector and update children.
      */
-    gwCameraSetTarget(
-        CZNodePartial * camera,
-        float x,
-        float y,
-        float z
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetTarget(CZNodePartial * camera, float x, float y, float z)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x43c, 0x43d, 0x43e);
         if (result != 0) {
             return result;
         }
 
-        zVec3 *target = GetSelectedTargetVector(data);
+        zVec3* target = GetSelectedTargetVector(data);
         target->x = x;
         target->y = y;
         target->z = z;
@@ -616,19 +579,15 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslateTarget.
      * Purpose: translate the selected camera target vector and update children.
      */
-    gwCameraTranslateTarget(
-        CZNodePartial * camera,
-        float dx,
-        float dy,
-        float dz
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraTranslateTarget(CZNodePartial * camera, float dx, float dy, float dz)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x46f, 0x470, 0x471);
         if (result != 0) {
             return result;
         }
 
-        zVec3 *target = GetSelectedTargetVector(data);
+        zVec3* target = GetSelectedTargetVector(data);
         target->x += dx;
         target->y += dy;
         target->z += dz;
@@ -645,19 +604,15 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a250: CZCamera::gwCameraGetTarget.
      * Purpose: return the selected camera target vector components.
      */
-    gwCameraGetTarget(
-        CZNodePartial * camera,
-        float *outX,
-        float *outY,
-        float *outZ
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraGetTarget(CZNodePartial * camera, float* outX, float* outY, float* outZ)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x4a1, 0x4a2, 0x4a3);
         if (result != 0) {
             return result;
         }
 
-        zVec3 *target = GetSelectedTargetVector(data);
+        zVec3* target = GetSelectedTargetVector(data);
         *outX = target->x;
         *outY = target->y;
         *outZ = target->z;
@@ -670,12 +625,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a2f0: CZCamera::gwCameraSetNearFarClip.
      * Purpose: store near/far clip distances and dirty frustum vectors.
      */
-    gwCameraSetNearFarClip(
-        CZNodePartial * camera,
-        float nearClip,
-        float farClip
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetNearFarClip(CZNodePartial * camera, float nearClip, float farClip)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x509, 0x50a, 0x50b);
         if (result != 0) {
             return result;
@@ -693,12 +645,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a380: CZCamera::gwCameraGetNearFarClip.
      * Purpose: return the camera near/far clip distances.
      */
-    gwCameraGetNearFarClip(
-        CZNodePartial * camera,
-        float *outNear,
-        float *outFar
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraGetNearFarClip(CZNodePartial * camera, float* outNear, float* outFar)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x52f, 0x530, 0x531);
         if (result != 0) {
             return result;
@@ -715,12 +664,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a410: CZCamera::gwCameraSetViewport.
      * Purpose: update viewport dimensions and derived frustum scale values.
      */
-    gwCameraSetViewport(
-        CZNodePartial * camera,
-        float viewportWidth,
-        float viewportHeight
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetViewport(CZNodePartial * camera, float viewportWidth, float viewportHeight)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x553, 0x554, 0x555);
         if (result != 0) {
             return result;
@@ -758,12 +704,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a580: CZCamera::gwCameraGetViewport.
      * Purpose: return the camera viewport dimensions.
      */
-    gwCameraGetViewport(
-        CZNodePartial * camera,
-        float *outWidth,
-        float *outHeight
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraGetViewport(CZNodePartial * camera, float* outWidth, float* outHeight)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x58e, 0x58f, 0x590);
         if (result != 0) {
             return result;
@@ -780,12 +723,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a610: CZCamera::gwCameraSetFOV.
      * Purpose: set camera frustum dimensions and derived projection scale values.
      */
-    gwCameraSetFOV(
-        CZNodePartial * camera,
-        float fovX,
-        float fovY
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetFOV(CZNodePartial * camera, float fovX, float fovY)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x5b2, 0x5b3, 0x5b4);
         if (result != 0) {
             return result;
@@ -820,12 +760,9 @@ namespace CZCamera {
      * Purpose: return the camera frustum FOV pair after legacy camera-node
      * validation diagnostics.
      */
-    int __fastcall gwCameraGetFOV(
-        CZNodePartial * camera,
-        float *outFovX,
-        float *outFovY
-    ) {
-        CZCameraDataPartial *data = 0;
+    int __fastcall gwCameraGetFOV(CZNodePartial * camera, float* outFovX, float* outFovY)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x5e7, 0x5e8, 0x5e9);
         if (result != 0) {
             return result;
@@ -842,11 +779,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a7f0: CZCamera::gwCameraGetClipDistance.
      * Purpose: return the camera clip distance.
      */
-    gwCameraGetClipDistance(
-        CZNodePartial * camera,
-        float *outClipDistance
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraGetClipDistance(CZNodePartial * camera, float* outClipDistance)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x609, 0x60a, 0x60b);
         if (result != 0) {
             return result;
@@ -862,11 +797,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a870: CZCamera::gwCameraSetClipDistance.
      * Purpose: store the camera clip distance and inverse squared distance.
      */
-    gwCameraSetClipDistance(
-        CZNodePartial * camera,
-        float clipDistance
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetClipDistance(CZNodePartial * camera, float clipDistance)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x62a, 0x62b, 0x62c);
         if (result != 0) {
             return result;
@@ -883,11 +816,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a910: CZCamera::gwCameraSetHorizon.
      * Purpose: assign the horizon node that follows the camera position.
      */
-    gwCameraSetHorizon(
-        CZNodePartial * camera,
-        CZNodePartial * horizonNode
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetHorizon(CZNodePartial * camera, CZNodePartial * horizonNode)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x64d, 0x64e, 0x64f);
         if (result != 0) {
             return result;
@@ -903,11 +834,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a980: CZCamera::gwCameraSetHorizonXZ.
      * Purpose: assign the horizon node that follows camera X/Z position.
      */
-    gwCameraSetHorizonXZ(
-        CZNodePartial * camera,
-        CZNodePartial * horizonXZNode
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetHorizonXZ(CZNodePartial * camera, CZNodePartial * horizonXZNode)
+    {
+        CZCameraDataPartial* data = 0;
         const int result = ValidateCameraNode(camera, &data, 0x66e, 0x66f, 0x670);
         if (result != 0) {
             return result;
@@ -922,7 +851,8 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44a9f0: CZCamera::gwCameraUpdate.
      * Purpose: validate the camera node and run the camera update implementation.
      */
-    int __fastcall gwCameraUpdate(CZNodePartial * camera) {
+    int __fastcall gwCameraUpdate(CZNodePartial * camera)
+    {
         if (camera == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", 0x75c, "Null node pointer.");
             return 5;
@@ -941,11 +871,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44aa30: CZCamera::UpdateImpl.
      * Purpose: rebuild camera transforms, frustum planes, and clip centers.
      */
-    int __fastcall UpdateImpl(
-        CZNodePartial * camera,
-        zVec3 * posOffset
-    ) {
-        CZCameraDataPartial *data = (CZCameraDataPartial *)(camera->classData);
+    int __fastcall UpdateImpl(CZNodePartial * camera, zVec3 * posOffset)
+    {
+        CZCameraDataPartial* data = (CZCameraDataPartial*)(camera->classData);
 
         BuildWorldTransform(camera, data, posOffset);
 
@@ -1002,15 +930,12 @@ namespace CZCamera {
      * Purpose: build the camera world transform and update the zSound
      * listener bridge previous-position state.
      */
-    int __fastcall BuildWorldTransform(
-        CZNodePartial * camera,
-        CZCameraDataPartial * data,
-        zVec3 * posOffset
-    ) {
+    int __fastcall BuildWorldTransform(CZNodePartial * camera, CZCameraDataPartial * data, zVec3 * posOffset)
+    {
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(camera, 1);
 
-        zMat4x3 *matrix = zMathMatGetCurrent();
+        zMat4x3* matrix = zMathMatGetCurrent();
         if (posOffset != 0) {
             matrix->posX += posOffset->x;
             matrix->posY += posOffset->y;
@@ -1027,7 +952,7 @@ namespace CZCamera {
         memcpy(data->worldTransform, matrix, sizeof(zMat4x3));
         zMathMatExtractEulerAngles(matrix, &data->eulerAngles);
         zMath::MatLoadIdentity();
-        zMathCameraStageInverseRotation((zMat4x3 *)(data->worldTransform));
+        zMathCameraStageInverseRotation((zMat4x3*)(data->worldTransform));
 
         if ((data->cameraFlags & 0x01) != 0) {
             /*
@@ -1035,19 +960,15 @@ namespace CZCamera {
              * for the previous camera position, consumed here before pushing
              * the current listener state into zSound.
              */
-            zVec3 listenerVelocity = {0};
+            zVec3 listenerVelocity = { 0 };
             if (g_FrameDeltaTimeSec != 0.0f) {
-                listenerVelocity.x =
-                    (data->worldTransform[9] - g_zSnd_PreviousListenerPos.x) / g_FrameDeltaTimeSec;
-                listenerVelocity.y =
-                    (data->worldTransform[10] - g_zSnd_PreviousListenerPos.y) / g_FrameDeltaTimeSec;
-                listenerVelocity.z =
-                    (data->worldTransform[11] - g_zSnd_PreviousListenerPos.z) / g_FrameDeltaTimeSec;
+                listenerVelocity.x = (data->worldTransform[9] - g_zSnd_PreviousListenerPos.x) / g_FrameDeltaTimeSec;
+                listenerVelocity.y = (data->worldTransform[10] - g_zSnd_PreviousListenerPos.y) / g_FrameDeltaTimeSec;
+                listenerVelocity.z = (data->worldTransform[11] - g_zSnd_PreviousListenerPos.z) / g_FrameDeltaTimeSec;
 
                 const float listenerSpeed = sqrt(
-                    listenerVelocity.x * listenerVelocity.x +
-                    listenerVelocity.y * listenerVelocity.y +
-                    listenerVelocity.z * listenerVelocity.z
+                    listenerVelocity.x * listenerVelocity.x + listenerVelocity.y * listenerVelocity.y
+                    + listenerVelocity.z * listenerVelocity.z
                 );
                 if (zSndGetSpeedOfSoundMps() <= listenerSpeed) {
                     listenerVelocity.x = 0.0f;
@@ -1059,10 +980,7 @@ namespace CZCamera {
             g_zSnd_PreviousListenerPos.x = data->worldTransform[9];
             g_zSnd_PreviousListenerPos.y = data->worldTransform[10];
             g_zSnd_PreviousListenerPos.z = data->worldTransform[11];
-            zSndUpdateListenerState(
-                (zSndListenerState *)(data->worldTransform),
-                &listenerVelocity
-            );
+            zSndUpdateListenerState((zSndListenerState*)(data->worldTransform), &listenerVelocity);
         }
 
         return 0;
@@ -1074,10 +992,8 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44ada0: CZCamera::RenderTraverse.
      * Purpose: frustum-test and render a camera node traversal branch.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -1085,16 +1001,16 @@ namespace CZCamera {
         }
 
         node->flags = flags & ~0x02000000;
-        CZCameraDataPartial *data = (CZCameraDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZCameraDataPartial* data = (CZCameraDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
-            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0 ||
-                (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = {0};
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & 0x00080000) == 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
@@ -1105,11 +1021,7 @@ namespace CZCamera {
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1119,7 +1031,7 @@ namespace CZCamera {
         }
 
         if (result == 0) {
-            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->worldTransform);
             zMath::MatApplyLocalTRS(&data->posOffset, &data->targetOrEuler, &unitScale);
@@ -1127,7 +1039,7 @@ namespace CZCamera {
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
             if (di != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
                     di->flags |= 0x08;
@@ -1151,10 +1063,10 @@ namespace CZCamera {
         }
         return result;
     }
-
 }
 
-namespace CZSound {
+namespace CZSound
+{
 
     int __fastcall
     /**
@@ -1164,10 +1076,8 @@ namespace CZSound {
      * Purpose: cull a sound node, push its local transform, render the node and
      * children, and restore traversal state.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -1175,16 +1085,16 @@ namespace CZSound {
         }
 
         node->flags = flags & ~0x02000000;
-        CZSoundDataPartial *data = (CZSoundDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZSoundDataPartial* data = (CZSoundDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
-            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0 ||
-                (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = {0};
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & 0x00080000) == 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
@@ -1195,11 +1105,7 @@ namespace CZSound {
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1209,8 +1115,8 @@ namespace CZSound {
         }
 
         if (result == 0) {
-            const zVec3 angles = {0.0f, 0.0f, 0.0f};
-            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            const zVec3 angles = { 0.0f, 0.0f, 0.0f };
+            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(&angles, &data->localPosition, &unitScale);
@@ -1218,7 +1124,7 @@ namespace CZSound {
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
             if (di != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
                     di->flags |= 0x08;
@@ -1242,10 +1148,10 @@ namespace CZSound {
         }
         return result;
     }
-
 }
 
-namespace CZLight {
+namespace CZLight
+{
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b140
@@ -1253,10 +1159,8 @@ namespace CZLight {
      * Purpose: cull an enabled light node, push render-bounds context when
      * needed, apply local transform, render the node subtree, and restore state.
      */
-    int __fastcall RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    int __fastcall RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -1264,16 +1168,16 @@ namespace CZLight {
         }
 
         node->flags = flags & ~0x02000000;
-        CZLightDataPartial *data = (CZLightDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZLightDataPartial* data = (CZLightDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
-            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0 ||
-                (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = {0};
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & 0x00080000) == 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
@@ -1284,11 +1188,7 @@ namespace CZLight {
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1298,7 +1198,7 @@ namespace CZLight {
         }
 
         if (result == 0) {
-            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
+            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(&data->localRotation, &data->localPosition, &unitScale);
@@ -1306,7 +1206,7 @@ namespace CZLight {
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
             if (di != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
                     di->flags |= 0x08;
@@ -1330,220 +1230,205 @@ namespace CZLight {
         }
         return result;
     }
-
 }
 
-namespace CZObject3D {
+namespace CZObject3D
+{
 
-    namespace {
-    const int kZClassNodeObject3D = 5;
-    const int kObject3DVisibleFlag = 0x04;
-    const int kObject3DTransformDirtyFlag = 0x20;
-    const int kNodeBoundsDirtyFlag = 0x04;
-    const int kSingleParentFlag = 0x00080000;
-    const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
+    namespace
+    {
+        const int kZClassNodeObject3D = 5;
+        const int kObject3DVisibleFlag = 0x04;
+        const int kObject3DTransformDirtyFlag = 0x20;
+        const int kNodeBoundsDirtyFlag = 0x04;
+        const int kSingleParentFlag = 0x00080000;
+        const int kNodeTransformDirtyPropagatedFlag = 0x02000000;
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the bounds refresh, sphere test, and far-clip repair as
-     * caller-local render traversal code rather than a separate call target.
-     * Purpose: decide whether object render culling is needed, refresh the view
-     * bounding sphere, and run the frustum sphere clip-mask test.
-     */
-    inline int CullNodeForRender(
-        CZNodePartial * node,
-        int siblingCountHint,
-        int *clipMask
-    ) {
-        int testNeeded = 0;
-        if (g_CZClass_ObjectHseTestEnabled == 0) {
-            testNeeded =
-                ((*clipMask != 0 || g_CZClass_RenderFrustumGridTileIndex > 0) &&
-                    siblingCountHint > 1);
-        } else {
-            testNeeded = (*clipMask != 0 && siblingCountHint > 1);
-        }
+        /**
+         * Original-source helper evidence: no standalone retail function exists.
+         * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+         * BN keeps the bounds refresh, sphere test, and far-clip repair as
+         * caller-local render traversal code rather than a separate call target.
+         * Purpose: decide whether object render culling is needed, refresh the view
+         * bounding sphere, and run the frustum sphere clip-mask test.
+         */
+        inline int CullNodeForRender(CZNodePartial * node, int siblingCountHint, int* clipMask)
+        {
+            int testNeeded = 0;
+            if (g_CZClass_ObjectHseTestEnabled == 0) {
+                testNeeded = ((*clipMask != 0 || g_CZClass_RenderFrustumGridTileIndex > 0) && siblingCountHint > 1);
+            } else {
+                testNeeded = (*clipMask != 0 && siblingCountHint > 1);
+            }
 
-        if (testNeeded == 0 && (node->flags & kSingleParentFlag) != 0) {
-            return 0;
-        }
+            if (testNeeded == 0 && (node->flags & kSingleParentFlag) != 0) {
+                return 0;
+            }
 
-        if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
-            g_CZClass_RenderBoundsContextActive != 0 || (node->flags & kSingleParentFlag) == 0) {
-            zBBoxCorners corners = {0};
-            CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-            CZBBox::CornersToBoundingSphere(
-                &corners,
+            if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & kSingleParentFlag) == 0) {
+                zBBoxCorners corners = { 0 };
+                CZClass::gwNodeGetViewBBoxCorners(node, &corners);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    zClassNodeViewSphereCenter(node),
+                    zClassNodeViewSphereRadius(node)
+                );
+                if ((node->flags & kSingleParentFlag) != 0) {
+                    node->boundsFlags &= ~kNodeBoundsDirtyFlag;
+                }
+            }
+
+            int result = zVideoFrustumTestSphereClipMask(
                 zClassNodeViewSphereCenter(node),
-                zClassNodeViewSphereRadius(node)
+                *zClassNodeViewSphereRadius(node),
+                clipMask
             );
-            if ((node->flags & kSingleParentFlag) != 0) {
-                node->boundsFlags &= ~kNodeBoundsDirtyFlag;
+            if ((node->flags & 0x80) != 0 && result == 0x20) {
+                result = 0;
+                *clipMask &= ~0x20;
+            }
+            return result;
+        }
+
+        /**
+         * Original-source helper evidence: no standalone retail function exists.
+         * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+         * BN shows the Object3D matrix-selection branches in the render traversal
+         * body, with only direct zMath provider calls inside the pattern.
+         * Purpose: push the correct object matrix onto the zMath stack, recomputing
+         * cached world matrix state when the transform is dirty.
+         */
+        inline void PushObjectMatrix(CZObject3DDataPartial * data, int* pushed)
+        {
+            const int flags = data->flags;
+            if ((flags & 0x08) != 0) {
+                *pushed = 0;
+                return;
+            }
+
+            *pushed = 1;
+            if ((flags & kObject3DTransformDirtyFlag) != 0) {
+                zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
+                zMath::MatMultiply((const zMat4x3*)data->localMatrix, 3);
+                data->flags &= ~kObject3DTransformDirtyFlag;
+            } else if ((flags & kSingleParentFlag) == 0) {
+                zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
+                zMath::MatMultiply((const zMat4x3*)data->localMatrix, 3);
+            } else {
+                zMath::MatStackPushPtr(data->cachedWorldMatrix);
             }
         }
 
-        int result = zVideoFrustumTestSphereClipMask(
-            zClassNodeViewSphereCenter(node),
-            *zClassNodeViewSphereRadius(node),
-            clipMask
-        );
-        if ((node->flags & 0x80) != 0 && result == 0x20) {
-            result = 0;
-            *clipMask &= ~0x20;
-        }
-        return result;
-    }
+        /**
+         * Original-source helper evidence: no standalone retail function exists.
+         * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+         * BN keeps the render-state stack pushes and zModel setter calls in the
+         * Object3D render traversal body.
+         * Purpose: push vertex-alpha, alpha-scale, and software color override
+         * render state for an Object3D node.
+         */
+        inline void PushObjectRenderState(
+            CZNodePartial * node,
+            CZObject3DDataPartial * data,
+            int* pushedVertexAlpha,
+            int* pushedAlphaScale,
+            int* pushedSoftwareState
+        )
+        {
+            *pushedVertexAlpha = 0;
+            *pushedAlphaScale = 0;
+            *pushedSoftwareState = 0;
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN shows the Object3D matrix-selection branches in the render traversal
-     * body, with only direct zMath provider calls inside the pattern.
-     * Purpose: push the correct object matrix onto the zMath stack, recomputing
-     * cached world matrix state when the transform is dirty.
-     */
-    inline void PushObjectMatrix(
-        CZObject3DDataPartial * data,
-        int *pushed
-    ) {
-        const int flags = data->flags;
-        if ((flags & 0x08) != 0) {
-            *pushed = 0;
-            return;
-        }
+            if ((node->flags & 0x00800000) != 0 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
+                *pushedVertexAlpha = 1;
+                g_CZClass_RenderVertexAlphaOverrideActive = 1;
+                zModelRenderVertexAlphaEnabledSetCurrent(1);
+            }
 
-        *pushed = 1;
-        if ((flags & kObject3DTransformDirtyFlag) != 0) {
-            zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
-            data->flags &= ~kObject3DTransformDirtyFlag;
-        } else if ((flags & kSingleParentFlag) == 0) {
-            zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-            zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
-        } else {
-            zMath::MatStackPushPtr(data->cachedWorldMatrix);
-        }
-    }
+            if ((data->flags & 0x02) != 0) {
+                *pushedAlphaScale = 1;
+                ++g_CZClass_RenderAlphaScaleStackTop;
+                g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] = data->alphaScale;
+                zModelRenderAlphaScaleSetCurrent(data->alphaScale);
+            }
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the render-state stack pushes and zModel setter calls in the
-     * Object3D render traversal body.
-     * Purpose: push vertex-alpha, alpha-scale, and software color override
-     * render state for an Object3D node.
-     */
-    inline void PushObjectRenderState(
-        CZNodePartial * node,
-        CZObject3DDataPartial * data,
-        int *pushedVertexAlpha,
-        int *pushedAlphaScale,
-        int *pushedSoftwareState
-    ) {
-        *pushedVertexAlpha = 0;
-        *pushedAlphaScale = 0;
-        *pushedSoftwareState = 0;
-
-        if ((node->flags & 0x00800000) != 0 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
-            *pushedVertexAlpha = 1;
-            g_CZClass_RenderVertexAlphaOverrideActive = 1;
-            zModelRenderVertexAlphaEnabledSetCurrent(1);
+            if ((data->flags & 0x04) != 0) {
+                *pushedSoftwareState = 1;
+                ++g_CZClass_SoftwarePathStateStackTop;
+                g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color = data->color;
+                g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha = data->colorAlpha;
+                zModelFogTargetColorOverrideSetCurrent(
+                    &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color,
+                    data->colorAlpha
+                );
+            }
         }
 
-        if ((data->flags & 0x02) != 0) {
-            *pushedAlphaScale = 1;
-            ++g_CZClass_RenderAlphaScaleStackTop;
-            g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] = data->alphaScale;
-            zModelRenderAlphaScaleSetCurrent(data->alphaScale);
-        }
+        /**
+         * Original-source helper evidence: no standalone retail function exists.
+         * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+         * BN keeps the vertex-alpha, alpha-scale, and software-state restore
+         * sequence in the Object3D render traversal epilogue.
+         * Purpose: restore Object3D render-state stacks after rendering a node
+         * subtree.
+         */
+        inline void PopObjectRenderState(int pushedVertexAlpha, int pushedAlphaScale, int pushedSoftwareState)
+        {
+            if (pushedVertexAlpha != 0) {
+                g_CZClass_RenderVertexAlphaOverrideActive = 0;
+                zModelRenderVertexAlphaEnabledSetCurrent(0);
+            }
 
-        if ((data->flags & 0x04) != 0) {
-            *pushedSoftwareState = 1;
-            ++g_CZClass_SoftwarePathStateStackTop;
-            g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color =
-                data->color;
-            g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha =
-                data->colorAlpha;
-            zModelFogTargetColorOverrideSetCurrent(
-                &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color,
-                data->colorAlpha
-            );
-        }
-    }
-
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN keeps the vertex-alpha, alpha-scale, and software-state restore
-     * sequence in the Object3D render traversal epilogue.
-     * Purpose: restore Object3D render-state stacks after rendering a node
-     * subtree.
-     */
-    inline void PopObjectRenderState(
-        int pushedVertexAlpha,
-        int pushedAlphaScale,
-        int pushedSoftwareState
-    ) {
-        if (pushedVertexAlpha != 0) {
-            g_CZClass_RenderVertexAlphaOverrideActive = 0;
-            zModelRenderVertexAlphaEnabledSetCurrent(0);
-        }
-
-        if (pushedAlphaScale != 0) {
-            --g_CZClass_RenderAlphaScaleStackTop;
-            const float scale =
-                g_CZClass_RenderAlphaScaleStackTop >= 0
+            if (pushedAlphaScale != 0) {
+                --g_CZClass_RenderAlphaScaleStackTop;
+                const float scale = g_CZClass_RenderAlphaScaleStackTop >= 0
                     ? g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
                     : 1.0f;
-            zModelRenderAlphaScaleSetCurrent(scale);
-        }
-
-        if (pushedSoftwareState != 0) {
-            --g_CZClass_SoftwarePathStateStackTop;
-            if (g_CZClass_SoftwarePathStateStackTop >= 0) {
-                zModelFogTargetColorOverrideSetCurrent(
-                    &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop]
-                        .color,
-                    g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha
-                );
-            } else {
-                zModelFogTargetColorOverrideSetCurrent(0, 0.0f);
+                zModelRenderAlphaScaleSetCurrent(scale);
             }
-        }
-    }
 
-    /**
-     * Original-source helper evidence: no standalone retail function exists.
-     * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
-     * BN shows the child-loop variant check, recursive Object3D call, and
-     * generic dispatch call inline in the traversal body.
-     * Purpose: render Object3D children through variant filtering and dispatch
-     * non-Object3D children through the generic node renderer.
-     */
-    inline void RenderObjectChildren(
-        CZNodePartial * node,
-        int clipMask
-    ) {
-        if (node->listCountB <= 0) {
-            return;
-        }
-
-        ++gModel_ClipMaskStackTop;
-        *gModel_ClipMaskStackTop = clipMask;
-        for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial *child = node->listB[i];
-            if (child != 0 && child->classId == kZClassNodeObject3D) {
-                if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
-                    CZObject3D::RenderTraverse(child, node->listCountB);
+            if (pushedSoftwareState != 0) {
+                --g_CZClass_SoftwarePathStateStackTop;
+                if (g_CZClass_SoftwarePathStateStackTop >= 0) {
+                    zModelFogTargetColorOverrideSetCurrent(
+                        &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color,
+                        g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha
+                    );
+                } else {
+                    zModelFogTargetColorOverrideSetCurrent(0, 0.0f);
                 }
-            } else if (child != 0) {
-                CZClass::gwNodeRenderDispatch(child, node->listCountB);
             }
         }
-        --gModel_ClipMaskStackTop;
-    }
 
+        /**
+         * Original-source helper evidence: no standalone retail function exists.
+         * Observed in caller 0x44b300 (D:\Proj\GameZRecoil\zClass\Object3d.c);
+         * BN shows the child-loop variant check, recursive Object3D call, and
+         * generic dispatch call inline in the traversal body.
+         * Purpose: render Object3D children through variant filtering and dispatch
+         * non-Object3D children through the generic node renderer.
+         */
+        inline void RenderObjectChildren(CZNodePartial * node, int clipMask)
+        {
+            if (node->listCountB <= 0) {
+                return;
+            }
+
+            ++gModel_ClipMaskStackTop;
+            *gModel_ClipMaskStackTop = clipMask;
+            for (int i = 0; i < node->listCountB; ++i) {
+                CZNodePartial* child = node->listB[i];
+                if (child != 0 && child->classId == kZClassNodeObject3D) {
+                    if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
+                        CZObject3D::RenderTraverse(child, node->listCountB);
+                    }
+                } else if (child != 0) {
+                    CZClass::gwNodeRenderDispatch(child, node->listCountB);
+                }
+            }
+            --gModel_ClipMaskStackTop;
+        }
     }
 
     int __fastcall
@@ -1554,10 +1439,8 @@ namespace CZObject3D {
      *
      * Purpose: cull Object3D nodes, manage transforms and render state, and render children.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & kObject3DVisibleFlag) == 0) {
@@ -1573,23 +1456,20 @@ namespace CZObject3D {
             altClipReset = 0;
         }
 
-        CZObject3DDataPartial *data = (CZObject3DDataPartial *)(node->classData);
+        CZObject3DDataPartial* data = (CZObject3DDataPartial*)(node->classData);
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         int testNeeded = 0;
         if (g_CZClass_ObjectHseTestEnabled != 0) {
-            testNeeded =
-                ((clipMask != 0 || g_CZClass_RenderFrustumGridTileIndex > 0) &&
-                    siblingCountHint > 1);
+            testNeeded = ((clipMask != 0 || g_CZClass_RenderFrustumGridTileIndex > 0) && siblingCountHint > 1);
         } else {
             testNeeded = (clipMask != 0 && siblingCountHint > 1);
         }
 
         if (testNeeded != 0 || (node->flags & kSingleParentFlag) == 0) {
-            if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 ||
-                g_CZClass_RenderBoundsContextActive != 0 ||
-                (node->flags & kSingleParentFlag) == 0) {
+            if ((node->boundsFlags & kNodeBoundsDirtyFlag) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & kSingleParentFlag) == 0) {
                 if ((node->flags & 0x100) == 0) {
                     if (altClipReset != 0) {
                         gAltClipPassEnabled = 1;
@@ -1598,7 +1478,11 @@ namespace CZObject3D {
                 }
                 zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, (zVec3 *)node->cachedSphereCenter, (&node->cachedSphereCenter[3]));
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    (&node->cachedSphereCenter[3])
+                );
                 if ((node->flags & kSingleParentFlag) != 0) {
                     node->boundsFlags &= ~kNodeBoundsDirtyFlag;
                 }
@@ -1609,7 +1493,7 @@ namespace CZObject3D {
             }
 
             result = zVideoFrustumTestSphereClipMask(
-                (zVec3 *)node->cachedSphereCenter,
+                (zVec3*)node->cachedSphereCenter,
                 node->cachedSphereCenter[3],
                 &clipMask
             );
@@ -1627,7 +1511,7 @@ namespace CZObject3D {
                 if ((node->flags & kSingleParentFlag) != 0) {
                     if ((data->flags & kObject3DTransformDirtyFlag) != 0) {
                         zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-                        zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
+                        zMath::MatMultiply((const zMat4x3*)data->localMatrix, 3);
                         data->flags &= ~kObject3DTransformDirtyFlag;
                         if (g_CZClass_RenderBoundsContextActive == 0) {
                             boundsContextPushed = 1;
@@ -1638,7 +1522,7 @@ namespace CZObject3D {
                     }
                 } else {
                     zMath::MatStackPushAndCloneParent(data->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3 *)data->localMatrix, 3);
+                    zMath::MatMultiply((const zMat4x3*)data->localMatrix, 3);
                     if (g_CZClass_RenderBoundsContextActive == 0) {
                         boundsContextPushed = 1;
                         g_CZClass_RenderBoundsContextActive = 1;
@@ -1652,8 +1536,7 @@ namespace CZObject3D {
             int pushedAlphaScale;
             int pushedSoftwareState;
 
-            if ((node->flags & 0x00800000) != 0 &&
-                g_CZClass_RenderVertexAlphaOverrideActive == 0) {
+            if ((node->flags & 0x00800000) != 0 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
                 pushedVertexAlpha = 1;
                 g_CZClass_RenderVertexAlphaOverrideActive = 1;
                 zModelRenderVertexAlphaEnabledSetCurrent(1);
@@ -1664,8 +1547,7 @@ namespace CZObject3D {
             if ((data->flags & 0x02) != 0) {
                 pushedAlphaScale = 1;
                 ++g_CZClass_RenderAlphaScaleStackTop;
-                g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] =
-                    data->alphaScale;
+                g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] = data->alphaScale;
                 zModelRenderAlphaScaleSetCurrent(data->alphaScale);
             } else {
                 pushedAlphaScale = 0;
@@ -1674,17 +1556,12 @@ namespace CZObject3D {
             if ((data->flags & 0x04) != 0) {
                 pushedSoftwareState = 1;
                 ++g_CZClass_SoftwarePathStateStackTop;
-                g_CZClass_SoftwarePathRenderStateStack[
-                    g_CZClass_SoftwarePathStateStackTop
-                ].color = data->color;
+                g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color = data->color;
                 float colorAlpha;
-                g_CZClass_SoftwarePathRenderStateStack[
-                    g_CZClass_SoftwarePathStateStackTop
-                ].alpha = colorAlpha = data->colorAlpha;
+                g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha = colorAlpha
+                    = data->colorAlpha;
                 zModelFogTargetColorOverrideSetCurrent(
-                    &g_CZClass_SoftwarePathRenderStateStack[
-                        g_CZClass_SoftwarePathStateStackTop
-                    ].color,
+                    &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color,
                     colorAlpha
                 );
             } else {
@@ -1692,23 +1569,20 @@ namespace CZObject3D {
             }
 
             int visibleByProjectedSphere;
-            if (g_CZClass_ObjectHseTestEnabled != 0 && g_CZClass_RenderFrustumGridTileIndex > 0 &&
-                siblingCountHint != 1 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
-                visibleByProjectedSphere = zScene::TestProjectedSphereVisible(
-                    (zVec3 *)node->cachedSphereCenter,
-                    node->cachedSphereCenter[3]
-                );
+            if (g_CZClass_ObjectHseTestEnabled != 0 && g_CZClass_RenderFrustumGridTileIndex > 0 && siblingCountHint != 1
+                && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
+                visibleByProjectedSphere
+                    = zScene::TestProjectedSphereVisible((zVec3*)node->cachedSphereCenter, node->cachedSphereCenter[3]);
             } else {
                 visibleByProjectedSphere = 1;
             }
             if (visibleByProjectedSphere != 0) {
                 node->flags |= 0x80000000;
-                zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+                zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
                 if (di != 0) {
                     if (g_CZClass_RenderRangeFadeActive != 0) {
                         di->flags |= 0x08;
-                        ((zDiPartial *)(unsigned int)node->userDataOrDiRef)->blendScale =
-                        g_CZClass_RenderRangeFadeScale;
+                        ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->blendScale = g_CZClass_RenderRangeFadeScale;
                     }
                     gModel_RenderFn(node, clipMask);
                 }
@@ -1716,7 +1590,7 @@ namespace CZObject3D {
                     ++gModel_ClipMaskStackTop;
                     *gModel_ClipMaskStackTop = clipMask;
                     for (int i = 0; i < node->listCountB; ++i) {
-                        CZNodePartial *child = node->listB[i];
+                        CZNodePartial* child = node->listB[i];
                         if (child != 0) {
                             if (child->classId == kZClassNodeObject3D) {
                                 if (VariantTag::CurrentAllowsId(child->nodeType) != 0) {
@@ -1742,7 +1616,8 @@ namespace CZObject3D {
                     zModelRenderAlphaScaleSetCurrent(1.0f);
                 } else {
                     zModelRenderAlphaScaleSetCurrent(
-                        g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]);
+                        g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
+                    );
                 }
             }
 
@@ -1752,12 +1627,8 @@ namespace CZObject3D {
                     zModelFogTargetColorOverrideSetCurrent(0, 0.0f);
                 } else {
                     zModelFogTargetColorOverrideSetCurrent(
-                        &g_CZClass_SoftwarePathRenderStateStack[
-                            g_CZClass_SoftwarePathStateStackTop
-                        ].color,
-                        g_CZClass_SoftwarePathRenderStateStack[
-                            g_CZClass_SoftwarePathStateStackTop
-                        ].alpha
+                        &g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].color,
+                        g_CZClass_SoftwarePathRenderStateStack[g_CZClass_SoftwarePathStateStackTop].alpha
                     );
                 }
             }
@@ -1774,13 +1645,12 @@ namespace CZObject3D {
         }
         return result;
     }
-
 }
 
-namespace CZAnimate {
+namespace CZAnimate
+{
 
-    namespace {
-    }
+    namespace { }
 
     int __fastcall
     /**
@@ -1790,10 +1660,8 @@ namespace CZAnimate {
      * Purpose: cull an animate node, push its animated transform when active,
      * render the node and children, and restore traversal state.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
@@ -1801,18 +1669,16 @@ namespace CZAnimate {
         }
 
         node->flags = flags & ~0x02000000;
-        CZAnimateDataPartial *data = (CZAnimateDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZAnimateDataPartial* data = (CZAnimateDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
-        if ((clipMask != 0 && siblingCountHint > 1) ||
-            (node->flags & 0x00080000) == 0) {
-            if ((node->boundsFlags & 0x04) != 0 ||
-                g_CZClass_RenderBoundsContextActive != 0 ||
-                (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = {0};
+        if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
+                || (node->flags & 0x00080000) == 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 if ((node->flags & 0x00080000) != 0) {
@@ -1823,11 +1689,7 @@ namespace CZAnimate {
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1842,13 +1704,13 @@ namespace CZAnimate {
             if ((data->statusFlags & 0x04) != 0) {
                 matrixPushed = 1;
                 zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
-                zMath::MatMultiply((const zMat4x3 *)data->animatedTransform, 3);
+                zMath::MatMultiply((const zMat4x3*)data->animatedTransform, 3);
                 if (g_CZClass_RenderBoundsContextActive == 0) {
                     boundsContextPushed = 1;
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            zDiPartial *di = (zDiPartial *)(unsigned int)node->userDataOrDiRef;
+            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
             if (di != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
                     di->flags |= 0x08;
@@ -1874,10 +1736,10 @@ namespace CZAnimate {
         }
         return result;
     }
-
 }
 
-namespace CZLod {
+namespace CZLod
+{
 
     int __fastcall
     /**
@@ -1887,32 +1749,28 @@ namespace CZLod {
      * Purpose: cull and render an LOD node, applying range, scale, alpha, and
      * vertex-alpha fades while maintaining the render traversal stacks.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         const int flags = node->flags;
         int boundsContextPushed = 0;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
-        CZLodDataPartial *data = (CZLodDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZLodDataPartial* data = (CZLodDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         node->flags = flags & ~0x02000000;
-        CZLodDistanceState &state =
-            g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
-        if (data->computeOwnDistance == 0 &&
-            (state.distanceSq < data->nearRangeSq || state.distanceSq >= data->farRangeSq)) {
+        CZLodDistanceState& state = g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
+        if (data->computeOwnDistance == 0
+            && (state.distanceSq < data->nearRangeSq || state.distanceSq >= data->farRangeSq)) {
             return 0;
         }
 
-        if ((node->boundsFlags & 0x04) != 0 ||
-            g_CZClass_RenderBoundsContextActive != 0 ||
-            (node->flags & 0x00080000) == 0) {
-            zBBoxCorners corners = {0};
+        if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
+            || (node->flags & 0x00080000) == 0) {
+            zBBoxCorners corners = { 0 };
             CZClass::gwNodeGetViewBBoxCorners(node, &corners);
             CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
             if ((node->flags & 0x00080000) != 0) {
@@ -1925,7 +1783,7 @@ namespace CZLod {
         }
         if (data->computeOwnDistance != 0) {
             state.center = *viewSphereCenter;
-            zVec3 delta = {0};
+            zVec3 delta = { 0 };
             delta.x = g_zVideo_pActiveViewContext->cameraPos.x - state.center.x;
             delta.y = g_zVideo_pActiveViewContext->cameraPos.y - state.center.y;
             delta.z = g_zVideo_pActiveViewContext->cameraPos.z - state.center.z;
@@ -1958,9 +1816,8 @@ namespace CZLod {
             const float fadeBegin = data->nearRange - data->fadeWidth.x;
             pushScaleMatrix = 1;
             scaleX = distance <= fadeBegin
-                         ? 1.0f
-                         : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.x - 1.0f) /
-                                      data->fadeWidth.x;
+                ? 1.0f
+                : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.x - 1.0f) / data->fadeWidth.x;
             if (data->active != 0) {
                 scaleY = scaleX;
                 scaleZ = scaleX;
@@ -1971,17 +1828,15 @@ namespace CZLod {
                 const float fadeBegin = data->nearRange - data->fadeWidth.y;
                 pushScaleMatrix = 1;
                 scaleY = distance <= fadeBegin
-                             ? 1.0f
-                             : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.y - 1.0f) /
-                                          data->fadeWidth.y;
+                    ? 1.0f
+                    : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.y - 1.0f) / data->fadeWidth.y;
             }
             if (data->fadeAmount.z > 0.01f) {
                 const float fadeBegin = data->nearRange - data->fadeWidth.z;
                 pushScaleMatrix = 1;
                 scaleZ = distance <= fadeBegin
-                             ? 1.0f
-                             : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.z - 1.0f) /
-                                          data->fadeWidth.z;
+                    ? 1.0f
+                    : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.z - 1.0f) / data->fadeWidth.z;
             }
         }
 
@@ -2010,11 +1865,7 @@ namespace CZLod {
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -2032,21 +1883,20 @@ namespace CZLod {
                 const float fadeBegin = data->farRangeSq - data->rangeSq;
                 g_CZClass_RenderRangeFadeActive = 1;
                 if (fadeBegin < state.distanceSq) {
-                    g_CZClass_RenderRangeFadeScale =
-                        (state.distanceSq - fadeBegin) / (data->farRangeSq - fadeBegin);
+                    g_CZClass_RenderRangeFadeScale = (state.distanceSq - fadeBegin) / (data->farRangeSq - fadeBegin);
                 } else {
                     g_CZClass_RenderRangeFadeScale = 0.0f;
                 }
             }
 
             const int nextLodStack = g_CZClass_LodDistanceStateStackTop + 1;
-            g_CZClass_LodDistanceStateStack[nextLodStack] =
-                g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
+            g_CZClass_LodDistanceStateStack[nextLodStack]
+                = g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
             g_CZClass_LodDistanceStateStackTop = nextLodStack;
 
             zMat4x3 slotBuffer;
             if (pushScaleMatrix != 0) {
-                zMath::MatStackPushAndCloneParent((float *)&slotBuffer);
+                zMath::MatStackPushAndCloneParent((float*)&slotBuffer);
                 zMath_Mat_Scale(scaleX, scaleY, scaleZ);
             }
             if (pushAlphaScale != 0) {
@@ -2071,10 +1921,9 @@ namespace CZLod {
             }
             if (pushAlphaScale != 0) {
                 --g_CZClass_RenderAlphaScaleStackTop;
-                const float previousAlphaScale =
-                    g_CZClass_RenderAlphaScaleStackTop >= 0
-                        ? g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
-                        : 1.0f;
+                const float previousAlphaScale = g_CZClass_RenderAlphaScaleStackTop >= 0
+                    ? g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
+                    : 1.0f;
                 zModelRenderAlphaScaleSetCurrent(previousAlphaScale);
             }
             if (pushedVertexAlpha != 0) {
@@ -2091,10 +1940,10 @@ namespace CZLod {
         }
         return result;
     }
-
 }
 
-namespace CZSequence {
+namespace CZSequence
+{
 
     int __fastcall
     /**
@@ -2104,20 +1953,18 @@ namespace CZSequence {
      * Purpose: cull an active sequence node, push traversal state, and render
      * only the currently selected child entry.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         int boundsContextPushed = 0;
-        CZSequenceDataPartial *data;
+        CZSequenceDataPartial* data;
         const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
-        data = (CZSequenceDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        data = (CZSequenceDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         node->flags = flags & ~0x02000000;
         if (data->isActive == 0) {
@@ -2127,18 +1974,13 @@ namespace CZSequence {
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
-            if ((node->boundsFlags & 0x04) != 0 ||
-                g_CZClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = {0};
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 node->boundsFlags &= ~0x04;
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0 && result == 0x20) {
                 result = 0;
                 clipMask &= ~0x20;
@@ -2153,10 +1995,7 @@ namespace CZSequence {
             node->flags |= 0x80000000;
             ++gModel_ClipMaskStackTop;
             *gModel_ClipMaskStackTop = clipMask;
-            CZClass::gwNodeRenderDispatch(
-                data->entries[data->currentIndex].node,
-                node->listCountB
-            );
+            CZClass::gwNodeRenderDispatch(data->entries[data->currentIndex].node, node->listCountB);
             --gModel_ClipMaskStackTop;
         }
 
@@ -2165,10 +2004,10 @@ namespace CZSequence {
         }
         return result;
     }
-
 }
 
-namespace CZSwitch {
+namespace CZSwitch
+{
 
     int __fastcall
     /**
@@ -2178,36 +2017,29 @@ namespace CZSwitch {
      * Purpose: cull the switch node, push the clip mask, and render only the
      * active child-mask entries.
      */
-    RenderTraverse(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    RenderTraverse(CZNodePartial * node, int siblingCountHint)
+    {
         int boundsContextPushed = 0;
         const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
-        CZSwitchDataPartial *data = (CZSwitchDataPartial *)(node->classData);
-        zVec3 *viewSphereCenter = (zVec3 *)node->cachedSphereCenter;
-        float *viewSphereRadius = &node->cachedSphereCenter[3];
+        CZSwitchDataPartial* data = (CZSwitchDataPartial*)(node->classData);
+        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
+        float* viewSphereRadius = &node->cachedSphereCenter[3];
 
         node->flags = flags & ~0x02000000;
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
-            if ((node->boundsFlags & 0x04) != 0 ||
-                g_CZClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = {0};
+            if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0) {
+                zBBoxCorners corners = { 0 };
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
                 CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
                 node->boundsFlags &= ~0x04;
             }
-            result = zVideoFrustumTestSphereClipMask(
-                viewSphereCenter,
-                *viewSphereRadius,
-                &clipMask
-            );
+            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
             if ((node->flags & 0x80) != 0 && result == 0x20) {
                 result = 0;
                 clipMask &= ~0x20;
@@ -2236,20 +2068,18 @@ namespace CZSwitch {
         }
         return result;
     }
-
 }
 
-namespace CZClass {
+namespace CZClass
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwnoderenderdispatch
      * @recoil-artifact defines .text recoil:function:0x44c0e0: CZClass::gwNodeRenderDispatch.
      * Purpose: route visible scene nodes to the class-specific render
      * traversal after variant-tag filtering.
      */
-    int __fastcall gwNodeRenderDispatch(
-        CZNodePartial * node,
-        int siblingCountHint
-    ) {
+    int __fastcall gwNodeRenderDispatch(CZNodePartial * node, int siblingCountHint)
+    {
         const int variantId = node->nodeType;
         const int variantAllowed = VariantTag::CurrentAllowsId(variantId);
         if (variantAllowed == 0) {
@@ -2277,19 +2107,17 @@ namespace CZClass {
             return fprintf(stderr, "Unrecognized node rendering type: %s\n", node->name);
         }
     }
-
 }
 
-namespace CZCamera {
+namespace CZCamera
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.fastanglexz
      * @recoil-artifact defines .text recoil:function:0x44c1b0: CZCamera::FastAngleXZ.
      * Purpose: approximate the XZ-plane angle between two points.
      */
-    float __fastcall FastAngleXZ(
-        zVec3 * point1,
-        zVec3 * point2
-    ) {
+    float __fastcall FastAngleXZ(zVec3 * point1, zVec3 * point2)
+    {
         const int deltaX = (int)(point2->x - point1->x);
         const int deltaZ = (int)(point1->z - point2->z);
 
@@ -2318,10 +2146,8 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44c230: CZCamera::FindConvexHullXZ.
      * Purpose: build the XZ convex hull ordering for frustum footprint points.
      */
-    int __fastcall FindConvexHullXZ(
-        zVec3 * points,
-        int count
-    ) {
+    int __fastcall FindConvexHullXZ(zVec3 * points, int count)
+    {
         int candidateIndex = 1;
         int selectedIndex = 0;
 
@@ -2340,7 +2166,7 @@ namespace CZCamera {
         points[count] = points[selectedIndex];
 
         if (count > 0) {
-            zVec3 *hullPoint = points;
+            zVec3* hullPoint = points;
             int hullIndex = 0;
             int scanStart = 1;
 
@@ -2354,7 +2180,7 @@ namespace CZCamera {
                 previousAngle = 6.28318548f;
 
                 if (scanStart <= count) {
-                    zVec3 *candidate = hullPoint + 1;
+                    zVec3* candidate = hullPoint + 1;
                     int scanIndex = scanStart;
                     do {
                         const float angle = FastAngleXZ(hullPoint, candidate);
@@ -2396,7 +2222,8 @@ namespace CZCamera {
         CZNodePartial * world,
         CZWorldDataPartial * worldData,
         CZCameraDataPartial * cameraData
-    ) {
+    )
+    {
         for (int ringIndex = 0; ringIndex < 50; ++ringIndex) {
             g_zCamera_FrustumGridTileRings[ringIndex].count = 0;
         }
@@ -2414,19 +2241,14 @@ namespace CZCamera {
             return result;
         }
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)&slotBuffer);
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)&slotBuffer);
         zMath::MatLoadIdentity();
-        zMath::MatTranslate(
-            cameraData->cameraPos.x,
-            cameraData->cameraPos.y,
-            cameraData->cameraPos.z
-        );
+        zMath::MatTranslate(cameraData->cameraPos.x, cameraData->cameraPos.y, cameraData->cameraPos.z);
         zMath::MatRotateY(cameraData->eulerAngles.y);
 
         int pointCount;
-        if (fabs(cameraData->eulerAngles.x) < 0.174533 &&
-            fabs(cameraData->eulerAngles.z) < 0.174533) {
+        if (fabs(cameraData->eulerAngles.x) < 0.174533 && fabs(cameraData->eulerAngles.z) < 0.174533) {
             pointCount = 3;
         } else {
             pointCount = 5;
@@ -2434,38 +2256,24 @@ namespace CZCamera {
             zMath::MatRotateZ(cameraData->eulerAngles.z);
         }
         g_zCamera_FrustumFootprintPointCount = pointCount;
-        memcpy(
-            g_zCamera_FrustumFootprintPoints,
-            &cameraData->frustumOrigin,
-            pointCount * sizeof(zVec3)
-        );
+        memcpy(g_zCamera_FrustumFootprintPoints, &cameraData->frustumOrigin, pointCount * sizeof(zVec3));
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3 *matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             for (int i = 0; i < pointCount; ++i) {
                 const zVec3 point = g_zCamera_FrustumFootprintPoints[i];
-                g_zCamera_FrustumFootprintPoints[i].x =
-                    point.x * matrix->xx + point.y * matrix->yx +
-                    point.z * matrix->zx + matrix->posX;
-                g_zCamera_FrustumFootprintPoints[i].z =
-                    point.x * matrix->xz + point.y * matrix->yz +
-                    point.z * matrix->zz + matrix->posZ;
-                g_zCamera_FrustumFootprintPoints[i].y =
-                    point.x * matrix->xy + point.y * matrix->yy +
-                    point.z * matrix->zy + matrix->posY;
+                g_zCamera_FrustumFootprintPoints[i].x
+                    = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
+                g_zCamera_FrustumFootprintPoints[i].z
+                    = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
+                g_zCamera_FrustumFootprintPoints[i].y
+                    = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
             }
         }
         if (pointCount > 3) {
-            pointCount = CZCamera::FindConvexHullXZ(
-                g_zCamera_FrustumFootprintPoints,
-                pointCount
-            );
+            pointCount = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, pointCount);
             g_zCamera_FrustumFootprintPointCount = pointCount;
         }
-        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
-                g_zCamera_FrustumFootprintPoints,
-                pointCount
-            ) == 0) {
+        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(g_zCamera_FrustumFootprintPoints, pointCount) == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt,
@@ -2480,7 +2288,7 @@ namespace CZCamera {
         float minZ = g_zCamera_FrustumFootprintPoints[0].z;
         float maxZ = g_zCamera_FrustumFootprintPoints[0].z;
         for (int i = 1; i < g_zCamera_FrustumFootprintPointCount; ++i) {
-            const zVec3 *point = &g_zCamera_FrustumFootprintPoints[i];
+            const zVec3* point = &g_zCamera_FrustumFootprintPoints[i];
             if (point->x < minX) {
                 minX = point->x;
             }
@@ -2543,37 +2351,36 @@ namespace CZCamera {
             for (int col = minCol; col <= maxCol; ++col) {
                 {
                     for (int row = minRow; row <= maxRow; ++row) {
-                        zWorldAreaPartial *area = &worldData->areaGridRows[row][col];
+                        zWorldAreaPartial* area = &worldData->areaGridRows[row][col];
                         if ((area->areaIndex & areaIndex) == 0) {
                             continue;
                         }
 
-                        zVec3 center = {0};
+                        zVec3 center = { 0 };
                         center.x = area->cellMinX + worldData->areaHalfSizeX;
                         center.y = 0.0f;
                         center.z = area->cellMinZ + worldData->areaHalfSizeZ;
                         if (CZDisplayInstance::FilterRegionsAgainstHexahedronFaces(
                                 &center,
                                 worldData->areaCellRadiusBias
-                            ) == 0) {
+                            )
+                            == 0) {
                             continue;
                         }
 
                         int clipMask = 0x3f;
-                        zVec3 *sphereCenter = &center;
+                        zVec3* sphereCenter = &center;
                         float bboxRadius = -worldData->areaCellRadiusBias;
                         if ((area->areaFlags & 0x100) != 0) {
                             sphereCenter = &area->bboxCenter;
                             bboxRadius = area->bboxRadius;
                         }
 
-                        if (zVideoFrustumTestSphereClipMask(sphereCenter, bboxRadius, &clipMask) ==
-                            0) {
+                        if (zVideoFrustumTestSphereClipMask(sphereCenter, bboxRadius, &clipMask) == 0) {
                             const int colDelta = col - originCol;
                             const int rowDelta = row - originRow;
-                            const int ringIndex =
-                                (colDelta < 0 ? -colDelta : colDelta) +
-                                (rowDelta < 0 ? -rowDelta : rowDelta);
+                            const int ringIndex
+                                = (colDelta < 0 ? -colDelta : colDelta) + (rowDelta < 0 ? -rowDelta : rowDelta);
                             if (ringIndex >= 50) {
                                 zError::ReportOld(
                                     0x200,
@@ -2582,8 +2389,7 @@ namespace CZCamera {
                                     g_CZClass_DiamondTilerNeedMoreRingsMsg
                                 );
                             } else {
-                                zCamera_FrustumGridTileRingPartial *ring =
-                                    &g_zCamera_FrustumGridTileRings[ringIndex];
+                                zCamera_FrustumGridTileRingPartial* ring = &g_zCamera_FrustumGridTileRings[ringIndex];
                                 const int tileIndex = ring->count;
                                 if (tileIndex >= 30) {
                                     zError::ReportOld(
@@ -2594,8 +2400,7 @@ namespace CZCamera {
                                     );
                                 } else {
                                     ring->count = tileIndex + 1;
-                                    zCamera_FrustumGridTilePartial *tile =
-                                        &ring->tiles[tileIndex];
+                                    zCamera_FrustumGridTilePartial* tile = &ring->tiles[tileIndex];
                                     tile->col = col;
                                     tile->row = row;
                                     tile->hasPosOffset = 0;
@@ -2624,7 +2429,8 @@ namespace CZCamera {
         CZNodePartial * world,
         CZWorldDataPartial * worldData,
         CZCameraDataPartial * cameraData
-    ) {
+    )
+    {
         for (int ringIndex = 0; ringIndex < 50; ++ringIndex) {
             g_zCamera_FrustumGridTileRings[ringIndex].count = 0;
         }
@@ -2648,19 +2454,14 @@ namespace CZCamera {
             return result;
         }
 
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)&slotBuffer);
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)&slotBuffer);
         zMath::MatLoadIdentity();
-        zMath::MatTranslate(
-            cameraData->cameraPos.x,
-            cameraData->cameraPos.y,
-            cameraData->cameraPos.z
-        );
+        zMath::MatTranslate(cameraData->cameraPos.x, cameraData->cameraPos.y, cameraData->cameraPos.z);
         zMath::MatRotateY(cameraData->eulerAngles.y);
 
         int pointCount;
-        if (fabs(cameraData->eulerAngles.x) < 0.174533 &&
-            fabs(cameraData->eulerAngles.z) < 0.174533) {
+        if (fabs(cameraData->eulerAngles.x) < 0.174533 && fabs(cameraData->eulerAngles.z) < 0.174533) {
             pointCount = 3;
         } else {
             pointCount = 5;
@@ -2668,38 +2469,24 @@ namespace CZCamera {
             zMath::MatRotateZ(cameraData->eulerAngles.z);
         }
         g_zCamera_FrustumFootprintPointCount = pointCount;
-        memcpy(
-            g_zCamera_FrustumFootprintPoints,
-            &cameraData->frustumOrigin,
-            pointCount * sizeof(zVec3)
-        );
+        memcpy(g_zCamera_FrustumFootprintPoints, &cameraData->frustumOrigin, pointCount * sizeof(zVec3));
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3 *matrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             for (int i = 0; i < pointCount; ++i) {
                 const zVec3 point = g_zCamera_FrustumFootprintPoints[i];
-                g_zCamera_FrustumFootprintPoints[i].x =
-                    point.x * matrix->xx + point.y * matrix->yx +
-                    point.z * matrix->zx + matrix->posX;
-                g_zCamera_FrustumFootprintPoints[i].z =
-                    point.x * matrix->xz + point.y * matrix->yz +
-                    point.z * matrix->zz + matrix->posZ;
-                g_zCamera_FrustumFootprintPoints[i].y =
-                    point.x * matrix->xy + point.y * matrix->yy +
-                    point.z * matrix->zy + matrix->posY;
+                g_zCamera_FrustumFootprintPoints[i].x
+                    = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
+                g_zCamera_FrustumFootprintPoints[i].z
+                    = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
+                g_zCamera_FrustumFootprintPoints[i].y
+                    = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
             }
         }
         if (pointCount > 3) {
-            pointCount = CZCamera::FindConvexHullXZ(
-                g_zCamera_FrustumFootprintPoints,
-                pointCount
-            );
+            pointCount = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, pointCount);
             g_zCamera_FrustumFootprintPointCount = pointCount;
         }
-        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
-                g_zCamera_FrustumFootprintPoints,
-                pointCount
-            ) == 0) {
+        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(g_zCamera_FrustumFootprintPoints, pointCount) == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt,
@@ -2714,7 +2501,7 @@ namespace CZCamera {
         float minZ = g_zCamera_FrustumFootprintPoints[0].z;
         float maxZ = g_zCamera_FrustumFootprintPoints[0].z;
         for (int i = 1; i < g_zCamera_FrustumFootprintPointCount; ++i) {
-            const zVec3 *point = &g_zCamera_FrustumFootprintPoints[i];
+            const zVec3* point = &g_zCamera_FrustumFootprintPoints[i];
             if (point->x < minX) {
                 minX = point->x;
             }
@@ -2765,123 +2552,118 @@ namespace CZCamera {
             if (result != 0) {
                 break;
             }
-        if (minClampedRow > maxClampedRow) {
-            const int savedClampedRow = minClampedRow;
-            minClampedRow = maxClampedRow;
-            maxClampedRow = savedClampedRow;
-        }
-        if (minRow > maxRow) {
-            const int savedRow = minRow;
-            minRow = maxRow;
-            maxRow = savedRow;
-        }
+            if (minClampedRow > maxClampedRow) {
+                const int savedClampedRow = minClampedRow;
+                minClampedRow = maxClampedRow;
+                maxClampedRow = savedClampedRow;
+            }
+            if (minRow > maxRow) {
+                const int savedRow = minRow;
+                minRow = maxRow;
+                maxRow = savedRow;
+            }
 
-        const int areaIndex = worldData->areaGridRows[originClampedRow][originClampedCol].areaIndex;
+            const int areaIndex = worldData->areaGridRows[originClampedRow][originClampedCol].areaIndex;
 
-        {
-            for (int col = minCol; col <= maxCol; ++col) {
-                {
-                    for (int row = minRow; row <= maxRow; ++row) {
-                        int hasPosOffset = 0;
-                        int areaCol = col;
-                        int areaRow = row;
+            {
+                for (int col = minCol; col <= maxCol; ++col) {
+                    {
+                        for (int row = minRow; row <= maxRow; ++row) {
+                            int hasPosOffset = 0;
+                            int areaCol = col;
+                            int areaRow = row;
 
-                        if (areaCol < 0) {
-                            hasPosOffset = 1;
-                            areaCol = 0;
-                        } else if (areaCol >= worldData->areaGridColCount) {
-                            hasPosOffset = 1;
-                            areaCol = worldData->areaGridColCount - 1;
-                        }
-
-                        if (areaRow < 0) {
-                            hasPosOffset = 1;
-                            areaRow = 0;
-                        } else if (areaRow >= worldData->areaGridRowCount) {
-                            hasPosOffset = 1;
-                            areaRow = worldData->areaGridRowCount - 1;
-                        }
-
-                        float posOffsetX = 0.0f;
-                        float posOffsetZ = 0.0f;
-                        if (hasPosOffset != 0) {
-                            posOffsetX = (float)(col - areaCol) * worldData->areaCellSizeX;
-                            posOffsetZ = (float)(row - areaRow) * worldData->areaCellSizeZ;
-                        }
-
-                        zWorldAreaPartial *area = &worldData->areaGridRows[areaRow][areaCol];
-                        if ((area->areaIndex & areaIndex) == 0) {
-                            continue;
-                        }
-
-                        zVec3 center = {0};
-                        center.x = area->cellMinX + worldData->areaHalfSizeX + posOffsetX;
-                        center.y = 0.0f;
-                        center.z = area->cellMinZ + worldData->areaHalfSizeZ + posOffsetZ;
-                        if (CZDisplayInstance::FilterRegionsAgainstHexahedronFaces(
-                                &center,
-                                worldData->areaCellRadiusBias
-                            ) == 0) {
-                            continue;
-                        }
-
-                        int clipMask = 0x3f;
-                        int frustumVisible = 0;
-                        if (hasPosOffset == 0) {
-                            zVec3 *sphereCenter = &center;
-                            float bboxRadius = -worldData->areaCellRadiusBias;
-                            if ((area->areaFlags & 0x100) != 0) {
-                                sphereCenter = &area->bboxCenter;
-                                bboxRadius = area->bboxRadius;
+                            if (areaCol < 0) {
+                                hasPosOffset = 1;
+                                areaCol = 0;
+                            } else if (areaCol >= worldData->areaGridColCount) {
+                                hasPosOffset = 1;
+                                areaCol = worldData->areaGridColCount - 1;
                             }
-                            frustumVisible = zVideoFrustumTestSphereClipMask(
-                                sphereCenter,
-                                bboxRadius,
-                                &clipMask
-                            );
-                        }
 
-                        if (frustumVisible == 0) {
-                            const int colDelta = col - originCol;
-                            const int rowDelta = row - originRow;
-                            const int ringIndex =
-                                (colDelta < 0 ? -colDelta : colDelta) +
-                                (rowDelta < 0 ? -rowDelta : rowDelta);
-                            if (ringIndex >= 50) {
-                                zError::ReportOld(
-                                    0x200,
-                                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
-                                    0x1357,
-                                    g_CZClass_DiamondTilerNeedMoreRingsMsg
-                                );
-                            } else {
-                                zCamera_FrustumGridTileRingPartial *ring =
-                                    &g_zCamera_FrustumGridTileRings[ringIndex];
-                                const int tileIndex = ring->count;
-                                if (tileIndex >= 30) {
+                            if (areaRow < 0) {
+                                hasPosOffset = 1;
+                                areaRow = 0;
+                            } else if (areaRow >= worldData->areaGridRowCount) {
+                                hasPosOffset = 1;
+                                areaRow = worldData->areaGridRowCount - 1;
+                            }
+
+                            float posOffsetX = 0.0f;
+                            float posOffsetZ = 0.0f;
+                            if (hasPosOffset != 0) {
+                                posOffsetX = (float)(col - areaCol) * worldData->areaCellSizeX;
+                                posOffsetZ = (float)(row - areaRow) * worldData->areaCellSizeZ;
+                            }
+
+                            zWorldAreaPartial* area = &worldData->areaGridRows[areaRow][areaCol];
+                            if ((area->areaIndex & areaIndex) == 0) {
+                                continue;
+                            }
+
+                            zVec3 center = { 0 };
+                            center.x = area->cellMinX + worldData->areaHalfSizeX + posOffsetX;
+                            center.y = 0.0f;
+                            center.z = area->cellMinZ + worldData->areaHalfSizeZ + posOffsetZ;
+                            if (CZDisplayInstance::FilterRegionsAgainstHexahedronFaces(
+                                    &center,
+                                    worldData->areaCellRadiusBias
+                                )
+                                == 0) {
+                                continue;
+                            }
+
+                            int clipMask = 0x3f;
+                            int frustumVisible = 0;
+                            if (hasPosOffset == 0) {
+                                zVec3* sphereCenter = &center;
+                                float bboxRadius = -worldData->areaCellRadiusBias;
+                                if ((area->areaFlags & 0x100) != 0) {
+                                    sphereCenter = &area->bboxCenter;
+                                    bboxRadius = area->bboxRadius;
+                                }
+                                frustumVisible = zVideoFrustumTestSphereClipMask(sphereCenter, bboxRadius, &clipMask);
+                            }
+
+                            if (frustumVisible == 0) {
+                                const int colDelta = col - originCol;
+                                const int rowDelta = row - originRow;
+                                const int ringIndex
+                                    = (colDelta < 0 ? -colDelta : colDelta) + (rowDelta < 0 ? -rowDelta : rowDelta);
+                                if (ringIndex >= 50) {
                                     zError::ReportOld(
                                         0x200,
                                         "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
-                                        0x1351,
-                                        g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg
+                                        0x1357,
+                                        g_CZClass_DiamondTilerNeedMoreRingsMsg
                                     );
                                 } else {
-                                    ring->count = tileIndex + 1;
-                                    zCamera_FrustumGridTilePartial *tile =
-                                        &ring->tiles[tileIndex];
-                                    tile->col = areaCol;
-                                    tile->row = areaRow;
-                                    tile->hasPosOffset = hasPosOffset;
-                                    tile->posOffsetX = posOffsetX;
-                                    tile->posOffsetZ = posOffsetZ;
-                                    tile->clipMask = clipMask;
+                                    zCamera_FrustumGridTileRingPartial* ring
+                                        = &g_zCamera_FrustumGridTileRings[ringIndex];
+                                    const int tileIndex = ring->count;
+                                    if (tileIndex >= 30) {
+                                        zError::ReportOld(
+                                            0x200,
+                                            "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
+                                            0x1351,
+                                            g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg
+                                        );
+                                    } else {
+                                        ring->count = tileIndex + 1;
+                                        zCamera_FrustumGridTilePartial* tile = &ring->tiles[tileIndex];
+                                        tile->col = areaCol;
+                                        tile->row = areaRow;
+                                        tile->hasPosOffset = hasPosOffset;
+                                        tile->posOffsetX = posOffsetX;
+                                        tile->posOffsetZ = posOffsetZ;
+                                        tile->clipMask = clipMask;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
         } while (0);
 
         zMath::MatStackPopPtr();
@@ -2897,8 +2679,9 @@ namespace CZCamera {
         CZNodePartial * world,
         CZNodePartial * camera,
         CZCameraDataPartial * cameraData
-    ) {
-        CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+    )
+    {
+        CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
         int result = 0;
 
         if (worldData->clampQueriesToBounds != 0) {
@@ -2922,16 +2705,15 @@ namespace CZCamera {
             int ringIndex = 0;
             while (ringIndex < 50) {
                 g_CZClass_RenderFrustumGridTileIndex = ringIndex;
-                zCamera_FrustumGridTileRingPartial *ring =
-                    &g_zCamera_FrustumGridTileRings[ringIndex];
+                zCamera_FrustumGridTileRingPartial* ring = &g_zCamera_FrustumGridTileRings[ringIndex];
                 {
                     for (int tileIndex = 0; tileIndex < ring->count; ++tileIndex) {
-                        zCamera_FrustumGridTilePartial *tile = &ring->tiles[tileIndex];
-                        zWorldAreaPartial *area = &worldData->areaGridRows[tile->row][tile->col];
+                        zCamera_FrustumGridTilePartial* tile = &ring->tiles[tileIndex];
+                        zWorldAreaPartial* area = &worldData->areaGridRows[tile->row][tile->col];
                         zVec3 center = area->bboxCenter;
 
                         if (tile->hasPosOffset != 0) {
-                            zVec3 posOffset = {-tile->posOffsetX, 0.0f, -tile->posOffsetZ};
+                            zVec3 posOffset = { -tile->posOffsetX, 0.0f, -tile->posOffsetZ };
                             UpdateImpl(camera, &posOffset);
                             cameraAtBasePos = 0;
                         } else if (cameraAtBasePos == 0) {
@@ -2939,19 +2721,18 @@ namespace CZCamera {
                             cameraAtBasePos = 1;
                         }
 
-                        if (g_CZClass_ObjectHseTestEnabled != 0 && ringIndex > 0 &&
-                            zScene::TestProjectedSphereVisible(&center, area->bboxRadius) == 0) {
+                        if (g_CZClass_ObjectHseTestEnabled != 0 && ringIndex > 0
+                            && zScene::TestProjectedSphereVisible(&center, area->bboxRadius) == 0) {
                             continue;
                         }
 
                         for (int lightIndex = 0; lightIndex < worldData->lightCount; ++lightIndex) {
-                            CZNodePartial *lightNode = worldData->lightNodes[lightIndex];
+                            CZNodePartial* lightNode = worldData->lightNodes[lightIndex];
                             if ((lightNode->flags & 0x04) == 0) {
                                 continue;
                             }
 
-                            CZLightDataPartial *lightData =
-                                worldData->lightDataList[lightIndex];
+                            CZLightDataPartial* lightData = worldData->lightDataList[lightIndex];
                             if (lightData->isPointSource == 0 || lightData->enabled == 0) {
                                 lightData->lightSubMode = 1;
                                 continue;
@@ -2979,14 +2760,11 @@ namespace CZCamera {
                         *gModel_ClipMaskStackTop = tile->clipMask;
                         if (tile->hasPosOffset == 0) {
                             for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                                CZClass::gwNodeRenderDispatch(
-                                    area->childList[childIndex],
-                                    area->childCount
-                                );
+                                CZClass::gwNodeRenderDispatch(area->childList[childIndex], area->childCount);
                             }
                         } else {
                             for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                                CZNodePartial *child = area->childList[childIndex];
+                                CZNodePartial* child = area->childList[childIndex];
                                 if (strstr(child->name, g_CZClass_VapStaticsNodeName) != 0) {
                                     CZClass::gwNodeRenderDispatch(child, area->childCount);
                                 }
@@ -3020,7 +2798,8 @@ namespace CZCamera {
      *
      * Purpose: render overlay child nodes from the world node.
      */
-    void __fastcall RenderOverlayNodes(CZNodePartial * world) {
+    void __fastcall RenderOverlayNodes(CZNodePartial * world)
+    {
         *gModel_ClipMaskStackTop = 0x3f;
         for (int i = 0; i < world->listCountB; ++i) {
             CZClass::gwNodeRenderDispatch(world->listB[i], 2);
@@ -3034,11 +2813,8 @@ namespace CZCamera {
      *
      * Purpose: render frustum grid tiles and overlay nodes for the world.
      */
-    void __fastcall RenderWorld(
-        CZNodePartial * world,
-        CZNodePartial * camera,
-        CZCameraDataPartial * cameraData
-    ) {
+    void __fastcall RenderWorld(CZNodePartial * world, CZNodePartial * camera, CZCameraDataPartial * cameraData)
+    {
         RenderFrustumGridTiles(world, camera, cameraData);
         RenderOverlayNodes(world);
     }
@@ -3049,11 +2825,9 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44d260: CZCamera::gwCameraSetVariantTagOverride.
      * Purpose: validate and store the camera variant tag override.
      */
-    gwCameraSetVariantTagOverride(
-        CZNodePartial * camera,
-        zTag4Partial * variantTag
-    ) {
-        CZCameraDataPartial *data = 0;
+    gwCameraSetVariantTagOverride(CZNodePartial * camera, zTag4Partial * variantTag)
+    {
+        CZCameraDataPartial* data = 0;
         const int validateResult = ValidateCameraNode(camera, &data, 0x1527, 0x1528, 0x1529);
         if (validateResult != 0) {
             return validateResult;
@@ -3081,7 +2855,8 @@ namespace CZCamera {
      * Purpose: synchronize horizon helper nodes with the active view context.
      * Preserve the horizon-XZ helper height while updating its X and Z.
      */
-    void __cdecl SyncViewContextPositions() {
+    void __cdecl SyncViewContextPositions()
+    {
         int updatedAnyNode = 0;
 
         if (g_zVideo_pActiveViewContext->horizonNode != 0) {
@@ -3124,19 +2899,16 @@ namespace CZCamera {
      * @recoil-artifact defines .text recoil:function:0x44d3a0: CZCamera::RenderScene.
      * Purpose: update camera scene state and render the active world.
      */
-    RenderScene(
-        CZNodePartial * camera,
-        int updateFxPass3Local
-    ) {
+    RenderScene(CZNodePartial * camera, int updateFxPass3Local)
+    {
         const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
-        zMat4x3 slotBuffer = {0};
-        zMath::MatStackPushPtr((float *)&slotBuffer);
+        zMat4x3 slotBuffer = { 0 };
+        zMath::MatStackPushPtr((float*)&slotBuffer);
 
-        g_zVideo_pActiveViewContext = (CZCameraDataPartial *)(camera->classData);
-        CZNodePartial *world = gwCameraGetWorld(camera);
-        CZCameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
-        CZWindowDataPartial *windowData =
-            (CZWindowDataPartial *)(viewContext->windowNode->classData);
+        g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
+        CZNodePartial* world = gwCameraGetWorld(camera);
+        CZCameraDataPartial* viewContext = g_zVideo_pActiveViewContext;
+        CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
 
         if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
             if (g_FrameDeltaTimeSec <= g_CZClass_CameraAutoClipDistanceThreshold) {
@@ -3147,8 +2919,7 @@ namespace CZCamera {
 
             if (g_CZClass_CameraAutoClipDistanceScale > 1.0f) {
                 g_CZClass_CameraAutoClipDistanceScale = 1.0f;
-            } else if (g_CZClass_CameraAutoClipDistanceScale <
-                       g_CZClass_CameraAutoClipDistanceMinScale) {
+            } else if (g_CZClass_CameraAutoClipDistanceScale < g_CZClass_CameraAutoClipDistanceMinScale) {
                 g_CZClass_CameraAutoClipDistanceScale = g_CZClass_CameraAutoClipDistanceMinScale;
             }
 
@@ -3169,12 +2940,9 @@ namespace CZCamera {
             if ((windowData->clearPolyIndexFlags & 0x80000000) != 0) {
                 const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
                 for (int i = 0; i < clearPolyCount; ++i) {
-                    CZWindowClearPoly *poly = &windowData->clearPolys[i];
+                    CZWindowClearPoly* poly = &windowData->clearPolys[i];
                     if ((poly->vertCount & 0x80000000) != 0) {
-                        zRndr::SpanOcclusionAddPolygon(
-                            poly->vertices,
-                            poly->vertCount & 0x7fffffff
-                        );
+                        zRndr::SpanOcclusionAddPolygon(poly->vertices, poly->vertCount & 0x7fffffff);
                     }
                 }
             }
@@ -3187,13 +2955,9 @@ namespace CZCamera {
             if (viewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
                 g_Variant_CurrentTag = viewContext->variantTag;
             } else {
-                PlayerProbeSampleCandidateBuffer pickCandidates = {0};
+                PlayerProbeSampleCandidateBuffer pickCandidates = { 0 };
                 g_Variant_FilterEnabled = 0;
-                CZDisplayInstance::FindBestPickCandidateBelowPoint(
-                    world,
-                    &viewContext->cameraPos,
-                    &pickCandidates
-                );
+                CZDisplayInstance::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos, &pickCandidates);
                 g_Variant_FilterEnabled = variantFilterEnabled;
 
                 if (pickCandidates.candidateCount <= 0) {
@@ -3221,7 +2985,6 @@ namespace CZCamera {
 
         return 0;
     }
-
 }
 
 /**
@@ -3234,19 +2997,16 @@ namespace CZCamera {
  * scene-depth owner at 0x632148.
  * Purpose: provide the recovered zVideoswRenderFrame behavior.
  */
-int __fastcall zVideoswRenderFrame(
-    CZNodePartial *camera,
-    int updateFxPass3Local
-) {
+int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local)
+{
     const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
-    zMat4x3 slotBuffer = {0};
-    zMath::MatStackPushPtr((float *)&slotBuffer);
+    zMat4x3 slotBuffer = { 0 };
+    zMath::MatStackPushPtr((float*)&slotBuffer);
 
-    g_zVideo_pActiveViewContext = (CZCameraDataPartial *)(camera->classData);
-    CZNodePartial *world = CZCamera::gwCameraGetWorld(camera);
-    CZCameraDataPartial *viewContext = g_zVideo_pActiveViewContext;
-    CZWindowDataPartial *windowData =
-        (CZWindowDataPartial *)(viewContext->windowNode->classData);
+    g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
+    CZNodePartial* world = CZCamera::gwCameraGetWorld(camera);
+    CZCameraDataPartial* viewContext = g_zVideo_pActiveViewContext;
+    CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
 
     if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
         if (g_FrameDeltaTimeSec <= g_CZClass_CameraAutoClipDistanceThreshold) {
@@ -3274,18 +3034,14 @@ int __fastcall zVideoswRenderFrame(
 
     const int variantFilterEnabled = g_Variant_FilterEnabled;
     g_CZClass_LodDistanceStateStackTop = 0;
-    PlayerProbeSampleCandidateBuffer pickCandidates = {0};
+    PlayerProbeSampleCandidateBuffer pickCandidates = { 0 };
     if (variantFilterEnabled != 0) {
         viewContext = g_zVideo_pActiveViewContext;
         if (viewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
             g_Variant_CurrentTag = viewContext->variantTag;
         } else {
             g_Variant_FilterEnabled = 0;
-            CZDisplayInstance::FindBestPickCandidateBelowPoint(
-                world,
-                &viewContext->cameraPos,
-                &pickCandidates
-            );
+            CZDisplayInstance::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos, &pickCandidates);
             g_Variant_FilterEnabled = variantFilterEnabled;
 
             if (pickCandidates.candidateCount <= 0) {
@@ -3314,10 +3070,9 @@ int __fastcall zVideoswRenderFrame(
     g_zVideo_pfnFlushSortedPolys();
     g_zVideo_pfnFlushOverwritePolys();
 
-    const int visibleLensFlareSampleCount =
-        zRndrLensFlareBuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
+    const int visibleLensFlareSampleCount = zRndrLensFlareBuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
     for (int sampleIndex = 0; sampleIndex < visibleLensFlareSampleCount; ++sampleIndex) {
-        zVec3 visibleSamplePoint = {0};
+        zVec3 visibleSamplePoint = { 0 };
         zRndrSpanOcclusionFilterSampleList(sampleIndex, &visibleSamplePoint);
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
@@ -3346,7 +3101,7 @@ int __fastcall zVideoswRenderFrame(
     if (CZTypeList::CountNodes(8) > 1 && (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
         const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
         for (int i = 0; i < clearPolyCount; ++i) {
-            CZWindowClearPoly *poly = &windowData->clearPolys[i];
+            CZWindowClearPoly* poly = &windowData->clearPolys[i];
             if ((poly->vertCount & 0x80000000) == 0) {
                 continue;
             }
@@ -3363,7 +3118,7 @@ int __fastcall zVideoswRenderFrame(
             rect.bottom = rect.top;
 
             for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
-                const zVec3 *vertex = &poly->vertices[vertexIndex];
+                const zVec3* vertex = &poly->vertices[vertexIndex];
                 if (rect.left > vertex->x) {
                     rect.left = (int)(vertex->x);
                 }
@@ -3385,13 +3140,15 @@ int __fastcall zVideoswRenderFrame(
     return 0;
 }
 
-namespace CZCamera {
+namespace CZCamera
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.deletenode
      * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-camera-delete-node: CZCamera::DeleteNode
      * Purpose: route camera deletion through the generic node free path.
      */
-    int __fastcall DeleteNode(CZNodePartial * node) {
+    int __fastcall DeleteNode(CZNodePartial * node)
+    {
         return CZClass::TryFreeNode(node);
     }
 }

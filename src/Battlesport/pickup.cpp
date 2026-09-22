@@ -3,7 +3,6 @@
 
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/zimage.h"
@@ -17,8 +16,9 @@
 #include "GameZRecoil/zNetwork/znet.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "GameZRecoil/zUtil/zsave_game.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zUtil/zbd.h"
+#include "GameZRecoil/zUtil/zsave_game.h"
 
 #include <ctype.h>
 #include <math.h>
@@ -89,56 +89,54 @@ extern char g_PickupLogicalName_PUP_SUB[];
  * Purpose: define the 40-row pickup type table used by pickup spawning and
  * effect application.
  */
-PickupType g_PickupTypes[40] = {
-    {0, 515, 0, 30, g_PickupLogicalName_ERFPG_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 517, 1, 3, g_PickupLogicalName_HEMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 519, 2, 3, g_PickupLogicalName_QMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 526, 3, 10, g_PickupLogicalName_FREON_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 523, 4, 10, g_PickupLogicalName_NAPALM_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 545, 5, 5, g_PickupLogicalName_P_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 547, 6, 5, g_PickupLogicalName_P_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 549, 7, 5, g_PickupLogicalName_R_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 551, 8, 5, g_PickupLogicalName_R_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 553, 9, 10, g_PickupLogicalName_LOCKON_LASER_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 555, 10, 10, g_PickupLogicalName_LASER_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 557, 11, 2, g_PickupLogicalName_SONIC_CANNON_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 559, 12, 10, g_PickupLogicalName_ARC_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 521, 13, 3, g_PickupLogicalName_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 561, 14, 5, g_PickupLogicalName_GUIDED_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 565, 15, 1, g_PickupLogicalName_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {0, 563, 16, 1, g_PickupLogicalName_GUIDED_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep1_1, 516, 17, 30, g_PickupLogicalName_ERFPG_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep2_0, 518, 18, 3, g_PickupLogicalName_HEMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep2_1, 520, 19, 3, g_PickupLogicalName_QMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep3_0, 527, 20, 10, g_PickupLogicalName_FREON_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep3_1, 524, 21, 10, g_PickupLogicalName_NAPALM_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep4_0, 546, 22, 5, g_PickupLogicalName_P_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep4_1, 548, 23, 5, g_PickupLogicalName_P_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep5_0, 550, 24, 5, g_PickupLogicalName_R_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep5_1, 552, 25, 5, g_PickupLogicalName_R_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep6_0, 554, 26, 10, g_PickupLogicalName_LOCKON_LASER_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep6_1, 556, 27, 10, g_PickupLogicalName_LASER_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep7_0, 558, 28, 10, g_PickupLogicalName_SONIC_CANNON_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep7_1, 560, 29, 10, g_PickupLogicalName_ARC_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep8_0, 522, 30, 3, g_PickupLogicalName_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep8_1, 562, 31, 5, g_PickupLogicalName_GUIDED_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep9_0, 566, 32, 1, g_PickupLogicalName_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {g_PickupOptKey_Wep9_1, 564, 33, 1, g_PickupLogicalName_GUIDED_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0},
-    {0, 528, 34, 60, "NANITE", 0, 0, 0, 0, 0, 0, 0},
-    {0, 586, 35, 100, g_PickupLogicalName_NANITE100, 0, 0, 0, 0, 0, 0, 0},
-    {0, 525, 36, 1, g_PickupLogicalName_NANO_CANISTER, 0, 0, 0, 0, 0, 0, 0},
-    {0, 577, 37, 1, g_PickupLogicalName_PUP_AMPHIB, 0, 0, 0, 0, 0, 0, 0},
-    {0, 578, 38, 1, g_PickupLogicalName_PUP_HOVER, 0, 0, 0, 0, 0, 0, 0},
-    {0, 581, 39, 1, g_PickupLogicalName_PUP_SUB, 0, 0, 0, 0, 0, 0, 0}
-};
-PickupSpawnList g_PickupSpawnList_NetworkCopy = {0};
+PickupType g_PickupTypes[40] = { { 0, 515, 0, 30, g_PickupLogicalName_ERFPG_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 517, 1, 3, g_PickupLogicalName_HEMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 519, 2, 3, g_PickupLogicalName_QMORTAR_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 526, 3, 10, g_PickupLogicalName_FREON_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 523, 4, 10, g_PickupLogicalName_NAPALM_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 545, 5, 5, g_PickupLogicalName_P_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 547, 6, 5, g_PickupLogicalName_P_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 549, 7, 5, g_PickupLogicalName_R_HEMINE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 551, 8, 5, g_PickupLogicalName_R_QMINE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 553, 9, 10, g_PickupLogicalName_LOCKON_LASER_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 555, 10, 10, g_PickupLogicalName_LASER_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 557, 11, 2, g_PickupLogicalName_SONIC_CANNON_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 559, 12, 10, g_PickupLogicalName_ARC_SABRE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 521, 13, 3, g_PickupLogicalName_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 561, 14, 5, g_PickupLogicalName_GUIDED_MISSILE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 565, 15, 1, g_PickupLogicalName_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 563, 16, 1, g_PickupLogicalName_GUIDED_NUKE_AMMO, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep1_1, 516, 17, 30, g_PickupLogicalName_ERFPG_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep2_0, 518, 18, 3, g_PickupLogicalName_HEMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep2_1, 520, 19, 3, g_PickupLogicalName_QMORTAR_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep3_0, 527, 20, 10, g_PickupLogicalName_FREON_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep3_1, 524, 21, 10, g_PickupLogicalName_NAPALM_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep4_0, 546, 22, 5, g_PickupLogicalName_P_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep4_1, 548, 23, 5, g_PickupLogicalName_P_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep5_0, 550, 24, 5, g_PickupLogicalName_R_HEMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep5_1, 552, 25, 5, g_PickupLogicalName_R_QMINE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep6_0, 554, 26, 10, g_PickupLogicalName_LOCKON_LASER_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep6_1, 556, 27, 10, g_PickupLogicalName_LASER_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep7_0, 558, 28, 10, g_PickupLogicalName_SONIC_CANNON_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep7_1, 560, 29, 10, g_PickupLogicalName_ARC_SABRE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep8_0, 522, 30, 3, g_PickupLogicalName_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep8_1, 562, 31, 5, g_PickupLogicalName_GUIDED_MISSILE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep9_0, 566, 32, 1, g_PickupLogicalName_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { g_PickupOptKey_Wep9_1, 564, 33, 1, g_PickupLogicalName_GUIDED_NUKE_WEAPON, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 528, 34, 60, "NANITE", 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 586, 35, 100, g_PickupLogicalName_NANITE100, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 525, 36, 1, g_PickupLogicalName_NANO_CANISTER, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 577, 37, 1, g_PickupLogicalName_PUP_AMPHIB, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 578, 38, 1, g_PickupLogicalName_PUP_HOVER, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 581, 39, 1, g_PickupLogicalName_PUP_SUB, 0, 0, 0, 0, 0, 0, 0 } };
+PickupSpawnList g_PickupSpawnList_NetworkCopy = { 0 };
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuprespawnqueue
  * @recoil-artifact defines .data recoil:data:0x4f3308: g_PickupRespawnQueue (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: hold the BSS-zeroed head/tail/count state for pending pickup respawns.
  */
-PickupRespawnQueue g_PickupRespawnQueue = {0};
-PickupSpawnList g_PickupSpawnList_Primary = {0};
+PickupRespawnQueue g_PickupRespawnQueue = { 0 };
+PickupSpawnList g_PickupSpawnList_Primary = { 0 };
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.g-nextpickupid
  * @recoil-artifact defines .data recoil:data:0x4f3330: g_NextPickupId (D:\Proj\Battlesport\pickup.cpp).
@@ -548,7 +546,7 @@ char g_PickupLogicalName_ERFPG_AMMO[] = "ERFPG_AMMO";
  * @recoil-artifact defines .data recoil:data:0x4f3328: g_Pickup_SceneNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache the scene node used as the parent and terrain query root for pickups.
  */
-CZNodePartial *g_Pickup_SceneNode = 0;
+CZNodePartial* g_Pickup_SceneNode = 0;
 
 extern "C" {
 /**
@@ -556,7 +554,7 @@ extern "C" {
  * @recoil-artifact defines .data recoil:data:0x4f4210: g_Pickup_GlobalAirdropSpawnRef (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: hold the optional global airdrop spawn reference allocated during pickup setup.
  */
-PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef = 0;
+PickupAirdropSpawnRef* g_Pickup_GlobalAirdropSpawnRef = 0;
 }
 
 struct PickupArchiveRecord {
@@ -570,48 +568,13 @@ struct PickupArchiveRecord {
     float respawnDelay;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        typeIndex
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        pickupId
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        amount
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        position
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        rotation
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        spawnParam
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupArchiveRecord,
-        respawnDelay
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, typeIndex) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, pickupId) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, amount) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, position) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, rotation) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, spawnParam) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(PickupArchiveRecord, respawnDelay) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(PickupArchiveRecord) == 0x30);
 
 namespace {
@@ -728,17 +691,18 @@ const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
  */
 char g_Pickup_NodePrefix[3] = "pu";
 
-PickupPkt11Delta g_PickupPkt11Flag2Delta = {{0x11, sizeof(PickupPkt11Delta), 0}, 0, 0, 0};
-PickupPkt11Delta g_PickupPkt11Flag8Delta = {{0x11, sizeof(PickupPkt11Delta), 0}, 0, 0, 0};
-PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay =
-    {{0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0}, {0.0f, 0.0f, 0.0f}, 0, 0, 0};
+PickupPkt11Delta g_PickupPkt11Flag2Delta = { { 0x11, sizeof(PickupPkt11Delta), 0 }, 0, 0, 0 };
+PickupPkt11Delta g_PickupPkt11Flag8Delta = { { 0x11, sizeof(PickupPkt11Delta), 0 }, 0, 0, 0 };
+PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay
+    = { { 0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0 }, { 0.0f, 0.0f, 0.0f }, 0, 0, 0 };
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-primary-init
  * @recoil-artifact defines .text recoil:function:0x41cc10: PickupSpawnList::PrimaryInit (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the primary pickup spawn list global.
  */
-void __cdecl PickupSpawnList::PrimaryInit() {
+void __cdecl PickupSpawnList::PrimaryInit()
+{
     g_PickupSpawnList_Primary.unused = 0;
     g_PickupSpawnList_Primary.tail = 0;
     g_PickupSpawnList_Primary.head = 0;
@@ -750,7 +714,8 @@ void __cdecl PickupSpawnList::PrimaryInit() {
  * @recoil-artifact defines .text recoil:function:0x41cc40: PickupSpawnList::NetCopyInit (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the network-copy pickup spawn list global.
  */
-void __cdecl PickupSpawnList::NetCopyInit() {
+void __cdecl PickupSpawnList::NetCopyInit()
+{
     g_PickupSpawnList_NetworkCopy.unused = 0;
     g_PickupSpawnList_NetworkCopy.tail = 0;
     g_PickupSpawnList_NetworkCopy.head = 0;
@@ -762,7 +727,8 @@ void __cdecl PickupSpawnList::NetCopyInit() {
  * @recoil-artifact defines .text recoil:function:0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clear the pickup respawn queue global.
  */
-void __cdecl PickupRespawnQueue::Init() {
+void __cdecl PickupRespawnQueue::Init()
+{
     g_PickupRespawnQueue.unused = 0;
     g_PickupRespawnQueue.tail = 0;
     g_PickupRespawnQueue.head = 0;
@@ -774,11 +740,12 @@ void __cdecl PickupRespawnQueue::Init() {
  * @recoil-artifact defines .text recoil:function:0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: release optional pickup metadata images and clear their table slots.
  */
-void __cdecl PickupTypeTable::FreeOptMeta() {
+void __cdecl PickupTypeTable::FreeOptMeta()
+{
     {
         for (int index = 0; index < 40; ++index) {
-            PickupType &pickupType = g_PickupTypes[index];
-            zVidImagePartial *const image = pickupType.optMetaImage;
+            PickupType& pickupType = g_PickupTypes[index];
+            zVidImagePartial* const image = pickupType.optMetaImage;
             if (image != 0) {
                 zVid_Image::ReleaseIfNotDefault(image);
                 pickupType.optMetaImage = 0;
@@ -794,7 +761,8 @@ void __cdecl PickupTypeTable::FreeOptMeta() {
  *
  * Purpose: clear pickup spawn, network-copy, and respawn queue state.
  */
-void __cdecl Pickup::Shutdown() {
+void __cdecl Pickup::Shutdown()
+{
     g_PickupSpawnList_Primary.Clear();
     g_PickupSpawnList_NetworkCopy.Clear();
     g_PickupRespawnQueue.ClearAndFree();
@@ -805,15 +773,13 @@ void __cdecl Pickup::Shutdown() {
  * @recoil-artifact defines .text recoil:function:0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: initialize pickup templates, metadata images, sounds, and archive handlers.
  */
-int __fastcall Pickup::Init(
-    CZNodePartial *sceneNode,
-    const char *pickupsCfgPath
-) {
+int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath)
+{
     g_Pickup_SceneNode = sceneNode;
 
-    zSndSample *const defaultPickupSound = zSnd::FindSampleByName(kPickupDefaultSoundName);
+    zSndSample* const defaultPickupSound = zSnd::FindSampleByName(kPickupDefaultSoundName);
     for (int index = 0; index < 40; ++index) {
-        PickupType &pickupType = g_PickupTypes[index];
+        PickupType& pickupType = g_PickupTypes[index];
 
         char templateName[0x28];
         sprintf(templateName, kPickupTemplateNameFormat, pickupType.typeIndex);
@@ -821,46 +787,38 @@ int __fastcall Pickup::Init(
         pickupType.pickupSound = defaultPickupSound;
         pickupType.nameSuffixMax = 0;
 
-        CZNodePartial *const templateNode = pickupType.templateNode;
+        CZNodePartial* const templateNode = pickupType.templateNode;
         if (templateNode != 0) {
-            PickupNodeRuntimeFields *const fields =
-                (PickupNodeRuntimeFields *)(templateNode->name);
+            PickupNodeRuntimeFields* const fields = (PickupNodeRuntimeFields*)(templateNode->name);
             fields->pickupId = 0;
             fields->pickupTypeIndex = pickupType.typeIndex;
             fields->amount = pickupType.defaultAmount;
         }
     }
 
-    zReader::Node *const rootNode = zReader::Load(pickupsCfgPath, 0, 0);
+    zReader::Node* const rootNode = zReader::Load(pickupsCfgPath, 0, 0);
     if (rootNode == 0) {
-        zError::ReportOld(
-            0x200,
-            kPickupSourceFilePath,
-            0xc1,
-            g_HudSensorTracker_ReadFileFailedFmt,
-            pickupsCfgPath
-        );
+        zError::ReportOld(0x200, kPickupSourceFilePath, 0xc1, g_HudSensorTracker_ReadFileFailedFmt, pickupsCfgPath);
         return 0;
     }
 
-    zReader::Node *const pickupDataNode = zRdrGetNode(rootNode, kPickupConfigDataNodeName);
+    zReader::Node* const pickupDataNode = zRdrGetNode(rootNode, kPickupConfigDataNodeName);
     if (pickupDataNode != 0) {
-        zReader::Node *const pickupData = pickupDataNode->value.nodes;
+        zReader::Node* const pickupData = pickupDataNode->value.nodes;
         const int pickupDataCount = pickupData[0].value.i32;
         for (int fieldIndex = 1; fieldIndex < pickupDataCount; fieldIndex += 2) {
             int pickupTypeIndex = 0;
-            const char *const logicalName = pickupData[fieldIndex].value.str;
+            const char* const logicalName = pickupData[fieldIndex].value.str;
             if (PickupType::FindByLogicalName(logicalName, &pickupTypeIndex) == 0) {
                 continue;
             }
 
-            PickupType &pickupType = g_PickupTypes[pickupTypeIndex];
-            zReader::Node *const entryNode = zRdrGetNode(pickupDataNode, logicalName);
-            zReader::Node *const soundNode = zRdrGetNode(entryNode, g_HudZrd_Key_Sound);
-            zReader::Node *const imageNode = zRdrGetNode(entryNode, kPickupConfigImageKey);
+            PickupType& pickupType = g_PickupTypes[pickupTypeIndex];
+            zReader::Node* const entryNode = zRdrGetNode(pickupDataNode, logicalName);
+            zReader::Node* const soundNode = zRdrGetNode(entryNode, g_HudZrd_Key_Sound);
+            zReader::Node* const imageNode = zRdrGetNode(entryNode, kPickupConfigImageKey);
             if (soundNode != 0) {
-                zSndSample *const pickupSound =
-                    zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
+                zSndSample* const pickupSound = zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
                 if (pickupSound != 0) {
                     pickupType.pickupSound = pickupSound;
                 } else {
@@ -869,8 +827,7 @@ int __fastcall Pickup::Init(
             }
 
             if (imageNode != 0 && pickupType.optMetaImage == 0) {
-                pickupType.optMetaImage =
-                    zImage::TexDirFindOrCreateByPath(imageNode->value.nodes[1].value.str);
+                pickupType.optMetaImage = zImage::TexDirFindOrCreateByPath(imageNode->value.nodes[1].value.str);
             }
         }
     }
@@ -894,9 +851,8 @@ int __fastcall Pickup::Init(
  * Purpose: clear pickup interaction flags from a node and each child in its
  * secondary child list.
  */
-int __fastcall CZNode::ClearPickupFlagsRecursive(
-    CZNodePartial *node
-) {
+int __fastcall CZNode::ClearPickupFlagsRecursive(CZNodePartial* node)
+{
     node->flags &= ~0x40018;
 
     for (int i = 0; i < node->listCountB; ++i) {
@@ -913,9 +869,8 @@ int __fastcall CZNode::ClearPickupFlagsRecursive(
  *
  * Purpose: restore pickup active/raycast flags on a node and its secondary children.
  */
-int __fastcall CZNode::SetPickupFlagsRecursive(
-    CZNodePartial *node
-) {
+int __fastcall CZNode::SetPickupFlagsRecursive(CZNodePartial* node)
+{
     node->flags = (node->flags & ~0x08) | 0x40010;
 
     for (int i = 0; i < node->listCountB; ++i) {
@@ -932,16 +887,14 @@ int __fastcall CZNode::SetPickupFlagsRecursive(
  *
  * Purpose: resolve a pickup bvol hit node back to its owning pickup node.
  */
-int __fastcall Pickup::ResolveOwnerFromBvolHit(
-    CZNodePartial **nodeInOut
-) {
-    CZNodePartial *const node = *nodeInOut;
+int __fastcall Pickup::ResolveOwnerFromBvolHit(CZNodePartial** nodeInOut)
+{
+    CZNodePartial* const node = *nodeInOut;
     if (node == 0 || (node->flags & 0x40000) == 0) {
         return 0;
     }
 
-    PickupBvolHitCallbackContext *const context =
-        (PickupBvolHitCallbackContext *)(node->callbackContext);
+    PickupBvolHitCallbackContext* const context = (PickupBvolHitCallbackContext*)(node->callbackContext);
     *nodeInOut = context->ownerNode;
     return 1;
 }
@@ -951,12 +904,9 @@ int __fastcall Pickup::ResolveOwnerFromBvolHit(
  * @recoil-artifact defines .text recoil:function:0x41cf50: Pickup::RemoveObject (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: deactivate a pickup object and return its spawn to respawn timing.
  */
-void __fastcall Pickup::RemoveObject(
-    zEffectAnimEntry *animEntry,
-    CZNodePartial *pickupObj,
-    int
-) {
-    PickupSpawnDef *const spawn = (PickupSpawnDef *)(pickupObj->callbackContext);
+void __fastcall Pickup::RemoveObject(zEffectAnimEntry* animEntry, CZNodePartial* pickupObj, int)
+{
+    PickupSpawnDef* const spawn = (PickupSpawnDef*)(pickupObj->callbackContext);
     CZClass::gwNodeSetActive(pickupObj, 0);
 
     if (spawn != 0 && spawn->respawnDelay != 0.0f) {
@@ -964,8 +914,7 @@ void __fastcall Pickup::RemoveObject(
             SendPkt11Flag8Delta(spawn);
         }
 
-        PickupRespawnEntry *const respawnEntry =
-            (PickupRespawnEntry *)(::operator new(sizeof(PickupRespawnEntry)));
+        PickupRespawnEntry* const respawnEntry = (PickupRespawnEntry*)(::operator new(sizeof(PickupRespawnEntry)));
         respawnEntry->spawn = 0;
         respawnEntry->when = 0.0f;
         respawnEntry->next = 0;
@@ -993,10 +942,10 @@ void __fastcall Pickup::RemoveObject(
     }
 
     if (spawn != 0 && g_PickupSpawnList_Primary.count != 0) {
-        PickupSpawnDef *current = g_PickupSpawnList_Primary.head;
+        PickupSpawnDef* current = g_PickupSpawnList_Primary.head;
         if (spawn == current) {
             --g_PickupSpawnList_Primary.count;
-            PickupSpawnDef *const next = spawn->next;
+            PickupSpawnDef* const next = spawn->next;
             g_PickupSpawnList_Primary.head = next;
             if (next == 0) {
                 g_PickupSpawnList_Primary.unused = 0;
@@ -1034,19 +983,16 @@ void __fastcall Pickup::RemoveObject(
  * @recoil-artifact defines .text recoil:function:0x41d0c0: Pickup::OnCollected (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: apply a collected pickup and transition the pickup object to its pickup animation or removal.
  */
-int __fastcall Pickup::OnCollected(
-    CZNodePartial *hitNode,
-    zUtil_SaveGameState *saveState
-) {
-    CZNodePartial *pickupObj = hitNode;
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* saveState)
+{
+    CZNodePartial* pickupObj = hitNode;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (ResolveOwnerFromBvolHit(&pickupObj) == 0) {
         return 0;
     }
 
-    const int pickupTypeId =
-        ((PickupNodeRuntimeFields *)(pickupObj->name))->pickupTypeIndex;
-    PickupSpawnDef *spawn = GetSpawnDefFromNode(pickupObj);
+    const int pickupTypeId = ((PickupNodeRuntimeFields*)(pickupObj->name))->pickupTypeIndex;
+    PickupSpawnDef* spawn = GetSpawnDefFromNode(pickupObj);
     if (spawn == 0 || ApplyEffect(pickupTypeId, spawn->amount, saveState) == 0) {
         return 0;
     }
@@ -1055,7 +1001,7 @@ int __fastcall Pickup::OnCollected(
     CZClass::gwNodeSetRaycastable(pickupObj, 0);
     CZClass::gwNodeSetPickable(pickupObj, 0);
 
-    PickupType *const pickupType = &g_PickupTypes[pickupTypeId];
+    PickupType* const pickupType = &g_PickupTypes[pickupTypeId];
     if (pickupType->weaponKeyName != 0) {
         g_HudSensorTracker.ShowObjectivePickupInfo(1, 1, pickupType->optEntry);
         if (zOpt::GetNetworkEnabled() == 0) {
@@ -1065,13 +1011,13 @@ int __fastcall Pickup::OnCollected(
 
     char pickupAnimName[8];
     sprintf(pickupAnimName, kPickupTemplateNameFormat, pickupTypeId);
-    zEffectAnimEntry *const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
+    zEffectAnimEntry* const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
     if (animEntry != 0) {
         zVec3 worldPosition;
         CZNode::GetWorldPosition(pickupObj, &worldPosition);
         pickupType->pickupSound->PlayA3DSimple(1.0f);
         CZClass::gwNodeSetName(pickupObj, pickupAnimName);
-        zEffectAnimEntry *const runtimeEntry = zEffectAnim::SetTransformRefsThunk(
+        zEffectAnimEntry* const runtimeEntry = zEffectAnim::SetTransformRefsThunk(
             animEntry,
             pickupObj,
             pickupObj,
@@ -1079,7 +1025,7 @@ int __fastcall Pickup::OnCollected(
             playerState->rootNode,
             0
         );
-        zEffectAnimEntry::SetOnStateDoneCallback(runtimeEntry, (void *)RemoveObject, pickupObj);
+        zEffectAnimEntry::SetOnStateDoneCallback(runtimeEntry, (void*)RemoveObject, pickupObj);
         GetSpawnDefFromNode(pickupObj)->refCount = 1;
         return 1;
     }
@@ -1093,20 +1039,17 @@ int __fastcall Pickup::OnCollected(
  * @recoil-artifact defines .text recoil:function:0x41d220: Pickup::ApplyEffect (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: apply the gameplay effect for a pickup type to the player save state.
  */
-int __fastcall Pickup::ApplyEffect(
-    int pickupTypeId,
-    int overrideAmount,
-    zUtil_SaveGameState *saveState
-) {
+int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState* saveState)
+{
     const float kUnlimitedAmmoSentinel = 123456792.0f;
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterCommonData *const masterCommonData = playerState->masterCommonData;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
     int result = 1;
     char message[64];
 
     if (pickupTypeId >= 0 && pickupTypeId <= 0x27) {
-        const int normalizedWeaponId =
-            pickupTypeId >= 0x11 && pickupTypeId <= 0x21 ? pickupTypeId - 0x11 : pickupTypeId;
+        const int normalizedWeaponId
+            = pickupTypeId >= 0x11 && pickupTypeId <= 0x21 ? pickupTypeId - 0x11 : pickupTypeId;
         if (normalizedWeaponId >= 0 && normalizedWeaponId <= 0x10) {
             int weaponBankIndex;
             int weaponSideIndex;
@@ -1140,25 +1083,19 @@ int __fastcall Pickup::ApplyEffect(
                 break;
 
             case 0x22:
-            case 0x23:
-                {
+            case 0x23: {
                 int statusAmount = overrideAmount;
                 if (pickupTypeId == 0x23) {
                     statusAmount = (int)(masterCommonData->maxHealth);
                 }
-                zLoc::FormatMessage(
-                    message,
-                    sizeof(message),
-                    g_PickupTypes[pickupTypeId].msgIdOrClassId
-                );
-                if (masterCommonData->invMaxHealth * playerState->statusMeterValue >
-                    kStatusPickupFullThreshold) {
+                zLoc::FormatMessage(message, sizeof(message), g_PickupTypes[pickupTypeId].msgIdOrClassId);
+                if (masterCommonData->invMaxHealth * playerState->statusMeterValue > kStatusPickupFullThreshold) {
                     result = 0;
                 } else {
                     result = Player::UpdateStatusMeter(saveState, 1, (float)(statusAmount));
                 }
                 break;
-                }
+            }
 
             case 0x25:
                 zLoc::FormatMessage(message, sizeof(message), 0x241);
@@ -1179,13 +1116,7 @@ int __fastcall Pickup::ApplyEffect(
                 break;
 
             default:
-                zError::ReportOld(
-                    0x200,
-                    kPickupSourceFilePath,
-                    0x370,
-                    kPickupUnhandledTypeFormat,
-                    pickupTypeId
-                );
+                zError::ReportOld(0x200, kPickupSourceFilePath, 0x370, kPickupUnhandledTypeFormat, pickupTypeId);
                 return 0;
             }
         }
@@ -1195,7 +1126,7 @@ int __fastcall Pickup::ApplyEffect(
         HudUiMessage::ClearDisplay(playerState->activePrimaryGunController->weaponBankIndex);
 
         for (int bankIndex = 1; bankIndex < 10; ++bankIndex) {
-            PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
+            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
             bank.controllerA.ammoOrCharge = kUnlimitedAmmoSentinel;
             bank.controllerA.flags |= 4;
             bank.controllerB.ammoOrCharge = kUnlimitedAmmoSentinel;
@@ -1206,9 +1137,9 @@ int __fastcall Pickup::ApplyEffect(
             HudUiMessage::SelectVariantDisplay(bankIndex, 0);
         }
 
-        zUtil_PlayerStateStorage *const displayPlayerState =
-            (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
-        PlayerGunFireController *activeController = displayPlayerState->activeAltGunController;
+        zUtil_PlayerStateStorage* const displayPlayerState
+            = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
+        PlayerGunFireController* activeController = displayPlayerState->activeAltGunController;
         HudUiMessage::UpdateSelectedWeaponDisplay(
             activeController->weaponBankIndex,
             activeController->weaponSideIndex,
@@ -1221,13 +1152,7 @@ int __fastcall Pickup::ApplyEffect(
             activeController->ammoOrCharge
         );
     } else if (pickupTypeId != 0x386 && pickupTypeId != 0x387) {
-        zError::ReportOld(
-            0x200,
-            kPickupSourceFilePath,
-            0x370,
-            kPickupUnhandledTypeFormat,
-            pickupTypeId
-        );
+        zError::ReportOld(0x200, kPickupSourceFilePath, 0x370, kPickupUnhandledTypeFormat, pickupTypeId);
         return 0;
     } else if (pickupTypeId == 0x387) {
         zLoc::FormatMessage(message, sizeof(message), 0x247);
@@ -1248,32 +1173,27 @@ int __fastcall Pickup::ApplyEffect(
  * Purpose: grant ammo or weapon ownership for a pickup and prepare HUD feedback.
  */
 int __fastcall Pickup::GrantAmmoOrWeapon(
-    PickupType *pickupType,
-    char *messageBuffer,
-    zUtil_SaveGameState *saveState,
+    PickupType* pickupType,
+    char* messageBuffer,
+    zUtil_SaveGameState* saveState,
     int weaponBankIndex,
     int weaponSideIndex,
     int pairedWeaponSideIndex,
     int overrideAmount
-) {
+)
+{
     const float kUnlimitedAmmoSentinel = 123456792.0f;
 
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerAltWeaponBank *const bank = &playerState->altWeaponBanks[weaponBankIndex];
-    PlayerGunFireController *const controller =
-        weaponSideIndex == 0 ? &bank->controllerA : &bank->controllerB;
-    PlayerGunFireController *const pairedController =
-        pairedWeaponSideIndex == 0 ? &bank->controllerA : &bank->controllerB;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[weaponBankIndex];
+    PlayerGunFireController* const controller = weaponSideIndex == 0 ? &bank->controllerA : &bank->controllerB;
+    PlayerGunFireController* const pairedController
+        = pairedWeaponSideIndex == 0 ? &bank->controllerA : &bank->controllerB;
 
     const float maxAmount = controller->optCatalogEntry->ammoOrChargeMax;
-    if (controller->ammoOrCharge != kUnlimitedAmmoSentinel &&
-        controller->ammoOrCharge >= maxAmount && pickupType->weaponKeyName == 0) {
-        zLoc::FormatMessage(
-            messageBuffer,
-            64,
-            0x237,
-            zLoc::GetMessageString(pickupType->msgIdOrClassId)
-        );
+    if (controller->ammoOrCharge != kUnlimitedAmmoSentinel && controller->ammoOrCharge >= maxAmount
+        && pickupType->weaponKeyName == 0) {
+        zLoc::FormatMessage(messageBuffer, 64, 0x237, zLoc::GetMessageString(pickupType->msgIdOrClassId));
         return 0;
     }
 
@@ -1296,10 +1216,7 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
         }
     } else if (controller->ammoOrCharge == 0.0f) {
         if (playerState->activeAltGunController == controller) {
-            HudUiMessage::SelectVariantDisplay(
-                controller->weaponBankIndex,
-                controller->weaponSideIndex + 3
-            );
+            HudUiMessage::SelectVariantDisplay(controller->weaponBankIndex, controller->weaponSideIndex + 3);
         }
 
         if (pairedController->ammoOrCharge == 0.0f) {
@@ -1314,21 +1231,12 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
         }
 
         if (updateValueText != 0) {
-            HudUiMessage::SetValueIfOwnerMatches(
-                weaponBankIndex,
-                weaponSideIndex,
-                controller->ammoOrCharge
-            );
+            HudUiMessage::SetValueIfOwnerMatches(weaponBankIndex, weaponSideIndex, controller->ammoOrCharge);
         }
     }
 
     if (overrideAmount == 1) {
-        zLoc::FormatMessage(
-            messageBuffer,
-            64,
-            0x23f,
-            zLoc::GetMessageString(pickupType->msgIdOrClassId)
-        );
+        zLoc::FormatMessage(messageBuffer, 64, 0x23f, zLoc::GetMessageString(pickupType->msgIdOrClassId));
     } else {
         zLoc::FormatMessage(
             messageBuffer,
@@ -1358,15 +1266,13 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
  * @recoil-artifact defines .text recoil:function:0x41d8a0: PickupSpawnList::RemoveAndFreeNode (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: unlink a pickup spawn from a spawn list and release its node.
  */
-void __fastcall PickupSpawnList::RemoveAndFreeNode(
-    PickupSpawnDef *node,
-    PickupSpawnList *list
-) {
+void __fastcall PickupSpawnList::RemoveAndFreeNode(PickupSpawnDef* node, PickupSpawnList* list)
+{
     if (node != 0 && list->count != 0) {
-        PickupSpawnDef *current = list->head;
+        PickupSpawnDef* current = list->head;
         if (node == current) {
             --list->count;
-            PickupSpawnDef *const next = node->next;
+            PickupSpawnDef* const next = node->next;
             list->head = next;
             if (next == 0) {
                 list->unused = 0;
@@ -1374,7 +1280,7 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
             }
         } else {
             while (current != 0) {
-                PickupSpawnDef *const next = current->next;
+                PickupSpawnDef* const next = current->next;
                 if (next == node) {
                     --list->count;
                     current->next = node->next;
@@ -1388,7 +1294,7 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
         }
     }
 
-    CZNodePartial *const pickupObj = node->pickupObj;
+    CZNodePartial* const pickupObj = node->pickupObj;
     if (pickupObj != 0) {
         if (pickupObj->listA != 0) {
             CZWorld::RemoveChildAtGrid(pickupObj->listA[0], pickupObj);
@@ -1405,22 +1311,22 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(
  * @recoil-artifact defines .text recoil:function:0x41d920: Pickup::CreateSpawnDefAndLink (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: allocate a spawn definition, attach it to the primary list, and bind node context.
  */
-PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
-    CZNodePartial *pickupObj,
-    zVec3 *position,
-    zVec3 *rotation,
+PickupSpawnDef* __fastcall Pickup::CreateSpawnDefAndLink(
+    CZNodePartial* pickupObj,
+    zVec3* position,
+    zVec3* rotation,
     int spawnParam,
     int linkToScene
-) {
+)
+{
     if (linkToScene != 0) {
         CZClass::AddChild(g_Pickup_SceneNode, pickupObj);
     }
 
-    PickupSpawnDef *const spawn = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
+    PickupSpawnDef* const spawn = (PickupSpawnDef*)(malloc(sizeof(PickupSpawnDef)));
 
-    PickupType *pickupType = 0;
-    const PickupNodeRuntimeFields *const pickupFields =
-        (const PickupNodeRuntimeFields *)(pickupObj->name);
+    PickupType* pickupType = 0;
+    const PickupNodeRuntimeFields* const pickupFields = (const PickupNodeRuntimeFields*)(pickupObj->name);
     const int pickupTypeIndex = pickupFields->pickupTypeIndex;
     for (int index = 0; index < 40; ++index) {
         if (g_PickupTypes[index].typeIndex == pickupTypeIndex) {
@@ -1456,7 +1362,7 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
     spawn->next = 0;
     ++g_PickupSpawnList_Primary.count;
 
-    CZNode::SetContextRecursive(pickupObj, (CZNodePartial *)spawn, 0x240000);
+    CZNode::SetContextRecursive(pickupObj, (CZNodePartial*)spawn, 0x240000);
     return spawn;
 }
 
@@ -1467,14 +1373,9 @@ PickupSpawnDef *__fastcall Pickup::CreateSpawnDefAndLink(
  *
  * Purpose: create a pickup object at a supplied transform and link its spawn definition.
  */
-PickupSpawnDef *__fastcall Pickup::SpawnAt(
-    int typeIndex,
-    int amount,
-    zVec3 *position,
-    zVec3 *rotation,
-    int spawnParam
-) {
-    CZNodePartial *const pickupObj = CreateObjectInstance(typeIndex, amount);
+PickupSpawnDef* __fastcall Pickup::SpawnAt(int typeIndex, int amount, zVec3* position, zVec3* rotation, int spawnParam)
+{
+    CZNodePartial* const pickupObj = CreateObjectInstance(typeIndex, amount);
     if (pickupObj == 0) {
         return 0;
     }
@@ -1486,8 +1387,7 @@ PickupSpawnDef *__fastcall Pickup::SpawnAt(
         CZObject3D::gwObject3DSetRotation(pickupObj, rotation->x, rotation->y, rotation->z);
     }
 
-    PickupSpawnDef *const spawn =
-        CreateSpawnDefAndLink(pickupObj, position, rotation, spawnParam, 1);
+    PickupSpawnDef* const spawn = CreateSpawnDefAndLink(pickupObj, position, rotation, spawnParam, 1);
     strcpy(spawn->name, pickupObj->name);
     return spawn;
 }
@@ -1497,35 +1397,27 @@ PickupSpawnDef *__fastcall Pickup::SpawnAt(
  * @recoil-artifact defines .text recoil:function:0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: clone a pickup template node, assign its runtime fields, and name it for spawning.
  */
-CZNodePartial *__fastcall Pickup::CreateObjectInstance(
-    int typeIndex,
-    int overrideAmount
-) {
-    PickupType *const pickupType = PickupType::GetByIndexPure(typeIndex);
+CZNodePartial* __fastcall Pickup::CreateObjectInstance(int typeIndex, int overrideAmount)
+{
+    PickupType* const pickupType = PickupType::GetByIndexPure(typeIndex);
     if (pickupType == 0 || pickupType->templateNode == 0) {
         return 0;
     }
 
-    CZNodePartial *const pickupObj =
-        CZUtil::CopyNodeWithCloneOptions(pickupType->templateNode, 1, 0);
+    CZNodePartial* const pickupObj = CZUtil::CopyNodeWithCloneOptions(pickupType->templateNode, 1, 0);
     if (pickupObj == 0) {
         return 0;
     }
 
     char pickupName[0x40];
-    sprintf(
-        pickupName,
-        kPickupInstanceNameFormat,
-        pickupType->typeIndex,
-        pickupType->nameSuffixMax
-    );
+    sprintf(pickupName, kPickupInstanceNameFormat, pickupType->typeIndex, pickupType->nameSuffixMax);
     CZClass::gwNodeSetName(pickupObj, pickupName);
 
     int amount = overrideAmount;
     if (amount == 0) {
         amount = pickupType->defaultAmount;
     }
-    ((PickupNodeRuntimeFields *)(pickupObj->name))->amount = amount;
+    ((PickupNodeRuntimeFields*)(pickupObj->name))->amount = amount;
 
     if (AssignBvolGroupAndId(pickupObj) != 0) {
         return pickupObj;
@@ -1540,9 +1432,8 @@ CZNodePartial *__fastcall Pickup::CreateObjectInstance(
  * @recoil-artifact defines .text recoil:function:0x41db40: PickupType::GetByIndexPure (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: return the pickup type record when the index is below the table size.
  */
-PickupType *__fastcall PickupType::GetByIndexPure(
-    int pickupTypeIndex
-) {
+PickupType* __fastcall PickupType::GetByIndexPure(int pickupTypeIndex)
+{
     if (pickupTypeIndex < 40) {
         return &g_PickupTypes[pickupTypeIndex];
     }
@@ -1555,13 +1446,9 @@ PickupType *__fastcall PickupType::GetByIndexPure(
  * @recoil-artifact defines .text recoil:function:0x41db60: Pickup::AssignBvolGroupAndId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: parse a pickup node name, assign runtime pickup fields, and disable its bvol child.
  */
-int __fastcall Pickup::AssignBvolGroupAndId(
-    CZNodePartial *pickupObj
-) {
-    CZNodePartial *const bvolNode = CZClass::FindSubNodeByName(
-        pickupObj,
-        kPickupBvolNodeName
-    );
+int __fastcall Pickup::AssignBvolGroupAndId(CZNodePartial* pickupObj)
+{
+    CZNodePartial* const bvolNode = CZClass::FindSubNodeByName(pickupObj, kPickupBvolNodeName);
     if (bvolNode == 0) {
         zError::ReportOld(0x400, kPickupSourceFilePath, 0x152, kPickupMissingBvolFormat, pickupObj);
         return 0;
@@ -1574,13 +1461,12 @@ int __fastcall Pickup::AssignBvolGroupAndId(
         return 0;
     }
 
-    PickupNodeRuntimeFields *const fields =
-        (PickupNodeRuntimeFields *)(pickupObj->name);
+    PickupNodeRuntimeFields* const fields = (PickupNodeRuntimeFields*)(pickupObj->name);
     fields->pickupTypeIndex = pickupTypeIndex;
     fields->pickupId = g_NextPickupId;
     ++g_NextPickupId;
 
-    PickupType *const pickupType = PickupType::GetByIndexPure(pickupTypeIndex);
+    PickupType* const pickupType = PickupType::GetByIndexPure(pickupTypeIndex);
     if (pickupType != 0 && pickupNameSuffix + 1 > pickupType->nameSuffixMax) {
         pickupType->nameSuffixMax = pickupNameSuffix + 1;
     }
@@ -1598,16 +1484,10 @@ int __fastcall Pickup::AssignBvolGroupAndId(
  *
  * Purpose: create a pickup spawn from parsed ZRD pickup placement data.
  */
-PickupSpawnDef *__fastcall Pickup::SpawnFromParsedZrdEntry(
-    PickupParsedZrdEntry *entry
-) {
-    PickupSpawnDef *const spawn = SpawnAt(
-        entry->typeDesc->typeIndex,
-        entry->amount,
-        &entry->position,
-        &entry->rotation,
-        entry->param
-    );
+PickupSpawnDef* __fastcall Pickup::SpawnFromParsedZrdEntry(PickupParsedZrdEntry* entry)
+{
+    PickupSpawnDef* const spawn
+        = SpawnAt(entry->typeDesc->typeIndex, entry->amount, &entry->position, &entry->rotation, entry->param);
     if (spawn != 0) {
         spawn->respawnDelay = entry->respawnDelay;
     }
@@ -1620,19 +1500,17 @@ PickupSpawnDef *__fastcall Pickup::SpawnFromParsedZrdEntry(
  * Purpose: create a pickup object at an airdrop position and attach its chute
  * animation state.
  */
-int __fastcall Pickup::SpawnWithAirdropChute(
-    int typeIndex,
-    zVec3 *position
-) {
-    CZNodePartial *const pickupObj = CreateObjectInstance(typeIndex, 0);
+int __fastcall Pickup::SpawnWithAirdropChute(int typeIndex, zVec3* position)
+{
+    CZNodePartial* const pickupObj = CreateObjectInstance(typeIndex, 0);
     if (pickupObj == 0) {
         return 0;
     }
 
     SetVariantFromTerrain(pickupObj, position);
 
-    zEffectAnimEntry *const chuteTemplate = zEffectAnim::FindEntryByName(kPickupChuteEffectName);
-    zEffectAnimEntry *const chuteEntry = zEffectAnim::SetTransformRotAndVelocityThunk(
+    zEffectAnimEntry* const chuteTemplate = zEffectAnim::FindEntryByName(kPickupChuteEffectName);
+    zEffectAnimEntry* const chuteEntry = zEffectAnim::SetTransformRotAndVelocityThunk(
         chuteTemplate,
         0,
         position->x,
@@ -1645,18 +1523,11 @@ int __fastcall Pickup::SpawnWithAirdropChute(
         0.0f,
         0.0f
     );
-    CZNodePartial *const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
-    CZNodePartial *const attachNode = CZClass::FindSubNodeByName(
-        chuteRoot,
-        kPickupAirdropAttachNodeName
-    );
+    CZNodePartial* const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
+    CZNodePartial* const attachNode = CZClass::FindSubNodeByName(chuteRoot, kPickupAirdropAttachNodeName);
     CZClass::AddChild(attachNode, pickupObj);
     CZClass::gwNodeSetActive(pickupObj, 0);
-    zEffectAnimEntry::SetOnStateDoneCallback(
-        chuteEntry,
-        (void *)&RegisterExistingObject,
-        pickupObj
-    );
+    zEffectAnimEntry::SetOnStateDoneCallback(chuteEntry, (void*)&RegisterExistingObject, pickupObj);
     return 1;
 }
 
@@ -1667,11 +1538,8 @@ int __fastcall Pickup::SpawnWithAirdropChute(
  *
  * Purpose: activate an existing pickup object, preserve its world position, and link a spawn record.
  */
-void __fastcall Pickup::RegisterExistingObject(
-    int,
-    CZNodePartial *pickupObj,
-    int
-) {
+void __fastcall Pickup::RegisterExistingObject(int, CZNodePartial* pickupObj, int)
+{
     zVec3 worldPos;
     CZNode::GetWorldPosition(pickupObj, &worldPos);
 
@@ -1689,12 +1557,10 @@ void __fastcall Pickup::RegisterExistingObject(
  * @recoil-artifact defines .text recoil:function:0x41dd60: PickupType::FindByLogicalName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: map a pickup logical name to its stored pickup type id.
  */
-int __fastcall PickupType::FindByLogicalName(
-    const char *logicalName,
-    int *outTypeIndex
-) {
+int __fastcall PickupType::FindByLogicalName(const char* logicalName, int* outTypeIndex)
+{
     for (int index = 0; index < 40; ++index) {
-        const PickupType &pickupType = g_PickupTypes[index];
+        const PickupType& pickupType = g_PickupTypes[index];
         if (pickupType.logicalName != 0 && strcmp(logicalName, pickupType.logicalName) == 0) {
             *outTypeIndex = pickupType.typeIndex;
             return 1;
@@ -1710,10 +1576,9 @@ int __fastcall PickupType::FindByLogicalName(
  * @recoil-artifact defines .text recoil:function:0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: choose the puppy spawn ZRD path for the current difficulty with fallback.
  */
-const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
-    const char *extraSearchPath
-) {
-    const char *filename = kPickupPuppiesDefaultZrd;
+const char* __fastcall Pickup::SelectPuppiesZrdByDifficulty(const char* extraSearchPath)
+{
+    const char* filename = kPickupPuppiesDefaultZrd;
     const int difficultyMode = zOpt::GetGameDifficultyMode();
     if (difficultyMode == 0) {
         filename = kPickupPuppiesEasyZrd;
@@ -1735,14 +1600,13 @@ const char *__fastcall Pickup::SelectPuppiesZrdByDifficulty(
  *
  * Purpose: report whether any player weapon slot already owns an option entry.
  */
-int __fastcall Net::IsOptEntryActiveInAnySlot(
-    OptCatalogEntryDef *optEntry
-) {
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
+int __fastcall Net::IsOptEntryActiveInAnySlot(OptCatalogEntryDef* optEntry)
+{
+    zUtil_PlayerStateStorage* const playerState
+        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
 
     for (int index = 0; index < 10; ++index) {
-        PlayerAltWeaponBank &bank = playerState->altWeaponBanks[index];
+        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[index];
         if (bank.controllerA.optCatalogEntry == optEntry && (bank.controllerA.flags & 4) != 0) {
             return 1;
         }
@@ -1759,9 +1623,10 @@ int __fastcall Net::IsOptEntryActiveInAnySlot(
  * @recoil-artifact defines .text recoil:function:0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: initialize weapon pickup metadata and load puppy pickup spawn records.
  */
-int __cdecl Pickup::InitAndLoadPuppySpawns() {
+int __cdecl Pickup::InitAndLoadPuppySpawns()
+{
     for (int index = 17; index <= 33; ++index) {
-        PickupType &pickupType = g_PickupTypes[index];
+        PickupType& pickupType = g_PickupTypes[index];
         if (pickupType.weaponKeyName != 0) {
             pickupType.optEntry = OptCatalog::FindEntryByName(pickupType.weaponKeyName);
             pickupType.weaponPresenceCount = 0;
@@ -1771,15 +1636,13 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
     g_PickupSpawnList_Primary.Clear();
 
     CZClass::FindNextByTypePrefix(g_Pickup_NodePrefix, 6);
-    CZNodePartial *pickupObj = CZClass::FindNextByTypePrefix(0, 6);
+    CZNodePartial* pickupObj = CZClass::FindNextByTypePrefix(0, 6);
     while (pickupObj != 0) {
         if (strlen(pickupObj->name) > 5 && isdigit((unsigned char)(pickupObj->name[2])) != 0) {
-            zVec3 zeroVec = {0.0f, 0.0f, 0.0f};
-            ((PickupNodeRuntimeFields *)(pickupObj->name))->pickupId =
-                g_NextPickupId;
+            zVec3 zeroVec = { 0.0f, 0.0f, 0.0f };
+            ((PickupNodeRuntimeFields*)(pickupObj->name))->pickupId = g_NextPickupId;
             if (AssignBvolGroupAndId(pickupObj) != 0) {
-                PickupSpawnDef *const spawn =
-                    CreateSpawnDefAndLink(pickupObj, &zeroVec, &zeroVec, 0, 0);
+                PickupSpawnDef* const spawn = CreateSpawnDefAndLink(pickupObj, &zeroVec, &zeroVec, 0, 0);
                 if (spawn->pickupType->weaponKeyName != 0) {
                     ++spawn->pickupType->weaponPresenceCount;
                 }
@@ -1789,30 +1652,29 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
         pickupObj = CZClass::FindNextByTypePrefix(0, 6);
     }
 
-    zReader::Node *const treeRoot =
-        zReader::Load(SelectPuppiesZrdByDifficulty(0), 0, 0);
+    zReader::Node* const treeRoot = zReader::Load(SelectPuppiesZrdByDifficulty(0), 0, 0);
     if (treeRoot == 0) {
         return 0;
     }
 
-    zReader::Node *const rootFields = treeRoot->value.nodes;
-    zReader::Node *const spawnList = rootFields[1].value.nodes;
+    zReader::Node* const rootFields = treeRoot->value.nodes;
+    zReader::Node* const spawnList = rootFields[1].value.nodes;
     const int spawnCount = spawnList[0].value.i32 - 1;
     for (int spawnIndex = 0; spawnIndex < spawnCount; ++spawnIndex) {
-        zReader::Node *const entryFields = spawnList[spawnIndex + 1].value.nodes;
-        PickupType *const pickupType = PickupTypeMeta::FindByName(entryFields[1].value.str);
+        zReader::Node* const entryFields = spawnList[spawnIndex + 1].value.nodes;
+        PickupType* const pickupType = PickupTypeMeta::FindByName(entryFields[1].value.str);
         if (pickupType == 0) {
             continue;
         }
 
-        if (zOpt::GetNetworkEnabled() == 0 && pickupType->weaponKeyName != 0 &&
-            Net::IsOptEntryActiveInAnySlot(pickupType->optEntry) != 0) {
+        if (zOpt::GetNetworkEnabled() == 0 && pickupType->weaponKeyName != 0
+            && Net::IsOptEntryActiveInAnySlot(pickupType->optEntry) != 0) {
             continue;
         }
 
-        zReader::Node *const position = entryFields[3].value.nodes;
-        zReader::Node *const rotation = entryFields[4].value.nodes;
-        PickupParsedZrdEntry parsedEntry = {0};
+        zReader::Node* const position = entryFields[3].value.nodes;
+        zReader::Node* const rotation = entryFields[4].value.nodes;
+        PickupParsedZrdEntry parsedEntry = { 0 };
         parsedEntry.typeDesc = pickupType;
         parsedEntry.amount = entryFields[2].value.i32;
         parsedEntry.position.x = position[1].value.f32;
@@ -1831,19 +1693,17 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
         }
     }
 
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
+    zUtil_PlayerStateStorage* const playerState
+        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
     for (int weaponIndex = 17; weaponIndex <= 33; ++weaponIndex) {
-        PickupType &pickupType = g_PickupTypes[weaponIndex];
+        PickupType& pickupType = g_PickupTypes[weaponIndex];
         if (pickupType.weaponPresenceCount != 0) {
             ++g_HudSensorTracker.weaponsFoundMask;
-        } else if (zOpt::GetNetworkEnabled() != 0 && pickupType.weaponKeyName != 0 &&
-                   weaponIndex < 32) {
+        } else if (zOpt::GetNetworkEnabled() != 0 && pickupType.weaponKeyName != 0 && weaponIndex < 32) {
             const int bankIndex = pickupType.weaponKeyName[4] - '0';
             const int sideIndex = pickupType.weaponKeyName[6] - '0';
-            PlayerAltWeaponBank &bank = playerState->altWeaponBanks[bankIndex];
-            PlayerGunFireController *const controller =
-                sideIndex == 0 ? &bank.controllerA : &bank.controllerB;
+            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
+            PlayerGunFireController* const controller = sideIndex == 0 ? &bank.controllerA : &bank.controllerB;
             if (controller->ammoOrCharge != 0.0f) {
                 pickupType.weaponPresenceCount = 1;
             }
@@ -1854,9 +1714,9 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
 
     if (zOpt::GetNetworkEnabled() != 0) {
         g_PickupSpawnList_NetworkCopy.Clear();
-        PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
+        PickupSpawnDef* primarySpawn = g_PickupSpawnList_Primary.head;
         while (primarySpawn != 0) {
-            PickupSpawnDef *const copy = (PickupSpawnDef *)(malloc(sizeof(PickupSpawnDef)));
+            PickupSpawnDef* const copy = (PickupSpawnDef*)(malloc(sizeof(PickupSpawnDef)));
             if (copy != 0) {
                 memset(copy, 0, sizeof(*copy));
                 memcpy(copy, primarySpawn, sizeof(*copy));
@@ -1885,9 +1745,8 @@ int __cdecl Pickup::InitAndLoadPuppySpawns() {
  *
  * Purpose: resolve a pickup logical name to its pickup type record.
  */
-PickupType *__fastcall PickupTypeMeta::FindByName(
-    const char *typeName
-) {
+PickupType* __fastcall PickupTypeMeta::FindByName(const char* typeName)
+{
     const int index = PickupTypeKeyTable::FindIndex(typeName);
     if (index < 0) {
         return 0;
@@ -1903,9 +1762,8 @@ PickupType *__fastcall PickupTypeMeta::FindByName(
  *
  * Purpose: return the pickup type record for an in-range pickup type index.
  */
-PickupType *__fastcall PickupType::GetByIndex(
-    int pickupTypeIndex
-) {
+PickupType* __fastcall PickupType::GetByIndex(int pickupTypeIndex)
+{
     if (pickupTypeIndex >= 0 && pickupTypeIndex < 40) {
         return &g_PickupTypes[pickupTypeIndex];
     }
@@ -1918,11 +1776,10 @@ PickupType *__fastcall PickupType::GetByIndex(
  * @recoil-artifact defines .text recoil:function:0x41e1e0: PickupTypeKeyTable::FindIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: scan the pickup type table for a matching logical name index.
  */
-int __fastcall PickupTypeKeyTable::FindIndex(
-    const char *logicalName
-) {
+int __fastcall PickupTypeKeyTable::FindIndex(const char* logicalName)
+{
     for (int index = 0; index < 40; ++index) {
-        const char *const candidateName = g_PickupTypes[index].logicalName;
+        const char* const candidateName = g_PickupTypes[index].logicalName;
         if (candidateName != 0 && strcmp(logicalName, candidateName) == 0) {
             return index;
         }
@@ -1938,10 +1795,11 @@ int __fastcall PickupTypeKeyTable::FindIndex(
  *
  * Purpose: free every spawn in a pickup spawn list and reset primary ids when needed.
  */
-void PickupSpawnList::Clear() {
-    PickupSpawnDef *node = head;
+void PickupSpawnList::Clear()
+{
+    PickupSpawnDef* node = head;
     while (node != 0) {
-        PickupSpawnDef *const next = node->next;
+        PickupSpawnDef* const next = node->next;
         PickupSpawnList::RemoveAndFreeNode(node, this);
         node = next;
     }
@@ -1956,13 +1814,14 @@ void PickupSpawnList::Clear() {
  * @recoil-artifact defines .text recoil:function:0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: unlink and release every pending pickup respawn queue entry.
  */
-void PickupRespawnQueue::ClearAndFree() {
-    PickupRespawnEntry *node = head;
+void PickupRespawnQueue::ClearAndFree()
+{
+    PickupRespawnEntry* node = head;
     while (node != 0) {
-        PickupRespawnEntry *const nextNode = node->next;
+        PickupRespawnEntry* const nextNode = node->next;
         bool removed = false;
         if (count != 0) {
-            PickupRespawnEntry *current = head;
+            PickupRespawnEntry* current = head;
             if (node == current) {
                 --count;
                 head = node->next;
@@ -1973,7 +1832,7 @@ void PickupRespawnQueue::ClearAndFree() {
                 }
             } else {
                 while (current != 0) {
-                    PickupRespawnEntry *const next = current->next;
+                    PickupRespawnEntry* const next = current->next;
                     if (next == node) {
                         --count;
                         current->next = node->next;
@@ -2000,13 +1859,11 @@ void PickupRespawnQueue::ClearAndFree() {
  * @recoil-artifact defines .text recoil:function:0x41e2f0: Pickup::RemoveOtherSpawnsWithSameOptEntry (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: remove other primary pickup spawns that grant the same option entry.
  */
-void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
-    OptCatalogEntryDef *optEntry,
-    CZNodePartial *keepPickupObj
-) {
-    PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
+void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(OptCatalogEntryDef* optEntry, CZNodePartial* keepPickupObj)
+{
+    PickupSpawnDef* spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
-        PickupSpawnDef *const next = spawn->next;
+        PickupSpawnDef* const next = spawn->next;
         if (spawn->pickupObj != keepPickupObj && spawn->pickupType->optEntry == optEntry) {
             PickupSpawnList::RemoveAndFreeNode(spawn, &g_PickupSpawnList_Primary);
         }
@@ -2019,10 +1876,8 @@ void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(
  * @recoil-artifact defines .text recoil:function:0x41e330: Pickup::SetVariantFromTerrain (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: choose the pickup variant tag from terrain below the spawn point.
  */
-void __fastcall Pickup::SetVariantFromTerrain(
-    CZNodePartial *pickupObj,
-    zVec3 *position
-) {
+void __fastcall Pickup::SetVariantFromTerrain(CZNodePartial* pickupObj, zVec3* position)
+{
     zTag4::Clear(&g_VariantTag_Current);
     g_Variant_CurrentTag = g_VariantTag_Current;
 
@@ -2050,24 +1905,21 @@ void __fastcall Pickup::SetVariantFromTerrain(
 
     int variantTag = 255;
     if (candidateBuffer.candidateCount != 0) {
-        zClassDiPickCandidateEntry *const candidate = &candidateBuffer.entries[bestCandidateIndex];
-        CZNodePartial *const worldChild = CZClass::gwNodeGetWorldChild(candidate->node);
+        zClassDiPickCandidateEntry* const candidate = &candidateBuffer.entries[bestCandidateIndex];
+        CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(candidate->node);
         if (worldChild != 0) {
             CZClass::gwNodeSetNodeType(pickupObj, worldChild->nodeType);
-            zDi::SetVariantTagIfUnset(
-                (zDiPartial *)(pickupObj->userDataOrDiRef),
-                worldChild->nodeType
-            );
+            zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), worldChild->nodeType);
             return;
         } else {
             variantTag = candidate->variantTag.tags[0];
             CZClass::gwNodeSetNodeType(pickupObj, variantTag);
-            zDi::SetVariantTagIfUnset((zDiPartial *)(pickupObj->userDataOrDiRef), variantTag);
+            zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), variantTag);
         }
     }
 
     CZClass::gwNodeSetNodeType(pickupObj, variantTag);
-    zDi::SetVariantTagIfUnset((zDiPartial *)(pickupObj->userDataOrDiRef), variantTag);
+    zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), variantTag);
 }
 
 /**
@@ -2075,14 +1927,12 @@ void __fastcall Pickup::SetVariantFromTerrain(
  * @recoil-artifact defines .text recoil:function:0x41e430: Pickup::SpawnListHasEntryNearXZ (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: test whether a primary spawn lies inside a requested XZ clearance window.
  */
-int __fastcall Pickup::SpawnListHasEntryNearXZ(
-    zVec3 *position,
-    float clearanceRadius
-) {
-    PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
+int __fastcall Pickup::SpawnListHasEntryNearXZ(zVec3* position, float clearanceRadius)
+{
+    PickupSpawnDef* spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
-        if (fabs(spawn->position.x - position->x) < clearanceRadius &&
-            fabs(spawn->position.z - position->z) < clearanceRadius) {
+        if (fabs(spawn->position.x - position->x) < clearanceRadius
+            && fabs(spawn->position.z - position->z) < clearanceRadius) {
             return 1;
         }
         spawn = spawn->next;
@@ -2096,9 +1946,10 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(
  * @recoil-artifact defines .text recoil:function:0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: rotate through available weapon pickups for the next VTOL drop.
  */
-int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex() {
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
+int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex()
+{
+    zUtil_PlayerStateStorage* const playerState
+        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
     int cursor = g_Pickup_LastVTOLDropIndex + 1;
 
     while (cursor != g_Pickup_LastVTOLDropIndex) {
@@ -2114,9 +1965,9 @@ int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex() {
             if (zOpt::GetNetworkEnabled() != 0) {
                 available = g_PickupTypes[14 + cursor].weaponPresenceCount != 0;
             } else {
-                PlayerAltWeaponBank *const bank = &playerState->altWeaponBanks[dropGroupIndex];
-                PlayerGunFireController *const controller =
-                    dropVariantIndex != 0 ? &bank->controllerB : &bank->controllerA;
+                PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[dropGroupIndex];
+                PlayerGunFireController* const controller
+                    = dropVariantIndex != 0 ? &bank->controllerB : &bank->controllerA;
                 available = (controller->flags & 4) != 0;
             }
 
@@ -2138,10 +1989,8 @@ int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex() {
  * @recoil-artifact defines .text recoil:function:0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: convert a VTOL drop weapon group and variant into a pickup type index.
  */
-int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(
-    int dropGroupIndex,
-    int dropVariantIndex
-) {
+int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(int dropGroupIndex, int dropVariantIndex)
+{
     if (dropGroupIndex < 2 || dropGroupIndex > 9) {
         return 0;
     }
@@ -2154,12 +2003,13 @@ int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(
  * @recoil-artifact defines .text recoil:function:0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: respawn due pickups and remove their queue entries.
  */
-void __cdecl PickupRespawnQueue::Update() {
+void __cdecl PickupRespawnQueue::Update()
+{
     if (g_PickupRespawnQueue.count == 0) {
         return;
     }
 
-    PickupRespawnEntry *entry = g_PickupRespawnQueue.head;
+    PickupRespawnEntry* entry = g_PickupRespawnQueue.head;
     if (entry == 0) {
         return;
     }
@@ -2168,9 +2018,9 @@ void __cdecl PickupRespawnQueue::Update() {
         if (entry->when < g_Time_UnscaledAccumulatedTimeSec) {
             Pickup::RespawnSpawnDef(entry->spawn);
 
-            PickupRespawnEntry *const nextEntry = entry->next;
+            PickupRespawnEntry* const nextEntry = entry->next;
             if (g_PickupRespawnQueue.count != 0) {
-                PickupRespawnEntry *prev = g_PickupRespawnQueue.head;
+                PickupRespawnEntry* prev = g_PickupRespawnQueue.head;
                 if (entry == prev) {
                     --g_PickupRespawnQueue.count;
                     g_PickupRespawnQueue.head = entry->next;
@@ -2181,7 +2031,7 @@ void __cdecl PickupRespawnQueue::Update() {
                     ::operator delete(entry);
                 } else if (prev != 0) {
                     while (prev != 0) {
-                        PickupRespawnEntry *const prevNext = prev->next;
+                        PickupRespawnEntry* const prevNext = prev->next;
                         if (prevNext == entry) {
                             --g_PickupRespawnQueue.count;
                             prev->next = entry->next;
@@ -2207,10 +2057,9 @@ void __cdecl PickupRespawnQueue::Update() {
  * @recoil-artifact defines .text recoil:function:0x41e6c0: Pickup::RespawnSpawnDef (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: restore a hidden pickup object to its saved spawn transform and flags.
  */
-void __fastcall Pickup::RespawnSpawnDef(
-    PickupSpawnDef *spawn
-) {
-    CZNodePartial *const pickupObj = spawn->pickupObj;
+void __fastcall Pickup::RespawnSpawnDef(PickupSpawnDef* spawn)
+{
+    CZNodePartial* const pickupObj = spawn->pickupObj;
 
     CZClass::gwNodeSetActive(pickupObj, 1);
     CZClass::gwNodeSetRaycastable(pickupObj, 1);
@@ -2218,18 +2067,8 @@ void __fastcall Pickup::RespawnSpawnDef(
     CZClass::gwNodeSetName(pickupObj, spawn->name);
     CZNode::SetPickupFlagsRecursive(pickupObj);
 
-    CZObject3D::gwObject3DSetPosition(
-        pickupObj,
-        spawn->position.x,
-        spawn->position.y,
-        spawn->position.z
-    );
-    CZObject3D::gwObject3DSetRotation(
-        pickupObj,
-        spawn->rotation.x,
-        spawn->rotation.y,
-        spawn->rotation.z
-    );
+    CZObject3D::gwObject3DSetPosition(pickupObj, spawn->position.x, spawn->position.y, spawn->position.z);
+    CZObject3D::gwObject3DSetRotation(pickupObj, spawn->rotation.x, spawn->rotation.y, spawn->rotation.z);
     CZObject3D::gwObject3DSetScale(pickupObj, 1.0f, 1.0f, 1.0f);
     CZObject3D::gwObject3DSetLitFlag(pickupObj, 1);
     CZObject3D::gwObject3DSetAlphaScale(pickupObj, 0.0f);
@@ -2241,17 +2080,15 @@ void __fastcall Pickup::RespawnSpawnDef(
  * @recoil-artifact defines .text recoil:function:0x41e780: Pickup::ArchiveWriteAll (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: serialize active pickup spawns to the pickup archive section.
  */
-int __fastcall Pickup::ArchiveWriteAll(
-    zZbdSectionCallbackCtx *callbackCtx,
-    void *userData
-) {
+int __fastcall Pickup::ArchiveWriteAll(zZbdSectionCallbackCtx* callbackCtx, void* userData)
+{
     (void)userData;
 
     int result = 1;
     int firstRecord = 1;
-    PickupSpawnDef *spawn = g_PickupSpawnList_Primary.head;
+    PickupSpawnDef* spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0 && result != 0) {
-        CZNodePartial *const pickupObj = spawn->pickupObj;
+        CZNodePartial* const pickupObj = spawn->pickupObj;
         if ((pickupObj->flags & 0x40000) != 0) {
             PickupArchiveRecord record;
             record.firstRecord = firstRecord;
@@ -2262,8 +2099,7 @@ int __fastcall Pickup::ArchiveWriteAll(
             record.rotation = spawn->rotation;
             record.spawnParam = spawn->spawnParam;
             record.respawnDelay = spawn->respawnDelay;
-            result =
-                zUtil_ZAR::WriteSectionBlob(callbackCtx, pickupObj->name, &record, sizeof(record));
+            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, pickupObj->name, &record, sizeof(record));
         }
 
         spawn = spawn->next;
@@ -2279,18 +2115,19 @@ int __fastcall Pickup::ArchiveWriteAll(
  * Purpose: restore one pickup spawn record from the pickup archive section.
  */
 void __fastcall Pickup::ArchiveReadRecord(
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken,
-    void *buffer,
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    void* buffer,
     unsigned int size,
-    void *userData
-) {
+    void* userData
+)
+{
     (void)callbackCtx;
     (void)sectionToken;
     (void)size;
     (void)userData;
 
-    const PickupArchiveRecord *const record = (const PickupArchiveRecord *)(buffer);
+    const PickupArchiveRecord* const record = (const PickupArchiveRecord*)(buffer);
     if (record->firstRecord != 0) {
         g_PickupSpawnList_Primary.Clear();
         for (int index = 0; index < 40; ++index) {
@@ -2298,11 +2135,11 @@ void __fastcall Pickup::ArchiveReadRecord(
         }
     }
 
-    PickupSpawnDef *const spawn = SpawnAt(
+    PickupSpawnDef* const spawn = SpawnAt(
         record->typeIndex,
         record->amount,
-        (zVec3 *)(&record->position),
-        (zVec3 *)(&record->rotation),
+        (zVec3*)(&record->position),
+        (zVec3*)(&record->rotation),
         record->spawnParam
     );
     if (spawn != 0) {
@@ -2316,8 +2153,9 @@ void __fastcall Pickup::ArchiveReadRecord(
  * Purpose: reconcile primary and network-copy pickup spawn lists by sending
  * create or delete pkt11 deltas for missing spawn ids.
  */
-void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
-    PickupSpawnDef *primarySpawn = g_PickupSpawnList_Primary.head;
+void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists()
+{
+    PickupSpawnDef* primarySpawn = g_PickupSpawnList_Primary.head;
     while (primarySpawn != 0) {
         if (SpawnListContainsPickupId(primarySpawn, &g_PickupSpawnList_NetworkCopy) == 0) {
             SendPkt11CreateDelta(primarySpawn);
@@ -2326,7 +2164,7 @@ void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
         primarySpawn = primarySpawn->next;
     }
 
-    PickupSpawnDef *networkCopySpawn = g_PickupSpawnList_NetworkCopy.head;
+    PickupSpawnDef* networkCopySpawn = g_PickupSpawnList_NetworkCopy.head;
     while (networkCopySpawn != 0) {
         if (SpawnListContainsPickupId(networkCopySpawn, &g_PickupSpawnList_Primary) == 0) {
             SendPkt11Flag2Delta(networkCopySpawn);
@@ -2342,11 +2180,9 @@ void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists() {
  * Purpose: scan a sorted pickup spawn list for a matching pickup id, stopping
  * early once the list passes the queried id.
  */
-int __fastcall Pickup::SpawnListContainsPickupId(
-    PickupSpawnDef *spawn,
-    PickupSpawnList *list
-) {
-    PickupSpawnDef *entry = list->head;
+int __fastcall Pickup::SpawnListContainsPickupId(PickupSpawnDef* spawn, PickupSpawnList* list)
+{
+    PickupSpawnDef* entry = list->head;
     if (entry == 0) {
         return 0;
     }
@@ -2373,11 +2209,9 @@ int __fastcall Pickup::SpawnListContainsPickupId(
  * @recoil-artifact defines .text recoil:function:0x41e930: Pickup::FindSpawnByPickupId (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: search a pickup spawn list for the spawn with the requested pickup id.
  */
-PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
-    int pickupId,
-    PickupSpawnList *list
-) {
-    PickupSpawnDef *spawn = list->head;
+PickupSpawnDef* __fastcall Pickup::FindSpawnByPickupId(int pickupId, PickupSpawnList* list)
+{
+    PickupSpawnDef* spawn = list->head;
     while (spawn != 0) {
         if (spawn->pickupId == pickupId) {
             return spawn;
@@ -2396,10 +2230,9 @@ PickupSpawnDef *__fastcall Pickup::FindSpawnByPickupId(
  *
  * Purpose: return the spawn definition stored in a pickup node callback context.
  */
-PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
-    CZNodePartial *pickupNode
-) {
-    return (PickupSpawnDef *)(pickupNode->callbackContext);
+PickupSpawnDef* __fastcall Pickup::GetSpawnDefFromNode(CZNodePartial* pickupNode)
+{
+    return (PickupSpawnDef*)(pickupNode->callbackContext);
 }
 
 /**
@@ -2409,9 +2242,8 @@ PickupSpawnDef *__fastcall Pickup::GetSpawnDefFromNode(
  *
  * Purpose: update the next pickup id counter and return its previous value.
  */
-int __fastcall Pickup::SetNextPickupId(
-    int nextPickupId
-) {
+int __fastcall Pickup::SetNextPickupId(int nextPickupId)
+{
     const int oldNextPickupId = g_NextPickupId;
     g_NextPickupId = nextPickupId;
     return oldNextPickupId;
@@ -2424,7 +2256,8 @@ int __fastcall Pickup::SetNextPickupId(
  *
  * Purpose: return the next pickup id counter.
  */
-int __cdecl Pickup::GetNextPickupId() {
+int __cdecl Pickup::GetNextPickupId()
+{
     return g_NextPickupId;
 }
 
@@ -2433,11 +2266,9 @@ int __cdecl Pickup::GetNextPickupId() {
  * @recoil-artifact defines .text recoil:function:0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: map the active player weapon option to the matching droppable pickup type.
  */
-PickupType *__fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(
-    zUtil_SaveGameState *saveState
-) {
-    const char *const keyName =
-        saveState->playerState->activeAltGunController->optCatalogEntry->keyName;
+PickupType* __fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(zUtil_SaveGameState* saveState)
+{
+    const char* const keyName = saveState->playerState->activeAltGunController->optCatalogEntry->keyName;
     {
         for (int index = 0x11; index <= 0x21; ++index) {
             if (strcmp(keyName, g_PickupTypes[index].weaponKeyName) == 0) {
@@ -2454,9 +2285,8 @@ PickupType *__fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(
  * @recoil-artifact defines .text recoil:function:0x41ea00: Pickup::FindOptMetaImageByOptEntry (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: find the optional metadata image for a weapon pickup option entry.
  */
-zVidImagePartial *__fastcall Pickup::FindOptMetaImageByOptEntry(
-    OptCatalogEntryDef *optEntry
-) {
+zVidImagePartial* __fastcall Pickup::FindOptMetaImageByOptEntry(OptCatalogEntryDef* optEntry)
+{
     {
         for (int index = 0x11; index <= 0x21; ++index) {
             if (g_PickupTypes[index].optEntry == optEntry) {
@@ -2475,12 +2305,9 @@ zVidImagePartial *__fastcall Pickup::FindOptMetaImageByOptEntry(
  *
  * Purpose: spawn a pickup at the world transform of a named carrier node.
  */
-void __fastcall Pickup::SpawnAtCarrierNodeByName(
-    const char *carrierNodeName,
-    int typeIndex,
-    int amount
-) {
-    CZNodePartial *const carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
+void __fastcall Pickup::SpawnAtCarrierNodeByName(const char* carrierNodeName, int typeIndex, int amount)
+{
+    CZNodePartial* const carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
     if (carrierNode == 0) {
         return;
     }
@@ -2510,9 +2337,8 @@ namespace CZNode {
  * @recoil-artifact defines .text recoil:function:0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: cache a carrier node and its healthy drop-attachment child.
  */
-PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
-    const char *carrierNodeName
-) {
+PickupAirdropSpawnRef* PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(const char* carrierNodeName)
+{
     carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
     dropAttachNode = CZClass::FindSubNodeByName(carrierNode, g_Player_HealthySubNodeName);
     return this;
@@ -2525,9 +2351,8 @@ PickupAirdropSpawnRef *PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(
  *
  * Purpose: spawn an airdrop pickup locally and relay it from network hosts.
  */
-int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
-    int pickupTypeIndex
-) {
+int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(int pickupTypeIndex)
+{
     if ((dropAttachNode->flags & 4) == 0) {
         return 0;
     }
@@ -2537,11 +2362,7 @@ int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
             return 0;
         }
 
-        Pickup::SendPkt12AirdropSpawnChuteRelay(
-            pickupTypeIndex,
-            &worldPos,
-            Pickup::GetNextPickupId()
-        );
+        Pickup::SendPkt12AirdropSpawnChuteRelay(pickupTypeIndex, &worldPos, Pickup::GetNextPickupId());
     }
 
     Pickup::SpawnWithAirdropChute(pickupTypeIndex, &worldPos);
@@ -2553,15 +2374,14 @@ int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(
  * @recoil-artifact defines .text recoil:function:0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: gate VTOL pickup spawning on attach-node state, ammo state, and XZ clearance.
  */
-int PickupAirdropSpawnRef::CanSpawnWithClearance(
-    float clearanceRadius
-) {
+int PickupAirdropSpawnRef::CanSpawnWithClearance(float clearanceRadius)
+{
     if ((dropAttachNode->flags & 4) == 0) {
         return 0;
     }
 
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)((void *)(g_GameStateOrMapTable->playerState));
+    zUtil_PlayerStateStorage* const playerState
+        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
     if (playerState->activeAltGunController->ammoOrCharge == kPickupAltAmmoDisabledSentinel) {
         return 0;
     }
@@ -2576,7 +2396,8 @@ int PickupAirdropSpawnRef::CanSpawnWithClearance(
  *
  * Purpose: refresh and return the cached world position of the airdrop carrier.
  */
-zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
+zVec3* PickupAirdropSpawnRef::GetWorldPos()
+{
     CZNode::GetWorldPosition(carrierNode, &worldPos);
     return &worldPos;
 }
@@ -2586,14 +2407,12 @@ zVec3 *PickupAirdropSpawnRef::GetWorldPos() {
  * @recoil-artifact defines .text recoil:function:0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: allocate and validate the global airdrop spawn reference.
  */
-void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
-    const char *carrierNodeName
-) {
-    PickupAirdropSpawnRef *const spawnRef = new PickupAirdropSpawnRef;
+void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(const char* carrierNodeName)
+{
+    PickupAirdropSpawnRef* const spawnRef = new PickupAirdropSpawnRef;
     g_Pickup_GlobalAirdropSpawnRef = spawnRef->InitNodesFromCarrierNodeName(carrierNodeName);
 
-    if (g_Pickup_GlobalAirdropSpawnRef->carrierNode == 0 ||
-        g_Pickup_GlobalAirdropSpawnRef->dropAttachNode == 0) {
+    if (g_Pickup_GlobalAirdropSpawnRef->carrierNode == 0 || g_Pickup_GlobalAirdropSpawnRef->dropAttachNode == 0) {
         ::operator delete(g_Pickup_GlobalAirdropSpawnRef);
         g_Pickup_GlobalAirdropSpawnRef = 0;
     }
@@ -2604,8 +2423,9 @@ void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(
  * @recoil-artifact defines .text recoil:function:0x438b10: PickupAirdropSpawnRef::ShutdownGlobal (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: release the global airdrop spawn reference and clear its pointer.
  */
-void PickupAirdropSpawnRef::ShutdownGlobal() {
-    PickupAirdropSpawnRef *const spawnRef = g_Pickup_GlobalAirdropSpawnRef;
+void PickupAirdropSpawnRef::ShutdownGlobal()
+{
+    PickupAirdropSpawnRef* const spawnRef = g_Pickup_GlobalAirdropSpawnRef;
     if (spawnRef != 0) {
         ::operator delete(spawnRef);
     }
@@ -2618,27 +2438,23 @@ void PickupAirdropSpawnRef::ShutdownGlobal() {
  * @recoil-artifact defines .text recoil:function:0x438b30: PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: attempt a random VTOL pickup spawn through the global airdrop ref.
  */
-int __cdecl PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal() {
+int __cdecl PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal()
+{
     zOpt::GetNetworkEnabled();
     if (g_Pickup_GlobalAirdropSpawnRef->CanSpawnWithClearance(20.0f) == 0) {
         return 0;
     }
 
-    return g_Pickup_GlobalAirdropSpawnRef->SpawnPickupTypeAndRelay(
-        Pickup::SelectNextVTOLSpawnTypeIndex()
-    );
+    return g_Pickup_GlobalAirdropSpawnRef->SpawnPickupTypeAndRelay(Pickup::SelectNextVTOLSpawnTypeIndex());
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *PickupCrtInitializerFn)();
+typedef void(__cdecl* PickupCrtInitializerFn)();
 /* VC5 emits these pickup.cpp startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
-PickupCrtInitializerFn s_PickupCrtInit_PrimarySpawnList =
-    PickupSpawnList::PrimaryInit;
-PickupCrtInitializerFn s_PickupCrtInit_NetworkCopySpawnList =
-    PickupSpawnList::NetCopyInit;
-PickupCrtInitializerFn s_PickupCrtInit_RespawnQueue =
-    PickupRespawnQueue::Init;
+PickupCrtInitializerFn s_PickupCrtInit_PrimarySpawnList = PickupSpawnList::PrimaryInit;
+PickupCrtInitializerFn s_PickupCrtInit_NetworkCopySpawnList = PickupSpawnList::NetCopyInit;
+PickupCrtInitializerFn s_PickupCrtInit_RespawnQueue = PickupRespawnQueue::Init;
 #pragma data_seg()
 #endif
 
@@ -2650,9 +2466,8 @@ namespace Pickup {
  * Purpose: send a reliable pkt11 delete delta for a spawn missing from the
  * primary pickup spawn list.
  */
-int __fastcall SendPkt11Flag2Delta(
-    PickupSpawnDef *spawn
-) {
+int __fastcall SendPkt11Flag2Delta(PickupSpawnDef* spawn)
+{
     g_PickupPkt11Flag2Delta.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt11Flag2Delta.flags = 2;
     g_PickupPkt11Flag2Delta.pickupId = spawn->pickupId;
@@ -2664,9 +2479,8 @@ int __fastcall SendPkt11Flag2Delta(
  * @recoil-artifact defines .text recoil:function:0x433e70: Pickup::SendPkt11Flag8Delta (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: send a reliable pkt11 hidden-state delta for a pickup spawn.
  */
-int __fastcall SendPkt11Flag8Delta(
-    PickupSpawnDef *spawn
-) {
+int __fastcall SendPkt11Flag8Delta(PickupSpawnDef* spawn)
+{
     g_PickupPkt11Flag8Delta.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt11Flag8Delta.flags = 8;
     g_PickupPkt11Flag8Delta.pickupId = spawn->pickupId;
@@ -2679,11 +2493,9 @@ int __fastcall SendPkt11Flag8Delta(
  * Purpose: allocate, populate, send, and release a reliable pkt11 create
  * delta for a primary pickup spawn.
  */
-void __fastcall SendPkt11CreateDelta(
-    PickupSpawnDef *spawn
-) {
-    PickupPkt11CreateDelta *const packet =
-        (PickupPkt11CreateDelta *)(malloc(sizeof(PickupPkt11CreateDelta)));
+void __fastcall SendPkt11CreateDelta(PickupSpawnDef* spawn)
+{
+    PickupPkt11CreateDelta* const packet = (PickupPkt11CreateDelta*)(malloc(sizeof(PickupPkt11CreateDelta)));
     memset(packet, 0, sizeof(PickupPkt11CreateDelta));
 
     packet->header.packetType = 0x11;
@@ -2691,8 +2503,7 @@ void __fastcall SendPkt11CreateDelta(
     packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->flags = 1;
     packet->pickupId = spawn->pickupId;
-    packet->typeKeyIndex =
-        (unsigned short)(PickupTypeKeyTable::FindIndex(spawn->pickupType->logicalName));
+    packet->typeKeyIndex = (unsigned short)(PickupTypeKeyTable::FindIndex(spawn->pickupType->logicalName));
     packet->amount = spawn->amount;
     packet->position = spawn->position;
     packet->rotation = spawn->rotation;
@@ -2708,11 +2519,9 @@ void __fastcall SendPkt11CreateDelta(
  * Purpose: apply a network pkt11 pickup spawn delta by creating, deleting, or
  * hiding the addressed spawn.
  */
-int __fastcall HandlePkt11SpawnDelta(
-    int,
-    PickupPkt11CreateDelta *packet
-) {
-    PickupSpawnDef *const spawn = FindSpawnByPickupId(packet->pickupId, &g_PickupSpawnList_Primary);
+int __fastcall HandlePkt11SpawnDelta(int, PickupPkt11CreateDelta* packet)
+{
+    PickupSpawnDef* const spawn = FindSpawnByPickupId(packet->pickupId, &g_PickupSpawnList_Primary);
     const unsigned int flags = packet->flags;
 
     if ((flags & 1u) != 0 && spawn == 0) {
@@ -2724,7 +2533,7 @@ int __fastcall HandlePkt11SpawnDelta(
         entry.rotation = packet->rotation;
         entry.respawnDelay = packet->respawnDelay;
 
-        PickupSpawnDef *const newSpawn = SpawnFromParsedZrdEntry(&entry);
+        PickupSpawnDef* const newSpawn = SpawnFromParsedZrdEntry(&entry);
         if (newSpawn != 0) {
             newSpawn->pickupId = packet->pickupId;
         }
@@ -2742,7 +2551,7 @@ int __fastcall HandlePkt11SpawnDelta(
     }
 
     if ((flags & 8u) != 0) {
-        CZNodePartial *const pickupObj = spawn->pickupObj;
+        CZNodePartial* const pickupObj = spawn->pickupObj;
         CZNode::ClearPickupFlagsRecursive(pickupObj);
         CZClass::gwNodeSetRaycastable(pickupObj, 0);
         CZClass::gwNodeSetPickable(pickupObj, 0);
@@ -2757,11 +2566,8 @@ int __fastcall HandlePkt11SpawnDelta(
  * @recoil-artifact defines .text recoil:function:0x434050: Pickup::SendPkt12AirdropSpawnChuteRelay (D:\Proj\Battlesport\pickup.cpp).
  * Purpose: send a reliable pkt12 airdrop chute-spawn relay to peers.
  */
-void __fastcall SendPkt12AirdropSpawnChuteRelay(
-    int pickupTypeIndex,
-    zVec3 *spawnPos,
-    int nextPickupId
-) {
+void __fastcall SendPkt12AirdropSpawnChuteRelay(int pickupTypeIndex, zVec3* spawnPos, int nextPickupId)
+{
     g_PickupPkt12AirdropSpawnChuteRelay.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_PickupPkt12AirdropSpawnChuteRelay.spawnPos = *spawnPos;
     g_PickupPkt12AirdropSpawnChuteRelay.pickupTypeIndex = (unsigned short)(pickupTypeIndex);
@@ -2776,10 +2582,8 @@ void __fastcall SendPkt12AirdropSpawnChuteRelay(
  *
  * Purpose: relay an airdrop chute spawn packet into the local pickup state.
  */
-int __fastcall HandlePkt12AirdropSpawnChuteRelay(
-    int,
-    PickupPkt12AirdropSpawnChuteRelay *packet
-) {
+int __fastcall HandlePkt12AirdropSpawnChuteRelay(int, PickupPkt12AirdropSpawnChuteRelay* packet)
+{
     SetNextPickupId(packet->nextPickupId);
     SpawnWithAirdropChute((int)(packet->pickupTypeIndex), &packet->spawnPos);
     return 1;

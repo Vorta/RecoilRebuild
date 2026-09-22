@@ -20,32 +20,21 @@ struct BriefingAction {
  * queue owns list nodes while retaining non-owning BriefingAction pointers.
  */
 struct CBriefingActionQueue {
-    std::list<BriefingAction *> actions;
-    std::list<BriefingAction *>::iterator current;
+    std::list<BriefingAction*> actions;
+    std::list<BriefingAction*>::iterator current;
     int active;
 
     CBriefingActionQueue();
-    int AddHideElement(HudUiElement *element);
-    int AddShowElement(HudUiElement *element);
-    int AddFadeInElement(HudUiElement *element);
-    int AddSetPanelText(
-        const char *text,
-        HudUiPanel *panel
-    );
-    int AddSetWidgetImageTimed(
-        zVidImagePartial *imageRef,
-        HudUiWidget *widget
-    );
-    int AddPlaySampleByName(
-        const char *sampleName,
-        float gain,
-        int useVariant,
-        int progressId
-    );
+    int AddHideElement(HudUiElement* element);
+    int AddShowElement(HudUiElement* element);
+    int AddFadeInElement(HudUiElement* element);
+    int AddSetPanelText(const char* text, HudUiPanel* panel);
+    int AddSetWidgetImageTimed(zVidImagePartial* imageRef, HudUiWidget* widget);
+    int AddPlaySampleByName(const char* sampleName, float gain, int useVariant, int progressId);
     int AddDelayUntilProgress(int progressId);
 };
 #if defined(_MSC_VER) && _MSC_VER == 1100
-RECOIL_STATIC_ASSERT(sizeof(std::list<BriefingAction *>) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(std::list<BriefingAction*>) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(CBriefingActionQueue, current) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(CBriefingActionQueue, active) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(CBriefingActionQueue) == 0x14);
@@ -83,7 +72,8 @@ struct HudUiBriefingObjectivePicture : HudUiWidget {
      * timer-to-noiseAlpha update before the typed virtual Invalidate call.
      * Purpose: update the briefing picture noise fade value.
      */
-    void SetNoiseAlpha(float alphaValue) {
+    void SetNoiseAlpha(float alphaValue)
+    {
         noiseAlpha = alphaValue;
     }
 };
@@ -95,8 +85,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiBriefingObjectivePicture, noiseAlpha) == 0xbc
  * @recoil-anchor recoil:anchor:battlesport.briefing.transport-progress-type
  * @recoil-artifact emits .text recoil:function:0x403eb0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
  */
-struct HudUiBriefingTransportProgress : HudUiFillBitmapSlider {
-};
+struct HudUiBriefingTransportProgress : HudUiFillBitmapSlider { };
 
 /**
  * Briefing runtime owner. BN constructor/destructor and action callers prove
@@ -137,12 +126,12 @@ namespace Briefing {
 void __fastcall BuildObjectiveActionsGlobal(int objectiveIndex);
 void __fastcall SampleEventCallback(int progressEventCode);
 int __fastcall StartForMission(int missionId);
-void __cdecl ThreadMain(void *threadParameter);
+void __cdecl ThreadMain(void* threadParameter);
 void __fastcall StopAndShutdownThread(int waitForInput);
 void __stdcall SetProgressAndSleep(float progressValue);
 } // namespace Briefing
 
-extern HudUiBriefingRuntime *g_Briefing_Runtime;
+extern HudUiBriefingRuntime* g_Briefing_Runtime;
 
 extern "C" {
 extern int g_Briefing_ThreadRunFlag;

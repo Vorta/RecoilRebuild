@@ -67,11 +67,8 @@ namespace HudUi {
  * Source placement note: this definition was provisionally moved from
  * HudUiMessageBoxDialog.cpp.
  */
-int __fastcall ShowMessageBox(
-    const char *messageText,
-    const char *titleText,
-    void *modalContext
-) {
+int __fastcall ShowMessageBox(const char* messageText, const char* titleText, void* modalContext)
+{
     HudUiMessageBoxDialog dialog("dialog.zrd", g_HudUiMessageBoxDialog_SectionName);
     return dialog.RunModal(messageText, titleText, modalContext, -1.0f);
 }
@@ -84,9 +81,8 @@ int __fastcall ShowMessageBox(
  * Purpose: initialize a save-state list sentinel and allocate zeroed player
  * state storage for the owning save-game state.
  */
-zUtil_SaveGameState *__fastcall zUtilSaveGameStateListInit(
-    zUtil_SaveGameState *self
-) {
+zUtil_SaveGameState* __fastcall zUtilSaveGameStateListInit(zUtil_SaveGameState* self)
+{
     self->unknown_10 = 0;
     self->saveStateListTail = 0;
     self->saveStateListHead = 0;
@@ -94,7 +90,7 @@ zUtil_SaveGameState *__fastcall zUtilSaveGameStateListInit(
     self->next = 0;
     self->firstSaveState = 0;
 
-    self->playerState = (zUtil_PlayerStateStorage *)(malloc(sizeof(zUtil_PlayerStateStorage)));
+    self->playerState = (zUtil_PlayerStateStorage*)(malloc(sizeof(zUtil_PlayerStateStorage)));
     memset(self->playerState, 0, sizeof(zUtil_PlayerStateStorage));
 
     self->unknown_0c = 0;
@@ -110,7 +106,8 @@ zUtil_SaveGameState *__fastcall zUtilSaveGameStateListInit(
  * Purpose: detach save-state back-references, free modal-state nodes, and
  * release the owned player-state storage.
  */
-void zUtil_SaveGameState::FreeOwnedResources() {
+void zUtil_SaveGameState::FreeOwnedResources()
+{
     if (playerState->lifecycleState == 2) {
         AINet::AiDiscardNegativeBranchPathNodes(this);
     }
@@ -119,9 +116,9 @@ void zUtil_SaveGameState::FreeOwnedResources() {
         netPlayerRow->saveState = 0;
     }
 
-    PlayerModalState *modalState = modalStateListHead;
+    PlayerModalState* modalState = modalStateListHead;
     while (modalState != 0) {
-        PlayerModalState *const nextModalState = modalState->next;
+        PlayerModalState* const nextModalState = modalState->next;
         if (modalStateCount != 0) {
             if (modalState == modalStateListHead) {
                 --modalStateCount;
@@ -131,9 +128,9 @@ void zUtil_SaveGameState::FreeOwnedResources() {
                     modalStateListTail = 0;
                 }
             } else {
-                PlayerModalState *cursor = modalStateListHead;
+                PlayerModalState* cursor = modalStateListHead;
                 while (cursor != 0) {
-                    PlayerModalState *const cursorNext = cursor->next;
+                    PlayerModalState* const cursorNext = cursor->next;
                     if (cursorNext == modalState) {
                         --modalStateCount;
                         cursor->next = modalState->next;
@@ -164,11 +161,9 @@ void zUtil_SaveGameState::FreeOwnedResources() {
  * Purpose: allocate a zeroed save-state node and append it to the tracked
  * save-state list.
  */
-zUtil_SaveGameState *__fastcall zUtilSaveGameStateListAllocAppend(
-    zUtil_SaveGameState *self
-) {
-    zUtil_SaveGameState *const saveState =
-        (zUtil_SaveGameState *)(malloc(sizeof(zUtil_SaveGameState)));
+zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGameState* self)
+{
+    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(malloc(sizeof(zUtil_SaveGameState)));
     memset(saveState, 0, sizeof(zUtil_SaveGameState));
 
     if (self->firstSaveState == 0) {

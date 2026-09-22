@@ -8,10 +8,10 @@
  * Purpose: Return the retail message-table id for a generated message symbol
  * name, or zero when the symbol is absent from the lookup table.
  */
-unsigned int __cdecl ZLocGetID(const char *name)
+unsigned int __cdecl ZLocGetID(const char* name)
 {
     unsigned int index;
-    MessagesLookupRow *row;
+    MessagesLookupRow* row;
 
     index = 0;
     row = g_MessagesLookupRows;

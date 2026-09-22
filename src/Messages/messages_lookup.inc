@@ -4,7 +4,7 @@
  * with writable strings emitted in reverse row order. */
 
 typedef struct MessagesLookupRow {
-    char *name;
+    char* name;
     unsigned int id;
 } MessagesLookupRow;
 

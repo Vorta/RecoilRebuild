@@ -32,7 +32,7 @@ extern "C" {
  * Purpose: Owns the zero-filled zInput static aggregate from DirectInput root
  * state through bind-map overlay lifetime state.
  */
-zInput_GlobalState g_zInput_GlobalStateStorage = {0};
+zInput_GlobalState g_zInput_GlobalStateStorage = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseactive
  * @recoil-artifact defines .data recoil:data:0x561c74: g_zInput_MouseActive.
@@ -74,7 +74,7 @@ int g_zInput_MouseCoopLevelFlags = DISCL_EXCLUSIVE | DISCL_FOREGROUND;
  * Purpose: Stores the gameplay joystick axis calibration copied into the
  * DirectInput device configuration.
  */
-zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
+zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickrawdistate
  * @recoil-artifact defines .data recoil:data:0x566310: g_zInput_JoystickRawDIState.
@@ -82,7 +82,7 @@ zInput::JoystickAxisConfig g_zInput_JoystickAxisConfig_Gameplay = {0};
  * IDirectInputDevice::GetDeviceState before joystick current-state updates.
  * Purpose: Stores the latest raw DirectInput joystick state read from the provider.
  */
-DIJOYSTATE2 g_zInput_JoystickRawDIState = {0};
+DIJOYSTATE2 g_zInput_JoystickRawDIState = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouserawdistate
  * @recoil-artifact defines .data recoil:data:0x561c58: g_zInput_MouseRawDIState.
@@ -90,7 +90,7 @@ DIJOYSTATE2 g_zInput_JoystickRawDIState = {0};
  * into the current mouse state after successful polling.
  * Purpose: Stores the latest raw DirectInput mouse state read from the provider.
  */
-zInput::MouseDeviceState g_zInput_MouseRawDIState = {0};
+zInput::MouseDeviceState g_zInput_MouseRawDIState = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousestatesnapshot
  * @recoil-artifact defines .data recoil:data:0x561c80: g_zInput_MouseStateSnapshot.
@@ -98,7 +98,7 @@ zInput::MouseDeviceState g_zInput_MouseRawDIState = {0};
  * cursor recentering, and normalized-coordinate updates.
  * Purpose: Stores the derived mouse state consumed by gameplay input code.
  */
-zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = {0};
+zInput::MouseStateSnapshot g_zInput_MouseStateSnapshot = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinputmouselastpollresult
  * @recoil-artifact defines .data recoil:data:0x4e0900: g_zInputMouseLastPollResult.
@@ -541,15 +541,7 @@ char g_zInput_KeyNameComma[6] = "COMMA";
  * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character Z/X/C/V/B/N/M key names.
  */
-unsigned int g_zInput_KeyCharRow_MNBVCXZ[7] = {
-    'M',
-    'N',
-    'B',
-    'V',
-    'C',
-    'X',
-    'Z'
-};
+unsigned int g_zInput_KeyCharRow_MNBVCXZ[7] = { 'M', 'N', 'B', 'V', 'C', 'X', 'Z' };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamebackslash
  * @recoil-artifact defines .data recoil:data:0x4e0b40: g_zInput_KeyNameBackslash.
@@ -586,17 +578,7 @@ char g_zInput_KeyNameSemicolon[10] = "SEMICOLON";
  * BN types this as nine 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character A/S/D/F/G/H/J/K/L key names.
  */
-unsigned int g_zInput_KeyCharRow_LKJHGFDSA[9] = {
-    'L',
-    'K',
-    'J',
-    'H',
-    'G',
-    'F',
-    'D',
-    'S',
-    'A'
-};
+unsigned int g_zInput_KeyCharRow_LKJHGFDSA[9] = { 'L', 'K', 'J', 'H', 'G', 'F', 'D', 'S', 'A' };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelcontrol
  * @recoil-artifact defines .data recoil:data:0x4e0b98: g_zInput_KeyNameLControl.
@@ -627,18 +609,7 @@ char g_zInput_KeyNameLBracket[9] = "LBRACKET";
  * BN types this as ten 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character Q/W/E/R/T/Y/U/I/O/P key names.
  */
-unsigned int g_zInput_KeyCharRow_POIUYTREWQ[10] = {
-    'P',
-    'O',
-    'I',
-    'U',
-    'Y',
-    'T',
-    'R',
-    'E',
-    'W',
-    'Q'
-};
+unsigned int g_zInput_KeyCharRow_POIUYTREWQ[10] = { 'P', 'O', 'I', 'U', 'Y', 'T', 'R', 'E', 'W', 'Q' };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynametab
  * @recoil-artifact defines .data recoil:data:0x4e0bec: g_zInput_KeyNameTab.
@@ -663,15 +634,7 @@ char g_zInput_KeyNameMinus[6] = "MINUS";
  * BN types this as seven 4-byte-aligned writable one-character DIK name slots.
  * Purpose: Stores folded one-character 3/5/6/7/8/9/0 key names.
  */
-unsigned int g_zInput_KeyCharRow_0987653[7] = {
-    '0',
-    '9',
-    '8',
-    '7',
-    '6',
-    '5',
-    '3'
-};
+unsigned int g_zInput_KeyCharRow_0987653[7] = { '0', '9', '8', '7', '6', '5', '3' };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynameescape
  * @recoil-artifact defines .data recoil:data:0x4e0c1c: g_zInput_KeyNameEscape.
@@ -809,7 +772,7 @@ int g_zInput_MouseWrapModeFlag = 0;
  * polling owner.
  * Purpose: Stores base ASCII/control codes for DirectInput keyboard scan codes.
  */
-int g_zInput_KbdDikToAsciiTable[0x100] = {0};
+int g_zInput_KbdDikToAsciiTable[0x100] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-kbddiktoasciitableready
  * @recoil-artifact defines .data recoil:data:0x561c48: g_zInput_KbdDikToAsciiTableReady.
@@ -825,13 +788,13 @@ int g_zInput_KbdDikToAsciiTableReady = 0;
  * the DirectInput force-feedback creation and playback helpers.
  * Purpose: Owns the active force-feedback effect set pointer.
  */
-zInput_FFEffectSet *g_zInputFfEffectSet = 0;
+zInput_FFEffectSet* g_zInputFfEffectSet = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-gamestateormaptable
  * @recoil-artifact defines .data recoil:data:0x4f3a88: g_GameStateOrMapTable.
  * Purpose: Stores g GameStateOrMapTable data used by engine.zinput.game_state_or_map_table_data.
  */
-zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable = 0;
+zInput_GameStateOrMapTablePartial* g_GameStateOrMapTable = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-dipitchanglelowpassrad
  * @recoil-artifact defines .data recoil:data:0x4f3ee8: g_zInput_DiPitchAngleLowpassRad.
@@ -847,7 +810,7 @@ float g_zInput_DiPitchAngleLowpassRad = 0.0f;
  * zInput::BindMapInitDikKeyNameTable fills the DirectInput DIK slots.
  * Purpose: Stores key-name pointers used by bind-map display formatting.
  */
-const char *g_zInput_DikKeyNames[0x100] = {0};
+const char* g_zInput_DikKeyNames[0x100] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-joystickbuttonnames
  * @recoil-artifact defines .data recoil:data:0x5662bc: g_zInput_JoystickButtonNames.
@@ -855,7 +818,7 @@ const char *g_zInput_DikKeyNames[0x100] = {0};
  * zInput::BindMapInitJoystickButtonNameTable fills one-based slots 1..8.
  * Purpose: Stores joystick button-name pointers used by bind-map display formatting.
  */
-const char *g_zInput_JoystickButtonNames[9] = {0};
+const char* g_zInput_JoystickButtonNames[9] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mousebuttonnames
  * @recoil-artifact defines .data recoil:data:0x5662fc: g_zInput_MouseButtonNames.
@@ -863,7 +826,7 @@ const char *g_zInput_JoystickButtonNames[9] = {0};
  * zInput::BindMapInitMouseButtonNameTable fills one-based slots 1..3.
  * Purpose: Stores mouse button-name pointers used by bind-map display formatting.
  */
-const char *g_zInput_MouseButtonNames[4] = {0};
+const char* g_zInput_MouseButtonNames[4] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-bindgroupinfolist
  * @recoil-artifact defines .data recoil:data:0x4f3ae0: g_zInput_BindGroupInfoList.
@@ -884,7 +847,7 @@ int g_zInput_CurrentBindGroupIndex = 0;
  * @recoil-artifact defines .data recoil:data:0x4f3af0: g_zInput_CommandLocIdTable.
  * Purpose: Stores g zInput CommandLocIdTable data used by engine.zinput.bindgroup_default_globals.
  */
-int g_zInput_CommandLocIdTable[0x30] = {0};
+int g_zInput_CommandLocIdTable[0x30] = { 0 };
 } // extern "C"
 
 namespace zInput {
@@ -895,30 +858,24 @@ const int kZInputCommandLabelBytes = 0x50;
  * @recoil-artifact defines .text recoil:function:0x4706c0: zInput_BindMapContext::InitFromTemplate.
  * Purpose: deep-copy an optional bind-map template and rebuild reverse lookup tables.
  */
-zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
-    const zInput_BindMapContext *tmpl
-) {
+zInput_BindMapContext* zInput_BindMapContext::InitFromTemplate(const zInput_BindMapContext* tmpl)
+{
     m_isOverlay = 0;
     if (tmpl != 0) {
         m_commandCount = tmpl->m_commandCount;
-        m_packedBindings = (int *)(calloc(tmpl->m_commandCount, sizeof(int)));
-        memcpy(
-            m_packedBindings,
-            tmpl->m_packedBindings,
-            (size_t)(tmpl->m_commandCount) * sizeof(int)
-        );
+        m_packedBindings = (int*)(calloc(tmpl->m_commandCount, sizeof(int)));
+        memcpy(m_packedBindings, tmpl->m_packedBindings, (size_t)(tmpl->m_commandCount) * sizeof(int));
 
-        m_commandCallbacks =
-            (zInputCommandCallbackFn *)(calloc(m_commandCount, sizeof(zInputCommandCallbackFn)));
+        m_commandCallbacks = (zInputCommandCallbackFn*)(calloc(m_commandCount, sizeof(zInputCommandCallbackFn)));
         memcpy(
             m_commandCallbacks,
             tmpl->m_commandCallbacks,
             (size_t)(m_commandCount) * sizeof(zInputCommandCallbackFn)
         );
 
-        m_commandLabels = (char **)(calloc(m_commandCount, sizeof(char *)));
+        m_commandLabels = (char**)(calloc(m_commandCount, sizeof(char*)));
         for (int i = 0; i < m_commandCount; ++i) {
-            m_commandLabels[i] = (char *)(calloc(1, zInput::kZInputCommandLabelBytes));
+            m_commandLabels[i] = (char*)(calloc(1, zInput::kZInputCommandLabelBytes));
             strncpy(m_commandLabels[i], tmpl->m_commandLabels[i], zInput::kZInputCommandLabelBytes);
         }
 
@@ -934,7 +891,8 @@ zInput_BindMapContext * zInput_BindMapContext::InitFromTemplate(
  *
  * Purpose: release owned binding, callback, and label buffers from a bind-map context.
  */
-void zInput_BindMapContext::FreeAllBuffers() {
+void zInput_BindMapContext::FreeAllBuffers()
+{
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
     }
@@ -964,7 +922,8 @@ void zInput_BindMapContext::FreeAllBuffers() {
  *
  * Purpose: rebuild keyboard, joystick, and mouse reverse lookup tables from packed bindings.
  */
-void zInput_BindMapContext::RebuildLookupIndices() {
+void zInput_BindMapContext::RebuildLookupIndices()
+{
     for (int i = 0; i < 0x7de; ++i) {
         m_primaryKeyToCommand[i] = 0;
         m_secondaryKeyToCommand[i] = 0;
@@ -980,15 +939,9 @@ void zInput_BindMapContext::RebuildLookupIndices() {
     {
         for (int commandId = 1; commandId < m_commandCount; ++commandId) {
             m_primaryKeyToCommand[m_packedBindings[commandId] & 0x7ff] = commandId;
-            m_secondaryKeyToCommand[
-                ((unsigned int)(m_packedBindings[commandId]) >> 0x0b) & 0x7ff
-            ] = commandId;
-            m_joystickToCommand[
-                ((unsigned int)(m_packedBindings[commandId]) >> 0x16) & 0x0f
-            ] = commandId;
-            m_mouseToCommand[
-                ((unsigned int)(m_packedBindings[commandId]) >> 0x1a) & 0x03
-            ] = commandId;
+            m_secondaryKeyToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x0b) & 0x7ff] = commandId;
+            m_joystickToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x16) & 0x0f] = commandId;
+            m_mouseToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x1a) & 0x03] = commandId;
 
             zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
             if (callback != 0) {
@@ -1005,21 +958,16 @@ void zInput_BindMapContext::RebuildLookupIndices() {
  *
  * Purpose: Allocate command binding, lookup, callback, and label storage for a bind-map context.
  */
-void zInput_BindMapContext::InitCommandMap(int commandCount) {
+void zInput_BindMapContext::InitCommandMap(int commandCount)
+{
     m_commandCount = commandCount;
-    zOptionEntryPartial *option =
-        zGame::OptionsGetOrCreateOption(
-            g_zInput_CommandMapKeyName,
-            7,
-            commandCount * (int)(sizeof(int)),
-            1
-        );
-    m_packedBindings = (int *)(option->payloadOrBuffer);
-    m_commandCallbacks =
-        (zInputCommandCallbackFn *)(calloc(commandCount, sizeof(zInputCommandCallbackFn)));
-    m_commandLabels = (char **)(calloc(commandCount, sizeof(char *)));
+    zOptionEntryPartial* option
+        = zGame::OptionsGetOrCreateOption(g_zInput_CommandMapKeyName, 7, commandCount * (int)(sizeof(int)), 1);
+    m_packedBindings = (int*)(option->payloadOrBuffer);
+    m_commandCallbacks = (zInputCommandCallbackFn*)(calloc(commandCount, sizeof(zInputCommandCallbackFn)));
+    m_commandLabels = (char**)(calloc(commandCount, sizeof(char*)));
     for (int i = 0; i < commandCount; ++i) {
-        m_commandLabels[i] = (char *)(calloc(1, zInput::kZInputCommandLabelBytes));
+        m_commandLabels[i] = (char*)(calloc(1, zInput::kZInputCommandLabelBytes));
     }
 
     ResetAllBindings();
@@ -1032,7 +980,8 @@ void zInput_BindMapContext::InitCommandMap(int commandCount) {
  *
  * Purpose: Release lookup and callback buffers that are not owned by a copied bind-map template.
  */
-void zInput_BindMapContext::FreeNonOwnedBuffers() {
+void zInput_BindMapContext::FreeNonOwnedBuffers()
+{
     if (m_commandCallbacks != 0) {
         free(m_commandCallbacks);
     }
@@ -1058,7 +1007,8 @@ void zInput_BindMapContext::FreeNonOwnedBuffers() {
  *
  * Purpose: clear every command binding/callback and rebuild reverse lookup indices.
  */
-void zInput_BindMapContext::ResetAllBindings() {
+void zInput_BindMapContext::ResetAllBindings()
+{
     for (int i = 0; i < m_commandCount; ++i) {
         m_packedBindings[i] = zInput::BindMapPackBindingCode(0, 0, 0, 0);
         m_commandCallbacks[i] = 0;
@@ -1074,14 +1024,9 @@ void zInput_BindMapContext::ResetAllBindings() {
  *
  * Purpose: pack keyboard, joystick, and mouse binding slots into the bind-map record format.
  */
-int __fastcall zInput::BindMapPackBindingCode(
-    int primary,
-    int secondary,
-    int joy,
-    int mouse
-) {
-    return (((mouse & 3) << 4 | (joy & 0x0f)) << 0x0b | (secondary & 0x7ff)) << 0x0b |
-           (primary & 0x7ff);
+int __fastcall zInput::BindMapPackBindingCode(int primary, int secondary, int joy, int mouse)
+{
+    return (((mouse & 3) << 4 | (joy & 0x0f)) << 0x0b | (secondary & 0x7ff)) << 0x0b | (primary & 0x7ff);
 }
 
 /**
@@ -1091,9 +1036,8 @@ int __fastcall zInput::BindMapPackBindingCode(
  *
  * Purpose: return the primary DIK key packed for a command binding.
  */
-int zInput_BindMapContext::GetPrimaryKeyboardKey(
-    int commandIndex
-) {
+int zInput_BindMapContext::GetPrimaryKeyboardKey(int commandIndex)
+{
     return m_packedBindings[commandIndex] & 0x7ff;
 }
 
@@ -1104,9 +1048,8 @@ int zInput_BindMapContext::GetPrimaryKeyboardKey(
  *
  * Purpose: return the secondary DIK key packed for a command binding.
  */
-int zInput_BindMapContext::GetSecondaryKeyboardKey(
-    int commandIndex
-) {
+int zInput_BindMapContext::GetSecondaryKeyboardKey(int commandIndex)
+{
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x0b) & 0x7ff;
 }
 
@@ -1117,9 +1060,8 @@ int zInput_BindMapContext::GetSecondaryKeyboardKey(
  *
  * Purpose: return the joystick button slot packed for a command binding.
  */
-int zInput_BindMapContext::GetJoystickButtonSlot(
-    int commandIndex
-) {
+int zInput_BindMapContext::GetJoystickButtonSlot(int commandIndex)
+{
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x16) & 0x0f;
 }
 
@@ -1130,9 +1072,8 @@ int zInput_BindMapContext::GetJoystickButtonSlot(
  *
  * Purpose: return the mouse button slot packed for a command binding.
  */
-int zInput_BindMapContext::GetMouseButtonSlot(
-    int commandIndex
-) {
+int zInput_BindMapContext::GetMouseButtonSlot(int commandIndex)
+{
     return ((unsigned int)(m_packedBindings[commandIndex]) >> 0x1a) & 0x03;
 }
 
@@ -1143,9 +1084,8 @@ int zInput_BindMapContext::GetMouseButtonSlot(
  *
  * Purpose: Resolve a primary keyboard key to its command id.
  */
-int zInput_BindMapContext::GetCommandByPrimaryKey(
-    int keyboardKey
-) {
+int zInput_BindMapContext::GetCommandByPrimaryKey(int keyboardKey)
+{
     return m_primaryKeyToCommand[keyboardKey];
 }
 
@@ -1156,9 +1096,8 @@ int zInput_BindMapContext::GetCommandByPrimaryKey(
  *
  * Purpose: Resolve a secondary keyboard key to its command id.
  */
-int zInput_BindMapContext::GetCommandBySecondaryKey(
-    int keyboardKey
-) {
+int zInput_BindMapContext::GetCommandBySecondaryKey(int keyboardKey)
+{
     return m_secondaryKeyToCommand[keyboardKey];
 }
 
@@ -1169,9 +1108,8 @@ int zInput_BindMapContext::GetCommandBySecondaryKey(
  *
  * Purpose: Resolve either keyboard binding slot to its command id.
  */
-int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
-    int keyboardKey
-) {
+int zInput_BindMapContext::GetCommandByAnyKeyboardKey(int keyboardKey)
+{
     const int primary = GetCommandByPrimaryKey(keyboardKey);
     if (primary != 0) {
         return primary;
@@ -1187,9 +1125,8 @@ int zInput_BindMapContext::GetCommandByAnyKeyboardKey(
  *
  * Purpose: Resolve a joystick button slot to its command id.
  */
-int zInput_BindMapContext::GetCommandByJoystickSlot(
-    int joystickSlot
-) {
+int zInput_BindMapContext::GetCommandByJoystickSlot(int joystickSlot)
+{
     return m_joystickToCommand[joystickSlot];
 }
 
@@ -1200,9 +1137,8 @@ int zInput_BindMapContext::GetCommandByJoystickSlot(
  *
  * Purpose: Return the command id stored for one bind-map mouse slot.
  */
-int zInput_BindMapContext::GetCommandByMouseSlot(
-    int mouseSlot
-) {
+int zInput_BindMapContext::GetCommandByMouseSlot(int mouseSlot)
+{
     return m_mouseToCommand[mouseSlot];
 }
 
@@ -1213,10 +1149,8 @@ int zInput_BindMapContext::GetCommandByMouseSlot(
  *
  * Purpose: Update a command's primary keyboard binding and reverse lookup slot.
  */
-void zInput_BindMapContext::SetPrimaryKeyBinding(
-    int keyCode,
-    int commandId
-) {
+void zInput_BindMapContext::SetPrimaryKeyBinding(int keyCode, int commandId)
+{
     if (keyCode != 0) {
         m_packedBindings[m_primaryKeyToCommand[keyCode]] &= 0xfffff800;
         m_primaryKeyToCommand[keyCode] = commandId;
@@ -1226,8 +1160,7 @@ void zInput_BindMapContext::SetPrimaryKeyBinding(
     }
 
     m_primaryKeyToCommand[m_packedBindings[commandId] & 0x7ff] = 0;
-    m_packedBindings[commandId] =
-        ((keyCode ^ m_packedBindings[commandId]) & 0x7ff) ^ m_packedBindings[commandId];
+    m_packedBindings[commandId] = ((keyCode ^ m_packedBindings[commandId]) & 0x7ff) ^ m_packedBindings[commandId];
 }
 
 /**
@@ -1237,10 +1170,8 @@ void zInput_BindMapContext::SetPrimaryKeyBinding(
  *
  * Purpose: Update a command's secondary keyboard binding and reverse lookup slot.
  */
-void zInput_BindMapContext::SetSecondaryKeyBinding(
-    int keyCode,
-    int commandId
-) {
+void zInput_BindMapContext::SetSecondaryKeyBinding(int keyCode, int commandId)
+{
     if (keyCode != 0) {
         m_packedBindings[m_secondaryKeyToCommand[keyCode]] &= 0xffc007ff;
         m_secondaryKeyToCommand[keyCode] = commandId;
@@ -1250,8 +1181,7 @@ void zInput_BindMapContext::SetSecondaryKeyBinding(
     }
 
     m_secondaryKeyToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x0b) & 0x7ff] = 0;
-    m_packedBindings[commandId] =
-        (m_packedBindings[commandId] & 0xffc007ff) | ((keyCode & 0x7ff) << 0x0b);
+    m_packedBindings[commandId] = (m_packedBindings[commandId] & 0xffc007ff) | ((keyCode & 0x7ff) << 0x0b);
 }
 
 /**
@@ -1261,10 +1191,8 @@ void zInput_BindMapContext::SetSecondaryKeyBinding(
  *
  * Purpose: Update a command's joystick button binding and reverse lookup slot.
  */
-void zInput_BindMapContext::SetJoystickBinding(
-    int joystickSlot,
-    int commandId
-) {
+void zInput_BindMapContext::SetJoystickBinding(int joystickSlot, int commandId)
+{
     if (joystickSlot != 0) {
         m_packedBindings[m_joystickToCommand[joystickSlot]] &= 0xfc3fffff;
         m_joystickToCommand[joystickSlot] = commandId;
@@ -1274,8 +1202,7 @@ void zInput_BindMapContext::SetJoystickBinding(
     }
 
     m_joystickToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x16) & 0x0f] = 0;
-    m_packedBindings[commandId] =
-        ((joystickSlot & 0x0f) << 0x16) | (m_packedBindings[commandId] & 0xfc3fffff);
+    m_packedBindings[commandId] = ((joystickSlot & 0x0f) << 0x16) | (m_packedBindings[commandId] & 0xfc3fffff);
 }
 
 /**
@@ -1285,10 +1212,8 @@ void zInput_BindMapContext::SetJoystickBinding(
  *
  * Purpose: Update a command's mouse button binding and reverse lookup slot.
  */
-void zInput_BindMapContext::SetMouseBinding(
-    int mouseSlot,
-    int commandId
-) {
+void zInput_BindMapContext::SetMouseBinding(int mouseSlot, int commandId)
+{
     if (mouseSlot != 0) {
         m_packedBindings[m_mouseToCommand[mouseSlot]] &= 0xf3ffffff;
         m_mouseToCommand[mouseSlot] = commandId;
@@ -1298,8 +1223,7 @@ void zInput_BindMapContext::SetMouseBinding(
     }
 
     m_mouseToCommand[((unsigned int)(m_packedBindings[commandId]) >> 0x1a) & 0x03] = 0;
-    m_packedBindings[commandId] =
-        ((mouseSlot & 0x03) << 0x1a) | (m_packedBindings[commandId] & 0xf3ffffff);
+    m_packedBindings[commandId] = ((mouseSlot & 0x03) << 0x1a) | (m_packedBindings[commandId] & 0xf3ffffff);
 }
 
 /**
@@ -1311,12 +1235,13 @@ void zInput_BindMapContext::SetMouseBinding(
  */
 void zInput_BindMapContext::SetBindingRecord(
     int commandId,
-    const char *labelSrc,
+    const char* labelSrc,
     int primaryKey,
     int secondaryKey,
     int joystickSlot,
     int mouseSlot
-) {
+)
+{
     if (labelSrc != 0 && *labelSrc != '\0') {
         strncpy(m_commandLabels[commandId], labelSrc, 0x4f);
     }
@@ -1334,8 +1259,9 @@ void zInput_BindMapContext::SetBindingRecord(
  *
  * Purpose: Dispatches pressed mouse-button transitions through bind-map command callbacks.
  */
-void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
-    zInput::MouseStateSnapshot *const state = zInput::MouseGetStateSnapshotPtr();
+void zInput_BindMapContext::DispatchMouseButtonCallbacks()
+{
+    zInput::MouseStateSnapshot* const state = zInput::MouseGetStateSnapshotPtr();
     if (state->button1Transition == 1) {
         const int commandId = GetCommandByMouseSlot(1);
         zInputCommandCallbackFn callback = m_commandCallbacks[commandId];
@@ -1366,7 +1292,8 @@ void zInput_BindMapContext::DispatchMouseButtonCallbacks() {
  *
  * Purpose: Dispatches pressed joystick-button transitions through bind-map command callbacks.
  */
-void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
+void zInput_BindMapContext::DispatchJoystickButtonCallbacks()
+{
     {
         for (unsigned int slot = 1; slot < 0x0b; ++slot) {
             if (zInput::DIGetButtonTransitionState(slot) == 1) {
@@ -1385,10 +1312,8 @@ void zInput_BindMapContext::DispatchJoystickButtonCallbacks() {
  * @recoil-artifact defines .text recoil:function:0x470df0: zInput_BindMapContext::SetCommandCallback.
  * Purpose: store a command callback and register keyboard bridge callbacks for its keys.
  */
-int zInput_BindMapContext::SetCommandCallback(
-    int commandId,
-    zInputCommandCallbackFn callback
-) {
+int zInput_BindMapContext::SetCommandCallback(int commandId, zInputCommandCallbackFn callback)
+{
     const int primary = GetPrimaryKeyboardKey(commandId);
     const int secondary = GetSecondaryKeyboardKey(commandId);
     if (primary == 0 && secondary == 0) {
@@ -1399,14 +1324,14 @@ int zInput_BindMapContext::SetCommandCallback(
     if (primary != 0) {
         zInput::KeyboardRegisterKeyCallback(
             primary,
-            (void *)(&zInputBindMapContextDispatchFromKeyboardEvent),
+            (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
             m_commandLabels[commandId]
         );
     }
     if (secondary != 0) {
         zInput::KeyboardRegisterKeyCallback(
             secondary,
-            (void *)(&zInputBindMapContextDispatchFromKeyboardEvent),
+            (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
             m_commandLabels[commandId]
         );
     }
@@ -1419,9 +1344,8 @@ int zInput_BindMapContext::SetCommandCallback(
  * @recoil-artifact defines .text recoil:function:0x470e80: zInputBindMapContextDispatchFromKeyboardEvent.
  * Purpose: Dispatches a raw keyboard event through the active bind-map command callback.
  */
-extern "C" void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(
-    int dikCode
-) {
+extern "C" void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(int dikCode)
+{
     const int commandId = g_zInput_BindMap_Current->GetCommandByAnyKeyboardKey(dikCode);
     zInputCommandCallbackFn callback = g_zInput_BindMap_Current->m_commandCallbacks[commandId];
     if (callback != 0) {
@@ -1434,9 +1358,8 @@ extern "C" void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(
  * @recoil-artifact defines .text recoil:function:0x470eb0: zInput_BindMapContext::ReadCommandInputState.
  * Purpose: Combine keyboard, joystick, and mouse transition states for one command.
  */
-int zInput_BindMapContext::ReadCommandInputState(
-    int commandIndex
-) {
+int zInput_BindMapContext::ReadCommandInputState(int commandIndex)
+{
     int result = 0;
     const int primary = GetPrimaryKeyboardKey(commandIndex);
     const int secondary = GetSecondaryKeyboardKey(commandIndex);
@@ -1452,7 +1375,7 @@ int zInput_BindMapContext::ReadCommandInputState(
         result |= zInput::DIGetButtonTransitionState(joystickButton);
     }
 
-    const zInput::MouseStateSnapshot *state = zInput::MouseGetStateSnapshotPtr();
+    const zInput::MouseStateSnapshot* state = zInput::MouseGetStateSnapshotPtr();
     const int mouseButton = GetMouseButtonSlot(commandIndex);
     if (mouseButton == 1) {
         return result | state->button1Transition;
@@ -1475,12 +1398,9 @@ int zInput_BindMapContext::ReadCommandInputState(
  * strncpy using the caller's byte limit.
  * Purpose: Copy the recovered command label for one bind-map command.
  */
-char * zInput_BindMapContext::CopyCommandLabel(
-    int commandId,
-    char *destBuf,
-    int maxBytes
-) {
-    char *source = m_commandLabels[commandId];
+char* zInput_BindMapContext::CopyCommandLabel(int commandId, char* destBuf, int maxBytes)
+{
+    char* source = m_commandLabels[commandId];
     if (source == 0) {
         return 0;
     }
@@ -1499,35 +1419,20 @@ char * zInput_BindMapContext::CopyCommandLabel(
  * string when the DIK slot has no name.
  * Purpose: Format a packed keyboard binding into the user-visible key name.
  */
-char * zInput_BindMapContext::FormatKeyComboName(
-    int packedKey,
-    char *destBuf,
-    int maxBytes
-) {
-    const char *const *keyNameSlot = &g_zInput_DikKeyNames[packedKey & 0xff];
+char* zInput_BindMapContext::FormatKeyComboName(int packedKey, char* destBuf, int maxBytes)
+{
+    const char* const* keyNameSlot = &g_zInput_DikKeyNames[packedKey & 0xff];
     if (*keyNameSlot != 0) {
         int remaining = maxBytes;
         *destBuf = '\0';
         if ((packedKey & 0x200) != 0) {
-            remaining -= (int)(strlen(strncat(
-                destBuf,
-                g_zInput_KeyNameCtrlPrefix,
-                remaining
-            )));
+            remaining -= (int)(strlen(strncat(destBuf, g_zInput_KeyNameCtrlPrefix, remaining)));
         }
         if ((packedKey & 0x100) != 0) {
-            remaining -= (int)(strlen(strncat(
-                destBuf,
-                g_zInput_KeyNameAltPrefix,
-                remaining
-            )));
+            remaining -= (int)(strlen(strncat(destBuf, g_zInput_KeyNameAltPrefix, remaining)));
         }
         if ((packedKey & 0x400) != 0) {
-            remaining -= (int)(strlen(strncat(
-                destBuf,
-                g_zInput_KeyNameShiftPrefix,
-                remaining
-            )));
+            remaining -= (int)(strlen(strncat(destBuf, g_zInput_KeyNameShiftPrefix, remaining)));
         }
 
         return strncat(destBuf, *keyNameSlot, remaining);
@@ -1546,12 +1451,9 @@ char * zInput_BindMapContext::FormatKeyComboName(
  * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a joystick button name for bind-map display.
  */
-char * zInput_BindMapContext::CopyJoystickButtonName(
-    int joystickSlot,
-    char *outBuf,
-    int bufSize
-) {
-    const char *source = g_zInput_JoystickButtonNames[joystickSlot];
+char* zInput_BindMapContext::CopyJoystickButtonName(int joystickSlot, char* outBuf, int bufSize)
+{
+    const char* source = g_zInput_JoystickButtonNames[joystickSlot];
     if (source != 0) {
         return strncpy(outBuf, source, bufSize);
     }
@@ -1569,12 +1471,9 @@ char * zInput_BindMapContext::CopyJoystickButtonName(
  * an empty string for an empty slot, or copies the selected literal.
  * Purpose: Copy a mouse button name for bind-map display.
  */
-char * zInput_BindMapContext::CopyMouseButtonName(
-    int mouseSlot,
-    char *outBuf,
-    int bufSize
-) {
-    const char *source = g_zInput_MouseButtonNames[mouseSlot];
+char* zInput_BindMapContext::CopyMouseButtonName(int mouseSlot, char* outBuf, int bufSize)
+{
+    const char* source = g_zInput_MouseButtonNames[mouseSlot];
     if (source != 0) {
         return strncpy(outBuf, source, bufSize);
     }
@@ -1593,10 +1492,9 @@ namespace zInput {
  * name-table globals owned by engine.zinput.bindmap_name_table_system.
  * Purpose: Initialize the bind-map context and input name-table subsystem.
  */
-void __fastcall BindMapSystemInit(
-    int commandCount
-) {
-    zInput_BindMapContext *context = new zInput_BindMapContext;
+void __fastcall BindMapSystemInit(int commandCount)
+{
+    zInput_BindMapContext* context = new zInput_BindMapContext;
     if (context != 0) {
         context = context->InitFromTemplate(0);
     }
@@ -1615,57 +1513,58 @@ void __fastcall BindMapSystemInit(
  * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.
  * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitDikKeyNameTable() {
+void __cdecl BindMapInitDikKeyNameTable()
+{
     g_zInput_DikKeyNames[1] = g_zInput_KeyNameEscape;
     g_zInput_DikKeyNames[2] = "1";
     g_zInput_DikKeyNames[3] = "2";
-    g_zInput_DikKeyNames[4] = (const char *)&g_zInput_KeyCharRow_0987653[6];
+    g_zInput_DikKeyNames[4] = (const char*)&g_zInput_KeyCharRow_0987653[6];
     g_zInput_DikKeyNames[5] = "4";
-    g_zInput_DikKeyNames[6] = (const char *)&g_zInput_KeyCharRow_0987653[5];
-    g_zInput_DikKeyNames[7] = (const char *)&g_zInput_KeyCharRow_0987653[4];
-    g_zInput_DikKeyNames[8] = (const char *)&g_zInput_KeyCharRow_0987653[3];
-    g_zInput_DikKeyNames[9] = (const char *)&g_zInput_KeyCharRow_0987653[2];
-    g_zInput_DikKeyNames[0x0a] = (const char *)&g_zInput_KeyCharRow_0987653[1];
-    g_zInput_DikKeyNames[0x0b] = (const char *)&g_zInput_KeyCharRow_0987653[0];
+    g_zInput_DikKeyNames[6] = (const char*)&g_zInput_KeyCharRow_0987653[5];
+    g_zInput_DikKeyNames[7] = (const char*)&g_zInput_KeyCharRow_0987653[4];
+    g_zInput_DikKeyNames[8] = (const char*)&g_zInput_KeyCharRow_0987653[3];
+    g_zInput_DikKeyNames[9] = (const char*)&g_zInput_KeyCharRow_0987653[2];
+    g_zInput_DikKeyNames[0x0a] = (const char*)&g_zInput_KeyCharRow_0987653[1];
+    g_zInput_DikKeyNames[0x0b] = (const char*)&g_zInput_KeyCharRow_0987653[0];
     g_zInput_DikKeyNames[0x0c] = g_zInput_KeyNameMinus;
     g_zInput_DikKeyNames[0x0d] = g_zInput_KeyNameEquals;
     g_zInput_DikKeyNames[0x0e] = "BACK";
     g_zInput_DikKeyNames[0x0f] = g_zInput_KeyNameTab;
-    g_zInput_DikKeyNames[0x10] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[9];
-    g_zInput_DikKeyNames[0x11] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[8];
-    g_zInput_DikKeyNames[0x12] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[7];
-    g_zInput_DikKeyNames[0x13] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[6];
-    g_zInput_DikKeyNames[0x14] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[5];
-    g_zInput_DikKeyNames[0x15] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[4];
-    g_zInput_DikKeyNames[0x16] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[3];
-    g_zInput_DikKeyNames[0x17] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[2];
-    g_zInput_DikKeyNames[0x18] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[1];
-    g_zInput_DikKeyNames[0x19] = (const char *)&g_zInput_KeyCharRow_POIUYTREWQ[0];
+    g_zInput_DikKeyNames[0x10] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[9];
+    g_zInput_DikKeyNames[0x11] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[8];
+    g_zInput_DikKeyNames[0x12] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[7];
+    g_zInput_DikKeyNames[0x13] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[6];
+    g_zInput_DikKeyNames[0x14] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[5];
+    g_zInput_DikKeyNames[0x15] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[4];
+    g_zInput_DikKeyNames[0x16] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[3];
+    g_zInput_DikKeyNames[0x17] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[2];
+    g_zInput_DikKeyNames[0x18] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[1];
+    g_zInput_DikKeyNames[0x19] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[0];
     g_zInput_DikKeyNames[0x1a] = "LBRACKET";
     g_zInput_DikKeyNames[0x1b] = "RBRACKET";
     g_zInput_DikKeyNames[0x1c] = "RETURN";
     g_zInput_DikKeyNames[0x1d] = "LCONTROL";
-    g_zInput_DikKeyNames[0x1e] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[8];
-    g_zInput_DikKeyNames[0x1f] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[7];
-    g_zInput_DikKeyNames[0x20] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[6];
-    g_zInput_DikKeyNames[0x21] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[5];
-    g_zInput_DikKeyNames[0x22] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[4];
-    g_zInput_DikKeyNames[0x23] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[3];
-    g_zInput_DikKeyNames[0x24] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[2];
-    g_zInput_DikKeyNames[0x25] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[1];
-    g_zInput_DikKeyNames[0x26] = (const char *)&g_zInput_KeyCharRow_LKJHGFDSA[0];
+    g_zInput_DikKeyNames[0x1e] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[8];
+    g_zInput_DikKeyNames[0x1f] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[7];
+    g_zInput_DikKeyNames[0x20] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[6];
+    g_zInput_DikKeyNames[0x21] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[5];
+    g_zInput_DikKeyNames[0x22] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[4];
+    g_zInput_DikKeyNames[0x23] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[3];
+    g_zInput_DikKeyNames[0x24] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[2];
+    g_zInput_DikKeyNames[0x25] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[1];
+    g_zInput_DikKeyNames[0x26] = (const char*)&g_zInput_KeyCharRow_LKJHGFDSA[0];
     g_zInput_DikKeyNames[0x27] = g_zInput_KeyNameSemicolon;
     g_zInput_DikKeyNames[0x28] = g_zInput_KeyNameApostrophe;
     g_zInput_DikKeyNames[0x29] = g_zInput_KeyNameGrave;
     g_zInput_DikKeyNames[0x2a] = g_zInput_KeyNameLShift;
     g_zInput_DikKeyNames[0x2b] = g_zInput_KeyNameBackslash;
-    g_zInput_DikKeyNames[0x2c] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[6];
-    g_zInput_DikKeyNames[0x2d] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[5];
-    g_zInput_DikKeyNames[0x2e] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[4];
-    g_zInput_DikKeyNames[0x2f] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[3];
-    g_zInput_DikKeyNames[0x30] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[2];
-    g_zInput_DikKeyNames[0x31] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[1];
-    g_zInput_DikKeyNames[0x32] = (const char *)&g_zInput_KeyCharRow_MNBVCXZ[0];
+    g_zInput_DikKeyNames[0x2c] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[6];
+    g_zInput_DikKeyNames[0x2d] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[5];
+    g_zInput_DikKeyNames[0x2e] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[4];
+    g_zInput_DikKeyNames[0x2f] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[3];
+    g_zInput_DikKeyNames[0x30] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[2];
+    g_zInput_DikKeyNames[0x31] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[1];
+    g_zInput_DikKeyNames[0x32] = (const char*)&g_zInput_KeyCharRow_MNBVCXZ[0];
     g_zInput_DikKeyNames[0x33] = g_zInput_KeyNameComma;
     g_zInput_DikKeyNames[0x34] = g_zInput_KeyNamePeriod;
     g_zInput_DikKeyNames[0x35] = g_zInput_KeyNameSlash;
@@ -1745,7 +1644,8 @@ void __cdecl BindMapInitDikKeyNameTable() {
  * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
  * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitJoystickButtonNameTable() {
+void __cdecl BindMapInitJoystickButtonNameTable()
+{
     g_zInput_JoystickButtonNames[1] = g_zInput_JoystickButtonName1;
     g_zInput_JoystickButtonNames[2] = g_zInput_JoystickButtonName2;
     g_zInput_JoystickButtonNames[3] = g_zInput_JoystickButtonName3;
@@ -1763,7 +1663,8 @@ void __cdecl BindMapInitJoystickButtonNameTable() {
  * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.
  * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitMouseButtonNameTable() {
+void __cdecl BindMapInitMouseButtonNameTable()
+{
     g_zInput_MouseButtonNames[1] = g_zInput_MouseButtonNameLeft;
     g_zInput_MouseButtonNames[2] = g_zInput_MouseButtonNameRight;
     g_zInput_MouseButtonNames[3] = g_zInput_MouseButtonNameMiddle;
@@ -1778,8 +1679,9 @@ void __cdecl BindMapInitMouseButtonNameTable() {
  * leaves g_zInput_BindMap_Current unchanged during process shutdown.
  * Purpose: shut down the active bind-map context stack.
  */
-void __cdecl BindMapSystemShutdown() {
-    zInput_BindMapContext *current = g_zInput_BindMap_Current;
+void __cdecl BindMapSystemShutdown()
+{
+    zInput_BindMapContext* current = g_zInput_BindMap_Current;
     while (current->m_isOverlay != 0) {
         BindMapContextPop();
         current = g_zInput_BindMap_Current;
@@ -1802,7 +1704,8 @@ void __cdecl BindMapSystemShutdown() {
  * @recoil-artifact defines .text recoil:function:0x4716b0: zInput::BindMapCurrentRebuildLookupIndices.
  * Purpose: Rebuild lookup indices for the active bind-map context.
  */
-void __cdecl BindMapCurrentRebuildLookupIndices() {
+void __cdecl BindMapCurrentRebuildLookupIndices()
+{
     g_zInput_BindMap_Current->RebuildLookupIndices();
 }
 
@@ -1811,7 +1714,8 @@ void __cdecl BindMapCurrentRebuildLookupIndices() {
  * @recoil-artifact defines .text recoil:function:0x4716c0: zInput::BindMapCurrentResetAllBindings.
  * Purpose: reset all bindings on the current global bind-map context.
  */
-void __cdecl BindMapCurrentResetAllBindings() {
+void __cdecl BindMapCurrentResetAllBindings()
+{
     g_zInput_BindMap_Current->ResetAllBindings();
 }
 
@@ -1822,9 +1726,8 @@ void __cdecl BindMapCurrentResetAllBindings() {
  * the recovered zInput_BindMapContext primary-key getter.
  * Purpose: Return the current bind map's primary keyboard key for a command.
  */
-int __fastcall BindMapCurrentGetPrimaryKeyboardKey(
-    int commandIndex
-) {
+int __fastcall BindMapCurrentGetPrimaryKeyboardKey(int commandIndex)
+{
     return g_zInput_BindMap_Current->GetPrimaryKeyboardKey(commandIndex);
 }
 
@@ -1835,9 +1738,8 @@ int __fastcall BindMapCurrentGetPrimaryKeyboardKey(
  * the recovered zInput_BindMapContext secondary-key getter.
  * Purpose: Return the current bind map's secondary keyboard key for a command.
  */
-int __fastcall BindMapCurrentGetSecondaryKeyboardKey(
-    int commandIndex
-) {
+int __fastcall BindMapCurrentGetSecondaryKeyboardKey(int commandIndex)
+{
     return g_zInput_BindMap_Current->GetSecondaryKeyboardKey(commandIndex);
 }
 
@@ -1848,9 +1750,8 @@ int __fastcall BindMapCurrentGetSecondaryKeyboardKey(
  * the recovered zInput_BindMapContext joystick-slot getter.
  * Purpose: Return the current bind map's joystick button slot for a command.
  */
-int __fastcall BindMapCurrentGetJoystickButtonSlot(
-    int commandIndex
-) {
+int __fastcall BindMapCurrentGetJoystickButtonSlot(int commandIndex)
+{
     return g_zInput_BindMap_Current->GetJoystickButtonSlot(commandIndex);
 }
 
@@ -1861,9 +1762,8 @@ int __fastcall BindMapCurrentGetJoystickButtonSlot(
  * the recovered zInput_BindMapContext mouse-slot getter.
  * Purpose: Return the current bind map's mouse button slot for a command.
  */
-int __fastcall BindMapCurrentGetMouseButtonSlot(
-    int commandIndex
-) {
+int __fastcall BindMapCurrentGetMouseButtonSlot(int commandIndex)
+{
     return g_zInput_BindMap_Current->GetMouseButtonSlot(commandIndex);
 }
 
@@ -1874,9 +1774,8 @@ int __fastcall BindMapCurrentGetMouseButtonSlot(
  * the recovered zInput_BindMapContext primary-key reverse lookup.
  * Purpose: Return the command bound to a primary keyboard key in the current bind map.
  */
-int __fastcall BindMapCurrentGetCommandByPrimaryKey(
-    int keyboardKey
-) {
+int __fastcall BindMapCurrentGetCommandByPrimaryKey(int keyboardKey)
+{
     return g_zInput_BindMap_Current->GetCommandByPrimaryKey(keyboardKey);
 }
 
@@ -1887,9 +1786,8 @@ int __fastcall BindMapCurrentGetCommandByPrimaryKey(
  * the recovered zInput_BindMapContext secondary-key reverse lookup.
  * Purpose: Return the command bound to a secondary keyboard key in the current bind map.
  */
-int __fastcall BindMapCurrentGetCommandBySecondaryKey(
-    int keyboardKey
-) {
+int __fastcall BindMapCurrentGetCommandBySecondaryKey(int keyboardKey)
+{
     return g_zInput_BindMap_Current->GetCommandBySecondaryKey(keyboardKey);
 }
 
@@ -1900,9 +1798,8 @@ int __fastcall BindMapCurrentGetCommandBySecondaryKey(
  * the recovered zInput_BindMapContext joystick-slot reverse lookup.
  * Purpose: Return the command bound to a joystick button slot in the current bind map.
  */
-int __fastcall BindMapCurrentGetCommandByJoystickSlot(
-    int joystickSlot
-) {
+int __fastcall BindMapCurrentGetCommandByJoystickSlot(int joystickSlot)
+{
     return g_zInput_BindMap_Current->GetCommandByJoystickSlot(joystickSlot);
 }
 
@@ -1913,9 +1810,8 @@ int __fastcall BindMapCurrentGetCommandByJoystickSlot(
  * the recovered zInput_BindMapContext mouse-slot reverse lookup.
  * Purpose: Return the command bound to a mouse button slot in the current bind map.
  */
-int __fastcall BindMapCurrentGetCommandByMouseSlot(
-    int mouseSlot
-) {
+int __fastcall BindMapCurrentGetCommandByMouseSlot(int mouseSlot)
+{
     return g_zInput_BindMap_Current->GetCommandByMouseSlot(mouseSlot);
 }
 
@@ -1926,10 +1822,8 @@ int __fastcall BindMapCurrentGetCommandByMouseSlot(
  * the recovered zInput_BindMapContext primary-key binding setter.
  * Purpose: Set a command's primary keyboard binding in the current bind map.
  */
-void __fastcall BindMapCurrentSetPrimaryKeyBinding(
-    int keyCode,
-    int commandId
-) {
+void __fastcall BindMapCurrentSetPrimaryKeyBinding(int keyCode, int commandId)
+{
     g_zInput_BindMap_Current->SetPrimaryKeyBinding(keyCode, commandId);
 }
 
@@ -1940,10 +1834,8 @@ void __fastcall BindMapCurrentSetPrimaryKeyBinding(
  * the recovered zInput_BindMapContext secondary-key binding setter.
  * Purpose: Set a command's secondary keyboard binding in the current bind map.
  */
-void __fastcall BindMapCurrentSetSecondaryKeyBinding(
-    int keyCode,
-    int commandId
-) {
+void __fastcall BindMapCurrentSetSecondaryKeyBinding(int keyCode, int commandId)
+{
     g_zInput_BindMap_Current->SetSecondaryKeyBinding(keyCode, commandId);
 }
 
@@ -1954,10 +1846,8 @@ void __fastcall BindMapCurrentSetSecondaryKeyBinding(
  * the recovered zInput_BindMapContext joystick-slot binding setter.
  * Purpose: Set a command's joystick button binding in the current bind map.
  */
-void __fastcall BindMapCurrentSetJoystickBinding(
-    int joystickSlot,
-    int commandId
-) {
+void __fastcall BindMapCurrentSetJoystickBinding(int joystickSlot, int commandId)
+{
     g_zInput_BindMap_Current->SetJoystickBinding(joystickSlot, commandId);
 }
 
@@ -1968,10 +1858,8 @@ void __fastcall BindMapCurrentSetJoystickBinding(
  * the recovered zInput_BindMapContext mouse-slot binding setter.
  * Purpose: Set a command's mouse button binding in the current bind map.
  */
-void __fastcall BindMapCurrentSetMouseBinding(
-    int mouseSlot,
-    int commandId
-) {
+void __fastcall BindMapCurrentSetMouseBinding(int mouseSlot, int commandId)
+{
     g_zInput_BindMap_Current->SetMouseBinding(mouseSlot, commandId);
 }
 
@@ -1982,14 +1870,14 @@ void __fastcall BindMapCurrentSetMouseBinding(
  */
 int __fastcall BindMapCurrentSetBindingRecord(
     int commandId,
-    const char *labelSrc,
+    const char* labelSrc,
     int primaryKey,
     int secondaryKey,
     int joystickSlot,
     int mouseSlot
-) {
-    g_zInput_BindMap_Current
-        ->SetBindingRecord(commandId, labelSrc, primaryKey, secondaryKey, joystickSlot, mouseSlot);
+)
+{
+    g_zInput_BindMap_Current->SetBindingRecord(commandId, labelSrc, primaryKey, secondaryKey, joystickSlot, mouseSlot);
     return commandId;
 }
 
@@ -2001,10 +1889,8 @@ int __fastcall BindMapCurrentSetBindingRecord(
  * preserved.
  * Purpose: Install a command callback on the current bind map.
  */
-int __fastcall BindMapCurrentSetCommandCallback(
-    int commandId,
-    zInputCommandCallbackFn callback
-) {
+int __fastcall BindMapCurrentSetCommandCallback(int commandId, zInputCommandCallbackFn callback)
+{
     return g_zInput_BindMap_Current->SetCommandCallback(commandId, callback);
 }
 
@@ -2016,9 +1902,8 @@ int __fastcall BindMapCurrentSetCommandCallback(
  * preserved.
  * Purpose: Read the current input state for a bind-map command.
  */
-int __fastcall BindMapCurrentReadCommandInputState(
-    int commandIndex
-) {
+int __fastcall BindMapCurrentReadCommandInputState(int commandIndex)
+{
     return g_zInput_BindMap_Current->ReadCommandInputState(commandIndex);
 }
 
@@ -2030,11 +1915,8 @@ int __fastcall BindMapCurrentReadCommandInputState(
  * and byte limit preserved.
  * Purpose: Copy a command label from the current bind map.
  */
-char *__fastcall BindMapCurrentCopyCommandLabel(
-    int commandId,
-    char *destBuf,
-    int maxBytes
-) {
+char* __fastcall BindMapCurrentCopyCommandLabel(int commandId, char* destBuf, int maxBytes)
+{
     return g_zInput_BindMap_Current->CopyCommandLabel(commandId, destBuf, maxBytes);
 }
 
@@ -2047,16 +1929,9 @@ char *__fastcall BindMapCurrentCopyCommandLabel(
  * key, destination buffer, and byte limit to the context formatting method.
  * Purpose: Format a packed keyboard binding for the current bind map.
  */
-char *__fastcall BindMapCurrentFormatKeyComboName(
-    int packedKey,
-    char *destBuf,
-    int maxBytes
-) {
-    return g_zInput_BindMap_Current->FormatKeyComboName(
-        packedKey,
-        destBuf,
-        maxBytes
-    );
+char* __fastcall BindMapCurrentFormatKeyComboName(int packedKey, char* destBuf, int maxBytes)
+{
+    return g_zInput_BindMap_Current->FormatKeyComboName(packedKey, destBuf, maxBytes);
 }
 
 /**
@@ -2068,16 +1943,9 @@ char *__fastcall BindMapCurrentFormatKeyComboName(
  * destination buffer, and byte limit to the context joystick-name method.
  * Purpose: Copy a joystick button name for the current bind map.
  */
-char *__fastcall BindMapCurrentCopyJoystickButtonName(
-    int joystickSlot,
-    char *outBuf,
-    int bufSize
-) {
-    return g_zInput_BindMap_Current->CopyJoystickButtonName(
-        joystickSlot,
-        outBuf,
-        bufSize
-    );
+char* __fastcall BindMapCurrentCopyJoystickButtonName(int joystickSlot, char* outBuf, int bufSize)
+{
+    return g_zInput_BindMap_Current->CopyJoystickButtonName(joystickSlot, outBuf, bufSize);
 }
 
 /**
@@ -2089,16 +1957,9 @@ char *__fastcall BindMapCurrentCopyJoystickButtonName(
  * destination buffer, and byte limit to the context mouse-name method.
  * Purpose: Copy a mouse button name for the current bind map.
  */
-char *__fastcall BindMapCurrentCopyMouseButtonName(
-    int mouseSlot,
-    char *outBuf,
-    int bufSize
-) {
-    return g_zInput_BindMap_Current->CopyMouseButtonName(
-        mouseSlot,
-        outBuf,
-        bufSize
-    );
+char* __fastcall BindMapCurrentCopyMouseButtonName(int mouseSlot, char* outBuf, int bufSize)
+{
+    return g_zInput_BindMap_Current->CopyMouseButtonName(mouseSlot, outBuf, bufSize);
 }
 
 /**
@@ -2106,10 +1967,9 @@ char *__fastcall BindMapCurrentCopyMouseButtonName(
  * @recoil-artifact defines .text recoil:function:0x471860: zInput::BindMapContextPush.
  * Purpose: push a bind-map overlay context and rebuild the active command lookup tables.
  */
-void __fastcall BindMapContextPush(
-    zInput_BindMapContext *bindMapOrNull
-) {
-    zInput_BindMapContext *bindMap = bindMapOrNull;
+void __fastcall BindMapContextPush(zInput_BindMapContext* bindMapOrNull)
+{
+    zInput_BindMapContext* bindMap = bindMapOrNull;
     if (bindMap == 0) {
         bindMap = new zInput_BindMapContext;
         if (bindMap != 0) {
@@ -2118,8 +1978,8 @@ void __fastcall BindMapContextPush(
         bindMap->m_isOverlay = 1;
     }
 
-    zInput_BindMapOverlayStackNode *node = g_zInput_BindMapOverlayNodeFreeList;
-    const zInput_BindMapContext *previousCurrent = g_zInput_BindMap_Current;
+    zInput_BindMapOverlayStackNode* node = g_zInput_BindMapOverlayNodeFreeList;
+    const zInput_BindMapContext* previousCurrent = g_zInput_BindMap_Current;
     if (node == 0) {
         node = new zInput_BindMapOverlayStackNode;
         if (node != 0) {
@@ -2130,7 +1990,7 @@ void __fastcall BindMapContextPush(
             node = 0;
         }
     } else {
-        zInput_BindMapOverlayStackNode *next = node->next;
+        zInput_BindMapOverlayStackNode* next = node->next;
         g_zInput_BindMapOverlayNodeFreeList = next;
         if (next != 0) {
             next->prev = 0;
@@ -2138,7 +1998,7 @@ void __fastcall BindMapContextPush(
         node->next = 0;
     }
 
-    node->bindMap = (zInput_BindMapContext *)(previousCurrent);
+    node->bindMap = (zInput_BindMapContext*)(previousCurrent);
     node->next = g_zInput_BindMapOverlayNodeStackHead;
     node->prev = 0;
     if (g_zInput_BindMapOverlayNodeStackHead != 0) {
@@ -2155,18 +2015,19 @@ void __fastcall BindMapContextPush(
  * @recoil-artifact defines .text recoil:function:0x471950: zInput::BindMapContextPop.
  * Purpose: pop the active bind-map overlay, recycle its stack node, and rebuild command lookup tables.
  */
-void __fastcall BindMapContextPop() {
-    zInput_BindMapContext *current = g_zInput_BindMap_Current;
+void __fastcall BindMapContextPop()
+{
+    zInput_BindMapContext* current = g_zInput_BindMap_Current;
     if (current->m_isOverlay != 0 && current != 0) {
         current->FreeAllBuffers();
         operator delete(current);
     }
 
-    zInput_BindMapOverlayStackNode *node = g_zInput_BindMapOverlayNodeStackHead;
+    zInput_BindMapOverlayStackNode* node = g_zInput_BindMapOverlayNodeStackHead;
     if (node == 0) {
         node = 0;
     } else {
-        zInput_BindMapOverlayStackNode *next = node->next;
+        zInput_BindMapOverlayStackNode* next = node->next;
         g_zInput_BindMapOverlayNodeStackHead = next;
         if (next != 0) {
             next->prev = 0;
@@ -2175,7 +2036,7 @@ void __fastcall BindMapContextPop() {
         node->next = 0;
     }
 
-    zInput_BindMapContext *bindMap = 0;
+    zInput_BindMapContext* bindMap = 0;
     if (node != 0) {
         bindMap = node->bindMap;
         node->bindMap = 0;

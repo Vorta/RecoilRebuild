@@ -27,13 +27,13 @@ extern float g_OptCatalogDamageMaskPhaseV;
 extern int g_OptCatalogDamageMaskEnabled;
 extern int g_OptCatalogDamageMaskSlotIndex;
 extern int gModel_DefaultGraphicsFlags;
-extern int *gModel_pGraphicsFlags;
+extern int* gModel_pGraphicsFlags;
 extern int gModel_RenderVertexAlphaEnabled;
 extern float gModel_RenderAlphaScaleCurrent;
 extern int g_Variant_FilterEnabled;
 extern zTag4Partial g_VariantTag_Current;
 extern zTag4Partial g_Variant_CurrentTag;
-extern void *g_OptCatalogDamageMaskHandles[3];
+extern void* g_OptCatalogDamageMaskHandles[3];
 extern int g_zModel_DisplayClipMode;
 extern int g_zModel_DisplayClipX;
 extern int g_zModel_DisplayClipY;
@@ -48,7 +48,7 @@ extern double g_zModel_ColinearTolerance;
 extern float g_zModel_UvQuantizeBias;
 extern float g_zModel_UvQuantizeScale;
 extern float g_zModel_UvQuantizeInvScale;
-extern zDiPartial *g_zModel_DiPoolBase;
+extern zDiPartial* g_zModel_DiPoolBase;
 extern int g_zModel_DiPoolCapacity;
 extern int g_zModel_DiPoolInUseCount;
 extern int g_zModel_DiPoolFreeHeadIndex;
@@ -60,57 +60,37 @@ extern int gModel_HasActiveLights;
  */
 
 struct zModel_ActiveLightEntryLive {
-    CZLightDataPartial *light;
-    CZNodePartial *lightNode;
+    CZLightDataPartial* light;
+    CZNodePartial* lightNode;
     int useFullWeight;
     int contributesToLighting;
     unsigned int reserved_10;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZNodePartial,
-        flags
-    ) == 0x24
-);
+RECOIL_STATIC_ASSERT(offsetof(CZNodePartial, flags) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zModel_ActiveLightEntryLive) == 0x14);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_ActiveLightEntryLive,
-        useFullWeight
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_ActiveLightEntryLive,
-        contributesToLighting
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(zModel_ActiveLightEntryLive, useFullWeight) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zModel_ActiveLightEntryLive, contributesToLighting) == 0x0c);
 
 struct zModel_FogTargetColorOverride {
     zColorRgb colorRgb01;
     float weight;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_FogTargetColorOverride,
-        weight
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(zModel_FogTargetColorOverride, weight) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zModel_FogTargetColorOverride) == 0x10);
 
 extern int gModel_ActiveLightCount;
 extern int gModel_ActiveLightSpecialIndex;
 extern zModel_ActiveLightEntryLive gModel_ActiveLights[0x40];
-extern CZLightDataPartial **gModel_LightInputDataList;
-extern CZNodePartial **gModel_LightInputNodeStates;
+extern CZLightDataPartial** gModel_LightInputDataList;
+extern CZNodePartial** gModel_LightInputNodeStates;
 extern int gModel_LightInputCount;
 extern int g_zModel_SoftwarePathActive;
 extern float g_Clip_PolyAttr0[0x40];
 extern float g_Clip_PolyAttr1[0x40];
 extern float g_Clip_PolyAttr2[0x40];
-extern zVec3 *g_zModel_CurrentPolyNormals;
+extern zVec3* g_zModel_CurrentPolyNormals;
 extern zVec3 g_zModel_CurrentPolyNormalsStorage[0x40];
 extern zModel_FogTargetColorOverride g_zModel_FogTargetColorOverride;
 extern zColorRgb gModel_FogBaseColorRgb01;
@@ -127,34 +107,24 @@ struct zModel_MaterialSlot {
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zModel_MaterialSlot) == 0x2c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_MaterialSlot,
-        prevPoolIndex
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_MaterialSlot,
-        nextPoolIndex
-    ) == 0x2a
-);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialSlot, prevPoolIndex) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialSlot, nextPoolIndex) == 0x2a);
 
-extern zModel_MaterialSlot *g_zModel_MatlPool;
+extern zModel_MaterialSlot* g_zModel_MatlPool;
 extern int g_zModel_MatlPoolCapacity;
 extern int g_zModel_MatlPoolInUseCount;
 extern int g_zModel_MatlFreeHeadIndex;
 extern int g_zModel_MatlActiveHeadIndex;
-extern zModel_MaterialPartial *g_zModel_MatlReuseCache;
+extern zModel_MaterialPartial* g_zModel_MatlReuseCache;
 extern zModel_MaterialPartial g_zModel_DefaultMaterial;
 extern zVec3 g_zModel_SharedVec3ScratchAStorage[0x400];
 extern zVec3 g_zModel_SharedVec3ScratchBStorage[0x400];
-extern zVec3 *g_zModel_TransformedVerts;
-extern zVec3 *g_zModel_TransformedNormals;
-extern zVec3 *g_zModel_SharedVec3ScratchA;
-extern zVec3 *g_zModel_SharedVec3ScratchB;
-extern zVec3 *g_zModel_PointInPolygonVertices;
-extern zVec3 *g_zModel_PointInPolygonEdgeNormals;
+extern zVec3* g_zModel_TransformedVerts;
+extern zVec3* g_zModel_TransformedNormals;
+extern zVec3* g_zModel_SharedVec3ScratchA;
+extern zVec3* g_zModel_SharedVec3ScratchB;
+extern zVec3* g_zModel_PointInPolygonVertices;
+extern zVec3* g_zModel_PointInPolygonEdgeNormals;
 extern int g_zModel_PointInPolygonVertexCount;
 extern float g_zModel_TextureWorldBaseU;
 extern float g_zModel_TextureWorldBaseV;
@@ -173,21 +143,21 @@ struct zModel_TextureScrollInfoPartial {
 };
 
 struct zModel_TextureRefPartial {
-    zModel_TextureScrollInfoPartial *textureInfo;
+    zModel_TextureScrollInfoPartial* textureInfo;
 };
 
 struct zModel_MaterialTextureBindingPartial {
     unsigned char unknown_00;
     unsigned char flags;
     unsigned char unknown_02[0x0e];
-    zModel_TextureRefPartial *textureRef;
+    zModel_TextureRefPartial* textureRef;
 };
 
 struct zModel_InstanceSurfaceEntryPartial {
     unsigned int vertexCountAndFlags;
     unsigned char unknown_04[0x0c];
-    zModel_Uv *uvs;
-    zModel_MaterialTextureBindingPartial *materialBinding;
+    zModel_Uv* uvs;
+    zModel_MaterialTextureBindingPartial* materialBinding;
     unsigned char unknown_18[0x04];
 };
 
@@ -198,138 +168,56 @@ struct zModel_InstancePartial {
     float scrollRateU;
     float scrollRateV;
     int scrollingTextureFrameTick;
-    zModel_InstanceSurfaceEntryPartial *surfaceEntries;
+    zModel_InstanceSurfaceEntryPartial* surfaceEntries;
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zModel_Uv) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_TextureScrollInfoPartial,
-        wrapShiftU
-    ) == 0x0a
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_TextureScrollInfoPartial,
-        wrapShiftV
-    ) == 0x0b
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_MaterialTextureBindingPartial,
-        flags
-    ) == 0x01
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_MaterialTextureBindingPartial,
-        textureRef
-    ) == 0x10
-);
+RECOIL_STATIC_ASSERT(offsetof(zModel_TextureScrollInfoPartial, wrapShiftU) == 0x0a);
+RECOIL_STATIC_ASSERT(offsetof(zModel_TextureScrollInfoPartial, wrapShiftV) == 0x0b);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialTextureBindingPartial, flags) == 0x01);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialTextureBindingPartial, textureRef) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zModel_InstanceSurfaceEntryPartial) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstanceSurfaceEntryPartial,
-        uvs
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstanceSurfaceEntryPartial,
-        materialBinding
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstancePartial,
-        surfaceEntryCount
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstancePartial,
-        scrollRateU
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstancePartial,
-        scrollingTextureFrameTick
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zModel_InstancePartial,
-        surfaceEntries
-    ) == 0x30
-);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstanceSurfaceEntryPartial, uvs) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstanceSurfaceEntryPartial, materialBinding) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstancePartial, surfaceEntryCount) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstancePartial, scrollRateU) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstancePartial, scrollingTextureFrameTick) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zModel_InstancePartial, surfaceEntries) == 0x30);
 
-int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(
-    zModel_InstancePartial *instance
-);
+int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePartial* instance);
 void __fastcall zModelInstanceUpdateScrollingTextures(
-    const zModel_TextureScrollInfoPartial *textureInfo,
-    zModel_Uv *uvs,
-    const float *scrollRates,
+    const zModel_TextureScrollInfoPartial* textureInfo,
+    zModel_Uv* uvs,
+    const float* scrollRates,
     int uvCount
 );
-void __fastcall zModelRenderPointQueueEntry(
-    const zVec3 *pointPos,
-    int packedColor16,
-    zModel_PointEntryPartial *pointEntry
-);
-int __fastcall zModelLightBuildLightWeights(
-    zVec3 *surfaceNormal,
-    int vertexCount,
-    int *outPackedFogColor,
-    float fogBlendScale
-);
-void __fastcall zModelLightPointInPolygonInitXZ(
-    CZNodePartial **lightNodes,
-    CZLightDataPartial **lightDataList,
-    int lightCount
-);
+void __fastcall
+zModelRenderPointQueueEntry(const zVec3* pointPos, int packedColor16, zModel_PointEntryPartial* pointEntry);
+int __fastcall
+zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPackedFogColor, float fogBlendScale);
+void __fastcall
+zModelLightPointInPolygonInitXZ(CZNodePartial** lightNodes, CZLightDataPartial** lightDataList, int lightCount);
 
 namespace zModel {
 int __cdecl Init();
 void __fastcall SetVertexShadingEnabled(int enabled);
 void __fastcall SetDisplayInstancePoolCapacity(int capacity);
 void __fastcall SetSoftwarePathActive(int active);
-void __stdcall SetTextureWorldPerMeter(
-    float worldPerMeterU,
-    float worldPerMeterV
-);
-void __stdcall SetTextureWorldBase(
-    float worldBaseU,
-    float worldBaseV
-);
-int __fastcall SetDiTextureWorldPerMeter(
-    zDiPartial *di,
-    int worldSpaceEnabled,
-    float scrollRateU,
-    float scrollRateV
-);
-void __fastcall RenderNodeHardware(
-    CZNodePartial *node,
-    int clipMask
-);
-void __fastcall RenderNodeSoftware(
-    CZNodePartial *node,
-    int clipMask
-);
+void __stdcall SetTextureWorldPerMeter(float worldPerMeterU, float worldPerMeterV);
+void __stdcall SetTextureWorldBase(float worldBaseU, float worldBaseV);
+int __fastcall SetDiTextureWorldPerMeter(zDiPartial* di, int worldSpaceEnabled, float scrollRateU, float scrollRateV);
+void __fastcall RenderNodeHardware(CZNodePartial* node, int clipMask);
+void __fastcall RenderNodeSoftware(CZNodePartial* node, int clipMask);
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
 float __cdecl GetBackfaceEliminationToleranceScalar();
 void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
 } // namespace zModel
 
 int __cdecl zModelDisplayInit();
-void __stdcall OptCatalogSetDamageMaskUv(
-    float u,
-    float v
-);
+void __stdcall OptCatalogSetDamageMaskUv(float u, float v);
 int __cdecl OptCatalogIsDamageMaskEnabled();
 void __fastcall OptCatalogSetDamageMaskEnabled(int enabled);
-int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void *slotPtr);
+int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void* slotPtr);
 void __fastcall zModelFogSetEnabled(int enabled);
 int __cdecl zModelFogIsEnabled();
 void __stdcall zModelFogSetDistanceStart(float distanceStart);
@@ -339,59 +227,28 @@ void __stdcall zModelFogSetHeightHigh(float heightHigh);
 void __stdcall zModelFogSetHeightLow(float heightLow);
 void __stdcall zModelFogSetDensity(float density);
 void __fastcall zModelFogSetLinearModeEnabled(int enabled);
-void __fastcall zModelFogSetColorRgb01(zColorRgb *rgb01);
+void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01);
 void __cdecl zModelFogApplyCurrentColor();
 
 namespace zModel_Light {
-float __fastcall EvalDistanceWeight(
-    const CZLightDataPartial *light,
-    float distance
-);
-float __fastcall EvalSphereFogFade(
-    const zVec3 *point,
-    float radius
-);
-int __fastcall BuildAttr0DepthFade(
-    int vertexCount,
-    int *outHasVariation
-);
-int __fastcall BuildAttr1Falloff(
-    int vertexCount,
-    int *pLightingFlags
-);
-int __fastcall EvalBatchSphereFade(float *outFade);
-int __fastcall PointInPolygonTestRadiusXZ(
-    const zVec3 *sphereCenter,
-    float radius
-);
-int __fastcall SetActiveLights(
-    zVec3 *surfaceNormal,
-    int vertexCount,
-    int *lightFlags,
-    int *lightingMode,
-    int usePaletteRemap
-);
+float __fastcall EvalDistanceWeight(const CZLightDataPartial* light, float distance);
+float __fastcall EvalSphereFogFade(const zVec3* point, float radius);
+int __fastcall BuildAttr0DepthFade(int vertexCount, int* outHasVariation);
+int __fastcall BuildAttr1Falloff(int vertexCount, int* pLightingFlags);
+int __fastcall EvalBatchSphereFade(float* outFade);
+int __fastcall PointInPolygonTestRadiusXZ(const zVec3* sphereCenter, float radius);
+int __fastcall
+SetActiveLights(zVec3* surfaceNormal, int vertexCount, int* lightFlags, int* lightingMode, int usePaletteRemap);
 } // namespace zModel_Light
 
 namespace zModel_DiPool {
-int __fastcall WriteToStream(void *stream);
-int __fastcall ReadHeaderFromStream(
-    void *stream,
-    int *outCapacity,
-    int *outInUseCount,
-    int *outFreeHeadIndex
-);
-int __fastcall ReadEntryDynamicDataFromStream(
-    void *stream,
-    zDiPartial *entry
-);
-RECOIL_NO_GS zDiPartial *__fastcall ReadEntryByIndexFromStream(
-    void *stream,
-    int index
-);
-int __fastcall ReadFromStream(void *stream);
-zDiPartial *__cdecl AllocFromFreeList();
-int __fastcall FreeIfUnreferenced(zDiPartial *di);
+int __fastcall WriteToStream(void* stream);
+int __fastcall ReadHeaderFromStream(void* stream, int* outCapacity, int* outInUseCount, int* outFreeHeadIndex);
+int __fastcall ReadEntryDynamicDataFromStream(void* stream, zDiPartial* entry);
+RECOIL_NO_GS zDiPartial* __fastcall ReadEntryByIndexFromStream(void* stream, int index);
+int __fastcall ReadFromStream(void* stream);
+zDiPartial* __cdecl AllocFromFreeList();
+int __fastcall FreeIfUnreferenced(zDiPartial* di);
 } // namespace zModel_DiPool
 
 namespace zModel_Const {
@@ -399,41 +256,15 @@ float __cdecl GetVertexMergeEpsilon();
 void __stdcall SetVertexMergeEpsilon(float epsilon);
 void __stdcall SetCoplanarTolerance(float tolerance);
 void __stdcall SetColinearTolerance(float tolerance);
-zVec3 *__fastcall SetNormalizedCrossFromVertexTriplet(
-    zVec3 *vertex0,
-    zVec3 *vertex1,
-    zVec3 *outNormal,
-    zVec3 *vertex2
-);
-int __fastcall check_colinearity(
-    int *vertexCount,
-    zVec3 *points,
-    zClipUV *uvPairsA,
-    zVec3 *normalsB,
-    zClipUV *uvPairsB
-);
-zGeometry_PlaneEquationPartial *__fastcall ComputePolygonPlaneEquation(
-    int vertexCount,
-    zVec3 *vertices,
-    zGeometry_PlaneEquationPartial *outPlane
-);
-int __fastcall IsPolygonCoplanar(
-    int vertexCount,
-    zVec3 *vertices
-);
-int __fastcall AddOrMergeVertex(
-    zDiPartial *self,
-    zVec3 *point
-);
-int __fastcall AddOrMergeVertexAndNormal(
-    zDiPartial *self,
-    zVec3 *point,
-    zVec3 *normal
-);
-int __fastcall FindOrAppendNormalIndex(
-    zDiPartial *self,
-    zVec3 *normal
-);
+zVec3* __fastcall SetNormalizedCrossFromVertexTriplet(zVec3* vertex0, zVec3* vertex1, zVec3* outNormal, zVec3* vertex2);
+int __fastcall
+check_colinearity(int* vertexCount, zVec3* points, zClipUV* uvPairsA, zVec3* normalsB, zClipUV* uvPairsB);
+zGeometry_PlaneEquationPartial* __fastcall
+ComputePolygonPlaneEquation(int vertexCount, zVec3* vertices, zGeometry_PlaneEquationPartial* outPlane);
+int __fastcall IsPolygonCoplanar(int vertexCount, zVec3* vertices);
+int __fastcall AddOrMergeVertex(zDiPartial* self, zVec3* point);
+int __fastcall AddOrMergeVertexAndNormal(zDiPartial* self, zVec3* point, zVec3* normal);
+int __fastcall FindOrAppendNormalIndex(zDiPartial* self, zVec3* normal);
 zClipUV __stdcall SolveTriScalarGradient2D(
     float vertex0A,
     float vertex0B,
@@ -445,33 +276,28 @@ zClipUV __stdcall SolveTriScalarGradient2D(
     float value1,
     float value2
 );
-void __fastcall QuantizeAndNormalizeUvPairs(
-    int vertexCount,
-    zClipUV *uvPairs
-);
+void __fastcall QuantizeAndNormalizeUvPairs(int vertexCount, zClipUV* uvPairs);
 void __fastcall SplitPolygonChunkedByVertexLimit(
-    zDiPartial *self,
+    zDiPartial* self,
     int totalVertexCount,
-    zVec3 *points,
-    zVec3 *entryNormals,
-    zClipUV *uvPairsA,
-    zVec3 *normalsA,
-    zVec3 *normalsBInput,
-    zClipUV *uvPairsBInput,
-    zModel_MaterialPartial *material,
+    zVec3* points,
+    zVec3* entryNormals,
+    zClipUV* uvPairsA,
+    zVec3* normalsA,
+    zVec3* normalsBInput,
+    zClipUV* uvPairsBInput,
+    zModel_MaterialPartial* material,
     unsigned int drawFlags,
     int flagBit8,
-    const int *userTag
+    const int* userTag
 );
 } // namespace zModel_Const
 
 namespace zModel_MatlBuffer {
 void __fastcall SetArraySize(int count);
-zModel_MaterialPartial *__fastcall CloneToActiveSlot(
-    zModel_MaterialPartial *material
-);
-int __fastcall WriteGameZ(void *stream);
-int __fastcall ReadGameZ(void *stream);
+zModel_MaterialPartial* __fastcall CloneToActiveSlot(zModel_MaterialPartial* material);
+int __fastcall WriteGameZ(void* stream);
+int __fastcall ReadGameZ(void* stream);
 int __cdecl ReleaseAllActive();
 void __cdecl ReleaseTextureSurfaces();
 int __cdecl Shutdown();
@@ -479,12 +305,12 @@ int __cdecl Shutdown();
 
 namespace zModel_Matl {
 int __cdecl InitGlobals();
-zModel_MaterialSlot *__fastcall GetPoolEntry(int index);
+zModel_MaterialSlot* __fastcall GetPoolEntry(int index);
 } // namespace zModel_Matl
 
 namespace zModel_MatlSlot {
-void __fastcall Release(zModel_MaterialSlot *slot);
-int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot *slot);
+void __fastcall Release(zModel_MaterialSlot* slot);
+int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot* slot);
 } // namespace zModel_MatlSlot
 
 namespace zModel_Display {
@@ -494,32 +320,23 @@ int __cdecl ShutdownThunk();
 } // namespace zModel_Display
 
 namespace zScene {
-int __fastcall TestProjectedSphereVisible(
-    zVec3 *center,
-    float radius
-);
+int __fastcall TestProjectedSphereVisible(zVec3* center, float radius);
 }
 
-void __fastcall zModelFogTargetColorOverrideSetCurrent(
-    zColorRgb *colorRgb01,
-    float weight
-);
+void __fastcall zModelFogTargetColorOverrideSetCurrent(zColorRgb* colorRgb01, float weight);
 void __stdcall zModelRenderAlphaScaleSetCurrent(float scale);
 void __fastcall zModelRenderVertexAlphaEnabledSetCurrent(int enabled);
 
 namespace VariantTag {
-int __fastcall TagsOverlap(
-    const zTag4Partial *tagA,
-    const zTag4Partial *tagB
-);
+int __fastcall TagsOverlap(const zTag4Partial* tagA, const zTag4Partial* tagB);
 int __fastcall CurrentAllowsId(int variantId);
 } // namespace VariantTag
 
 namespace zDi {
 void __fastcall EvalBoundingSphereLightingFlags(
-    zDiPartial *self,
-    int *outDepthFade,
-    int *outActiveLightState,
-    int *outLensFlareVisible
+    zDiPartial* self,
+    int* outDepthFade,
+    int* outActiveLightState,
+    int* outLensFlareVisible
 );
 }

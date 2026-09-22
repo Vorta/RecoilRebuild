@@ -1,8 +1,8 @@
 #include "Battlesport/game_net.h"
 #include "Battlesport/net_ui.h"
 
-#include <winsock2.h>
 #include <windows.h>
+#include <winsock2.h>
 
 #include <stdio.h>
 
@@ -15,10 +15,8 @@ namespace NetUi {
  * Purpose: verify Winsock 2.0 availability and ask the user whether network
  * flows should continue when startup or version checks fail.
  */
-int __fastcall VerifyWinsock2OrPromptContinue(
-    const char *caption,
-    const char *messageFormat
-) {
+int __fastcall VerifyWinsock2OrPromptContinue(const char* caption, const char* messageFormat)
+{
     int result = TRUE;
     WSADATA wsaData;
     if (WSAStartup(2, &wsaData) != 0) {
@@ -58,10 +56,8 @@ namespace Net {
  * source provenance remains unresolved.
  * Purpose: Format a little-endian IPv4 address for session UI text.
  */
-void __fastcall FormatIpv4Address(
-    char *outText,
-    unsigned int ipAddress
-) {
+void __fastcall FormatIpv4Address(char* outText, unsigned int ipAddress)
+{
     int octets[4];
     int index;
     for (index = 0; index < 4; ++index) {

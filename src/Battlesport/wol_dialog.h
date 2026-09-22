@@ -20,25 +20,15 @@ struct WestwoodOnlineUpgradeDownloadReadyEntry;
  * registered.
  */
 struct WestwoodOnlineUpgradeProgressDialog : CDialog {
-    WestwoodOnlineUpgradeProgressDialog(
-        CWnd *parentWnd
-    );
+    WestwoodOnlineUpgradeProgressDialog(CWnd* parentWnd);
 
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    const AFX_MSGMAP * GetMessageMap() const;
-    static BOOL SetStatusTextFmt(
-        const char *format,
-        ...
-    );
-    static BOOL CALLBACK DlgProc(
-        HWND hWnd,
-        UINT uMsg,
-        WPARAM wParam,
-        LPARAM lParam
-    );
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
+    const AFX_MSGMAP* GetMessageMap() const;
+    static BOOL SetStatusTextFmt(const char* format, ...);
+    static BOOL CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
 /**
@@ -83,17 +73,14 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
 
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
-    WestwoodOnlineUpgradeDialog(CWnd *parentWnd);
-    virtual const AFX_MSGMAP * GetMessageMap() const;
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
+    WestwoodOnlineUpgradeDialog(CWnd* parentWnd);
+    virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
-    WestwoodOnlineUpgradeDialog * Constructor(CWnd *parentWnd);
+    WestwoodOnlineUpgradeDialog* Constructor(CWnd* parentWnd);
     void Destructor();
-    virtual void DoDataExchange(CDataExchange *dataExchange);
-    int AppendStatusTextFmt(
-        const char *format,
-        ...
-    );
+    virtual void DoDataExchange(CDataExchange* dataExchange);
+    int AppendStatusTextFmt(const char* format, ...);
     void SetSelectedProfilePlayerName(CString playerName);
     void SetSelectedProfileConnectString(CString connectString);
     CString GetSelectedProfilePlayerName();
@@ -125,170 +112,46 @@ struct WestwoodOnlineUpgradeDialog : CDialog {
     void EnableConnectButton(int enable);
     void ResetSelectedBrowseRecordAndRefreshList();
     void ClearStatusList();
-    void AppendConnectStatusAndRefreshList(const char *sessionName);
+    void AppendConnectStatusAndRefreshList(const char* sessionName);
     void SetAbortAndClose();
-    static int __fastcall ShowModalAndGetSelectedMissionIndex(
-        int *selectedMissionIndexOut
-    );
-    static int __fastcall ShowDownloadReadyList(
-        WestwoodOnlineUpgradeDownloadReadyEntry *readyListHead
-    );
+    static int __fastcall ShowModalAndGetSelectedMissionIndex(int* selectedMissionIndexOut);
+    static int __fastcall ShowDownloadReadyList(WestwoodOnlineUpgradeDownloadReadyEntry* readyListHead);
 };
 
 extern "C" HINSTANCE g_hWestwoodOnlineUpgradeModuleInstance;
-extern "C" WestwoodOnlineUpgradeProgressDialog *g_pWestwoodOnlineUpgradeProgressDialog;
-extern "C" WestwoodOnlineUpgradeDialog *g_pWestwoodOnlineUpgradeDialog;
+extern "C" WestwoodOnlineUpgradeProgressDialog* g_pWestwoodOnlineUpgradeProgressDialog;
+extern "C" WestwoodOnlineUpgradeDialog* g_pWestwoodOnlineUpgradeDialog;
 extern "C" char g_WestwoodOnlineUpgradeProgressStatusTextBuffer[0x40];
 extern "C" int g_WestwoodOnlineUpgradeSelectedMissionIndex;
 extern "C" char g_WestwoodOnlineUpgradeStatusAppendBuffer[1024];
 
 namespace WestwoodOnlineUpgrade {
-void __fastcall TruncateStringAtFirstSpace(char *text);
+void __fastcall TruncateStringAtFirstSpace(char* text);
 }
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeProgressDialog) == 0x60);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeDialog) == 0x4cc);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_serverAddressEdit
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_statusTokenEdit
-    ) == 0xa0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryValueOrTimeEdit
-    ) == 0xe0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryMaxPlayersEdit
-    ) == 0x120
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryAuxParamEdit
-    ) == 0x160
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryStatusFlag1Check
-    ) == 0x1a0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryStatusFlag0Check
-    ) == 0x1e0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_submitPendingSessionListButton
-    ) == 0x220
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_connectButton
-    ) == 0x260
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_querySessionsByNameButton
-    ) == 0x2a0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queueVisibleSessionRequestsButton
-    ) == 0x2e0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_statusList
-    ) == 0x320
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_sessionModeCombo
-    ) == 0x360
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_sessionResultsList
-    ) == 0x3a0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_statusServerEdit
-    ) == 0x3e0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_sessionNameEdit
-    ) == 0x420
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_browseRecordList
-    ) == 0x460
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_queryAuxParam
-    ) == 0x4a0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_querySessionModeKind
-    ) == 0x4b4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_selectedProfilePlayerName
-    ) == 0x4b8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_selectedProfileConnectString
-    ) == 0x4bc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_sessionName
-    ) == 0x4c0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_selectedProfileConnectStringMode
-    ) == 0x4c4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        WestwoodOnlineUpgradeDialog,
-        m_statusLineCount
-    ) == 0x4c8
-);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_serverAddressEdit) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_statusTokenEdit) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryValueOrTimeEdit) == 0xe0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryMaxPlayersEdit) == 0x120);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryAuxParamEdit) == 0x160);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryStatusFlag1Check) == 0x1a0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryStatusFlag0Check) == 0x1e0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_submitPendingSessionListButton) == 0x220);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_connectButton) == 0x260);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_querySessionsByNameButton) == 0x2a0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queueVisibleSessionRequestsButton) == 0x2e0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_statusList) == 0x320);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_sessionModeCombo) == 0x360);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_sessionResultsList) == 0x3a0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_statusServerEdit) == 0x3e0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_sessionNameEdit) == 0x420);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_browseRecordList) == 0x460);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_queryAuxParam) == 0x4a0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_querySessionModeKind) == 0x4b4);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_selectedProfilePlayerName) == 0x4b8);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_selectedProfileConnectString) == 0x4bc);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_sessionName) == 0x4c0);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_selectedProfileConnectStringMode) == 0x4c4);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDialog, m_statusLineCount) == 0x4c8);

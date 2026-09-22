@@ -1,8 +1,8 @@
 #include "zsnd.h"
 
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd_a3d_provider.h"
+#include "GameZRecoil/zTime/time.h"
 
 #include <list>
 #include <stdlib.h>
@@ -12,20 +12,20 @@
  * Data owner: namespace:zSound system configuration state.
  * Purpose: hold the loaded sound configuration tree until sound shutdown.
  */
-extern "C" zReader::Node *g_zSnd_ConfigRootNode = 0;
+extern "C" zReader::Node* g_zSnd_ConfigRootNode = 0;
 /**
  * Purpose: hold the sound resource search path list built from SOUND_PATH.
  */
-extern "C" zArchiveList *g_zSnd_SearchPathList = 0;
+extern "C" zArchiveList* g_zSnd_SearchPathList = 0;
 /**
  * Data owner: namespace:zSound backend runtime state.
  * Purpose: reference the active A3D or DirectSound backend device.
  */
-extern "C" void *g_zSnd_BackendDevice;
+extern "C" void* g_zSnd_BackendDevice;
 
 namespace {
-std::list<zSndFadeEntry *> g_zSndFadeActiveList;
-std::list<zSndFadeEntry *> g_zSndFadeDispatchList;
+std::list<zSndFadeEntry*> g_zSndFadeActiveList;
+std::list<zSndFadeEntry*> g_zSndFadeDispatchList;
 } // namespace
 
 /*
@@ -44,9 +44,8 @@ namespace zSndFadeDispatchList {
  * Purpose: append a completed fade entry to the dispatch list for completion
  * handling.
  */
-void __fastcall PushBack(
-    zSndFadeEntry *fadeEntry
-) {
+void __fastcall PushBack(zSndFadeEntry* fadeEntry)
+{
     g_zSndFadeDispatchList.push_back(fadeEntry);
 }
 } // namespace zSndFadeDispatchList
@@ -57,9 +56,8 @@ void __fastcall PushBack(
  * Purpose: advance one fade entry toward its target, apply the backend
  * volume/gain value, and queue completed entries for dispatch.
  */
-int zSndFadeEntry::TickAndMaybeDispatch(
-    float deltaTime
-) {
+int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
+{
     const float direction = (targetValue - currentValue) < 0.0 ? -1.0f : 1.0f;
     const float step = direction * deltaTime * 2500.0f;
     currentValue = currentValue + step;
@@ -83,9 +81,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(
             currentValue = 0.0f;
         }
 
-        ((zA3dProviderSource *)(handle->backendBuffer))->SetGain(
-            zSndSamplePlaySimple(currentValue)
-        );
+        ((zA3dProviderSource*)(handle->backendBuffer))->SetGain(zSndSamplePlaySimple(currentValue));
         break;
     }
     }
@@ -107,11 +103,9 @@ int zSndFadeEntry::TickAndMaybeDispatch(
  * Purpose: tick active fades, compact unfinished entries, and delete completed
  * fade-list nodes.
  */
-extern "C" void __stdcall zSndFadeActiveListTickAll(
-    float deltaTime
-) {
-    std::list<zSndFadeEntry *>::iterator compactIt =
-        g_zSndFadeActiveList.begin();
+extern "C" void __stdcall zSndFadeActiveListTickAll(float deltaTime)
+{
+    std::list<zSndFadeEntry*>::iterator compactIt = g_zSndFadeActiveList.begin();
     while (compactIt != g_zSndFadeActiveList.end()) {
         if ((*compactIt)->TickAndMaybeDispatch(deltaTime) != 0) {
             break;
@@ -123,7 +117,7 @@ extern "C" void __stdcall zSndFadeActiveListTickAll(
         return;
     }
 
-    std::list<zSndFadeEntry *>::iterator fadeIt = compactIt;
+    std::list<zSndFadeEntry*>::iterator fadeIt = compactIt;
     ++fadeIt;
     while (fadeIt != g_zSndFadeActiveList.end()) {
         if ((*fadeIt)->TickAndMaybeDispatch(deltaTime) == 0) {
@@ -148,21 +142,20 @@ namespace zSndFadeLists {
  * Purpose: stop active fade handles and drain both recovered fade lists during
  * sound-system shutdown.
  */
-void __cdecl StopAllAndShutdown() {
-    std::list<zSndFadeEntry *>::iterator fadeIt =
-        g_zSndFadeActiveList.begin();
+void __cdecl StopAllAndShutdown()
+{
+    std::list<zSndFadeEntry*>::iterator fadeIt = g_zSndFadeActiveList.begin();
     while (fadeIt != g_zSndFadeActiveList.end()) {
-        zSndFadeEntry *const fadeEntry = *fadeIt;
+        zSndFadeEntry* const fadeEntry = *fadeIt;
         fadeEntry->handle->StopIfActive();
         zSndFadeDispatchList::PushBack(fadeEntry);
         ++fadeIt;
     }
-    zSndFadeList *const activeList =
-        (zSndFadeList *)(&g_zSndFadeActiveList);
+    zSndFadeList* const activeList = (zSndFadeList*)(&g_zSndFadeActiveList);
     zSndFadeListCursor activeCursor;
     activeCursor.node = activeList->sentinel->next;
     while (activeCursor.node != activeList->sentinel) {
-        zSndFadeListNode *node;
+        zSndFadeListNode* node;
         activeCursor.PopFrontCursor(&node, 0);
         activeList->DeleteNodeAndAdvanceCursor(&activeCursor.node, node);
     }
@@ -183,13 +176,11 @@ void __cdecl StopAllAndShutdown() {
  * Purpose: remove the current fade-list node, release its storage, and advance
  * the caller's cursor to the next node.
  */
-void zSndFadeList::DeleteNodeAndAdvanceCursor(
-    zSndFadeListNode **outCursor,
-    zSndFadeListNode *node
-) {
+void zSndFadeList::DeleteNodeAndAdvanceCursor(zSndFadeListNode** outCursor, zSndFadeListNode* node)
+{
     node->prev->next = node->next;
     node->next->prev = node->prev;
-    zSndFadeListNode *const outNext = node->next;
+    zSndFadeListNode* const outNext = node->next;
     ::operator delete(node);
     --count;
     *outCursor = outNext;
@@ -203,13 +194,11 @@ void zSndFadeList::DeleteNodeAndAdvanceCursor(
  * Purpose: return the current cursor node and advance the cursor to the next
  * intrusive-list node.
  */
-zSndFadeListNode ** zSndFadeListCursor::PopFrontCursor(
-    zSndFadeListNode **outNode,
-    int unused
-) {
+zSndFadeListNode** zSndFadeListCursor::PopFrontCursor(zSndFadeListNode** outNode, int unused)
+{
     (void)unused;
 
-    zSndFadeListNode *const current = node;
+    zSndFadeListNode* const current = node;
     node = current->next;
     *outNode = current;
     return outNode;

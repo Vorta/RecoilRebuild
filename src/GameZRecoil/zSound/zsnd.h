@@ -18,7 +18,7 @@ typedef DWORD DWORD_PTR;
 #include "zclass.h"
 
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound;
-extern "C" const GUID *g_zSnd_CachedDirectSoundGuid;
+extern "C" const GUID* g_zSnd_CachedDirectSoundGuid;
 
 struct zSndBuffer;
 struct zSndSample;
@@ -31,8 +31,8 @@ enum zSndPlayHandleKind {
 };
 
 struct zSndSampleReplayFields {
-    const char *resourceName;
-    const char *sampleId;
+    const char* resourceName;
+    const char* sampleId;
     int flags;
     float gain;
 };
@@ -40,12 +40,12 @@ struct zSndSampleReplayFields {
 struct zSndPlayHandle {
     int isActive;
     zSndPlayHandleKind handleKind;
-    zSndBuffer *backendBuffer;
+    zSndBuffer* backendBuffer;
     zVec3 worldPos;
     zVec3 velocityOrDir;
     int gainScaled;
     int hasWorldPos;
-    struct zSndSample *ownerSample;
+    struct zSndSample* ownerSample;
     int backendState0;
     int backendState1;
     int backendState2;
@@ -53,72 +53,57 @@ struct zSndPlayHandle {
     int StopIfActive();
     int SetFreqScaled(float scale);
     void SetEnableScale(float scale);
-    int __fastcall Update3DDispatch(
-        zVec3 *worldPos,
-        zVec3 *velocity,
-        int velocityScaleMode
-    );
-    int __fastcall Update3D(
-        zVec3 *worldPos,
-        zVec3 *velocity,
-        int velocityScaleMode
-    );
-    int __fastcall Update3DA3D(
-        zVec3 *worldPos,
-        zVec3 *velocity,
-        int velocityScaleMode
-    );
+    int __fastcall Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
+    int __fastcall Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
+    int __fastcall Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     static void __fastcall PlayWithDeltaA3D(
-        zSndSampleReplayFields *replayFields,
-        zSndPlayHandle *playHandle,
+        zSndSampleReplayFields* replayFields,
+        zSndPlayHandle* playHandle,
         int restartBeforePlay,
         float gainDelta
     );
     static void __fastcall PlayWithDeltaDirectSound(
-        zSndSampleReplayFields *replayFields,
-        zSndPlayHandle *playHandle,
+        zSndSampleReplayFields* replayFields,
+        zSndPlayHandle* playHandle,
         int restartBeforePlay,
         int gainDelta
     );
     static void __fastcall PlayWithDeltaBackendDispatch(
-        zSndSample *sourceSample,
-        zSndPlayHandle *playHandle,
+        zSndSample* sourceSample,
+        zSndPlayHandle* playHandle,
         int restartBeforePlay,
         float gainDelta
     );
 };
 
 struct zSndPlayHandleSnapshotPayload {
-    zSndPlayHandle *playHandle;
-    zSndSample *sourceSample;
+    zSndPlayHandle* playHandle;
+    zSndSample* sourceSample;
     unsigned int volumeScaleRaw;
     unsigned int flags;
     zVec3 worldPos;
     zVec3 velocityOrDir;
 
-    void __fastcall CaptureFromPlayHandle(zSndPlayHandle *playHandle);
+    void __fastcall CaptureFromPlayHandle(zSndPlayHandle* playHandle);
 };
 
 struct zSndPlayHandleSnapshotItem {
-    zSndPlayHandleSnapshotItem *next;
-    zSndPlayHandleSnapshotItem *prev;
+    zSndPlayHandleSnapshotItem* next;
+    zSndPlayHandleSnapshotItem* prev;
     zSndPlayHandleSnapshotPayload payload;
 };
 
 struct zSndPlayHandleSnapshot {
     unsigned char backendTag;
     unsigned char unknown_01[3];
-    zSndPlayHandleSnapshotItem *listHead;
+    zSndPlayHandleSnapshotItem* listHead;
     int itemCount;
 
     zSndPlayHandleSnapshot(unsigned char backendTag);
 
-    static zSndPlayHandleSnapshot *__cdecl CreateFromActiveSamples();
-    void AppendPayload(const zSndPlayHandleSnapshotPayload &payload);
-    zSndPlayHandleSnapshotItem * NewNode(
-        zSndPlayHandleSnapshotItem *listHead,
-        zSndPlayHandleSnapshotItem *prev
-    );
+    static zSndPlayHandleSnapshot* __cdecl CreateFromActiveSamples();
+    void AppendPayload(const zSndPlayHandleSnapshotPayload& payload);
+    zSndPlayHandleSnapshotItem* NewNode(zSndPlayHandleSnapshotItem* listHead, zSndPlayHandleSnapshotItem* prev);
 
     int StopAllIfPlaying();
     int RestoreAllWithGlobalVolumeDelta();
@@ -133,7 +118,7 @@ struct zSndListenerState {
 };
 
 struct zSndQualityVariant {
-    const char *sampleName;
+    const char* sampleName;
     int samplesPerSec;
     int bitsPerSample;
     int channelCount;
@@ -150,26 +135,21 @@ struct zSndCuePoint {
 
 struct zSndWaveData {
     int parsedOk;
-    char *nameOrPath;
+    char* nameOrPath;
     int fileSize;
-    void *fileData;
+    void* fileData;
     int pcmByteCount;
-    WAVEFORMATEX *fmt;
+    WAVEFORMATEX* fmt;
     int cuePointCount;
-    zSndCuePoint *cuePoints;
-    void *pcmData;
+    zSndCuePoint* cuePoints;
+    void* pcmData;
 
-    zSndWaveData(
-        const char *path,
-        int loadNow
-    );
+    zSndWaveData(const char* path, int loadNow);
     ~zSndWaveData();
     int ParseLoadedWaveFile();
     int LoadAndParseIfNeeded();
     int Reset();
-    int LoadAndParseFromIndexArchiveIfNeeded(
-        zIndexArchive *archive
-    );
+    int LoadAndParseFromIndexArchiveIfNeeded(zIndexArchive* archive);
 };
 
 struct zSndSample {
@@ -181,91 +161,58 @@ struct zSndSample {
     float playbackParam3;
     float sampleRate;
     float a3dDistanceScale;
-    void(__fastcall *playbackEventHandler)(int eventCode);
+    void(__fastcall* playbackEventHandler)(int eventCode);
     float markerBaseTime;
     int markerCount;
-    float *markerTimes;
-    float *markerValues;
-    int *markerAux;
+    float* markerTimes;
+    float* markerValues;
+    int* markerAux;
     zSndPlayHandle primaryVoice;
     int duplicateVoiceCount;
-    zSndPlayHandle **duplicateVoices;
+    zSndPlayHandle** duplicateVoices;
     zSndQualityVariant highVariant;
     zSndQualityVariant medVariant;
     zSndQualityVariant lowVariant;
 
-    zSndPlayHandle * AcquirePlayHandleDispatch();
-    zSndPlayHandle * AcquireA3dVoice();
-    zSndPlayHandle * AcquireVoice();
-    zSndPlayHandle *__fastcall PlayOnActiveBackend(
-        zVec3 *worldPos,
-        float gainScale,
-        zVec3 *velocity,
-        int backendArg
-    );
-    zSndPlayHandle *__fastcall PlayOnA3D(
-        zVec3 *worldPos,
-        float gainScale,
-        zVec3 *velocity,
-        int backendArg
-    );
-    zSndPlayHandle *__fastcall PlayOnDirectSound(
-        int attenuation,
-        zVec3 *worldPos,
-        zVec3 *velocity,
-        int backendArg
-    );
-    zSndPlayHandle *__fastcall PlayA3D(
-        zVec3 *worldPos,
-        float gainScale,
-        zVec3 *velocity
-    );
-    zSndPlayHandle *__fastcall PlayDirectSound(
-        int variantIndex,
-        float gainScale,
-        int stopMarkerIndex
-    );
-    zSndPlayHandle * PlayA3DSimple(float gainScale);
+    zSndPlayHandle* AcquirePlayHandleDispatch();
+    zSndPlayHandle* AcquireA3dVoice();
+    zSndPlayHandle* AcquireVoice();
+    zSndPlayHandle* __fastcall PlayOnActiveBackend(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
+    zSndPlayHandle* __fastcall PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
+    zSndPlayHandle* __fastcall PlayOnDirectSound(int attenuation, zVec3* worldPos, zVec3* velocity, int backendArg);
+    zSndPlayHandle* __fastcall PlayA3D(zVec3* worldPos, float gainScale, zVec3* velocity);
+    zSndPlayHandle* __fastcall PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex);
+    zSndPlayHandle* PlayA3DSimple(float gainScale);
     int StopActiveVoicesIfPlaying();
-    int __fastcall InitFromWaveData(zSndWaveData *waveData);
-    int __fastcall InitFromWaveDataDirectSound(zSndWaveData *waveData);
-    int __fastcall InitFromWaveDataA3D(zSndWaveData *waveData);
+    int __fastcall InitFromWaveData(zSndWaveData* waveData);
+    int __fastcall InitFromWaveDataDirectSound(zSndWaveData* waveData);
+    int __fastcall InitFromWaveDataA3D(zSndWaveData* waveData);
     int __fastcall LockBackendBuffers(
         unsigned int offset,
         unsigned int bytes,
-        void **buffer1,
-        void **buffer2,
-        int *buffer1Bytes,
-        int *buffer2Bytes
+        void** buffer1,
+        void** buffer2,
+        int* buffer1Bytes,
+        int* buffer2Bytes
     );
-    int __fastcall UnlockBackendBuffers(
-        void *buffer1,
-        void *buffer2,
-        int buffer1Bytes,
-        int buffer2Bytes
-    );
+    int __fastcall UnlockBackendBuffers(void* buffer1, void* buffer2, int buffer1Bytes, int buffer2Bytes);
     unsigned int GetPlayCursorBytes();
-    void __fastcall SetPlaybackEventHandler(
-        void(__fastcall *callback)(int eventCode)
-    );
+    void __fastcall SetPlaybackEventHandler(void(__fastcall* callback)(int eventCode));
     int DestroyOwnedData();
     void Destroy();
 };
 
 struct zSndSampleSet {
-    char *setName;
+    char* setName;
     int sampleCount;
-    zSndSample *samples;
+    zSndSample* samples;
     int resourcesLoaded;
 
-    zSndSampleSet * RegistryAddEntry(
-        const char *name,
-        int count
-    );
-    zSndSample * GetSampleAt(int index);
-    zSndSample * FindSampleByName(const char *sampleName);
+    zSndSampleSet* RegistryAddEntry(const char* name, int count);
+    zSndSample* GetSampleAt(int index);
+    zSndSample* FindSampleByName(const char* sampleName);
     int Init();
-    int LoadSamplesFromIndexArchive(zIndexArchive *archive);
+    int LoadSamplesFromIndexArchive(zIndexArchive* archive);
     int Destroy();
     void DestroyOwnedData();
 };
@@ -277,20 +224,20 @@ struct zSndSampleSet {
  * deallocation COMDATs over the object stored at 0x56b290.
  * Purpose: own the ordered set of loaded zSndSampleSet pointers.
  */
-typedef std::vector<zSndSampleSet *> zSndSampleSetRegistry;
+typedef std::vector<zSndSampleSet*> zSndSampleSetRegistry;
 
 struct zSndGroupConfigBlock {
     unsigned short currentPlayCount;
     unsigned short maxPlayCount;
     float delayPlaySec;
     float weight;
-    const char *streamName;
-    zSndSample *cachedSample;
-    zSndGroupConfigBlock *child;
+    const char* streamName;
+    zSndSample* cachedSample;
+    zSndGroupConfigBlock* child;
 };
 
 struct zSndGroupRuntimeFields {
-    const char *groupName;
+    const char* groupName;
     int dynamicWeightsEnabled;
     int playSolo;
     float dynamicWeightScale;
@@ -299,12 +246,12 @@ struct zSndGroupRuntimeFields {
     float delayRepeatSec;
     float delayTerminationSec;
     int configBlockCount;
-    zSndGroupConfigBlock *configBlocks;
+    zSndGroupConfigBlock* configBlocks;
 };
 
 struct zSndGroup {
     int createGuard;
-    const char *groupName;
+    const char* groupName;
     int dynamicWeightsEnabled;
     int playSolo;
     float dynamicWeightScale;
@@ -313,22 +260,13 @@ struct zSndGroup {
     float delayRepeatSec;
     float delayTerminationSec;
     int configBlockCount;
-    zSndGroupConfigBlock *configBlocks;
+    zSndGroupConfigBlock* configBlocks;
     char unknown_28[0x90];
 
-    zSndGroupConfigBlock * SelectWeightedEntry();
-    zSndPlayHandle *__fastcall QueueStreamRequest(
-        int hasWorldPos,
-        float gain,
-        zVec3 *worldPos,
-        zVec3 *velocity
-    );
-    zSndPlayHandle * QueueStreamRequestSimple(float gain);
-    zSndPlayHandle *__fastcall QueueStreamRequestWithWorldPos(
-        zVec3 *worldPos,
-        float gain,
-        zVec3 *velocity
-    );
+    zSndGroupConfigBlock* SelectWeightedEntry();
+    zSndPlayHandle* __fastcall QueueStreamRequest(int hasWorldPos, float gain, zVec3* worldPos, zVec3* velocity);
+    zSndPlayHandle* QueueStreamRequestSimple(float gain);
+    zSndPlayHandle* __fastcall QueueStreamRequestWithWorldPos(zVec3* worldPos, float gain, zVec3* velocity);
 };
 
 struct zSndStreamRequest {
@@ -340,9 +278,9 @@ struct zSndStreamRequest {
     float gain;
     float elapsedSec;
     int playIndex;
-    zSndGroupConfigBlock *currentEntry;
+    zSndGroupConfigBlock* currentEntry;
     int streamState;
-    zSndGroup *group;
+    zSndGroup* group;
 
     int StateBeginGroup();
     void StatePlayCurrentEntry();
@@ -353,40 +291,34 @@ struct zSndStreamRequest {
 struct zSndFadeEntry {
     float targetValue;
     float currentValue;
-    zSndPlayHandle *handle;
+    zSndPlayHandle* handle;
     int stopOnComplete;
 
     int TickAndMaybeDispatch(float deltaTime);
 };
 
 struct zSndFadeListNode {
-    zSndFadeListNode *next;
-    zSndFadeListNode *prev;
-    zSndFadeEntry *fadeEntry;
+    zSndFadeListNode* next;
+    zSndFadeListNode* prev;
+    zSndFadeEntry* fadeEntry;
 };
 
 struct zSndFadeList {
     unsigned int flags;
-    zSndFadeListNode *sentinel;
+    zSndFadeListNode* sentinel;
     int count;
 
-    void DeleteNodeAndAdvanceCursor(
-        zSndFadeListNode **outCursor,
-        zSndFadeListNode *node
-    );
+    void DeleteNodeAndAdvanceCursor(zSndFadeListNode** outCursor, zSndFadeListNode* node);
 };
 
 struct zSndFadeListCursor {
-    zSndFadeListNode *node;
+    zSndFadeListNode* node;
 
-    zSndFadeListNode ** PopFrontCursor(
-        zSndFadeListNode **outNode,
-        int unused
-    );
+    zSndFadeListNode** PopFrontCursor(zSndFadeListNode** outNode, int unused);
 };
 
 struct zSndCdTrackEntry {
-    char *archiveName;
+    char* archiveName;
     int trackNumber;
 };
 
@@ -416,155 +348,33 @@ RECOIL_STATIC_ASSERT(sizeof(zSndFadeEntry) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeListNode) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeList) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackEntry) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshotPayload,
-        volumeScaleRaw
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshotPayload,
-        worldPos
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshotPayload,
-        velocityOrDir
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshotItem,
-        payload
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshot,
-        listHead
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndPlayHandleSnapshot,
-        itemCount
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndSampleSet,
-        sampleCount
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndSampleSet,
-        samples
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndGroupConfigBlock,
-        cachedSample
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndGroupConfigBlock,
-        child
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndGroup,
-        groupName
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndGroup,
-        configBlocks
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndStreamRequest,
-        hasWorldPos
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndStreamRequest,
-        gain
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndStreamRequest,
-        streamState
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndStreamRequest,
-        group
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeEntry,
-        currentValue
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeEntry,
-        handle
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeEntry,
-        stopOnComplete
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeListNode,
-        fadeEntry
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeList,
-        sentinel
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zSndFadeList,
-        count
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, volumeScaleRaw) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, worldPos) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, velocityOrDir) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotItem, payload) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, listHead) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, itemCount) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, sampleCount) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, samples) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, cachedSample) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, child) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroup, groupName) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroup, configBlocks) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, hasWorldPos) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, gain) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, streamState) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, group) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, currentValue) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, handle) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, stopOnComplete) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeListNode, fadeEntry) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, sentinel) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, count) == 0x08);
 
 namespace zSnd {
-int __fastcall ReportMciError(
-    unsigned int mciError,
-    const char *sourceFile,
-    int lineNumber
-);
-int __fastcall ReportA3DError(
-    int a3dError,
-    const char *sourceFile,
-    int sourceLine
-);
-int __fastcall ReportDirectSoundError(
-    int directSoundError,
-    const char *sourceFile,
-    int sourceLine
-);
+int __fastcall ReportMciError(unsigned int mciError, const char* sourceFile, int lineNumber);
+int __fastcall ReportA3DError(int a3dError, const char* sourceFile, int sourceLine);
+int __fastcall ReportDirectSoundError(int directSoundError, const char* sourceFile, int sourceLine);
 int __fastcall SetAudioApiOption(int apiType);
 void __fastcall SetSpeedOfSoundMps(float speedOfSoundMps);
 int GetAudioApiOption();
@@ -573,7 +383,7 @@ int GetCDAudioOption();
 int __fastcall SetActiveBackendPreInit(int backend);
 int __cdecl GetActiveBackend();
 void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks);
-zSndSample *__fastcall FindSampleByName(const char *sampleName);
+zSndSample* __fastcall FindSampleByName(const char* sampleName);
 int __stdcall GainScaleToDirectSoundAttenuation(float gainScale);
 int __fastcall ApplyMuteStateToActiveVoices(int enableMute);
 int __cdecl IsMuted();
@@ -581,35 +391,23 @@ float __stdcall MulGlobalVolumeScaleAndGetPrev(float scale);
 float __stdcall SetGlobalVolumeScale(float scale);
 void __fastcall SetFlag10PlaybackEnabled(int enabled);
 int __cdecl HasMmxMixerSupport();
-LPDIRECTSOUND __fastcall AcquireCachedDirectSound(const GUID *deviceGuid);
+LPDIRECTSOUND __fastcall AcquireCachedDirectSound(const GUID* deviceGuid);
 void __cdecl ReleaseCachedDirectSound();
-HRESULT __fastcall CachedDirectSoundGetCaps(DSCAPS *caps);
+HRESULT __fastcall CachedDirectSoundGetCaps(DSCAPS* caps);
 } // namespace zSnd
 
 namespace zSndCd {
-int __fastcall Init(zReader::Node *cdTracksNode);
+int __fastcall Init(zReader::Node* cdTracksNode);
 int __cdecl Stop();
 int __cdecl Shutdown();
 int __cdecl GetTrackCount();
-int __fastcall PlayTrackWithMode(
-    int trackIndex,
-    int playbackMode
-);
-int __fastcall GetVolume(
-    unsigned short *primaryVolumeOut,
-    unsigned short *secondaryVolumeOut
-);
-int __fastcall SetVolume(
-    unsigned short primaryVolume,
-    unsigned short secondaryVolume
-);
+int __fastcall PlayTrackWithMode(int trackIndex, int playbackMode);
+int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secondaryVolumeOut);
+int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryVolume);
 } // namespace zSndCd
 
-extern "C" zSndSample *__fastcall zSndSampleCreateQueuedStreamingSample(
-    WAVEFORMATEX *audioFormat,
-    void *audioBuffer,
-    int bufferBytes
-);
+extern "C" zSndSample* __fastcall
+zSndSampleCreateQueuedStreamingSample(WAVEFORMATEX* audioFormat, void* audioBuffer, int bufferBytes);
 
 extern "C" {
 extern int g_zSnd_IsInitialized;
@@ -618,31 +416,31 @@ extern int g_zSnd_ActiveBackend;
 extern unsigned int g_zSnd_WindowHandle;
 extern int g_zSnd_UseArchiveBanksFlag;
 extern int g_zSnd_SoundLodDefault;
-extern void *g_zSnd_SoundLodValuePtr;
+extern void* g_zSnd_SoundLodValuePtr;
 extern int g_zSnd_MuteOptionDefault;
-extern void *g_zSnd_MuteOptionValuePtr;
+extern void* g_zSnd_MuteOptionValuePtr;
 extern int g_zSnd_MuteDepth;
 extern float g_zSnd_VolumeScaleDefault;
-extern void *g_zSnd_GlobalVolumeScalePtr;
-extern zSndSample *g_zSndLastSample;
-extern zSndSample *g_zSndLastVoice;
-extern zSndPlayHandle *g_zSndLastVoiceHandle;
+extern void* g_zSnd_GlobalVolumeScalePtr;
+extern zSndSample* g_zSndLastSample;
+extern zSndSample* g_zSndLastVoice;
+extern zSndPlayHandle* g_zSndLastVoiceHandle;
 extern int g_zSndLastVoiceMarkerIndex;
 extern int g_zSndLastVoiceStopMarkerIndex;
 extern int g_zSnd_Flag10PlaybackEnabled;
 extern zSndSampleSetRegistry g_zSnd_SampleSetRegistry;
-extern zReader::Node *g_zSnd_ConfigRootNode;
-extern zArchiveList *g_zSnd_SearchPathList;
+extern zReader::Node* g_zSnd_ConfigRootNode;
+extern zArchiveList* g_zSnd_SearchPathList;
 extern int g_zSnd_ListenerStateValid;
 extern zSndListenerState g_zSnd_ListenerState;
 extern zVec3 g_zSnd_ListenerVelocity;
 extern zVec3 g_zSnd_PreviousListenerPos;
-extern zArchiveList *g_zSndStream_PendingList;
-extern zArchiveList *g_zSndStream_ActiveList;
-extern zArchiveList *g_zSndStream_FreeList;
-extern zSndStreamRequest *g_zSndStream_MatchedRequest;
+extern zArchiveList* g_zSndStream_PendingList;
+extern zArchiveList* g_zSndStream_ActiveList;
+extern zArchiveList* g_zSndStream_FreeList;
+extern zSndStreamRequest* g_zSndStream_MatchedRequest;
 extern int g_zSndStream_MatchedRequestCount;
-extern CZNodePartial *g_zSndStream_RootNode;
+extern CZNodePartial* g_zSndStream_RootNode;
 extern int g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
 extern int g_zSndCdDeviceId;
@@ -674,16 +472,10 @@ extern "C" char g_zEffectAnim_TokenRange[0x06];
 extern "C" int __cdecl zSndBackendInitA3D();
 extern "C" int __cdecl zSndBackendInitDirectSound();
 extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd);
-extern "C" int __fastcall zSndUpdateListenerState(
-    zSndListenerState *listenerState,
-    zVec3 *listenerVelocity
-);
+extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity);
 extern "C" float __cdecl zSndGetSpeedOfSoundMps();
 
-extern "C" int __fastcall zSndSystemInit(
-    unsigned int hwnd,
-    const char *zrdPath
-);
+extern "C" int __fastcall zSndSystemInit(unsigned int hwnd, const char* zrdPath);
 namespace zSndSystem {
 int __cdecl Shutdown();
 }
@@ -691,67 +483,38 @@ namespace zSndBackend {
 int __cdecl Shutdown();
 }
 namespace zSndStreamMgr {
-int __fastcall UpdateActiveRequestPredicate(
-    void *payload,
-    void *userData
-);
+int __fastcall UpdateActiveRequestPredicate(void* payload, void* userData);
 int __cdecl Shutdown();
 }
 extern "C" void __cdecl zSndSampleSetRegistryDestroyAll();
 extern "C" int __cdecl zSndSampleSetRegistryGetCount();
-extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryGetByIndex(
-    int index
-);
-extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryFindByName(
-    const char *setName
-);
-extern "C" int __fastcall zSndSampleSetDestroyByName(const char *setName);
-extern "C" int __fastcall zSndSampleSetInitByName(const char *setName);
+extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryGetByIndex(int index);
+extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryFindByName(const char* setName);
+extern "C" int __fastcall zSndSampleSetDestroyByName(const char* setName);
+extern "C" int __fastcall zSndSampleSetInitByName(const char* setName);
 namespace zSndFadeLists {
 void __cdecl StopAllAndShutdown();
 } // namespace zSndFadeLists
 namespace zSndFadeDispatchList {
-void __fastcall PushBack(zSndFadeEntry *fadeEntry);
+void __fastcall PushBack(zSndFadeEntry* fadeEntry);
 }
 extern "C" void __stdcall zSndFadeActiveListTickAll(float deltaTime);
 extern "C" void __fastcall zSndTick(int skipA3dCommit);
-extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(
-    zReader::Node *configRootNode
-);
-extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(
-    zReader::Node *configRootNode
-);
+extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRootNode);
+extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRootNode);
 extern "C" int __fastcall zSndGroupLoadConfigBlock(
-    zReader::Node *readerNode,
-    zSndGroupRuntimeFields *groupFields,
-    zSndGroupConfigBlock *outConfigBlock
+    zReader::Node* readerNode,
+    zSndGroupRuntimeFields* groupFields,
+    zSndGroupConfigBlock* outConfigBlock
 );
-extern "C" zSndGroup *__fastcall zSndGroupLoadFromConfigNode(
-    zReader::Node *readerNode
-);
-extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(
-    zReader::Node *readerNode
-);
-extern "C" int __fastcall zSndStreamRequestStopIfActive(
-    zSndPlayHandle *request
-);
-extern "C" int __fastcall zSndPlayHandleTryEnableManaged(
-    zSndPlayHandle *handle
-);
-extern "C" int __fastcall zSndPlayHandleTryDisableManaged(
-    zSndPlayHandle *handle
-);
-extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(
-    void *payload,
-    void *group
-);
+extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* readerNode);
+extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(zReader::Node* readerNode);
+extern "C" int __fastcall zSndStreamRequestStopIfActive(zSndPlayHandle* request);
+extern "C" int __fastcall zSndPlayHandleTryEnableManaged(zSndPlayHandle* handle);
+extern "C" int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle);
+extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(void* payload, void* group);
 extern "C" float __stdcall zSndSamplePlaySimple(float value);
-extern "C" zSndSample *__fastcall zSndPendingListFindByName(
-    const char *sampleName
-);
-extern "C" int __fastcall zSndPendingListMatchNamePredicate(
-    void *payload,
-    void *sampleName
-);
+extern "C" zSndSample* __fastcall zSndPendingListFindByName(const char* sampleName);
+extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void* sampleName);
 extern "C" int __cdecl zSndStreamMgrEnsureInit();
 extern "C" void __cdecl zSndStreamMgrRecycleFinishedRequest();

@@ -9,7 +9,8 @@ namespace RecoilVersion {
  * Purpose: return the fixed retail version string used by the shell and about
  * dialog paths.
  */
-const char *__cdecl GetString() {
+const char* __cdecl GetString()
+{
     return "1.0";
 }
 } // namespace RecoilVersion

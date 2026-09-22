@@ -16,14 +16,13 @@ const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp
  * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
  * active DirectSound or A3D backend handle.
  */
-int zSndPlayHandle::SetFreqScaled(
-    float scale
-) {
+int zSndPlayHandle::SetFreqScaled(float scale)
+{
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return -1;
     }
 
-    zSndSample *const sample = ownerSample;
+    zSndSample* const sample = ownerSample;
     if (sample->createGuard != 0) {
         return -1;
     }
@@ -36,11 +35,11 @@ int zSndPlayHandle::SetFreqScaled(
     } else if (clampedScale < 0.0f) {
         clampedScale = 0.0f;
     }
-    const float playbackRate =
-        (sample->playbackParam2 - sample->playbackParam3) * clampedScale + sample->playbackParam3;
+    const float playbackRate
+        = (sample->playbackParam2 - sample->playbackParam3) * clampedScale + sample->playbackParam3;
 
     if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
+        zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
         if (source == 0) {
             return -1;
         }
@@ -69,14 +68,13 @@ int zSndPlayHandle::SetFreqScaled(
  * Purpose: apply global volume scaling to the backend handle and refresh its
  * active 3D/backend state.
  */
-void zSndPlayHandle::SetEnableScale(
-    float scale
-) {
+void zSndPlayHandle::SetEnableScale(float scale)
+{
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return;
     }
 
-    const float globalScale = *(float *)(g_zSnd_GlobalVolumeScalePtr);
+    const float globalScale = *(float*)(g_zSnd_GlobalVolumeScalePtr);
     const float scaledGain = globalScale * scale;
     if (g_zSnd_ActiveBackend == 1) {
         // BN stores the x87 product directly into this int-backed gain field
@@ -97,9 +95,8 @@ void zSndPlayHandle::SetEnableScale(
  * Purpose: install the playback event callback while the sample is not under
  * the creation guard.
  */
-void __fastcall zSndSample::SetPlaybackEventHandler(
-    void(__fastcall *callback)(int eventCode)
-) {
+void __fastcall zSndSample::SetPlaybackEventHandler(void(__fastcall* callback)(int eventCode))
+{
     if (createGuard == 0) {
         playbackEventHandler = callback;
     }
@@ -113,9 +110,8 @@ void __fastcall zSndSample::SetPlaybackEventHandler(
  * Purpose: mark a managed play handle active only when it exists and is not
  * already active.
  */
-extern "C" int __fastcall zSndPlayHandleTryEnableManaged(
-    zSndPlayHandle *handle
-) {
+extern "C" int __fastcall zSndPlayHandleTryEnableManaged(zSndPlayHandle* handle)
+{
     if (handle == 0 || handle->isActive != 0) {
         return 0;
     }
@@ -132,9 +128,8 @@ extern "C" int __fastcall zSndPlayHandleTryEnableManaged(
  * Purpose: clear a managed play handle's active flag only when it exists and
  * is currently active.
  */
-extern "C" int __fastcall zSndPlayHandleTryDisableManaged(
-    zSndPlayHandle *handle
-) {
+extern "C" int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle)
+{
     if (handle == 0 || handle->isActive == 0) {
         return 0;
     }
@@ -147,9 +142,8 @@ namespace zSnd {
 /**
  * Purpose: Select the sound backend before the runtime is preinitialized.
  */
-int __fastcall SetActiveBackendPreInit(
-    int backend
-) {
+int __fastcall SetActiveBackendPreInit(int backend)
+{
     if (g_zSnd_PreInitialized != 0) {
         return 0;
     }
@@ -161,7 +155,8 @@ int __fastcall SetActiveBackendPreInit(
 /**
  * Purpose: Return the currently selected sound backend id.
  */
-int __cdecl GetActiveBackend() {
+int __cdecl GetActiveBackend()
+{
     return g_zSnd_ActiveBackend;
 }
 } // namespace zSnd

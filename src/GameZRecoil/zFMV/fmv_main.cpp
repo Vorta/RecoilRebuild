@@ -2,8 +2,8 @@
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
-#include <mmsystem.h>
 #include <digitalv.h>
+#include <mmsystem.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +40,7 @@ struct zFMV_MciWindowParams {
     DWORD callback;
     HWND hwnd;
     unsigned int commandShow;
-    const char *text;
+    const char* text;
 };
 
 struct zFMV_MciRectParams {
@@ -68,10 +68,8 @@ struct zFMV_MciPlayParams {
 /**
  * Purpose: initialize an MCI playback object with a duplicated media path and window handle.
  */
-CZFMVPlayback::CZFMVPlayback(
-    const char *mediaPath,
-    HWND hwnd
-) {
+CZFMVPlayback::CZFMVPlayback(const char* mediaPath, HWND hwnd)
+{
     mediaPathDup = DuplicateCString(mediaPath);
     notifyHwnd = hwnd;
     mciPutFlags = 0;
@@ -80,7 +78,8 @@ CZFMVPlayback::CZFMVPlayback(
 /**
  * Purpose: release the duplicated MCI media path.
  */
-CZFMVPlayback::~CZFMVPlayback() {
+CZFMVPlayback::~CZFMVPlayback()
+{
     free(mediaPathDup);
 }
 
@@ -91,7 +90,8 @@ CZFMVPlayback::~CZFMVPlayback() {
  *
  * Purpose: open an MCI MPEG device, configure its window/rect/time format, and start playback.
  */
-void CZFMVPlayback::OpenAndPlay(unsigned int startMs, int endMs, int notifyFlag) {
+void CZFMVPlayback::OpenAndPlay(unsigned int startMs, int endMs, int notifyFlag)
+{
     zVideo_dd::FlipToGDIIfAttached();
 
     // Retail writes only the MCI fields consumed by each command.
@@ -173,7 +173,8 @@ void CZFMVPlayback::OpenAndPlay(unsigned int startMs, int endMs, int notifyFlag)
  *
  * Purpose: stop and close the active MCI device, reporting any failure.
  */
-void CZFMVPlayback::StopAndClose() {
+void CZFMVPlayback::StopAndClose()
+{
     DWORD mciError = mciSendCommandA(mciDeviceId, 0x808, 0x2, 0);
     if (mciError == 0) {
         MCI_GENERIC_PARMS closeParams;
@@ -192,9 +193,8 @@ void CZFMVPlayback::StopAndClose() {
  *
  * Purpose: copy the destination rectangle and mark it for the next MCI put command.
  */
-int CZFMVPlayback::SetDestRect(
-    const zFMV_Rect *rect
-) {
+int CZFMVPlayback::SetDestRect(const zFMV_Rect* rect)
+{
     destinationRect = *rect;
     const int result = mciPutFlags | 0x40000;
     mciPutFlags = result;
@@ -208,7 +208,8 @@ int CZFMVPlayback::SetDestRect(
  *
  * Purpose: translate an MCI error code and report it through the old zError path.
  */
-int CZFMVPlayback::ReportMciError(unsigned int mciError) {
+int CZFMVPlayback::ReportMciError(unsigned int mciError)
+{
     char errorText[0x80];
     if (mciGetErrorStringA(mciError, errorText, sizeof(errorText)) == 0) {
         strcpy(errorText, g_zFMV_UnknownErrorIdMsg);

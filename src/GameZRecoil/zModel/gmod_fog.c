@@ -10,7 +10,8 @@
 #include <string.h>
 
 /* Fog evaluator implementation; the original filename remains unresolved. */
-namespace zModel_Light {
+namespace zModel_Light
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evalspherefogfade
      * @recoil-artifact defines .text recoil:function:0x489540: zModel_Light::EvalSphereFogFade
@@ -21,11 +22,13 @@ namespace zModel_Light {
      * Purpose: combine sphere distance and height fog; the reviewed inline asm conversion
      * reproduces retail after failed VC5 C++ variants.
      */
-    float __fastcall EvalSphereFogFade(const zVec3 *point, float radius) {
+    float __fastcall EvalSphereFogFade(const zVec3* point, float radius)
+    {
         const float distSqXZ = point->z * point->z + point->x * point->x;
         float distanceXZ;
         /**
-         * Purpose: reproduce the retail distance estimate with inline asm and named locals after the VC5 C++ conversion variants failed.
+         * Purpose: reproduce the retail distance estimate with inline asm and named locals after the VC5 C++ conversion
+         * variants failed.
          */
         __asm {
             mov eax, distSqXZ
@@ -83,9 +86,11 @@ namespace zModel_Light {
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.attr0-fog-distance
      * @recoil-match byte
      *
-     * Purpose: build per-vertex attr0 fog weights with 255-scale output; reviewed inline asm reproduces retail after failed VC5 C++ distance-estimate variants.
+     * Purpose: build per-vertex attr0 fog weights with 255-scale output; reviewed inline asm reproduces retail after
+     * failed VC5 C++ distance-estimate variants.
      */
-    int __fastcall BuildAttr0DepthFade(int vertexCount, int *outHasVariation) {
+    int __fastcall BuildAttr0DepthFade(int vertexCount, int* outHasVariation)
+    {
         float projectedY;
         int hasAnyFogCandidate = 0;
         float attrScale;
@@ -93,12 +98,13 @@ namespace zModel_Light {
         const double kVisibleAttrThreshold = 0.003921569;
         float radialDistance[0x40];
         for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert &vert = g_Clip_PolyVertsScratch[i];
+            const zClipVert& vert = g_Clip_PolyVertsScratch[i];
             radialDistance[i] = vert.z * vert.z + vert.x * vert.x;
             const float distanceSq = radialDistance[i];
             float distance;
             /**
-             * Purpose: reproduce the retail signed bit-pattern distance estimate through named locals after native VC5 forms failed.
+             * Purpose: reproduce the retail signed bit-pattern distance estimate through named locals after native VC5
+             * forms failed.
              */
             __asm {
                 mov eax, distanceSq
@@ -111,14 +117,14 @@ namespace zModel_Light {
         float attrFade[0x40];
         zFloat::Set255f(&attrScale);
         for (int i_250 = 0; i_250 < vertexCount; ++i_250) {
-            const float &distance = radialDistance[i_250];
+            const float& distance = radialDistance[i_250];
             if (distance < gModel_FogDistanceStart) {
                 attrFade[i_250] = 0.0f;
                 continue;
             }
             if (distance >= gModel_FogDistanceEnd) {
                 attrFade[i_250] = 1.0f;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[i_250], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[i_250], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     attrFade[i_250] = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
@@ -127,7 +133,7 @@ namespace zModel_Light {
                 hasAnyFogCandidate = 1;
             } else {
                 attrFade[i_250] = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[i_250], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[i_250], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     attrFade[i_250] = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
@@ -175,14 +181,16 @@ namespace zModel_Light {
      * Purpose: evaluate current-vertex distance and height fog with the reviewed inline asm
      * conversion after failed VC5 C++ variants, and store/report a contributing fade.
      */
-    int __fastcall EvalBatchSphereFade(float *outFade) {
+    int __fastcall EvalBatchSphereFade(float* outFade)
+    {
         float projectedY;
         int hasFogContribution = 0;
-        const float distanceSq = g_Clip_PolyVertsScratch[0].z * g_Clip_PolyVertsScratch[0].z +
-                                 g_Clip_PolyVertsScratch[0].x * g_Clip_PolyVertsScratch[0].x;
+        const float distanceSq = g_Clip_PolyVertsScratch[0].z * g_Clip_PolyVertsScratch[0].z
+            + g_Clip_PolyVertsScratch[0].x * g_Clip_PolyVertsScratch[0].x;
         float distance;
         /**
-         * Purpose: reproduce the retail distance estimate with inline asm and named locals after the VC5 C++ conversion variants failed.
+         * Purpose: reproduce the retail distance estimate with inline asm and named locals after the VC5 C++ conversion
+         * variants failed.
          */
         __asm {
             mov eax, distanceSq
@@ -190,12 +198,15 @@ namespace zModel_Light {
             add eax, 01fc00000h
             mov distance, eax
         }
-        if (distance <= gModel_FogDistanceStart) {
+        if (distance <= gModel_FogDistanceStart)
+        {
             distance = 0.0f;
-        } else {
+        }
+        else
+        {
             if (distance >= gModel_FogDistanceEnd) {
                 distance = 1.0f;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[0], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[0], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     distance = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
@@ -203,7 +214,7 @@ namespace zModel_Light {
                 }
             } else {
                 distance = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[0], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[0], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     distance = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
@@ -232,20 +243,23 @@ namespace zModel_Light {
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.attr2-fog-distance
      * @recoil-match byte
      *
-     * Purpose: build attr2 fog weights and commit the fog color; reviewed inline asm reproduces retail after failed VC5 C++ distance-estimate variants.
+     * Purpose: build attr2 fog weights and commit the fog color; reviewed inline asm reproduces retail after failed VC5
+     * C++ distance-estimate variants.
      */
-    int __fastcall BuildAttr1Falloff(int vertexCount, int *pLightingFlags) {
+    int __fastcall BuildAttr1Falloff(int vertexCount, int* pLightingFlags)
+    {
         float projectedY;
         int hasFogContribution = 0;
         const double kVisibleAttrThreshold = 0.003921569;
         float radialDistance[0x40];
         for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert &vert = g_Clip_PolyVertsScratch[i];
+            const zClipVert& vert = g_Clip_PolyVertsScratch[i];
             radialDistance[i] = vert.z * vert.z + vert.x * vert.x;
             const float distanceSq = radialDistance[i];
             float distance;
             /**
-             * Purpose: reproduce the retail signed bit-pattern distance estimate through named locals after native VC5 forms failed.
+             * Purpose: reproduce the retail signed bit-pattern distance estimate through named locals after native VC5
+             * forms failed.
              */
             __asm {
                 mov eax, distanceSq
@@ -256,14 +270,14 @@ namespace zModel_Light {
             radialDistance[i] = distance;
         }
         for (int fogIndex = 0; fogIndex < vertexCount; ++fogIndex) {
-            const float &distance = radialDistance[fogIndex];
+            const float& distance = radialDistance[fogIndex];
             if (distance <= gModel_FogDistanceStart) {
                 g_Clip_PolyAttr2[fogIndex] = 0.0f;
                 continue;
             }
             if (distance >= gModel_FogDistanceEnd) {
                 g_Clip_PolyAttr2[fogIndex] = 1.0f;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[fogIndex], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[fogIndex], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     g_Clip_PolyAttr2[fogIndex] = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
@@ -272,11 +286,12 @@ namespace zModel_Light {
                 hasFogContribution = 1;
             } else {
                 g_Clip_PolyAttr2[fogIndex] = (distance - gModel_FogDistanceStart) * gModel_FogDistanceInvRange;
-                zMath::Vec3ArrayProjectToCachedY((const zVec3 *)&g_Clip_PolyVertsScratch[fogIndex], &projectedY, 1);
+                zMath::Vec3ArrayProjectToCachedY((const zVec3*)&g_Clip_PolyVertsScratch[fogIndex], &projectedY, 1);
                 if (projectedY >= gModel_FogHeightHigh) {
                     g_Clip_PolyAttr2[fogIndex] = 0.0f;
                 } else if (projectedY > gModel_FogHeightLow) {
-                    g_Clip_PolyAttr2[fogIndex] = (gModel_FogHeightHigh - projectedY) * gModel_FogHeightInvRange * g_Clip_PolyAttr2[fogIndex];
+                    g_Clip_PolyAttr2[fogIndex]
+                        = (gModel_FogHeightHigh - projectedY) * gModel_FogHeightInvRange * g_Clip_PolyAttr2[fogIndex];
                 }
                 hasFogContribution = 1;
             }
@@ -305,10 +320,9 @@ namespace zModel_Light {
                     break;
                 }
             }
-            zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(&gModel_FogColorRgb01));
+            zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat*)(&gModel_FogColorRgb01));
             zVideo::CommitFogColorIfChanged();
         }
         return hasVisibleFog;
     }
-
 }

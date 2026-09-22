@@ -2,16 +2,15 @@
 
 #include "GameZRecoil/zHud/zhud_ui.h"
 
-#include "Battlesport/briefing.h"
 #include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
+#include "Battlesport/hud.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
-#include "Battlesport/recoil_state_credits.h"
-#include "Battlesport/hud.h"
 #include "Battlesport/player.h"
+#include "Battlesport/recoil_state_credits.h"
 #include "Battlesport/recoil_state_main_menu_transition.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/zimage.h"
@@ -24,11 +23,12 @@
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
+#include "Battlesport/turret.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "Battlesport/turret.h"
 #include "GameZRecoil/zUtil/zbd.h"
 
 #include <cctype>
@@ -43,7 +43,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-
 namespace {
 const int ZOPT_GRAPHICS_PERSPECTIVE = 8;
 const int ZOPT_GRAPHICS_GLOBAL_LIGHT = 0x10;
@@ -53,22 +52,22 @@ const float ZSND_CD_NORMALIZED_TO_VOLUME = 65535.0f;
 
 struct HudReticleAttachStatePartial {
     unsigned char unknown_00[0x0c];
-    CZNodePartial *projectileNode;
+    CZNodePartial* projectileNode;
 };
 
 struct HudReticleAltGunControllerPartial {
-    OptCatalogEntryDef *optCatalogEntry;
+    OptCatalogEntryDef* optCatalogEntry;
     unsigned char unknown_04[0x24];
-    HudReticleAttachStatePartial *attachState;
+    HudReticleAttachStatePartial* attachState;
 };
 
 struct HudReticlePlayerStatePartial {
     unsigned char unknown_000[0x58c];
     int cameraState;
     unsigned char unknown_590[0x54];
-    HudReticleAltGunControllerPartial *activeAltGunController;
+    HudReticleAltGunControllerPartial* activeAltGunController;
     unsigned char unknown_5e8[0x8e8];
-    CZNodePartial *rootNode;
+    CZNodePartial* rootNode;
 };
 
 RECOIL_STATIC_ASSERT(offsetof(HudReticleAttachStatePartial, projectileNode) == 0x0c);
@@ -90,13 +89,13 @@ int g_zTimedTask_ActiveCount = 0;
  * @recoil-artifact defines .data recoil:data:0x56bd34: g_zTimedTask_ActiveHead.
  * Purpose: preserve the recovered HUD global storage for g_zTimedTask_ActiveHead.
  */
-zTimedTask *g_zTimedTask_ActiveHead = 0;
+zTimedTask* g_zTimedTask_ActiveHead = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-ztimedtask-activetail
  * @recoil-artifact defines .data recoil:data:0x56bd38: g_zTimedTask_ActiveTail.
  * Purpose: preserve the recovered HUD global storage for g_zTimedTask_ActiveTail.
  */
-zTimedTask *g_zTimedTask_ActiveTail = 0;
+zTimedTask* g_zTimedTask_ActiveTail = 0;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudcmdmousedebounceframes
@@ -109,7 +108,7 @@ int g_HudCmdMouseDebounceFrames = 0;
  * @recoil-artifact defines .data recoil:data:0x56bd1c: g_HudUiWidget_ExclusiveDrawImage.
  * Purpose: preserve the recovered HUD global storage for g_HudUiWidget_ExclusiveDrawImage.
  */
-zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
+zVidImagePartial* g_HudUiWidget_ExclusiveDrawImage = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduimgrsensor-roundrobintrackindex
  * @recoil-artifact defines .data recoil:data:0x4dd1d8: g_HudUiMgrSensor_RoundRobinTrackIndex.
@@ -118,7 +117,7 @@ zVidImagePartial *g_HudUiWidget_ExclusiveDrawImage = 0;
  * HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag advances it.
  */
 int g_HudUiMgrSensor_RoundRobinTrackIndex = -1;
-HudUiRect g_HudUiMgrSensor_FxRectScratch = {0};
+HudUiRect g_HudUiMgrSensor_FxRectScratch = { 0 };
 
 #undef g_HudUiMgr
 #undef g_HudLayoutHW
@@ -130,7 +129,6 @@ union HudUiSensorWindowStorage {
     unsigned char bytes[sizeof(CWnd)];
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
-
 
 /*
  * Retail HUD UI storage and CRT initialization are not the same sequence.
@@ -147,7 +145,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
  * row constructs it and registers the provider destructor.
  * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindow.
  */
-HudUiSensorWindowStorage g_HudUiSensorWindow = {0};
+HudUiSensorWindowStorage g_HudUiSensorWindow = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduimgr
  * @recoil-artifact defines .data recoil:data:0x4e5ed0: g_HudUiMgr.
@@ -155,7 +153,7 @@ HudUiSensorWindowStorage g_HudUiSensorWindow = {0};
  * constructs the typed manager through the explicit CRT row.
  * Purpose: preserve the recovered HUD global storage for g_HudUiMgr.
  */
-HudUiMgrDataStorage g_HudUiMgr = {0};
+HudUiMgrDataStorage g_HudUiMgr = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudlayoutsw
  * @recoil-artifact defines .data recoil:data:0x4eda68: g_HudLayoutSW.
@@ -172,12 +170,10 @@ HudLayoutSW g_HudLayoutSW;
  */
 HudLayoutHW g_HudLayoutHW;
 
-#define g_HudUiSensorWindow \
-    (*(CWnd *)&g_HudUiSensorWindow)
-#define g_HudUiMgr \
-    (*(HudUiMgrData *)&g_HudUiMgr)
+#define g_HudUiSensorWindow (*(CWnd*)&g_HudUiSensorWindow)
+#define g_HudUiMgr (*(HudUiMgrData*)&g_HudUiMgr)
 
-HudUiRect g_HudUiMgrSensorFxRect = {0};
+HudUiRect g_HudUiMgrSensorFxRect = { 0 };
 int g_HudUiMgrSensorFxViewportWidth = 0;
 int g_HudUiMgrSensorFxViewportHeight = 0;
 
@@ -186,23 +182,20 @@ int g_HudUiMgrSensorFxViewportHeight = 0;
  * @recoil-artifact defines .data recoil:data:0x4edb70: g_HudUiSensorWindowPlayback.
  * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindowPlayback.
  */
-CZFMVPlayback *g_HudUiSensorWindowPlayback = 0;
-
-
-
+CZFMVPlayback* g_HudUiSensorWindowPlayback = 0;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduichatmessagestack
  * @recoil-artifact defines .data recoil:data:0x56bd20: g_HudUiChatMessageStack.
  * Purpose: preserve the recovered HUD global storage for g_HudUiChatMessageStack.
  */
-HudUiTextStack4 *g_HudUiChatMessageStack = 0;
+HudUiTextStack4* g_HudUiChatMessageStack = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduitopmessagestack
  * @recoil-artifact defines .data recoil:data:0x56bd24: g_HudUiTopMessageStack.
  * Purpose: preserve the recovered HUD global storage for g_HudUiTopMessageStack.
  */
-HudUiTextStack4 *g_HudUiTopMessageStack = 0;
+HudUiTextStack4* g_HudUiTopMessageStack = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudui-auxoverlayenabled
  * @recoil-artifact defines .data recoil:data:0x4f3aa8: g_HudUi_AuxOverlayEnabled.
@@ -216,10 +209,9 @@ int g_HudUi_AuxOverlayEnabled = 0;
  * 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit thunks from this global object.
  * Purpose: preserve the recovered HUD global storage for g_HudCmdDialogState.
  */
-HudCmdDialogStateStorage g_HudCmdDialogState = {0};
+HudCmdDialogStateStorage g_HudCmdDialogState = { 0 };
 
-#define g_HudCmdDialogState \
-    (*(HudCmdDialogState *)&g_HudCmdDialogState)
+#define g_HudCmdDialogState (*(HudCmdDialogState*)&g_HudCmdDialogState)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduioptionspanel-resolutioncyclenodename
@@ -720,11 +712,10 @@ char g_HudUiMessage_NodeName[8] = "Message";
 char g_HudUiMessage_SeparatorColon[2] = ":";
 
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *HudUiSensorWindowCrtInitializerFn)();
+typedef void(__cdecl* HudUiSensorWindowCrtInitializerFn)();
 #pragma data_seg(".CRT$XCU")
 /* VC5 emits this HUD sensor window startup callback as a direct .CRT$XCU row. */
-HudUiSensorWindowCrtInitializerFn s_HudUiSensorWindowCrtInit =
-    HudUiSensorWindow::StaticInitAndRegisterAtExit;
+HudUiSensorWindowCrtInitializerFn s_HudUiSensorWindowCrtInit = HudUiSensorWindow::StaticInitAndRegisterAtExit;
 #pragma data_seg()
 #endif
 
@@ -736,16 +727,14 @@ HudUiSensorWindowCrtInitializerFn s_HudUiSensorWindowCrtInit =
  * Purpose: preserve the typed HudLayoutBase virtual source model without
  * introducing a production FTable scaffold.
  */
-void HudLayoutBase::LayoutPreUpdate() {
-}
+void HudLayoutBase::LayoutPreUpdate() { }
 
 /**
  * Original inline helper; no standalone retail function exists.
  * Original source name: HudLayoutBase::OnActivated.
  * Purpose: provide the default layout activation hook for derived HUD layouts.
  */
-void HudLayoutBase::OnActivated() {
-}
+void HudLayoutBase::OnActivated() { }
 
 namespace HudLayout {
 } // namespace HudLayout
@@ -768,67 +757,63 @@ extern "C" const char kClampedIntTextInputAcceptedRawKeyChars[] = "0123456789\x1
 // Keep the same call-site spelling for first-pass VC5 verification without changing
 // modern compiler codegen.
 template <typename T> class FieldAt {
-  public:
+public:
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
      * Purpose: preserve the recovered HUD behavior for FieldAt.
      */
-FieldAt(
-        void *base,
-        size_t offset
-    )
-        : address((T *)((unsigned char *)(base) + offset)) {}
+    FieldAt(void* base, size_t offset)
+        : address((T*)((unsigned char*)(base) + offset))
+    {
+    }
 
     /**
      * Original-source helper; no standalone retail function exists.
      * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
      * Purpose: preserve the recovered HUD behavior for FieldAt.
      */
-FieldAt(
-        const void *base,
-        size_t offset
-    )
-        : address((T *)((const unsigned char *)(base) + offset)) {}
+    FieldAt(const void* base, size_t offset)
+        : address((T*)((const unsigned char*)(base) + offset))
+    {
+    }
 
-    operator T &() {
+    operator T&()
+    {
         return *address;
     }
 
-    T *operator&() const {
+    T* operator&() const
+    {
         return address;
     }
 
-    FieldAt &operator=(
-        const T &value
-    ) {
+    FieldAt& operator=(const T& value)
+    {
         *address = value;
         return *this;
     }
 
-    FieldAt &operator|=(
-        const T &value
-    ) {
+    FieldAt& operator|=(const T& value)
+    {
         *address |= value;
         return *this;
     }
 
-    FieldAt &operator+=(
-        const T &value
-    ) {
+    FieldAt& operator+=(const T& value)
+    {
         *address += value;
         return *this;
     }
 
-    FieldAt &operator-=(
-        const T &value
-    ) {
+    FieldAt& operator-=(const T& value)
+    {
         *address -= value;
         return *this;
     }
 
-  private:
-    T *address;
+private:
+    T* address;
 };
 #else
 template <typename T>
@@ -837,27 +822,22 @@ template <typename T>
  * Evidence: recovered in the HUD source cluster near address-backed 0x4135f0 HudLayoutHW::Disable callers.
  * Purpose: preserve the recovered HUD behavior for FieldAt.
  */
-T &FieldAt(
-    void *base,
-    size_t offset
-) {
-    return *(T *)((unsigned char *)(base) + offset);
+T& FieldAt(void* base, size_t offset)
+{
+    return *(T*)((unsigned char*)(base) + offset);
 }
 
 template <typename T>
 /**
  * Original-source helper; no standalone retail function exists.
- * Evidence: recovered in the HUD source cluster near address-backed 0x40d220 HudUiListMenuEntry::CompareSortKey callers.
- * Purpose: preserve the recovered HUD behavior for FieldAt.
+ * Evidence: recovered in the HUD source cluster near address-backed 0x40d220 HudUiListMenuEntry::CompareSortKey
+ * callers. Purpose: preserve the recovered HUD behavior for FieldAt.
  */
-const T &FieldAt(
-    const void *base,
-    size_t offset
-) {
-    return *(const T *)((const unsigned char *)(base) + offset);
+const T& FieldAt(const void* base, size_t offset)
+{
+    return *(const T*)((const unsigned char*)(base) + offset);
 }
 #endif
-
 
 const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
 
@@ -868,18 +848,17 @@ const float kHudUiMessageClearSpecialTokenValue = 123456792.0f;
  * Purpose: apply a visibility state to every panel in a recovered panel-vector
  * member while preserving the original HudUiZrdWidget source pattern.
  */
-inline void HudUiSetPanelVectorVisible(
-    HudUiPanelPtrVector &panels,
-    int visible
-) {
+inline void HudUiSetPanelVectorVisible(HudUiPanelPtrVector& panels, int visible)
+{
     for (HudUiPanelPtrVector::iterator it = panels.begin(); it != panels.end(); ++it) {
         (*it)->SetVisible(visible);
     }
 }
 
 struct HudUiZrdDeleteChildIfPresent {
-    HudUiPanel * operator()(HudUiPanel *childWidgetOrNull) {
-        return (HudUiPanel *)(HudUiZrdWidget::DeleteChildIfPresent(childWidgetOrNull));
+    HudUiPanel* operator()(HudUiPanel* childWidgetOrNull)
+    {
+        return (HudUiPanel*)(HudUiZrdWidget::DeleteChildIfPresent(childWidgetOrNull));
     }
 };
 
@@ -888,9 +867,8 @@ struct HudUiZrdDeleteChildIfPresent {
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayBase.
  */
-inline zReader::Node *ZrdArrayBase(
-    zReader::Node *node
-) {
+inline zReader::Node* ZrdArrayBase(zReader::Node* node)
+{
     if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
     }
@@ -903,9 +881,8 @@ inline zReader::Node *ZrdArrayBase(
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayCount.
  */
-inline int ZrdArrayCount(
-    zReader::Node *arrayBase
-) {
+inline int ZrdArrayCount(zReader::Node* arrayBase)
+{
     return arrayBase != 0 ? arrayBase[0].value.i32 : 0;
 }
 
@@ -914,10 +891,8 @@ inline int ZrdArrayCount(
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayItem.
  */
-inline zReader::Node *ZrdArrayItem(
-    zReader::Node *arrayBase,
-    int index
-) {
+inline zReader::Node* ZrdArrayItem(zReader::Node* arrayBase, int index)
+{
     return arrayBase != 0 ? &arrayBase[index] : 0;
 }
 
@@ -926,11 +901,9 @@ inline zReader::Node *ZrdArrayItem(
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayString.
  */
-inline const char *ZrdArrayString(
-    zReader::Node *arrayBase,
-    int index
-) {
-    zReader::Node *const item = ZrdArrayItem(arrayBase, index);
+inline const char* ZrdArrayString(zReader::Node* arrayBase, int index)
+{
+    zReader::Node* const item = ZrdArrayItem(arrayBase, index);
     return item != 0 && item->type == zReader::ZRDR_NODE_STRING ? item->value.str : 0;
 }
 
@@ -939,12 +912,9 @@ inline const char *ZrdArrayString(
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayInt.
  */
-inline int ZrdArrayInt(
-    zReader::Node *arrayBase,
-    int index,
-    int fallback
-) {
-    zReader::Node *const item = ZrdArrayItem(arrayBase, index);
+inline int ZrdArrayInt(zReader::Node* arrayBase, int index, int fallback)
+{
+    zReader::Node* const item = ZrdArrayItem(arrayBase, index);
     return item != 0 && item->type == zReader::ZRDR_NODE_INT ? item->value.i32 : fallback;
 }
 
@@ -953,12 +923,9 @@ inline int ZrdArrayInt(
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayFloat.
  */
-inline float ZrdArrayFloat(
-    zReader::Node *arrayBase,
-    int index,
-    float fallback
-) {
-    zReader::Node *const item = ZrdArrayItem(arrayBase, index);
+inline float ZrdArrayFloat(zReader::Node* arrayBase, int index, float fallback)
+{
+    zReader::Node* const item = ZrdArrayItem(arrayBase, index);
     if (item == 0) {
         return fallback;
     }
@@ -983,11 +950,9 @@ namespace {
  * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
  * Purpose: preserve the recovered HUD behavior for HudUiZrdOwnerFontStyle.
  */
-inline const HudFontStyle *HudUiZrdOwnerFontStyle(
-    const HudUiBackground *owner,
-    int styleIndex
-) {
-    const HudFontStyle *const style = &owner->fontStyles[styleIndex];
+inline const HudFontStyle* HudUiZrdOwnerFontStyle(const HudUiBackground* owner, int styleIndex)
+{
+    const HudFontStyle* const style = &owner->fontStyles[styleIndex];
     return style->validMarker != 0 ? style : 0;
 }
 
@@ -996,10 +961,8 @@ inline const HudFontStyle *HudUiZrdOwnerFontStyle(
  * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
  * Purpose: apply the recovered HUD layout or option state handled by ApplyHudFontStyleToPanel.
  */
-inline void ApplyHudFontStyleToPanel(
-    HudUiPanel *panel,
-    const HudFontStyle *style
-) {
+inline void ApplyHudFontStyleToPanel(HudUiPanel* panel, const HudFontStyle* style)
+{
     if (style == 0) {
         return;
     }
@@ -1021,10 +984,8 @@ inline void ApplyHudFontStyleToPanel(
  * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
  * Purpose: apply the recovered HUD layout or option state handled by ApplyHudFontStyleTextOnly.
  */
-inline void ApplyHudFontStyleTextOnly(
-    HudUiPanel *panel,
-    const HudFontStyle *style
-) {
+inline void ApplyHudFontStyleTextOnly(HudUiPanel* panel, const HudFontStyle* style)
+{
     if (style == 0) {
         return;
     }
@@ -1043,36 +1004,30 @@ inline void ApplyHudFontStyleTextOnly(
  * Evidence: recovered in the HUD source cluster near address-backed 0x413d30 HudUiLayoutNode::ApplyImageWidget callers.
  * Purpose: preserve the recovered HUD behavior for CreateHudZrdTextPanel.
  */
-inline HudUiPanel *CreateHudZrdTextPanel(
-    HudUiZrdWidget *widget,
-    zReader::Node *textNode,
-    int visible
-) {
-    zReader::Node *const textBase = ZrdArrayBase(textNode);
+inline HudUiPanel* CreateHudZrdTextPanel(HudUiZrdWidget* widget, zReader::Node* textNode, int visible)
+{
+    zReader::Node* const textBase = ZrdArrayBase(textNode);
     if (textBase == 0) {
         return 0;
     }
 
-    HudUiTransitionTextPanel *const transitionPanel =
-        (HudUiTransitionTextPanel *)(::operator new(sizeof(HudUiTransitionTextPanel)));
+    HudUiTransitionTextPanel* const transitionPanel
+        = (HudUiTransitionTextPanel*)(::operator new(sizeof(HudUiTransitionTextPanel)));
     new (transitionPanel) HudUiTransitionTextPanel;
 
-    HudUiPanel *const panel = (HudUiPanel *)(transitionPanel);
-    const char *const key = ZrdArrayString(textBase, 1);
-    const char *const text = key != 0 ? zLoc::ResolveMessageKeyOrFallback(key) : "";
+    HudUiPanel* const panel = (HudUiPanel*)(transitionPanel);
+    const char* const key = ZrdArrayString(textBase, 1);
+    const char* const text = key != 0 ? zLoc::ResolveMessageKeyOrFallback(key) : "";
     panel->SetTextFmt(text != 0 ? text : "");
 
-    HudUiElement *const element = (HudUiElement *)(transitionPanel);
-    element->SetPos(
-        widget->originX + ZrdArrayInt(textBase, 2, 0),
-        widget->originY + ZrdArrayInt(textBase, 3, 0)
-    );
+    HudUiElement* const element = (HudUiElement*)(transitionPanel);
+    element->SetPos(widget->originX + ZrdArrayInt(textBase, 2, 0), widget->originY + ZrdArrayInt(textBase, 3, 0));
 
     const int styleIndex = ZrdArrayInt(textBase, 4, 0);
     ApplyHudFontStyleTextOnly(panel, HudUiZrdOwnerFontStyle(widget->owner, styleIndex));
 
     element->SetVisible(visible);
-    ((HudUiContainer *)(widget->owner))->AddChild(element);
+    ((HudUiContainer*)(widget->owner))->AddChild(element);
     return panel;
 }
 
@@ -1081,11 +1036,9 @@ inline HudUiPanel *CreateHudZrdTextPanel(
  * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
  * Purpose: apply the recovered HUD layout or option state handled by ApplyHudZrdFlashSection.
  */
-inline void ApplyHudZrdFlashSection(
-    zReader::Node *parentNode,
-    HudUiPanelPtrVector &panels
-) {
-    zReader::Node *const flashNode = zRdrGetNode(parentNode, g_HudZrd_Key_Flash);
+inline void ApplyHudZrdFlashSection(zReader::Node* parentNode, HudUiPanelPtrVector& panels)
+{
+    zReader::Node* const flashNode = zRdrGetNode(parentNode, g_HudZrd_Key_Flash);
     if (flashNode == 0) {
         return;
     }
@@ -1094,8 +1047,8 @@ inline void ApplyHudZrdFlashSection(
     zReader::GetFloat(flashNode, g_HudZrd_Key_Rate, &flashRate);
 
     unsigned int flashColor = 0;
-    zReader::Node *const colorNode = zRdrGetNode(flashNode, "COLOR");
-    zReader::Node *const colorBase = ZrdArrayBase(colorNode);
+    zReader::Node* const colorNode = zRdrGetNode(flashNode, "COLOR");
+    zReader::Node* const colorBase = ZrdArrayBase(colorNode);
     if (colorBase != 0) {
         const unsigned int red = (unsigned int)(ZrdArrayInt(colorBase, 1, 0)) & 0xffu;
         const unsigned int green = (unsigned int)(ZrdArrayInt(colorBase, 2, 0)) & 0xffu;
@@ -1107,10 +1060,8 @@ inline void ApplyHudZrdFlashSection(
         return;
     }
 
-    for (HudUiPanelPtrVector::iterator it = panels.begin();
-         it != panels.end();
-         ++it) {
-        ((HudUiTransitionTextPanel *)(*it))->SetFlashColorAndRate(flashColor, flashRate);
+    for (HudUiPanelPtrVector::iterator it = panels.begin(); it != panels.end(); ++it) {
+        ((HudUiTransitionTextPanel*)(*it))->SetFlashColorAndRate(flashColor, flashRate);
     }
 }
 
@@ -1119,14 +1070,11 @@ inline void ApplyHudZrdFlashSection(
  * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
  * Purpose: load the recovered HUD data handled by LoadHudZrdBitmap.
  */
-inline void LoadHudZrdBitmap(
-    zReader::Node *parentNode,
-    const char *sectionName,
-    zVidImagePartial **outImage
-) {
-    zReader::Node *const bitmapNode = zRdrGetNode(parentNode, sectionName);
-    zReader::Node *const bitmapBase = ZrdArrayBase(bitmapNode);
-    const char *const path = ZrdArrayString(bitmapBase, 1);
+inline void LoadHudZrdBitmap(zReader::Node* parentNode, const char* sectionName, zVidImagePartial** outImage)
+{
+    zReader::Node* const bitmapNode = zRdrGetNode(parentNode, sectionName);
+    zReader::Node* const bitmapBase = ZrdArrayBase(bitmapNode);
+    const char* const path = ZrdArrayString(bitmapBase, 1);
     if (path != 0) {
         *outImage = zImage::TexDirFindOrCreateByPath(path);
     }
@@ -1137,14 +1085,11 @@ inline void LoadHudZrdBitmap(
  * Evidence: recovered in the HUD source cluster near address-backed 0x41ebd0 HudUiMgrSensor::TrackList_Reset callers.
  * Purpose: load the recovered HUD data handled by LoadHudZrdSound.
  */
-inline void LoadHudZrdSound(
-    zReader::Node *parentNode,
-    zSndSample **outSound,
-    float *outScale
-) {
-    zReader::Node *const soundNode = zRdrGetNode(parentNode, g_HudZrd_Key_Sound);
-    zReader::Node *const soundBase = ZrdArrayBase(soundNode);
-    const char *const name = ZrdArrayString(soundBase, 1);
+inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, float* outScale)
+{
+    zReader::Node* const soundNode = zRdrGetNode(parentNode, g_HudZrd_Key_Sound);
+    zReader::Node* const soundBase = ZrdArrayBase(soundNode);
+    const char* const name = ZrdArrayString(soundBase, 1);
     if (name == 0) {
         return;
     }
@@ -1159,115 +1104,91 @@ inline void LoadHudZrdSound(
  * body has no intervening helper calls and VC5 /Ob1 does not inline the
  * complete nested label loader when it is expressed as an ordinary function.
  */
-#define HUD_ZRD_LOAD_BITMAP(parentNode_, sectionName_, outImage_) \
-    do { \
-        zReader::Node *const hudBitmapNode_ = \
-            zRdrGetNode((parentNode_), (sectionName_)); \
-        if (hudBitmapNode_ != 0) { \
-            zReader::Node *const hudBitmapBase_ = hudBitmapNode_->value.nodes; \
-            const char *const hudBitmapPath_ = hudBitmapBase_[1].value.str; \
-            { \
-                (outImage_) = zImage::TexDirFindOrCreateByPath(hudBitmapPath_); \
-            } \
-        } \
+#define HUD_ZRD_LOAD_BITMAP(parentNode_, sectionName_, outImage_)                                                      \
+    do {                                                                                                               \
+        zReader::Node* const hudBitmapNode_ = zRdrGetNode((parentNode_), (sectionName_));                              \
+        if (hudBitmapNode_ != 0) {                                                                                     \
+            zReader::Node* const hudBitmapBase_ = hudBitmapNode_->value.nodes;                                         \
+            const char* const hudBitmapPath_ = hudBitmapBase_[1].value.str;                                            \
+            {                                                                                                          \
+                (outImage_) = zImage::TexDirFindOrCreateByPath(hudBitmapPath_);                                        \
+            }                                                                                                          \
+        }                                                                                                              \
     } while (0)
 
-#define HUD_ZRD_LOAD_SOUND(parentNode_, outSound_, outScale_) \
-    do { \
-        zReader::Node *const hudSoundNode_ = \
-            zRdrGetNode((parentNode_), g_HudZrd_Key_Sound); \
-        if (hudSoundNode_ != 0) { \
-            zReader::Node *const hudSoundBase_ = hudSoundNode_->value.nodes; \
-            const char *const hudSoundName_ = hudSoundBase_[1].value.str; \
-            { \
-                const float hudSoundScale_ = hudSoundBase_[0].value.i32 >= 3 \
-                    ? hudSoundBase_[2].value.f32 \
-                    : 1.0f; \
-                (outSound_) = zSnd::FindSampleByName(hudSoundName_); \
-                (outScale_) = hudSoundScale_; \
-            } \
-        } \
+#define HUD_ZRD_LOAD_SOUND(parentNode_, outSound_, outScale_)                                                          \
+    do {                                                                                                               \
+        zReader::Node* const hudSoundNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Sound);                           \
+        if (hudSoundNode_ != 0) {                                                                                      \
+            zReader::Node* const hudSoundBase_ = hudSoundNode_->value.nodes;                                           \
+            const char* const hudSoundName_ = hudSoundBase_[1].value.str;                                              \
+            {                                                                                                          \
+                const float hudSoundScale_ = hudSoundBase_[0].value.i32 >= 3 ? hudSoundBase_[2].value.f32 : 1.0f;      \
+                (outSound_) = zSnd::FindSampleByName(hudSoundName_);                                                   \
+                (outScale_) = hudSoundScale_;                                                                          \
+            }                                                                                                          \
+        }                                                                                                              \
     } while (0)
 
-#define HUD_ZRD_INSERT_LABEL_COUNTED(panels_, panel_) \
-    (panels_).push_back(panel_)
+#define HUD_ZRD_INSERT_LABEL_COUNTED(panels_, panel_) (panels_).push_back(panel_)
 
-#define HUD_ZRD_INSERT_LABEL_NATURAL(panels_, panel_) \
-    (panels_).insert((panels_).end(), 1, (panel_))
+#define HUD_ZRD_INSERT_LABEL_NATURAL(panels_, panel_) (panels_).insert((panels_).end(), 1, (panel_))
 
-#define HUD_ZRD_APPEND_LABEL_WITH_INSERT( \
-    widget_, panels_, labelSpecBase_, originX_, originY_, insert_) \
-    do { \
-        const int hudLabelOriginX_ = (originX_); \
-        const int hudLabelOriginY_ = (originY_); \
-        HudUiPanel *hudPanel_; \
-        hudPanel_ = (HudUiPanel *)(new HudUiTransitionTextPanel); \
-        HudUiElement *hudElement_; \
-        hudElement_ = (HudUiElement *)(hudPanel_); \
-        hudElement_->flags = (hudElement_->flags & 0x10u) | 2; \
-        const char *const hudLabelKey_ = (labelSpecBase_)[1].value.str; \
-        hudPanel_->SetTextFmt( \
-            zLoc::ResolveMessageKeyOrFallback(hudLabelKey_)); \
-        hudElement_->SetPos( \
-            hudLabelOriginX_ + (labelSpecBase_)[2].value.i32, \
-            hudLabelOriginY_ + (labelSpecBase_)[3].value.i32 \
-        ); \
-        const int hudStyleIndex_ = (labelSpecBase_)[4].value.i32; \
-        const HudFontStyle *hudStyle_ = \
-            &((widget_)->owner->fontStyles[hudStyleIndex_]); \
-        if (hudStyle_->validMarker == 0) { \
-            hudStyle_ = 0; \
-        } \
-        if (hudStyle_ != 0) { \
-            hudPanel_->alignMode = hudStyle_->alignMode; \
-            hudPanel_->SetFont( \
-                hudStyle_->fontName, \
-                hudStyle_->fontSize, \
-                hudStyle_->fontWeight, \
-                0, \
-                0, \
-                0, \
-                2 \
-            ); \
-            hudPanel_->SetTextColorsAndMarkDirty(hudStyle_->textColor, hudStyle_->textColor); \
-            hudPanel_->SetShadow(hudStyle_->shadowEnabled, 1, 1); \
-            hudPanel_->SetTextBackground(hudStyle_->bkMode, hudStyle_->bkColor); \
-        } \
-        hudPanel_->SetVisible(1); \
-        ((HudUiContainer *)((widget_)->owner))->AddChild(hudPanel_); \
-        insert_((panels_), hudPanel_); \
+#define HUD_ZRD_APPEND_LABEL_WITH_INSERT(widget_, panels_, labelSpecBase_, originX_, originY_, insert_)                \
+    do {                                                                                                               \
+        const int hudLabelOriginX_ = (originX_);                                                                       \
+        const int hudLabelOriginY_ = (originY_);                                                                       \
+        HudUiPanel* hudPanel_;                                                                                         \
+        hudPanel_ = (HudUiPanel*)(new HudUiTransitionTextPanel);                                                       \
+        HudUiElement* hudElement_;                                                                                     \
+        hudElement_ = (HudUiElement*)(hudPanel_);                                                                      \
+        hudElement_->flags = (hudElement_->flags & 0x10u) | 2;                                                         \
+        const char* const hudLabelKey_ = (labelSpecBase_)[1].value.str;                                                \
+        hudPanel_->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(hudLabelKey_));                                        \
+        hudElement_->SetPos(                                                                                           \
+            hudLabelOriginX_ + (labelSpecBase_)[2].value.i32,                                                          \
+            hudLabelOriginY_ + (labelSpecBase_)[3].value.i32                                                           \
+        );                                                                                                             \
+        const int hudStyleIndex_ = (labelSpecBase_)[4].value.i32;                                                      \
+        const HudFontStyle* hudStyle_ = &((widget_)->owner->fontStyles[hudStyleIndex_]);                               \
+        if (hudStyle_->validMarker == 0) {                                                                             \
+            hudStyle_ = 0;                                                                                             \
+        }                                                                                                              \
+        if (hudStyle_ != 0) {                                                                                          \
+            hudPanel_->alignMode = hudStyle_->alignMode;                                                               \
+            hudPanel_->SetFont(hudStyle_->fontName, hudStyle_->fontSize, hudStyle_->fontWeight, 0, 0, 0, 2);           \
+            hudPanel_->SetTextColorsAndMarkDirty(hudStyle_->textColor, hudStyle_->textColor);                          \
+            hudPanel_->SetShadow(hudStyle_->shadowEnabled, 1, 1);                                                      \
+            hudPanel_->SetTextBackground(hudStyle_->bkMode, hudStyle_->bkColor);                                       \
+        }                                                                                                              \
+        hudPanel_->SetVisible(1);                                                                                      \
+        ((HudUiContainer*)((widget_)->owner))->AddChild(hudPanel_);                                                    \
+        insert_((panels_), hudPanel_);                                                                                 \
     } while (0)
 
-#define HUD_ZRD_APPEND_LABEL(widget_, panels_, labelSpecBase_, originX_, originY_) \
-    HUD_ZRD_APPEND_LABEL_WITH_INSERT( \
-        widget_, panels_, labelSpecBase_, originX_, originY_, \
-        HUD_ZRD_INSERT_LABEL_COUNTED)
+#define HUD_ZRD_APPEND_LABEL(widget_, panels_, labelSpecBase_, originX_, originY_)                                     \
+    HUD_ZRD_APPEND_LABEL_WITH_INSERT(widget_, panels_, labelSpecBase_, originX_, originY_, HUD_ZRD_INSERT_LABEL_COUNTED)
 
-#define HUD_ZRD_APPEND_LABEL_NATURAL( \
-    widget_, panels_, labelSpecBase_, originX_, originY_) \
-    HUD_ZRD_APPEND_LABEL_WITH_INSERT( \
-        widget_, panels_, labelSpecBase_, originX_, originY_, \
-        HUD_ZRD_INSERT_LABEL_NATURAL)
+#define HUD_ZRD_APPEND_LABEL_NATURAL(widget_, panels_, labelSpecBase_, originX_, originY_)                             \
+    HUD_ZRD_APPEND_LABEL_WITH_INSERT(widget_, panels_, labelSpecBase_, originX_, originY_, HUD_ZRD_INSERT_LABEL_NATURAL)
 
-inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget *widget, zReader::Node *labelBase, HudUiPanelPtrVector &panels);
-#define HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, append_) \
-    do { \
-        zReader::Node *const hudLabelNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Label); \
-        if (hudLabelNode_ != 0) { \
-            if (hudLabelNode_->value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) { \
-                LoadHudZrdExpandedLabelArray((widget_), hudLabelNode_, (panels_)); \
-            } else { \
-                append_((widget_), (panels_), hudLabelNode_->value.nodes, (widget_)->originX, (widget_)->originY); \
-            } \
-        } \
+inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget* widget, zReader::Node* labelBase, HudUiPanelPtrVector& panels);
+#define HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, append_)                                 \
+    do {                                                                                                               \
+        zReader::Node* const hudLabelNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Label);                           \
+        if (hudLabelNode_ != 0) {                                                                                      \
+            if (hudLabelNode_->value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {                                      \
+                LoadHudZrdExpandedLabelArray((widget_), hudLabelNode_, (panels_));                                     \
+            } else {                                                                                                   \
+                append_((widget_), (panels_), hudLabelNode_->value.nodes, (widget_)->originX, (widget_)->originY);     \
+            }                                                                                                          \
+        }                                                                                                              \
     } while (0)
-#define HUD_ZRD_LOAD_LABEL_SECTION(widget_, parentNode_, panels_) \
-    HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND( \
-        widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL)
+#define HUD_ZRD_LOAD_LABEL_SECTION(widget_, parentNode_, panels_)                                                      \
+    HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL)
 
-#define HUD_ZRD_LOAD_LABEL_SECTION_NATURAL(widget_, parentNode_, panels_) \
-    HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND( \
-        widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL_NATURAL)
+#define HUD_ZRD_LOAD_LABEL_SECTION_NATURAL(widget_, parentNode_, panels_)                                              \
+    HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, HUD_ZRD_APPEND_LABEL_NATURAL)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-apply-panel-vector-flash
@@ -1277,40 +1198,34 @@ inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget *widget, zReader::Node *
  * retail 0x4b59f0. Parsing and the nonzero-rate check remain with the section;
  * the loop reloads the vector end after each panel update.
  */
-inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector &panels, unsigned int color, float rate) {
+inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector& panels, unsigned int color, float rate)
+{
     for (HudUiPanelPtrVector::iterator it = panels.begin(); it != panels.end(); ++it) {
-        ((HudUiTransitionTextPanel *)(*it))->SetFlashColorAndRate(color, rate);
+        ((HudUiTransitionTextPanel*)(*it))->SetFlashColorAndRate(color, rate);
     }
 }
-#define HUD_ZRD_APPLY_FLASH_SECTION(parentNode_, panels_) \
-    do { \
-        zReader::Node *const hudFlashNode_ = \
-            zRdrGetNode((parentNode_), g_HudZrd_Key_Flash); \
-        if (hudFlashNode_ != 0) { \
-            float hudFlashRate_ = 0.0f; \
-            zReader::Node *const hudRateNode_ = \
-                zRdrGetNode(hudFlashNode_, g_HudZrd_Key_Rate); \
-            if (hudRateNode_ != 0) { \
-                hudFlashRate_ = hudRateNode_->value.nodes[1].value.f32; \
-            } \
-            unsigned int hudFlashColor_ = 0; \
-            zReader::Node *const hudColorNode_ = \
-                zRdrGetNode(hudFlashNode_, "COLOR"); \
-            if (hudColorNode_ != 0) { \
-                zReader::Node *const hudColorBase_ = hudColorNode_->value.nodes; \
-                const unsigned int hudRed_ = \
-                    (unsigned int)(hudColorBase_[1].value.i32) & 0xffu; \
-                const unsigned int hudGreen_ = \
-                    (unsigned int)(hudColorBase_[2].value.i32) & 0xffu; \
-                const unsigned int hudBlue_ = \
-                    (unsigned int)(hudColorBase_[3].value.i32) & 0xffu; \
-                hudFlashColor_ = \
-                    hudRed_ | (hudGreen_ << 8) | (hudBlue_ << 16); \
-            } \
-            if (hudFlashRate_ != 0.0f) { \
-                ApplyHudPanelVectorFlash((panels_), hudFlashColor_, hudFlashRate_); \
-            } \
-        } \
+#define HUD_ZRD_APPLY_FLASH_SECTION(parentNode_, panels_)                                                              \
+    do {                                                                                                               \
+        zReader::Node* const hudFlashNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Flash);                           \
+        if (hudFlashNode_ != 0) {                                                                                      \
+            float hudFlashRate_ = 0.0f;                                                                                \
+            zReader::Node* const hudRateNode_ = zRdrGetNode(hudFlashNode_, g_HudZrd_Key_Rate);                         \
+            if (hudRateNode_ != 0) {                                                                                   \
+                hudFlashRate_ = hudRateNode_->value.nodes[1].value.f32;                                                \
+            }                                                                                                          \
+            unsigned int hudFlashColor_ = 0;                                                                           \
+            zReader::Node* const hudColorNode_ = zRdrGetNode(hudFlashNode_, "COLOR");                                  \
+            if (hudColorNode_ != 0) {                                                                                  \
+                zReader::Node* const hudColorBase_ = hudColorNode_->value.nodes;                                       \
+                const unsigned int hudRed_ = (unsigned int)(hudColorBase_[1].value.i32) & 0xffu;                       \
+                const unsigned int hudGreen_ = (unsigned int)(hudColorBase_[2].value.i32) & 0xffu;                     \
+                const unsigned int hudBlue_ = (unsigned int)(hudColorBase_[3].value.i32) & 0xffu;                      \
+                hudFlashColor_ = hudRed_ | (hudGreen_ << 8) | (hudBlue_ << 16);                                        \
+            }                                                                                                          \
+            if (hudFlashRate_ != 0.0f) {                                                                               \
+                ApplyHudPanelVectorFlash((panels_), hudFlashColor_, hudFlashRate_);                                    \
+            }                                                                                                          \
+        }                                                                                                              \
     } while (0)
 
 /**
@@ -1322,11 +1237,8 @@ inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector &panels, unsigned int c
  * push_back. The original lexical boundary is unknown. Fresh VC5 comparison
  * must establish each physical insert target and its helper expansion.
  */
-inline void LoadHudZrdExpandedLabelArray(
-    HudUiZrdWidget *widget,
-    zReader::Node *labelBase,
-    HudUiPanelPtrVector &panels
-) {
+inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget* widget, zReader::Node* labelBase, HudUiPanelPtrVector& panels)
+{
     const int labelCount = labelBase->value.nodes[0].value.i32;
     for (int labelIndex = 1; labelIndex <= labelCount - 1; ++labelIndex) {
         HUD_ZRD_APPEND_LABEL_NATURAL(
@@ -1349,12 +1261,9 @@ namespace HudUiMgrSensor {
  * Purpose: append one payload-bearing sensor tracking node to the recovered
  * global track-list owner while preserving its head, tail, and count fields.
  */
-HudUiMgrSensorTrackNode *__fastcall TrackListAdd(
-    int trackKind,
-    void *payload
-) {
-    HudUiMgrSensorTrackNode *const trackNode =
-        (HudUiMgrSensorTrackNode *)(malloc(sizeof(HudUiMgrSensorTrackNode)));
+HudUiMgrSensorTrackNode* __fastcall TrackListAdd(int trackKind, void* payload)
+{
+    HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(malloc(sizeof(HudUiMgrSensorTrackNode)));
     trackNode->trackKind = 0;
     trackNode->payload = 0;
     trackNode->next = 0;
@@ -1377,7 +1286,6 @@ HudUiMgrSensorTrackNode *__fastcall TrackListAdd(
     return trackNode;
 }
 
-
 } // namespace HudUiMgrSensor
 
 namespace HudUiMgrTarget {
@@ -1392,8 +1300,9 @@ namespace HudUiMgrObjective {
  * Purpose: refresh the cached objective widget right edge from its current
  * center position and borrowed image width.
  */
-static void HudUiMgrObjectiveUpdateWidgetRightX() {
-    const zVidImagePartial *const image = g_HudUiMgrObjectiveWidget.image;
+static void HudUiMgrObjectiveUpdateWidgetRightX()
+{
+    const zVidImagePartial* const image = g_HudUiMgrObjectiveWidget.image;
     const int width = image != 0 ? image->width : 0;
     g_HudUiMgrObjectiveWidgetRightX = g_HudUiMgrObjectiveWidget.GetCenterX() + width;
 }
@@ -1407,13 +1316,12 @@ static void HudUiMgrObjectiveUpdateWidgetRightX() {
  * Purpose: apply the objective panel slide X position and dependent meter
  * geometry.
  */
-static void HudUiMgrObjectiveSetSlidePosition(
-    float slideX
-) {
+static void HudUiMgrObjectiveSetSlidePosition(float slideX)
+{
     g_HudUiMgrObjectiveBar.points[2].x = slideX;
     g_HudUiMgrObjectiveBar.points[3].x = slideX;
     g_HudUiMgrObjectiveBar.Invalidate();
-    ((HudUiElement *)(&g_HudUiMgrObjectiveWidget))->SetX((int)(slideX)-1);
+    ((HudUiElement*)(&g_HudUiMgrObjectiveWidget))->SetX((int)(slideX)-1);
     HudUiMgrObjective::UpdateMeterXPoints();
 }
 
@@ -1425,7 +1333,8 @@ static void HudUiMgrObjectiveSetSlidePosition(
  * Purpose: update the hardware HUD objective dirty rectangle only for the
  * hardware perspective HUD mode.
  */
-static void HudUiMgrObjectiveUpdateHwDirtyRectIfNeeded() {
+static void HudUiMgrObjectiveUpdateHwDirtyRectIfNeeded()
+{
     if (zOpt::GetHudTypeForCurrentHwMode() == 2) {
         g_HudLayoutHW.UpdateObjectiveDirtyRect();
     }
@@ -1440,25 +1349,20 @@ static void HudUiMgrObjectiveUpdateHwDirtyRectIfNeeded() {
  * Purpose: draw objective sensor transition noise while optionally revealing or
  * hiding the sensor rectangle when the fade passes the midpoint.
  */
-static void HudUiMgrObjectiveDrawSensorNoise(
-    float fade,
-    int visibleWhenCovered
-) {
+static void HudUiMgrObjectiveDrawSensorNoise(float fade, int visibleWhenCovered)
+{
     if (g_HudUiMgrObjectiveSensorRect.image == 0) {
         return;
     }
 
     float noise = fade + fade;
     if (noise < 1.0f) {
-        zVid::DrawNoiseRect((zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)(noise));
+        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)(noise));
         return;
     }
 
     g_HudUiMgrObjectiveSensorRect.SetVisible(visibleWhenCovered);
-    zVid::DrawNoiseRect(
-        (zVidRect32 *)(&g_HudUiMgrSensorBlock.sensorRectRaw),
-        (double)(2.0f - noise)
-    );
+    zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)(2.0f - noise));
 }
 
 } // namespace HudUiMgrObjective
@@ -1469,9 +1373,8 @@ namespace {
  * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
  * Purpose: preserve the recovered HUD behavior for HudUiZrdPayload.
  */
-zReader::Node *HudUiZrdPayload(
-    zReader::Node *node
-) {
+zReader::Node* HudUiZrdPayload(zReader::Node* node)
+{
     return node != 0 && node->type == zReader::ZRDR_NODE_ARRAY ? node->value.nodes : 0;
 }
 
@@ -1480,10 +1383,8 @@ zReader::Node *HudUiZrdPayload(
  * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
  * Purpose: preserve the recovered HUD behavior for HudUiZrdStringAt.
  */
-const char *HudUiZrdStringAt(
-    zReader::Node *payload,
-    int index
-) {
+const char* HudUiZrdStringAt(zReader::Node* payload, int index)
+{
     return payload != 0 ? payload[index].value.str : 0;
 }
 
@@ -1492,10 +1393,8 @@ const char *HudUiZrdStringAt(
  * Evidence: recovered in the HUD source cluster near address-backed 0x4137c0 HudUiAuxOverlay::ClearTextLines callers.
  * Purpose: preserve the recovered HUD behavior for HudUiZrdIntAt.
  */
-int HudUiZrdIntAt(
-    zReader::Node *payload,
-    int index
-) {
+int HudUiZrdIntAt(zReader::Node* payload, int index)
+{
     return payload != 0 ? payload[index].value.i32 : 0;
 }
 
@@ -1504,19 +1403,9 @@ int HudUiZrdIntAt(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
  * Purpose: preserve the recovered HUD behavior for HudUiSetFontFromRect.
  */
-void HudUiSetFontFromRect(
-    HudUiPanel *panel,
-    const HudUiRect &fontSpec
-) {
-    panel->SetFont(
-        (const char *)(fontSpec.left),
-        fontSpec.right,
-        fontSpec.bottom,
-        fontSpec.top,
-        0,
-        0,
-        2
-    );
+void HudUiSetFontFromRect(HudUiPanel* panel, const HudUiRect& fontSpec)
+{
+    panel->SetFont((const char*)(fontSpec.left), fontSpec.right, fontSpec.bottom, fontSpec.top, 0, 0, 2);
 }
 
 /**
@@ -1524,11 +1413,8 @@ void HudUiSetFontFromRect(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
  * Purpose: preserve the recovered HUD behavior for HudUiSetPanelClipWithSource.
  */
-inline void HudUiSetPanelClipWithSource(
-    HudUiPanel *panel,
-    void *source,
-    const HudUiRect *clipRect
-) {
+inline void HudUiSetPanelClipWithSource(HudUiPanel* panel, void* source, const HudUiRect* clipRect)
+{
     panel->SetBltSourceAndClipRect(source, clipRect);
 }
 
@@ -1537,22 +1423,17 @@ inline void HudUiSetPanelClipWithSource(
  * Evidence: recovered in the HUD source cluster near address-backed 0x40d7e0 HudUiMgr::Constructor callers.
  * Purpose: preserve the recovered HUD behavior for HudUiApplyStatsTripletInt3.
  */
-void HudUiApplyStatsTripletInt3(
-    zReader::Node *payload,
-    int nodeIndex,
-    int &outX,
-    int &outY,
-    int *outZ = 0
-) {
+void HudUiApplyStatsTripletInt3(zReader::Node* payload, int nodeIndex, int& outX, int& outY, int* outZ = 0)
+{
     HudUiLayoutNode::ReadInt3(&payload[nodeIndex], &outX, &outY, outZ);
 }
 } // namespace
 
-
 /**
  * Purpose: run the recovered HudUiWidget::DestructorCore teardown path.
  */
-void HudUiWidget::DestructorCore() {
+void HudUiWidget::DestructorCore()
+{
     this->~HudUiWidget();
 }
 
@@ -1563,12 +1444,14 @@ void HudUiWidget::DestructorCore() {
  *
  * Purpose: Initialize the widget image, alignment, clipping and dirty rectangles.
  */
-HudUiWidget::HudUiWidget(unsigned int initAlignFlags) : HudUiElement(0, 0) {
+HudUiWidget::HudUiWidget(unsigned int initAlignFlags)
+    : HudUiElement(0, 0)
+{
     alignFlags = initAlignFlags;
     image = 0;
     ownsImage = 0;
     bltClipRectOrNull = 0;
-    *((unsigned short *)(&imageStateWord)) = 0;
+    *((unsigned short*)(&imageStateWord)) = 0;
     dirtyRectCount = 0;
 
     {
@@ -1587,7 +1470,8 @@ HudUiWidget::HudUiWidget(unsigned int initAlignFlags) : HudUiElement(0, 0) {
  * Purpose: Release the widget's owned image before its element base is destroyed.
  * Evidence: VC5 supplies the vtable stores and native exception cleanup.
  */
-HudUiWidget::~HudUiWidget() {
+HudUiWidget::~HudUiWidget()
+{
     ReleaseImageIfOwned();
 }
 
@@ -1599,7 +1483,8 @@ HudUiWidget::~HudUiWidget() {
  * Purpose: Release an owned image and clear the widget's ownership state.
  * Evidence: Retail stores the release helper's returned pointer into image.
  */
-void HudUiWidget::ReleaseImageIfOwned() {
+void HudUiWidget::ReleaseImageIfOwned()
+{
     if (image != 0 && ownsImage != 0) {
         image = zVid_Image::ReleaseIfNotDefault(image);
     }
@@ -1607,7 +1492,8 @@ void HudUiWidget::ReleaseImageIfOwned() {
     ownsImage = 0;
 }
 
-void HudUiWidget::SetPos(int newX, int newY) {
+void HudUiWidget::SetPos(int newX, int newY)
+{
     if (alignFlags != 0 && image != 0) {
         x = newX - (image->width / 2);
         y = newY - (image->height / 2);
@@ -1619,7 +1505,8 @@ void HudUiWidget::SetPos(int newX, int newY) {
     Invalidate();
 }
 
-zVidImagePartial * HudUiWidget::SetImageByPathOwned(const char *imagePath) {
+zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
+{
     if (imagePath == 0) {
         return 0;
     }
@@ -1634,19 +1521,21 @@ zVidImagePartial * HudUiWidget::SetImageByPathOwned(const char *imagePath) {
     return image;
 }
 
-zVidImagePartial * HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial *newImage) {
+zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* newImage)
+{
     ownsImage = 0;
     image = newImage;
     Invalidate();
     return newImage;
 }
 
-void HudUiWidget::InvalidateRect(const HudUiRect *dirtyRect) {
+void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
+{
     if (image == 0) {
         return;
     }
 
-    HudUiRectDirty *slot = 0;
+    HudUiRectDirty* slot = 0;
     {
         for (int index = 0; index < 4; ++index) {
             if (dirtyRects[index].framesRemaining == 0) {
@@ -1699,7 +1588,8 @@ void HudUiWidget::InvalidateRect(const HudUiRect *dirtyRect) {
     Invalidate();
 }
 
-void HudUiWidget::Draw() {
+void HudUiWidget::Draw()
+{
     if (image == 0) {
         return;
     }
@@ -1707,7 +1597,7 @@ void HudUiWidget::Draw() {
     if (dirtyRectCount != 0) {
         int dirtyRectIndex;
         for (dirtyRectIndex = 0; dirtyRectIndex < 4; ++dirtyRectIndex) {
-            HudUiRectDirty &dirtyRect = dirtyRects[dirtyRectIndex];
+            HudUiRectDirty& dirtyRect = dirtyRects[dirtyRectIndex];
             if (dirtyRect.framesRemaining == 0) {
                 continue;
             }
@@ -1717,7 +1607,7 @@ void HudUiWidget::Draw() {
                 dirtyRect.drawX,
                 dirtyRect.drawY,
                 0,
-                (zVidRect32 *)(&dirtyRect.srcLeft)
+                (zVidRect32*)(&dirtyRect.srcLeft)
             );
 
             --dirtyRect.framesRemaining;
@@ -1734,29 +1624,29 @@ void HudUiWidget::Draw() {
 
     DrawBase();
 
-    zVid_Image::BlitToActiveTarget(image, x, y, 0, (zVidRect32 *)(bltClipRectOrNull));
+    zVid_Image::BlitToActiveTarget(image, x, y, 0, (zVidRect32*)(bltClipRectOrNull));
 }
 
-int HudUiWidget::HitTest(int px, int py) {
+int HudUiWidget::HitTest(int px, int py)
+{
     if ((flags & 0x10) != 0) {
         return 0;
     }
 
-    HudUiRect *const bounds = GetBoundsRectOrNull();
+    HudUiRect* const bounds = GetBoundsRectOrNull();
     if (bounds == 0) {
         return 0;
     }
 
-    return px >= bounds->left && px <= bounds->right && py >= bounds->top && py <= bounds->bottom
-               ? 1
-               : 0;
+    return px >= bounds->left && px <= bounds->right && py >= bounds->top && py <= bounds->bottom ? 1 : 0;
 }
 
 /**
  * Purpose: Initializes the common HUD element position, links, timer, invalidation state, and blit source.
  */
-HudUiElement::HudUiElement(int initX, int initY) {
-    HudUiElement *const element = this;
+HudUiElement::HudUiElement(int initX, int initY)
+{
+    HudUiElement* const element = this;
     parent = 0;
     next = 0;
     timer = 0.0f;
@@ -1772,10 +1662,8 @@ HudUiElement::HudUiElement(int initX, int initY) {
 /**
  * Purpose: initialize the recovered HudUiElement::Constructor state.
  */
-HudUiElement * HudUiElement::Constructor(
-    int initX,
-    int initY
-) {
+HudUiElement* HudUiElement::Constructor(int initX, int initY)
+{
     new (this) HudUiElement(initX, initY);
     return this;
 }
@@ -1785,9 +1673,8 @@ HudUiElement * HudUiElement::Constructor(
  * @recoil-artifact defines .text recoil:function:0x4b40c0: HudUiElement::HudUiElement(const HudUiElement &).
  * Purpose: initialize a HUD element from another element while clearing owner links.
  */
-HudUiElement::HudUiElement(
-    const HudUiElement &source
-) {
+HudUiElement::HudUiElement(const HudUiElement& source)
+{
     next = 0;
     parent = 0;
     flags = source.flags;
@@ -1802,9 +1689,8 @@ HudUiElement::HudUiElement(
 /**
  * Purpose: copy another HUD element's runtime fields while preserving dispatch identity.
  */
-HudUiElement & HudUiElement::operator=(
-    const HudUiElement &source
-) {
+HudUiElement& HudUiElement::operator=(const HudUiElement& source)
+{
     next = 0;
     parent = 0;
     flags = source.flags;
@@ -1832,7 +1718,8 @@ HudUiElement & HudUiElement::operator=(
  *
  * Purpose: mark the element dirty by OR-ing the current HUD invalidation mask into its flags.
  */
-void HudUiElement::Invalidate() {
+void HudUiElement::Invalidate()
+{
     flags |= g_HudUi_InvalidateMask;
 }
 
@@ -1843,10 +1730,8 @@ void HudUiElement::Invalidate() {
  *
  * Purpose: apply the recovered HUD state change handled by HudUiElement::SetBltSourceAndClipRect.
  */
-void HudUiElement::SetBltSourceAndClipRect(
-    void *bltSourceOrNull,
-    const HudUiRect *rectOrNull
-) {
+void HudUiElement::SetBltSourceAndClipRect(void* bltSourceOrNull, const HudUiRect* rectOrNull)
+{
     bltSource = bltSourceOrNull;
     SetClipRect(rectOrNull);
 }
@@ -1860,9 +1745,8 @@ void HudUiElement::SetBltSourceAndClipRect(
  * Binary Ninja: 0x4b41b0 returns immediately for a null argument; otherwise it
  * copies the four HudUiRect fields into the clipRect member at offset 0x20.
  */
-void HudUiElement::SetClipRect(
-    const HudUiRect *rect
-) {
+void HudUiElement::SetClipRect(const HudUiRect* rect)
+{
     if (rect == 0) {
         return;
     }
@@ -1875,9 +1759,8 @@ void HudUiElement::SetClipRect(
  * @recoil-artifact defines .text recoil:function:0x4b41e0: HudUiElement::Update.
  * Purpose: dispatch visible or hidden dirty drawing and hide the element when its timer expires.
  */
-void HudUiElement::Update(
-    float deltaSeconds
-) {
+void HudUiElement::Update(float deltaSeconds)
+{
     unsigned int currentFlags = flags;
 
     if ((currentFlags & 0x10) == 0) {
@@ -1918,18 +1801,15 @@ void HudUiElement::Update(
  * Purpose: preserve the source-faithful HudUiElement virtual order used by
  * retail input/update dispatch without recreating table data under src/.
  */
-void HudUiElement::OnUpdateIdle(
-    float
-) {}
+void HudUiElement::OnUpdateIdle(float) { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-settimer
  * @recoil-artifact defines .text recoil:function:0x4b4280: HudUiElement::SetTimer.
  * Purpose: set the element timer and update the timed-visible flag state.
  */
-void HudUiElement::SetTimer(
-    float duration
-) {
+void HudUiElement::SetTimer(float duration)
+{
     timer = duration;
 
     if (duration >= 0.0f) {
@@ -1949,9 +1829,8 @@ void HudUiElement::SetTimer(
  * methods from the base text-rectangle slot, then writes right/left and
  * bottom/top in that order.
  */
-void HudUiElement::GetTextRect(
-    HudUiRect *outRect
-) {
+void HudUiElement::GetTextRect(HudUiRect* outRect)
+{
     const int rectX = GetCenterX();
     outRect->right = rectX;
     outRect->left = rectX;
@@ -1961,10 +1840,9 @@ void HudUiElement::GetTextRect(
     outRect->top = rectY;
 }
 
-HudUiTextInput::HudUiTextInput(
-    int bufferSize
-) {
-    HudUiTextInput *const input = this;
+HudUiTextInput::HudUiTextInput(int bufferSize)
+{
+    HudUiTextInput* const input = this;
     input->cursor = 0;
     input->buffer = 0;
     input->capacity = 0;
@@ -1990,16 +1868,16 @@ HudUiTextInput::HudUiTextInput(
     input->keyActionMap[0x06] = 7;
 }
 
-HudUiTextInput::~HudUiTextInput() {
-    char *const ownedBuffer = buffer;
+HudUiTextInput::~HudUiTextInput()
+{
+    char* const ownedBuffer = buffer;
     ::operator delete(ownedBuffer);
 }
 
-void HudUiTextInput::AllocTextBuffer(
-    int bufferSize
-) {
-    char *const newBuffer = (char *)(::operator new(bufferSize));
-    char *const oldBuffer = buffer;
+void HudUiTextInput::AllocTextBuffer(int bufferSize)
+{
+    char* const newBuffer = (char*)(::operator new(bufferSize));
+    char* const oldBuffer = buffer;
     if (oldBuffer != 0) {
         int copyCount = capacity;
         if (bufferSize < copyCount) {
@@ -2013,30 +1891,25 @@ void HudUiTextInput::AllocTextBuffer(
     buffer = newBuffer;
 }
 
-void HudUiTextInput::SetContents(
-    const char *source
-) {
+void HudUiTextInput::SetContents(const char* source)
+{
     strncpy(buffer, source, capacity);
     buffer[capacity - 1] = '\0';
     SetCursorPosition((int)(cursor));
 }
 
-char * HudUiTextInput::GetBuffer() {
+char* HudUiTextInput::GetBuffer()
+{
     return buffer;
 }
 
-void HudUiTextInput::SetCursorPosition(
-    int position
-) {
-    cursor =
-        (position < (int)(strlen(buffer)))
-            ? (unsigned int)(position)
-            : (unsigned int)(strlen(buffer));
+void HudUiTextInput::SetCursorPosition(int position)
+{
+    cursor = (position < (int)(strlen(buffer))) ? (unsigned int)(position) : (unsigned int)(strlen(buffer));
 }
 
-void HudUiTextInput::DispatchKeyAction(
-    int key
-) {
+void HudUiTextInput::DispatchKeyAction(int key)
+{
     const int keyIndex = (signed char)(key);
     const int action = (signed char)(keyActionMap[keyIndex]);
 
@@ -2070,9 +1943,8 @@ void HudUiTextInput::DispatchKeyAction(
     }
 }
 
-void HudUiTextInput::InsertCharAtCursor(
-    int ch
-) {
+void HudUiTextInput::InsertCharAtCursor(int ch)
+{
     const int textLength = (int)(strlen(buffer));
     if (textLength < (int)(capacity)-1) {
         ShiftTextRight(1, (int)(cursor));
@@ -2083,18 +1955,21 @@ void HudUiTextInput::InsertCharAtCursor(
     }
 }
 
-void HudUiTextInput::BackspaceDeleteChar() {
+void HudUiTextInput::BackspaceDeleteChar()
+{
     if ((int)(cursor) > 0) {
         --cursor;
         ShiftTextLeft(1, (int)(cursor));
     }
 }
 
-void HudUiTextInput::DeleteCharForward() {
+void HudUiTextInput::DeleteCharForward()
+{
     ShiftTextLeft(1, (int)(cursor));
 }
 
-void HudUiTextInput::MoveCursorLeft() {
+void HudUiTextInput::MoveCursorLeft()
+{
     if ((int)(cursor) > 0) {
         --cursor;
     }
@@ -2106,7 +1981,8 @@ void HudUiTextInput::MoveCursorLeft() {
  *
  * Purpose: advance the insertion cursor while it precedes the end of the text.
  */
-void HudUiTextInput::MoveCursorRight() {
+void HudUiTextInput::MoveCursorRight()
+{
     if ((int)cursor < (int)strlen(buffer)) {
         ++cursor;
     }
@@ -2119,10 +1995,8 @@ void HudUiTextInput::MoveCursorRight() {
  *
  * Purpose: make room in the input buffer by shifting its suffix right.
  */
-int HudUiTextInput::ShiftTextRight(
-    int count,
-    int startPos
-) {
+int HudUiTextInput::ShiftTextRight(int count, int startPos)
+{
     int result = 0;
     const int length = (int)strlen(buffer);
     int index = length + count;
@@ -2136,10 +2010,8 @@ int HudUiTextInput::ShiftTextRight(
     return result;
 }
 
-int HudUiTextInput::ShiftTextLeft(
-    int count,
-    int startPos
-) {
+int HudUiTextInput::ShiftTextLeft(int count, int startPos)
+{
     const int textLength = (int)(strlen(buffer));
     {
         for (int index = startPos; index < textLength; ++index) {
@@ -2150,7 +2022,8 @@ int HudUiTextInput::ShiftTextLeft(
     return 1;
 }
 
-HudUiSliderBorder::HudUiSliderBorder() {
+HudUiSliderBorder::HudUiSliderBorder()
+{
     originX = 0;
     originY = 0;
     halfWidth = 1;
@@ -2175,9 +2048,8 @@ HudUiSliderBorder::HudUiSliderBorder() {
     SetPoint(12, -halfWidth, 0);
 }
 
-void HudUiSliderBorder::Update(
-    float deltaSeconds
-) {
+void HudUiSliderBorder::Update(float deltaSeconds)
+{
     if ((flags & 0x10) != 0) {
         return;
     }
@@ -2196,12 +2068,8 @@ void HudUiSliderBorder::Update(
     }
 }
 
-void HudUiSliderBorder::SetBounds(
-    int newOriginX,
-    int newOriginY,
-    int newHalfWidth,
-    int newHeight
-) {
+void HudUiSliderBorder::SetBounds(int newOriginX, int newOriginY, int newHalfWidth, int newHeight)
+{
     originX = newOriginX;
     originY = newOriginY;
     halfWidth = newHalfWidth;
@@ -2223,19 +2091,20 @@ void HudUiSliderBorder::SetBounds(
 }
 
 HudUiNumericTextInput::HudUiNumericTextInput()
-    : HudUiZrdWidget(),
-      textInput(0x100),
-      sliderBorder(),
-      sliderVisibleWhenInputActive(0),
-      rawKeyFilterEnabled(0) {
+    : HudUiZrdWidget()
+    , textInput(0x100)
+    , sliderBorder()
+    , sliderVisibleWhenInputActive(0)
+    , rawKeyFilterEnabled(0)
+{
     sliderBorder.inputActive = 1;
     sliderBorder.caretHalfWidth = 0;
 
-    HudUiElement *sliderElement = &sliderBorder;
+    HudUiElement* sliderElement = &sliderBorder;
     sliderElement->SetVisible(1);
-    HudUiNumericTextInput *ownerSelf = this;
+    HudUiNumericTextInput* ownerSelf = this;
     textInput.owner = ownerSelf;
-    HudUiElement *element = ownerSelf;
+    HudUiElement* element = ownerSelf;
     element->SetVisible(1);
 }
 
@@ -2247,14 +2116,13 @@ HudUiNumericTextInput::HudUiNumericTextInput()
  * HudUiZrdWidget cleanup with EH state transitions.
  * Purpose: Disable raw keyboard capture before C++ member/base destruction.
  */
-HudUiNumericTextInput::~HudUiNumericTextInput() {
+HudUiNumericTextInput::~HudUiNumericTextInput()
+{
     SetRawKeyboardCapture(0);
 }
 
-int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
-    int key,
-    HudUiNumericTextInput *callbackCtx
-) {
+int __fastcall HudUiNumericTextInput::RawKeyboardCallback(int key, HudUiNumericTextInput* callbackCtx)
+{
     if (callbackCtx != 0) {
         return callbackCtx->OnRawKeyboardChar(key);
     }
@@ -2262,9 +2130,8 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(
     return 0;
 }
 
-int HudUiNumericTextInput::OnRawKeyboardChar(
-    int key
-) {
+int HudUiNumericTextInput::OnRawKeyboardChar(int key)
+{
     if (rawKeyFilterEnabled != 0) {
         if (strchr(kNumericTextInputAcceptedRawKeyChars, key) == 0) {
             return 0;
@@ -2277,10 +2144,9 @@ int HudUiNumericTextInput::OnRawKeyboardChar(
     return 0;
 }
 
-int HudUiNumericTextInput::SetInputActive(
-    int active
-) {
-    HudUiPanel *firstLabelPanel = 0;
+int HudUiNumericTextInput::SetInputActive(int active)
+{
+    HudUiPanel* firstLabelPanel = 0;
     const int previousActive = sliderBorder.inputActive;
     sliderBorder.inputActive = active;
 
@@ -2307,9 +2173,8 @@ int HudUiNumericTextInput::SetInputActive(
     return previousActive;
 }
 
-void HudUiNumericTextInput::SetRawKeyboardCapture(
-    int enable
-) {
+void HudUiNumericTextInput::SetRawKeyboardCapture(int enable)
+{
     const char enableByte = (char)(enable);
     if (enableByte == sliderVisibleWhenInputActive) {
         return;
@@ -2317,23 +2182,20 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(
 
     sliderVisibleWhenInputActive = enableByte;
     if (enableByte != 0) {
-        zInput::KeyboardSetRawEventCallback(
-            (void *)(&HudUiNumericTextInput::RawKeyboardCallback),
-            this
-        );
+        zInput::KeyboardSetRawEventCallback((void*)(&HudUiNumericTextInput::RawKeyboardCallback), this);
     } else {
         zInput::KeyboardSetRawEventCallback(0, 0);
     }
 }
 
-void HudUiNumericTextInput::OnActivate() {
+void HudUiNumericTextInput::OnActivate()
+{
     sliderBorder.inputActive = 1;
     HudUiZrdWidget::OnActivate();
 }
 
-RECOIL_NO_GS void HudUiNumericTextInput::Update(
-    float deltaSeconds
-) {
+RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
+{
     if ((flags & 0x10) != 0) {
         labelPanels[0]->SetVisible(0);
         labelPanels[0]->Invalidate();
@@ -2344,7 +2206,7 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(
 
     if (sliderVisibleWhenInputActive != 0) {
         labelPanels[0]->SetVisible(1);
-        char *const buffer = textInput.GetBuffer();
+        char* const buffer = textInput.GetBuffer();
 
         if (labelPanels.begin() != labelPanels.end()) {
             const ptrdiff_t panelCount = labelPanels.end() - labelPanels.begin();
@@ -2353,7 +2215,7 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(
             }
         }
 
-        RECT textRect = {0};
+        RECT textRect = { 0 };
         textRect.left = labelPanels[0]->GetCenterX();
         textRect.top = labelPanels[0]->GetCenterY();
         textRect.right = labelPanels[0]->GetCenterX();
@@ -2365,15 +2227,11 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(
                                                  (unsigned char)(textColor),
                                                  (unsigned char)(textColor >> 8),
                                                  (unsigned char)(textColor >> 16)
-                                             ) &
-                                             0xffffu;
+                                             )
+                & 0xffffu;
             sliderBorder.color565 = (int)(packedColor);
-            sliderBorder.SetBounds(
-                textRect.right,
-                textRect.top,
-                sliderBorder.caretHalfWidth,
-                textRect.bottom - textRect.top
-            );
+            sliderBorder
+                .SetBounds(textRect.right, textRect.top, sliderBorder.caretHalfWidth, textRect.bottom - textRect.top);
             sliderBorder.SetVisible(1);
         }
 
@@ -2386,32 +2244,33 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(
     sliderBorder.Update(deltaSeconds);
 }
 
-void HudUiNumericTextInput::AllocTextBuffer(
-    unsigned int bufferSize
-) {
+void HudUiNumericTextInput::AllocTextBuffer(unsigned int bufferSize)
+{
     textInput.AllocTextBuffer(bufferSize);
 }
 
-void HudUiNumericTextInput::Update(
-    const char *text
-) {
+void HudUiNumericTextInput::Update(const char* text)
+{
     textInput.SetContents(text);
     textInput.SetCursorPosition((int)(strlen(text)));
-    char *const buffer = textInput.GetBuffer();
+    char* const buffer = textInput.GetBuffer();
 
     if (labelPanels.size() != 0) {
-        HudUiPanel *const firstPanel = labelPanels[0];
+        HudUiPanel* const firstPanel = labelPanels[0];
         firstPanel->SetText(buffer);
     }
 
     Invalidate();
 }
 
-char * HudUiNumericTextInput::GetBuffer() {
+char* HudUiNumericTextInput::GetBuffer()
+{
     return textInput.GetBuffer();
 }
 
-HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
+HudUiZrdWidget::HudUiZrdWidget()
+    : HudUiWidget(0)
+{
     modeOrEnabled = 1;
     originY = 0;
     originX = 0;
@@ -2433,23 +2292,19 @@ HudUiZrdWidget::HudUiZrdWidget() : HudUiWidget(0) {
     (void)labelPanels.empty();
     (void)rolloverLabelPanels.empty();
 
-    *((unsigned short *)(&imageStateWord)) = 1;
-    HudUiElement *element = this;
+    *((unsigned short*)(&imageStateWord)) = 1;
+    HudUiElement* element = this;
     element->Invalidate();
     unsigned int visibleFlag = (unsigned char)(flags);
     flags = (unsigned char)((visibleFlag & ~0xefu) | 0x02u);
 }
 
-HudUiZrdWidget::~HudUiZrdWidget() {
+HudUiZrdWidget::~HudUiZrdWidget()
+{
     {
         HudUiZrdDeleteChildIfPresent deleteChildIfPresent;
         HudUiZrdDeleteChildIfPresent deleteChildIfPresentCopy(deleteChildIfPresent);
-        std::transform(
-            labelPanels.begin(),
-            labelPanels.end(),
-            labelPanels.begin(),
-            deleteChildIfPresentCopy
-        );
+        std::transform(labelPanels.begin(), labelPanels.end(), labelPanels.begin(), deleteChildIfPresentCopy);
     }
 
     {
@@ -2486,8 +2341,7 @@ HudUiZrdWidget::~HudUiZrdWidget() {
         HudUiPanelPtrVector::iterator,
         HudUiPanelPtrVector::iterator
     );
-    ErasePanelRangeMethod erasePanelRange =
-        (ErasePanelRangeMethod)(&HudUiPanelPtrVector::erase);
+    ErasePanelRangeMethod erasePanelRange = (ErasePanelRangeMethod)(&HudUiPanelPtrVector::erase);
     (labelPanels.*erasePanelRange)(labelPanels.begin(), labelPanels.end());
     (rolloverLabelPanels.*erasePanelRange)(rolloverLabelPanels.begin(), rolloverLabelPanels.end());
     (activateLabelPanels.*erasePanelRange)(activateLabelPanels.begin(), activateLabelPanels.end());
@@ -2513,17 +2367,17 @@ HudUiZrdWidget::~HudUiZrdWidget() {
     }
 }
 
-void *__stdcall HudUiZrdWidget::DeleteChildIfPresent(
-    void *childWidgetOrNull
-) {
+void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
+{
     if (childWidgetOrNull != 0) {
-        delete ((HudUiElement *)(childWidgetOrNull));
+        delete ((HudUiElement*)(childWidgetOrNull));
     }
 
     return 0;
 }
 
-void HudUiZrdWidget::Invalidate() {
+void HudUiZrdWidget::Invalidate()
+{
     HudUiElement::Invalidate();
 
     HudUiPanelPtrVector::iterator panel = labelPanels.begin();
@@ -2532,13 +2386,14 @@ void HudUiZrdWidget::Invalidate() {
     }
 
     while (panel != labelPanels.end()) {
-        HudUiPanel *const label = *panel;
+        HudUiPanel* const label = *panel;
         label->Invalidate();
         ++panel;
     }
 }
 
-HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
+HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
+{
     if (modeOrEnabled == 0) {
         return 0;
     }
@@ -2557,8 +2412,7 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     }
 
     boundsRect.top = labelPanels[0]->GetCenterY();
-    boundsRect.bottom =
-        boundsRect.top + labelPanels[0]->QueryTextHeight();
+    boundsRect.bottom = boundsRect.top + labelPanels[0]->QueryTextHeight();
 
     while (panelIt != labelPanels.end()) {
         boundsRect.bottom += (*panelIt)->QueryTextHeight();
@@ -2567,35 +2421,27 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
         switch (alignMode) {
         case 0:
             boundsRect.left = labelPanels[0]->GetCenterX();
-            if ((*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() >
-                boundsRect.right) {
-                boundsRect.right =
-                    (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth();
+            if ((*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() > boundsRect.right) {
+                boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth();
             }
             break;
 
         case 1:
-            if ((*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2) <
-                boundsRect.left) {
-                boundsRect.left =
-                    (*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2);
+            if ((*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2) < boundsRect.left) {
+                boundsRect.left = (*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2);
             }
 
-            if ((*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2) >
-                boundsRect.right) {
-                boundsRect.right =
-                    (*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2);
+            if ((*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2) > boundsRect.right) {
+                boundsRect.right = (*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2);
             }
             break;
 
         case 2:
             boundsRect.right = labelPanels[0]->GetCenterX();
-            if ((*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() >
-                boundsRect.left) {
+            if ((*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() > boundsRect.left) {
                 boundsRect.left = boundsRect.left;
             } else {
-                boundsRect.left =
-                    (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth();
+                boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth();
             }
             break;
         }
@@ -2607,7 +2453,8 @@ HudUiRect * HudUiZrdWidget::GetBoundsRectOrNull() {
     return &boundsRect;
 }
 
-void HudUiZrdWidget::ShowPreview() {
+void HudUiZrdWidget::ShowPreview()
+{
     if (rolloverImage != 0) {
         if (defaultImage == 0) {
             defaultImage = image;
@@ -2631,7 +2478,8 @@ void HudUiZrdWidget::ShowPreview() {
     HudUiSetPanelVectorVisible(activateLabelPanels, 0);
 }
 
-void HudUiZrdWidget::RefreshState() {
+void HudUiZrdWidget::RefreshState()
+{
     for (HudUiPanelPtrVector::iterator rolloverIt = rolloverLabelPanels.begin();
         rolloverIt != rolloverLabelPanels.end();
         ++rolloverIt) {
@@ -2645,12 +2493,12 @@ void HudUiZrdWidget::RefreshState() {
     }
 
     if (modeOrEnabled != 0) {
-        for (HudUiPanelPtrVector::iterator labelIt = labelPanels.begin();
-            labelIt != labelPanels.end(); ++labelIt) {
+        for (HudUiPanelPtrVector::iterator labelIt = labelPanels.begin(); labelIt != labelPanels.end(); ++labelIt) {
             (*labelIt)->SetVisible(1);
         }
         for (HudUiPanelPtrVector::iterator disabledIt = disabledLabelPanels.begin();
-            disabledIt != disabledLabelPanels.end(); ++disabledIt) {
+            disabledIt != disabledLabelPanels.end();
+            ++disabledIt) {
             (*disabledIt)->SetVisible(0);
         }
         SetImageBorrowedAndInvalidate(defaultImage);
@@ -2658,12 +2506,12 @@ void HudUiZrdWidget::RefreshState() {
         return;
     }
 
-    for (HudUiPanelPtrVector::iterator labelIt2 = labelPanels.begin();
-        labelIt2 != labelPanels.end(); ++labelIt2) {
+    for (HudUiPanelPtrVector::iterator labelIt2 = labelPanels.begin(); labelIt2 != labelPanels.end(); ++labelIt2) {
         (*labelIt2)->SetVisible(0);
     }
     for (HudUiPanelPtrVector::iterator disabledIt2 = disabledLabelPanels.begin();
-        disabledIt2 != disabledLabelPanels.end(); ++disabledIt2) {
+        disabledIt2 != disabledLabelPanels.end();
+        ++disabledIt2) {
         (*disabledIt2)->SetVisible(1);
     }
 
@@ -2671,7 +2519,8 @@ void HudUiZrdWidget::RefreshState() {
     Invalidate();
 }
 
-void HudUiZrdWidget::HidePreview() {
+void HudUiZrdWidget::HidePreview()
+{
     if (defaultImage != 0) {
         SetImageBorrowedAndInvalidate(defaultImage);
     }
@@ -2690,13 +2539,13 @@ void HudUiZrdWidget::HidePreview() {
         ++activateIt) {
         (*activateIt)->SetVisible(0);
     }
-    for (HudUiPanelPtrVector::iterator labelIt = labelPanels.begin();
-        labelIt != labelPanels.end(); ++labelIt) {
+    for (HudUiPanelPtrVector::iterator labelIt = labelPanels.begin(); labelIt != labelPanels.end(); ++labelIt) {
         (*labelIt)->SetVisible(1);
     }
 }
 
-void HudUiZrdWidget::OnActivate() {
+void HudUiZrdWidget::OnActivate()
+{
     zInput::ResetAllTransitionState();
 
     if (activateImage != 0) {
@@ -2727,13 +2576,11 @@ void HudUiZrdWidget::OnActivate() {
  * Purpose: attach the widget to its owning dialog and load its base ZRD
  * position, bitmap, sound, and label state.
  */
-int HudUiZrdWidget::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     owner = ownerDialog;
     SetVisible(1);
-    ((HudUiContainer *)(ownerDialog))->AddChild(this);
+    ((HudUiContainer*)(ownerDialog))->AddChild(this);
 
     originX = ownerDialog->uiOriginX;
     originY = ownerDialog->uiOriginY;
@@ -2741,7 +2588,7 @@ int HudUiZrdWidget::LoadFromZrd(
         return 0;
     }
 
-    zReader::Node *const positionNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Position);
+    zReader::Node* const positionNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Position);
     if (positionNode != 0) {
         originX += positionNode->value.nodes[1].value.i32;
         originY += positionNode->value.nodes[2].value.i32;
@@ -2749,12 +2596,9 @@ int HudUiZrdWidget::LoadFromZrd(
 
     int widgetX = originX;
     int widgetY = originY;
-    zReader::Node *const bitmapNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
-    );
+    zReader::Node* const bitmapNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
     if (bitmapNode != 0) {
-        const char *const bitmapPath = bitmapNode->value.nodes[1].value.str;
+        const char* const bitmapPath = bitmapNode->value.nodes[1].value.str;
         {
             defaultImage = SetImageByPathOwned(bitmapPath);
             if (bitmapNode->value.nodes[0].value.i32 >= 4) {
@@ -2766,9 +2610,9 @@ int HudUiZrdWidget::LoadFromZrd(
 
     SetPos(widgetX, widgetY);
 
-    void *const clipSource = ownerDialog->capturedCompositeImage;
+    void* const clipSource = ownerDialog->capturedCompositeImage;
     if (clipSource != 0) {
-        HudUiRect *const bounds = GetBoundsRectOrNull();
+        HudUiRect* const bounds = GetBoundsRectOrNull();
         if (bounds != 0) {
             // The clipping call receives a snapshot of the returned bounds.
             HudUiRect clipRect = *bounds;
@@ -2776,7 +2620,7 @@ int HudUiZrdWidget::LoadFromZrd(
         }
     }
 
-    zReader::Node *const rolloverNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Rollover);
+    zReader::Node* const rolloverNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Rollover);
     if (rolloverNode != 0) {
         HUD_ZRD_LOAD_BITMAP(rolloverNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, rolloverImage);
         HUD_ZRD_LOAD_SOUND(rolloverNode, rolloverSound, rolloverSoundScale);
@@ -2784,7 +2628,7 @@ int HudUiZrdWidget::LoadFromZrd(
         HUD_ZRD_APPLY_FLASH_SECTION(rolloverNode, rolloverLabelPanels);
     }
 
-    zReader::Node *const disableNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Disable);
+    zReader::Node* const disableNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Disable);
     if (disableNode != 0) {
         HUD_ZRD_LOAD_BITMAP(disableNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, disabledImage);
         HUD_ZRD_LOAD_SOUND(disableNode, disabledSound, disabledSoundScale);
@@ -2792,7 +2636,7 @@ int HudUiZrdWidget::LoadFromZrd(
         HUD_ZRD_APPLY_FLASH_SECTION(disableNode, disabledLabelPanels);
     }
 
-    zReader::Node *const activateNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Activate);
+    zReader::Node* const activateNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Activate);
     if (activateNode != 0) {
         HUD_ZRD_LOAD_BITMAP(activateNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, activateImage);
         HUD_ZRD_LOAD_SOUND(activateNode, activateSound, activateSoundScale);
@@ -2810,7 +2654,9 @@ int HudUiZrdWidget::LoadFromZrd(
  * Purpose: initialize the toggle widget's unchecked, checked, label, and
  * disabled-state members over the ZRD widget base.
  */
-HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
+HudUiCheckToggleWidget::HudUiCheckToggleWidget()
+    : HudUiZrdWidget()
+{
     checked = 0;
     uncheckedImage = 0;
     checkedImage = 0;
@@ -2824,7 +2670,8 @@ HudUiCheckToggleWidget::HudUiCheckToggleWidget() : HudUiZrdWidget() {
  * @recoil-artifact defines .text recoil:function:0x4b7020: HudUiCheckToggleWidget::~HudUiCheckToggleWidget.
  * Purpose: Restore the unchecked image, delete owned checked state, and tear down the ZRD widget base.
  */
-HudUiCheckToggleWidget::~HudUiCheckToggleWidget() {
+HudUiCheckToggleWidget::~HudUiCheckToggleWidget()
+{
     SetImageBorrowedAndInvalidate(uncheckedImage);
 
     if (checkedImage != 0) {
@@ -2845,7 +2692,8 @@ HudUiCheckToggleWidget::~HudUiCheckToggleWidget() {
  * authored body.
  * Purpose: Run the check-toggle destructor body.
  */
-void HudUiCheckToggleWidget::DestructorCore() {
+void HudUiCheckToggleWidget::DestructorCore()
+{
     this->HudUiCheckToggleWidget::~HudUiCheckToggleWidget();
 }
 
@@ -2856,7 +2704,8 @@ void HudUiCheckToggleWidget::DestructorCore() {
  *
  * Purpose: return the recovered HUD value exposed by HudUiCheckToggleWidget::GetBoundsRectOrNull.
  */
-HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
+HudUiRect* HudUiCheckToggleWidget::GetBoundsRectOrNull()
+{
     return &boundsRect;
 }
 
@@ -2865,11 +2714,12 @@ HudUiRect * HudUiCheckToggleWidget::GetBoundsRectOrNull() {
  * @recoil-artifact defines .text recoil:function:0x4b70c0: HudUiCheckToggleWidget::RefreshState.
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::RefreshState.
  */
-void HudUiCheckToggleWidget::RefreshState() {
+void HudUiCheckToggleWidget::RefreshState()
+{
     HudUiSetPanelVectorVisible(rolloverLabelPanels, 0);
     HudUiSetPanelVectorVisible(activateLabelPanels, 0);
 
-    zVidImagePartial *image = 0;
+    zVidImagePartial* image = 0;
     if (modeOrEnabled != 0) {
         HudUiSetPanelVectorVisible(labelPanels, 1);
         HudUiSetPanelVectorVisible(disabledLabelPanels, 0);
@@ -2910,7 +2760,8 @@ void HudUiCheckToggleWidget::RefreshState() {
  *
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::ShowPreview.
  */
-void HudUiCheckToggleWidget::ShowPreview() {
+void HudUiCheckToggleWidget::ShowPreview()
+{
     if (modeOrEnabled == 0 || checked != 0) {
         return;
     }
@@ -2929,7 +2780,8 @@ void HudUiCheckToggleWidget::ShowPreview() {
  *
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::HidePreview.
  */
-void HudUiCheckToggleWidget::HidePreview() {
+void HudUiCheckToggleWidget::HidePreview()
+{
     if (modeOrEnabled == 0 || checked != 0) {
         return;
     }
@@ -2947,7 +2799,8 @@ void HudUiCheckToggleWidget::HidePreview() {
  * @recoil-artifact defines .text recoil:function:0x4b7290: HudUiCheckToggleWidget::OnActivate.
  * Purpose: handle the recovered HUD event path for HudUiCheckToggleWidget::OnActivate.
  */
-void HudUiCheckToggleWidget::OnActivate() {
+void HudUiCheckToggleWidget::OnActivate()
+{
     if (modeOrEnabled == 0) {
         return;
     }
@@ -2959,7 +2812,8 @@ void HudUiCheckToggleWidget::OnActivate() {
 /**
  * Purpose: handle the recovered HUD event path for HudUiCheckToggleWidget::OnActivateThunk.
  */
-void HudUiCheckToggleWidget::OnActivateThunk() {
+void HudUiCheckToggleWidget::OnActivateThunk()
+{
     OnActivate();
 }
 
@@ -2968,9 +2822,8 @@ void HudUiCheckToggleWidget::OnActivateThunk() {
  * @recoil-artifact defines .text recoil:function:0x4b72c0: HudUiCheckToggleWidget::SetChecked.
  * Purpose: apply the recovered HUD state change handled by
  */
-int HudUiCheckToggleWidget::SetChecked(
-    int newChecked
-) {
+int HudUiCheckToggleWidget::SetChecked(int newChecked)
+{
     const int previousChecked = checked;
     checked = newChecked;
 
@@ -3003,42 +2856,34 @@ int HudUiCheckToggleWidget::SetChecked(
  * Purpose: load the base widget and its checked-state bitmap, label, and
  * disabled fallback resources from the owning ZRD section.
  */
-int HudUiCheckToggleWidget::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
     uncheckedImage = image;
 
-    zReader::Node *const checkedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_Checked);
+    zReader::Node* const checkedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_Checked);
     if (checkedNode != 0) {
-        zReader::Node *const bitmapNode = zRdrGetNode(
-            checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrGetNode(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             checkedImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node *const textNode = zRdrGetNode(
-            checkedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Text
-        );
+        zReader::Node* const textNode = zRdrGetNode(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
             checkedLabelPanel = new HudUiTransitionTextPanel;
-            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
-                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textNode->value.nodes[1].value.str));
             checkedLabelPanel->SetPos(
                 textOriginX + textNode->value.nodes[2].value.i32,
-                textOriginY + textNode->value.nodes[3].value.i32);
+                textOriginY + textNode->value.nodes[3].value.i32
+            );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            const HudFontStyle* style = &owner->fontStyles[styleIndex];
             if (style->validMarker == 0) {
                 style = 0;
             }
             if (style != 0) {
-                checkedLabelPanel->SetFont(
-                    style->fontName, style->fontSize, style->fontWeight,
-                    0, 0, 0, 2);
+                checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->textColor0 = style->textColor;
                 checkedLabelPanel->textColor1 = style->textColor;
                 checkedLabelPanel->textDirty = 1;
@@ -3047,43 +2892,33 @@ int HudUiCheckToggleWidget::LoadFromZrd(
                 checkedLabelPanel->shadowOffsetY = 1;
             }
             checkedLabelPanel->SetVisible(0);
-            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
+            ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
         }
     }
 
-    zReader::Node *const disabledUnselectedNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiZrdKey_DisableUnsel
-    );
+    zReader::Node* const disabledUnselectedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_DisableUnsel);
     if (disabledUnselectedNode != 0) {
-        zReader::Node *const bitmapNode = zRdrGetNode(
-            disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrGetNode(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
-            disabledCheckedFallbackImage = zImage::TexDirFindOrCreateByPath(
-                bitmapNode->value.nodes[1].value.str);
+            disabledCheckedFallbackImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node *const textNode = zRdrGetNode(
-            disabledUnselectedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Text
-        );
+        zReader::Node* const textNode = zRdrGetNode(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
             checkedLabelPanel = new HudUiTransitionTextPanel;
-            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
-                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textNode->value.nodes[1].value.str));
             checkedLabelPanel->SetPos(
                 textOriginX + textNode->value.nodes[2].value.i32,
-                textOriginY + textNode->value.nodes[3].value.i32);
+                textOriginY + textNode->value.nodes[3].value.i32
+            );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            const HudFontStyle* style = &owner->fontStyles[styleIndex];
             if (style->validMarker == 0) {
                 style = 0;
             }
             if (style != 0) {
-                checkedLabelPanel->SetFont(
-                    style->fontName, style->fontSize, style->fontWeight,
-                    0, 0, 0, 2);
+                checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->textColor0 = style->textColor;
                 checkedLabelPanel->textColor1 = style->textColor;
                 checkedLabelPanel->textDirty = 1;
@@ -3092,42 +2927,35 @@ int HudUiCheckToggleWidget::LoadFromZrd(
                 checkedLabelPanel->shadowOffsetY = 1;
             }
             checkedLabelPanel->SetVisible(0);
-            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
+            ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
         }
 
         HUD_ZRD_LOAD_LABEL_SECTION(this, zrdSection, disabledLabelPanels);
     }
 
-    zReader::Node *const disabledSelectedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_DisableSel);
+    zReader::Node* const disabledSelectedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_DisableSel);
     if (disabledSelectedNode != 0) {
-        zReader::Node *const bitmapNode = zRdrGetNode(
-            disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrGetNode(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
-            disabledCheckedImage = zImage::TexDirFindOrCreateByPath(
-                bitmapNode->value.nodes[1].value.str);
+            disabledCheckedImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node *const textNode = zRdrGetNode(
-            disabledSelectedNode,
-            g_HudUiCycleSelectorWidget_ZrdKey_Text
-        );
+        zReader::Node* const textNode = zRdrGetNode(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
             checkedLabelPanel = new HudUiTransitionTextPanel;
-            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(
-                textNode->value.nodes[1].value.str));
+            checkedLabelPanel->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textNode->value.nodes[1].value.str));
             checkedLabelPanel->SetPos(
                 textOriginX + textNode->value.nodes[2].value.i32,
-                textOriginY + textNode->value.nodes[3].value.i32);
+                textOriginY + textNode->value.nodes[3].value.i32
+            );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle *style = &owner->fontStyles[styleIndex];
+            const HudFontStyle* style = &owner->fontStyles[styleIndex];
             if (style->validMarker == 0) {
                 style = 0;
             }
             if (style != 0) {
-                checkedLabelPanel->SetFont(
-                    style->fontName, style->fontSize, style->fontWeight,
-                    0, 0, 0, 2);
+                checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->textColor0 = style->textColor;
                 checkedLabelPanel->textColor1 = style->textColor;
                 checkedLabelPanel->textDirty = 1;
@@ -3136,7 +2964,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(
                 checkedLabelPanel->shadowOffsetY = 1;
             }
             checkedLabelPanel->SetVisible(0);
-            ((HudUiContainer *)owner)->AddChild(checkedLabelPanel);
+            ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
         }
     }
 
@@ -3147,18 +2975,17 @@ int HudUiCheckToggleWidget::LoadFromZrd(
         boundsRect.bottom = y + uncheckedImage->height;
     } else if (labelPanels.begin() != labelPanels.end()) {
         HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
-        HudUiPanel *const firstPanel = *panelIt;
+        HudUiPanel* const firstPanel = *panelIt;
         boundsRect.top = firstPanel->GetCenterY();
         boundsRect.left = firstPanel->GetCenterX();
         boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
         while (panelIt != labelPanels.end()) {
-            HudUiPanel *const panel = *panelIt;
+            HudUiPanel* const panel = *panelIt;
             boundsRect.bottom += panel->QueryTextHeight();
 
             if (panel->QueryTextWidth() + boundsRect.left > boundsRect.right) {
-                boundsRect.right =
-                    panel->QueryTextWidth() + boundsRect.left;
+                boundsRect.right = panel->QueryTextWidth() + boundsRect.left;
             }
 
             ++panelIt;
@@ -3173,7 +3000,9 @@ int HudUiCheckToggleWidget::LoadFromZrd(
 /**
  * Purpose: preserve the recovered HUD behavior for HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.
  */
-HudUiCycleSelectorWidget::HudUiCycleSelectorWidget() : HudUiZrdWidget() {
+HudUiCycleSelectorWidget::HudUiCycleSelectorWidget()
+    : HudUiZrdWidget()
+{
     selectedIndex = 0;
     itemCount = 0;
     for (int i = 0; i < 20; ++i) {
@@ -3191,7 +3020,8 @@ HudUiCycleSelectorWidget::HudUiCycleSelectorWidget() : HudUiZrdWidget() {
 /**
  * Purpose: initialize the recovered HudUiCycleSelectorWidget::Constructor state.
  */
-HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
+HudUiCycleSelectorWidget* HudUiCycleSelectorWidget::Constructor()
+{
     new (this) HudUiCycleSelectorWidget;
     return this;
 }
@@ -3201,7 +3031,8 @@ HudUiCycleSelectorWidget * HudUiCycleSelectorWidget::Constructor() {
  * @recoil-artifact defines .text recoil:function:0x4b7de0: HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget.
  * Purpose: Delete paired selector entry widgets and tear down the ZRD widget base.
  */
-HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget() {
+HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget()
+{
     for (int i = 0; i < 20; ++i) {
         if (entriesA[i] != 0) {
             delete entriesA[i];
@@ -3222,7 +3053,8 @@ HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget() {
  * authored body.
  * Purpose: Run the cycle-selector destructor body.
  */
-void HudUiCycleSelectorWidget::DestructorCore() {
+void HudUiCycleSelectorWidget::DestructorCore()
+{
     this->HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget();
 }
 
@@ -3233,9 +3065,8 @@ void HudUiCycleSelectorWidget::DestructorCore() {
  *
  * Purpose: advance the recovered HUD update path for HudUiCycleSelectorWidget::Update.
  */
-void HudUiCycleSelectorWidget::Update(
-    float deltaSeconds
-) {
+void HudUiCycleSelectorWidget::Update(float deltaSeconds)
+{
     for (int i = 0; i < itemCount; ++i) {
         Invalidate();
 
@@ -3265,7 +3096,8 @@ void HudUiCycleSelectorWidget::Update(
  * Purpose: Advance the selected cycle entry, wrap at the visible/item limit,
  * and run the base ZRD activation path.
  */
-void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
+void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate()
+{
     const int nextIndex = selectedIndex + 1;
     selectedIndex = nextIndex;
 
@@ -3294,9 +3126,8 @@ void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate() {
  * and visibleCount, writes selectedIndex to the clamped value, and returns with
  * eax preserved.
  */
-int HudUiCycleSelectorWidget::SetIndexClamped(
-    int index
-) {
+int HudUiCycleSelectorWidget::SetIndexClamped(int index)
+{
     const int previousIndex = selectedIndex;
 
     if (index < firstIndex) {
@@ -3325,10 +3156,8 @@ int HudUiCycleSelectorWidget::SetIndexClamped(
  *
  * Purpose: set the visible selector range and clamp the selected entry into it.
  */
-void HudUiCycleSelectorWidget::SetVisibleRange(
-    int first,
-    int last
-) {
+void HudUiCycleSelectorWidget::SetVisibleRange(int first, int last)
+{
     if (first >= 0 && first < itemCount) {
         firstIndex = first;
     }
@@ -3357,12 +3186,8 @@ void HudUiCycleSelectorWidget::SetVisibleRange(
  * 0x2c0 HudUiTransitionTextPanel, stores it in entriesA[index], dispatches
  * SetTextFmt/SetPos/SetVisible, and adds it through the owner container.
  */
-void HudUiCycleSelectorWidget::AddTextEntry(
-    int index,
-    const char *text,
-    int posX,
-    int posY
-) {
+void HudUiCycleSelectorWidget::AddTextEntry(int index, const char* text, int posX, int posY)
+{
     if (index >= itemCount) {
         int newCount = index + 1;
         if (newCount >= 20) {
@@ -3379,14 +3204,14 @@ void HudUiCycleSelectorWidget::AddTextEntry(
         return;
     }
 
-    HudUiTransitionTextPanel *const transitionPanel = new HudUiTransitionTextPanel;
+    HudUiTransitionTextPanel* const transitionPanel = new HudUiTransitionTextPanel;
 
-    entriesA[index] = (HudUiWidget *)(transitionPanel);
-    ((HudUiPanel *)(entriesA[index]))->SetTextFmt(text);
+    entriesA[index] = (HudUiWidget*)(transitionPanel);
+    ((HudUiPanel*)(entriesA[index]))->SetTextFmt(text);
 
     entriesA[index]->SetPos(textOffsetX + posX, textOffsetY + posY);
     entriesA[index]->SetVisible(0);
-    ((HudUiContainer *)(owner))->AddChild(entriesA[index]);
+    ((HudUiContainer*)(owner))->AddChild(entriesA[index]);
 }
 
 /**
@@ -3402,10 +3227,8 @@ void HudUiCycleSelectorWidget::AddTextEntry(
  * validMarker is clear, calls the entry SetFont slot, and copies text color,
  * shadow, alignment, background mode, and background color fields.
  */
-void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
-    int index,
-    int styleIndex
-) {
+void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(int index, int styleIndex)
+{
     if (index >= itemCount) {
         int newCount = index + 1;
         if (newCount >= 20) {
@@ -3422,32 +3245,30 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
         return;
     }
 
-    const HudFontStyle *const style =
-        owner->fontStyles[styleIndex].validMarker != 0 ?
-        &owner->fontStyles[styleIndex] :
-        0;
+    const HudFontStyle* const style
+        = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
     if (style == 0) {
         return;
     }
 
-    HudUiPanel *panel = (HudUiPanel *)(entriesA[index]);
+    HudUiPanel* panel = (HudUiPanel*)(entriesA[index]);
     panel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
 
-    panel = (HudUiPanel *)(entriesA[index]);
+    panel = (HudUiPanel*)(entriesA[index]);
     const unsigned int textColor = style->textColor;
     panel->textColor0 = textColor;
     panel->textColor1 = textColor;
     panel->textDirty = 1;
 
-    panel = (HudUiPanel *)(entriesA[index]);
+    panel = (HudUiPanel*)(entriesA[index]);
     panel->shadowEnabled = style->shadowEnabled;
     panel->shadowOffsetX = 1;
     panel->shadowOffsetY = 1;
 
-    panel = (HudUiPanel *)(entriesA[index]);
+    panel = (HudUiPanel*)(entriesA[index]);
     panel->alignMode = style->alignMode;
 
-    panel = (HudUiPanel *)(entriesA[index]);
+    panel = (HudUiPanel*)(entriesA[index]);
     const unsigned int backgroundColor = style->bkColor;
     const int backgroundMode = style->bkMode;
     panel->bkMode = backgroundMode;
@@ -3460,12 +3281,8 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(
  * Purpose: construct a bitmap entry, load its image, then position and attach
  * the entry reloaded from the selector array after each callback.
  */
-void HudUiCycleSelectorWidget::AddBitmapEntry(
-    int index,
-    const char *imagePath,
-    int posX,
-    int posY
-) {
+void HudUiCycleSelectorWidget::AddBitmapEntry(int index, const char* imagePath, int posX, int posY)
+{
     if (index > itemCount) {
         int newCount = index + 1;
         if (newCount >= 20) {
@@ -3482,12 +3299,12 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(
         return;
     }
 
-    HudUiWidget *const bitmapWidget = new HudUiWidget(0);
+    HudUiWidget* const bitmapWidget = new HudUiWidget(0);
     entriesB[index] = bitmapWidget;
     bitmapWidget->SetImageByPathOwned(imagePath);
     entriesB[index]->SetPos(posX, posY);
     entriesB[index]->SetVisible(0);
-    ((HudUiContainer *)(owner))->AddChild(entriesB[index]);
+    ((HudUiContainer*)(owner))->AddChild(entriesB[index]);
 }
 
 /**
@@ -3495,32 +3312,24 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(
  * @recoil-artifact defines .text recoil:function:0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd.
  * Purpose: load the recovered HUD data handled by HudUiCycleSelectorWidget::LoadFromZrd.
  */
-int HudUiCycleSelectorWidget::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    zReader::Node *const fontNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Font);
+    zReader::Node* const fontNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Font);
     if (fontNode != 0) {
-        fontStyleRef = (void *)((unsigned int)(fontNode->value.u32));
+        fontStyleRef = (void*)((unsigned int)(fontNode->value.u32));
     }
 
-    zReader::Node *const textOffsetNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiCycleSelectorWidget_ZrdKey_TextOffset
-    );
-    zReader::Node *const textOffsetBase = ZrdArrayBase(textOffsetNode);
+    zReader::Node* const textOffsetNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_TextOffset);
+    zReader::Node* const textOffsetBase = ZrdArrayBase(textOffsetNode);
     if (textOffsetBase != 0) {
         textOffsetX = ZrdArrayInt(textOffsetBase, 1, textOffsetX);
         textOffsetY = ZrdArrayInt(textOffsetBase, 2, textOffsetY);
     }
 
-    zReader::Node *const cycleNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiCycleSelectorWidget_ZrdKey_Cycle
-    );
-    zReader::Node *const cycleBase = ZrdArrayBase(cycleNode);
+    zReader::Node* const cycleNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Cycle);
+    zReader::Node* const cycleBase = ZrdArrayBase(cycleNode);
     if (cycleBase == 0) {
         return 1;
     }
@@ -3537,16 +3346,13 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
 
     {
         for (int index = 0; index < itemCount; ++index) {
-            zReader::Node *const entryNode = ZrdArrayItem(cycleBase, index + 1);
+            zReader::Node* const entryNode = ZrdArrayItem(cycleBase, index + 1);
 
-            zReader::Node *const textNode = zRdrGetNode(
-                entryNode,
-                g_HudUiCycleSelectorWidget_ZrdKey_Text
-            );
-            zReader::Node *const textBase = ZrdArrayBase(textNode);
+            zReader::Node* const textNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+            zReader::Node* const textBase = ZrdArrayBase(textNode);
             if (textBase != 0) {
-                const char *const key = ZrdArrayString(textBase, 1);
-                const char *const text = key != 0 ? zLoc::ResolveMessageKeyOrFallback(key) : "";
+                const char* const key = ZrdArrayString(textBase, 1);
+                const char* const text = key != 0 ? zLoc::ResolveMessageKeyOrFallback(key) : "";
                 AddTextEntry(
                     index,
                     text != 0 ? text : "",
@@ -3556,11 +3362,8 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
                 ApplyFontStyleForEntry(index, ZrdArrayInt(textBase, 4, 0));
             }
 
-            zReader::Node *const bitmapNode = zRdrGetNode(
-                entryNode,
-                g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
-            );
-            zReader::Node *const bitmapBase = ZrdArrayBase(bitmapNode);
+            zReader::Node* const bitmapNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+            zReader::Node* const bitmapBase = ZrdArrayBase(bitmapNode);
             if (bitmapBase != 0) {
                 int bitmapX = originX;
                 int bitmapY = originY;
@@ -3569,7 +3372,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
                     bitmapY += ZrdArrayInt(bitmapBase, 3, 0);
                 }
 
-                AddBitmapEntry(index, ZrdArrayString( bitmapBase, 1 ), bitmapX, bitmapY);
+                AddBitmapEntry(index, ZrdArrayString(bitmapBase, 1), bitmapX, bitmapY);
             }
         }
     }
@@ -3582,7 +3385,9 @@ int HudUiCycleSelectorWidget::LoadFromZrd(
  * @recoil-artifact defines .text recoil:function:0x4b8450: HudUiFillBitmap::HudUiFillBitmap.
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::HudUiFillBitmap.
  */
-HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
+HudUiFillBitmap::HudUiFillBitmap()
+    : HudUiZrdWidget()
+{
     normalizedValue = 0.0f;
     previewImage = 0;
     fillImage = 0;
@@ -3601,15 +3406,14 @@ HudUiFillBitmap::HudUiFillBitmap() : HudUiZrdWidget() {
  * @recoil-artifact defines .text recoil:function:0x4b84d0: HudUiFillBitmap::~HudUiFillBitmap.
  * Purpose: Release distinct preview/fill images and tear down the ZRD widget base.
  */
-HudUiFillBitmap::~HudUiFillBitmap() {
+HudUiFillBitmap::~HudUiFillBitmap()
+{
     if (previewImage != 0 && previewImage != image) {
-        previewImage =
-            zVid_Image::ReleaseIfNotDefault(previewImage);
+        previewImage = zVid_Image::ReleaseIfNotDefault(previewImage);
     }
 
     if (fillImage != 0 && fillImage != image) {
-        fillImage =
-            zVid_Image::ReleaseIfNotDefault(fillImage);
+        fillImage = zVid_Image::ReleaseIfNotDefault(fillImage);
     }
 }
 
@@ -3620,7 +3424,8 @@ HudUiFillBitmap::~HudUiFillBitmap() {
  * authored body.
  * Purpose: Run the fill-bitmap destructor body.
  */
-void HudUiFillBitmap::DestructorCore() {
+void HudUiFillBitmap::DestructorCore()
+{
     this->HudUiFillBitmap::~HudUiFillBitmap();
 }
 
@@ -3629,7 +3434,8 @@ void HudUiFillBitmap::DestructorCore() {
  * @recoil-artifact defines .text recoil:function:0x4b8520: HudUiFillBitmap::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
  */
-void HudUiFillBitmap::Draw() {
+void HudUiFillBitmap::Draw()
+{
     if (previewImage == 0 || fillImage == 0) {
         return;
     }
@@ -3637,13 +3443,7 @@ void HudUiFillBitmap::Draw() {
     DrawBase();
 
     if (fillRect.left != fillRect.right) {
-        zVid_Image::BlitToActiveTarget(
-            fillImage,
-            x + fillOffsetX,
-            y + fillOffsetY,
-            0,
-            (zVidRect32 *)(&fillRect)
-        );
+        zVid_Image::BlitToActiveTarget(fillImage, x + fillOffsetX, y + fillOffsetY, 0, (zVidRect32*)(&fillRect));
     }
 
     if (previewRect.left != previewRect.right) {
@@ -3652,7 +3452,7 @@ void HudUiFillBitmap::Draw() {
             x + previewOffsetX,
             y + previewOffsetY,
             0,
-            (zVidRect32 *)(&previewRect)
+            (zVidRect32*)(&previewRect)
         );
     }
 }
@@ -3662,19 +3462,14 @@ void HudUiFillBitmap::Draw() {
  * @recoil-artifact defines .text recoil:function:0x4b85c0: HudUiFillBitmap::LoadFromZrd.
  * Purpose: load the recovered HUD data handled by HudUiFillBitmap::LoadFromZrd.
  */
-int HudUiFillBitmap::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int HudUiFillBitmap::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    zReader::Node *const fillBitmapNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiFillBitmap_ZrdKey_FillBitmap
-    );
-    zReader::Node *const fillBitmapBase = ZrdArrayBase(fillBitmapNode);
+    zReader::Node* const fillBitmapNode = zRdrGetNode(zrdSection, g_HudUiFillBitmap_ZrdKey_FillBitmap);
+    zReader::Node* const fillBitmapBase = ZrdArrayBase(fillBitmapNode);
     if (fillBitmapBase != 0) {
-        fillImage = zImage::TexDirFindOrCreateByPath(ZrdArrayString( fillBitmapBase, 1 ));
+        fillImage = zImage::TexDirFindOrCreateByPath(ZrdArrayString(fillBitmapBase, 1));
         Invalidate();
 
         int posX = originX;
@@ -3698,7 +3493,8 @@ int HudUiFillBitmap::LoadFromZrd(
  * @recoil-artifact defines .text recoil:function:0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor.
  * Purpose: update the normalized fill value from the owner cursor and activate the widget.
  */
-void HudUiFillBitmapSlider::OnActivate() {
+void HudUiFillBitmapSlider::OnActivate()
+{
     const int cursorX = owner->mouseState.cursorClientX;
     const int relativeX = cursorX - GetCenterX();
     const int imageWidth = image != 0 ? image->width : 0;
@@ -3713,9 +3509,8 @@ void HudUiFillBitmapSlider::OnActivate() {
  * @recoil-artifact defines .text recoil:function:0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild.
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValueAndRebuild.
  */
-void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(
-    float value
-) {
+void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(float value)
+{
     if (fillImage == 0) {
         return;
     }
@@ -3751,7 +3546,9 @@ void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(
  * @recoil-artifact defines .text recoil:function:0x4b8760: CHudRadioButtonWidget::CHudRadioButtonWidget.
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::CHudRadioButtonWidget.
  */
-CHudRadioButtonWidget::CHudRadioButtonWidget() : HudUiZrdWidget() {
+CHudRadioButtonWidget::CHudRadioButtonWidget()
+    : HudUiZrdWidget()
+{
     selected = 0;
     selectedImage = 0;
     unselectedImage = 0;
@@ -3762,7 +3559,8 @@ CHudRadioButtonWidget::CHudRadioButtonWidget() : HudUiZrdWidget() {
 /**
  * Purpose: run the recovered CHudRadioButtonWidget::DestructorCore teardown path.
  */
-CHudRadioButtonWidget * CHudRadioButtonWidget::Constructor() {
+CHudRadioButtonWidget* CHudRadioButtonWidget::Constructor()
+{
     new (this) CHudRadioButtonWidget;
     return this;
 }
@@ -3770,8 +3568,7 @@ CHudRadioButtonWidget * CHudRadioButtonWidget::Constructor() {
 /**
  * Purpose: run the recovered CHudRadioButtonWidget::DestructorCore teardown path.
  */
-CHudRadioButtonWidget::~CHudRadioButtonWidget() {
-}
+CHudRadioButtonWidget::~CHudRadioButtonWidget() { }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-item-showpreviewifnotselected
@@ -3780,7 +3577,8 @@ CHudRadioButtonWidget::~CHudRadioButtonWidget() {
  *
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::ShowPreviewIfNotSelected.
  */
-void CHudRadioButtonWidget::ShowPreviewIfNotSelected() {
+void CHudRadioButtonWidget::ShowPreviewIfNotSelected()
+{
     if (selected == 0) {
         HudUiZrdWidget::ShowPreview();
     }
@@ -3789,14 +3587,16 @@ void CHudRadioButtonWidget::ShowPreviewIfNotSelected() {
 /**
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::HidePreviewIfNotSelected.
  */
-void CHudRadioButtonWidget::ShowPreview() {
+void CHudRadioButtonWidget::ShowPreview()
+{
     ShowPreviewIfNotSelected();
 }
 
 /**
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::HidePreviewIfNotSelected.
  */
-void CHudRadioButtonWidget::HidePreviewIfNotSelected() {
+void CHudRadioButtonWidget::HidePreviewIfNotSelected()
+{
     if (selected == 0) {
         HudUiZrdWidget::HidePreview();
     }
@@ -3805,21 +3605,23 @@ void CHudRadioButtonWidget::HidePreviewIfNotSelected() {
 /**
  * Purpose: handle the recovered HUD event path for CHudRadioButtonWidget::OnActivateSelectSelf.
  */
-void CHudRadioButtonWidget::HidePreview() {
+void CHudRadioButtonWidget::HidePreview()
+{
     HidePreviewIfNotSelected();
 }
 
 /**
  * Purpose: handle the recovered HUD event path for CHudRadioButtonWidget::OnActivateSelectSelf.
  */
-void CHudRadioButtonWidget::OnActivateSelectSelf() {
+void CHudRadioButtonWidget::OnActivateSelectSelf()
+{
     ownerSelector->SetSelectedIndex(itemIndex);
     ownerSelector->OnActivate();
     HudUiZrdWidget::OnActivate();
 
     {
         for (int index = 0; index < ownerSelector->optionCount; ++index) {
-            CHudRadioButtonWidget *const option = ownerSelector->options[index];
+            CHudRadioButtonWidget* const option = ownerSelector->options[index];
             option->HidePreview();
         }
     }
@@ -3828,17 +3630,16 @@ void CHudRadioButtonWidget::OnActivateSelectSelf() {
 /**
  * Purpose: load the recovered HUD data handled by CHudRadioButtonWidget::LoadFromZrd.
  */
-void CHudRadioButtonWidget::OnActivate() {
+void CHudRadioButtonWidget::OnActivate()
+{
     OnActivateSelectSelf();
 }
 
 /**
  * Purpose: load the recovered HUD data handled by CHudRadioButtonWidget::LoadFromZrd.
  */
-int CHudRadioButtonWidget::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
     unselectedImage = image;
@@ -3864,13 +3665,13 @@ int CHudRadioButtonWidget::LoadFromZrd(
         boundsRect.right = x + unselectedImage->width;
     } else if (labelPanels.begin() != labelPanels.end()) {
         HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
-        HudUiPanel *const firstPanel = *panelIt;
+        HudUiPanel* const firstPanel = *panelIt;
         boundsRect.top = firstPanel->GetCenterY();
         boundsRect.left = firstPanel->GetCenterX();
         boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
 
         while (panelIt != labelPanels.end()) {
-            HudUiPanel *const panel = *panelIt;
+            HudUiPanel* const panel = *panelIt;
             boundsRect.bottom += panel->QueryTextHeight();
 
             if (panel->textDirty != 0) {
@@ -3894,11 +3695,8 @@ int CHudRadioButtonWidget::LoadFromZrd(
     mouseRect = boundsRect;
     mouseRectValid = 1;
 
-    zReader::Node *const mouseRectNode = zRdrGetNode(
-        zrdSection,
-        g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect
-    );
-    zReader::Node *const mouseRectBase = ZrdArrayBase(mouseRectNode);
+    zReader::Node* const mouseRectNode = zRdrGetNode(zrdSection, g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect);
+    zReader::Node* const mouseRectBase = ZrdArrayBase(mouseRectNode);
     if (mouseRectBase != 0) {
         mouseRect.top += ZrdArrayInt(mouseRectBase, 1, 0);
         mouseRect.left += ZrdArrayInt(mouseRectBase, 2, 0);
@@ -3917,9 +3715,8 @@ int CHudRadioButtonWidget::LoadFromZrd(
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C_Item.cpp.
  * Purpose: Record the option-item selected state and refresh the displayed image pair when enabled.
  */
-void CHudRadioButtonWidget::SetSelected(
-    int selectedValue
-) {
+void CHudRadioButtonWidget::SetSelected(int selectedValue)
+{
     selected = selectedValue;
     if (modeOrEnabled == 0) {
         return;
@@ -3943,7 +3740,8 @@ void CHudRadioButtonWidget::SetSelected(
  *
  * Purpose: return the recovered HUD value exposed by CHudRadioButtonWidget::GetMouseRectOrBounds.
  */
-HudUiRect * CHudRadioButtonWidget::GetBoundsRectOrNull() {
+HudUiRect* CHudRadioButtonWidget::GetBoundsRectOrNull()
+{
     if (mouseRectValid != 0) {
         return &mouseRect;
     }
@@ -3955,7 +3753,9 @@ HudUiRect * CHudRadioButtonWidget::GetBoundsRectOrNull() {
  * @recoil-artifact defines .text recoil:function:0x4b8b10: CHudRadioGroupWidget::CHudRadioGroupWidget.
  * Purpose: preserve the recovered HUD behavior for CHudRadioGroupWidget::CHudRadioGroupWidget.
  */
-CHudRadioGroupWidget::CHudRadioGroupWidget() : HudUiZrdWidget() {
+CHudRadioGroupWidget::CHudRadioGroupWidget()
+    : HudUiZrdWidget()
+{
     optionCount = 0;
 
     {
@@ -3970,12 +3770,13 @@ CHudRadioGroupWidget::CHudRadioGroupWidget() : HudUiZrdWidget() {
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
  * Purpose: Delete owned option-selector items and clear their slots before compiler-generated base cleanup.
  */
-CHudRadioGroupWidget::~CHudRadioGroupWidget() {
+CHudRadioGroupWidget::~CHudRadioGroupWidget()
+{
 
     {
         int optionIndex;
         for (optionIndex = 0; optionIndex < 10; ++optionIndex) {
-            CHudRadioButtonWidget *option = options[optionIndex];
+            CHudRadioButtonWidget* option = options[optionIndex];
             if (option != 0) {
                 delete option;
                 options[optionIndex] = 0;
@@ -3987,7 +3788,8 @@ CHudRadioGroupWidget::~CHudRadioGroupWidget() {
 /**
  * Purpose: run the recovered CHudRadioGroupWidget destructor through the compatibility name.
  */
-CHudRadioGroupWidget * CHudRadioGroupWidget::Constructor() {
+CHudRadioGroupWidget* CHudRadioGroupWidget::Constructor()
+{
     new (this) CHudRadioGroupWidget;
     return this;
 }
@@ -3999,7 +3801,8 @@ CHudRadioGroupWidget * CHudRadioGroupWidget::Constructor() {
  * reconstruction.
  * Purpose: Run the option-selector destructor body.
  */
-void CHudRadioGroupWidget::DestructorCore() {
+void CHudRadioGroupWidget::DestructorCore()
+{
     this->CHudRadioGroupWidget::~CHudRadioGroupWidget();
 }
 
@@ -4008,14 +3811,12 @@ void CHudRadioGroupWidget::DestructorCore() {
  * @recoil-artifact defines .text recoil:function:0x4b8be0: CHudRadioGroupWidget::LoadFromZrd.
  * Purpose: load the recovered HUD data handled by CHudRadioGroupWidget::LoadFromZrd.
  */
-int CHudRadioGroupWidget::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int CHudRadioGroupWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     owner = ownerDialog;
 
-    zReader::Node *const radioNode = zRdrGetNode(zrdSection, g_HudUiZrdToken_Radio);
-    zReader::Node *const radioBase = ZrdArrayBase(radioNode);
+    zReader::Node* const radioNode = zRdrGetNode(zrdSection, g_HudUiZrdToken_Radio);
+    zReader::Node* const radioBase = ZrdArrayBase(radioNode);
     if (radioBase != 0) {
         optionCount = ZrdArrayCount(radioBase) - 1;
         if (optionCount >= 10) {
@@ -4024,8 +3825,7 @@ int CHudRadioGroupWidget::LoadFromZrd(
 
         {
             for (int index = 0; index < optionCount; ++index) {
-                CHudRadioButtonWidget *const option =
-                    new CHudRadioButtonWidget;
+                CHudRadioButtonWidget* const option = new CHudRadioButtonWidget;
                 options[index] = option;
 
                 option->LoadFromZrd(&radioBase[index + 1], ownerDialog);
@@ -4044,9 +3844,8 @@ int CHudRadioGroupWidget::LoadFromZrd(
  * source file.
  * Purpose: apply the recovered HUD state change handled by CHudRadioGroupWidget::SetSelectedIndex.
  */
-void CHudRadioGroupWidget::SetVisible(
-    int childIndex
-) {
+void CHudRadioGroupWidget::SetVisible(int childIndex)
+{
     EnableChildAtIndex(childIndex);
 }
 
@@ -4054,13 +3853,12 @@ void CHudRadioGroupWidget::SetVisible(
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
  * Purpose: Store the selected option index and update every loaded option item's selected state.
  */
-int CHudRadioGroupWidget::SetSelectedIndex(
-    int index
-) {
+int CHudRadioGroupWidget::SetSelectedIndex(int index)
+{
     selectedIndex = index;
     {
         for (int optionIndex = 0; optionIndex < 10; ++optionIndex) {
-            CHudRadioButtonWidget *const option = options[optionIndex];
+            CHudRadioButtonWidget* const option = options[optionIndex];
             if (option != 0) {
                 option->SetSelected(optionIndex == index ? 1 : 0);
             }
@@ -4075,8 +3873,8 @@ int CHudRadioGroupWidget::SetSelectedIndex(
  * @recoil-artifact defines .text recoil:function:0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase.
  * Purpose: preserve the recovered HUD behavior for HudCmdBindButtonBase::HudCmdBindButtonBase.
  */
-HudCmdBindButtonBase::HudCmdBindButtonBase() :
-    HudUiCheckToggleWidget()
+HudCmdBindButtonBase::HudCmdBindButtonBase()
+    : HudUiCheckToggleWidget()
 {
     bindingSlotTotalCount = 0;
     bindingSlotPanels = 0;
@@ -4096,28 +3894,22 @@ HudCmdBindButtonBase::HudCmdBindButtonBase() :
  * Touched data: uses accepted ZRD-key literal owner
  * hud_ui.hudcmd_bind_button_base_zrd_key_literals.
  */
-int HudCmdBindButtonBase::LoadFromZrd(
-    zReader::Node *zrdSection,
-    HudUiBackground *ownerDialog
-) {
+int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
+{
     HudUiRect clipRect;
     clipRect.left = clipRect.top = 0;
     clipRect.right = clipRect.bottom = 0;
     HudUiCheckToggleWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    void *const clipSource = ownerDialog->capturedCompositeImage;
+    void* const clipSource = ownerDialog->capturedCompositeImage;
 
-    zReader::Node *const selectedFontNode = zRdrGetNode(zrdSection, "SELECTED_FONT");
+    zReader::Node* const selectedFontNode = zRdrGetNode(zrdSection, "SELECTED_FONT");
     if (selectedFontNode != 0) {
         selectedFontStyleRef = selectedFontNode->value.i32;
-        const HudFontStyle *const selectedStyle =
-            HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef);
+        const HudFontStyle* const selectedStyle = HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef);
         if (selectedStyle != 0) {
-            HudUiPanel *const panel = &bindPanel;
-            panel->SetFont(
-                selectedStyle->fontName, selectedStyle->fontSize,
-                selectedStyle->fontWeight, 0, 0, 0, 2
-            );
+            HudUiPanel* const panel = &bindPanel;
+            panel->SetFont(selectedStyle->fontName, selectedStyle->fontSize, selectedStyle->fontWeight, 0, 0, 0, 2);
             const unsigned int color = selectedStyle->textColor;
             panel->textColor0 = color;
             panel->textColor1 = color;
@@ -4128,17 +3920,17 @@ int HudCmdBindButtonBase::LoadFromZrd(
         }
     }
 
-    zReader::Node *const listFontNode = zRdrGetNode(zrdSection, "LIST_FONT");
+    zReader::Node* const listFontNode = zRdrGetNode(zrdSection, "LIST_FONT");
     if (listFontNode != 0) {
         listFontStyleRef = listFontNode->value.i32;
     }
 
-    zReader::Node *const spacingNode = zRdrGetNode(zrdSection, "SPACING");
+    zReader::Node* const spacingNode = zRdrGetNode(zrdSection, "SPACING");
     if (spacingNode != 0) {
         bindingSlotSpacing = spacingNode->value.i32;
     }
 
-    zReader::Node *const listOffsetNode = zRdrGetNode(zrdSection, "LIST_OFFSET");
+    zReader::Node* const listOffsetNode = zRdrGetNode(zrdSection, "LIST_OFFSET");
     if (listOffsetNode != 0) {
         visibleListOffsetX = (float)listOffsetNode->value.nodes[1].value.nodes[1].value.i32;
         visibleListOffsetY = (float)listOffsetNode->value.nodes[1].value.nodes[2].value.i32;
@@ -4146,9 +3938,9 @@ int HudCmdBindButtonBase::LoadFromZrd(
         overflowListOffsetY = (float)listOffsetNode->value.nodes[2].value.nodes[2].value.i32;
     }
 
-    zReader::Node *const listSizeNode = zRdrGetNode(zrdSection, "LISTSIZE");
+    zReader::Node* const listSizeNode = zRdrGetNode(zrdSection, "LISTSIZE");
     if (listSizeNode != 0) {
-        zReader::Node *const listSizeBase = listSizeNode->value.nodes;
+        zReader::Node* const listSizeBase = listSizeNode->value.nodes;
         const int totalCount = listSizeBase[1].value.i32;
         int visibleCount = 0;
         if (listSizeBase[0].value.i32 > 2) {
@@ -4158,31 +3950,28 @@ int HudCmdBindButtonBase::LoadFromZrd(
 
         {
             for (int index = 0; index < bindingSlotTotalCount; ++index) {
-                ((HudUiContainer *)(ownerDialog))->AddChild(&bindingSlotPanels[index]);
+                ((HudUiContainer*)(ownerDialog))->AddChild(&bindingSlotPanels[index]);
                 bindingSlotPanels[index].SetVisible(1);
                 bindingSlotPanels[index].owner = this;
                 if (clipSource != 0) {
                     bindingSlotPanels[index].SetBltSourceAndClipRect(clipSource, &clipRect);
                 }
 
-                const HudFontStyle *const listStyle =
-                    HudUiZrdOwnerFontStyle(owner, listFontStyleRef);
+                const HudFontStyle* const listStyle = HudUiZrdOwnerFontStyle(owner, listFontStyleRef);
                 if (listStyle != 0) {
                     // Retail repeats the complete font pass inside the child loop.
                     for (int fontIndex = 0; fontIndex < bindingSlotTotalCount; ++fontIndex) {
-                        bindingSlotPanels[fontIndex].SetFont(
-                            listStyle->fontName, listStyle->fontSize,
-                            listStyle->fontWeight, 0, 0, 0, 2
-                        );
+                        bindingSlotPanels[fontIndex]
+                            .SetFont(listStyle->fontName, listStyle->fontSize, listStyle->fontWeight, 0, 0, 0, 2);
                         {
-                            HudUiPanel *const panel = &bindingSlotPanels[fontIndex];
+                            HudUiPanel* const panel = &bindingSlotPanels[fontIndex];
                             const unsigned int color = listStyle->textColor;
                             panel->textColor0 = color;
                             panel->textColor1 = color;
                             panel->textDirty = 1;
                         }
                         {
-                            HudUiPanel *const panel = &bindingSlotPanels[fontIndex];
+                            HudUiPanel* const panel = &bindingSlotPanels[fontIndex];
                             panel->shadowEnabled = listStyle->shadowEnabled;
                             panel->shadowOffsetX = 1;
                             panel->shadowOffsetY = 1;
@@ -4192,7 +3981,7 @@ int HudCmdBindButtonBase::LoadFromZrd(
             }
         }
 
-        ((HudUiContainer *)(ownerDialog))->AddChild((HudUiElement *)(&bindPanel));
+        ((HudUiContainer*)(ownerDialog))->AddChild((HudUiElement*)(&bindPanel));
         bindPanel.SetVisible(1);
         bindPanel.owner = this;
         if (clipSource != 0) {
@@ -4209,12 +3998,10 @@ int HudCmdBindButtonBase::LoadFromZrd(
  * Purpose: recreate the binding-slot panel array and lay out visible and
  * overflow slots around the selected binding panel.
  */
-void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
-    int totalCount,
-    int visibleCount
-) {
+void HudCmdBindButtonBase::RebuildBindingSlotWidgets(int totalCount, int visibleCount)
+{
     if (bindingSlotPanels != 0) {
-        delete [] bindingSlotPanels;
+        delete[] bindingSlotPanels;
         bindingSlotPanels = 0;
     }
     bindingSlotPanels = new HudUiListSelectorItem[totalCount];
@@ -4223,9 +4010,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 
     {
         for (int index = 0; index < visibleBindingSlotCount; ++index) {
-            const int y = (int)((float)originY +
-                (index - visibleBindingSlotCount) * bindingSlotSpacing +
-                visibleListOffsetY);
+            const int y
+                = (int)((float)originY + (index - visibleBindingSlotCount) * bindingSlotSpacing + visibleListOffsetY);
             bindingSlotPanels[index].SetPos((int)((float)originX + visibleListOffsetX), y);
         }
     }
@@ -4234,9 +4020,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
 
     {
         for (int index = visibleBindingSlotCount; index < bindingSlotTotalCount; ++index) {
-            const int y = (int)((float)originY +
-                (index - visibleBindingSlotCount + 1) * bindingSlotSpacing +
-                overflowListOffsetY);
+            const int y = (int)((float)originY + (index - visibleBindingSlotCount + 1) * bindingSlotSpacing
+                + overflowListOffsetY);
             bindingSlotPanels[index].SetPos((int)((float)originX + overflowListOffsetX), y);
         }
     }
@@ -4249,9 +4034,8 @@ void HudCmdBindButtonBase::RebuildBindingSlotWidgets(
  *
  * Purpose: handle the recovered HUD event path for HudCmdBindButtonBase::OnSelectedIndexChanged.
  */
-void HudCmdBindButtonBase::OnSelectionChangedRefresh(
-    int selectedIndex
-) {
+void HudCmdBindButtonBase::OnSelectionChangedRefresh(int selectedIndex)
+{
     SetSelectedEntry(selectedIndex);
 }
 
@@ -4262,21 +4046,20 @@ void HudCmdBindButtonBase::OnSelectionChangedRefresh(
  *
  * Purpose: apply the recovered HUD state change handled by HudCmdBindButtonBase::SetSelectedEntry.
  */
-void HudCmdBindButtonBase::SetSelectedEntry(
-    int selectedIndex
-) {
+void HudCmdBindButtonBase::SetSelectedEntry(int selectedIndex)
+{
     int slotIndex;
     for (slotIndex = 0; slotIndex < visibleBindingSlotCount; ++slotIndex) {
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount;
         if (entryIndex >= 0 && entryIndex < bindingVec.size()) {
-            HudCmdBindingEntry *const entry = bindingVec[entryIndex];
+            HudCmdBindingEntry* const entry = bindingVec[entryIndex];
             bindingSlotPanels[slotIndex].entryIndex = entryIndex;
             bindingSlotPanels[slotIndex].SetTextFmt("%s", entry->displayText);
-            HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+            HudUiElement* const panel = &bindingSlotPanels[slotIndex];
             panel->SetVisible(1);
         } else {
             {
-                HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+                HudUiElement* const panel = &bindingSlotPanels[slotIndex];
                 panel->SetVisible(0);
             }
             (bindingSlotPanels + slotIndex)->DrawBase();
@@ -4293,14 +4076,14 @@ void HudCmdBindButtonBase::SetSelectedEntry(
     for (slotIndex = visibleBindingSlotCount; slotIndex < bindingSlotTotalCount; ++slotIndex) {
         const int entryIndex = selectedIndex + slotIndex - visibleBindingSlotCount + 1;
         if (entryIndex >= 0 && entryIndex < bindingVec.size()) {
-            HudCmdBindingEntry *const entry = bindingVec[entryIndex];
+            HudCmdBindingEntry* const entry = bindingVec[entryIndex];
             bindingSlotPanels[slotIndex].entryIndex = entryIndex;
             bindingSlotPanels[slotIndex].SetTextFmt("%s", entry->displayText);
-            HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+            HudUiElement* const panel = &bindingSlotPanels[slotIndex];
             panel->SetVisible(1);
         } else {
             {
-                HudUiElement *const panel = &bindingSlotPanels[slotIndex];
+                HudUiElement* const panel = &bindingSlotPanels[slotIndex];
                 panel->SetVisible(0);
             }
             (bindingSlotPanels + slotIndex)->DrawBase();
@@ -4320,16 +4103,13 @@ void HudCmdBindButtonBase::SetSelectedEntry(
  * edge is claimed here.
  * Purpose: handle the recovered HUD event path for HudUiListSelectorItem::OnActivate.
  */
-void HudUiListSelectorItem::OnActivate() {
-    typedef void( * OnSelectedIndexChangedFn)(
-        void *self,
-        int selectedIndex
-    );
+void HudUiListSelectorItem::OnActivate()
+{
+    typedef void (*OnSelectedIndexChangedFn)(void* self, int selectedIndex);
 
-    void *const selectionOwner = owner;
+    void* const selectionOwner = owner;
     if (selectionOwner != 0) {
-        const unsigned int *const ownerSlots =
-            *(const unsigned int *const *)selectionOwner;
+        const unsigned int* const ownerSlots = *(const unsigned int* const*)selectionOwner;
         ((OnSelectedIndexChangedFn)(ownerSlots[33]))(selectionOwner, entryIndex);
     }
 }
@@ -4341,8 +4121,9 @@ void HudUiListSelectorItem::OnActivate() {
  * Purpose: initialize the HUD background and its member arrays.
  */
 HudUiBackground::HudUiBackground()
-    : HudUiBackgroundContainer(1),
-      cursorWidget(0, 1) {
+    : HudUiBackgroundContainer(1)
+    , cursorWidget(0, 1)
+{
     primaryClipImage = 0;
     capturedCompositeImage = 0;
     {
@@ -4354,9 +4135,9 @@ HudUiBackground::HudUiBackground()
     }
 
     int defaultVMode = 5;
-    zOptionEntryPartial *vmodeOption = zGame::OptionsFindOption("VMode");
+    zOptionEntryPartial* vmodeOption = zGame::OptionsFindOption("VMode");
     if (vmodeOption == 0) {
-        vmodeOption = (zOptionEntryPartial *)(&defaultVMode);
+        vmodeOption = (zOptionEntryPartial*)(&defaultVMode);
     }
 
     switch (vmodeOption->payloadOrBuffer) {
@@ -4379,7 +4160,6 @@ HudUiBackground::HudUiBackground()
         uiOriginY = 144;
         break;
     }
-
 }
 
 /**
@@ -4387,19 +4167,15 @@ HudUiBackground::HudUiBackground()
  * @recoil-artifact defines .text recoil:function:0x4b9760: HudUiBackground::~HudUiBackground.
  * Purpose: Releases owned background clip images before compiler-generated member and base cleanup.
  */
-HudUiBackground::~HudUiBackground() {
+HudUiBackground::~HudUiBackground()
+{
     if (primaryClipImage != 0) {
-        primaryClipImage =
-            zVid_Image::ReleaseIfNotDefault(primaryClipImage);
+        primaryClipImage = zVid_Image::ReleaseIfNotDefault(primaryClipImage);
     }
 
     if (capturedCompositeImage != 0) {
-        capturedCompositeImage =
-            zVid_Image::ReleaseIfNotDefault(
-                capturedCompositeImage
-            );
+        capturedCompositeImage = zVid_Image::ReleaseIfNotDefault(capturedCompositeImage);
     }
-
 }
 
 /**
@@ -4409,15 +4185,13 @@ HudUiBackground::~HudUiBackground() {
  *
  * Purpose: start or stop configured background sounds and update background visibility state.
  */
-void HudUiBackground::SetEnabled(
-    int enabled
-) {
+void HudUiBackground::SetEnabled(int enabled)
+{
     if (enabled != 0) {
         int entryIndex14;
-        for (entryIndex14 = 0;
-            entryIndex14 < (int)(sizeof(backgroundSounds) / sizeof(backgroundSounds[0]));
+        for (entryIndex14 = 0; entryIndex14 < (int)(sizeof(backgroundSounds) / sizeof(backgroundSounds[0]));
             ++entryIndex14) {
-            HudUiBackgroundSoundEntry &entry = backgroundSounds[entryIndex14];
+            HudUiBackgroundSoundEntry& entry = backgroundSounds[entryIndex14];
             if (entry.sample != 0) {
                 entry.playHandle = entry.sample->PlayA3DSimple(entry.volume);
             }
@@ -4426,10 +4200,9 @@ void HudUiBackground::SetEnabled(
         InvalidateChildren();
     } else {
         int entryIndex15;
-        for (entryIndex15 = 0;
-            entryIndex15 < (int)(sizeof(backgroundSounds) / sizeof(backgroundSounds[0]));
+        for (entryIndex15 = 0; entryIndex15 < (int)(sizeof(backgroundSounds) / sizeof(backgroundSounds[0]));
             ++entryIndex15) {
-            HudUiBackgroundSoundEntry &entry = backgroundSounds[entryIndex15];
+            HudUiBackgroundSoundEntry& entry = backgroundSounds[entryIndex15];
             if (entry.playHandle != 0) {
                 entry.playHandle->StopIfActive();
             }
@@ -4448,12 +4221,9 @@ void HudUiBackground::SetEnabled(
  *
  * Purpose: load the recovered HUD data handled by HudUiBackground::LoadFromZrd.
  */
-zReader::Node * HudUiBackground::LoadFromZrd(
-    const char *zrdPath,
-    const char *sectionName,
-    int capturePrimary
-) {
-    zReader::Node *const root = zReader::Load(zrdPath, 0, 0);
+zReader::Node* HudUiBackground::LoadFromZrd(const char* zrdPath, const char* sectionName, int capturePrimary)
+{
+    zReader::Node* const root = zReader::Load(zrdPath, 0, 0);
     loadedRoot = root;
     return LoadZrdAndSection(root, sectionName, capturePrimary);
 }
@@ -4463,12 +4233,10 @@ zReader::Node * HudUiBackground::LoadFromZrd(
  * @recoil-artifact defines .text recoil:function:0x4b9900: HudUiBackground::LoadZrdAndSection.
  * Purpose: load the recovered HUD data handled by HudUiBackground::LoadZrdAndSection.
  */
-zReader::Node * HudUiBackground::LoadZrdAndSection(
-    zReader::Node *loadedRootNode,
-    const char *sectionName,
-    int capturePrimary
-) {
-    zReader::Node *result = 0;
+zReader::Node*
+HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* sectionName, int capturePrimary)
+{
+    zReader::Node* result = 0;
     zVideo::RunPostprocessOnPrimaryBuffer();
 
     if (capturePrimary == 0) {
@@ -4478,242 +4246,226 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
     if (loadedRootNode != 0) {
         result = loadedRootNode;
 
-        zReader::Node *const sharedImagePath =
-            zRdrGetNode(loadedRootNode, zHudCfgKey_SHARED_IMAGE_PATH);
+        zReader::Node* const sharedImagePath = zRdrGetNode(loadedRootNode, zHudCfgKey_SHARED_IMAGE_PATH);
         if (sharedImagePath != 0) {
             zImageInitMissionResources(sharedImagePath->value.nodes[1].value.str);
         }
 
-        zReader::Node *const sectionRoot = zRdrGetNode(loadedRootNode, sectionName);
+        zReader::Node* const sectionRoot = zRdrGetNode(loadedRootNode, sectionName);
         cfgRoot = sectionRoot;
 
         if (sectionRoot != 0) {
-        zReader::Node *const imagePath = zRdrGetNode(sectionRoot, "IMAGE_PATH");
-        if (imagePath != 0) {
-            zImageInitMissionResources(imagePath->value.nodes[1].value.str);
-        }
-
-        zReader::Node *const fontListNode = zRdrGetNode(cfgRoot, g_HudCfgKey_Fonts);
-        if (fontListNode != 0) {
-            int fontCount = fontListNode->value.nodes[0].value.i32;
-            if (fontCount > 20) {
-                fontCount = 20;
+            zReader::Node* const imagePath = zRdrGetNode(sectionRoot, "IMAGE_PATH");
+            if (imagePath != 0) {
+                zImageInitMissionResources(imagePath->value.nodes[1].value.str);
             }
 
-            for (int index = 1; index < fontCount; ++index) {
-                zReader::Node *const fontSpec =
-                    fontListNode->value.nodes[index].value.nodes;
-
-                const int styleIndex = fontSpec[1].value.i32;
-
-                fontStyles[styleIndex].validMarker = 1;
-                fontStyles[styleIndex].bkColor = 0;
-                fontStyles[styleIndex].bkMode = 1;
-                fontStyles[styleIndex].fontName = fontSpec[2].value.str;
-                fontStyles[styleIndex].fontSize = fontSpec[3].value.i32;
-
-                if (fontSpec[4].value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {
-                    fontStyles[styleIndex].textColor =
-                        (unsigned char)(fontSpec[4].value.nodes[1].value.nodes[1].value.i32) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[2].value.i32) << 8) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[3].value.i32) << 16);
-
-                    fontStyles[styleIndex].bkColor =
-                        (unsigned char)(fontSpec[4].value.nodes[2].value.nodes[1].value.i32) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[2].value.i32) << 8) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[3].value.i32) << 16);
-                    fontStyles[styleIndex].bkMode = 2;
-                } else {
-                    fontStyles[styleIndex].textColor =
-                        (unsigned char)(fontSpec[4].value.nodes[1].value.i32) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.i32) << 8) |
-                        ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[3].value.i32) << 16);
+            zReader::Node* const fontListNode = zRdrGetNode(cfgRoot, g_HudCfgKey_Fonts);
+            if (fontListNode != 0) {
+                int fontCount = fontListNode->value.nodes[0].value.i32;
+                if (fontCount > 20) {
+                    fontCount = 20;
                 }
 
-                if (fontSpec[0].value.i32 >= 6) {
-                    fontStyles[styleIndex].shadowEnabled = fontSpec[5].value.i32;
-                }
-                if (fontSpec[0].value.i32 >= 7) {
-                    fontStyles[styleIndex].fontWeight = fontSpec[6].value.i32;
-                }
-                if (fontSpec[0].value.i32 >= 8) {
-                    const char *const align = fontSpec[7].value.str;
-                    if (align == 0 || strcmp(align, "LEFT") == 0) {
-                        fontStyles[styleIndex].alignMode = 0;
-                    } else if (strcmp(align, "RIGHT") == 0) {
-                        fontStyles[styleIndex].alignMode = 2;
-                    } else if (strcmp(align, "CENTER") == 0) {
-                        fontStyles[styleIndex].alignMode = 1;
+                for (int index = 1; index < fontCount; ++index) {
+                    zReader::Node* const fontSpec = fontListNode->value.nodes[index].value.nodes;
+
+                    const int styleIndex = fontSpec[1].value.i32;
+
+                    fontStyles[styleIndex].validMarker = 1;
+                    fontStyles[styleIndex].bkColor = 0;
+                    fontStyles[styleIndex].bkMode = 1;
+                    fontStyles[styleIndex].fontName = fontSpec[2].value.str;
+                    fontStyles[styleIndex].fontSize = fontSpec[3].value.i32;
+
+                    if (fontSpec[4].value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {
+                        fontStyles[styleIndex].textColor
+                            = (unsigned char)(fontSpec[4].value.nodes[1].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[2].value.i32) << 8)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[3].value.i32)
+                                << 16);
+
+                        fontStyles[styleIndex].bkColor
+                            = (unsigned char)(fontSpec[4].value.nodes[2].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[2].value.i32) << 8)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[3].value.i32)
+                                << 16);
+                        fontStyles[styleIndex].bkMode = 2;
+                    } else {
+                        fontStyles[styleIndex].textColor = (unsigned char)(fontSpec[4].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.i32) << 8)
+                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[3].value.i32) << 16);
+                    }
+
+                    if (fontSpec[0].value.i32 >= 6) {
+                        fontStyles[styleIndex].shadowEnabled = fontSpec[5].value.i32;
+                    }
+                    if (fontSpec[0].value.i32 >= 7) {
+                        fontStyles[styleIndex].fontWeight = fontSpec[6].value.i32;
+                    }
+                    if (fontSpec[0].value.i32 >= 8) {
+                        const char* const align = fontSpec[7].value.str;
+                        if (align == 0 || strcmp(align, "LEFT") == 0) {
+                            fontStyles[styleIndex].alignMode = 0;
+                        } else if (strcmp(align, "RIGHT") == 0) {
+                            fontStyles[styleIndex].alignMode = 2;
+                        } else if (strcmp(align, "CENTER") == 0) {
+                            fontStyles[styleIndex].alignMode = 1;
+                        }
                     }
                 }
             }
-        }
 
-        zReader::Node *const imageListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
-        if (imageListNode != 0) {
-            int imageCount = imageListNode->value.nodes[0].value.i32;
-            if (imageCount > 20) {
-                imageCount = 20;
+            zReader::Node* const imageListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
+            if (imageListNode != 0) {
+                int imageCount = imageListNode->value.nodes[0].value.i32;
+                if (imageCount > 20) {
+                    imageCount = 20;
+                }
+
+                for (int index = 1; index < imageCount; ++index) {
+                    zReader::Node* const imageSpec = imageListNode->value.nodes[index].value.nodes;
+
+                    HudUiWidget& child = backgroundImageWidgets[index - 1];
+                    child.SetImageByPathOwned(imageSpec[1].value.str);
+                    if (imageSpec[0].value.i32 >= 4) {
+                        const int originX = uiOriginX;
+                        const int originY = uiOriginY;
+                        ((HudUiElement*)(&child))
+                            ->SetPos(imageSpec[2].value.i32 + originX, imageSpec[3].value.i32 + originY);
+                    }
+
+                    child.flags = (unsigned int)((unsigned char)(child.flags) & 0x10u) | 0x02u;
+                    ((HudUiElement*)(&child))->SetVisible(1);
+                    ((HudUiElement*)(&child))->Invalidate();
+                    AddChild((HudUiElement*)(&child));
+                }
             }
 
-            for (int index = 1; index < imageCount; ++index) {
-                zReader::Node *const imageSpec =
-                    imageListNode->value.nodes[index].value.nodes;
+            zReader::Node* const videoListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_VIDEOS);
+            if (videoListNode != 0) {
+                int videoCount = videoListNode->value.nodes[0].value.i32;
+                if (videoCount > 10) {
+                    videoCount = 10;
+                }
 
-                HudUiWidget &child = backgroundImageWidgets[index - 1];
-                child.SetImageByPathOwned(imageSpec[1].value.str);
-                if (imageSpec[0].value.i32 >= 4) {
+                for (int index = 1; index < videoCount; ++index) {
+                    zReader::Node* const videoSpec = videoListNode->value.nodes[index].value.nodes;
+
+                    HudUiBackgroundVideoWidget& child = backgroundVideoWidgets[index - 1];
+                    child.SetMediaPathOwnedAndRefresh(videoSpec[1].value.str);
+                    if (videoSpec[0].value.i32 >= 4) {
+                        const int originX = uiOriginX;
+                        const int originY = uiOriginY;
+                        child.SetPos(videoSpec[2].value.i32 + originX, videoSpec[3].value.i32 + originY);
+                    }
+                    if (videoSpec[0].value.i32 >= 5) {
+                        zReader::Node* const color = videoSpec[4].value.nodes;
+                        child.SetColorKey565((unsigned short)(zVidPackColorRGB(
+                            color[1].value.i32,
+                            color[2].value.i32,
+                            color[3].value.i32
+                        )));
+                    }
+
+                    child.SetVisible(1);
+                    child.Invalidate();
+                    // Retail preserves these four polymorphic queries before the
+                    // blit-source update even though their return values are not
+                    // retained by the surrounding path.
+                    child.GetCenterX();
+                    child.GetCenterY();
+                    child.GetCenterX();
+                    child.GetCenterY();
+                    child.SetBltSourceAndClipRect(primaryClipImage, 0);
+                    child.RebuildBltRect();
+                    AddChild(&child);
+                }
+            }
+
+            zReader::Node* const textListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
+            if (textListNode != 0) {
+                int textCount = textListNode->value.nodes[0].value.i32;
+                if (textCount > 50) {
+                    textCount = 50;
+                }
+
+                for (int index = 1; index < textCount; ++index) {
+                    zReader::Node* const textSpec = textListNode->value.nodes[index].value.nodes;
+
+                    HudUiPanel* const child = (HudUiPanel*)(&backgroundTextPanels[index - 1]);
+                    child->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textSpec[1].value.str));
                     const int originX = uiOriginX;
                     const int originY = uiOriginY;
-                    ((HudUiElement *)(&child))
-                        ->SetPos(
-                            imageSpec[2].value.i32 + originX,
-                            imageSpec[3].value.i32 + originY
-                        );
+                    child->SetPos(textSpec[2].value.i32 + originX, textSpec[3].value.i32 + originY);
+                    const HudFontStyle* style = &fontStyles[textSpec[4].value.i32];
+                    style = style->validMarker != 0 ? style : 0;
+                    if (style != 0) {
+                        child->alignMode = style->alignMode;
+                        child->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
+                        const unsigned int textColor = style->textColor;
+                        child->textColor0 = textColor;
+                        child->textColor1 = textColor;
+                        child->textDirty = 1;
+                        child->shadowEnabled = style->shadowEnabled;
+                        child->shadowOffsetX = 1;
+                        child->shadowOffsetY = 1;
+                        child->bkColor = style->bkColor;
+                        child->bkMode = style->bkMode;
+                    }
+                    child->SetVisible(1);
+                    AddChild((HudUiElement*)(child));
+                }
+            }
+
+            if (capturePrimary == 0) {
+                SetEnabled(1);
+                UpdateAll(0.0f);
+                capturedCompositeImage = zVideobuffCaptureSurfaceToImage(1);
+                SetEnabled(0);
+                ((HudUiDialogController*)(this))->BlitOwnedSurfaceToPrimary();
+            }
+
+            zReader::Node* const cursorNode = zRdrGetNode(cfgRoot, zHudCfgKey_CURSOR);
+            if (cursorNode != 0) {
+                zReader::Node* const bitmapNode = zRdrGetNode(cursorNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+                if (bitmapNode != 0) {
+                    cursorWidget.SetImageByPathOwnedAndRefresh(bitmapNode->value.nodes[1].value.str);
                 }
 
-                child.flags =
-                    (unsigned int)((unsigned char)(child.flags) & 0x10u) |
-                    0x02u;
-                ((HudUiElement *)(&child))->SetVisible(1);
-                ((HudUiElement *)(&child))->Invalidate();
-                AddChild((HudUiElement *)(&child));
-            }
-        }
+                SetInputFocus((HudUiElement*)(&cursorWidget));
 
-        zReader::Node *const videoListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_VIDEOS);
-        if (videoListNode != 0) {
-            int videoCount = videoListNode->value.nodes[0].value.i32;
-            if (videoCount > 10) {
-                videoCount = 10;
-            }
-
-            for (int index = 1; index < videoCount; ++index) {
-                zReader::Node *const videoSpec =
-                    videoListNode->value.nodes[index].value.nodes;
-
-                HudUiBackgroundVideoWidget &child = backgroundVideoWidgets[index - 1];
-                child.SetMediaPathOwnedAndRefresh(videoSpec[1].value.str);
-                if (videoSpec[0].value.i32 >= 4) {
-                    const int originX = uiOriginX;
-                    const int originY = uiOriginY;
-                    child.SetPos(
-                        videoSpec[2].value.i32 + originX,
-                        videoSpec[3].value.i32 + originY
-                    );
-                }
-                if (videoSpec[0].value.i32 >= 5) {
-                    zReader::Node *const color = videoSpec[4].value.nodes;
-                    child.SetColorKey565((unsigned short)(zVidPackColorRGB(
-                        color[1].value.i32,
-                        color[2].value.i32,
-                        color[3].value.i32
-                    )));
+                zReader::Node* const centerNode = zRdrGetNode(cursorNode, "CENTER");
+                if (centerNode != 0) {
+                    // Original 0x4b9f69 stores CENTER's string pointer into HudUiWidget::alignFlags;
+                    // GetCenterX/Y only test the slot for nonzero on this cursor path.
+                    cursorWidget.alignFlags = (unsigned int)(centerNode->value.nodes[1].value.str);
                 }
 
-                child.SetVisible(1);
-                child.Invalidate();
-                // Retail preserves these four polymorphic queries before the
-                // blit-source update even though their return values are not
-                // retained by the surrounding path.
-                child.GetCenterX();
-                child.GetCenterY();
-                child.GetCenterX();
-                child.GetCenterY();
-                child.SetBltSourceAndClipRect(primaryClipImage, 0);
-                child.RebuildBltRect();
-                AddChild(&child);
-            }
-        }
-
-        zReader::Node *const textListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
-        if (textListNode != 0) {
-            int textCount = textListNode->value.nodes[0].value.i32;
-            if (textCount > 50) {
-                textCount = 50;
+                int cursorCapture = 1;
+                zReader::GetInt(cursorNode, zHudCfgKey_CAPTURE, &cursorCapture);
+                cursorWidget.SetImageOwnedAndRefresh(cursorCapture);
             }
 
-            for (int index = 1; index < textCount; ++index) {
-                zReader::Node *const textSpec =
-                    textListNode->value.nodes[index].value.nodes;
-
-                HudUiPanel *const child = (HudUiPanel *)(&backgroundTextPanels[index - 1]);
-                child->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textSpec[1].value.str));
-                const int originX = uiOriginX;
-                const int originY = uiOriginY;
-                child->SetPos(textSpec[2].value.i32 + originX, textSpec[3].value.i32 + originY);
-                const HudFontStyle *style = &fontStyles[textSpec[4].value.i32];
-                style = style->validMarker != 0 ? style : 0;
-                if (style != 0) {
-                    child->alignMode = style->alignMode;
-                    child->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                    const unsigned int textColor = style->textColor;
-                    child->textColor0 = textColor;
-                    child->textColor1 = textColor;
-                    child->textDirty = 1;
-                    child->shadowEnabled = style->shadowEnabled;
-                    child->shadowOffsetX = 1;
-                    child->shadowOffsetY = 1;
-                    child->bkColor = style->bkColor;
-                    child->bkMode = style->bkMode;
+            zReader::Node* const soundListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_SOUNDS);
+            if (soundListNode != 0) {
+                int soundCount = soundListNode->value.nodes[0].value.i32;
+                if (soundCount > 10) {
+                    soundCount = 10;
                 }
-                child->SetVisible(1);
-                AddChild((HudUiElement *)(child));
-            }
-        }
 
-        if (capturePrimary == 0) {
-            SetEnabled(1);
-            UpdateAll(0.0f);
-            capturedCompositeImage = zVideobuffCaptureSurfaceToImage(1);
-            SetEnabled(0);
-            ((HudUiDialogController *)(this))->BlitOwnedSurfaceToPrimary();
-        }
+                for (int index = 1; index < soundCount; ++index) {
+                    zReader::Node* const soundSpec = soundListNode->value.nodes[index].value.nodes;
 
-        zReader::Node *const cursorNode = zRdrGetNode(cfgRoot, zHudCfgKey_CURSOR);
-        if (cursorNode != 0) {
-            zReader::Node *const bitmapNode =
-                zRdrGetNode(cursorNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
-            if (bitmapNode != 0) {
-                cursorWidget.SetImageByPathOwnedAndRefresh(bitmapNode->value.nodes[1].value.str);
-            }
-
-            SetInputFocus((HudUiElement *)(&cursorWidget));
-
-            zReader::Node *const centerNode =
-                zRdrGetNode(cursorNode, "CENTER");
-            if (centerNode != 0) {
-                // Original 0x4b9f69 stores CENTER's string pointer into HudUiWidget::alignFlags;
-                // GetCenterX/Y only test the slot for nonzero on this cursor path.
-                cursorWidget.alignFlags =
-                    (unsigned int)(centerNode->value.nodes[1].value.str);
-            }
-
-            int cursorCapture = 1;
-            zReader::GetInt(cursorNode, zHudCfgKey_CAPTURE, &cursorCapture);
-            cursorWidget.SetImageOwnedAndRefresh(cursorCapture);
-        }
-
-        zReader::Node *const soundListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_SOUNDS);
-        if (soundListNode != 0) {
-            int soundCount = soundListNode->value.nodes[0].value.i32;
-            if (soundCount > 10) {
-                soundCount = 10;
-            }
-
-            for (int index = 1; index < soundCount; ++index) {
-                zReader::Node *const soundSpec =
-                    soundListNode->value.nodes[index].value.nodes;
-
-                HudUiBackgroundSoundEntry &entry = backgroundSounds[index - 1];
-                float volume = 1.0f;
-                if (soundSpec[0].value.i32 >= 3) {
-                    volume = soundSpec[2].value.f32;
+                    HudUiBackgroundSoundEntry& entry = backgroundSounds[index - 1];
+                    float volume = 1.0f;
+                    if (soundSpec[0].value.i32 >= 3) {
+                        volume = soundSpec[2].value.f32;
+                    }
+                    entry.sample = zSnd::FindSampleByName(soundSpec[1].value.str);
+                    entry.volume = volume;
                 }
-                entry.sample = zSnd::FindSampleByName(soundSpec[1].value.str);
-                entry.volume = volume;
             }
-        }
         }
     }
 
@@ -4731,16 +4483,17 @@ zReader::Node * HudUiBackground::LoadZrdAndSection(
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindButtonsNodeToWidgetByName.
  */
 unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
-    zReader::Node *parentNode,
-    HudUiWidget *widget,
-    const char *name
-) {
+    zReader::Node* parentNode,
+    HudUiWidget* widget,
+    const char* name
+)
+{
     if (parentNode != 0) {
-        zReader::Node *const buttonsNode = zRdrGetNode(parentNode, "BUTTONS");
-        zReader::Node *const widgetNode = zRdrGetNode(buttonsNode, name);
+        zReader::Node* const buttonsNode = zRdrGetNode(parentNode, "BUTTONS");
+        zReader::Node* const widgetNode = zRdrGetNode(buttonsNode, name);
         if (widgetNode != 0) {
-            ((HudUiZrdWidget *)widget)->LoadFromZrd(widgetNode, this);
-            ((HudUiZrdWidget *)widget)->PostLoadFromZrd();
+            ((HudUiZrdWidget*)widget)->LoadFromZrd(widgetNode, this);
+            ((HudUiZrdWidget*)widget)->PostLoadFromZrd();
         }
     }
 
@@ -4754,11 +4507,8 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
  *
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::BindWidgetByName.
  */
-int HudUiBackground::BindWidgetByName(
-    zReader::Node *,
-    HudUiWidget *widget,
-    const char *name
-) {
+int HudUiBackground::BindWidgetByName(zReader::Node*, HudUiWidget* widget, const char* name)
+{
     return BindButtonsNodeToWidgetByName(cfgRoot, widget, name) & 0xff;
 }
 
@@ -4770,45 +4520,34 @@ int HudUiBackground::BindWidgetByName(
  * optional BITMAP, POSITION, WORDWRAP, FONT, COLOR, ENDP_REL, and ENDP_ABS
  * records before assigning the final blit source, clip rect, and dirty state.
  */
-int HudUiBackground::BindPrimitiveNodeToElement(
-    zReader::Node *,
-    HudUiElement *element,
-    const char *name
-) {
-    zReader::Node *const cfgRoot = this->cfgRoot;
+int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* element, const char* name)
+{
+    zReader::Node* const cfgRoot = this->cfgRoot;
     if (cfgRoot == 0) {
         return 0;
     }
 
-    zReader::Node *primitiveNode;
+    zReader::Node* primitiveNode;
     primitiveNode = zRdrGetNode(cfgRoot, g_HudUiBackground_ZrdKey_Primitives);
     if (primitiveNode != 0) {
         primitiveNode = zRdrGetNode(primitiveNode, name);
         if (primitiveNode != 0) {
-            ((HudUiContainer *)(this))->AddChild(element);
+            ((HudUiContainer*)(this))->AddChild(element);
 
-            zReader::Node *bitmapNode = zRdrGetNode(
-                primitiveNode,
-                g_HudUiCycleSelectorWidget_ZrdKey_Bitmap
-            );
+            zReader::Node* bitmapNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
             if (bitmapNode != 0) {
-                ((HudUiWidget *)(element))->SetImageByPathOwned(
-                    bitmapNode->value.nodes[1].value.str
-                );
+                ((HudUiWidget*)(element))->SetImageByPathOwned(bitmapNode->value.nodes[1].value.str);
             }
 
-            zReader::Node *positionNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Position);
+            zReader::Node* positionNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Position);
             if (positionNode != 0) {
-                zReader::Node *const positionBase = positionNode->value.nodes;
-                element->SetPos(
-                    uiOriginX + positionBase[1].value.i32,
-                    uiOriginY + positionBase[2].value.i32
-                );
+                zReader::Node* const positionBase = positionNode->value.nodes;
+                element->SetPos(uiOriginX + positionBase[1].value.i32, uiOriginY + positionBase[2].value.i32);
             }
 
-            zReader::Node *wordWrapNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_WordWrap);
+            zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_WordWrap);
             if (wordWrapNode != 0) {
-                zReader::Node *const wordWrapBase = wordWrapNode->value.nodes;
+                zReader::Node* const wordWrapBase = wordWrapNode->value.nodes;
                 HudUiRect wordWrapRect;
                 wordWrapRect.left = 0;
                 wordWrapRect.top = 0;
@@ -4817,18 +4556,12 @@ int HudUiBackground::BindPrimitiveNodeToElement(
                 element->EnableWordWrapWithRect(&wordWrapRect);
             }
 
-            zReader::Node *fontNode = zRdrGetNode(
-                primitiveNode,
-                g_HudUiCycleSelectorWidget_ZrdKey_Font
-            );
+            zReader::Node* fontNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Font);
             if (fontNode != 0) {
                 const int fontIndex = fontNode->value.i32;
-                const HudFontStyle *style =
-                    fontStyles[fontIndex].validMarker != 0 ?
-                    &fontStyles[fontIndex] :
-                    0;
+                const HudFontStyle* style = fontStyles[fontIndex].validMarker != 0 ? &fontStyles[fontIndex] : 0;
                 if (style != 0) {
-                    HudUiPanel *const panel = (HudUiPanel *)(element);
+                    HudUiPanel* const panel = (HudUiPanel*)(element);
                     panel->alignMode = style->alignMode;
                     panel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                     const unsigned int textColor = style->textColor;
@@ -4843,24 +4576,21 @@ int HudUiBackground::BindPrimitiveNodeToElement(
                 }
             }
 
-            zReader::Node *colorNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Color);
+            zReader::Node* colorNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Color);
             if (colorNode != 0) {
-                zReader::Node *const colorBase = colorNode->value.nodes;
-                ((HudUiPrimitiveBindTarget *)(element))->color565 =
-                    zVidPackColorRGB(
-                        (unsigned char)(colorBase[1].value.i32),
-                        (unsigned char)(colorBase[2].value.i32),
-                        (unsigned char)(colorBase[3].value.i32)
-                    ) & 0xffffu;
+                zReader::Node* const colorBase = colorNode->value.nodes;
+                ((HudUiPrimitiveBindTarget*)(element))->color565 = zVidPackColorRGB(
+                                                                       (unsigned char)(colorBase[1].value.i32),
+                                                                       (unsigned char)(colorBase[2].value.i32),
+                                                                       (unsigned char)(colorBase[3].value.i32)
+                                                                   )
+                    & 0xffffu;
             }
 
-            zReader::Node *relativeEndNode = zRdrGetNode(
-                primitiveNode,
-                g_HudUiZrdToken_EndPointRelative
-            );
+            zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointRelative);
             if (relativeEndNode != 0) {
-                zReader::Node *const relativeEndBase = relativeEndNode->value.nodes;
-                ((HudUiPrimitiveBindTarget *)(element))
+                zReader::Node* const relativeEndBase = relativeEndNode->value.nodes;
+                ((HudUiPrimitiveBindTarget*)(element))
                     ->SetSegmentEndpoints(
                         element->GetCenterX(),
                         element->GetCenterY(),
@@ -4869,13 +4599,10 @@ int HudUiBackground::BindPrimitiveNodeToElement(
                     );
             }
 
-            zReader::Node *absoluteEndNode = zRdrGetNode(
-                primitiveNode,
-                g_HudUiZrdToken_EndPointAbsolute
-            );
+            zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointAbsolute);
             if (absoluteEndNode != 0) {
-                zReader::Node *const absoluteEndBase = absoluteEndNode->value.nodes;
-                ((HudUiPrimitiveBindTarget *)(element))
+                zReader::Node* const absoluteEndBase = absoluteEndNode->value.nodes;
+                ((HudUiPrimitiveBindTarget*)(element))
                     ->SetSegmentEndpoints(
                         element->GetCenterX(),
                         element->GetCenterY(),
@@ -4891,9 +4618,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(
             clipRect.bottom = element->GetCenterY();
             element->SetBltSourceAndClipRect(capturedCompositeImage, &clipRect);
 
-            element->flags =
-                (unsigned int)((unsigned char)(element->flags) & 0x10u) |
-                0x02u;
+            element->flags = (unsigned int)((unsigned char)(element->flags) & 0x10u) | 0x02u;
         }
     }
     return 0;
@@ -4906,10 +4631,9 @@ int HudUiBackground::BindPrimitiveNodeToElement(
  *
  * Purpose: preserve the recovered HUD behavior for HudUiBackground::FreeLoadedTreeRoots.
  */
-void HudUiBackground::FreeLoadedTreeRoots(
-    int
-) {
-    zReader::Node *const root = loadedRoot;
+void HudUiBackground::FreeLoadedTreeRoots(int)
+{
+    zReader::Node* const root = loadedRoot;
     if (root != 0) {
         zReader::Free(root);
     }
@@ -4925,7 +4649,8 @@ void HudUiBackground::FreeLoadedTreeRoots(
  *
  * Purpose: blit the captured dialog image back to the active primary target.
  */
-void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
+void HudUiDialogController::BlitOwnedSurfaceToPrimary()
+{
     if (capturedImage != 0) {
         zVid_Image::BlitToActiveTarget(capturedImage, 0, 0, 0, 0);
     }
@@ -4938,8 +4663,9 @@ void HudUiDialogController::BlitOwnedSurfaceToPrimary() {
  *
  * Purpose: preserve the recovered HUD behavior for HudUiContainer::InvalidateChildren.
  */
-void HudUiContainer::InvalidateChildren() {
-    for (HudUiElement *child = childHead; child != 0; child = child->next) {
+void HudUiContainer::InvalidateChildren()
+{
+    for (HudUiElement* child = childHead; child != 0; child = child->next) {
         child->Invalidate();
     }
 }
@@ -4951,9 +4677,8 @@ void HudUiContainer::InvalidateChildren() {
  *
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValue.
  */
-void HudUiFillBitmap::SetNormalizedValueAndRebuild(
-    float value
-) {
+void HudUiFillBitmap::SetNormalizedValueAndRebuild(float value)
+{
     normalizedValue = value;
     Invalidate();
 }
@@ -4963,7 +4688,8 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(
  * @recoil-artifact defines .text recoil:function:0x4ba3e0: HudUiOwnedTextInput::OnAccept.
  * Purpose: handle the recovered HUD event path for HudUiOwnedTextInput::OnAccept.
  */
-void HudUiOwnedTextInput::OnAccept() {
+void HudUiOwnedTextInput::OnAccept()
+{
     HudUiTextInput::OnAccept();
     owner->OnAccept();
 }
@@ -4975,7 +4701,8 @@ void HudUiOwnedTextInput::OnAccept() {
  *
  * Purpose: Returns the panel word-wrap rectangle storage.
  */
-HudUiRect * HudUiPanel::GetBoundsRectOrNull() {
+HudUiRect* HudUiPanel::GetBoundsRectOrNull()
+{
     return &wrapRect;
 }
 
@@ -4984,7 +4711,8 @@ HudUiRect * HudUiPanel::GetBoundsRectOrNull() {
  * @recoil-artifact defines .text recoil:function:0x4ba410: HudUiListSelectorItem::Draw.
  * Purpose: preserve the recovered HUD behavior for HudUiListSelectorItem::Draw.
  */
-void HudUiListSelectorItem::Draw() {
+void HudUiListSelectorItem::Draw()
+{
     HudUiPanel::Draw();
 
     clipRect.left = GetCenterX();
@@ -5005,7 +4733,8 @@ void HudUiListSelectorItem::Draw() {
  *
  * Purpose: preserve the recovered HUD behavior for HudFontStyle::HudFontStyle.
  */
-HudFontStyle::HudFontStyle() {
+HudFontStyle::HudFontStyle()
+{
     validMarker = 0;
     fontName = 0;
     fontSize = 0;
@@ -5027,7 +4756,8 @@ HudFontStyle::HudFontStyle() {
  * The class has no base or owned members requiring further teardown.
  * The ordinary destructor directly expresses that lifetime operation.
  */
-HudFontStyle::~HudFontStyle() {
+HudFontStyle::~HudFontStyle()
+{
     validMarker = 0;
 }
 
@@ -5036,16 +4766,9 @@ HudFontStyle::~HudFontStyle() {
  * @recoil-artifact defines .text recoil:function:0x4ba740: HudUiPanel::HudUiPanel.
  * Purpose: Construct a text panel with default font, color, wrapping, and bounds state.
  */
-HudUiPanel::HudUiPanel(
-    const char *text,
-    int initX,
-    int initY
-) : HudUiTextLabel(
-        text,
-        initX,
-        initY,
-        0
-) {
+HudUiPanel::HudUiPanel(const char* text, int initX, int initY)
+    : HudUiTextLabel(text, initX, initY, 0)
+{
     textPick = 0;
     textColor0 = 0x00ffffff;
     textColor1 = 0x00ffffff;
@@ -5072,14 +4795,14 @@ HudUiPanel::HudUiPanel(
  * @recoil-artifact defines .text recoil:function:0x4ba850: HudUiPanel::HudUiPanel(const HudUiPanel &).
  * Purpose: Copy-construct panel-owned text and font state from another panel.
  */
-HudUiPanel::HudUiPanel(
-    const HudUiPanel &source
-) : HudUiTextLabel(source) {
+HudUiPanel::HudUiPanel(const HudUiPanel& source)
+    : HudUiTextLabel(source)
+{
     textPick = 0;
     textColor0 = source.textColor0;
     textColor1 = source.textColor1;
 
-    LOGFONTA logFont = {0};
+    LOGFONTA logFont = { 0 };
     if (GetObjectA(source.hFont, sizeof(logFont), &logFont) != 0) {
         hFont = CreateFontIndirectA(&logFont);
     }
@@ -5105,21 +4828,16 @@ HudUiPanel::HudUiPanel(
 /**
  * Purpose: Initialize this panel by copying text, font, and layout state from another panel.
  */
-HudUiPanel & HudUiPanel::operator=(
-    const HudUiPanel &source
-) {
+HudUiPanel& HudUiPanel::operator=(const HudUiPanel& source)
+{
     HudUiTextLabel::operator=(source);
 
     textPick = 0;
     textColor0 = source.textColor0;
     textColor1 = source.textColor1;
 
-    LOGFONTA logFont = {0};
-    if (GetObjectA(
-        source.hFont,
-        sizeof(logFont),
-        &logFont
-    ) != 0) {
+    LOGFONTA logFont = { 0 };
+    if (GetObjectA(source.hFont, sizeof(logFont), &logFont) != 0) {
         hFont = CreateFontIndirectA(&logFont);
     }
 
@@ -5152,7 +4870,8 @@ HudUiPanel & HudUiPanel::operator=(
  * and releases the font through DeleteObject. VC5 supplies the vtable stores
  * and native exception cleanup for this ordinary destructor.
  */
-HudUiPanel::~HudUiPanel() {
+HudUiPanel::~HudUiPanel()
+{
     if (textPick != 0) {
         zVid_Image::Destroy(textPick);
         textPick = 0;
@@ -5167,14 +4886,15 @@ HudUiPanel::~HudUiPanel() {
  * Purpose: Replace the panel font handle and mark text layout dirty.
  */
 void HudUiPanel::SetFont(
-    const char *faceName,
+    const char* faceName,
     int height,
     int weight,
     int width,
     int italic,
     int charSet,
     int pitchAndFamily
-) {
+)
+{
     DeleteObject(hFont);
     hFont = CreateFontA(
         -height,
@@ -5200,7 +4920,8 @@ void HudUiPanel::SetFont(
  * @recoil-artifact defines .text recoil:function:0x4bac10: HudUiPanel::RebuildTextRect.
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::RebuildTextRect.
  */
-void HudUiPanel::RebuildTextRect() {
+void HudUiPanel::RebuildTextRect()
+{
     if (strlen(textBuffer) == 0) {
         textRect.left = textRect.top = textRect.right = textRect.bottom = 0;
         textHeightPx = 0;
@@ -5217,11 +4938,11 @@ void HudUiPanel::RebuildTextRect() {
 
     SelectObject(measureDc, hFont);
 
-    RECT &textRectRef = *(RECT *)(&textRect);
+    RECT& textRectRef = *(RECT*)(&textRect);
     UINT drawFormat = DT_LEFT;
     BOOL measured = FALSE;
     if (wordWrapEnabled != 0) {
-        textRectRef = *(RECT *)(&wrapRect);
+        textRectRef = *(RECT*)(&wrapRect);
         drawFormat = DT_WORDBREAK;
         measured = TRUE;
     } else {
@@ -5243,8 +4964,7 @@ void HudUiPanel::RebuildTextRect() {
                 textPick = zVid_Image::Create();
                 zVid_Image::SetFormatCode(textPick, 3);
                 zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
-                void *const pixels =
-                    malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
+                void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
                 zVidImageSetPixels(textPick, pixels, 0);
                 textPick->formatFlagsPacked |= 0x20;
             }
@@ -5252,8 +4972,7 @@ void HudUiPanel::RebuildTextRect() {
             textPick = zVid_Image::Create();
             zVid_Image::SetFormatCode(textPick, 3);
             zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
-            void *const pixels =
-                malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
+            void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
             zVidImageSetPixels(textPick, pixels, 0);
             textPick->formatFlagsPacked |= 0x20;
         }
@@ -5304,25 +5023,16 @@ void HudUiPanel::RebuildTextRect() {
             TEXTMETRICA metrics;
             if (GetTextMetricsA(measureDc, &metrics) != 0) {
                 if (textColor0 != textColor1) {
-                    const unsigned short sourceWhite =
-                        (unsigned short)(zVidPackColorRGB(0xff, 0xff, 0xff));
-                    unsigned short *pixel = (unsigned short *)(textPick->pixels);
+                    const unsigned short sourceWhite = (unsigned short)(zVidPackColorRGB(0xff, 0xff, 0xff));
+                    unsigned short* pixel = (unsigned short*)(textPick->pixels);
                     {
                         for (int row = 0; row < textPick->height; ++row) {
                             const int lineSpan = metrics.tmHeight + metrics.tmExternalLeading;
-                            const int rowPhase = (shadowEnabled != 0
-                                                         ? row + shadowOffsetY
-                                                         : row) %
-                                                 lineSpan;
-                            const float blend =
-                                (float)(rowPhase - metrics.tmInternalLeading) /
-                                (float)(metrics.tmAscent - metrics.tmInternalLeading);
-                            const unsigned int blendedColor =
-                                HudUiFlashPanel::ComputeFlashBlendColor(
-                                    textColor0,
-                                    textColor1,
-                                    blend
-                                );
+                            const int rowPhase = (shadowEnabled != 0 ? row + shadowOffsetY : row) % lineSpan;
+                            const float blend = (float)(rowPhase - metrics.tmInternalLeading)
+                                / (float)(metrics.tmAscent - metrics.tmInternalLeading);
+                            const unsigned int blendedColor
+                                = HudUiFlashPanel::ComputeFlashBlendColor(textColor0, textColor1, blend);
                             const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
                                 (unsigned char)(blendedColor & 0xffu),
                                 (unsigned char)((blendedColor >> 8) & 0xffu),
@@ -5356,11 +5066,8 @@ void HudUiPanel::RebuildTextRect() {
  * @recoil-artifact defines .text recoil:function:0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor.
  * Purpose: clamp endpoint flash colors and blend RGB channels for intermediate flash values.
  */
-unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
-    unsigned int color0,
-    unsigned int color1,
-    float blend
-) {
+unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int color0, unsigned int color1, float blend)
+{
     const double blendValue = (double)(blend);
     if (!(blendValue >= 0.001)) {
         return color0;
@@ -5370,15 +5077,15 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
     }
 
     const double inverseBlend = 1.0 - blendValue;
-    const unsigned int blue = (unsigned int)((int)((double)(color0 & 0xffu) * inverseBlend +
-                                                   (double)(color1 & 0xffu) * blendValue)) &
-                              0xffu;
-    const unsigned int green = (unsigned int)((int)((double)((color0 >> 8) & 0xffu) * inverseBlend +
-                                                    (double)((color1 >> 8) & 0xffu) * blendValue)) &
-                               0xffu;
-    const unsigned int red = (unsigned int)((int)((double)((color0 >> 16) & 0xffu) * inverseBlend +
-                                                  (double)((color1 >> 16) & 0xffu) * blendValue)) &
-                             0xffu;
+    const unsigned int blue
+        = (unsigned int)((int)((double)(color0 & 0xffu) * inverseBlend + (double)(color1 & 0xffu) * blendValue))
+        & 0xffu;
+    const unsigned int green = (unsigned int)((int)((double)((color0 >> 8) & 0xffu) * inverseBlend
+                                   + (double)((color1 >> 8) & 0xffu) * blendValue))
+        & 0xffu;
+    const unsigned int red = (unsigned int)((int)((double)((color0 >> 16) & 0xffu) * inverseBlend
+                                 + (double)((color1 >> 16) & 0xffu) * blendValue))
+        & 0xffu;
     return (red << 16) | (green << 8) | blue;
 }
 
@@ -5387,10 +5094,8 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(
  * @recoil-artifact defines .text recoil:function:0x4bb1c0: HudUiPanel::MeasureTextPrefixRect.
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::MeasureTextPrefixRect.
  */
-int HudUiPanel::MeasureTextPrefixRect(
-    int maxChars,
-    RECT *outRect
-) {
+int HudUiPanel::MeasureTextPrefixRect(int maxChars, RECT* outRect)
+{
     int result = 0;
     HDC hdc = CreateCompatibleDC(0);
     if (hdc == 0) {
@@ -5399,7 +5104,7 @@ int HudUiPanel::MeasureTextPrefixRect(
 
     SelectObject(hdc, hFont);
     if (maxChars > 0) {
-        char *const textCopy = _strdup(textBuffer);
+        char* const textCopy = _strdup(textBuffer);
         if (maxChars <= (int)(strlen(textCopy))) {
             textCopy[maxChars] = '\0';
             if (DrawTextA(hdc, textCopy, -1, outRect, DT_CALCRECT) != 0) {
@@ -5426,8 +5131,9 @@ int HudUiPanel::MeasureTextPrefixRect(
  * @recoil-artifact defines .text recoil:function:0x4bb2a0: HudUiPanel::UpdateTextBoundsFromContent.
  * Purpose: update the panel clip rectangle from current text contents, alignment, wrapping, and shadow state.
  */
-void HudUiPanel::UpdateTextBoundsFromContent() {
-    char *const panelText = textBuffer;
+void HudUiPanel::UpdateTextBoundsFromContent()
+{
+    char* const panelText = textBuffer;
     const int textLength = (int)(strlen(panelText));
 
     if (wordWrapEnabled != 0) {
@@ -5444,7 +5150,7 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
     }
 
     SelectObject(hdc, hFont);
-    SIZE textSize = {0};
+    SIZE textSize = { 0 };
     if (GetTextExtentPoint32A(hdc, panelText, textLength, &textSize) != 0) {
         int left;
         if (alignMode != 0) {
@@ -5453,9 +5159,7 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
             }
 
             if (alignMode == 1) {
-                left = clipRect.left +
-                    ((clipRect.right - clipRect.left) / 2) -
-                    (textWidthPx / 2);
+                left = clipRect.left + ((clipRect.right - clipRect.left) / 2) - (textWidthPx / 2);
             } else {
                 left = clipRect.right - textWidthPx;
             }
@@ -5481,10 +5185,8 @@ void HudUiPanel::UpdateTextBoundsFromContent() {
  * @recoil-artifact defines .text recoil:function:0x4bb3d0: HudUiPanel::HitTest.
  * Purpose: test a point against the current visible text bounds, rebuilding dirty text metrics first.
  */
-int HudUiPanel::HitTest(
-    int px,
-    int py
-) {
+int HudUiPanel::HitTest(int px, int py)
+{
     if ((flags & 0x10u) != 0 || x > px || y > py) {
         return 0;
     }
@@ -5505,7 +5207,8 @@ int HudUiPanel::HitTest(
  * @recoil-artifact defines .text recoil:function:0x4bb440: HudUiPanel::GetLastTextPtr.
  * Purpose: return the cached panel text after ensuring dirty text rendering state is rebuilt.
  */
-char * HudUiPanel::GetLastTextPtr() {
+char* HudUiPanel::GetLastTextPtr()
+{
     if (textDirty != 0) {
         RebuildTextRect();
     }
@@ -5516,9 +5219,11 @@ char * HudUiPanel::GetLastTextPtr() {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-draw
  * @recoil-artifact defines .text recoil:function:0x4bb460: HudUiPanel::Draw.
- * Purpose: rebuild dirty panel text, draw the panel base, and blit the rendered text image with recovered alignment behavior.
+ * Purpose: rebuild dirty panel text, draw the panel base, and blit the rendered text image with recovered alignment
+ * behavior.
  */
-void HudUiPanel::Draw() {
+void HudUiPanel::Draw()
+{
     if (textDirty != 0) {
         RebuildTextRect();
     }
@@ -5545,13 +5250,13 @@ void HudUiPanel::Draw() {
 
             const int dstX = x + frameWidth - textWidth;
             x = dstX;
-            zVid_Image::BlitToActiveTarget(textPick, dstX, y, 0, (zVidRect32 *)(&textRect));
+            zVid_Image::BlitToActiveTarget(textPick, dstX, y, 0, (zVidRect32*)(&textRect));
             x += textWidth;
             return;
         }
 
         DrawBase();
-        zVid_Image::BlitToActiveTarget(textPick, x, y, 0, (zVidRect32 *)(&textRect));
+        zVid_Image::BlitToActiveTarget(textPick, x, y, 0, (zVidRect32*)(&textRect));
         return;
     }
 
@@ -5564,10 +5269,8 @@ void HudUiPanel::Draw() {
  * Purpose: format stack varargs into the panel text buffer and refresh cached
  * panel text state when the content changes.
  */
-void __cdecl HudUiPanel::SetTextFmt(
-    const char *format,
-    ...
-) {
+void __cdecl HudUiPanel::SetTextFmt(const char* format, ...)
+{
     if (format == 0) {
         memset(textBuffer, 0, sizeof(textBuffer));
         textDirty = 1;
@@ -5598,10 +5301,8 @@ void __cdecl HudUiPanel::SetTextFmt(
  * Purpose: format a va_list into the panel text buffer and refresh cached
  * panel text state when the content changes.
  */
-void __cdecl HudUiPanel::SetTextFmtV(
-    const char *format,
-    va_list args
-) {
+void __cdecl HudUiPanel::SetTextFmtV(const char* format, va_list args)
+{
     if (format == 0) {
         memset(textBuffer, 0, sizeof(textBuffer));
         textDirty = 1;
@@ -5632,9 +5333,8 @@ void __cdecl HudUiPanel::SetTextFmtV(
  * Purpose: copy literal panel text and refresh cached panel text state when
  * the content changes.
  */
-void HudUiPanel::SetText(
-    const char *text
-) {
+void HudUiPanel::SetText(const char* text)
+{
     if (text == 0) {
         memset(textBuffer, 0, sizeof(textBuffer));
         textDirty = 1;
@@ -5663,7 +5363,8 @@ void HudUiPanel::SetText(
  *
  * Purpose: return the panel text height without external leading after rebuilding dirty text metrics.
  */
-int HudUiPanel::QueryTextHeight() {
+int HudUiPanel::QueryTextHeight()
+{
     if (textDirty != 0) {
         RebuildTextRect();
     }
@@ -5678,9 +5379,8 @@ int HudUiPanel::QueryTextHeight() {
  *
  * Purpose: report the inherited element rectangle extended to the current rendered panel text dimensions.
  */
-void HudUiPanel::GetTextRect(
-    HudUiRect *outRect
-) {
+void HudUiPanel::GetTextRect(HudUiRect* outRect)
+{
     HudUiElement::GetTextRect(outRect);
 
     if (textDirty != 0) {
@@ -5702,7 +5402,8 @@ void HudUiPanel::GetTextRect(
  * vector helper calls with this phase present. The original helper name and
  * lexical boundary are unknown; no standalone retail body is attributed here.
  */
-inline void HudUiCompositePanel::InitializeLayout(int entryCount) {
+inline void HudUiCompositePanel::InitializeLayout(int entryCount)
+{
     HudUiPanel::SetTextFmt("W");
     HudUiCompositePanel::SetPos(0, 0);
     ResizeEntryVectorAndRelayout(entryCount);
@@ -5723,14 +5424,9 @@ inline void HudUiCompositePanel::InitializeLayout(int entryCount) {
  * Source model note: the recovered constructor symbol is
  * ??0HudUiCompositePanel@@QAE@H@Z.
  */
-HudUiCompositePanel::HudUiCompositePanel(
-    int entryCount
-)
-    : HudUiPanel(
-        0,
-        0,
-        0
-) {
+HudUiCompositePanel::HudUiCompositePanel(int entryCount)
+    : HudUiPanel(0, 0, 0)
+{
     activeEntryCount = 0;
     {
         HudUiCompositePanelEntry templateEntry;
@@ -5747,9 +5443,8 @@ HudUiCompositePanel::HudUiCompositePanel(
  *
  * Purpose: tick flash state for each visible composite-panel entry.
  */
-void HudUiCompositePanel::Update(
-    float deltaSeconds
-) {
+void HudUiCompositePanel::Update(float deltaSeconds)
+{
     if ((~flags & 0x10u) != 0) {
         for (unsigned int index = 0; index < entryVector.size(); ++index) {
             entryVector[index].Update(deltaSeconds);
@@ -5768,10 +5463,8 @@ void HudUiCompositePanel::Update(
  * the inherited HudUiElement::SetPos slot; the body writes x/y, invalidates,
  * measures one entry height, and dispatches SetPos on each transition entry.
  */
-void HudUiCompositePanel::SetPos(
-    int x,
-    int y
-) {
+void HudUiCompositePanel::SetPos(int x, int y)
+{
     this->x = x;
     this->y = y;
     Invalidate();
@@ -5779,8 +5472,7 @@ void HudUiCompositePanel::SetPos(
     const int entryHeight = QueryTextHeight();
     unsigned int index = 0;
     int yOffset = 0;
-    for (; index < entryVector.size();
-         ++index, yOffset += entryHeight) {
+    for (; index < entryVector.size(); ++index, yOffset += entryHeight) {
         entryVector[index].SetPos(GetCenterX(), GetCenterY() + yOffset);
     }
 }
@@ -5792,10 +5484,8 @@ void HudUiCompositePanel::SetPos(
  *
  * Purpose: format text into the next composite-panel history entry.
  */
-void __cdecl HudUiCompositePanel::SetTextFmt(
-    const char *format,
-    ...
-) {
+void __cdecl HudUiCompositePanel::SetTextFmt(const char* format, ...)
+{
     va_list args;
     va_start(args, format);
     SetTextFmtV(format, args);
@@ -5810,12 +5500,10 @@ void __cdecl HudUiCompositePanel::SetTextFmt(
  * Purpose: write formatted text into the active composite entry and scroll
  * history as needed.
  */
-void __cdecl HudUiCompositePanel::SetTextFmtV(
-    const char *format,
-    va_list args
-) {
+void __cdecl HudUiCompositePanel::SetTextFmtV(const char* format, va_list args)
+{
     entryVector[activeEntryCount].SetTextFmtV(format, args);
-    HudUiTransitionTextPanel *const entry = &entryVector[activeEntryCount];
+    HudUiTransitionTextPanel* const entry = &entryVector[activeEntryCount];
     entry->SetVisible(1);
     ScrollHistory();
 }
@@ -5828,14 +5516,13 @@ void __cdecl HudUiCompositePanel::SetTextFmtV(
  * Purpose: shift composite text history entries and keep the newest entry
  * active.
  */
-void HudUiCompositePanel::ScrollHistory() {
+void HudUiCompositePanel::ScrollHistory()
+{
     ++activeEntryCount;
 
     if ((unsigned int)(activeEntryCount) >= (unsigned int)(entryVector.size())) {
         {
-            for (unsigned int index = 0;
-                index < (unsigned int)(entryVector.size()) - 1;
-                ++index) {
+            for (unsigned int index = 0; index < (unsigned int)(entryVector.size()) - 1; ++index) {
                 entryVector[index].SetText(entryVector[index + 1].GetLastTextPtr());
             }
         }
@@ -5854,16 +5541,17 @@ void HudUiCompositePanel::ScrollHistory() {
  * the panel.
  */
 void HudUiCompositePanel::SetFont(
-    const char *faceName,
+    const char* faceName,
     int height,
     int weight,
     int width,
     int italic,
     int charSet,
     int pitchAndFamily
-) {
+)
+{
     for (unsigned int index = 0; index < entryVector.size(); ++index) {
-        HudUiTransitionTextPanel *const entry = &entryVector[index];
+        HudUiTransitionTextPanel* const entry = &entryVector[index];
         entry->SetFont(faceName, height, weight, width, italic, charSet, pitchAndFamily);
     }
 
@@ -5878,9 +5566,8 @@ void HudUiCompositePanel::SetFont(
  * Purpose: resize the composite-entry vector, update active entries, and
  * relayout the panel.
  */
-void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
-    int entryCount
-) {
+void HudUiCompositePanel::ResizeEntryVectorAndRelayout(int entryCount)
+{
     const int oldCount = (int)(entryVector.size());
 
     if (entryCount != oldCount) {
@@ -5905,7 +5592,8 @@ void HudUiCompositePanel::ResizeEntryVectorAndRelayout(
  *
  * Purpose: reapply the current composite-entry count after vector changes.
  */
-void HudUiCompositePanel::ReapplyEntryCount() {
+void HudUiCompositePanel::ReapplyEntryCount()
+{
     ResizeEntryCount(0, (int)(entryVector.size()));
 }
 
@@ -5914,10 +5602,8 @@ void HudUiCompositePanel::ReapplyEntryCount() {
  * @recoil-artifact defines .text recoil:function:0x4bbed0: HudUiCompositePanel::ResizeEntryCount.
  * Purpose: update composite-entry visibility for the requested active count.
  */
-void HudUiCompositePanel::ResizeEntryCount(
-    int oldCount,
-    int entryCount
-) {
+void HudUiCompositePanel::ResizeEntryCount(int oldCount, int entryCount)
+{
     if (oldCount > entryCount) {
         oldCount = entryCount;
     } else if (oldCount < 0) {
@@ -5933,7 +5619,7 @@ void HudUiCompositePanel::ResizeEntryCount(
     {
         for (int index = oldCount; index < entryCount; ++index) {
             entryVector[index].SetTextFmt("");
-            HudUiTransitionTextPanel *const entry = &entryVector[index];
+            HudUiTransitionTextPanel* const entry = &entryVector[index];
             entry->SetVisible(0);
         }
     }

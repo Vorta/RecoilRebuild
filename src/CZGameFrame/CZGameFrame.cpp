@@ -6,10 +6,7 @@
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
-HINSTANCE __stdcall AfxFindResourceHandle(
-    LPCSTR resourceName,
-    LPCSTR resourceType
-);
+HINSTANCE __stdcall AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
 
 extern "C" {
 /**
@@ -26,24 +23,11 @@ extern const char g_CZGameFrame_DefaultAppId[] = "gamez";
 extern const char g_CZGameFrame_GameBmpResourceName[] = "GAMEBMP";
 }
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CPaintDC,
-        m_hDC
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CPaintDC,
-        m_ps
-    ) == 0x14
-);
+RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_hDC) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(CPaintDC, m_ps) == 0x14);
 
 namespace {
-typedef void( *RecoilStateWndActivateMethod)(
-    RecoilApp_IState *,
-    unsigned int
-);
+typedef void (*RecoilStateWndActivateMethod)(RecoilApp_IState*, unsigned int);
 
 /*
  * BN evidence for 0x4438a0 loads the explicit CWnd argument's object pointer
@@ -75,14 +59,14 @@ IMPLEMENT_DYNCREATE(CZGameFrame, CFrameWnd)
  * base-map callback, virtual map accessor, map record, and terminal entries.
  */
 BEGIN_MESSAGE_MAP(CZGameFrame, CFrameWnd)
-    ON_WM_CLOSE()
-    ON_WM_PAINT()
-    ON_WM_SIZE()
-    ON_WM_MOVE()
-    ON_WM_CREATE()
-    ON_WM_DESTROY()
-    ON_MESSAGE(0x3b9, OnAppIdleDispatchMessage)
-    ON_WM_ACTIVATE()
+ON_WM_CLOSE()
+ON_WM_PAINT()
+ON_WM_SIZE()
+ON_WM_MOVE()
+ON_WM_CREATE()
+ON_WM_DESTROY()
+ON_MESSAGE(0x3b9, OnAppIdleDispatchMessage)
+ON_WM_ACTIVATE()
 END_MESSAGE_MAP()
 
 /**
@@ -90,9 +74,8 @@ END_MESSAGE_MAP()
  * Purpose: model the original MFC-derived construction path that installs the
  * compiler-emitted CZGameFrame vtable before the app-shell startup hooks run.
  */
-CZGameFrame::CZGameFrame(
-    const char *appId
-) {
+CZGameFrame::CZGameFrame(const char* appId)
+{
     RecoilApp::InitStdLogFiles(appId);
     zVideo::ModuleInit();
 }
@@ -102,7 +85,8 @@ CZGameFrame::CZGameFrame(
  * Purpose: let compiler-emitted MFC-derived teardown restore provider vtables,
  * release the owned game bitmap member, and then destroy the CFrameWnd base.
  */
-CZGameFrame::~CZGameFrame() {
+CZGameFrame::~CZGameFrame()
+{
     zVideo::ReturnSuccessStub();
 }
 
@@ -114,12 +98,10 @@ CZGameFrame::~CZGameFrame() {
  * Purpose: preserve the frame vtable callback shape for the MFC
  * window-validity rule.
  */
-int CZGameFrame::IsWindowValid(
-    CWnd *pWnd
-) const {
+int CZGameFrame::IsWindowValid(CWnd* pWnd) const
+{
     if (pWnd != 0) {
-        return ((const MfcWindowValidityTarget *)(const void *)pWnd)
-            ->QueryWindowValidity() == 0 ? 1 : 0;
+        return ((const MfcWindowValidityTarget*)(const void*)pWnd)->QueryWindowValidity() == 0 ? 1 : 0;
     }
 
     return 0;
@@ -131,7 +113,8 @@ int CZGameFrame::IsWindowValid(
  *
  * Purpose: construct the fixed Zipper Interactive title used by the game frame.
  */
-CString CZGameFrame::BuildWindowTitle() {
+CString CZGameFrame::BuildWindowTitle()
+{
     return CString("Zipper Interactive");
 }
 
@@ -141,7 +124,8 @@ CString CZGameFrame::BuildWindowTitle() {
  *
  * Purpose: forward close handling to the MFC CFrameWnd provider base.
  */
-void CZGameFrame::OnClose() {
+void CZGameFrame::OnClose()
+{
     CFrameWnd::OnClose();
 }
 
@@ -152,8 +136,9 @@ void CZGameFrame::OnClose() {
  * Purpose: paint the startup game bitmap into the frame unless the 3dfx client
  * rectangle update path is active.
  */
-void CZGameFrame::OnPaint() {
-    CPaintDC paintDc((CWnd *)(void *)this);
+void CZGameFrame::OnPaint()
+{
+    CPaintDC paintDc((CWnd*)(void*)this);
     if (zVid::QueryCachedClientRectUpdateMaskIf3dfx() == 0) {
         PAINTSTRUCT paintStruct = paintDc.m_ps;
         HDC compatibleDc = CreateCompatibleDC(paintDc.GetSafeHdc());
@@ -198,11 +183,8 @@ void CZGameFrame::OnPaint() {
  * Purpose: let MFC handle resizing and refresh the cached video client rect
  * when the update mask requests it.
  */
-void CZGameFrame::OnSize(
-    unsigned int nType,
-    int cx,
-    int cy
-) {
+void CZGameFrame::OnSize(unsigned int nType, int cx, int cy)
+{
     CFrameWnd::OnSize(nType, cx, cy);
     zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
@@ -211,7 +193,8 @@ void CZGameFrame::OnSize(
  * Purpose: refresh the cached client rectangle when the active renderer path
  * permits update-mask-driven window tracking.
  */
-void __cdecl zVid::UpdateCachedClientRectIfUpdateMaskEnabled() {
+void __cdecl zVid::UpdateCachedClientRectIfUpdateMaskEnabled()
+{
     if (QueryCachedClientRectUpdateMaskIf3dfx() != 0) {
         zVideo::UpdateCachedClientRectScreenCoords();
     }
@@ -224,10 +207,8 @@ void __cdecl zVid::UpdateCachedClientRectIfUpdateMaskEnabled() {
  * Purpose: dispatch default MFC move handling and refresh the cached video
  * client rect when the update mask requests it.
  */
-void CZGameFrame::OnMove(
-    int,
-    int
-) {
+void CZGameFrame::OnMove(int, int)
+{
     Default();
     zVid::UpdateCachedClientRectIfUpdateMaskEnabled();
 }
@@ -239,20 +220,17 @@ void CZGameFrame::OnMove(
  * Purpose: finish MFC frame creation by loading the game bitmap and shutting
  * down the startup mouse device path.
  */
-int CZGameFrame::OnCreate(
-    CREATESTRUCTA *createStruct
-) {
+int CZGameFrame::OnCreate(CREATESTRUCTA* createStruct)
+{
     const int result = CFrameWnd::OnCreate(createStruct);
     if (result == -1) {
         return result;
     }
 
-    m_gameBitmap.Attach(
-        LoadBitmapA(AfxFindResourceHandle(
-            g_CZGameFrame_GameBmpResourceName,
-            MAKEINTRESOURCEA(2)
-        ), g_CZGameFrame_GameBmpResourceName)
-    );
+    m_gameBitmap.Attach(LoadBitmapA(
+        AfxFindResourceHandle(g_CZGameFrame_GameBmpResourceName, MAKEINTRESOURCEA(2)),
+        g_CZGameFrame_GameBmpResourceName
+    ));
     zInput::MouseShutdownDevice();
     return 0;
 }
@@ -264,7 +242,8 @@ int CZGameFrame::OnCreate(
  * Purpose: release network/video/audio frame resources before the MFC destroy
  * handler and bitmap cleanup run.
  */
-void CZGameFrame::OnDestroy() {
+void CZGameFrame::OnDestroy()
+{
     zNetworkDPlayDestroyCachedLocalPlayer();
     zVideo::ShutdownVideoSystem();
     zSndCd::Stop();
@@ -279,14 +258,11 @@ void CZGameFrame::OnDestroy() {
  * Purpose: forward activation to MFC and synchronize Recoil app, input, game,
  * and video activation state.
  */
-void CZGameFrame::OnActivate(
-    unsigned int nState,
-    CWnd *pWndOther,
-    BOOL bMinimized
-) {
+void CZGameFrame::OnActivate(unsigned int nState, CWnd* pWndOther, BOOL bMinimized)
+{
     CFrameWnd::OnActivate(nState, pWndOther, bMinimized);
 
-    RecoilApp_IState *const currentState = m_app->GetCurrentState();
+    RecoilApp_IState* const currentState = m_app->GetCurrentState();
     if (currentState != 0) {
         currentState->OnWndActivate(nState);
     }
@@ -310,9 +286,7 @@ void CZGameFrame::OnActivate(
  * Purpose: route frame idle/dispatch work into the current Recoil application
  * object.
  */
-int CZGameFrame::OnAppIdleDispatchMessage(
-    unsigned int wParam,
-    unsigned int lParam
-) {
+int CZGameFrame::OnAppIdleDispatchMessage(unsigned int wParam, unsigned int lParam)
+{
     return m_app->OnIdleOrDispatch(wParam, lParam);
 }

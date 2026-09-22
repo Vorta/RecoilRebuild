@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-extern "C" void *g_zSnd_BackendListenerHandle;
+extern "C" void* g_zSnd_BackendListenerHandle;
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
@@ -30,13 +30,13 @@ extern "C" int g_zSnd_ListenerStateValid = 0;
  * Purpose: Stores the cached DirectSound listener position and basis vectors
  * used when software 3D playback gain and pan are recomputed.
  */
-extern "C" zSndListenerState g_zSnd_ListenerState = {0};
+extern "C" zSndListenerState g_zSnd_ListenerState = { 0 };
 
 /**
  * Purpose: Stores the cached DirectSound listener velocity used by Doppler
  * frequency scaling in software 3D playback.
  */
-extern "C" zVec3 g_zSnd_ListenerVelocity = {0};
+extern "C" zVec3 g_zSnd_ListenerVelocity = { 0 };
 
 namespace {
 const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
@@ -45,10 +45,8 @@ const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 /**
  * Purpose: update cached listener state or forward it to the A3D listener.
  */
-extern "C" int __fastcall zSndUpdateListenerState(
-    zSndListenerState *listenerState,
-    zVec3 *listenerVelocity
-) {
+extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity)
+{
     if (g_zSnd_ActiveBackend == 0) {
         if (listenerState != 0) {
             memcpy(&g_zSnd_ListenerState, listenerState, sizeof(g_zSnd_ListenerState));
@@ -63,18 +61,13 @@ extern "C" int __fastcall zSndUpdateListenerState(
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderListener *const listener =
-            (zA3dProviderListener *)(g_zSnd_BackendListenerHandle);
+        zA3dProviderListener* const listener = (zA3dProviderListener*)(g_zSnd_BackendListenerHandle);
         if (listener == 0) {
             return -1;
         }
 
         if (listenerState != 0) {
-            listener->SetPosition3f(
-                listenerState->position.x,
-                listenerState->position.y,
-                listenerState->position.z
-            );
+            listener->SetPosition3f(listenerState->position.x, listenerState->position.y, listenerState->position.z);
             listener->SetOrientation6f(
                 -listenerState->forward.x,
                 -listenerState->forward.y,
@@ -97,11 +90,8 @@ extern "C" int __fastcall zSndUpdateListenerState(
 /**
  * Purpose: route play-handle 3D updates to the active sound backend.
  */
-int __fastcall zSndPlayHandle::Update3DDispatch(
-    zVec3 *worldPos,
-    zVec3 *velocity,
-    int velocityScaleMode
-) {
+int __fastcall zSndPlayHandle::Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
+{
     if (g_zSnd_ActiveBackend == 1) {
         return Update3DA3D(worldPos, velocity, velocityScaleMode);
     }
@@ -116,11 +106,8 @@ int __fastcall zSndPlayHandle::Update3DDispatch(
 /**
  * Purpose: update A3D provider position, velocity, gain, and Doppler state.
  */
-int __fastcall zSndPlayHandle::Update3DA3D(
-    zVec3 *worldPos,
-    zVec3 *velocity,
-    int velocityScaleMode
-) {
+int __fastcall zSndPlayHandle::Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
+{
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return -1;
     }
@@ -130,7 +117,7 @@ int __fastcall zSndPlayHandle::Update3DA3D(
     }
 
     int const sourceGainScaled = gainScaled;
-    zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
+    zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
     if (source == 0) {
         return -1;
     }
@@ -140,13 +127,13 @@ int __fastcall zSndPlayHandle::Update3DA3D(
     }
 
     if (velocity != 0) {
-        ((zA3dProviderSource *)backendBuffer)->SetVelocity3f(velocity->x, velocity->y, velocity->z);
+        ((zA3dProviderSource*)backendBuffer)->SetVelocity3f(velocity->x, velocity->y, velocity->z);
     }
 
     if (zSnd::IsMuted() != 0) {
         source->SetGain(0.0f);
     } else {
-        source->SetGain(zSndSamplePlaySimple(*(float *)&sourceGainScaled));
+        source->SetGain(zSndSamplePlaySimple(*(float*)&sourceGainScaled));
     }
 
     source->SetDopplerScale(velocityScaleMode != 0 ? 1.0f : 0.0f);
@@ -156,11 +143,8 @@ int __fastcall zSndPlayHandle::Update3DA3D(
 /**
  * Purpose: update DirectSound spatial pan, volume, and Doppler state.
  */
-int __fastcall zSndPlayHandle::Update3D(
-    zVec3 *worldPos,
-    zVec3 *velocity,
-    int velocityScaleMode
-) {
+int __fastcall zSndPlayHandle::Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
+{
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return -1;
     }
@@ -181,7 +165,7 @@ int __fastcall zSndPlayHandle::Update3D(
             gain = gainScaled;
         }
     } else {
-        zSndSample *const sample = ownerSample;
+        zSndSample* const sample = ownerSample;
         if (sample->createGuard != 0) {
             return -1;
         }
@@ -199,25 +183,21 @@ int __fastcall zSndPlayHandle::Update3D(
             gain = gainScaled;
         }
 
-        const zVec3 relativePos = {this->worldPos.x - g_zSnd_ListenerState.position.x,
+        const zVec3 relativePos = { this->worldPos.x - g_zSnd_ListenerState.position.x,
             this->worldPos.y - g_zSnd_ListenerState.position.y,
-            this->worldPos.z - g_zSnd_ListenerState.position.z};
-        const float distanceSquared =
-            relativePos.x * relativePos.x +
-            relativePos.y * relativePos.y +
-            relativePos.z * relativePos.z;
+            this->worldPos.z - g_zSnd_ListenerState.position.z };
+        const float distanceSquared
+            = relativePos.x * relativePos.x + relativePos.y * relativePos.y + relativePos.z * relativePos.z;
 
         float distance = sample->rangeMin;
         float inverseDistance = 1.0f / sample->rangeMin;
         if (distanceSquared != 0.0f) {
-            int distanceBits = *(int *)&distanceSquared;
+            int distanceBits = *(int*)&distanceSquared;
             distanceBits = (distanceBits >> 1) + 0x1fc00000;
-            distance = *(float *)&distanceBits;
+            distance = *(float*)&distanceBits;
             inverseDistance = 1.0f / distance;
-            const float panDot =
-                relativePos.x * g_zSnd_ListenerState.right.x +
-                relativePos.y * g_zSnd_ListenerState.right.y +
-                relativePos.z * g_zSnd_ListenerState.right.z;
+            const float panDot = relativePos.x * g_zSnd_ListenerState.right.x
+                + relativePos.y * g_zSnd_ListenerState.right.y + relativePos.z * g_zSnd_ListenerState.right.z;
             pan = (int)(panDot * inverseDistance * 1600.0f);
         }
 
@@ -234,21 +214,17 @@ int __fastcall zSndPlayHandle::Update3D(
         }
 
         if (velocityScaleMode != 0) {
-            const zVec3 relativeVelocity = {velocityOrDir.x - g_zSnd_ListenerVelocity.x,
+            const zVec3 relativeVelocity = { velocityOrDir.x - g_zSnd_ListenerVelocity.x,
                 velocityOrDir.y - g_zSnd_ListenerVelocity.y,
-                velocityOrDir.z - g_zSnd_ListenerVelocity.z};
-            const float dopplerDot =
-                relativeVelocity.x * relativePos.x +
-                relativeVelocity.y * relativePos.y +
-                relativeVelocity.z * relativePos.z;
-            const float dopplerPitchScale =
-                1.0f - dopplerDot * inverseDistance * g_zSndInvSpeedOfSoundMps;
+                velocityOrDir.z - g_zSnd_ListenerVelocity.z };
+            const float dopplerDot = relativeVelocity.x * relativePos.x + relativeVelocity.y * relativePos.y
+                + relativeVelocity.z * relativePos.z;
+            const float dopplerPitchScale = 1.0f - dopplerDot * inverseDistance * g_zSndInvSpeedOfSoundMps;
 
             unsigned int baseFrequency = 0;
             buffer->GetFrequency((LPDWORD)&baseFrequency);
             const __int64 baseFrequencyWide = baseFrequency;
-            const int scaledFrequency =
-                (int)((float)(baseFrequencyWide)*dopplerPitchScale);
+            const int scaledFrequency = (int)((float)(baseFrequencyWide)*dopplerPitchScale);
             ((LPDIRECTSOUNDBUFFER)backendBuffer)->SetFrequency(scaledFrequency);
         }
     }
@@ -270,7 +246,8 @@ int __fastcall zSndPlayHandle::Update3D(
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: return the current 3D-audio speed-of-sound setting.
  */
-extern "C" float __cdecl zSndGetSpeedOfSoundMps() {
+extern "C" float __cdecl zSndGetSpeedOfSoundMps()
+{
     return g_zSndSpeedOfSoundMps;
 }
 
@@ -278,9 +255,8 @@ extern "C" float __cdecl zSndGetSpeedOfSoundMps() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp.
  * Purpose: store the speed of sound and its reciprocal for 3D audio.
  */
-void __fastcall zSnd::SetSpeedOfSoundMps(
-    float speedOfSoundMps
-) {
+void __fastcall zSnd::SetSpeedOfSoundMps(float speedOfSoundMps)
+{
     g_zSndSpeedOfSoundMps = speedOfSoundMps;
     g_zSndInvSpeedOfSoundMps = 1.0f / speedOfSoundMps;
 }

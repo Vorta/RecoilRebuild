@@ -37,13 +37,13 @@ struct NetSessionBrowserDialog : CDialog {
 
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
-    NetSessionBrowserDialog(CWnd *parentWnd);
-    virtual ~NetSessionBrowserDialog() {}
-    virtual const AFX_MSGMAP * GetMessageMap() const;
+    NetSessionBrowserDialog(CWnd* parentWnd);
+    virtual ~NetSessionBrowserDialog() { }
+    virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange* dataExchange);
     int RefreshSessionList();
     void ConnectSelectedProvider();
     void OnTimer(UINT_PTR timerId);
@@ -54,66 +54,16 @@ struct NetSessionBrowserDialog : CDialog {
     void OnHelpDocs();
 };
 RECOIL_STATIC_ASSERT(sizeof(NetSessionBrowserDialog) == 0x1b4);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_selectedSessionIndex
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_sessionCount
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_shouldEnterHostSetup
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_selectedProviderIsModem
-    ) == 0x6c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_playerNameEdit
-    ) == 0x70
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_okButton
-    ) == 0xb0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_createSessionButton
-    ) == 0xf0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_sessionList
-    ) == 0x130
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_providerCombo
-    ) == 0x170
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionBrowserDialog,
-        m_playerName
-    ) == 0x1b0
-);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_selectedSessionIndex) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_sessionCount) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_shouldEnterHostSetup) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_selectedProviderIsModem) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_playerNameEdit) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_okButton) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_createSessionButton) == 0xf0);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_sessionList) == 0x130);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_providerCombo) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionBrowserDialog, m_playerName) == 0x1b0);
 
 /**
  * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
@@ -135,91 +85,36 @@ struct NetSessionConfigDialog : CDialog {
 
     static const AFX_MSGMAP messageMap;
     static const AFX_MSGMAP_ENTRY messageEntries[];
-    static const AFX_MSGMAP *__stdcall GetBaseMessageMapForMfc();
+    static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
-    NetSessionConfigDialog(CWnd *parentWnd);
-    virtual ~NetSessionConfigDialog() {}
-    virtual const AFX_MSGMAP * GetMessageMap() const;
+    NetSessionConfigDialog(CWnd* parentWnd);
+    virtual ~NetSessionConfigDialog() { }
+    virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange *dataExchange);
+    virtual void DoDataExchange(CDataExchange* dataExchange);
     void OnDestroy();
     void OnMapChanged();
 };
 RECOIL_STATIC_ASSERT(sizeof(NetSessionConfigDialog) == 0x17c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_selectedMapIndex
-    ) == 0x60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_defaultExerciseOrdinal
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_maxPlayersSpin
-    ) == 0x68
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_valueLimitSpin
-    ) == 0xa8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_timeLimitSpin
-    ) == 0xe8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_mapCombo
-    ) == 0x128
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_sessionName
-    ) == 0x168
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_valueLimit
-    ) == 0x16c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_timeLimitMinutes
-    ) == 0x170
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_maxPlayers
-    ) == 0x174
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetSessionConfigDialog,
-        m_unusedCheckboxEnabled
-    ) == 0x178
-);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_selectedMapIndex) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_defaultExerciseOrdinal) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_maxPlayersSpin) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_valueLimitSpin) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_timeLimitSpin) == 0xe8);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_mapCombo) == 0x128);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_sessionName) == 0x168);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_valueLimit) == 0x16c);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_timeLimitMinutes) == 0x170);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_maxPlayers) == 0x174);
+RECOIL_STATIC_ASSERT(offsetof(NetSessionConfigDialog, m_unusedCheckboxEnabled) == 0x178);
 
 extern CString g_NetSessionConfigDialog_MapNameStrings[7];
 
 extern "C" int g_NetUiTcpIpProviderWarningShown;
 
 struct PlayerModalState {
-    PlayerModalState *next;
-    PlayerMasterModalData *masterModalData;
+    PlayerModalState* next;
+    PlayerMasterModalData* masterModalData;
     int modalStateCode;
     zVec3 transformedProbePointWorldByIndex[4];
     unsigned char reserved03c[0x30];
@@ -227,128 +122,43 @@ struct PlayerModalState {
     float chassisPitchFilterState;
     float chassisRollAngleRad;
     float chassisRollFilterState;
-    CZNodePartial *nodeRightMorphs;
-    CZNodePartial *nodeLeftMorphs;
-    CZNodePartial *modalNode;
-    CZNodePartial *nodeRTracks;
-    CZNodePartial *nodeLTracks;
-    CZNodePartial *nodeProps;
-    CZNodePartial *nodeCaustic1;
-    CZNodePartial *nodeWake;
-    CZNodePartial *nodeSplashL;
-    CZNodePartial *nodeSplashR;
-    CZNodePartial *nodeDustL;
-    CZNodePartial *nodeDustR;
-    zSndPlayHandle *modalSfxHandle[4];
+    CZNodePartial* nodeRightMorphs;
+    CZNodePartial* nodeLeftMorphs;
+    CZNodePartial* modalNode;
+    CZNodePartial* nodeRTracks;
+    CZNodePartial* nodeLTracks;
+    CZNodePartial* nodeProps;
+    CZNodePartial* nodeCaustic1;
+    CZNodePartial* nodeWake;
+    CZNodePartial* nodeSplashL;
+    CZNodePartial* nodeSplashR;
+    CZNodePartial* nodeDustL;
+    CZNodePartial* nodeDustR;
+    zSndPlayHandle* modalSfxHandle[4];
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        chassisPitchAngleRad
-    ) == 0x6c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        chassisPitchFilterState
-    ) == 0x70
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        chassisRollAngleRad
-    ) == 0x74
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        chassisRollFilterState
-    ) == 0x78
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeRightMorphs
-    ) == 0x7c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeLeftMorphs
-    ) == 0x80
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        modalNode
-    ) == 0x84
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeRTracks
-    ) == 0x88
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeLTracks
-    ) == 0x8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeProps
-    ) == 0x90
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeCaustic1
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeWake
-    ) == 0x98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeSplashL
-    ) == 0x9c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeSplashR
-    ) == 0xa0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeDustL
-    ) == 0xa4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeDustR
-    ) == 0xa8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        modalSfxHandle
-    ) == 0xac
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchAngleRad) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchFilterState) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollAngleRad) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisRollFilterState) == 0x78);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeRightMorphs) == 0x7c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeLeftMorphs) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeRTracks) == 0x88);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeLTracks) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeProps) == 0x90);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeCaustic1) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeWake) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeSplashL) == 0x9c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeSplashR) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeDustL) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeDustR) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalSfxHandle) == 0xac);
 
 struct GameNetPlayerSaveState {
     unsigned char reserved000[0x04];
-    zUtil_PlayerStateStorage *playerState;
-    PlayerModalState *primaryModalState;
+    zUtil_PlayerStateStorage* playerState;
+    PlayerModalState* primaryModalState;
 };
 
 struct GameNetPlayerRow {
@@ -358,13 +168,13 @@ struct GameNetPlayerRow {
     int score;
     int lapCount;
     float lapTimeSec;
-    CZNodePartial *playerNode;
-    CZNodePartial *turretNode;
-    CZNodePartial *gunNode;
+    CZNodePartial* playerNode;
+    CZNodePartial* turretNode;
+    CZNodePartial* gunNode;
     char displayName[0x40];
     HudUiPanel hudWidget;
-    GameNetPlayerSaveState *saveState;
-    GameNetPlayerRow *next;
+    GameNetPlayerSaveState* saveState;
+    GameNetPlayerRow* next;
 
     void ApplyPlayerColorTint();
     void DestroyEmbeddedPanel();
@@ -372,21 +182,21 @@ struct GameNetPlayerRow {
 
 struct GameNetPlayerRowListState {
     unsigned int flags;
-    GameNetPlayerRow *head;
-    GameNetPlayerRow *tail;
+    GameNetPlayerRow* head;
+    GameNetPlayerRow* tail;
     unsigned int count;
 };
 
 struct GameNetSpawnPoint {
     zVec3 position;
     float yawDegrees;
-    GameNetSpawnPoint *next;
+    GameNetSpawnPoint* next;
 };
 
 struct GameNetSpawnPointListState {
     unsigned int flags;
-    GameNetSpawnPoint *head;
-    GameNetSpawnPoint *tail;
+    GameNetSpawnPoint* head;
+    GameNetSpawnPoint* tail;
     unsigned int count;
 };
 
@@ -509,12 +319,10 @@ struct NetPkt14_HudTimerAndFlagsSync {
 };
 
 namespace GameNet {
-GameNetPlayerRow *__fastcall FindPlayerRowByKey(int playerKey);
+GameNetPlayerRow* __fastcall FindPlayerRowByKey(int playerKey);
 int __cdecl GetLocalPlayerColorIndexOrZero();
-float __fastcall GetNearestOtherPlayerDistanceToSpawnPoint(
-    GameNetSpawnPoint *spawnPoint,
-    GameNetPlayerSaveState **outSaveState
-);
+float __fastcall
+GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNetPlayerSaveState** outSaveState);
 int __cdecl AreAllPlayersAtLapTarget();
 void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks();
 void __cdecl UnregisterGameplayPacketHandlers();
@@ -524,122 +332,41 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown();
 void __fastcall SetStatusBitsFromFlags(unsigned int statusFlags);
 int __cdecl GetStatusBitAllowMaps();
 int __cdecl GetStatusBitNameTags();
-void __fastcall ShowPlayerKillMessage(
-    GameNetPlayerRow *victimRow,
-    OptCatalogEntryDef *killEntry,
-    GameNetPlayerRow *killerRow
-);
-int __cdecl ReassignPlayerColorsAndRefreshRows(
-    int senderPlayerId,
-    zNetworkPacketHeader *packet
-);
-int __fastcall HandlePkt03RemoveRemotePlayer(
-    int senderPlayerId,
-    zNetworkPacketHeader *packet
-);
-void __fastcall RefreshPlayerListMenu(GameNetPlayerRow *playerRow);
-int __fastcall HandlePkt0CHudTimerStatusBits(
-    int senderPlayerId,
-    NetPkt0C_HudTimerStatusBits *packet
-);
-int __fastcall HandlePkt0BChatMessage(
-    int senderPlayerId,
-    NetPkt0B_ChatMessage *packet
-);
-void __fastcall SendPkt0BChatMessage(const char *message);
-int __fastcall HandlePkt0DHudTimerPanelState(
-    int senderPlayerId,
-    NetPkt0D_HudTimerPanelState *packet
-);
-int __fastcall HandlePkt08PlayerKillEvent(
-    int localPlayerKey,
-    NetPkt08_PlayerKillEvent *packet
-);
-void __fastcall SendPkt08PlayerKillEvent(
-    zUtil_SaveGameState *saveState,
-    short killMethodOrOptCatalogEntryId
-);
+void __fastcall
+ShowPlayerKillMessage(GameNetPlayerRow* victimRow, OptCatalogEntryDef* killEntry, GameNetPlayerRow* killerRow);
+int __cdecl ReassignPlayerColorsAndRefreshRows(int senderPlayerId, zNetworkPacketHeader* packet);
+int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketHeader* packet);
+void __fastcall RefreshPlayerListMenu(GameNetPlayerRow* playerRow);
+int __fastcall HandlePkt0CHudTimerStatusBits(int senderPlayerId, NetPkt0C_HudTimerStatusBits* packet);
+int __fastcall HandlePkt0BChatMessage(int senderPlayerId, NetPkt0B_ChatMessage* packet);
+void __fastcall SendPkt0BChatMessage(const char* message);
+int __fastcall HandlePkt0DHudTimerPanelState(int senderPlayerId, NetPkt0D_HudTimerPanelState* packet);
+int __fastcall HandlePkt08PlayerKillEvent(int localPlayerKey, NetPkt08_PlayerKillEvent* packet);
+void __fastcall SendPkt08PlayerKillEvent(zUtil_SaveGameState* saveState, short killMethodOrOptCatalogEntryId);
 void __cdecl SendPkt09PlayerScoreboardSnapshot();
-void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState *saveState);
-int __fastcall HandlePkt09PlayerScoreboardSnapshot(
-    int senderPlayerId,
-    NetPkt09_PlayerScoreboardSnapshot *packet
-);
-void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(
-    zUtil_SaveGameState *saveState,
-    int useColorIndexedSpawn
-);
-int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(
-    zUtil_SaveGameState *saveState
-);
-int __fastcall ApplyPkt06PlayerStateSnapshotToRow(
-    GameNetPlayerRow *row,
-    NetPkt06_PlayerStateSnapshot *packet
-);
-int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(
-    int senderPlayerId,
-    NetPkt06_PlayerStateSnapshot *packet
-);
-int __fastcall HandlePkt06PlayerStateSnapshot(
-    int senderPlayerId,
-    NetPkt06_PlayerStateSnapshot *packet
-);
-int __fastcall HandlePkt07_AltGunDispatch(
-    int senderPlayerId,
-    NetPkt07_AltGunDispatch *packet
-);
-void __fastcall SendPkt07_AltGunDispatch(
-    short weaponId,
-    unsigned int dispatchFlags
-);
-int __fastcall AltGunDispatchNoOpCallback(
-    OptCatalogEntryDef *entry,
-    void **saveStateSlot
-);
-int __fastcall HostSendPkt10QSandFeature(
-    zDEClient_QSandEventTemplate *eventTemplate
-);
-int __fastcall SendPkt10QSandEvent(
-    zDEClient_QSandEventTemplate *eventTemplate
-);
-int __fastcall HostSendPkt0FCraterFeature(
-    zDEClient_CraterEventTemplate *eventTemplate
-);
-void __fastcall SendPkt0DHudTimerPanelState(
-    HudTimerPanelNetState *timerState
-);
-int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState *timerState);
-int __fastcall HandlePkt0EPlayerLapProgress(
-    int senderPlayerId,
-    NetPkt0E_PlayerLapProgress *packet
-);
-int __fastcall HandlePkt13EffectAnimActivationRecord(
-    int senderPlayerId,
-    zNetworkPacketHeader *packet
-);
-void __fastcall SendPkt13EffectAnimActivationRecord(
-    zEffectAnimActivationRecord *record
-);
+void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState* saveState);
+int __fastcall HandlePkt09PlayerScoreboardSnapshot(int senderPlayerId, NetPkt09_PlayerScoreboardSnapshot* packet);
+void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState* saveState, int useColorIndexedSpawn);
+int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* saveState);
+int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt06_PlayerStateSnapshot* packet);
+int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId, NetPkt06_PlayerStateSnapshot* packet);
+int __fastcall HandlePkt06PlayerStateSnapshot(int senderPlayerId, NetPkt06_PlayerStateSnapshot* packet);
+int __fastcall HandlePkt07_AltGunDispatch(int senderPlayerId, NetPkt07_AltGunDispatch* packet);
+void __fastcall SendPkt07_AltGunDispatch(short weaponId, unsigned int dispatchFlags);
+int __fastcall AltGunDispatchNoOpCallback(OptCatalogEntryDef* entry, void** saveStateSlot);
+int __fastcall HostSendPkt10QSandFeature(zDEClient_QSandEventTemplate* eventTemplate);
+int __fastcall SendPkt10QSandEvent(zDEClient_QSandEventTemplate* eventTemplate);
+int __fastcall HostSendPkt0FCraterFeature(zDEClient_CraterEventTemplate* eventTemplate);
+void __fastcall SendPkt0DHudTimerPanelState(HudTimerPanelNetState* timerState);
+int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState* timerState);
+int __fastcall HandlePkt0EPlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerLapProgress* packet);
+int __fastcall HandlePkt13EffectAnimActivationRecord(int senderPlayerId, zNetworkPacketHeader* packet);
+void __fastcall SendPkt13EffectAnimActivationRecord(zEffectAnimActivationRecord* record);
 void __cdecl SendAllPkt13EffectAnimActivationRecords();
-int __fastcall HandlePkt14HudTimerAndFlagsSync(
-    int senderPlayerId,
-    NetPkt14_HudTimerAndFlagsSync *packet
-);
-int __fastcall SendPkt14HudTimerAndFlagsSync(
-    int eventCode,
-    unsigned int statusFlags,
-    int valueOrTime,
-    int auxParam
-);
-int __fastcall HostUpdateSessionDescStatusFields(
-    int eventCode,
-    int auxParam,
-    int valueOrTime,
-    int statusFlags
-);
-int __fastcall UpdateRemotePlayerHudWidgetScreenPos(
-    zUtil_SaveGameState *saveState
-);
+int __fastcall HandlePkt14HudTimerAndFlagsSync(int senderPlayerId, NetPkt14_HudTimerAndFlagsSync* packet);
+int __fastcall SendPkt14HudTimerAndFlagsSync(int eventCode, unsigned int statusFlags, int valueOrTime, int auxParam);
+int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, int valueOrTime, int statusFlags);
+int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveState);
 void __fastcall ChatComposeKeyCallback(int dikCodeWithMods);
 void __cdecl BeginChatCompose();
 void __cdecl EndChatComposeAndSend();
@@ -648,10 +375,7 @@ void __cdecl EndChatComposeAndSendThunk();
 
 namespace Net {
 void __cdecl InitFromZrd();
-void __fastcall FormatIpv4Address(
-    char *outText,
-    unsigned int ipAddress
-);
+void __fastcall FormatIpv4Address(char* outText, unsigned int ipAddress);
 } // namespace Net
 
 namespace GameNetSpawnPointList {
@@ -660,10 +384,7 @@ void __cdecl InitGlobals();
 
 namespace GameNetPlayerRowList {
 void __cdecl Reset();
-GameNetPlayerRow *__fastcall AppendNewRow(
-    GameNetPlayerRowListState *self,
-    int zeroInitializeRow
-);
+GameNetPlayerRow* __fastcall AppendNewRow(GameNetPlayerRowListState* self, int zeroInitializeRow);
 } // namespace GameNetPlayerRowList
 
 extern "C" {
@@ -703,426 +424,86 @@ extern NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf;
 #define g_GameNetSpawnPointCount (g_GameNetSpawnPointList.count)
 
 #if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        modalNode
-    ) == 0x84
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        nodeCaustic1
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        modalSfxHandle
-    ) == 0xac
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PlayerModalState,
-        next
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerSaveState,
-        primaryModalState
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        playerColorIndex
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        playerColorPackedRgb
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        score
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        lapCount
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        lapTimeSec
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        playerNode
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        turretNode
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        gunNode
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        displayName
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        hudWidget
-    ) == 0x64
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        saveState
-    ) == 0x308
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRow,
-        next
-    ) == 0x30c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRowListState,
-        head
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRowListState,
-        tail
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetPlayerRowListState,
-        count
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalNode) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, nodeCaustic1) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, modalSfxHandle) == 0xac);
+RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerSaveState, primaryModalState) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, playerColorIndex) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, playerColorPackedRgb) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, score) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, lapCount) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, lapTimeSec) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, playerNode) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, turretNode) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, gunNode) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, displayName) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, hudWidget) == 0x64);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, saveState) == 0x308);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRow, next) == 0x30c);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRowListState, head) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRowListState, tail) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(GameNetPlayerRowListState, count) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(GameNetPlayerRowListState) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetSpawnPoint,
-        yawDegrees
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetSpawnPoint,
-        next
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetSpawnPointListState,
-        head
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetSpawnPointListState,
-        tail
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        GameNetSpawnPointListState,
-        count
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPoint, yawDegrees) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPoint, next) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPointListState, head) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPointListState, tail) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(GameNetSpawnPointListState, count) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(GameNetSpawnPointListState) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudTimerPanelNetState,
-        timerDirectionNeg
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudTimerPanelNetState,
-        timeWarningShown
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudTimerPanelNetState,
-        oneMinuteWarningShown
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudTimerPanelNetState,
-        startCountdownTriggered
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudTimerPanelNetState,
-        tailFlags
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, timerDirectionNeg) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, timeWarningShown) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, oneMinuteWarningShown) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, startCountdownTriggered) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(HudTimerPanelNetState, tailFlags) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(HudTimerPanelNetState) == 0x4c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0C_HudTimerStatusBits,
-        timerSeconds
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0C_HudTimerStatusBits,
-        statusBitsPackedHiWord
-    ) == 0x12
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0C_HudTimerStatusBits, timerSeconds) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0C_HudTimerStatusBits, statusBitsPackedHiWord) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0C_HudTimerStatusBits) == 0x14);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0D_HudTimerPanelState,
-        hudTimerFlagsPacked
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        cachedAltSelectionCode
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        packedMasterTypeColorFlags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        altGunAimOrigin
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        storedTargetPos
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        worldPos
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        vehicleRotationAngles
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        statusMeterValue
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        progressTargetCount
-    ) == 0x44
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt06_PlayerStateSnapshot,
-        progressTargetPoints
-    ) == 0x48
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0D_HudTimerPanelState, hudTimerFlagsPacked) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, cachedAltSelectionCode) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, packedMasterTypeColorFlags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, altGunAimOrigin) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, storedTargetPos) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, worldPos) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, vehicleRotationAngles) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, statusMeterValue) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, progressTargetCount) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, progressTargetPoints) == 0x48);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt06_PlayerStateSnapshot) == 0xc0);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0D_HudTimerPanelState) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0A_RemoveRuntimeRelay,
-        optCatalogEntryId
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0A_RemoveRuntimeRelay,
-        pointOrVec3
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0A_RemoveRuntimeRelay,
-        ownerPlayerKey
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0A_RemoveRuntimeRelay, optCatalogEntryId) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0A_RemoveRuntimeRelay, pointOrVec3) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0A_RemoveRuntimeRelay, ownerPlayerKey) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0A_RemoveRuntimeRelay) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt07_AltGunDispatch,
-        weaponId
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt07_AltGunDispatch,
-        dispatchFlags
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt07_AltGunDispatch,
-        targetPos
-    ) == 0x10
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt07_AltGunDispatch, weaponId) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt07_AltGunDispatch, dispatchFlags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt07_AltGunDispatch, targetPos) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt07_AltGunDispatch) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0E_PlayerLapProgress,
-        lapCountPacked
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0E_PlayerLapProgress,
-        lapTimeSec
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0E_PlayerLapProgress, lapCountPacked) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0E_PlayerLapProgress, lapTimeSec) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0E_PlayerLapProgress) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0F_CraterEvent,
-        eventFlags
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0F_CraterEvent,
-        craterTypeId
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0F_CraterEvent,
-        center
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0F_CraterEvent,
-        radius
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0F_CraterEvent, eventFlags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0F_CraterEvent, craterTypeId) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0F_CraterEvent, center) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0F_CraterEvent, radius) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0F_CraterEvent) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt10_QSandEvent,
-        eventFlags
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt10_QSandEvent,
-        center
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt10_QSandEvent,
-        radius
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt10_QSandEvent, eventFlags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt10_QSandEvent, center) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt10_QSandEvent, radius) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt10_QSandEvent) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0B_ChatMessage,
-        messageLength
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt0B_ChatMessage,
-        message
-    ) == 0x0a
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt08_PlayerKillEvent,
-        killMethodOrOptCatalogEntryId
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt08_PlayerKillEvent,
-        targetPlayerKey
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0B_ChatMessage, messageLength) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt0B_ChatMessage, message) == 0x0a);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt08_PlayerKillEvent, killMethodOrOptCatalogEntryId) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt08_PlayerKillEvent, targetPlayerKey) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt08_PlayerKillEvent) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt09_PlayerScoreboardEntry,
-        packedScoreAndLapCount
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt09_PlayerScoreboardEntry, packedScoreAndLapCount) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt09_PlayerScoreboardEntry) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt09_PlayerScoreboardSnapshot,
-        entryCount
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt09_PlayerScoreboardSnapshot,
-        entries
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt14_HudTimerAndFlagsSync,
-        eventCode
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt14_HudTimerAndFlagsSync,
-        auxParam
-    ) == 0x0a
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt14_HudTimerAndFlagsSync,
-        valueOrTime
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        NetPkt14_HudTimerAndFlagsSync,
-        statusFlags
-    ) == 0x10
-);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt09_PlayerScoreboardSnapshot, entryCount) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt09_PlayerScoreboardSnapshot, entries) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt14_HudTimerAndFlagsSync, eventCode) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt14_HudTimerAndFlagsSync, auxParam) == 0x0a);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt14_HudTimerAndFlagsSync, valueOrTime) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt14_HudTimerAndFlagsSync, statusFlags) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(NetPkt14_HudTimerAndFlagsSync) == 0x14);
 #endif

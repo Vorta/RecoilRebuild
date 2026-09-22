@@ -10,10 +10,10 @@
 #include "recoil/recoil_callconv.h"
 
 namespace zCom {
-typedef HRESULT(WINAPI *QueryInterfaceResolver)(
-    void *objectBase,
-    const GUID *requestedIid,
-    void **outInterface,
+typedef HRESULT(WINAPI* QueryInterfaceResolver)(
+    void* objectBase,
+    const GUID* requestedIid,
+    void** outInterface,
     DWORD interfaceOffset
 );
 
@@ -23,47 +23,24 @@ enum zComInterfaceMapResolverRaw {
 };
 
 struct InterfaceMapEntry {
-    const GUID *iid;
+    const GUID* iid;
     DWORD interfaceOffset;
     unsigned int resolverRaw;
 };
 RECOIL_STATIC_ASSERT(sizeof(InterfaceMapEntry) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        InterfaceMapEntry,
-        iid
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        InterfaceMapEntry,
-        interfaceOffset
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        InterfaceMapEntry,
-        resolverRaw
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(InterfaceMapEntry, iid) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(InterfaceMapEntry, interfaceOffset) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(InterfaceMapEntry, resolverRaw) == 0x08);
 
 HRESULT WINAPI QueryInterfaceFromInterfaceMap(
-    void *objectBase,
-    const InterfaceMapEntry *interfaceMap,
-    const GUID *requestedIid,
-    void **outInterface
+    void* objectBase,
+    const InterfaceMapEntry* interfaceMap,
+    const GUID* requestedIid,
+    void** outInterface
 );
 
-HRESULT WINAPI ConnectionPointContainerAdvise(
-    IUnknown *source,
-    IUnknown *sink,
-    REFIID connectionPointIid,
-    DWORD *cookie
-);
+HRESULT WINAPI
+ConnectionPointContainerAdvise(IUnknown* source, IUnknown* sink, REFIID connectionPointIid, DWORD* cookie);
 
-HRESULT WINAPI ConnectionPointContainerUnadvise(
-    IUnknown *source,
-    REFIID connectionPointIid,
-    DWORD cookie
-);
+HRESULT WINAPI ConnectionPointContainerUnadvise(IUnknown* source, REFIID connectionPointIid, DWORD cookie);
 } // namespace zCom

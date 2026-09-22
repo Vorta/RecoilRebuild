@@ -34,12 +34,7 @@ struct zMat4x3 {
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zMat4x3) == 0x30);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zMat4x3,
-        posX
-    ) == 0x24
-);
+RECOIL_STATIC_ASSERT(offsetof(zMat4x3, posX) == 0x24);
 
 struct zQuat {
     float w;
@@ -49,12 +44,7 @@ struct zQuat {
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zQuat) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zQuat,
-        x
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(zQuat, x) == 0x04);
 
 /**
  * Axis-aligned box defined by its minimum and maximum positions.
@@ -84,30 +74,10 @@ struct zProjectedSphere {
 RECOIL_STATIC_ASSERT(sizeof(zBBox3f) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zBBoxCorners) == 0x60);
 RECOIL_STATIC_ASSERT(sizeof(_exception) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        _exception,
-        name
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        _exception,
-        arg1
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        _exception,
-        arg2
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        _exception,
-        retval
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(_exception, name) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(_exception, arg1) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(_exception, arg2) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(_exception, retval) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zVec2) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedPoint) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedSphere) == 0x0c);

@@ -33,9 +33,9 @@ extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
 extern "C" int g_zSndCdTrackCountCached = 0;
 extern "C" int g_zSndCdDiscLengthMinute = 0;
 extern "C" int g_zSndCdDiscLengthSecond = 0;
-extern "C" zSndCdTrackState g_zSndCdPlayFrom = {0};
-extern "C" zSndCdTrackState g_zSndCdCurrent = {0};
-extern "C" zSndCdTrackState g_zSndCdPlayTo = {0};
+extern "C" zSndCdTrackState g_zSndCdPlayFrom = { 0 };
+extern "C" zSndCdTrackState g_zSndCdCurrent = { 0 };
+extern "C" zSndCdTrackState g_zSndCdPlayTo = { 0 };
 extern "C" int g_zSnd_IsInitialized = 0;
 extern "C" int g_zSnd_ActiveBackend = 0;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
@@ -59,7 +59,7 @@ namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
 const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
-std::list<zSndCdTrackEntry *> g_zSndCdTrackList;
+std::list<zSndCdTrackEntry*> g_zSndCdTrackList;
 } // namespace
 
 namespace zSnd {
@@ -76,14 +76,13 @@ int __cdecl Shutdown();
  * @recoil-artifact defines .text recoil:function:0x4a20d0: zSndCd::Init.
  * Purpose: Open the MCI CD device, cache track metadata, and build the CD track list.
  */
-RECOIL_NO_GS int __fastcall Init(
-    zReader::Node *cdTracksNode
-) {
+RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) != 0) {
         return 1;
     }
 
-    MCI_OPEN_PARMSA openParms = {0};
+    MCI_OPEN_PARMSA openParms = { 0 };
     openParms.lpstrDeviceType = "cdaudio";
     DWORD mciError = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
@@ -92,7 +91,7 @@ RECOIL_NO_GS int __fastcall Init(
 
     g_zSndCdDeviceId = (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
 
-    MCI_STATUS_PARMS statusParms = {0};
+    MCI_STATUS_PARMS statusParms = { 0 };
     statusParms.dwItem = 5;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
@@ -109,7 +108,7 @@ RECOIL_NO_GS int __fastcall Init(
         return 0;
     }
 
-    MCI_SET_PARMS setParms = {0};
+    MCI_SET_PARMS setParms = { 0 };
     setParms.dwTimeFormat = MCI_FORMAT_TMSF;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
@@ -148,9 +147,9 @@ RECOIL_NO_GS int __fastcall Init(
 
     const UINT auxCount = auxGetNumDevs();
     for (UINT deviceId = 0; deviceId < auxCount; ++deviceId) {
-        AUXCAPSA caps = {0};
-        if (auxGetDevCapsA(deviceId, &caps, sizeof(caps)) == 0 &&
-            caps.wTechnology == AUXCAPS_CDAUDIO && (caps.dwSupport & AUXCAPS_VOLUME) != 0) {
+        AUXCAPSA caps = { 0 };
+        if (auxGetDevCapsA(deviceId, &caps, sizeof(caps)) == 0 && caps.wTechnology == AUXCAPS_CDAUDIO
+            && (caps.dwSupport & AUXCAPS_VOLUME) != 0) {
             if ((caps.dwSupport & AUXCAPS_LRVOLUME) != 0) {
                 g_zSndCdFlags |= ZSND_CD_FLAG_STEREO_AUX;
             }
@@ -174,16 +173,15 @@ RECOIL_NO_GS int __fastcall Init(
     g_zSndCdFlags |= ZSND_CD_FLAG_READY;
 
     if (cdTracksNode != 0) {
-        zReader::Node *tracks = cdTracksNode->value.nodes;
+        zReader::Node* tracks = cdTracksNode->value.nodes;
         for (int i = 1; i < cdTracksNode->value.nodes[0].value.i32; ++i) {
-            zReader::Node *trackNode = &tracks[i];
+            zReader::Node* trackNode = &tracks[i];
             if (trackNode->type != zReader::ZRDR_NODE_ARRAY) {
                 continue;
             }
 
-            zReader::Node *trackConfig = trackNode->value.nodes;
-            zSndCdTrackEntry *entry =
-                (zSndCdTrackEntry *)(::operator new(sizeof(zSndCdTrackEntry)));
+            zReader::Node* trackConfig = trackNode->value.nodes;
+            zSndCdTrackEntry* entry = (zSndCdTrackEntry*)(::operator new(sizeof(zSndCdTrackEntry)));
             if (entry != 0) {
                 entry->trackNumber = trackConfig[2].value.i32;
                 entry->archiveName = _strdup(trackConfig[1].value.str);
@@ -201,8 +199,9 @@ RECOIL_NO_GS int __fastcall Init(
  * @recoil-artifact defines .text recoil:function:0x4a2490: zSndCd::ResetTrackState.
  * Purpose: Reset cached CD play-from/current/play-to positions to track one.
  */
-int __cdecl ResetTrackState() {
-    zSndCdTrackState state = {1, 0, 0};
+int __cdecl ResetTrackState()
+{
+    zSndCdTrackState state = { 1, 0, 0 };
     g_zSndCdPlayFrom = state;
     g_zSndCdCurrent = state;
     g_zSndCdPlayTo = state;
@@ -215,17 +214,13 @@ int __cdecl ResetTrackState() {
  * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
  * release configured track-list entries.
  */
-int __cdecl Shutdown() {
+int __cdecl Shutdown()
+{
     Stop();
 
     if ((g_zSndCdDeviceId & 0xffff) != 0) {
-        MCI_GENERIC_PARMS closeParms = {0};
-        mciSendCommandA(
-            (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-            MCI_CLOSE,
-            MCI_WAIT,
-            (DWORD_PTR)(&closeParms)
-        );
+        MCI_GENERIC_PARMS closeParms = { 0 };
+        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_CLOSE, MCI_WAIT, (DWORD_PTR)(&closeParms));
         g_zSndCdDeviceId &= 0xffff0000;
     }
 
@@ -235,10 +230,9 @@ int __cdecl Shutdown() {
         return 1;
     }
 
-    std::list<zSndCdTrackEntry *>::iterator entryIt =
-        g_zSndCdTrackList.begin();
+    std::list<zSndCdTrackEntry*>::iterator entryIt = g_zSndCdTrackList.begin();
     while (entryIt != g_zSndCdTrackList.end()) {
-        zSndCdTrackEntry *entry = *entryIt;
+        zSndCdTrackEntry* entry = *entryIt;
         free(entry->archiveName);
         entry->archiveName = 0;
         ::operator delete(entry);
@@ -256,10 +250,8 @@ int __cdecl Shutdown() {
  *
  * Purpose: Start a CD track and then apply the requested playback mode.
  */
-int __fastcall PlayTrackWithMode(
-    int trackIndex,
-    int playbackMode
-) {
+int __fastcall PlayTrackWithMode(int trackIndex, int playbackMode)
+{
     int result = 0;
     const int mode = playbackMode;
     if (PlayTrack(trackIndex) != 0) {
@@ -274,9 +266,8 @@ int __fastcall PlayTrackWithMode(
  * @recoil-artifact defines .text recoil:function:0x4a2600: zSndCd::ApplyPlaybackMode.
  * Purpose: Apply the requested CD playback mode and issue the MCI play command.
  */
-RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
-    int playbackMode
-) {
+RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -305,12 +296,8 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
         playFlags = 0x0d;
     }
 
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x806,
-        playFlags,
-        (DWORD_PTR)(&playParms)
-    );
+    const DWORD mciError
+        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x806, playFlags, (DWORD_PTR)(&playParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0xf1);
     }
@@ -324,12 +311,10 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(
  * @recoil-artifact defines .text recoil:function:0x4a26b0: zSndCd::OnMciNotify.
  * Purpose: Restart looping CD playback when the MCI notify callback completes.
  */
-void __fastcall OnMciNotify(
-    unsigned int wParam,
-    unsigned int lParam
-) {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5 ||
-        lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
+void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
+{
+    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5
+        || lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
         return;
     }
 
@@ -341,18 +326,15 @@ void __fastcall OnMciNotify(
  * @recoil-artifact defines .text recoil:function:0x4a26f0: zSndCd::Stop.
  * Purpose: stop the current MCI CD playback and reset the cached track state.
  */
-RECOIL_NO_GS int __cdecl Stop() {
+RECOIL_NO_GS int __cdecl Stop()
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
 
     MCI_GENERIC_PARMS stopParms;
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x808,
-        0x02,
-        (DWORD_PTR)(&stopParms)
-    );
+    const DWORD mciError
+        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x808, 0x02, (DWORD_PTR)(&stopParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x10e);
     }
@@ -367,9 +349,8 @@ RECOIL_NO_GS int __cdecl Stop() {
  * @recoil-artifact defines .text recoil:function:0x4a2750: zSndCd::PlayTrack.
  * Purpose: Seek to a CD track and reset cached playback state for that track.
  */
-RECOIL_NO_GS int __fastcall PlayTrack(
-    int trackIndex
-) {
+RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -377,12 +358,8 @@ RECOIL_NO_GS int __fastcall PlayTrack(
     MCI_SEEK_PARMS seekParms;
     seekParms.dwTo = (DWORD)(trackIndex & 0xff);
 
-    const DWORD mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
-        0x807,
-        0x0a,
-        (DWORD_PTR)(&seekParms)
-    );
+    const DWORD mciError
+        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x807, 0x0a, (DWORD_PTR)(&seekParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x16e);
     }
@@ -399,7 +376,8 @@ RECOIL_NO_GS int __fastcall PlayTrack(
  * @recoil-artifact defines .text recoil:function:0x4a27d0: zSndCd::IsStereoAuxEnabled.
  * Purpose: report whether CD audio has an initialized stereo AUX mixer.
  */
-int __cdecl IsStereoAuxEnabled() {
+int __cdecl IsStereoAuxEnabled()
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -416,10 +394,8 @@ int __cdecl IsStereoAuxEnabled() {
  * @recoil-artifact defines .text recoil:function:0x4a27f0: zSndCd::GetVolume.
  * Purpose: read the AUX mixer volume into mono or stereo output channels.
  */
-int __fastcall GetVolume(
-    unsigned short *primaryVolumeOut,
-    unsigned short *secondaryVolumeOut
-) {
+int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secondaryVolumeOut)
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -453,10 +429,8 @@ int __fastcall GetVolume(
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */
-int __fastcall SetVolume(
-    unsigned short primaryVolume,
-    unsigned short secondaryVolume
-) {
+int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryVolume)
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }
@@ -484,7 +458,8 @@ int __fastcall SetVolume(
  * @recoil-artifact defines .text recoil:function:0x4a2930: zSndCd::GetTrackCount.
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */
-int __cdecl GetTrackCount() {
+int __cdecl GetTrackCount()
+{
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
         return 0;
     }

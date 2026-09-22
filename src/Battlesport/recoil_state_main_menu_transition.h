@@ -32,7 +32,7 @@ class HudUiMainMenuDialog;
  * lifetime causes VC5 to emit the deleting-destructor contribution.
  */
 struct RecoilStateMainMenuTransition : RecoilApp_IState {
-    HudUiMainMenuDialog *m_mainMenuDialog;
+    HudUiMainMenuDialog* m_mainMenuDialog;
     int m_savedHalfResAdjustMode;
     RecoilMainMenuEntryRoute m_entryRoute;
     zVidModeIndex m_deferredVideoModeIndex;
@@ -47,7 +47,7 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     void OnDeactivate();
 
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateMainMenuTransition *StaticInit();
+    static RecoilStateMainMenuTransition* StaticInit();
     static void RegisterAtExit();
     static void __cdecl AtExitDestructor();
     static void ClearPausedAudioSnapshot();
@@ -55,36 +55,11 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     static void __fastcall SetDeferredVideoModeIndex(zVidModeIndex modeIndex);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateMainMenuTransition) == 0x18);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateMainMenuTransition,
-        m_mainMenuDialog
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateMainMenuTransition,
-        m_savedHalfResAdjustMode
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateMainMenuTransition,
-        m_entryRoute
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateMainMenuTransition,
-        m_deferredVideoModeIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateMainMenuTransition,
-        m_pausedAudioSnapshot
-    ) == 0x14
-);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_mainMenuDialog) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_savedHalfResAdjustMode) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_entryRoute) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_deferredVideoModeIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_pausedAudioSnapshot) == 0x14);
 
 union RecoilStateMainMenuTransitionStorage {
     unsigned long align;
@@ -93,8 +68,7 @@ union RecoilStateMainMenuTransitionStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateMainMenuTransitionStorage) == 0x18);
 
 extern RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition;
-#define g_RecoilState_MainMenuTransition \
-    (*(RecoilStateMainMenuTransition *)&g_RecoilState_MainMenuTransition)
+#define g_RecoilState_MainMenuTransition (*(RecoilStateMainMenuTransition*)&g_RecoilState_MainMenuTransition)
 
 struct CHudUiMainMenuDialogCreditsButton : HudUiZrdWidget {
     CHudUiMainMenuDialogCreditsButton();
@@ -109,7 +83,9 @@ struct HudUiMenuBackButton : HudUiZrdWidget {
      * Purpose: keep shared back-button dispatch-table installation owned by
      * the typed button member.
      */
-    HudUiMenuBackButton() : HudUiZrdWidget() {
+    HudUiMenuBackButton()
+        : HudUiZrdWidget()
+    {
     }
 
     void OnActivate();
@@ -153,7 +129,7 @@ struct CHudUiMainMenuDialogControlsButton : HudUiZrdWidget {
  * VC5 to emit its deleting destructor and complete-object cleanup.
  */
 class HudUiMainMenuDialog : public HudUiBackground {
-  public:
+public:
     CHudUiMainMenuDialogCreditsButton creditsButton;
     HudUiMenuBackButton backButton;
     CHudUiMainMenuDialogSaveButton saveGameButton;
@@ -169,51 +145,11 @@ class HudUiMainMenuDialog : public HudUiBackground {
     static int CanSaveGame();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiMainMenuDialog) == 0xb3ac);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        creditsButton
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        backButton
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        saveGameButton
-    ) == 0xabe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        loadGameButton
-    ) == 0xad30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        newGameButton
-    ) == 0xae7c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        optionsButton
-    ) == 0xafc8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        quitButton
-    ) == 0xb114
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiMainMenuDialog,
-        controlsButton
-    ) == 0xb260
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, creditsButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, backButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, saveGameButton) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, loadGameButton) == 0xad30);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, newGameButton) == 0xae7c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, optionsButton) == 0xafc8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, quitButton) == 0xb114);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMainMenuDialog, controlsButton) == 0xb260);

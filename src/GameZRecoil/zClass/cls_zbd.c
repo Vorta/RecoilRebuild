@@ -16,7 +16,7 @@ extern "C" {
  * followed by the capacity global at 0x539cdc.
  * Purpose: own the reusable ZBD node-reference conversion scratch buffer.
  */
-CZNodePartial **g_GameZ_Zbd_NodeIndexScratch = 0;
+CZNodePartial** g_GameZ_Zbd_NodeIndexScratch = 0;
 RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratch) == 4);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-gamez-zbd-nodeindexscratchcapacity
@@ -32,294 +32,260 @@ RECOIL_STATIC_ASSERT(sizeof(g_GameZ_Zbd_NodeIndexScratchCapacity) == 4);
  * @recoil-artifact defines .data recoil:data:0x4dee1c: g_CZClass_SourceFile_ClsZbdC.
  * Purpose: preserve the legacy source-file literal for cls_zbd.c diagnostics.
  */
-char g_CZClass_SourceFile_ClsZbdC[0x25] =
-    "D:\\Proj\\GameZRecoil\\zClass\\cls_zbd.c";
+char g_CZClass_SourceFile_ClsZbdC[0x25] = "D:\\Proj\\GameZRecoil\\zClass\\cls_zbd.c";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_SourceFile_ClsZbdC) == 0x25);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodedataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4dee44: g_CZClass_WriteNodeDataErrorMsg.
  * Purpose: preserve the legacy write-node diagnostic literal.
  */
-char g_CZClass_WriteNodeDataErrorMsg[0x19] =
-    "Error writing node data.";
+char g_CZClass_WriteNodeDataErrorMsg[0x19] = "Error writing node data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeDataErrorMsg) == 0x19);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writeworldareapartitiondataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4dee60: g_CZClass_WriteWorldAreaPartitionDataErrorMsg.
  * Purpose: preserve the legacy world-area write diagnostic literal.
  */
-char g_CZClass_WriteWorldAreaPartitionDataErrorMsg[0x29] =
-    "Error writing world area partition data.";
+char g_CZClass_WriteWorldAreaPartitionDataErrorMsg[0x29] = "Error writing world area partition data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteWorldAreaPartitionDataErrorMsg) == 0x29);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeworlddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4dee8c: g_CZClass_WriteNodeWorldDataErrorMsg.
  * Purpose: preserve the legacy write-node-world diagnostic literal.
  */
-char g_CZClass_WriteNodeWorldDataErrorMsg[0x1f] =
-    "Error writing node world data.";
+char g_CZClass_WriteNodeWorldDataErrorMsg[0x1f] = "Error writing node world data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeWorldDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodewindowdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4deeac: g_CZClass_WriteNodeWindowDataErrorMsg.
  * Purpose: preserve the legacy write-node-window diagnostic literal.
  */
-char g_CZClass_WriteNodeWindowDataErrorMsg[0x20] =
-    "Error writing node window data.";
+char g_CZClass_WriteNodeWindowDataErrorMsg[0x20] = "Error writing node window data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeWindowDataErrorMsg) == 0x20);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodedisplaydataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4deecc: g_CZClass_WriteNodeDisplayDataErrorMsg.
  * Purpose: preserve the legacy write-node-display diagnostic literal.
  */
-char g_CZClass_WriteNodeDisplayDataErrorMsg[0x21] =
-    "Error writing node display data.";
+char g_CZClass_WriteNodeDisplayDataErrorMsg[0x21] = "Error writing node display data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeDisplayDataErrorMsg) == 0x21);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodecameradataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4deef0: g_CZClass_WriteNodeCameraDataErrorMsg.
  * Purpose: preserve the legacy write-node-camera diagnostic literal.
  */
-char g_CZClass_WriteNodeCameraDataErrorMsg[0x20] =
-    "Error writing node camera data.";
+char g_CZClass_WriteNodeCameraDataErrorMsg[0x20] = "Error writing node camera data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeCameraDataErrorMsg) == 0x20);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodelightdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4def10: g_CZClass_WriteNodeLightDataErrorMsg.
  * Purpose: preserve the legacy write-node-light diagnostic literal.
  */
-char g_CZClass_WriteNodeLightDataErrorMsg[0x1f] =
-    "Error writing node light data.";
+char g_CZClass_WriteNodeLightDataErrorMsg[0x1f] = "Error writing node light data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeLightDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeloddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4def30: g_CZClass_WriteNodeLodDataErrorMsg.
  * Purpose: preserve the legacy write-node-lod diagnostic literal.
  */
-char g_CZClass_WriteNodeLodDataErrorMsg[0x1d] =
-    "Error writing node lod data.";
+char g_CZClass_WriteNodeLodDataErrorMsg[0x1d] = "Error writing node lod data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeLodDataErrorMsg) == 0x1d);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeobject3ddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4def50: g_CZClass_WriteNodeObject3DDataErrorMsg.
  * Purpose: preserve the legacy write-node-object3d diagnostic literal.
  */
-char g_CZClass_WriteNodeObject3DDataErrorMsg[0x22] =
-    "Error writing node object3d data.";
+char g_CZClass_WriteNodeObject3DDataErrorMsg[0x22] = "Error writing node object3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeObject3DDataErrorMsg) == 0x22);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodeunrecognizedclasstypefmt
  * @recoil-artifact defines .data recoil:data:0x4def74: g_CZClass_WriteNodeUnrecognizedClassTypeFmt.
  * Purpose: preserve the legacy write-node class-type diagnostic format.
  */
-char g_CZClass_WriteNodeUnrecognizedClassTypeFmt[0x4c] =
-    "gClsWriteNode(): Unrecognized node class type:\n"
-    "  node = %s class_type = %d\n";
+char g_CZClass_WriteNodeUnrecognizedClassTypeFmt[0x4c] = "gClsWriteNode(): Unrecognized node class type:\n"
+                                                         "  node = %s class_type = %d\n";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeUnrecognizedClassTypeFmt) == 0x4c);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writenodesounddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4defc0: g_CZClass_WriteNodeSoundDataErrorMsg.
  * Purpose: preserve the legacy write-node-sound diagnostic literal.
  */
-char g_CZClass_WriteNodeSoundDataErrorMsg[0x1f] =
-    "Error writing node sound data.";
+char g_CZClass_WriteNodeSoundDataErrorMsg[0x1f] = "Error writing node sound data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteNodeSoundDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writesoundnodedataincompletemsg
  * @recoil-artifact defines .data recoil:data:0x4defe0: g_CZClass_WriteSoundNodeDataIncompleteMsg.
  * Purpose: preserve the legacy incomplete write-sound-node diagnostic literal.
  */
-char g_CZClass_WriteSoundNodeDataIncompleteMsg[0x31] =
-    "Writing sound node data: Must complete software.";
+char g_CZClass_WriteSoundNodeDataIncompleteMsg[0x31] = "Writing sound node data: Must complete software.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteSoundNodeDataIncompleteMsg) == 0x31);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writegameznodeactioncallbackdefinedfmt
  * @recoil-artifact defines .data recoil:data:0x4df014: g_CZClass_WriteGameZNodeActionCallbackDefinedFmt.
  * Purpose: preserve the legacy write-node action-callback diagnostic format.
  */
-char g_CZClass_WriteGameZNodeActionCallbackDefinedFmt[0x38] =
-    "Writing gamez.zbd; node %s has action callback defined.";
+char g_CZClass_WriteGameZNodeActionCallbackDefinedFmt[0x38] = "Writing gamez.zbd; node %s has action callback defined.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteGameZNodeActionCallbackDefinedFmt) == 0x38);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-writegamezheaderdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df04c: g_CZClass_WriteGameZHeaderDataErrorMsg.
  * Purpose: preserve the legacy write-GameZ-header diagnostic literal.
  */
-char g_CZClass_WriteGameZHeaderDataErrorMsg[0x21] =
-    "Error writing GameZ header data.";
+char g_CZClass_WriteGameZHeaderDataErrorMsg[0x21] = "Error writing GameZ header data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_WriteGameZHeaderDataErrorMsg) == 0x21);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-zbdfilenametoolongfmt
  * @recoil-artifact defines .data recoil:data:0x4df070: g_CZClass_ZbdFilenameTooLongFmt.
  * Purpose: preserve the legacy zbd filename length diagnostic format.
  */
-char g_CZClass_ZbdFilenameTooLongFmt[0x37] =
-    "zbd_filename length %d exceeds storage string size %d.";
+char g_CZClass_ZbdFilenameTooLongFmt[0x37] = "zbd_filename length %d exceeds storage string size %d.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ZbdFilenameTooLongFmt) == 0x37);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodelisterrormsg
  * @recoil-artifact defines .data recoil:data:0x4df0a8: g_CZClass_ReadGameZNodeListErrorMsg.
  * Purpose: preserve the legacy read-node-list diagnostic literal.
  */
-char g_CZClass_ReadGameZNodeListErrorMsg[0x1f] =
-    "Error reading GameZ Node list.";
+char g_CZClass_ReadGameZNodeListErrorMsg[0x1f] = "Error reading GameZ Node list.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZNodeListErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readworldareapartitiondataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df0c8: g_CZClass_ReadWorldAreaPartitionDataErrorMsg.
  * Purpose: preserve the legacy read-world-area diagnostic literal.
  */
-char g_CZClass_ReadWorldAreaPartitionDataErrorMsg[0x29] =
-    "Error reading world area partition data.";
+char g_CZClass_ReadWorldAreaPartitionDataErrorMsg[0x29] = "Error reading world area partition data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadWorldAreaPartitionDataErrorMsg) == 0x29);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeunrecognizedclasstypefmt
  * @recoil-artifact defines .data recoil:data:0x4df0f4: g_CZClass_ReadNodeUnrecognizedClassTypeFmt.
  * Purpose: preserve the legacy read-node class-type diagnostic format.
  */
-char g_CZClass_ReadNodeUnrecognizedClassTypeFmt[0x4b] =
-    "gClsReadNode(): Unrecognized node class type:\n"
-    "  node = %s class_type = %d\n";
+char g_CZClass_ReadNodeUnrecognizedClassTypeFmt[0x4b] = "gClsReadNode(): Unrecognized node class type:\n"
+                                                        "  node = %s class_type = %d\n";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeUnrecognizedClassTypeFmt) == 0x4b);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeworlddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df140: g_CZClass_ReadNodeWorldDataErrorMsg.
  * Purpose: preserve the legacy read-node-world diagnostic literal.
  */
-char g_CZClass_ReadNodeWorldDataErrorMsg[0x1f] =
-    "Error reading node world data.";
+char g_CZClass_ReadNodeWorldDataErrorMsg[0x1f] = "Error reading node world data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeWorldDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodewindowdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df160: g_CZClass_ReadNodeWindowDataErrorMsg.
  * Purpose: preserve the legacy read-node-window diagnostic literal.
  */
-char g_CZClass_ReadNodeWindowDataErrorMsg[0x20] =
-    "Error reading node window data.";
+char g_CZClass_ReadNodeWindowDataErrorMsg[0x20] = "Error reading node window data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeWindowDataErrorMsg) == 0x20);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodedisplaydataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df180: g_CZClass_ReadNodeDisplayDataErrorMsg.
  * Purpose: preserve the legacy read-node-display diagnostic literal.
  */
-char g_CZClass_ReadNodeDisplayDataErrorMsg[0x21] =
-    "Error reading node display data.";
+char g_CZClass_ReadNodeDisplayDataErrorMsg[0x21] = "Error reading node display data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeDisplayDataErrorMsg) == 0x21);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodecameradataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df1a4: g_CZClass_ReadNodeCameraDataErrorMsg.
  * Purpose: preserve the legacy read-node-camera diagnostic literal.
  */
-char g_CZClass_ReadNodeCameraDataErrorMsg[0x20] =
-    "Error reading node camera data.";
+char g_CZClass_ReadNodeCameraDataErrorMsg[0x20] = "Error reading node camera data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeCameraDataErrorMsg) == 0x20);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodelightdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df1c4: g_CZClass_ReadNodeLightDataErrorMsg.
  * Purpose: preserve the legacy read-node-light diagnostic literal.
  */
-char g_CZClass_ReadNodeLightDataErrorMsg[0x1f] =
-    "Error reading node light data.";
+char g_CZClass_ReadNodeLightDataErrorMsg[0x1f] = "Error reading node light data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeLightDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeloddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df1e4: g_CZClass_ReadNodeLodDataErrorMsg.
  * Purpose: preserve the legacy read-node-lod diagnostic literal.
  */
-char g_CZClass_ReadNodeLodDataErrorMsg[0x1d] =
-    "Error reading node lod data.";
+char g_CZClass_ReadNodeLodDataErrorMsg[0x1d] = "Error reading node lod data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeLodDataErrorMsg) == 0x1d);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodeobject3ddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df204: g_CZClass_ReadNodeObject3DDataErrorMsg.
  * Purpose: preserve the legacy read-node-object3d diagnostic literal.
  */
-char g_CZClass_ReadNodeObject3DDataErrorMsg[0x22] =
-    "Error reading node object3d data.";
+char g_CZClass_ReadNodeObject3DDataErrorMsg[0x22] = "Error reading node object3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeObject3DDataErrorMsg) == 0x22);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readnodesounddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df228: g_CZClass_ReadNodeSoundDataErrorMsg.
  * Purpose: preserve the legacy read-node-sound diagnostic literal.
  */
-char g_CZClass_ReadNodeSoundDataErrorMsg[0x1f] =
-    "Error reading node sound data.";
+char g_CZClass_ReadNodeSoundDataErrorMsg[0x1f] = "Error reading node sound data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadNodeSoundDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readsoundnodedataincompletemsg
  * @recoil-artifact defines .data recoil:data:0x4df248: g_CZClass_ReadSoundNodeDataIncompleteMsg.
  * Purpose: preserve the legacy incomplete read-sound-node diagnostic literal.
  */
-char g_CZClass_ReadSoundNodeDataIncompleteMsg[0x31] =
-    "Reading sound node data: Must complete software.";
+char g_CZClass_ReadSoundNodeDataIncompleteMsg[0x31] = "Reading sound node data: Must complete software.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadSoundNodeDataIncompleteMsg) == 0x31);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodebuffererrormsg
  * @recoil-artifact defines .data recoil:data:0x4df27c: g_CZClass_ReadGameZNodeBufferErrorMsg.
  * Purpose: preserve the legacy read-node-buffer diagnostic literal.
  */
-char g_CZClass_ReadGameZNodeBufferErrorMsg[0x21] =
-    "Error reading GameZ Node buffer.";
+char g_CZClass_ReadGameZNodeBufferErrorMsg[0x21] = "Error reading GameZ Node buffer.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZNodeBufferErrorMsg) == 0x21);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameznodedataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df2a0: g_CZClass_ReadGameZNodeDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-node diagnostic literal.
  */
-char g_CZClass_ReadGameZNodeDataErrorMsg[0x1f] =
-    "Error reading GameZ node data.";
+char g_CZClass_ReadGameZNodeDataErrorMsg[0x1f] = "Error reading GameZ node data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZNodeDataErrorMsg) == 0x1f);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezmodel3ddataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df2c0: g_CZClass_ReadGameZModel3DDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-model3d diagnostic literal.
  */
-char g_CZClass_ReadGameZModel3DDataErrorMsg[0x22] =
-    "Error reading GameZ model3d data.";
+char g_CZClass_ReadGameZModel3DDataErrorMsg[0x22] = "Error reading GameZ model3d data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZModel3DDataErrorMsg) == 0x22);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezmaterialdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df2e4: g_CZClass_ReadGameZMaterialDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-material diagnostic literal.
  */
-char g_CZClass_ReadGameZMaterialDataErrorMsg[0x23] =
-    "Error reading GameZ material data.";
+char g_CZClass_ReadGameZMaterialDataErrorMsg[0x23] = "Error reading GameZ material data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZMaterialDataErrorMsg) == 0x23);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgameztexturedataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df308: g_CZClass_ReadGameZTextureDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-texture diagnostic literal.
  */
-char g_CZClass_ReadGameZTextureDataErrorMsg[0x22] =
-    "Error reading GameZ texture data.";
+char g_CZClass_ReadGameZTextureDataErrorMsg[0x22] = "Error reading GameZ texture data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZTextureDataErrorMsg) == 0x22);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderincompatibleversionmsg
  * @recoil-artifact defines .data recoil:data:0x4df32c: g_CZClass_ReadGameZHeaderIncompatibleVersionMsg.
  * Purpose: preserve the legacy incompatible-version read-header diagnostic literal.
  */
-char g_CZClass_ReadGameZHeaderIncompatibleVersionMsg[0x3b] =
-    "Error reading GameZ header data; incompatible file version";
+char g_CZClass_ReadGameZHeaderIncompatibleVersionMsg[0x3b]
+    = "Error reading GameZ header data; incompatible file version";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZHeaderIncompatibleVersionMsg) == 0x3b);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderincompatibletypemsg
  * @recoil-artifact defines .data recoil:data:0x4df368: g_CZClass_ReadGameZHeaderIncompatibleTypeMsg.
  * Purpose: preserve the legacy incompatible-type read-header diagnostic literal.
  */
-char g_CZClass_ReadGameZHeaderIncompatibleTypeMsg[0x38] =
-    "Error reading GameZ header data; incompatible file type";
+char g_CZClass_ReadGameZHeaderIncompatibleTypeMsg[0x38] = "Error reading GameZ header data; incompatible file type";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZHeaderIncompatibleTypeMsg) == 0x38);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.g-zclass-readgamezheaderdataerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df3a0: g_CZClass_ReadGameZHeaderDataErrorMsg.
  * Purpose: preserve the legacy read-GameZ-header diagnostic literal.
  */
-char g_CZClass_ReadGameZHeaderDataErrorMsg[0x21] =
-    "Error reading GameZ header data.";
+char g_CZClass_ReadGameZHeaderDataErrorMsg[0x21] = "Error reading GameZ header data.";
 RECOIL_STATIC_ASSERT(sizeof(g_CZClass_ReadGameZHeaderDataErrorMsg) == 0x21);
 }
 
-namespace {
+namespace
+{
     const int kZClassNodeCamera = 1;
     const int kZClassNodeWorld = 2;
     const int kZClassNodeWindow = 3;
@@ -336,13 +302,8 @@ namespace {
      * callsites share the cls_zbd.c source literal and return -1.
      * Purpose: report a ZBD write failure and return the caller's error code.
      */
-#define ReportZbdWriteFailure(sourceLine, message) \
-    (zError::ReportOld( \
-        0x200, \
-        g_CZClass_SourceFile_ClsZbdC, \
-        (sourceLine), \
-        (message) \
-    ), -1)
+#define ReportZbdWriteFailure(sourceLine, message)                                                                     \
+    (zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, (sourceLine), (message)), -1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -351,13 +312,8 @@ namespace {
      * callsites share the cls_zbd.c source literal and return -1.
      * Purpose: report a ZBD read failure and return the caller's error code.
      */
-#define ReportZbdReadFailure(sourceLine, message) \
-    (zError::ReportOld( \
-        0x200, \
-        g_CZClass_SourceFile_ClsZbdC, \
-        (sourceLine), \
-        (message) \
-    ), -1)
+#define ReportZbdReadFailure(sourceLine, message)                                                                      \
+    (zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, (sourceLine), (message)), -1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -366,8 +322,7 @@ namespace {
      * element-count checks for serialized class-data blobs.
      * Purpose: write one fixed-size ZBD blob to the active FILE stream.
      */
-#define WriteZbdBlob(data, byteCount, stream) \
-    (fwrite((data), (byteCount), 1, (FILE *)(stream)) == 1)
+#define WriteZbdBlob(data, byteCount, stream) (fwrite((data), (byteCount), 1, (FILE*)(stream)) == 1)
 
     /**
      * Original inline/static helper; no standalone retail function is known.
@@ -376,21 +331,23 @@ namespace {
      * element-count checks for serialized class-data blobs.
      * Purpose: read one fixed-size ZBD blob from the active FILE stream.
      */
-#define ReadZbdBlob(data, byteCount, stream) \
-    (fread((data), (byteCount), 1, (FILE *)(stream)) == 1)
+#define ReadZbdBlob(data, byteCount, stream) (fread((data), (byteCount), 1, (FILE*)(stream)) == 1)
 }
 
-namespace CZClass {
+namespace CZClass
+{
     /**
      * Purpose: clear the active zClass ZBD path buffer and return success.
      */
-    int __cdecl ResetCurrentZbdPath() {
+    int __cdecl ResetCurrentZbdPath()
+    {
         g_CZClass_CurrentZbdPath[0] = 0;
         return 0;
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtoindex
      * @recoil-artifact defines .text recoil:function:0x454370: CZZbd::NodePtrToIndex
@@ -398,16 +355,18 @@ namespace CZZbd {
      *
      * Purpose: convert a node pointer in the ZBD node table to its slot index.
      */
-    int __fastcall NodePtrToIndex(CZNodePartial * node) {
+    int __fastcall NodePtrToIndex(CZNodePartial * node)
+    {
         if (node == 0) {
             return -1;
         }
 
-        return (int)((CZNodeFreeListSlot *)(node)-g_CZClass_NodeArray);
+        return (int)((CZNodeFreeListSlot*)(node)-g_CZClass_NodeArray);
     }
 }
 
-namespace CZClass {
+namespace CZClass
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeptrtovalidatedindex
      * @recoil-artifact defines .text recoil:function:0x4543a0: CZClass::NodePtrToValidatedIndex
@@ -416,7 +375,8 @@ namespace CZClass {
      * Purpose: convert a node-array pointer to its index only when the slot is
      * marked live in the ZBD node table.
      */
-    int __fastcall NodePtrToValidatedIndex(CZNodePartial * node) {
+    int __fastcall NodePtrToValidatedIndex(CZNodePartial * node)
+    {
         const int index = CZZbd::NodePtrToIndex(node);
         if (index >= 0 && (g_CZClass_NodeArray[index].freeTag & 0x01000000u) != 0) {
             return index;
@@ -426,7 +386,8 @@ namespace CZClass {
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.nodeindextoptr
      * @recoil-artifact defines .text recoil:function:0x4543d0: CZZbd::NodeIndexToPtr
@@ -435,7 +396,8 @@ namespace CZZbd {
      * Purpose: convert a non-negative ZBD node table index back to its node
      * pointer.
      */
-    CZNodePartial *__fastcall NodeIndexToPtr(int index) {
+    CZNodePartial* __fastcall NodeIndexToPtr(int index)
+    {
         if (index < 0) {
             return 0;
         }
@@ -450,35 +412,26 @@ namespace CZZbd {
      * pointer lists through the shared scratch buffer before fwrite.
      * Purpose: serialize a node-reference list as node-table indices.
      */
-    int __fastcall WriteNodeRefListIndices(
-        CZNodePartial * *nodeRefList,
-        int entryCount,
-        void *stream
-    ) {
+    int __fastcall WriteNodeRefListIndices(CZNodePartial * *nodeRefList, int entryCount, void* stream)
+    {
         if (entryCount == 0) {
             return 0;
         }
 
         const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
         if (entryCount > g_GameZ_Zbd_NodeIndexScratchCapacity) {
-            g_GameZ_Zbd_NodeIndexScratch =
-                (CZNodePartial **)(realloc(g_GameZ_Zbd_NodeIndexScratch, byteCount));
+            g_GameZ_Zbd_NodeIndexScratch = (CZNodePartial**)(realloc(g_GameZ_Zbd_NodeIndexScratch, byteCount));
             g_GameZ_Zbd_NodeIndexScratchCapacity = entryCount;
         }
 
         memcpy(g_GameZ_Zbd_NodeIndexScratch, nodeRefList, byteCount);
-        int *indices = (int *)(g_GameZ_Zbd_NodeIndexScratch);
+        int* indices = (int*)(g_GameZ_Zbd_NodeIndexScratch);
         for (int i = 0; i < entryCount; ++i) {
             indices[i] = NodePtrToIndex(g_GameZ_Zbd_NodeIndexScratch[i]);
         }
 
-        if (fwrite(g_GameZ_Zbd_NodeIndexScratch, byteCount, 1, (FILE *)(stream)) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0xd7,
-                g_CZClass_WriteNodeDataErrorMsg
-            );
+        if (fwrite(g_GameZ_Zbd_NodeIndexScratch, byteCount, 1, (FILE*)(stream)) != 1) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0xd7, g_CZClass_WriteNodeDataErrorMsg);
             return -1;
         }
 
@@ -492,10 +445,8 @@ namespace CZZbd {
      * node class payloads and nested node-reference lists.
      * Purpose: write one node's class-specific ZBD payload.
      */
-    RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(
-        CZNodePartial * node,
-        void *stream
-    ) {
+    RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(CZNodePartial * node, void* stream)
+    {
         int result = 0;
         if (node->actionCallback != 0) {
             zError::ReportOld(
@@ -513,14 +464,9 @@ namespace CZZbd {
 
         case kZClassNodeSound: {
             result = 1;
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0xfc,
-                g_CZClass_WriteSoundNodeDataIncompleteMsg
-            );
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0xfc, g_CZClass_WriteSoundNodeDataIncompleteMsg);
 
-            CZSoundDataPartial *data = (CZSoundDataPartial *)(node->classData);
+            CZSoundDataPartial* data = (CZSoundDataPartial*)(node->classData);
             if (!WriteZbdBlob(data, sizeof(CZSoundDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x105, g_CZClass_WriteNodeSoundDataErrorMsg);
             }
@@ -547,7 +493,7 @@ namespace CZZbd {
 
         case kZClassNodeLight: {
             result = 1;
-            CZLightDataPartial *data = (CZLightDataPartial *)(node->classData);
+            CZLightDataPartial* data = (CZLightDataPartial*)(node->classData);
             if (!WriteZbdBlob(data, sizeof(CZLightDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x137, g_CZClass_WriteNodeLightDataErrorMsg);
             }
@@ -562,10 +508,10 @@ namespace CZZbd {
             result = 1;
             CZCameraDataPartial data;
             memcpy(&data, node->classData, sizeof(data));
-            data.worldNode = (CZNodePartial *)((int)(NodePtrToIndex(data.worldNode)));
-            data.windowNode = (CZNodePartial *)((int)(NodePtrToIndex(data.windowNode)));
-            data.horizonNode = (CZNodePartial *)((int)(NodePtrToIndex(data.horizonNode)));
-            data.horizonXZNode = (CZNodePartial *)((int)(NodePtrToIndex(data.horizonXZNode)));
+            data.worldNode = (CZNodePartial*)((int)(NodePtrToIndex(data.worldNode)));
+            data.windowNode = (CZNodePartial*)((int)(NodePtrToIndex(data.windowNode)));
+            data.horizonNode = (CZNodePartial*)((int)(NodePtrToIndex(data.horizonNode)));
+            data.horizonXZNode = (CZNodePartial*)((int)(NodePtrToIndex(data.horizonXZNode)));
 
             if (!WriteZbdBlob(&data, sizeof(data), stream)) {
                 return ReportZbdWriteFailure(0x15a, g_CZClass_WriteNodeCameraDataErrorMsg);
@@ -589,7 +535,7 @@ namespace CZZbd {
 
         case kZClassNodeWorld: {
             result = 1;
-            CZWorldDataPartial *data = (CZWorldDataPartial *)(node->classData);
+            CZWorldDataPartial* data = (CZWorldDataPartial*)(node->classData);
             if (!WriteZbdBlob(data, sizeof(CZWorldDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x18c, g_CZClass_WriteNodeWorldDataErrorMsg);
             }
@@ -603,14 +549,11 @@ namespace CZZbd {
 
             {
                 for (int row = 0; row < data->areaGridRowCount; ++row) {
-                    zWorldAreaPartial *area = data->areaGridRows[row];
+                    zWorldAreaPartial* area = data->areaGridRows[row];
                     {
                         for (int col = 0; col < data->areaGridColCount; ++col) {
                             if (!WriteZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
-                                return ReportZbdWriteFailure(
-                                    0x1a8,
-                                    g_CZClass_WriteWorldAreaPartitionDataErrorMsg
-                                );
+                                return ReportZbdWriteFailure(0x1a8, g_CZClass_WriteWorldAreaPartitionDataErrorMsg);
                             }
 
                             if (area->childCount > 0) {
@@ -655,39 +598,34 @@ namespace CZZbd {
      * array, append payloads, and patch encoded class-data offsets.
      * Purpose: serialize the live ZBD node table and associated payload blocks.
      */
-    int __fastcall WriteNodeTable(void *stream) {
+    int __fastcall WriteNodeTable(void* stream)
+    {
         int result = g_CZClass_NodeArraySize;
         if (result == 0) {
             return result;
         }
 
         const int byteCount = result * (int)(sizeof(CZNodeFreeListSlot));
-        CZNodeFreeListSlot *nodeBuffer = (CZNodeFreeListSlot *)(malloc(byteCount));
+        CZNodeFreeListSlot* nodeBuffer = (CZNodeFreeListSlot*)(malloc(byteCount));
         memcpy(nodeBuffer, g_CZClass_NodeArray, byteCount);
 
         for (int i = 0; i < result; ++i) {
-            CZNodePartial *node = &nodeBuffer[i].node;
+            CZNodePartial* node = &nodeBuffer[i].node;
             if (node->listCountA == 0) {
                 node->listA = 0;
             }
             if (node->listCountB == 0) {
                 node->listB = 0;
             }
-            node->userDataOrDiRef = (unsigned int)(zDi::PtrToIndexOrMinus1(
-                (zDiPartial *)((unsigned int)(node->userDataOrDiRef))
-            ));
+            node->userDataOrDiRef
+                = (unsigned int)(zDi::PtrToIndexOrMinus1((zDiPartial*)((unsigned int)(node->userDataOrDiRef))));
             node->actionCallback = 0;
         }
 
-        FILE *file = (FILE *)(stream);
+        FILE* file = (FILE*)(stream);
         const long nodeTableOffset = ftell(file);
         if (fwrite(nodeBuffer, byteCount, 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x218,
-                g_CZClass_WriteNodeDataErrorMsg
-            );
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x218, g_CZClass_WriteNodeDataErrorMsg);
             result = 0;
         }
 
@@ -696,22 +634,15 @@ namespace CZZbd {
                 const long classDataOffset = ftell(file);
                 if (WriteSingleNodeClassData(&nodeBuffer[i].node, stream) != 0) {
                     const unsigned int freeTag = nodeBuffer[i].freeTag;
-                    nodeBuffer[i].freeTag =
-                        (((unsigned int)(classDataOffset) ^ freeTag) & 0x00ffffffu) ^ freeTag;
+                    nodeBuffer[i].freeTag = (((unsigned int)(classDataOffset) ^ freeTag) & 0x00ffffffu) ^ freeTag;
                 }
             }
         }
 
         const long endOffset = ftell(file);
         fseek(file, nodeTableOffset, SEEK_SET);
-        if (fwrite(nodeBuffer, g_CZClass_NodeArraySize * sizeof(CZNodeFreeListSlot), 1, file) !=
-            1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x23a,
-                g_CZClass_WriteNodeDataErrorMsg
-            );
+        if (fwrite(nodeBuffer, g_CZClass_NodeArraySize * sizeof(CZNodeFreeListSlot), 1, file) != 1) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x23a, g_CZClass_WriteNodeDataErrorMsg);
             result = 0;
         }
         fseek(file, endOffset, SEEK_SET);
@@ -727,7 +658,8 @@ namespace CZZbd {
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writezbdfile
      * @recoil-artifact defines .text recoil:function:0x454a50: CZZbd::WriteZBDFile.
@@ -735,7 +667,8 @@ namespace CZZbd {
      * the header, texture directory, material pool, DI pool, and node table.
      * Purpose: write a GameZ ZBD archive and patch the header offsets.
      */
-    RECOIL_NO_GS int __fastcall WriteZBDFile(const char *filename) {
+    RECOIL_NO_GS int __fastcall WriteZBDFile(const char* filename)
+    {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
             return -1;
@@ -754,7 +687,7 @@ namespace CZZbd {
             );
         }
 
-        FILE *const file = fopen(filename, "wb");
+        FILE* const file = fopen(filename, "wb");
         if (file == 0) {
             return -1;
         }
@@ -787,7 +720,8 @@ namespace CZZbd {
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodereflistindices
      * @recoil-artifact defines .text recoil:function:0x454bf0: CZZbd::ReadNodeRefListIndices.
@@ -795,23 +729,15 @@ namespace CZZbd {
      * indices into the destination list before resolving node pointers.
      * Purpose: deserialize a node-reference list from node-table indices.
      */
-    int __fastcall ReadNodeRefListIndices(
-        CZNodePartial * *nodeRefList,
-        int entryCount,
-        void *stream
-    ) {
+    int __fastcall ReadNodeRefListIndices(CZNodePartial * *nodeRefList, int entryCount, void* stream)
+    {
         if (entryCount == 0) {
             return 0;
         }
 
         const size_t byteCount = (size_t)(entryCount) * sizeof(unsigned int);
-        if (fread(nodeRefList, byteCount, 1, (FILE *)(stream)) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x2d0,
-                g_CZClass_ReadGameZNodeListErrorMsg
-            );
+        if (fread(nodeRefList, byteCount, 1, (FILE*)(stream)) != 1) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x2d0, g_CZClass_ReadGameZNodeListErrorMsg);
             return -1;
         }
 
@@ -830,10 +756,8 @@ namespace CZZbd {
      * the node class payloads, node-reference lists, and type-list entries.
      * Purpose: read one node's class-specific ZBD payload.
      */
-    int __fastcall ReadSingleNodeClassData(
-        CZNodePartial * node,
-        void *stream
-    ) {
+    int __fastcall ReadSingleNodeClassData(CZNodePartial * node, void* stream)
+    {
         int result = 0;
         switch (node->classId) {
         case 0:
@@ -841,15 +765,9 @@ namespace CZZbd {
 
         case kZClassNodeSound: {
             result = 1;
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x2f1,
-                g_CZClass_ReadSoundNodeDataIncompleteMsg
-            );
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x2f1, g_CZClass_ReadSoundNodeDataIncompleteMsg);
 
-            CZSoundDataPartial *data =
-                (CZSoundDataPartial *)(malloc(sizeof(CZSoundDataPartial)));
+            CZSoundDataPartial* data = (CZSoundDataPartial*)(malloc(sizeof(CZSoundDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(CZSoundDataPartial), stream)) {
                 return ReportZbdReadFailure(0x2fc, g_CZClass_ReadNodeSoundDataErrorMsg);
@@ -858,9 +776,7 @@ namespace CZZbd {
             data->sample = 0;
             data->playHandle = 0;
             if (data->attachedWorldCount > 0) {
-                data->attachedWorlds = (CZNodePartial **)(malloc(
-                    data->attachedWorldCount * sizeof(CZNodePartial *)
-                ));
+                data->attachedWorlds = (CZNodePartial**)(malloc(data->attachedWorldCount * sizeof(CZNodePartial*)));
                 ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
                 data->attachedWorlds = 0;
@@ -891,17 +807,14 @@ namespace CZZbd {
 
         case kZClassNodeLight: {
             result = 1;
-            CZLightDataPartial *data =
-                (CZLightDataPartial *)(malloc(sizeof(CZLightDataPartial)));
+            CZLightDataPartial* data = (CZLightDataPartial*)(malloc(sizeof(CZLightDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(CZLightDataPartial), stream)) {
                 return ReportZbdReadFailure(0x34d, g_CZClass_ReadNodeLightDataErrorMsg);
             }
 
             if (data->attachedWorldCount > 0) {
-                data->attachedWorlds = (CZNodePartial **)(malloc(
-                    data->attachedWorldCount * sizeof(CZNodePartial *)
-                ));
+                data->attachedWorlds = (CZNodePartial**)(malloc(data->attachedWorldCount * sizeof(CZNodePartial*)));
                 ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             } else {
                 data->attachedWorlds = 0;
@@ -914,8 +827,7 @@ namespace CZZbd {
 
         case kZClassNodeCamera: {
             result = 1;
-            CZCameraDataPartial *data =
-                (CZCameraDataPartial *)(malloc(sizeof(CZCameraDataPartial)));
+            CZCameraDataPartial* data = (CZCameraDataPartial*)(malloc(sizeof(CZCameraDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(CZCameraDataPartial), stream)) {
                 return ReportZbdReadFailure(0x371, g_CZClass_ReadNodeCameraDataErrorMsg);
@@ -935,8 +847,7 @@ namespace CZZbd {
 
         case kZClassNodeDisplay: {
             result = 1;
-            CZDisplayDataPartial *data =
-                (CZDisplayDataPartial *)(malloc(sizeof(CZDisplayDataPartial)));
+            CZDisplayDataPartial* data = (CZDisplayDataPartial*)(malloc(sizeof(CZDisplayDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(CZDisplayDataPartial), stream)) {
                 return ReportZbdReadFailure(0x39a, g_CZClass_ReadNodeDisplayDataErrorMsg);
@@ -944,12 +855,7 @@ namespace CZZbd {
 
             CZTypeList::Insert(6, node);
             CZTypeList::Insert(0x0f, node);
-            CZDisplay::gwDisplaySetBackgroundColor(
-                node,
-                data->backgroundR,
-                data->backgroundG,
-                data->backgroundB
-            );
+            CZDisplay::gwDisplaySetBackgroundColor(node, data->backgroundR, data->backgroundG, data->backgroundB);
             break;
         }
 
@@ -965,66 +871,49 @@ namespace CZZbd {
 
         case kZClassNodeWorld: {
             result = 1;
-            CZWorldDataPartial *data =
-                (CZWorldDataPartial *)(malloc(sizeof(CZWorldDataPartial)));
+            CZWorldDataPartial* data = (CZWorldDataPartial*)(malloc(sizeof(CZWorldDataPartial)));
             node->classData = data;
             if (!ReadZbdBlob(data, sizeof(CZWorldDataPartial), stream)) {
                 return ReportZbdReadFailure(0x3d4, g_CZClass_ReadNodeWorldDataErrorMsg);
             }
 
             if (data->lightCount > 0) {
-                data->lightNodes = (CZNodePartial **)(malloc(
-                    data->lightCount * sizeof(CZNodePartial *)
-                ));
+                data->lightNodes = (CZNodePartial**)(malloc(data->lightCount * sizeof(CZNodePartial*)));
                 ReadNodeRefListIndices(data->lightNodes, data->lightCount, stream);
-                data->lightDataList = (CZLightDataPartial **)(malloc(
-                    data->lightCount * sizeof(CZLightDataPartial *)
-                ));
+                data->lightDataList = (CZLightDataPartial**)(malloc(data->lightCount * sizeof(CZLightDataPartial*)));
             } else {
                 data->lightNodes = 0;
                 data->lightDataList = 0;
             }
 
             if (data->soundCount > 0) {
-                data->soundNodes = (CZNodePartial **)(malloc(
-                    data->soundCount * sizeof(CZNodePartial *)
-                ));
+                data->soundNodes = (CZNodePartial**)(malloc(data->soundCount * sizeof(CZNodePartial*)));
                 ReadNodeRefListIndices(data->soundNodes, data->soundCount, stream);
-                data->soundDataList = (CZSoundDataPartial **)(malloc(
-                    data->soundCount * sizeof(CZSoundDataPartial *)
-                ));
+                data->soundDataList = (CZSoundDataPartial**)(malloc(data->soundCount * sizeof(CZSoundDataPartial*)));
             } else {
                 data->soundNodes = 0;
                 data->soundDataList = 0;
             }
 
-            data->areaGridRows =
-                (zWorldAreaPartial **)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial *)));
+            data->areaGridRows = (zWorldAreaPartial**)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial*)));
             {
                 for (int row = 0; row < data->areaGridRowCount; ++row) {
-                    data->areaGridRows[row] = (zWorldAreaPartial *)(calloc(
-                        data->areaGridColCount,
-                        sizeof(zWorldAreaPartial)
-                    ));
+                    data->areaGridRows[row]
+                        = (zWorldAreaPartial*)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
                 }
             }
 
             {
                 for (int row = 0; row < data->areaGridRowCount; ++row) {
-                    zWorldAreaPartial *area = data->areaGridRows[row];
+                    zWorldAreaPartial* area = data->areaGridRows[row];
                     {
                         for (int col = 0; col < data->areaGridColCount; ++col) {
                             if (!ReadZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
-                                return ReportZbdReadFailure(
-                                    0x423,
-                                    g_CZClass_ReadWorldAreaPartitionDataErrorMsg
-                                );
+                                return ReportZbdReadFailure(0x423, g_CZClass_ReadWorldAreaPartitionDataErrorMsg);
                             }
 
                             if (area->childCount > 0) {
-                                area->childList = (CZNodePartial **)(malloc(
-                                    area->childCount * sizeof(CZNodePartial *)
-                                ));
+                                area->childList = (CZNodePartial**)(malloc(area->childCount * sizeof(CZNodePartial*)));
                                 ReadNodeRefListIndices(area->childList, area->childCount, stream);
                             } else {
                                 area->childList = 0;
@@ -1068,16 +957,14 @@ namespace CZZbd {
 
         if (node->listCountA > 0) {
             result = 1;
-            node->listA =
-                (CZNodePartial **)(malloc(node->listCountA * sizeof(CZNodePartial *)));
+            node->listA = (CZNodePartial**)(malloc(node->listCountA * sizeof(CZNodePartial*)));
             ReadNodeRefListIndices(node->listA, node->listCountA, stream);
         } else {
             node->listA = 0;
         }
 
         if (node->listCountB > 0) {
-            node->listB =
-                (CZNodePartial **)(malloc(node->listCountB * sizeof(CZNodePartial *)));
+            node->listB = (CZNodePartial**)(malloc(node->listCountB * sizeof(CZNodePartial*)));
             ReadNodeRefListIndices(node->listB, node->listCountB, stream);
             return 1;
         }
@@ -1093,22 +980,19 @@ namespace CZZbd {
      * node slots, rebuild class payloads, and reconnect world light/sound data.
      * Purpose: deserialize the ZBD node table into the runtime node array.
      */
-    int __fastcall ReadNodeTable(
-        int nodeCount,
-        void *stream
-    ) {
+    int __fastcall ReadNodeTable(int nodeCount, void* stream)
+    {
         if (nodeCount == 0) {
             return 0;
         }
 
         const size_t byteCount = (size_t)(nodeCount) * sizeof(CZNodeFreeListSlot);
         if (g_CZClass_NodeArray == 0) {
-            g_CZClass_NodeArray = (CZNodeFreeListSlot *)(malloc(byteCount));
+            g_CZClass_NodeArray = (CZNodeFreeListSlot*)(malloc(byteCount));
             g_CZClass_NodeArraySize = nodeCount;
         } else if (nodeCount > g_CZClass_NodeArraySize) {
             const int oldNodeCount = g_CZClass_NodeArraySize;
-            g_CZClass_NodeArray =
-                (CZNodeFreeListSlot *)(realloc(g_CZClass_NodeArray, byteCount));
+            g_CZClass_NodeArray = (CZNodeFreeListSlot*)(realloc(g_CZClass_NodeArray, byteCount));
             memset(
                 &g_CZClass_NodeArray[oldNodeCount],
                 0,
@@ -1117,21 +1001,15 @@ namespace CZZbd {
             g_CZClass_NodeArraySize = nodeCount;
         }
 
-        if (fread(g_CZClass_NodeArray, byteCount, 1, (FILE *)(stream)) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x4a9,
-                g_CZClass_ReadGameZNodeBufferErrorMsg
-            );
+        if (fread(g_CZClass_NodeArray, byteCount, 1, (FILE*)(stream)) != 1) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x4a9, g_CZClass_ReadGameZNodeBufferErrorMsg);
             return -1;
         }
 
         g_CZClass_ActiveNodeCount = 0;
         for (int i = 0; i < g_CZClass_NodeArraySize; ++i) {
-            CZNodePartial *node = &g_CZClass_NodeArray[i].node;
-            node->userDataOrDiRef =
-                (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(node->userDataOrDiRef))));
+            CZNodePartial* node = &g_CZClass_NodeArray[i].node;
+            node->userDataOrDiRef = (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(node->userDataOrDiRef))));
             node->actionCallback = 0;
 
             if (ReadSingleNodeClassData(node, stream) > 0) {
@@ -1142,23 +1020,20 @@ namespace CZZbd {
             }
         }
 
-        for (CZTypeListLink *link = *g_CZTypeList_HeadSlotPtrs[0x0d]; link != 0;
-            link = link->next) {
-            CZNodePartial *node = link->node;
+        for (CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[0x0d]; link != 0; link = link->next) {
+            CZNodePartial* node = link->node;
             if (node == 0) {
                 continue;
             }
 
-            CZWorldDataPartial *data = (CZWorldDataPartial *)(node->classData);
+            CZWorldDataPartial* data = (CZWorldDataPartial*)(node->classData);
             for (int i = 0; i < data->lightCount; ++i) {
-                data->lightDataList[i] =
-                    (CZLightDataPartial *)(data->lightNodes[i]->classData);
+                data->lightDataList[i] = (CZLightDataPartial*)(data->lightNodes[i]->classData);
             }
 
-            data = (CZWorldDataPartial *)(node->classData);
+            data = (CZWorldDataPartial*)(node->classData);
             for (int i_775 = 0; i_775 < data->soundCount; ++i_775) {
-                data->soundDataList[i_775] =
-                    (CZSoundDataPartial *)(data->soundNodes[i_775]->classData);
+                data->soundDataList[i_775] = (CZSoundDataPartial*)(data->soundNodes[i_775]->classData);
             }
         }
 
@@ -1166,7 +1041,8 @@ namespace CZZbd {
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readzbdfile
      * @recoil-artifact defines .text recoil:function:0x455520: CZZbd::ReadZBDFile.
@@ -1174,7 +1050,8 @@ namespace CZZbd {
      * texture, material, model, and node-table sections from header offsets.
      * Purpose: read a GameZ ZBD archive into the engine resource state.
      */
-    RECOIL_NO_GS int __fastcall ReadZBDFile(const char *filename) {
+    RECOIL_NO_GS int __fastcall ReadZBDFile(const char* filename)
+    {
         const size_t filenameLength = strlen(filename);
         if (filenameLength == 0) {
             return -1;
@@ -1194,13 +1071,13 @@ namespace CZZbd {
         }
 
         CZZbdHeader header;
-        FILE *const file = OpenAndReadZBDHeader(filename, &header);
+        FILE* const file = OpenAndReadZBDHeader(filename, &header);
         if (file == 0) {
             return -1;
         }
 
         int sourceLine = 0;
-        const char *message = 0;
+        const char* message = 0;
 
         fseek(file, header.texDirOffset, SEEK_SET);
         if (zImage::ReadTextureDirectory(header.texDirArg, file) < 0) {
@@ -1251,17 +1128,15 @@ namespace CZZbd {
      * this shared header validation before reading ZBD sections.
      * Purpose: open a ZBD file, read its header, and reject bad magic/version.
      */
-    FILE *__fastcall OpenAndReadZBDHeader(
-        const char *filename,
-        CZZbdHeader *outHeader
-    ) {
-        FILE *file = fopen(filename, "rb");
+    FILE* __fastcall OpenAndReadZBDHeader(const char* filename, CZZbdHeader* outHeader)
+    {
+        FILE* file = fopen(filename, "rb");
         if (file == 0) {
             return 0;
         }
 
         int sourceLine = 0;
-        const char *message = 0;
+        const char* message = 0;
         if (fread(outHeader, sizeof(CZZbdHeader), 1, file) != 1) {
             message = g_CZClass_ReadGameZHeaderDataErrorMsg;
             sourceLine = 0x515;
@@ -1281,7 +1156,8 @@ namespace CZZbd {
     }
 }
 
-namespace CZZbd {
+namespace CZZbd
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesfromcurrentpath-local
      * @recoil-artifact defines .text recoil:function:0x455730: CZZbd::ReloadDisplayInstancesFromCurrentPath_Local.
@@ -1291,22 +1167,19 @@ namespace CZZbd {
      * ZBD path, then delegate display-instance replacement to 0x4557a0.
      * Purpose: reload display instances for a node subtree from the current ZBD.
      */
-    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(
-        CZNodePartial * node,
-        int recurseChildren
-    ) {
+    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(CZNodePartial * node, int recurseChildren)
+    {
         if (strlen(g_CZClass_CurrentZbdPath) == 0) {
             return 1;
         }
 
         CZZbdHeader header;
-        FILE *const file = CZZbd::OpenAndReadZBDHeader(g_CZClass_CurrentZbdPath, &header);
+        FILE* const file = CZZbd::OpenAndReadZBDHeader(g_CZClass_CurrentZbdPath, &header);
         if (file == 0) {
             return 1;
         }
 
-        const int result =
-            ReloadDisplayInstancesRecursive_Local(file, &header, node, recurseChildren);
+        const int result = ReloadDisplayInstancesRecursive_Local(file, &header, node, recurseChildren);
         fclose(file);
         return result;
     }
@@ -1319,11 +1192,12 @@ namespace CZZbd {
      * Purpose: replace one node's display instance from a ZBD and recurse.
      */
     RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
-        void *stream,
-        CZZbdHeader *zbdHeader,
-        CZNodePartial *node,
+        void* stream,
+        CZZbdHeader* zbdHeader,
+        CZNodePartial* node,
         int recurseChildren
-    ) {
+    )
+    {
         const int nodeIndex = NodePtrToIndex(node);
         if (nodeIndex < 0) {
             return 1;
@@ -1333,21 +1207,12 @@ namespace CZZbd {
             return 1;
         }
 
-        FILE *const file = (FILE *)(stream);
-        fseek(
-            file,
-            zbdHeader->nodeTableOffset + nodeIndex * (int)(sizeof(CZNodeFreeListSlot)),
-            SEEK_SET
-        );
+        FILE* const file = (FILE*)(stream);
+        fseek(file, zbdHeader->nodeTableOffset + nodeIndex * (int)(sizeof(CZNodeFreeListSlot)), SEEK_SET);
 
         CZNodeFreeListSlot serializedNode;
         if (fread(&serializedNode, sizeof(serializedNode), 1, file) != 1) {
-            zError::ReportOld(
-                0x200,
-                g_CZClass_SourceFile_ClsZbdC,
-                0x5b5,
-                g_CZClass_ReadGameZNodeBufferErrorMsg
-            );
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x5b5, g_CZClass_ReadGameZNodeBufferErrorMsg);
             return 1;
         }
 
@@ -1358,10 +1223,8 @@ namespace CZZbd {
         CZClass::gwNodeGetUserData(node, &oldDisplayInstanceValue);
         CZClass::gwNodeSetDisplayInstance(node, 0);
 
-        zDiPartial *const displayInstance =
-            zModel_DiPool::ReadEntryByIndexFromStream(file, displayInstanceIndex);
-        zDiPartial *const oldDisplayInstance =
-            (zDiPartial *)((unsigned int)(oldDisplayInstanceValue));
+        zDiPartial* const displayInstance = zModel_DiPool::ReadEntryByIndexFromStream(file, displayInstanceIndex);
+        zDiPartial* const oldDisplayInstance = (zDiPartial*)((unsigned int)(oldDisplayInstanceValue));
         if (displayInstance != 0) {
             CZClass::gwNodeSetDisplayInstance(node, displayInstance);
             if (oldDisplayInstance != 0) {
@@ -1373,12 +1236,7 @@ namespace CZZbd {
 
         if (recurseChildren != 0) {
             for (int i = 0; i < node->listCountB; ++i) {
-                ReloadDisplayInstancesRecursive_Local(
-                    file,
-                    zbdHeader,
-                    node->listB[i],
-                    recurseChildren
-                );
+                ReloadDisplayInstancesRecursive_Local(file, zbdHeader, node->listB[i], recurseChildren);
             }
         }
 

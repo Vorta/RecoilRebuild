@@ -9,12 +9,8 @@
  * Data: reads no authored zMath globals; VC5 materializes literal and x87
  * range-check constants while lowering the sin/cos half-angle calls.
  */
-void __fastcall zMathQuatFromEuler(
-    zQuat *outQuat,
-    float angle0,
-    float angle1,
-    float angle2
-) {
+void __fastcall zMathQuatFromEuler(zQuat* outQuat, float angle0, float angle1, float angle2)
+{
     const float sin0 = sin(angle0 * 0.5f);
     const float cos0 = cos(angle0 * 0.5f);
     const float sin1 = sin(angle1 * 0.5f);
@@ -40,11 +36,8 @@ void __fastcall zMathQuatFromEuler(
  *
  * Purpose: computes the quaternion product used by zMath rotation composition.
  */
-void __fastcall zMathQuatMultiply(
-    const zQuat *quatA,
-    const zQuat *quatB,
-    zQuat *outAB
-) {
+void __fastcall zMathQuatMultiply(const zQuat* quatA, const zQuat* quatB, zQuat* outAB)
+{
     outAB->w = quatB->w * quatA->w - quatA->x * quatB->x - quatA->y * quatB->y - quatA->z * quatB->z;
     const float scaledX = quatB->w * quatA->x;
     outAB->x = scaledX + quatA->w * quatB->x + quatB->z * quatA->y - quatA->z * quatB->y;
@@ -61,18 +54,12 @@ void __fastcall zMathQuatMultiply(
  *
  * Purpose: multiplies a quaternion by the inverse/conjugate form used by camera-view composition.
  */
-void __fastcall zMathQuatMultiplyInverse(const zQuat *quatA,
-    const zQuat *quatB,
-    zQuat *outAConjB
-) {
-    outAConjB->w =
-        quatB->w * quatA->w + quatB->x * quatA->x + quatA->y * quatB->y + quatB->z * quatA->z;
-    outAConjB->x =
-        quatB->w * quatA->x - quatA->w * quatB->x - quatB->z * quatA->y + quatA->z * quatB->y;
-    outAConjB->y =
-        quatB->w * quatA->y - quatA->w * quatB->y - quatA->z * quatB->x + quatB->z * quatA->x;
-    outAConjB->z =
-        quatB->w * quatA->z - quatA->w * quatB->z - quatB->y * quatA->x + quatA->y * quatB->x;
+void __fastcall zMathQuatMultiplyInverse(const zQuat* quatA, const zQuat* quatB, zQuat* outAConjB)
+{
+    outAConjB->w = quatB->w * quatA->w + quatB->x * quatA->x + quatA->y * quatB->y + quatB->z * quatA->z;
+    outAConjB->x = quatB->w * quatA->x - quatA->w * quatB->x - quatB->z * quatA->y + quatA->z * quatB->y;
+    outAConjB->y = quatB->w * quatA->y - quatA->w * quatB->y - quatA->z * quatB->x + quatB->z * quatA->x;
+    outAConjB->z = quatB->w * quatA->z - quatA->w * quatB->z - quatB->y * quatA->x + quatA->y * quatB->x;
 }
 
 /**
@@ -81,10 +68,8 @@ void __fastcall zMathQuatMultiplyInverse(const zQuat *quatA,
  *
  * Purpose: expands a quaternion into the rotational part of a 4x3 matrix.
  */
-void __fastcall zMathQuatToMatrix(
-    const zQuat *quat,
-    zMat4x3 *outMatrix3x3
-) {
+void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
+{
     const float x2 = quat->x + quat->x;
     const float y2 = quat->y + quat->y;
     const float z2 = quat->z + quat->z;
@@ -116,13 +101,11 @@ void __fastcall zMathQuatToMatrix(
  *
  * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
  */
-void __fastcall zMathQuatFromRotationVector(
-    const zVec3 *rotationVector,
-    zQuat *outQuat
-) {
+void __fastcall zMathQuatFromRotationVector(const zVec3* rotationVector, zQuat* outQuat)
+{
     const float length = sqrt(
-        rotationVector->x * rotationVector->x + rotationVector->y * rotationVector->y +
-        rotationVector->z * rotationVector->z
+        rotationVector->x * rotationVector->x + rotationVector->y * rotationVector->y
+        + rotationVector->z * rotationVector->z
     );
 
     if (length == 0.0f) {

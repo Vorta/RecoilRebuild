@@ -18,7 +18,7 @@
 #endif
 #include <dinput.h>
 
-typedef void(__fastcall *zInputCommandCallbackFn)(int commandId);
+typedef void(__fastcall* zInputCommandCallbackFn)(int commandId);
 
 struct zVec3;
 struct zInput_GlobalState;
@@ -26,17 +26,15 @@ struct zInput_GlobalState;
 struct zInput_BindMapContext {
     int m_isOverlay;
     int m_commandCount;
-    int *m_packedBindings;
-    zInputCommandCallbackFn *m_commandCallbacks;
-    char **m_commandLabels;
+    int* m_packedBindings;
+    zInputCommandCallbackFn* m_commandCallbacks;
+    char** m_commandLabels;
     int m_primaryKeyToCommand[0x7de];
     int m_secondaryKeyToCommand[0x7de];
     int m_joystickToCommand[0x10];
     int m_mouseToCommand[4];
 
-    zInput_BindMapContext * InitFromTemplate(
-        const zInput_BindMapContext *tmpl
-    );
+    zInput_BindMapContext* InitFromTemplate(const zInput_BindMapContext* tmpl);
     void FreeAllBuffers();
     void RebuildLookupIndices();
     void InitCommandMap(int commandCount);
@@ -51,25 +49,13 @@ struct zInput_BindMapContext {
     int GetCommandByAnyKeyboardKey(int keyboardKey);
     int GetCommandByJoystickSlot(int joystickSlot);
     int GetCommandByMouseSlot(int mouseSlot);
-    void SetPrimaryKeyBinding(
-        int keyCode,
-        int commandId
-    );
-    void SetSecondaryKeyBinding(
-        int keyCode,
-        int commandId
-    );
-    void SetJoystickBinding(
-        int joystickSlot,
-        int commandId
-    );
-    void SetMouseBinding(
-        int mouseSlot,
-        int commandId
-    );
+    void SetPrimaryKeyBinding(int keyCode, int commandId);
+    void SetSecondaryKeyBinding(int keyCode, int commandId);
+    void SetJoystickBinding(int joystickSlot, int commandId);
+    void SetMouseBinding(int mouseSlot, int commandId);
     void SetBindingRecord(
         int commandId,
-        const char *labelSrc,
+        const char* labelSrc,
         int primaryKey,
         int secondaryKey,
         int joystickSlot,
@@ -77,87 +63,28 @@ struct zInput_BindMapContext {
     );
     void DispatchMouseButtonCallbacks();
     void DispatchJoystickButtonCallbacks();
-    int SetCommandCallback(
-        int commandId,
-        zInputCommandCallbackFn callback
-    );
+    int SetCommandCallback(int commandId, zInputCommandCallbackFn callback);
     int ReadCommandInputState(int commandIndex);
-    char * CopyCommandLabel(
-        int commandId,
-        char *destBuf,
-        int maxBytes
-    );
-    char * FormatKeyComboName(
-        int packedKey,
-        char *destBuf,
-        int maxBytes
-    );
-    char * CopyJoystickButtonName(
-        int joystickSlot,
-        char *outBuf,
-        int bufSize
-    );
-    char * CopyMouseButtonName(
-        int mouseSlot,
-        char *outBuf,
-        int bufSize
-    );
+    char* CopyCommandLabel(int commandId, char* destBuf, int maxBytes);
+    char* FormatKeyComboName(int packedKey, char* destBuf, int maxBytes);
+    char* CopyJoystickButtonName(int joystickSlot, char* outBuf, int bufSize);
+    char* CopyMouseButtonName(int mouseSlot, char* outBuf, int bufSize);
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_commandCount
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_packedBindings
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_commandCallbacks
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_commandLabels
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_primaryKeyToCommand
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_secondaryKeyToCommand
-    ) == 0x1f8c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_joystickToCommand
-    ) == 0x3f04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_BindMapContext,
-        m_mouseToCommand
-    ) == 0x3f44
-);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_commandCount) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_packedBindings) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_commandCallbacks) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_commandLabels) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_primaryKeyToCommand) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_secondaryKeyToCommand) == 0x1f8c);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_joystickToCommand) == 0x3f04);
+RECOIL_STATIC_ASSERT(offsetof(zInput_BindMapContext, m_mouseToCommand) == 0x3f44);
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapContext) == 0x3f54);
 
 struct zInput_BindMapOverlayStackNode {
-    zInput_BindMapOverlayStackNode *next;
-    zInput_BindMapOverlayStackNode *prev;
-    zInput_BindMapContext *bindMap;
+    zInput_BindMapOverlayStackNode* next;
+    zInput_BindMapOverlayStackNode* prev;
+    zInput_BindMapContext* bindMap;
 };
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindMapOverlayStackNode) == 0x0c);
 
@@ -170,27 +97,18 @@ struct CZInputBindGroupInfo {
     CString title;
     zInput_CommandIdVector commandIds;
 
-    CZInputBindGroupInfo(const char *sourceTitle) {
+    CZInputBindGroupInfo(const char* sourceTitle)
+    {
         title = sourceTitle;
     }
 
     ~CZInputBindGroupInfo();
 };
 
-typedef std::vector<CZInputBindGroupInfo *> zInput_BindGroupInfoList;
+typedef std::vector<CZInputBindGroupInfo*> zInput_BindGroupInfoList;
 #if defined(_MSC_VER) && _MSC_VER < 1200
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZInputBindGroupInfo,
-        title
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        CZInputBindGroupInfo,
-        commandIds
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(CZInputBindGroupInfo, title) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(CZInputBindGroupInfo, commandIds) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(CZInputBindGroupInfo) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfoList) == 0x10);
 #endif
@@ -198,65 +116,24 @@ RECOIL_STATIC_ASSERT(sizeof(zInput_BindGroupInfoList) == 0x10);
 typedef IDirectInputEffect zInput_DiEffect;
 
 struct zInput_FFEffectSet {
-    zInput_DiEffect *PrimaryFire;
-    zInput_DiEffect *AltFire;
-    zInput_DiEffect *AmbientSine;
-    zInput_DiEffect *CollisionImpact;
-    zInput_DiEffect *DamageHit;
-    zInput_DiEffect *SteerForce;
-    zInput_DiEffect *PitchForce;
+    zInput_DiEffect* PrimaryFire;
+    zInput_DiEffect* AltFire;
+    zInput_DiEffect* AmbientSine;
+    zInput_DiEffect* CollisionImpact;
+    zInput_DiEffect* DamageHit;
+    zInput_DiEffect* SteerForce;
+    zInput_DiEffect* PitchForce;
 
-    void PlayCollisionImpactEffect(
-        const zVec3 *impactWorldPosXZ,
-        float gain
-    );
-    void PlayDamageHitEffect(
-        const zVec3 *damageSourceWorldPosXZ,
-        float gain
-    );
+    void PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ, float gain);
+    void PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ, float gain);
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        PrimaryFire
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        AltFire
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        AmbientSine
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        CollisionImpact
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        DamageHit
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        SteerForce
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_FFEffectSet,
-        PitchForce
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, PrimaryFire) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, AltFire) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, AmbientSine) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, CollisionImpact) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, DamageHit) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, SteerForce) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, PitchForce) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zInput_FFEffectSet) == 0x1c);
 
 struct zInput_PlayerStatePartial {
@@ -271,47 +148,17 @@ struct zInput_PlayerStatePartial {
     float cameraDirNextY;
     float cameraDirNextZ;
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_PlayerStatePartial,
-        angVelYaw
-    ) == 0x94
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_PlayerStatePartial,
-        yawVelocityLimit
-    ) == 0xcc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_PlayerStatePartial,
-        pitchAngleRad
-    ) == 0x3bc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_PlayerStatePartial,
-        cameraDirNextX
-    ) == 0x520
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_PlayerStatePartial,
-        cameraDirNextZ
-    ) == 0x528
-);
+RECOIL_STATIC_ASSERT(offsetof(zInput_PlayerStatePartial, angVelYaw) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(zInput_PlayerStatePartial, yawVelocityLimit) == 0xcc);
+RECOIL_STATIC_ASSERT(offsetof(zInput_PlayerStatePartial, pitchAngleRad) == 0x3bc);
+RECOIL_STATIC_ASSERT(offsetof(zInput_PlayerStatePartial, cameraDirNextX) == 0x520);
+RECOIL_STATIC_ASSERT(offsetof(zInput_PlayerStatePartial, cameraDirNextZ) == 0x528);
 
 struct zInput_GameStateOrMapTablePartial {
-    void *unknown_00;
-    zInput_PlayerStatePartial *playerState;
+    void* unknown_00;
+    zInput_PlayerStatePartial* playerState;
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zInput_GameStateOrMapTablePartial,
-        playerState
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(zInput_GameStateOrMapTablePartial, playerState) == 0x04);
 
 namespace zInput {
 typedef IDirectInputA DIDirectInput;
@@ -319,79 +166,26 @@ typedef IDirectInputDevice2A DIDevice;
 typedef DIDEVICEINSTANCEA DIDeviceInstance;
 typedef DIDEVICEOBJECTDATA DIDeviceObjectData;
 
-typedef int(__stdcall *DIEnumDevicesCallback)(
-    const DIDeviceInstance *instance,
-    void *ref
-);
+typedef int(__stdcall* DIEnumDevicesCallback)(const DIDeviceInstance* instance, void* ref);
 RECOIL_STATIC_ASSERT(offsetof(DIDeviceInstance, guidInstance) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(DIDeviceObjectData) == 0x10);
 
 struct KbdKeyDispatchEntry {
     int state;
-    void *callback;
+    void* callback;
 };
 RECOIL_STATIC_ASSERT(sizeof(KbdKeyDispatchEntry) == 0x08);
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lZ
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lRz
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        rgdwPOV
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        rgbButtons
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lVZ
-    ) == 0xb8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lVRz
-    ) == 0xc4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lAZ
-    ) == 0xd8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lARz
-    ) == 0xe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lFZ
-    ) == 0xf8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIJOYSTATE2,
-        lFRz
-    ) == 0x104
-);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lZ) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lRz) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, rgdwPOV) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, rgbButtons) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lVZ) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lVRz) == 0xc4);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lAZ) == 0xd8);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lARz) == 0xe4);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lFZ) == 0xf8);
+RECOIL_STATIC_ASSERT(offsetof(DIJOYSTATE2, lFRz) == 0x104);
 RECOIL_STATIC_ASSERT(sizeof(DIJOYSTATE2) == 0x110);
 
 struct JoystickAxisConfigEntry {
@@ -422,12 +216,7 @@ struct DIDeviceCaps {
     unsigned int dwFFDriverVersion;
 };
 RECOIL_STATIC_ASSERT(sizeof(DIDeviceCaps) == 0x2c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        DIDeviceCaps,
-        dwAxes
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(DIDeviceCaps, dwAxes) == 0x0c);
 
 struct MouseDeviceState {
     int lX;
@@ -461,10 +250,7 @@ void __cdecl MouseApplyClientCursorPosToOS();
 void __cdecl MouseUpdateClientRectAndCenter();
 void __cdecl MouseRecenterCursor();
 void __cdecl MouseRecenterCursorX();
-void __stdcall MouseSetNormalizedCursorPos(
-    float normX,
-    float normY
-);
+void __stdcall MouseSetNormalizedCursorPos(float normX, float normY);
 int __cdecl MouseIsInitialized();
 int __cdecl MouseInitDevice();
 void __fastcall MousePollAndStoreState(unsigned char dispatchCallbacks);
@@ -472,8 +258,8 @@ int __fastcall MousePollState(unsigned char dispatchCallbacks);
 int __cdecl MouseAddRef();
 int __fastcall MouseGetButtonTransitionState(int buttonNumber);
 int __fastcall MouseWaitForButtonPress(int pollUntilFound);
-MouseStateSnapshot *__cdecl MouseGetStateSnapshotPtr();
-int __fastcall MouseGetStateSnapshot(MouseStateSnapshot *outState);
+MouseStateSnapshot* __cdecl MouseGetStateSnapshotPtr();
+int __fastcall MouseGetStateSnapshot(MouseStateSnapshot* outState);
 int __cdecl KeyboardShutdownDevice();
 int __cdecl JoystickShutdownDevice();
 int __cdecl Shutdown();
@@ -492,26 +278,16 @@ void __fastcall KeyboardPollState(unsigned char dispatchCallbacks);
 int __fastcall KeyboardWaitForAnyKeyPress(int keepWaiting);
 void __cdecl KeyboardInitDikToAsciiTable();
 int __fastcall KeyboardTranslateDikToAscii(int comboIdx);
-void __fastcall KeyboardSetRawEventCallback(
-    void *callback,
-    void *context
-);
+void __fastcall KeyboardSetRawEventCallback(void* callback, void* context);
 int __fastcall KeyboardGetKeyTransitionState(int keyIndex);
-int __fastcall KeyboardRegisterKeyCallback(
-    int comboIdx,
-    void *callback,
-    const char *unusedLabel
-);
+int __fastcall KeyboardRegisterKeyCallback(int comboIdx, void* callback, const char* unusedLabel);
 void __fastcall KeyboardUnregisterKeyCallback(int comboIdx);
 void __cdecl ResetAllTransitionState();
 int __cdecl KeyboardInitDevice();
 int __cdecl KeyboardAddRef();
 void __cdecl DIResetTransitionState();
 void __cdecl JoystickResumeFromSuspend();
-int __fastcall Init(
-    HWND hWnd,
-    HINSTANCE hInstance
-);
+int __fastcall Init(HWND hWnd, HINSTANCE hInstance);
 void __cdecl BindMapInitDikKeyNameTable();
 void __cdecl BindMapInitJoystickButtonNameTable();
 void __cdecl BindMapInitMouseButtonNameTable();
@@ -519,64 +295,35 @@ int __cdecl DIAddJoystickRef();
 int __cdecl DIReleaseJoystickRef();
 int __cdecl DIGetJoystickRefCount();
 int __fastcall DIGetButtonTransitionState(int buttonIndex);
-int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(
-    const DIDeviceInstance *instance,
-    void *ref
-);
+int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(const DIDeviceInstance* instance, void* ref);
 int __cdecl DIAcquireJoystickDevice();
 int __fastcall DIInitJoystickDevice(HWND hwnd);
-int __fastcall DIApplyAxisConfig(JoystickAxisConfig *axisCfg);
-int __fastcall DISetAxisDeadzone(
-    int axisOffset,
-    int deadzone
-);
-int __fastcall DISetAxisRange(
-    int axisOffset,
-    int rangeMin,
-    int rangeMax
-);
-int __fastcall DIGetAxisRange(
-    int axisOffset,
-    int *pOutMin,
-    int *pOutMax
-);
+int __fastcall DIApplyAxisConfig(JoystickAxisConfig* axisCfg);
+int __fastcall DISetAxisDeadzone(int axisOffset, int deadzone);
+int __fastcall DISetAxisRange(int axisOffset, int rangeMin, int rangeMax);
+int __fastcall DIGetAxisRange(int axisOffset, int* pOutMin, int* pOutMax);
 int __cdecl DIIsJoystickDeviceReady();
-DIJOYSTATE2 *__cdecl DIGetCurrentState();
-DIJOYSTATE2 *__fastcall DIPollJoystickState(unsigned char dispatchCallbacks);
+DIJOYSTATE2* __cdecl DIGetCurrentState();
+DIJOYSTATE2* __fastcall DIPollJoystickState(unsigned char dispatchCallbacks);
 int __fastcall DISetJoystickEnabled(int enable);
 int __fastcall DIWaitForButtonPress(int loopUntilPressed);
-int __fastcall DIReportError(
-    int hresult,
-    const char *sourceFile,
-    int sourceLine
-);
-int __fastcall BindMapPackBindingCode(
-    int primary,
-    int secondary,
-    int joy,
-    int mouse
-);
-void *__fastcall GlobalStateConstructor(::zInput_GlobalState *self);
-void __fastcall GlobalStateDestructor(::zInput_GlobalState *self);
-void *GlobalStateStaticInit();
+int __fastcall DIReportError(int hresult, const char* sourceFile, int sourceLine);
+int __fastcall BindMapPackBindingCode(int primary, int secondary, int joy, int mouse);
+void* __fastcall GlobalStateConstructor(::zInput_GlobalState* self);
+void __fastcall GlobalStateDestructor(::zInput_GlobalState* self);
+void* GlobalStateStaticInit();
 int GlobalStateRegisterAtExit();
 void __cdecl GlobalStateAtExitDestructor();
 void __cdecl GlobalStateStaticInitAndRegisterAtExit();
 int __cdecl BindGroupListGetCount();
-char *__fastcall BindGroupListGetGroupTitle(int groupIndex);
+char* __fastcall BindGroupListGetGroupTitle(int groupIndex);
 int __fastcall BindGroupListGetGroupCommandCount(int groupIndex);
-int __fastcall BindGroupListGetGroupCommandId(
-    int groupIndex,
-    int commandIndex
-);
+int __fastcall BindGroupListGetGroupCommandId(int groupIndex, int commandIndex);
 void __cdecl BindGroupListClear();
-int __fastcall BindGroupListAddGroup(const char *title);
-void __fastcall BindGroupListAddCommandToGroup(
-    int groupIndex,
-    int commandId
-);
-char *__fastcall BindMapGetCommandLabel(int commandId);
-char *__fastcall BindMapGetCommandHint(int commandId);
+int __fastcall BindGroupListAddGroup(const char* title);
+void __fastcall BindGroupListAddCommandToGroup(int groupIndex, int commandId);
+char* __fastcall BindMapGetCommandLabel(int commandId);
+char* __fastcall BindMapGetCommandHint(int commandId);
 void __fastcall BindMapAddDefaultBinding(
     int commandId,
     int messageId,
@@ -588,7 +335,7 @@ void __fastcall BindMapAddDefaultBinding(
 int __fastcall BindMapInitDefaultBindings();
 void __fastcall BindMapSystemInit(int commandCount);
 void __cdecl BindMapSystemShutdown();
-void __fastcall BindMapContextPush(zInput_BindMapContext *bindMapOrNull);
+void __fastcall BindMapContextPush(zInput_BindMapContext* bindMapOrNull);
 void __fastcall BindMapContextPop();
 void __cdecl BindMapCurrentRebuildLookupIndices();
 void __cdecl BindMapCurrentResetAllBindings();
@@ -600,60 +347,26 @@ int __fastcall BindMapCurrentGetCommandByPrimaryKey(int keyboardKey);
 int __fastcall BindMapCurrentGetCommandBySecondaryKey(int keyboardKey);
 int __fastcall BindMapCurrentGetCommandByJoystickSlot(int joystickSlot);
 int __fastcall BindMapCurrentGetCommandByMouseSlot(int mouseSlot);
-void __fastcall BindMapCurrentSetPrimaryKeyBinding(
-    int keyCode,
-    int commandId
-);
-void __fastcall BindMapCurrentSetSecondaryKeyBinding(
-    int keyCode,
-    int commandId
-);
-void __fastcall BindMapCurrentSetJoystickBinding(
-    int joystickSlot,
-    int commandId
-);
-void __fastcall BindMapCurrentSetMouseBinding(
-    int mouseSlot,
-    int commandId
-);
+void __fastcall BindMapCurrentSetPrimaryKeyBinding(int keyCode, int commandId);
+void __fastcall BindMapCurrentSetSecondaryKeyBinding(int keyCode, int commandId);
+void __fastcall BindMapCurrentSetJoystickBinding(int joystickSlot, int commandId);
+void __fastcall BindMapCurrentSetMouseBinding(int mouseSlot, int commandId);
 int __fastcall BindMapCurrentSetBindingRecord(
     int commandId,
-    const char *labelSrc,
+    const char* labelSrc,
     int primaryKey,
     int secondaryKey,
     int joystickSlot,
     int mouseSlot
 );
-int __fastcall BindMapCurrentSetCommandCallback(
-    int commandId,
-    zInputCommandCallbackFn callback
-);
+int __fastcall BindMapCurrentSetCommandCallback(int commandId, zInputCommandCallbackFn callback);
 int __fastcall BindMapCurrentReadCommandInputState(int commandIndex);
-char *__fastcall BindMapCurrentCopyCommandLabel(
-    int commandId,
-    char *destBuf,
-    int maxBytes
-);
-char *__fastcall BindMapCurrentFormatKeyComboName(
-    int packedKey,
-    char *destBuf,
-    int maxBytes
-);
-char *__fastcall BindMapCurrentCopyJoystickButtonName(
-    int joystickSlot,
-    char *outBuf,
-    int bufSize
-);
-char *__fastcall BindMapCurrentCopyMouseButtonName(
-    int mouseSlot,
-    char *outBuf,
-    int bufSize
-);
+char* __fastcall BindMapCurrentCopyCommandLabel(int commandId, char* destBuf, int maxBytes);
+char* __fastcall BindMapCurrentFormatKeyComboName(int packedKey, char* destBuf, int maxBytes);
+char* __fastcall BindMapCurrentCopyJoystickButtonName(int joystickSlot, char* outBuf, int bufSize);
+char* __fastcall BindMapCurrentCopyMouseButtonName(int mouseSlot, char* outBuf, int bufSize);
 int __fastcall MouseSetCooperativeLevelFlags(int flags);
-void __fastcall MouseSetClientSizeAndCenter(
-    int width,
-    int height
-);
+void __fastcall MouseSetClientSizeAndCenter(int width, int height);
 void __fastcall PollActiveDevices(unsigned char dispatchCallbacks);
 void __cdecl OnAppActivate();
 void __cdecl OnAppDeactivate();
@@ -679,18 +392,18 @@ struct zInput_DeviceRegistry {
 typedef char zInput_DeviceRegistry_size_check[(sizeof(zInput_DeviceRegistry) == 0x0c) ? 1 : -1];
 
 struct zInput_GlobalState {
-    zInput::DIDirectInput *directInput;
+    zInput::DIDirectInput* directInput;
     HWND hWnd;
     zInput_DeviceRegistry deviceRegistry;
     int keyboardSystemReady;
-    zInput::DIDevice *keyboardDevice;
-    zInput::DIDeviceObjectData *keyboardEventBuffer;
+    zInput::DIDevice* keyboardDevice;
+    zInput::DIDeviceObjectData* keyboardEventBuffer;
     int keyboardModifierState;
     zInput::KbdKeyDispatchEntry keyboardDispatchTable[0x7de];
-    void *keyboardRawEventCallback;
-    void *keyboardRawEventCallbackCtx;
+    void* keyboardRawEventCallback;
+    void* keyboardRawEventCallbackCtx;
     int joystickInitialized;
-    zInput::DIDevice *joystickDevice;
+    zInput::DIDevice* joystickDevice;
     DIJOYSTATE2 joystickCurrentState;
     DIJOYSTATE2 joystickPreviousState;
     unsigned char unknown_4144[0x20];
@@ -700,93 +413,63 @@ struct zInput_GlobalState {
     int joystickCapsFFFade;
     zInput::JoystickAxisConfig joystickAxisConfig;
     int mouseInitialized;
-    zInput::DIDevice *mouseDevice;
+    zInput::DIDevice* mouseDevice;
     zInput::MouseDeviceState mouseCurrentState;
     zInput::MouseDeviceState mousePreviousState;
     unsigned char unknown_41ec[4];
-    zInput_BindMapContext *currentBindMap;
+    zInput_BindMapContext* currentBindMap;
     int bindMapOverlayBlockSize;
-    zInput_BindMapOverlayStackNode *bindMapOverlayNodeBlockList;
-    zInput_BindMapOverlayStackNode *bindMapOverlayNodeFreeList;
-    zInput_BindMapOverlayStackNode *bindMapOverlayNodeStackHead;
+    zInput_BindMapOverlayStackNode* bindMapOverlayNodeBlockList;
+    zInput_BindMapOverlayStackNode* bindMapOverlayNodeFreeList;
+    zInput_BindMapOverlayStackNode* bindMapOverlayNodeStackHead;
     int bindMapOverlayReserved;
     int bindMapOverlayDepth;
 };
-typedef char zInput_GlobalState_directInput_check[
-    (offsetof(zInput_GlobalState, directInput) == 0x00) ? 1 : -1
-];
-typedef char zInput_GlobalState_hWnd_check[
-    (offsetof(zInput_GlobalState, hWnd) == 0x04) ? 1 : -1
-];
-typedef char zInput_GlobalState_deviceRegistry_check[
-    (offsetof(zInput_GlobalState, deviceRegistry) == 0x08) ? 1 : -1
-];
-typedef char zInput_GlobalState_keyboardSystemReady_check[
-    (offsetof(zInput_GlobalState, keyboardSystemReady) == 0x14) ? 1 : -1
-];
-typedef char zInput_GlobalState_keyboardDispatchTable_check[
-    (offsetof(zInput_GlobalState, keyboardDispatchTable) == 0x24) ? 1 : -1
-];
-typedef char zInput_GlobalState_keyboardRawEventCallback_check[
-    (offsetof(zInput_GlobalState, keyboardRawEventCallback) == 0x3f14) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickInitialized_check[
-    (offsetof(zInput_GlobalState, joystickInitialized) == 0x3f1c) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickCurrentState_check[
-    (offsetof(zInput_GlobalState, joystickCurrentState) == 0x3f24) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickPreviousState_check[
-    (offsetof(zInput_GlobalState, joystickPreviousState) == 0x4034) ? 1 : -1
-];
-typedef char zInput_GlobalState_unknown_4144_check[
-    (offsetof(zInput_GlobalState, unknown_4144) == 0x4144) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickAxisCount_check[
-    (offsetof(zInput_GlobalState, joystickAxisCount) == 0x4164) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickCapsForceFeedback_check[
-    (offsetof(zInput_GlobalState, joystickCapsForceFeedback) == 0x4168) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickCapsFFAttack_check[
-    (offsetof(zInput_GlobalState, joystickCapsFFAttack) == 0x416c) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickCapsFFFade_check[
-    (offsetof(zInput_GlobalState, joystickCapsFFFade) == 0x4170) ? 1 : -1
-];
-typedef char zInput_GlobalState_joystickAxisConfig_check[
-    (offsetof(zInput_GlobalState, joystickAxisConfig) == 0x4174) ? 1 : -1
-];
-typedef char zInput_GlobalState_mouseInitialized_check[
-    (offsetof(zInput_GlobalState, mouseInitialized) == 0x41c4) ? 1 : -1
-];
-typedef char zInput_GlobalState_mouseCurrentState_check[
-    (offsetof(zInput_GlobalState, mouseCurrentState) == 0x41cc) ? 1 : -1
-];
-typedef char zInput_GlobalState_mousePreviousState_check[
-    (offsetof(zInput_GlobalState, mousePreviousState) == 0x41dc) ? 1 : -1
-];
-typedef char zInput_GlobalState_currentBindMap_check[
-    (offsetof(zInput_GlobalState, currentBindMap) == 0x41f0) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayBlockSize_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayBlockSize) == 0x41f4) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayNodeBlockList_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayNodeBlockList) == 0x41f8) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayNodeFreeList_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayNodeFreeList) == 0x41fc) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayNodeStackHead_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayNodeStackHead) == 0x4200) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayReserved_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayReserved) == 0x4204) ? 1 : -1
-];
-typedef char zInput_GlobalState_bindMapOverlayDepth_check[
-    (offsetof(zInput_GlobalState, bindMapOverlayDepth) == 0x4208) ? 1 : -1
-];
+typedef char zInput_GlobalState_directInput_check[(offsetof(zInput_GlobalState, directInput) == 0x00) ? 1 : -1];
+typedef char zInput_GlobalState_hWnd_check[(offsetof(zInput_GlobalState, hWnd) == 0x04) ? 1 : -1];
+typedef char zInput_GlobalState_deviceRegistry_check[(offsetof(zInput_GlobalState, deviceRegistry) == 0x08) ? 1 : -1];
+typedef char
+    zInput_GlobalState_keyboardSystemReady_check[(offsetof(zInput_GlobalState, keyboardSystemReady) == 0x14) ? 1 : -1];
+typedef char zInput_GlobalState_keyboardDispatchTable_check
+    [(offsetof(zInput_GlobalState, keyboardDispatchTable) == 0x24) ? 1 : -1];
+typedef char zInput_GlobalState_keyboardRawEventCallback_check
+    [(offsetof(zInput_GlobalState, keyboardRawEventCallback) == 0x3f14) ? 1 : -1];
+typedef char zInput_GlobalState_joystickInitialized_check
+    [(offsetof(zInput_GlobalState, joystickInitialized) == 0x3f1c) ? 1 : -1];
+typedef char zInput_GlobalState_joystickCurrentState_check
+    [(offsetof(zInput_GlobalState, joystickCurrentState) == 0x3f24) ? 1 : -1];
+typedef char zInput_GlobalState_joystickPreviousState_check
+    [(offsetof(zInput_GlobalState, joystickPreviousState) == 0x4034) ? 1 : -1];
+typedef char zInput_GlobalState_unknown_4144_check[(offsetof(zInput_GlobalState, unknown_4144) == 0x4144) ? 1 : -1];
+typedef char
+    zInput_GlobalState_joystickAxisCount_check[(offsetof(zInput_GlobalState, joystickAxisCount) == 0x4164) ? 1 : -1];
+typedef char zInput_GlobalState_joystickCapsForceFeedback_check
+    [(offsetof(zInput_GlobalState, joystickCapsForceFeedback) == 0x4168) ? 1 : -1];
+typedef char zInput_GlobalState_joystickCapsFFAttack_check
+    [(offsetof(zInput_GlobalState, joystickCapsFFAttack) == 0x416c) ? 1 : -1];
+typedef char
+    zInput_GlobalState_joystickCapsFFFade_check[(offsetof(zInput_GlobalState, joystickCapsFFFade) == 0x4170) ? 1 : -1];
+typedef char
+    zInput_GlobalState_joystickAxisConfig_check[(offsetof(zInput_GlobalState, joystickAxisConfig) == 0x4174) ? 1 : -1];
+typedef char
+    zInput_GlobalState_mouseInitialized_check[(offsetof(zInput_GlobalState, mouseInitialized) == 0x41c4) ? 1 : -1];
+typedef char
+    zInput_GlobalState_mouseCurrentState_check[(offsetof(zInput_GlobalState, mouseCurrentState) == 0x41cc) ? 1 : -1];
+typedef char
+    zInput_GlobalState_mousePreviousState_check[(offsetof(zInput_GlobalState, mousePreviousState) == 0x41dc) ? 1 : -1];
+typedef char zInput_GlobalState_currentBindMap_check[(offsetof(zInput_GlobalState, currentBindMap) == 0x41f0) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayBlockSize_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayBlockSize) == 0x41f4) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayNodeBlockList_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayNodeBlockList) == 0x41f8) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayNodeFreeList_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayNodeFreeList) == 0x41fc) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayNodeStackHead_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayNodeStackHead) == 0x4200) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayReserved_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayReserved) == 0x4204) ? 1 : -1];
+typedef char zInput_GlobalState_bindMapOverlayDepth_check
+    [(offsetof(zInput_GlobalState, bindMapOverlayDepth) == 0x4208) ? 1 : -1];
 typedef char zInput_GlobalState_size_check[(sizeof(zInput_GlobalState) == 0x420c) ? 1 : -1];
 
 namespace zInp {
@@ -798,9 +481,9 @@ int GetJoystickOption();
 
 extern "C" {
 extern zInput_GlobalState g_zInput_GlobalStateStorage;
-extern const char *g_zInput_DikKeyNames[0x100];
-extern const char *g_zInput_JoystickButtonNames[9];
-extern const char *g_zInput_MouseButtonNames[4];
+extern const char* g_zInput_DikKeyNames[0x100];
+extern const char* g_zInput_JoystickButtonNames[9];
+extern const char* g_zInput_MouseButtonNames[4];
 extern zInput_BindGroupInfoList g_zInput_BindGroupInfoList;
 extern int g_zInput_CurrentBindGroupIndex;
 extern int g_zInput_CommandLocIdTable[0x30];
@@ -822,31 +505,23 @@ extern float g_zInput_MouseSensitivityY;
 extern int g_zInput_MouseWrapModeFlag;
 extern int g_zInput_KbdDikToAsciiTable[0x100];
 extern int g_zInput_KbdDikToAsciiTableReady;
-extern zInput_FFEffectSet *g_zInputFfEffectSet;
-extern zInput_GameStateOrMapTablePartial *g_GameStateOrMapTable;
+extern zInput_FFEffectSet* g_zInputFfEffectSet;
+extern zInput_GameStateOrMapTablePartial* g_GameStateOrMapTable;
 extern float g_zInput_DiPitchAngleLowpassRad;
 
 int __cdecl zInputKeyboardIsUnsuspended();
 int __fastcall zInputWaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
 int __cdecl zInputDIHasForceFeedback();
 int __cdecl zInputDIIsForceFeedbackEnabled();
-zInput_DiEffect *__fastcall zInputDICreateForceFeedbackEffect(
-    const GUID *rguidEffect,
-    const DIEFFECT *effect
-);
-zInput_DiEffect *__stdcall zInputDICreateConstantForceEffectScaled(float gain);
-zInput_DiEffect *__fastcall zInputDICreateConstantForceEffectWithDirection(int direction);
-zInput_DiEffect *__stdcall zInputDICreateSineEffectScaled(float gain);
+zInput_DiEffect* __fastcall zInputDICreateForceFeedbackEffect(const GUID* rguidEffect, const DIEFFECT* effect);
+zInput_DiEffect* __stdcall zInputDICreateConstantForceEffectScaled(float gain);
+zInput_DiEffect* __fastcall zInputDICreateConstantForceEffectWithDirection(int direction);
+zInput_DiEffect* __stdcall zInputDICreateSineEffectScaled(float gain);
 void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(int dikCode);
-void __fastcall zInputDIRestartPrimaryFireEffect(zInput_FFEffectSet *effectSet);
-void __fastcall zInputDIPlayAltFireEffect(
-    zInput_FFEffectSet *effectSet,
-    float gain
-);
-zInput_FFEffectSet *__fastcall zInputDIInitForceFeedbackEffectSet(
-    zInput_FFEffectSet *effectSet
-);
-void __fastcall zInputDIUpdateSteerAndPitchForceEffects(zInput_FFEffectSet *effectSet);
+void __fastcall zInputDIRestartPrimaryFireEffect(zInput_FFEffectSet* effectSet);
+void __fastcall zInputDIPlayAltFireEffect(zInput_FFEffectSet* effectSet, float gain);
+zInput_FFEffectSet* __fastcall zInputDIInitForceFeedbackEffectSet(zInput_FFEffectSet* effectSet);
+void __fastcall zInputDIUpdateSteerAndPitchForceEffects(zInput_FFEffectSet* effectSet);
 }
 
 #define g_zInput_GlobalState (g_zInput_GlobalStateStorage.directInput)

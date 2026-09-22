@@ -1,13 +1,13 @@
 #include "Battlesport/briefing.h"
 
 #include "Battlesport/hud_sensor_tracker.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zInput/zinput.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zSound/zsnd.h"
+#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include <windows.h>
@@ -28,7 +28,7 @@ namespace {
  * scaffold.
  */
 struct BriefingActionElementTarget : BriefingAction {
-    HudUiElement *target;
+    HudUiElement* target;
 };
 
 struct BriefingActionHideElement : BriefingActionElementTarget {
@@ -37,7 +37,8 @@ struct BriefingActionHideElement : BriefingActionElementTarget {
      * Observed in caller 0x4045b0 as the hide-element action allocation path.
      * Purpose: bind a hide action to the queued briefing UI element.
      */
-    BriefingActionHideElement(HudUiElement *element) {
+    BriefingActionHideElement(HudUiElement* element)
+    {
         target = element;
     }
 
@@ -50,7 +51,8 @@ struct BriefingActionShowElement : BriefingActionElementTarget {
      * Observed in caller 0x404640 as the show-element action allocation path.
      * Purpose: bind a show action to the queued briefing UI element.
      */
-    BriefingActionShowElement(HudUiElement *element) {
+    BriefingActionShowElement(HudUiElement* element)
+    {
         target = element;
     }
 
@@ -65,8 +67,9 @@ struct BriefingActionFadeInElement : BriefingActionElementTarget {
      * Observed in caller 0x4046d0 as the fade-in action allocation path.
      * Purpose: bind a fade action to the target element and start alpha at zero.
      */
-    BriefingActionFadeInElement(HudUiElement *element)
-        : alpha(0.0f) {
+    BriefingActionFadeInElement(HudUiElement* element)
+        : alpha(0.0f)
+    {
         target = element;
     }
 
@@ -75,17 +78,15 @@ struct BriefingActionFadeInElement : BriefingActionElementTarget {
 
 struct BriefingActionSetPanelText : BriefingAction {
     char text[0x100];
-    HudUiPanel *target;
+    HudUiPanel* target;
 
     /**
      * Original inline constructor; no standalone retail function exists.
      * Observed in caller 0x404780 as the panel-text action allocation path.
      * Purpose: copy the queued text, bind the target panel, and hide it until Tick.
      */
-    BriefingActionSetPanelText(
-        const char *textValue,
-        HudUiPanel *panel
-    ) {
+    BriefingActionSetPanelText(const char* textValue, HudUiPanel* panel)
+    {
         strncpy(text, textValue, sizeof(text));
         target = panel;
         panel->SetVisible(0);
@@ -95,8 +96,8 @@ struct BriefingActionSetPanelText : BriefingAction {
 };
 
 struct BriefingActionSetWidgetImageTimed : BriefingAction {
-    zVidImagePartial *imageRef;
-    HudUiWidget *target;
+    zVidImagePartial* imageRef;
+    HudUiWidget* target;
     float timer;
 
     /**
@@ -104,10 +105,8 @@ struct BriefingActionSetWidgetImageTimed : BriefingAction {
      * Observed in caller 0x4048a0 as the timed-image action allocation path.
      * Purpose: bind the image/widget action, hide the widget, and seed its timer.
      */
-    BriefingActionSetWidgetImageTimed(
-        zVidImagePartial *imageRefValue,
-        HudUiWidget *widget
-    ) {
+    BriefingActionSetWidgetImageTimed(zVidImagePartial* imageRefValue, HudUiWidget* widget)
+    {
         imageRef = imageRefValue;
         target = widget;
         widget->SetVisible(0);
@@ -128,12 +127,8 @@ struct BriefingActionPlaySample : BriefingAction {
      * Observed in caller 0x4049d0 as the sample-play action allocation path.
      * Purpose: copy the queued sample request and playback variant state.
      */
-    BriefingActionPlaySample(
-        const char *sampleNameValue,
-        float gainValue,
-        int useVariantValue,
-        int progressId
-    ) {
+    BriefingActionPlaySample(const char* sampleNameValue, float gainValue, int useVariantValue, int progressId)
+    {
         strncpy(sampleName, sampleNameValue, sizeof(sampleName));
         gain = gainValue;
         useVariant = useVariantValue;
@@ -152,65 +147,26 @@ struct BriefingActionDelayUntilProgress : BriefingAction {
      * Purpose: convert the required progress event id into the queued threshold.
      */
     BriefingActionDelayUntilProgress(int progressId)
-        : requiredProgress((float)(progressId)) {
+        : requiredProgress((float)(progressId))
+    {
     }
 
     int Tick(float deltaSec);
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionElementTarget,
-        target
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionElementTarget, target) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionElementTarget) == 0x08);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionFadeInElement,
-        alpha
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionFadeInElement, alpha) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionFadeInElement) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionSetPanelText,
-        target
-    ) == 0x104
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionSetPanelText, target) == 0x104);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionSetPanelText) == 0x108);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionSetWidgetImageTimed,
-        timer
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionSetWidgetImageTimed, timer) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionSetWidgetImageTimed) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionPlaySample,
-        gain
-    ) == 0x54
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionPlaySample,
-        useVariant
-    ) == 0x58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionPlaySample,
-        variantIndex
-    ) == 0x5c
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionPlaySample, gain) == 0x54);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionPlaySample, useVariant) == 0x58);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionPlaySample, variantIndex) == 0x5c);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionPlaySample) == 0x60);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        BriefingActionDelayUntilProgress,
-        requiredProgress
-    ) == 0x04
-);
+RECOIL_STATIC_ASSERT(offsetof(BriefingActionDelayUntilProgress, requiredProgress) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(BriefingActionDelayUntilProgress) == 0x08);
 
 } // namespace
@@ -242,19 +198,19 @@ int g_Briefing_SequenceActiveFlag = 0;
  * @recoil-artifact defines .data recoil:data:0x4e5c70: g_Briefing_SndSetName.
  * Purpose: store the mission briefing sample-set name for thread startup and shutdown.
  */
-char g_Briefing_SndSetName[0x40] = {0};
+char g_Briefing_SndSetName[0x40] = { 0 };
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.g-briefing-currentsndhandle
  * @recoil-artifact defines .data recoil:data:0x4e5cb0: g_Briefing_CurrentSndHandle.
  * Purpose: retain the currently playing briefing voice sample so later actions can stop it.
  */
-zSndPlayHandle *g_Briefing_CurrentSndHandle = 0;
+zSndPlayHandle* g_Briefing_CurrentSndHandle = 0;
 
 /**
  * Purpose: hold the active briefing UI runtime while the mission briefing thread is alive.
  */
-HudUiBriefingRuntime *g_Briefing_Runtime = 0;
+HudUiBriefingRuntime* g_Briefing_Runtime = 0;
 
 extern "C" {
 
@@ -296,7 +252,8 @@ int g_Briefing_ProgressEventCode = -1;
  * Purpose: initialize the briefing action queue's independent active state.
  */
 inline CBriefingActionQueue::CBriefingActionQueue()
-    : active(0) {
+    : active(0)
+{
     g_Briefing_ProgressEventCode = -1;
 }
 
@@ -306,9 +263,10 @@ inline CBriefingActionQueue::CBriefingActionQueue()
  * Purpose: construct the briefing picture widget and clear its noise overlay state.
  */
 inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
-    : HudUiWidget(0) {
+    : HudUiWidget(0)
+{
     noiseAlpha = 0.0f;
-    ((HudUiElement *)(this))->Invalidate();
+    ((HudUiElement*)(this))->Invalidate();
 }
 
 /**
@@ -320,7 +278,8 @@ inline HudUiBriefingObjectivePicture::HudUiBriefingObjectivePicture()
  * HudUiWidget::Draw override for the briefing objective picture.
  * Purpose: draw the objective picture and overlay transition noise while active.
  */
-void HudUiBriefingObjectivePicture::Draw() {
+void HudUiBriefingObjectivePicture::Draw()
+{
     HudUiWidget::Draw();
     if (noiseAlpha <= 0.0) {
         return;
@@ -329,7 +288,7 @@ void HudUiBriefingObjectivePicture::Draw() {
     zVidRect32 rect;
     rect.left = GetCenterX();
     rect.top = GetCenterY();
-    const zVidImagePartial *image = this->image;
+    const zVidImagePartial* image = this->image;
     const int imageWidth = image != 0 ? image->width : 0;
     rect.right = GetCenterX() + imageWidth;
     image = this->image;
@@ -346,70 +305,42 @@ void HudUiBriefingObjectivePicture::Draw() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: construct the briefing UI runtime, bind its ZRD widgets, and run the first frame.
  */
-HudUiBriefingRuntime::HudUiBriefingRuntime(
-    int missionId
-) : HudUiBackground(),
-    actionQueue(),
-    transportProgress(),
-    missionName(
-        0,
-        0,
-        0
-    ),
-    objectiveSummary(
-        0,
-        0,
-        0
-    ),
-    objectiveDesc(
-        0,
-        0,
-        0
-    ),
-    objectivePicture(),
-    transmissionHalted(
-        0,
-        0,
-        0
-    ),
-    messagesPanel(25) {
-    HudUiBriefingTransportProgress *const progress = &transportProgress;
-    HudUiPanel *const namePanel = &missionName;
+HudUiBriefingRuntime::HudUiBriefingRuntime(int missionId)
+    : HudUiBackground()
+    , actionQueue()
+    , transportProgress()
+    , missionName(0, 0, 0)
+    , objectiveSummary(0, 0, 0)
+    , objectiveDesc(0, 0, 0)
+    , objectivePicture()
+    , transmissionHalted(0, 0, 0)
+    , messagesPanel(25)
+{
+    HudUiBriefingTransportProgress* const progress = &transportProgress;
+    HudUiPanel* const namePanel = &missionName;
     char campaignSection[0x20];
     sprintf(campaignSection, "CAMPAIGN%1d", missionId);
-    zReader::Node *const loadedRoot = LoadFromZrd("briefing.zrd", campaignSection, 0);
+    zReader::Node* const loadedRoot = LoadFromZrd("briefing.zrd", campaignSection, 0);
     if (loadedRoot != 0) {
-        BindWidgetByName(loadedRoot, (HudUiZrdWidget *)(progress), "TRANSPORT_PROGRESS");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(namePanel), "MISSION_NAME");
-        BindPrimitiveNodeToElement(
-            loadedRoot,
-            (HudUiElement *)(&objectiveSummary),
-            "OBJECTIVE_SUMMARY"
-        );
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&objectiveDesc), "OBJECTIVE_DESC");
-        BindPrimitiveNodeToElement(
-            loadedRoot,
-            (HudUiElement *)(&objectivePicture),
-            "OBJECTIVE_PICT"
-        );
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&messagesPanel), "MESSAGES");
-        BindPrimitiveNodeToElement(
-            loadedRoot,
-            (HudUiElement *)(&transmissionHalted),
-            "TRANSMISSION_HALTED"
-        );
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[0]), "LOCATOR1");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[1]), "LOCATOR2");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[2]), "LOCATOR3");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[3]), "LOCATOR4");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[4]), "LOCATOR5");
-        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement *)(&locatorPanels[5]), "LOCATOR6");
+        BindWidgetByName(loadedRoot, (HudUiZrdWidget*)(progress), "TRANSPORT_PROGRESS");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(namePanel), "MISSION_NAME");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&objectiveSummary), "OBJECTIVE_SUMMARY");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&objectiveDesc), "OBJECTIVE_DESC");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&objectivePicture), "OBJECTIVE_PICT");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&messagesPanel), "MESSAGES");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&transmissionHalted), "TRANSMISSION_HALTED");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[0]), "LOCATOR1");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[1]), "LOCATOR2");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[2]), "LOCATOR3");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[3]), "LOCATOR4");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[4]), "LOCATOR5");
+        BindPrimitiveNodeToElement(loadedRoot, (HudUiElement*)(&locatorPanels[5]), "LOCATOR6");
         FreeLoadedTreeRoots((int)(unsigned int)loadedRoot);
     }
 
     namePanel->SetVisible(0);
     messagesPanel.SetVisible(1);
-    HudUiBackground *const background = this;
+    HudUiBackground* const background = this;
     background->SetEnabled(1);
 
     Time::Tick();
@@ -429,17 +360,9 @@ HudUiBriefingRuntime::HudUiBriefingRuntime(
  * Purpose: construct a briefing locator circle with the original red marker style.
  */
 HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
-    : HudUiCircle(
-        0x64,
-        0x6e,
-        0x1e,
-        (unsigned short)(zVidPackColorRGB(
-            0xff,
-            0,
-            0
-        ))
-) {
-    HudUiBriefingLocatorPanel *const locatorPanel = this;
+    : HudUiCircle(0x64, 0x6e, 0x1e, (unsigned short)(zVidPackColorRGB(0xff, 0, 0)))
+{
+    HudUiBriefingLocatorPanel* const locatorPanel = this;
     locatorPanel->SetVisible(0);
 }
 
@@ -451,7 +374,8 @@ HudUiBriefingLocatorPanel::HudUiBriefingLocatorPanel()
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: draw the locator circle through the inherited circle implementation.
  */
-void HudUiBriefingLocatorPanel::Draw() {
+void HudUiBriefingLocatorPanel::Draw()
+{
     HudUiCircle::Draw();
 }
 
@@ -463,14 +387,15 @@ void HudUiBriefingLocatorPanel::Draw() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: redraw the locator panel's clipped background region.
  */
-void HudUiBriefingLocatorPanel::DrawBase() {
+void HudUiBriefingLocatorPanel::DrawBase()
+{
     if (bltSource != 0) {
         zVid_Image::BlitToActiveTarget(
-            (zVidImagePartial *)(bltSource),
+            (zVidImagePartial*)(bltSource),
             clipRect.left,
             clipRect.top,
             0,
-            (zVidRect32 *)(&clipRect)
+            (zVidRect32*)(&clipRect)
         );
     }
 }
@@ -483,9 +408,8 @@ void HudUiBriefingLocatorPanel::DrawBase() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: animate the locator pulse radius and refresh the element state.
  */
-void HudUiBriefingLocatorPanel::Update(
-    float deltaSec
-) {
+void HudUiBriefingLocatorPanel::Update(float deltaSec)
+{
     unsigned int currentFlags = flags;
     if ((~currentFlags & 0x10) == 0) {
         return;
@@ -529,8 +453,9 @@ void HudUiBriefingLocatorPanel::Update(
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: tear down briefing UI children, queued actions, and the background base.
  */
-HudUiBriefingRuntime::~HudUiBriefingRuntime() {
-    HudUiContainer *const container = this;
+HudUiBriefingRuntime::~HudUiBriefingRuntime()
+{
+    HudUiContainer* const container = this;
     container->SetEnabled(0);
 }
 
@@ -542,10 +467,9 @@ HudUiBriefingRuntime::~HudUiBriefingRuntime() {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: tick queued briefing actions, invalidate briefing panels, and update the background UI.
  */
-void HudUiBriefingRuntime::UpdateAll(
-    float deltaSec
-) {
-    CBriefingActionQueue *const actionQueue = &this->actionQueue;
+void HudUiBriefingRuntime::UpdateAll(float deltaSec)
+{
+    CBriefingActionQueue* const actionQueue = &this->actionQueue;
     if (actionQueue->active != 0) {
         int sequenceComplete = 0;
         if (actionQueue->current != actionQueue->actions.end()) {
@@ -579,13 +503,12 @@ void HudUiBriefingRuntime::UpdateAll(
  * Purpose: poll keyboard input in 100 ms Sleep slices until a key arrives or
  * the caller's timeout budget expires.
  */
-extern "C" int __fastcall zInputWaitForAnyKeyPressWithTimeoutMs(
-    int timeoutMs
-) {
+extern "C" int __fastcall zInputWaitForAnyKeyPressWithTimeoutMs(int timeoutMs)
+{
     int result = 0;
     int remainingMs = timeoutMs;
     if (timeoutMs > 0) {
-        void (WINAPI *const sleepProc)(DWORD) = Sleep;
+        void(WINAPI* const sleepProc)(DWORD) = Sleep;
         while (remainingMs > 0) {
             if (zInput::KeyboardWaitForAnyKeyPress(0) != 0) {
                 result = 1;
@@ -609,12 +532,11 @@ namespace Briefing {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: create the briefing runtime, load its sound set, and start the briefing thread.
  */
-int __fastcall StartForMission(
-    int missionId
-) {
+int __fastcall StartForMission(int missionId)
+{
     g_Briefing_SystemActiveFlag = 1;
 
-    HudUiBriefingRuntime *const runtime = new HudUiBriefingRuntime(missionId);
+    HudUiBriefingRuntime* const runtime = new HudUiBriefingRuntime(missionId);
 
     g_Briefing_Runtime = runtime;
     sprintf(g_Briefing_SndSetName, "BRIEFING%d", missionId);
@@ -647,26 +569,25 @@ int __fastcall StartForMission(
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: run the briefing input, audio, video, and UI update loop.
  */
-void __cdecl ThreadMain(
-    void *
-) {
+void __cdecl ThreadMain(void*)
+{
     g_Briefing_ThreadRunFlag = 1;
     g_Briefing_AllowAdvanceFlag = 1;
     HudUi::SetInvalidateMode(0);
     const int previousHalfResMode = zVideo::SetHalfResAdjustMode(0);
 
     while (g_Briefing_ThreadRunFlag != 0) {
-        if (zOpt::GetNetworkEnabled() == 0 && g_Briefing_AllowAdvanceFlag != 0 &&
-            zInputWaitForAnyKeyPressWithTimeoutMs(100) != 0) {
+        if (zOpt::GetNetworkEnabled() == 0 && g_Briefing_AllowAdvanceFlag != 0
+            && zInputWaitForAnyKeyPressWithTimeoutMs(100) != 0) {
             /**
              * Purpose: snapshot the active runtime while input cancellation resets the visible panels.
              */
-            HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
+            HudUiBriefingRuntime* const runtime = g_Briefing_Runtime;
             if (g_Briefing_CurrentSndHandle != 0) {
                 g_Briefing_CurrentSndHandle->StopIfActive();
             }
 
-            CBriefingActionQueue *const actionQueue = &runtime->actionQueue;
+            CBriefingActionQueue* const actionQueue = &runtime->actionQueue;
             actionQueue->active = 0;
             g_Briefing_SequenceActiveFlag = 0;
             actionQueue->current = actionQueue->actions.end();
@@ -675,12 +596,11 @@ void __cdecl ThreadMain(
             runtime->objectiveSummary.SetVisible(0);
             runtime->objectiveDesc.SetVisible(0);
 
-            HudUiBriefingObjectivePicture *const objectivePicture =
-                &runtime->objectivePicture;
+            HudUiBriefingObjectivePicture* const objectivePicture = &runtime->objectivePicture;
             objectivePicture->noiseAlpha = 1.0f;
             objectivePicture->Invalidate();
 
-            HudUiPanel *const transmissionHalted = &runtime->transmissionHalted;
+            HudUiPanel* const transmissionHalted = &runtime->transmissionHalted;
             transmissionHalted->SetTextFmt(zLoc::GetMessageString(0x110));
             transmissionHalted->SetVisible(1);
         }
@@ -689,7 +609,7 @@ void __cdecl ThreadMain(
         if (g_Briefing_Runtime != 0) {
             zSndTick(1);
             zVideo::RunPostprocessOnPrimaryBuffer();
-            ((HudUiContainer *)(g_Briefing_Runtime))->UpdateAll(g_FrameDeltaTimeSec);
+            ((HudUiContainer*)(g_Briefing_Runtime))->UpdateAll(g_FrameDeltaTimeSec);
             zVideo::DispatchUnlockPrimarySurfaceState();
         }
 
@@ -711,10 +631,9 @@ void __cdecl ThreadMain(
  *
  * Purpose: build the queued per-objective briefing action sequence.
  */
-int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
-    int objectiveIndex
-) {
-    HudUiBriefingRuntime *const runtime = this;
+int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(int objectiveIndex)
+{
+    HudUiBriefingRuntime* const runtime = this;
     int progressId = objectiveIndex + objectiveIndex;
     if (zOpt::GetNetworkEnabled() != 0) {
         return 0;
@@ -723,23 +642,21 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
     char sampleName[0x50];
     sprintf(sampleName, "snd_briefing_c%d", g_HudSensorTracker.GetMissionId());
 
-    CBriefingActionQueue *const actionQueue = &runtime->actionQueue;
+    CBriefingActionQueue* const actionQueue = &runtime->actionQueue;
     actionQueue->AddPlaySampleByName(sampleName, 1.0f, 1, progressId);
 
     unsigned int index = (unsigned int)(objectiveIndex);
     if (index < (unsigned int)(g_HudSensorTracker.objectiveCount)) {
-        HudUiPanel *const missionNamePanel = &runtime->missionName;
-        HudUiPanel *const objectiveSummaryPanel = &runtime->objectiveSummary;
-        HudUiBriefingObjectivePicture *const objectivePicture =
-            &runtime->objectivePicture;
-        HudUiPanel *const objectiveDescPanel = &runtime->objectiveDesc;
-        HudUiBriefingLocatorPanel *locatorPanel =
-            &runtime->locatorPanels[(int)(index)];
+        HudUiPanel* const missionNamePanel = &runtime->missionName;
+        HudUiPanel* const objectiveSummaryPanel = &runtime->objectiveSummary;
+        HudUiBriefingObjectivePicture* const objectivePicture = &runtime->objectivePicture;
+        HudUiPanel* const objectiveDescPanel = &runtime->objectiveDesc;
+        HudUiBriefingLocatorPanel* locatorPanel = &runtime->locatorPanels[(int)(index)];
 
         do {
-            char *objectiveSummaryText;
-            char *objectiveDescText;
-            zVidImagePartial *objectiveImage;
+            char* objectiveSummaryText;
+            char* objectiveDescText;
+            zVidImagePartial* objectiveImage;
             g_HudSensorTracker.GetObjectiveBriefingStringsAndImageRef(
                 (int)(index),
                 &objectiveSummaryText,
@@ -781,10 +698,9 @@ int HudUiBriefingRuntime::BuildObjectiveActionsFromIndex(
  *
  * Purpose: enqueue an action that hides one briefing UI element.
  */
-int CBriefingActionQueue::AddHideElement(
-    HudUiElement *element
-) {
-    BriefingActionHideElement *const action = new BriefingActionHideElement(element);
+int CBriefingActionQueue::AddHideElement(HudUiElement* element)
+{
+    BriefingActionHideElement* const action = new BriefingActionHideElement(element);
     actions.push_back(action);
     return actions.size();
 }
@@ -796,9 +712,8 @@ int CBriefingActionQueue::AddHideElement(
  *
  * Purpose: hide a queued briefing UI element and complete the action.
  */
-int BriefingActionHideElement::Tick(
-    float
-) {
+int BriefingActionHideElement::Tick(float)
+{
     target->SetVisible(0);
     return 1;
 }
@@ -810,10 +725,9 @@ int BriefingActionHideElement::Tick(
  *
  * Purpose: enqueue an action that shows one briefing UI element.
  */
-int CBriefingActionQueue::AddShowElement(
-    HudUiElement *element
-) {
-    BriefingActionShowElement *const action = new BriefingActionShowElement(element);
+int CBriefingActionQueue::AddShowElement(HudUiElement* element)
+{
+    BriefingActionShowElement* const action = new BriefingActionShowElement(element);
     actions.push_back(action);
     return actions.size();
 }
@@ -825,9 +739,8 @@ int CBriefingActionQueue::AddShowElement(
  *
  * Purpose: show and invalidate a queued briefing UI element.
  */
-int BriefingActionShowElement::Tick(
-    float
-) {
+int BriefingActionShowElement::Tick(float)
+{
     target->SetVisible(1);
     target->Invalidate();
     return 1;
@@ -840,10 +753,9 @@ int BriefingActionShowElement::Tick(
  *
  * Purpose: enqueue an objective picture fade-in action.
  */
-int CBriefingActionQueue::AddFadeInElement(
-    HudUiElement *element
-) {
-    BriefingActionFadeInElement *const action = new BriefingActionFadeInElement(element);
+int CBriefingActionQueue::AddFadeInElement(HudUiElement* element)
+{
+    BriefingActionFadeInElement* const action = new BriefingActionFadeInElement(element);
     actions.push_back(action);
     return actions.size();
 }
@@ -855,10 +767,9 @@ int CBriefingActionQueue::AddFadeInElement(
  *
  * Purpose: advance the objective picture fade/noise effect until it completes.
  */
-int BriefingActionFadeInElement::Tick(
-    float
-) {
-    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
+int BriefingActionFadeInElement::Tick(float)
+{
+    HudUiBriefingObjectivePicture* const widget = (HudUiBriefingObjectivePicture*)(target);
     alpha += 0.5f;
     widget->SetNoiseAlpha(alpha);
     widget->Invalidate();
@@ -873,12 +784,9 @@ int BriefingActionFadeInElement::Tick(
  *
  * Purpose: enqueue text replacement for a briefing panel.
  */
-int CBriefingActionQueue::AddSetPanelText(
-    const char *text,
-    HudUiPanel *panel
-) {
-    BriefingActionSetPanelText *const action =
-        new BriefingActionSetPanelText(text, panel);
+int CBriefingActionQueue::AddSetPanelText(const char* text, HudUiPanel* panel)
+{
+    BriefingActionSetPanelText* const action = new BriefingActionSetPanelText(text, panel);
     actions.push_back(action);
     return actions.size();
 }
@@ -890,9 +798,8 @@ int CBriefingActionQueue::AddSetPanelText(
  *
  * Purpose: apply queued text to a briefing panel and make it visible.
  */
-int BriefingActionSetPanelText::Tick(
-    float
-) {
+int BriefingActionSetPanelText::Tick(float)
+{
     target->SetTextFmt(text);
     target->UpdateTextBoundsFromContent();
     target->SetVisible(1);
@@ -907,12 +814,9 @@ int BriefingActionSetPanelText::Tick(
  *
  * Purpose: enqueue image replacement for a briefing widget with a timed transition.
  */
-int CBriefingActionQueue::AddSetWidgetImageTimed(
-    zVidImagePartial *imageRef,
-    HudUiWidget *widget
-) {
-    BriefingActionSetWidgetImageTimed *const action =
-        new BriefingActionSetWidgetImageTimed(imageRef, widget);
+int CBriefingActionQueue::AddSetWidgetImageTimed(zVidImagePartial* imageRef, HudUiWidget* widget)
+{
+    BriefingActionSetWidgetImageTimed* const action = new BriefingActionSetWidgetImageTimed(imageRef, widget);
     actions.push_back(action);
     return actions.size();
 }
@@ -924,14 +828,13 @@ int CBriefingActionQueue::AddSetWidgetImageTimed(
  *
  * Purpose: install an objective image and advance its timed noise transition.
  */
-int BriefingActionSetWidgetImageTimed::Tick(
-    float
-) {
+int BriefingActionSetWidgetImageTimed::Tick(float)
+{
     target->DrawBase();
     target->SetImageBorrowedAndInvalidate(imageRef);
     target->RebuildBltRectFromImage();
     target->SetVisible(1);
-    HudUiBriefingObjectivePicture *const widget = (HudUiBriefingObjectivePicture *)(target);
+    HudUiBriefingObjectivePicture* const widget = (HudUiBriefingObjectivePicture*)(target);
     widget->SetNoiseAlpha(timer);
     widget->Invalidate();
 
@@ -946,14 +849,9 @@ int BriefingActionSetWidgetImageTimed::Tick(
  *
  * Purpose: enqueue a briefing sample playback request.
  */
-int CBriefingActionQueue::AddPlaySampleByName(
-    const char *sampleName,
-    float gain,
-    int useVariant,
-    int progressId
-) {
-    BriefingActionPlaySample *const action =
-        new BriefingActionPlaySample(sampleName, gain, useVariant, progressId);
+int CBriefingActionQueue::AddPlaySampleByName(const char* sampleName, float gain, int useVariant, int progressId)
+{
+    BriefingActionPlaySample* const action = new BriefingActionPlaySample(sampleName, gain, useVariant, progressId);
     actions.push_back(action);
     return actions.size();
 }
@@ -963,15 +861,14 @@ int CBriefingActionQueue::AddPlaySampleByName(
  * @recoil-artifact defines .text recoil:function:0x404aa0: BriefingAction_PlaySample::Tick.
  * Purpose: stop any current briefing voice sample and start the queued sample.
  */
-int BriefingActionPlaySample::Tick(
-    float
-) {
-    zSndPlayHandle *handle = g_Briefing_CurrentSndHandle;
+int BriefingActionPlaySample::Tick(float)
+{
+    zSndPlayHandle* handle = g_Briefing_CurrentSndHandle;
     if (handle != 0) {
         handle->StopIfActive();
     }
 
-    zSndSample *sample = zSnd::FindSampleByName(sampleName);
+    zSndSample* sample = zSnd::FindSampleByName(sampleName);
     if (sample != 0) {
         if (useVariant != 0) {
             sample->SetPlaybackEventHandler(Briefing::SampleEventCallback);
@@ -998,9 +895,8 @@ namespace Briefing {
  *
  * Purpose: record the latest briefing sample progress event code.
  */
-void __fastcall SampleEventCallback(
-    int progressEventCode
-) {
+void __fastcall SampleEventCallback(int progressEventCode)
+{
     g_Briefing_ProgressEventCode = progressEventCode;
 }
 
@@ -1013,11 +909,9 @@ void __fastcall SampleEventCallback(
  *
  * Purpose: enqueue a wait action tied to the briefing sample progress event.
  */
-int CBriefingActionQueue::AddDelayUntilProgress(
-    int progressId
-) {
-    BriefingActionDelayUntilProgress *const action =
-        new BriefingActionDelayUntilProgress(progressId);
+int CBriefingActionQueue::AddDelayUntilProgress(int progressId)
+{
+    BriefingActionDelayUntilProgress* const action = new BriefingActionDelayUntilProgress(progressId);
     actions.push_back(action);
     return actions.size();
 }
@@ -1029,9 +923,8 @@ int CBriefingActionQueue::AddDelayUntilProgress(
  *
  * Purpose: wait until sample progress reaches the queued briefing progress id.
  */
-int BriefingActionDelayUntilProgress::Tick(
-    float
-) {
+int BriefingActionDelayUntilProgress::Tick(float)
+{
     return (float)(g_Briefing_ProgressEventCode) >= requiredProgress ? 1 : 0;
 }
 
@@ -1044,9 +937,8 @@ namespace Briefing {
  * Retail literal-backed physical source block: D:\Proj\Battlesport\Briefing.cpp.
  * Purpose: stop the briefing thread and destroy the active briefing runtime.
  */
-void __fastcall StopAndShutdownThread(
-    int waitForInput
-) {
+void __fastcall StopAndShutdownThread(int waitForInput)
+{
     if (waitForInput != 0) {
         while (g_Briefing_SequenceActiveFlag != 0) {
             if (zInputWaitForAnyKeyPressWithTimeoutMs(100) != 0) {
@@ -1065,7 +957,7 @@ void __fastcall StopAndShutdownThread(
     const int threadExited = g_Briefing_ThreadExitedFlag;
     g_Briefing_ThreadRunFlag = 0;
     if (threadExited == 0) {
-        void (WINAPI *const sleepProc)(DWORD) = Sleep;
+        void(WINAPI* const sleepProc)(DWORD) = Sleep;
         do {
             sleepProc(100);
         } while (g_Briefing_ThreadExitedFlag == 0);
@@ -1074,7 +966,7 @@ void __fastcall StopAndShutdownThread(
     /**
      * Purpose: destroy and clear the active runtime after the briefing thread has stopped.
      */
-    HudUiBriefingRuntime *const runtime = g_Briefing_Runtime;
+    HudUiBriefingRuntime* const runtime = g_Briefing_Runtime;
     if (runtime != 0) {
         delete runtime;
         g_Briefing_Runtime = 0;
@@ -1090,12 +982,10 @@ void __fastcall StopAndShutdownThread(
  *
  * Purpose: update the transport progress widget and sleep between progress frames.
  */
-void __stdcall SetProgressAndSleep(
-    float progressValue
-) {
+void __stdcall SetProgressAndSleep(float progressValue)
+{
     if (g_Briefing_Runtime != 0) {
-        HudUiBriefingTransportProgress *const transportProgress =
-            &g_Briefing_Runtime->transportProgress;
+        HudUiBriefingTransportProgress* const transportProgress = &g_Briefing_Runtime->transportProgress;
         transportProgress->SetNormalizedValueAndRebuild(progressValue);
     }
 
@@ -1108,9 +998,8 @@ void __stdcall SetProgressAndSleep(
  *
  * Purpose: forward the global briefing action-build callback to the active runtime.
  */
-void __fastcall BuildObjectiveActionsGlobal(
-    int objectiveIndex
-) {
+void __fastcall BuildObjectiveActionsGlobal(int objectiveIndex)
+{
     if (g_Briefing_Runtime != 0) {
         g_Briefing_Runtime->BuildObjectiveActionsFromIndex(objectiveIndex);
     }

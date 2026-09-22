@@ -48,46 +48,49 @@ float g_zDEClient_QuickSandAnimSpeed = 0.0f;
  * Purpose: Owns the quicksand texture path pointer array allocated from
  * declient.zrd configuration.
  */
-char **g_zDEClient_QuickSandTexturePaths = 0;
+char** g_zDEClient_QuickSandTexturePaths = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandmaterial
  * @recoil-artifact defines .data recoil:data:0x539d24: g_zDEClient_QuickSandMaterial.
  * Purpose: Caches the quicksand material used by generated terrain features.
  */
-zModel_MaterialPartial *g_zDEClient_QuickSandMaterial = 0;
+zModel_MaterialPartial* g_zDEClient_QuickSandMaterial = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandmaterialcycle
  * @recoil-artifact defines .data recoil:data:0x539d28: g_zDEClient_QuickSandMaterialCycle.
  * Purpose: Caches the quicksand cycle material used while feature textures
  * animate.
  */
-zModel_MaterialPartial *g_zDEClient_QuickSandMaterialCycle = 0;
-zDEClient_QSandEventTemplate g_zDEClient_QuickSandEventTemplateDefaults = {0};
+zModel_MaterialPartial* g_zDEClient_QuickSandMaterialCycle = 0;
+zDEClient_QSandEventTemplate g_zDEClient_QuickSandEventTemplateDefaults = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-craterdisplaysourcecount
  * @recoil-artifact defines .data recoil:data:0x539ce0: g_zDEClient_CraterDisplaySourceCount.
- * Purpose: Stores g zDEClient CraterDisplaySourceCount data used by engine.zeffect.zdeclient_crater_display_source_globals.
+ * Purpose: Stores g zDEClient CraterDisplaySourceCount data used by
+ * engine.zeffect.zdeclient_crater_display_source_globals.
  */
 int g_zDEClient_CraterDisplaySourceCount = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-craterdisplaysourcelist
  * @recoil-artifact defines .data recoil:data:0x539ce4: g_zDEClient_CraterDisplaySourceList.
- * Purpose: Stores g zDEClient CraterDisplaySourceList data used by engine.zeffect.zdeclient_crater_display_source_globals.
+ * Purpose: Stores g zDEClient CraterDisplaySourceList data used by
+ * engine.zeffect.zdeclient_crater_display_source_globals.
  */
-zDEClient_CraterDisplaySourceEntry *g_zDEClient_CraterDisplaySourceList = 0;
+zDEClient_CraterDisplaySourceEntry* g_zDEClient_CraterDisplaySourceList = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cratereventtemplatedefaults
  * @recoil-artifact defines .data recoil:data:0x539ce8: g_zDEClient_CraterEventTemplateDefaults.
- * Purpose: Stores g zDEClient CraterEventTemplateDefaults data used by engine.zeffect.zdeclient_crater_event_template_defaults.
+ * Purpose: Stores g zDEClient CraterEventTemplateDefaults data used by
+ * engine.zeffect.zdeclient_crater_event_template_defaults.
  */
-zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = {0};
+zDEClient_CraterEventTemplate g_zDEClient_CraterEventTemplateDefaults = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-configreaderroot
  * @recoil-artifact defines .data recoil:data:0x539de0: g_zDEClient_ConfigReaderRoot.
  * Purpose: Holds the transient declient.zrd reader tree while config
  * resources are loaded.
  */
-zReader::Node *g_zDEClient_ConfigReaderRoot = 0;
+zReader::Node* g_zDEClient_ConfigReaderRoot = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-rebuildbltrectonreload
  * @recoil-artifact defines .data recoil:data:0x4df3c4: g_zDEClient_RebuildBltRectOnReload.
@@ -180,8 +183,7 @@ char g_zDEClient_ConfigArchiveName[] = "declient.zrd";
  * @recoil-artifact defines .data recoil:data:0x4df48c: g_zDEClient_SourceFile_ZdecInitCpp.
  * Purpose: Provides the original source path for zDEClient config diagnostics.
  */
-char g_zDEClient_SourceFile_ZdecInitCpp[] =
-    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp";
+char g_zDEClient_SourceFile_ZdecInitCpp[] = "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_init.cpp";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-worldnodenullerrormsg
  * @recoil-artifact defines .data recoil:data:0x4df4b8: g_zDEClient_WorldNodeNullErrorMsg.
@@ -215,13 +217,13 @@ RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_FeatureNodeName) == 0x0d);
  * @recoil-artifact defines .data recoil:data:0x539e18: g_zDEClient_CameraNode.
  * Purpose: Stores g zDEClient CameraNode data used by engine.zeffect.zdeclient_camera_globals.
  */
-CZNodePartial *g_zDEClient_CameraNode = 0;
+CZNodePartial* g_zDEClient_CameraNode = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-cameranodeclassdata
  * @recoil-artifact defines .data recoil:data:0x539e1c: g_zDEClient_CameraNodeClassData.
  * Purpose: Stores g zDEClient CameraNodeClassData data used by engine.zeffect.zdeclient_camera_globals.
  */
-CZCameraDataPartial *g_zDEClient_CameraNodeClassData = 0;
+CZCameraDataPartial* g_zDEClient_CameraNodeClassData = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclientqsandnetrelaycallback
  * @recoil-artifact defines .data recoil:data:0x539de4: g_zDEClientQSandNetRelayCallback.
@@ -243,17 +245,11 @@ namespace zDEClient {
  * Purpose: load declient.zrd crater and quicksand resource defaults, bind the
  * active camera, and register feature reload callbacks.
  */
-int __fastcall LoadConfigResources(
-    CZNodePartial *worldNode
-) {
+int __fastcall LoadConfigResources(CZNodePartial* worldNode)
+{
     int textureLoadPending = 0;
     if (worldNode == 0) {
-        zError::ReportOld(
-            0x200,
-            g_zDEClient_SourceFile_ZdecInitCpp,
-            0x44,
-            g_zDEClient_WorldNodeNullErrorMsg
-        );
+        zError::ReportOld(0x200, g_zDEClient_SourceFile_ZdecInitCpp, 0x44, g_zDEClient_WorldNodeNullErrorMsg);
         return -1;
     }
 
@@ -274,95 +270,69 @@ int __fastcall LoadConfigResources(
         );
     }
 
-    zReader::Node *const craterNode = zRdrGetNode(
-        g_zDEClient_ConfigReaderRoot,
-        g_zDEClient_CraterNodeName
-    );
+    zReader::Node* const craterNode = zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_CraterNodeName);
     g_zDEClient_CraterEventTemplateDefaults.featureFlags = 0x100c;
     g_zDEClient_CraterEventTemplateDefaults.pointCount = 7;
     g_zDEClient_CraterEventTemplateDefaults.slope = 0.0f;
     g_zDEClient_CraterEventTemplateDefaults.depth = 4.0f;
     g_zDEClient_CraterEventTemplateDefaults.radius = 20.0f;
 
-    zReader::GetInt(
-        craterNode,
-        g_zDEClient_PointsFieldName,
-        &g_zDEClient_CraterEventTemplateDefaults.pointCount
-    );
-    zReader::GetFloat(
-        craterNode,
-        g_zDEClient_SlopeFieldName,
-        &g_zDEClient_CraterEventTemplateDefaults.slope
-    );
-    zReader::GetFloat(
-        craterNode,
-        g_zDEClient_DepthFieldName,
-        &g_zDEClient_CraterEventTemplateDefaults.depth
-    );
-    zReader::GetFloat(
-        craterNode,
-        g_zDEClient_RadiusFieldName,
-        &g_zDEClient_CraterEventTemplateDefaults.radius
-    );
+    zReader::GetInt(craterNode, g_zDEClient_PointsFieldName, &g_zDEClient_CraterEventTemplateDefaults.pointCount);
+    zReader::GetFloat(craterNode, g_zDEClient_SlopeFieldName, &g_zDEClient_CraterEventTemplateDefaults.slope);
+    zReader::GetFloat(craterNode, g_zDEClient_DepthFieldName, &g_zDEClient_CraterEventTemplateDefaults.depth);
+    zReader::GetFloat(craterNode, g_zDEClient_RadiusFieldName, &g_zDEClient_CraterEventTemplateDefaults.radius);
 
     g_zDEClient_CraterDisplaySourceCount = 1;
-    g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(calloc(
-        1,
-        sizeof(zDEClient_CraterDisplaySourceEntry)
-    ));
+    g_zDEClient_CraterDisplaySourceList
+        = (zDEClient_CraterDisplaySourceEntry*)(calloc(1, sizeof(zDEClient_CraterDisplaySourceEntry)));
 
-    zDEClient_CraterDisplaySourceEntry *defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
+    zDEClient_CraterDisplaySourceEntry* defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            (char *)(zReader::GetString(craterNode, g_zDEClient_DefaultTextureNodeName))
-        ) != 0) {
+            (char*)(zReader::GetString(craterNode, g_zDEClient_DefaultTextureNodeName))
+        )
+        != 0) {
         textureLoadPending = 1;
     }
 
-    defaultDisplaySource->effectAnimEntry =
-        zEffectAnim::FindEntryByName(zReader::GetString(
-            craterNode,
-            g_zDEClient_DefaultAnimNodeName
-        ));
+    defaultDisplaySource->effectAnimEntry
+        = zEffectAnim::FindEntryByName(zReader::GetString(craterNode, g_zDEClient_DefaultAnimNodeName));
 
-    zReader::Node *const textureAnimNode = zRdrGetNode(craterNode, g_zDEClient_TextureAnimNodeName);
+    zReader::Node* const textureAnimNode = zRdrGetNode(craterNode, g_zDEClient_TextureAnimNodeName);
     if (textureAnimNode != 0) {
-        const int textureAnimEntryCount =
-            textureAnimNode->value.nodes[0].value.i32;
+        const int textureAnimEntryCount = textureAnimNode->value.nodes[0].value.i32;
         const int additionalDisplaySourceCount = (textureAnimEntryCount - 1) / 2;
         g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
 
-        g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry *)(realloc(
+        g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry*)(realloc(
             g_zDEClient_CraterDisplaySourceList,
-            (size_t)(g_zDEClient_CraterDisplaySourceCount) *
-                sizeof(zDEClient_CraterDisplaySourceEntry)
+            (size_t)(g_zDEClient_CraterDisplaySourceCount) * sizeof(zDEClient_CraterDisplaySourceEntry)
         ));
 
-        zDEClient_CraterDisplaySourceEntry *displaySource = &g_zDEClient_CraterDisplaySourceList[1];
+        zDEClient_CraterDisplaySourceEntry* displaySource = &g_zDEClient_CraterDisplaySourceList[1];
         for (int i = 1; i < textureAnimEntryCount; i += 2) {
             if (LoadMaterialFromTexturePath_Local(
                     &displaySource->sourceMaterial,
                     textureAnimNode->value.nodes[i].value.str
-                ) != 0) {
+                )
+                != 0) {
                 textureLoadPending = 1;
             }
 
-            zReader::Node *const entryNode =
-                zRdrGetNode(textureAnimNode, textureAnimNode->value.nodes[i].value.str);
+            zReader::Node* const entryNode = zRdrGetNode(textureAnimNode, textureAnimNode->value.nodes[i].value.str);
             if (entryNode != 0) {
                 if (LoadMaterialFromTexturePath_Local(
                         &displaySource->craterMaterial,
                         entryNode->value.nodes[1].value.str
-                    ) != 0) {
+                    )
+                    != 0) {
                     textureLoadPending = 1;
                 }
 
                 if (entryNode->value.nodes[0].value.i32 > 2) {
-                    displaySource->effectAnimEntry =
-                        zEffectAnim::FindEntryByName(entryNode->value.nodes[2].value.str);
+                    displaySource->effectAnimEntry = zEffectAnim::FindEntryByName(entryNode->value.nodes[2].value.str);
                 } else {
-                    displaySource->effectAnimEntry =
-                        g_zDEClient_CraterDisplaySourceList[0].effectAnimEntry;
+                    displaySource->effectAnimEntry = g_zDEClient_CraterDisplaySourceList[0].effectAnimEntry;
                 }
             }
 
@@ -370,11 +340,9 @@ int __fastcall LoadConfigResources(
         }
     }
 
-    zReader::Node *const quickSandNode =
-        zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
+    zReader::Node* const quickSandNode = zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
     if (quickSandNode != 0) {
-        zReader::Node *const defaultTextureNode =
-            zRdrGetNode(quickSandNode, g_zDEClient_DefaultTextureNodeName);
+        zReader::Node* const defaultTextureNode = zRdrGetNode(quickSandNode, g_zDEClient_DefaultTextureNodeName);
         int textureCount = 1;
         if (defaultTextureNode != 0) {
             g_zDEClient_QuickSandAnimSpeed = defaultTextureNode->value.nodes[1].value.f32;
@@ -382,11 +350,9 @@ int __fastcall LoadConfigResources(
             g_zDEClient_QuickSandTextureCount = textureCount;
 
             if (textureCount > 0) {
-                g_zDEClient_QuickSandTexturePaths =
-                    (char **)(malloc((size_t)(textureCount) * sizeof(char *)));
+                g_zDEClient_QuickSandTexturePaths = (char**)(malloc((size_t)(textureCount) * sizeof(char*)));
                 for (int i = 0; i < g_zDEClient_QuickSandTextureCount; ++i) {
-                    g_zDEClient_QuickSandTexturePaths[i] =
-                        defaultTextureNode->value.nodes[i + 2].value.str;
+                    g_zDEClient_QuickSandTexturePaths[i] = defaultTextureNode->value.nodes[i + 2].value.str;
                 }
             } else {
                 g_zDEClient_QuickSandTexturePaths = 0;
@@ -406,16 +372,8 @@ int __fastcall LoadConfigResources(
             g_zDEClient_PointsFieldName,
             &g_zDEClient_QuickSandEventTemplateDefaults.pointCount
         );
-        zReader::GetFloat(
-            quickSandNode,
-            g_zDEClient_SlopeFieldName,
-            &g_zDEClient_QuickSandEventTemplateDefaults.slope
-        );
-        zReader::GetFloat(
-            quickSandNode,
-            g_zDEClient_DepthFieldName,
-            &g_zDEClient_QuickSandEventTemplateDefaults.depth
-        );
+        zReader::GetFloat(quickSandNode, g_zDEClient_SlopeFieldName, &g_zDEClient_QuickSandEventTemplateDefaults.slope);
+        zReader::GetFloat(quickSandNode, g_zDEClient_DepthFieldName, &g_zDEClient_QuickSandEventTemplateDefaults.depth);
         zReader::GetFloat(
             quickSandNode,
             g_zDEClient_RadiusFieldName,
@@ -447,12 +405,7 @@ int __fastcall LoadConfigResources(
         } else {
             material.flags = (unsigned short)(material.flags & 0xfeff);
             g_zDEClient_QuickSandMaterial = 0;
-            zError::ReportOld(
-                0x100,
-                g_zDEClient_SourceFile_ZdecInitCpp,
-                0xef,
-                g_zDEClient_QuickSandUntexturedMsg
-            );
+            zError::ReportOld(0x100, g_zDEClient_SourceFile_ZdecInitCpp, 0xef, g_zDEClient_QuickSandUntexturedMsg);
         }
 
         if (g_zDEClient_QuickSandMaterial != 0) {
@@ -462,8 +415,7 @@ int __fastcall LoadConfigResources(
         if (textureCount >= 1 && g_zDEClient_QuickSandTexturePaths != 0) {
             zModel_Material::ResetDefaults(&material);
             material.flags = (unsigned short)(material.flags | 0x0100);
-            material.currentTextureDirectoryEntry =
-                zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);
+            material.currentTextureDirectoryEntry = zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);
             zModel_Material::SetUserTag(&material, 0);
             g_zDEClient_QuickSandMaterialCycle = zModel_Material::Clone(&material);
             g_zDEClient_QuickSandEnabled = 1;
@@ -505,12 +457,10 @@ int __fastcall LoadConfigResources(
  * Purpose: resolve or create a material for a texture path and report whether
  * the texture directory entry still needs loading.
  */
-RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
-    zModel_MaterialPartial **outMaterial,
-    char *texturePath
-) {
+RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(zModel_MaterialPartial** outMaterial, char* texturePath)
+{
     int result = 0;
-    zImage_TexDirEntryPartial *textureDirectoryEntry = zImage::FindTexDirEntryByName(texturePath);
+    zImage_TexDirEntryPartial* textureDirectoryEntry = zImage::FindTexDirEntryByName(texturePath);
     if (textureDirectoryEntry == 0) {
         textureDirectoryEntry = zImage::TexDirFindOrAppendByPath(texturePath);
         result = 1;
@@ -537,7 +487,8 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(
  * Purpose: clear feature runtime state, free loaded quicksand and crater
  * config arrays, and mark quicksand resources shut down.
  */
-int __cdecl ShutdownGlobals() {
+int __cdecl ShutdownGlobals()
+{
     if (g_zDEClient_QuickSandEnabled == 0) {
         return 0;
     }

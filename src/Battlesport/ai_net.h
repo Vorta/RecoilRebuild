@@ -1,7 +1,6 @@
 #ifndef BATTLESPORT_AI_NET_H
 #define BATTLESPORT_AI_NET_H
 
-
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
@@ -20,23 +19,19 @@ struct AINetPathProbeFan {
     float pathWidth;
     unsigned char unknown_38[0x04];
 
-    void InitFromSegment(
-        zVec3 fromPosition,
-        zVec3 toPosition,
-        float pathWidth
-    );
+    void InitFromSegment(zVec3 fromPosition, zVec3 toPosition, float pathWidth);
 };
 
 struct AINetNode {
     zVec3 position;
     union {
-        AINetNode *neighborNodes[3];
+        AINetNode* neighborNodes[3];
         int neighborIndices[3];
     };
-    AINetPathProbeFan *probeFans[3];
+    AINetPathProbeFan* probeFans[3];
     int costOrType;
     int nodeIndex;
-    AINetNode *next;
+    AINetNode* next;
 
     void Free();
 };
@@ -74,311 +69,120 @@ struct AINet {
     int activateBuddyNetId;
     int attackBuddyNetId;
     AINetAttackStrategy attackStrategy;
-    AINetNode *nodeListHead;
-    AINet *next;
+    AINetNode* nodeListHead;
+    AINet* next;
 
     static void __cdecl LoadAllFromZrd();
-    static AINet *__fastcall LoadFromZrd(int netId);
-    static AINet *Alloc();
-    static AINet *__fastcall FindByNetId(int netId);
-    static AINetNode *__fastcall FindNearestNode(
-        const zVec3 *position,
-        AINetNode *nodeListHead
-    );
-    static AINetNode *__fastcall FindNodeByIndex(
-        int nodeIndex,
-        AINetNode *nodeListHead
-    );
-    static void __fastcall ResolveNeighborLinksAndBuildProbeFans(
-        AINetNode *nodeListHead,
-        float pathWidth
-    );
-    static void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState *saveState);
-    static void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState *saveState);
-    static int __fastcall AiMode2ForwardProbeRequiresAutoTurn(
-        zUtil_SaveGameState *saveState
-    );
+    static AINet* __fastcall LoadFromZrd(int netId);
+    static AINet* Alloc();
+    static AINet* __fastcall FindByNetId(int netId);
+    static AINetNode* __fastcall FindNearestNode(const zVec3* position, AINetNode* nodeListHead);
+    static AINetNode* __fastcall FindNodeByIndex(int nodeIndex, AINetNode* nodeListHead);
+    static void __fastcall ResolveNeighborLinksAndBuildProbeFans(AINetNode* nodeListHead, float pathWidth);
+    static void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState* saveState);
+    static void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState* saveState);
+    static int __fastcall AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState* saveState);
     static void __fastcall AiAdvancePathCursorAndComputeTargetVec(
-        zUtil_SaveGameState *saveState,
-        AINetNode **currentNodeInOut,
-        AINetPathProbeFan **outProbeFan,
-        zVec3 *outTargetVec
+        zUtil_SaveGameState* saveState,
+        AINetNode** currentNodeInOut,
+        AINetPathProbeFan** outProbeFan,
+        zVec3* outTargetVec
     );
     static int __fastcall AiChooseNextPathBranchIndex(
-        zUtil_SaveGameState *saveState,
-        AINetNode **currentNodeInOut,
-        int *outBranchIndex,
+        zUtil_SaveGameState* saveState,
+        AINetNode** currentNodeInOut,
+        int* outBranchIndex,
         int excludedBranchIndex
     );
-    static void __fastcall TickAiMode2SteeringSubstate(
-        zUtil_SaveGameState *saveState
-    );
+    static void __fastcall TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveState);
     static void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
-        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState* saveState,
         float forwardDot,
         float lateralDot,
         float targetDistance
     );
     static void __fastcall TickAiMode2OffsetTargetSteering(
-        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState* saveState,
         float unusedForwardDot,
         float unusedLateralDot,
         float unusedTargetDistance
     );
     static void __fastcall TickAiMode2DynamicOffsetTargetSteering(
-        zUtil_SaveGameState *saveState,
+        zUtil_SaveGameState* saveState,
         float unusedForwardDot,
         float unusedLateralDot,
         float targetDistance
     );
-    static int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState *saveState);
-    static void __fastcall AiEnterMode2SteeringPursuit(
-        zUtil_SaveGameState *saveState
-    );
-    static int __fastcall HasLineOfSightFromLocalPlayerFxOffset(
-        CZNodePartial *node,
-        const zVec3 *point,
-        int directionMode
-    );
-    static int __fastcall HasLineOfSightFromCameraTarget(
-        CZNodePartial *node,
-        const zVec3 *point,
-        int directionMode
-    );
-    static void __fastcall AiRebuildSyntheticPathToNodeIfFar(
-        zUtil_SaveGameState *saveState,
-        AINetNode *targetNode
-    );
-    static void __fastcall AiRestoreSavedTopLevelState(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall TickAiMode2AltGunAttackWindow(
-        zUtil_SaveGameState *saveState,
-        float targetDistance,
-        float forwardDot
-    );
+    static int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameState* saveState);
+    static void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState* saveState);
+    static void __fastcall AiEnterMode2SteeringPursuit(zUtil_SaveGameState* saveState);
+    static int __fastcall
+    HasLineOfSightFromLocalPlayerFxOffset(CZNodePartial* node, const zVec3* point, int directionMode);
+    static int __fastcall HasLineOfSightFromCameraTarget(CZNodePartial* node, const zVec3* point, int directionMode);
+    static void __fastcall AiRebuildSyntheticPathToNodeIfFar(zUtil_SaveGameState* saveState, AINetNode* targetNode);
+    static void __fastcall AiRestoreSavedTopLevelState(zUtil_SaveGameState* saveState);
+    static void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameState* saveState);
+    static void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState* saveState);
+    static void __fastcall
+    TickAiMode2AltGunAttackWindow(zUtil_SaveGameState* saveState, float targetDistance, float forwardDot);
     static void __fastcall SolveAltGunLeadTargetPoint(
-        zUtil_SaveGameState *saveState,
-        zUtil_SaveGameState *targetSaveState,
-        zVec3 *outTargetPos
+        zUtil_SaveGameState* saveState,
+        zUtil_SaveGameState* targetSaveState,
+        zVec3* outTargetPos
     );
-    static void __fastcall UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-        zUtil_SaveGameState *saveState,
-        zUtil_SaveGameState *targetState
-    );
+    static void __fastcall
+    UpdateAiMode2MoveAndTurnTowardOffsetTarget(zUtil_SaveGameState* saveState, zUtil_SaveGameState* targetState);
     static void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
-        zUtil_SaveGameState *saveState,
-        zUtil_SaveGameState *targetState,
+        zUtil_SaveGameState* saveState,
+        zUtil_SaveGameState* targetState,
         float targetDistance
     );
-    static void __fastcall TickAiMode2TimedPathSteering(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall AiSteerTowardPathNodeForward(
-        zUtil_SaveGameState *saveState
-    );
-    static void __fastcall AiSteerTowardPathNodeReverse(
-        zUtil_SaveGameState *saveState
-    );
+    static void __fastcall TickAiMode2TimedPathSteering(zUtil_SaveGameState* saveState);
+    static void __fastcall AiSteerTowardPathNodeForward(zUtil_SaveGameState* saveState);
+    static void __fastcall AiSteerTowardPathNodeReverse(zUtil_SaveGameState* saveState);
     static void __cdecl AiFinalizeMode2State1ForAllPlayers();
     static void __cdecl BuildAiPeerRingsByAiNetId();
-    static void __fastcall AiDiscardNegativeBranchPathNodes(
-        zUtil_SaveGameState *saveState
-    );
+    static void __fastcall AiDiscardNegativeBranchPathNodes(zUtil_SaveGameState* saveState);
     void Free();
     static void __cdecl FreeAll();
 };
 
 extern "C" {
-extern AINet *g_AINetListHead;
-extern AINet *g_AINetListTail;
+extern AINet* g_AINetListHead;
+extern AINet* g_AINetListTail;
 }
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        position
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        neighborNodes
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        probeFans
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        costOrType
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        nodeIndex
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetNode,
-        next
-    ) == 0x2c
-);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, position) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, neighborNodes) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, probeFans) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, costOrType) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, nodeIndex) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(AINetNode, next) == 0x2c);
 RECOIL_STATIC_ASSERT(sizeof(AINetNode) == 0x30);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetPathProbeFan,
-        clampedTravel
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetPathProbeFan,
-        perpendicular
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetPathProbeFan,
-        probeDirPlus45
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetPathProbeFan,
-        probeDirMinus45
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINetPathProbeFan,
-        pathWidth
-    ) == 0x34
-);
+RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, clampedTravel) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, perpendicular) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, probeDirPlus45) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, probeDirMinus45) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(AINetPathProbeFan, pathWidth) == 0x34);
 RECOIL_STATIC_ASSERT(sizeof(AINetPathProbeFan) == 0x3c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        netId
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        name
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        aiType
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        pathWidth
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        activateRadius
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        attackRadius
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        attackDwell
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        notPursuitDwell
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        pursuitParam0
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        pursuitParam1
-    ) == 0x34
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        returnRange
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        hideTime0
-    ) == 0x3c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        hideTime1
-    ) == 0x40
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        activateBuddyNetId
-    ) == 0x44
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        attackBuddyNetId
-    ) == 0x48
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        attackStrategy
-    ) == 0x4c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        nodeListHead
-    ) == 0x50
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        AINet,
-        next
-    ) == 0x54
-);
+RECOIL_STATIC_ASSERT(offsetof(AINet, netId) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(AINet, name) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(AINet, aiType) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(AINet, pathWidth) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(AINet, activateRadius) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(AINet, attackRadius) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(AINet, attackDwell) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(AINet, notPursuitDwell) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(AINet, pursuitParam0) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(AINet, pursuitParam1) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(AINet, returnRange) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(AINet, hideTime0) == 0x3c);
+RECOIL_STATIC_ASSERT(offsetof(AINet, hideTime1) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(AINet, activateBuddyNetId) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(AINet, attackBuddyNetId) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(AINet, attackStrategy) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(AINet, nodeListHead) == 0x50);
+RECOIL_STATIC_ASSERT(offsetof(AINet, next) == 0x54);
 RECOIL_STATIC_ASSERT(sizeof(AINet) == 0x58);
 
 #endif
@@ -388,13 +192,13 @@ RECOIL_STATIC_ASSERT(sizeof(AINet) == 0x58);
 
 #include "Battlesport/game_net.h"
 #include "Battlesport/player.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zMath/zmth_decls.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zTime/time.h"
 
 #include <math.h>
 #include <string.h>
@@ -435,41 +239,39 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 
 #define AINET_MAX(a, b) (((a) < (b)) ? (b) : (a))
 
-#define AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world) \
-    do {                                                 \
-        v0 = &(dst);                                     \
-        v1 = &(world);                                   \
-        v0->x = (srcVec)->x - v1->x;                     \
-        v0->y = (srcVec)->y - v1->y;                     \
-        v0->z = (srcVec)->z - v1->z;                     \
+#define AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)                                                       \
+    do {                                                                                                               \
+        v0 = &(dst);                                                                                                   \
+        v1 = &(world);                                                                                                 \
+        v0->x = (srcVec)->x - v1->x;                                                                                   \
+        v0->y = (srcVec)->y - v1->y;                                                                                   \
+        v0->z = (srcVec)->z - v1->z;                                                                                   \
     } while (0)
 
-#define AINET_VEC3_SUB_WORLD_DST_V1_WORLD_V0(dst, srcVec, world) \
-    do {                                                 \
-        v1 = &(dst);                                     \
-        v0 = &(world);                                   \
-        v1->x = (srcVec)->x - v0->x;                     \
-        v1->y = (srcVec)->y - v0->y;                     \
-        v1->z = (srcVec)->z - v0->z;                     \
+#define AINET_VEC3_SUB_WORLD_DST_V1_WORLD_V0(dst, srcVec, world)                                                       \
+    do {                                                                                                               \
+        v1 = &(dst);                                                                                                   \
+        v0 = &(world);                                                                                                 \
+        v1->x = (srcVec)->x - v0->x;                                                                                   \
+        v1->y = (srcVec)->y - v0->y;                                                                                   \
+        v1->z = (srcVec)->z - v0->z;                                                                                   \
     } while (0)
 
-#define AINET_VEC3_DOT_XZ(out, steer, delta) \
-    do {                                     \
-        v1 = &(delta);                       \
-        v0 = &(steer);                       \
-        (out) = v0->x * v1->x +              \
-                v0->z * v1->z;               \
+#define AINET_VEC3_DOT_XZ(out, steer, delta)                                                                           \
+    do {                                                                                                               \
+        v1 = &(delta);                                                                                                 \
+        v0 = &(steer);                                                                                                 \
+        (out) = v0->x * v1->x + v0->z * v1->z;                                                                         \
     } while (0)
 
-#define AINET_VEC3_CROSS_XZ(out, steer, delta) \
-    do {                                       \
-        v1 = &(delta);                         \
-        v2 = &(steer);                         \
-        (out) = v2->z * v1->x -                \
-                v2->x * v1->z;                 \
+#define AINET_VEC3_CROSS_XZ(out, steer, delta)                                                                         \
+    do {                                                                                                               \
+        v1 = &(delta);                                                                                                 \
+        v2 = &(steer);                                                                                                 \
+        (out) = v2->z * v1->x - v2->x * v1->z;                                                                         \
     } while (0)
 
-#define AINET_TURN_DIRECTION_SLOT(cross) (*(int *)&(cross))
+#define AINET_TURN_DIRECTION_SLOT(cross) (*(int*)&(cross))
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
@@ -481,24 +283,16 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * treated as the original inline-asm island.
  * Purpose: Add the player's world position into the forward probe endpoint.
  */
-#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg) \
-    do {                                                           \
-        zVec3 *zaddDst = (dstArg);                                 \
-        zVec3 *zaddWorld = (worldArg);                             \
-        zVec3 *zaddEnd = (endArg);                                 \
-        __asm mov ebx, zaddEnd                                     \
-        __asm mov ecx, zaddWorld                                   \
-        __asm mov edx, zaddDst                                     \
-        __asm fld dword ptr [ebx]zVec3.x                           \
-        __asm fadd dword ptr [ecx]zVec3.x                          \
-        __asm fld dword ptr [ebx]zVec3.y                           \
-        __asm fadd dword ptr [ecx]zVec3.y                          \
-        __asm fld dword ptr [ebx]zVec3.z                           \
-        __asm fadd dword ptr [ecx]zVec3.z                          \
-        __asm fxch ST(2)                                           \
-        __asm fstp dword ptr [edx]zVec3.x                          \
-        __asm fstp dword ptr [edx]zVec3.y                          \
-        __asm fstp dword ptr [edx]zVec3.z                          \
+#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg)                                                    \
+    do {                                                                                                               \
+        zVec3* zaddDst = (dstArg);                                                                                     \
+        zVec3* zaddWorld = (worldArg);                                                                                 \
+        zVec3* zaddEnd = (endArg);                                                                                     \
+        __asm mov ebx, zaddEnd __asm mov ecx, zaddWorld __asm mov edx,                                                 \
+            zaddDst __asm fld dword ptr[ebx] zVec3.x __asm fadd dword ptr[ecx] zVec3.x __asm fld dword                 \
+                ptr[ebx] zVec3.y __asm fadd dword ptr[ecx] zVec3.y __asm fld dword                                     \
+                    ptr[ebx] zVec3.z __asm fadd dword ptr[ecx] zVec3.z __asm fxch ST(2) __asm fstp dword               \
+                        ptr[edx] zVec3.x __asm fstp dword ptr[edx] zVec3.y __asm fstp dword ptr[edx] zVec3.z           \
     } while (0)
 
 /**
@@ -513,7 +307,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * VC5SP3 fixed-register sequence at each declared consumer.
  * Purpose: Provide the recovered shared inlined AINet vector subtraction.
  */
-#define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
+#define AINET_VECTOR_SUBTRACT(destination, source, subtractor)                                                         \
     __asm {                                                     \
         __asm mov ebx, source                                  \
         __asm mov ecx, subtractor                              \
@@ -527,8 +321,7 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
         __asm fxch ST(2)                                       \
         __asm fstp dword ptr [edx]zVec3.x                      \
         __asm fstp dword ptr [edx]zVec3.y                      \
-        __asm fstp dword ptr [edx]zVec3.z                      \
-    }
+        __asm fstp dword ptr [edx]zVec3.z }
 
 /**
  * Raw assembly wrapper for 0x401180: computes the auto-turn target delta while
@@ -536,13 +329,13 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * vector subtract helper.
  * Purpose: Produce the auto-turn target delta for path-follow recovery.
  */
-#define AINET_PATH_COMPUTE_AUTO_TURN_DELTA(dst, srcVec, world) \
-    do {                                                 \
-        zVec3 *v0;                                       \
-        zVec3 *v1;                                       \
-        v0 = &(dst);                                     \
-        v1 = &(world);                                   \
-        AINET_VECTOR_SUBTRACT(v0, srcVec, v1)            \
+#define AINET_PATH_COMPUTE_AUTO_TURN_DELTA(dst, srcVec, world)                                                         \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v0 = &(dst);                                                                                                   \
+        v1 = &(world);                                                                                                 \
+        AINET_VECTOR_SUBTRACT(v0, srcVec, v1)                                                                          \
     } while (0)
 
 /**
@@ -551,13 +344,13 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * inlined vector subtract helper.
  * Purpose: Produce the steering target delta for path-follow movement.
  */
-#define AINET_PATH_COMPUTE_PATH_TARGET_DELTA(dst, srcVec, world) \
-    do {                                                 \
-        zVec3 *v0;                                       \
-        zVec3 *v1;                                       \
-        v1 = &(dst);                                     \
-        v0 = &(world);                                   \
-        AINET_VECTOR_SUBTRACT(v1, srcVec, v0)            \
+#define AINET_PATH_COMPUTE_PATH_TARGET_DELTA(dst, srcVec, world)                                                       \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v1 = &(dst);                                                                                                   \
+        v0 = &(world);                                                                                                 \
+        AINET_VECTOR_SUBTRACT(v1, srcVec, v0)                                                                          \
     } while (0)
 
 /**
@@ -566,15 +359,15 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * inlined vector subtract helper.
  * Purpose: Produce the dynamic-offset pursuit direction.
  */
-#define AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world) \
-    do {                                                    \
-        zVec3 *v0;                                          \
-        zVec3 *v1;                                          \
-        zVec3 *v2;                                          \
-        v1 = &(world);                                      \
-        v2 = &(dst);                                        \
-        v0 = &(srcVec);                                     \
-        AINET_VECTOR_SUBTRACT(v2, v0, v1)                   \
+#define AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)                                                      \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        zVec3* v2;                                                                                                     \
+        v1 = &(world);                                                                                                 \
+        v2 = &(dst);                                                                                                   \
+        v0 = &(srcVec);                                                                                                \
+        AINET_VECTOR_SUBTRACT(v2, v0, v1)                                                                              \
     } while (0)
 
 /**
@@ -583,15 +376,15 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * inlined vector subtract helper.
  * Purpose: Produce the path-probe fan segment delta.
  */
-#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(dst, srcVec, world) \
-    do {                                                    \
-        zVec3 *v0;                                          \
-        zVec3 *v1;                                          \
-        zVec3 *v2;                                          \
-        v2 = &(dst);                                        \
-        v1 = &(world);                                      \
-        v0 = &(srcVec);                                     \
-        AINET_VECTOR_SUBTRACT(v2, v0, v1)                   \
+#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(dst, srcVec, world)                                                      \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        zVec3* v2;                                                                                                     \
+        v2 = &(dst);                                                                                                   \
+        v1 = &(world);                                                                                                 \
+        v0 = &(srcVec);                                                                                                \
+        AINET_VECTOR_SUBTRACT(v2, v0, v1)                                                                              \
     } while (0)
 
 /**
@@ -599,14 +392,14 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * destination pointer available to the following clamp helper.
  * Purpose: Produce the path-probe fan segment delta and retain its pointer.
  */
-#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(dst, srcVec, world, dstPtr) \
-    do {                                                                     \
-        zVec3 *v0;                                                           \
-        zVec3 *v1;                                                           \
-        dstPtr = &(dst);                                                     \
-        v1 = &(world);                                                       \
-        v0 = &(srcVec);                                                      \
-        AINET_VECTOR_SUBTRACT(dstPtr, v0, v1)                                \
+#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(dst, srcVec, world, dstPtr)                                     \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        dstPtr = &(dst);                                                                                               \
+        v1 = &(world);                                                                                                 \
+        v0 = &(srcVec);                                                                                                \
+        AINET_VECTOR_SUBTRACT(dstPtr, v0, v1)                                                                          \
     } while (0)
 
 /**
@@ -617,37 +410,20 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * byte-match the retail register and FPU ordering.
  * Purpose: Preserve the byte-sensitive AINet path-probe travel clamp.
  */
-#define AINET_PATH_PROBE_CLAMP_TRAVEL_VC5(deltaPtr, xzLengthLocal, pathWidthValue) \
-    do {                                                                           \
-        __asm mov ecx, deltaPtr                                                    \
-        __asm fld dword ptr [ecx]zVec3.x                                           \
-        __asm fmul dword ptr [ecx]zVec3.x                                          \
-        __asm fld dword ptr [ecx]zVec3.z                                           \
-        __asm fmul dword ptr [ecx]zVec3.z                                          \
-        __asm faddp ST(1), ST(0)                                                   \
-        __asm fsqrt                                                               \
-        __asm fstp dword ptr xzLengthLocal                                         \
-        __asm fld dword ptr pathWidthValue                                         \
-        __asm fmul dword ptr g_AINetPathProbeHalfWidthScale                        \
-        __asm fld dword ptr xzLengthLocal                                          \
-        __asm fsub dword ptr pathWidthValue                                        \
-        __asm fcomp ST(1)                                                          \
-        __asm fnstsw ax                                                            \
-        __asm test ah, 041h                                                        \
-        __asm jne ainet_path_probe_clamp_store                                     \
-        __asm fstp ST(0)                                                           \
-        __asm mov ecx, deltaPtr                                                    \
-        __asm fld dword ptr [ecx]zVec3.x                                           \
-        __asm fmul dword ptr [ecx]zVec3.x                                          \
-        __asm fld dword ptr [ecx]zVec3.z                                           \
-        __asm fmul dword ptr [ecx]zVec3.z                                          \
-        __asm faddp ST(1), ST(0)                                                   \
-        __asm fsqrt                                                               \
-        __asm fstp dword ptr xzLengthLocal                                         \
-        __asm fld dword ptr xzLengthLocal                                          \
-        __asm fsub dword ptr pathWidthValue                                        \
-        __asm ainet_path_probe_clamp_store:                                        \
-        __asm fstp dword ptr [esi]AINetPathProbeFan.clampedTravel                  \
+#define AINET_PATH_PROBE_CLAMP_TRAVEL_VC5(deltaPtr, xzLengthLocal, pathWidthValue)                                     \
+    do {                                                                                                               \
+        __asm mov ecx,                                                                                                 \
+            deltaPtr __asm fld dword ptr[ecx] zVec3.x __asm fmul dword ptr[ecx] zVec3.x __asm fld dword                \
+                ptr[ecx] zVec3.z __asm fmul dword ptr[ecx] zVec3.z __asm faddp ST(1),                                  \
+            ST(0) __asm fsqrt __asm fstp dword ptr xzLengthLocal __asm fld dword ptr pathWidthValue __asm fmul dword   \
+                ptr g_AINetPathProbeHalfWidthScale __asm fld dword ptr xzLengthLocal __asm fsub dword ptr              \
+                    pathWidthValue __asm fcomp ST(1) __asm fnstsw ax __asm test ah,                                    \
+            041h __asm jne ainet_path_probe_clamp_store __asm fstp ST(0) __asm mov ecx,                                \
+            deltaPtr __asm fld dword ptr[ecx] zVec3.x __asm fmul dword ptr[ecx] zVec3.x __asm fld dword                \
+                ptr[ecx] zVec3.z __asm fmul dword ptr[ecx] zVec3.z __asm faddp ST(1),                                  \
+            ST(0) __asm fsqrt __asm fstp dword ptr xzLengthLocal __asm fld dword ptr xzLengthLocal __asm fsub dword    \
+                ptr pathWidthValue __asm ainet_path_probe_clamp_store                                                  \
+            : __asm fstp dword ptr[esi] AINetPathProbeFan.clampedTravel                                                \
     } while (0)
 
 /**
@@ -656,14 +432,14 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * the recovered VC5 byte shape.
  * Purpose: Produce the direction to the next forward path node.
  */
-#define AINET_PATH_COMPUTE_FORWARD_NODE_DIR(dst, srcVec, world) \
-    do {                                                         \
-        zVec3 *v0;                                               \
-        zVec3 *v1;                                               \
-        v1 = &(dst);                                             \
-        v2 = &(world);                                           \
-        v0 = &(srcVec);                                          \
-        AINET_VECTOR_SUBTRACT(v1, v0, v2)                        \
+#define AINET_PATH_COMPUTE_FORWARD_NODE_DIR(dst, srcVec, world)                                                        \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v1 = &(dst);                                                                                                   \
+        v2 = &(world);                                                                                                 \
+        v0 = &(srcVec);                                                                                                \
+        AINET_VECTOR_SUBTRACT(v1, v0, v2)                                                                              \
     } while (0)
 
 /**
@@ -672,15 +448,15 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * pointer binding for the recovered inlined vector subtract helper.
  * Purpose: Produce the local-player target delta for turn-in-place helpers.
  */
-#define AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(dst, srcVec, world) \
-    do {                                                          \
-        zVec3 *v0;                                                \
-        zVec3 *v1;                                                \
-        zVec3 *v2;                                                \
-        v0 = &(dst);                                              \
-        v1 = &(world);                                            \
-        v2 = (srcVec);                                            \
-        AINET_VECTOR_SUBTRACT(v0, v2, v1)                         \
+#define AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(dst, srcVec, world)                                                      \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        zVec3* v2;                                                                                                     \
+        v0 = &(dst);                                                                                                   \
+        v1 = &(world);                                                                                                 \
+        v2 = (srcVec);                                                                                                 \
+        AINET_VECTOR_SUBTRACT(v0, v2, v1)                                                                              \
     } while (0)
 
 /**
@@ -691,20 +467,16 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * ainet-vector exception.
  * Purpose: Produce byte-sensitive path-follow forward-dot math.
  */
-#define AINET_PATH_DOT_XZ(out, steer, delta) \
-    do {                                     \
-        zVec3 *v0;                           \
-        zVec3 *v1;                           \
-        v1 = &(delta);                       \
-        v0 = &(steer);                       \
-        __asm mov ecx, v0                    \
-        __asm mov edx, v1                    \
-        __asm fld dword ptr [ecx]zVec3.x     \
-        __asm fmul dword ptr [edx]zVec3.x    \
-        __asm fld dword ptr [ecx]zVec3.z     \
-        __asm fmul dword ptr [edx]zVec3.z    \
-        __asm faddp ST(1), ST(0)             \
-        __asm fstp dword ptr [out]           \
+#define AINET_PATH_DOT_XZ(out, steer, delta)                                                                           \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v1 = &(delta);                                                                                                 \
+        v0 = &(steer);                                                                                                 \
+        __asm mov ecx, v0 __asm mov edx,                                                                               \
+            v1 __asm fld dword ptr[ecx] zVec3.x __asm fmul dword ptr[edx] zVec3.x __asm fld dword                      \
+                ptr[ecx] zVec3.z __asm fmul dword ptr[edx] zVec3.z __asm faddp ST(1),                                  \
+            ST(0) __asm fstp dword ptr[out]                                                                            \
     } while (0)
 
 /**
@@ -715,19 +487,15 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * ainet-vector exception.
  * Purpose: Produce byte-sensitive path-follow steering-cross math.
  */
-#define AINET_PATH_CROSS_XZ(out, steer, delta) \
-    do {                                       \
-        zVec3 *v1;                             \
-        v1 = &(delta);                         \
-        v2 = &(steer);                         \
-        __asm mov ebx, v2                      \
-        __asm mov ecx, v1                      \
-        __asm fld dword ptr [ebx]zVec3.z       \
-        __asm fmul dword ptr [ecx]zVec3.x      \
-        __asm fld dword ptr [ebx]zVec3.x       \
-        __asm fmul dword ptr [ecx]zVec3.z      \
-        __asm fsubp ST(1), ST(0)               \
-        __asm fstp dword ptr [out]             \
+#define AINET_PATH_CROSS_XZ(out, steer, delta)                                                                         \
+    do {                                                                                                               \
+        zVec3* v1;                                                                                                     \
+        v1 = &(delta);                                                                                                 \
+        v2 = &(steer);                                                                                                 \
+        __asm mov ebx, v2 __asm mov ecx,                                                                               \
+            v1 __asm fld dword ptr[ebx] zVec3.z __asm fmul dword ptr[ecx] zVec3.x __asm fld dword                      \
+                ptr[ebx] zVec3.x __asm fmul dword ptr[ecx] zVec3.z __asm fsubp ST(1),                                  \
+            ST(0) __asm fstp dword ptr[out]                                                                            \
     } while (0)
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz
@@ -738,24 +506,17 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * free class instead of the retail grouped island.
  * Purpose: Produce the byte-sensitive alt-gun lead-solve XYZ dot products.
  */
-#define AINET_VECTOR_DOT_XYZ(out, source, factor) \
-    do {                                          \
-        zVec3 *v0;                                \
-        zVec3 *v1;                                \
-        v1 = &(factor);                           \
-        v0 = &(source);                           \
-        __asm mov ecx, v0                         \
-        __asm mov edx, v1                         \
-        __asm fld dword ptr [ecx]zVec3.x          \
-        __asm fmul dword ptr [edx]zVec3.x         \
-        __asm fld dword ptr [ecx]zVec3.y          \
-        __asm fmul dword ptr [edx]zVec3.y         \
-        __asm fld dword ptr [ecx]zVec3.z          \
-        __asm fmul dword ptr [edx]zVec3.z         \
-        __asm fxch ST(1)                          \
-        __asm faddp ST(2), ST(0)                  \
-        __asm faddp ST(1), ST(0)                  \
-        __asm fstp dword ptr [out]                \
+#define AINET_VECTOR_DOT_XYZ(out, source, factor)                                                                      \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v1 = &(factor);                                                                                                \
+        v0 = &(source);                                                                                                \
+        __asm mov ecx, v0 __asm mov edx,                                                                               \
+            v1 __asm fld dword ptr[ecx] zVec3.x __asm fmul dword ptr[edx] zVec3.x __asm fld dword                      \
+                ptr[ecx] zVec3.y __asm fmul dword ptr[edx] zVec3.y __asm fld dword                                     \
+                    ptr[ecx] zVec3.z __asm fmul dword ptr[edx] zVec3.z __asm fxch ST(1) __asm faddp ST(2),             \
+            ST(0) __asm faddp ST(1), ST(0) __asm fstp dword ptr[out]                                                   \
     } while (0)
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate
@@ -771,13 +532,12 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * Purpose: Preserve the retail fast square-root estimate transform
  * without absorbing the surrounding x87 or pointer-setup code.
  */
-#define AINET_FAST_SQRT_ESTIMATE(destination, source) \
+#define AINET_FAST_SQRT_ESTIMATE(destination, source)                                                                  \
     __asm {                                           \
         __asm mov eax, source                         \
         __asm sar eax, 1                              \
         __asm add eax, 01fc00000h                     \
-        __asm mov destination, eax                    \
-    }
+        __asm mov destination, eax }
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add
  * Raw assembly for 0x4024a0: adds two vectors with the observed VC5
@@ -786,74 +546,68 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * is assembly.
  * Purpose: Produce the byte-sensitive alt-gun lead target-point vector add.
  */
-#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr) \
-    do {                                                         \
-        __asm mov ebx, sourcePtr                                 \
-        __asm mov ecx, addendPtr                                 \
-        __asm mov edx, destination                    \
-        __asm fld dword ptr [ebx]zVec3.x              \
-        __asm fadd dword ptr [ecx]zVec3.x             \
-        __asm fld dword ptr [ebx]zVec3.y              \
-        __asm fadd dword ptr [ecx]zVec3.y             \
-        __asm fld dword ptr [ebx]zVec3.z              \
-        __asm fadd dword ptr [ecx]zVec3.z             \
-        __asm fxch ST(2)                              \
-        __asm fstp dword ptr [edx]zVec3.x             \
-        __asm fstp dword ptr [edx]zVec3.y             \
-        __asm fstp dword ptr [edx]zVec3.z             \
+#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr)                                                      \
+    do {                                                                                                               \
+        __asm mov ebx, sourcePtr __asm mov ecx, addendPtr __asm mov edx,                                               \
+            destination __asm fld dword ptr[ebx] zVec3.x __asm fadd dword ptr[ecx] zVec3                               \
+                .x __asm fld dword ptr[ebx] zVec3.y __asm fadd dword ptr[ecx] zVec3.y __asm fld dword                  \
+                    ptr[ebx] zVec3.z __asm fadd dword ptr[ecx] zVec3.z __asm fxch ST(2) __asm fstp dword               \
+                        ptr[edx] zVec3.x __asm fstp dword ptr[edx] zVec3.y __asm fstp dword ptr[edx] zVec3.z           \
     } while (0)
-#define AINET_VECTOR_ADD(destination, source, addend)          \
-    do {                                                       \
-        zVec3 *v0;                                             \
-        zVec3 *v1;                                             \
-        v1 = &(addend);                                        \
-        v0 = &(source);                                        \
-        AINET_VECTOR_ADD_BOUND(destination, v0, v1);           \
+#define AINET_VECTOR_ADD(destination, source, addend)                                                                  \
+    do {                                                                                                               \
+        zVec3* v0;                                                                                                     \
+        zVec3* v1;                                                                                                     \
+        v1 = &(addend);                                                                                                \
+        v0 = &(source);                                                                                                \
+        AINET_VECTOR_ADD_BOUND(destination, v0, v1);                                                                   \
     } while (0)
 #else
-#define AINET_FAST_SQRT_ESTIMATE(destination, source)       \
-    do {                                                    \
-        *(int *)&(destination) =                            \
-            (*(int *)&(source) >> 1) + 0x1fc00000;          \
+#define AINET_FAST_SQRT_ESTIMATE(destination, source)                                                                  \
+    do {                                                                                                               \
+        *(int*)&(destination) = (*(int*)&(source) >> 1) + 0x1fc00000;                                                  \
     } while (0)
-#define AINET_VECTOR_DOT_XYZ(out, source, factor) \
-    do {                                            \
-        (out) = (source).x * (factor).x +           \
-                (source).y * (factor).y +           \
-                (source).z * (factor).z;            \
+#define AINET_VECTOR_DOT_XYZ(out, source, factor)                                                                      \
+    do {                                                                                                               \
+        (out) = (source).x * (factor).x + (source).y * (factor).y + (source).z * (factor).z;                           \
     } while (0)
-#define AINET_VECTOR_ADD(destination, source, addend)  \
-    do {                                               \
-        (destination)->x = (source).x + (addend).x;  \
-        (destination)->y = (source).y + (addend).y;  \
-        (destination)->z = (source).z + (addend).z;  \
+#define AINET_VECTOR_ADD(destination, source, addend)                                                                  \
+    do {                                                                                                               \
+        (destination)->x = (source).x + (addend).x;                                                                    \
+        (destination)->y = (source).y + (addend).y;                                                                    \
+        (destination)->z = (source).z + (addend).z;                                                                    \
     } while (0)
-#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr) \
+#define AINET_VECTOR_ADD_BOUND(destination, sourcePtr, addendPtr)                                                      \
     AINET_VECTOR_ADD(destination, *(sourcePtr), *(addendPtr))
-#define AINET_VECTOR_SUBTRACT(destination, source, subtractor) \
-    do {                                                        \
-        (destination)->x = (source)->x - (subtractor)->x;       \
-        (destination)->y = (source)->y - (subtractor)->y;       \
-        (destination)->z = (source)->z - (subtractor)->z;       \
+#define AINET_VECTOR_SUBTRACT(destination, source, subtractor)                                                         \
+    do {                                                                                                               \
+        (destination)->x = (source)->x - (subtractor)->x;                                                              \
+        (destination)->y = (source)->y - (subtractor)->y;                                                              \
+        (destination)->z = (source)->z - (subtractor)->z;                                                              \
     } while (0)
-#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg) \
-    do {                                                           \
-        (dstArg)->x = (endArg)->x + (worldArg)->x;                  \
-        (dstArg)->y = (endArg)->y + (worldArg)->y;                  \
-        (dstArg)->z = (endArg)->z + (worldArg)->z;                  \
+#define AINET_FORWARD_PROBE_ADD_WORLD_ASM(dstArg, worldArg, endArg)                                                    \
+    do {                                                                                                               \
+        (dstArg)->x = (endArg)->x + (worldArg)->x;                                                                     \
+        (dstArg)->y = (endArg)->y + (worldArg)->y;                                                                     \
+        (dstArg)->z = (endArg)->z + (worldArg)->z;                                                                     \
     } while (0)
 #define AINET_PATH_COMPUTE_AUTO_TURN_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)
-#define AINET_PATH_COMPUTE_PATH_TARGET_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V1_WORLD_V0(dst, srcVec, world)
-#define AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(dst, srcVec, world) AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)
-#define AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world) \
-    do {                                                    \
-        (dst).x = (srcVec).x - (world).x;                   \
-        (dst).y = (srcVec).y - (world).y;                   \
-        (dst).z = (srcVec).z - (world).z;                   \
+#define AINET_PATH_COMPUTE_PATH_TARGET_DELTA(dst, srcVec, world)                                                       \
+    AINET_VEC3_SUB_WORLD_DST_V1_WORLD_V0(dst, srcVec, world)
+#define AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(dst, srcVec, world)                                                      \
+    AINET_VEC3_SUB_WORLD_DST_V0_WORLD_V1(dst, srcVec, world)
+#define AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)                                                      \
+    do {                                                                                                               \
+        (dst).x = (srcVec).x - (world).x;                                                                              \
+        (dst).y = (srcVec).y - (world).y;                                                                              \
+        (dst).z = (srcVec).z - (world).z;                                                                              \
     } while (0)
-#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(dst, srcVec, world) AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
-#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(dst, srcVec, world, dstPtr) AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
-#define AINET_PATH_COMPUTE_FORWARD_NODE_DIR(dst, srcVec, world) AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
+#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA(dst, srcVec, world)                                                      \
+    AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
+#define AINET_PROBE_FAN_COMPUTE_SEGMENT_DELTA_KEEP_PTR(dst, srcVec, world, dstPtr)                                     \
+    AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
+#define AINET_PATH_COMPUTE_FORWARD_NODE_DIR(dst, srcVec, world)                                                        \
+    AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(dst, srcVec, world)
 #define AINET_PATH_DOT_XZ(out, steer, delta) AINET_VEC3_DOT_XZ(out, steer, delta)
 #define AINET_PATH_CROSS_XZ(out, steer, delta) AINET_VEC3_CROSS_XZ(out, steer, delta)
 #endif
@@ -862,14 +616,13 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
  * @recoil-artifact defines .text recoil:function:0x401060: AINet::TickAiMode2TopLevel.
  * @recoil-match byte
  *
- * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2TopLevel(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zUtil_PlayerStateStorage *const localPlayerState =
-        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
+void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
     playerState->storedTargetPos = localPlayerState->fxOffsetWorld;
 
     switch (playerState->aiTopLevelState) {
@@ -878,8 +631,7 @@ void __fastcall AINet::TickAiMode2TopLevel(
         if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
-                playerState->aiCurrentPathNode
-                    ->neighborNodes[playerState->aiCurrentPathNeighborIndex]
+                playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
             );
         }
         return;
@@ -894,8 +646,7 @@ void __fastcall AINet::TickAiMode2TopLevel(
         if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
-                playerState->aiCurrentPathNode
-                    ->neighborNodes[playerState->aiCurrentPathNeighborIndex]
+                playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
             );
         }
         return;
@@ -910,8 +661,7 @@ void __fastcall AINet::TickAiMode2TopLevel(
         if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
-                playerState->aiCurrentPathNode
-                    ->neighborNodes[playerState->aiCurrentPathNeighborIndex]
+                playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
             );
         }
         return;
@@ -926,8 +676,7 @@ void __fastcall AINet::TickAiMode2TopLevel(
         if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
-                playerState->aiCurrentPathNode
-                    ->neighborNodes[playerState->aiCurrentPathNeighborIndex]
+                playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
             );
         }
         return;
@@ -937,29 +686,28 @@ void __fastcall AINet::TickAiMode2TopLevel(
     }
 }
 
-
 /**
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401180
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x401180
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x401180
  * Original function evidence: retail 0x401180 contains the shared subtraction and the
  * byte-sensitive XZ dot/cross expansions used by this path-follow body.
- * Purpose: Steers toward the current AI path edge, advances the cursor, or arms auto-turn. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Steers toward the current AI path edge, advances the cursor, or arms auto-turn. Source model: AINet
+ * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2PathFollow(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    AINetNode *currentNode;
-    AINetPathProbeFan *edgeProbeFan;
+void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    AINetNode* currentNode;
+    AINetPathProbeFan* edgeProbeFan;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
-    zVec3 *v2;
-    zVec3 *targetPathNode;
+    zVec3* v2;
+    zVec3* targetPathNode;
     float steerDotXZ;
-    PlayerMasterModalData *masterModalData;
+    PlayerMasterModalData* masterModalData;
     float targetDistance;
     zVec3 targetDelta;
     zVec3 steerBasis;
@@ -967,29 +715,17 @@ void __fastcall AINet::TickAiMode2PathFollow(
 
     masterModalData = saveState->primaryModalState->masterModalData;
     currentNode = playerState->aiCurrentPathNode;
-    edgeProbeFan =
-        currentNode->probeFans[playerState->aiCurrentPathNeighborIndex];
-    targetPathNode =
-        &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
+    edgeProbeFan = currentNode->probeFans[playerState->aiCurrentPathNeighborIndex];
+    targetPathNode = &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
 
     if (AiMode2ForwardProbeRequiresAutoTurn(saveState) != 0) {
-        AiAdvancePathCursorAndComputeTargetVec(
-            saveState,
-            &currentNode,
-            &edgeProbeFan,
-            &targetDelta
-        );
-        targetPathNode =
-            &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
+        AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan, &targetDelta);
+        targetPathNode = &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
         playerState->aiReturnTopLevelState = playerState->aiTopLevelState;
         playerState->aiTopLevelState = kPlayerAiTopAutoTurn;
         playerState->autoTurnActive = 1;
 
-        AINET_PATH_COMPUTE_AUTO_TURN_DELTA(
-            autoTurnTargetDelta,
-            targetPathNode,
-            playerState->worldPos
-        );
+        AINET_PATH_COMPUTE_AUTO_TURN_DELTA(autoTurnTargetDelta, targetPathNode, playerState->worldPos);
         autoTurnTargetDelta.y = 0.0f;
         zMath::Vec3NormalizeXZ(&autoTurnTargetDelta, &playerState->autoTurnTargetDir);
         playerState->throttleInput = 0.0f;
@@ -1009,12 +745,7 @@ void __fastcall AINet::TickAiMode2PathFollow(
 
     if (steerDotXZ < 0.0f) {
         if (playerState->aiPathCursorAdvanceRequested != 0) {
-            AiAdvancePathCursorAndComputeTargetVec(
-                saveState,
-                &currentNode,
-                &edgeProbeFan,
-                &targetDelta
-            );
+            AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan, &targetDelta);
             playerState->aiPathCursorAdvanceRequested = 0;
             TickAiMode2PathFollow(saveState);
             return;
@@ -1036,22 +767,16 @@ void __fastcall AINet::TickAiMode2PathFollow(
     playerState->steeringInputCopy = playerState->steeringInput;
 
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
-        const float pitchInput = ((targetPathNode->y - playerState->worldPos.y +
-                                      masterModalData->modeAltTransitionTime) *
-                                         g_Player_AiMode2_PathFollowPitchInputScale -
-                                     playerState->vehiclePitchRad) *
-                                 g_Player_AiMode2_PathFollowPitchTurnGain;
+        const float pitchInput = ((targetPathNode->y - playerState->worldPos.y + masterModalData->modeAltTransitionTime)
+                                         * g_Player_AiMode2_PathFollowPitchInputScale
+                                     - playerState->vehiclePitchRad)
+            * g_Player_AiMode2_PathFollowPitchTurnGain;
         playerState->subPitchInput = pitchInput;
         playerState->subPitchInputCopy = pitchInput;
     }
 
     if (targetDistance < 10.0f) {
-        AiAdvancePathCursorAndComputeTargetVec(
-            saveState,
-            &currentNode,
-            &edgeProbeFan,
-            &targetDelta
-        );
+        AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan, &targetDelta);
         playerState->aiPathCursorAdvanceRequested = 0;
     }
 }
@@ -1060,14 +785,13 @@ void __fastcall AINet::TickAiMode2PathFollow(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.forward-probe-add-world recoil:function:0x401420
  * Original function evidence: retail 0x401420 contains the fixed-register x87 endpoint
  * addition emitted by the forward-probe macro.
- * Purpose: Checks forward probe queues and requests auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Checks forward probe queues and requests auto-turn recovery when blocked. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerMasterModalData *masterModalData =
-        saveState->primaryModalState->masterModalData;
+int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerMasterModalData* masterModalData = saveState->primaryModalState->masterModalData;
     int segmentTags[2];
     zVec3 forwardDir;
     CZDisplayInstanceSegmentEndpoints segmentPairs[1];
@@ -1082,25 +806,20 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
 
     forwardDir = playerState->projectileSpawnVel;
 
-    const float forwardProbeOffset =
-        AINET_MAX(zMath::Vec3Normalize(&forwardDir), 1.0f) * kPlayerAiForwardProbeLengthHalfScale -
-        masterModalData->probePoints[1].z;
+    const float forwardProbeOffset
+        = AINET_MAX(zMath::Vec3Normalize(&forwardDir), 1.0f) * kPlayerAiForwardProbeLengthHalfScale
+        - masterModalData->probePoints[1].z;
     segmentPairs[0].end.x = forwardProbeOffset * forwardDir.x;
     segmentPairs[0].end.y = forwardProbeOffset * forwardDir.y;
     segmentPairs[0].end.z = forwardProbeOffset * forwardDir.z;
-    AINET_FORWARD_PROBE_ADD_WORLD_ASM(
-        &segmentPairs[0].end,
-        &playerState->worldPos,
-        &segmentPairs[0].end
-    );
+    AINET_FORWARD_PROBE_ADD_WORLD_ASM(&segmentPairs[0].end, &playerState->worldPos, &segmentPairs[0].end);
 
     segmentTags[0] = -1;
     segmentTags[1] = -1;
     Player::CollectPendingContactsForSegments(saveState, segmentPairs, 2, segmentTags);
 
     int result;
-    if (playerState->preferredCollisionQueue.count != 0 ||
-        playerState->playerCollisionQueue.count != 0) {
+    if (playerState->preferredCollisionQueue.count != 0 || playerState->playerCollisionQueue.count != 0) {
         result = 1;
     } else {
         result = 0;
@@ -1113,25 +832,25 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401580
  * Original function evidence: retail 0x401580 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Advances the AI path cursor and returns the target vector and probe fan. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
- * Preserve the pre-tested `while (branchOffset < 0x18)` for VC5 byte shape:
- * VC5 folds its initially true entry test and emits the retail direct `jl`
- * latch, while equivalent `do/while` and indefinite-loop/positive-`continue`
- * forms add a two-byte backedge trampoline. The exact original lexical tokens
- * remain unproven.
+ * Purpose: Advances the AI path cursor and returns the target vector and probe fan. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class. Preserve the pre-tested `while (branchOffset < 0x18)`
+ * for VC5 byte shape: VC5 folds its initially true entry test and emits the retail direct `jl` latch, while equivalent
+ * `do/while` and indefinite-loop/positive-`continue` forms add a two-byte backedge trampoline. The exact original
+ * lexical tokens remain unproven.
  */
 void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
-    zUtil_SaveGameState *saveState,
-    AINetNode **currentNodeInOut,
-    AINetPathProbeFan **outProbeFan,
-    zVec3 *outTargetVec
-) {
-    zUtil_PlayerStateStorage *playerState = saveState->playerState;
-    AINetNode **nodeInOut = currentNodeInOut;
+    zUtil_SaveGameState* saveState,
+    AINetNode** currentNodeInOut,
+    AINetPathProbeFan** outProbeFan,
+    zVec3* outTargetVec
+)
+{
+    zUtil_PlayerStateStorage* playerState = saveState->playerState;
+    AINetNode** nodeInOut = currentNodeInOut;
     int chosenBranchIndex;
 
     int pathNeighborIndex = playerState->aiCurrentPathNeighborIndex;
-    AINetNode *nextNode = (*nodeInOut)->neighborNodes[pathNeighborIndex];
+    AINetNode* nextNode = (*nodeInOut)->neighborNodes[pathNeighborIndex];
     playerState->aiCurrentPathNode = nextNode;
 
     int previousNodeIndex = (*nodeInOut)->nodeIndex;
@@ -1155,10 +874,8 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
         int candidateBranchIndex = 0;
         int branchOffset = 0x0c;
         while (branchOffset < 0x18) {
-            AINetNode *reverseNode =
-                *(AINetNode **)((char *)nextNode + branchOffset);
-            if (reverseNode != 0 &&
-                reverseNode->nodeIndex == previousNodeIndex) {
+            AINetNode* reverseNode = *(AINetNode**)((char*)nextNode + branchOffset);
+            if (reverseNode != 0 && reverseNode->nodeIndex == previousNodeIndex) {
                 excludedBranchIndex = candidateBranchIndex;
                 break;
             }
@@ -1167,40 +884,35 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
             ++candidateBranchIndex;
         }
 
-        AINet::AiChooseNextPathBranchIndex(
-            saveState,
-            nodeInOut,
-            &chosenBranchIndex,
-            excludedBranchIndex
-        );
+        AINet::AiChooseNextPathBranchIndex(saveState, nodeInOut, &chosenBranchIndex, excludedBranchIndex);
         playerState->aiCurrentPathNeighborIndex = chosenBranchIndex;
     }
 
     int index = playerState->aiCurrentPathNeighborIndex;
     *outProbeFan = (*nodeInOut)->probeFans[index];
 
-    zVec3 *worldPosition;
-    zVec3 *selectedPosition;
+    zVec3* worldPosition;
+    zVec3* selectedPosition;
     worldPosition = &playerState->worldPos;
     selectedPosition = &(*nodeInOut)->position;
     AINET_VECTOR_SUBTRACT(outTargetVec, worldPosition, selectedPosition);
 }
 
-
 /**
  * Purpose: Selects the next non-excluded AI path branch for mode-2 steering.
  */
 int __fastcall AINet::AiChooseNextPathBranchIndex(
-    zUtil_SaveGameState *saveState,
-    AINetNode **currentNodeInOut,
-    int *outBranchIndex,
+    zUtil_SaveGameState* saveState,
+    AINetNode** currentNodeInOut,
+    int* outBranchIndex,
     int excludedBranchIndex
-) {
+)
+{
     (void)saveState;
 
-    AINetNode *currentNode = *currentNodeInOut;
+    AINetNode* currentNode = *currentNodeInOut;
     int branchCount = 0;
-    AINetNode **neighborSlot = currentNode->neighborNodes;
+    AINetNode** neighborSlot = currentNode->neighborNodes;
     for (int branchIndex = 0; branchIndex < 3; ++branchIndex) {
         if (neighborSlot[branchIndex] != 0) {
             ++branchCount;
@@ -1229,30 +941,29 @@ int __fastcall AINet::AiChooseNextPathBranchIndex(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401710
  * Original function evidence: retail 0x401710 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Runs pursuit steering, submarine vertical controls, and pursuit exit checks. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Runs pursuit steering, submarine vertical controls, and pursuit exit checks. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2SteeringSubstate(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     float forwardDot;
     float verticalDistanceScale;
     float targetDistance;
     float lateralDot;
-    PlayerMasterModalData *const masterModalData = saveState->primaryModalState->masterModalData;
-    const zVec3 targetWorldSnapshot =
-        ((zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState)->worldPos;
+    PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
+    const zVec3 targetWorldSnapshot = ((zUtil_PlayerStateStorage*)g_GameStateOrMapTable->playerState)->worldPos;
 
-    if (g_Player_TotalTimeSecScaled >= playerState->aiNextPathRebuildTime &&
-        playerState->aiCurrentSteeringSubstate != kPlayerAiMode2SteerPathFollow) {
+    if (g_Player_TotalTimeSecScaled >= playerState->aiNextPathRebuildTime
+        && playerState->aiCurrentSteeringSubstate != kPlayerAiMode2SteerPathFollow) {
         AiRebuildSyntheticPathToNodeIfFar(saveState, playerState->aiCurrentPathNode);
     }
 
     zVec3 targetDelta;
     {
-        zVec3 *v0;
-        zVec3 *v1;
-        const zVec3 *v2;
+        zVec3* v0;
+        zVec3* v1;
+        const zVec3* v2;
         v0 = &targetDelta;
         v1 = &playerState->worldPos;
         v2 = &targetWorldSnapshot;
@@ -1261,14 +972,11 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
     verticalDistanceScale = targetDelta.y;
     targetDelta.y = 0.0f;
     targetDistance = zMath::Vec3Normalize(&targetDelta);
-    verticalDistanceScale =
-        targetDistance != 0.0f ? verticalDistanceScale / targetDistance : 0.0f;
+    verticalDistanceScale = targetDistance != 0.0f ? verticalDistanceScale / targetDistance : 0.0f;
 
     const zVec3 steerBasisNorm = playerState->steerBasisNorm;
-    lateralDot = steerBasisNorm.z * targetDelta.x -
-                 steerBasisNorm.x * targetDelta.z;
-    forwardDot = steerBasisNorm.x * targetDelta.x +
-                 steerBasisNorm.z * targetDelta.z;
+    lateralDot = steerBasisNorm.z * targetDelta.x - steerBasisNorm.x * targetDelta.z;
+    forwardDot = steerBasisNorm.x * targetDelta.x + steerBasisNorm.z * targetDelta.z;
 
     if (playerState->aiMode2SteeringRetryCount > 6) {
         playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerTurnInPlace;
@@ -1307,40 +1015,39 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
         float pitchInput = g_Player_AiMode2_SteeringPitchInputScale;
         pitchInput *= verticalDistanceScale;
-        pitchInput = (pitchInput - playerState->vehiclePitchRad) *
-                     g_Player_AiMode2_SteeringPitchTurnGain;
+        pitchInput = (pitchInput - playerState->vehiclePitchRad) * g_Player_AiMode2_SteeringPitchTurnGain;
         playerState->subPitchInput = pitchInput;
         playerState->subPitchInputCopy = pitchInput;
 
-        const float verticalInput = (targetWorldSnapshot.y - playerState->worldPos.y) *
-                                    g_Player_AiMode2_SteeringVerticalErrorScale;
+        const float verticalInput
+            = (targetWorldSnapshot.y - playerState->worldPos.y) * g_Player_AiMode2_SteeringVerticalErrorScale;
         playerState->subVerticalInput = verticalInput;
         playerState->subVerticalInputCopy = verticalInput;
     }
 
     TickAiMode2AltGunAttackWindow(saveState, targetDistance, forwardDot);
 
-    zUtil_PlayerStateStorage *targetPlayerState =
-        (zUtil_PlayerStateStorage *)g_GameStateOrMapTable->playerState;
-    if (targetPlayerState->lifecycleState == kPlayerLifecycleInactive ||
-        zMath::Vec3DeltaLengthSq(&playerState->worldPos, &playerState->aiRestoreTarget) >
-            playerState->aiRestoreDistanceSq) {
+    zUtil_PlayerStateStorage* targetPlayerState = (zUtil_PlayerStateStorage*)g_GameStateOrMapTable->playerState;
+    if (targetPlayerState->lifecycleState == kPlayerLifecycleInactive
+        || zMath::Vec3DeltaLengthSq(&playerState->worldPos, &playerState->aiRestoreTarget)
+            > playerState->aiRestoreDistanceSq) {
         AiRestoreSavedTopLevelState(saveState);
-        playerState->aiStateUntilTime =
-            g_Player_TotalTimeSecScaled + playerState->aiNotPursuitDwell;
+        playerState->aiStateUntilTime = g_Player_TotalTimeSecScaled + playerState->aiNotPursuitDwell;
     }
 }
 
 /**
- * Purpose: Converts target alignment and pursuit distance into throttle and steering input. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Converts target alignment and pursuit distance into throttle and steering input. Source model: AINet
+ * source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
-    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState* saveState,
     float forwardDot,
     float lateralDot,
     float targetDistance
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     if (forwardDot <= 0.0f) {
         playerState->throttleInput = 0.0f;
@@ -1362,30 +1069,29 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
 }
 
 /**
- * Purpose: Runs offset-target pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Runs offset-target pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2OffsetTargetSteering(
-    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState* saveState,
     float unusedForwardDot,
     float unusedLateralDot,
     float unusedTargetDistance
-) {
+)
+{
     (void)unusedForwardDot;
     (void)unusedLateralDot;
     (void)unusedTargetDistance;
 
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0) {
-        UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-            saveState,
-            (zUtil_SaveGameState *)g_GameStateOrMapTable
-        );
+        UpdateAiMode2MoveAndTurnTowardOffsetTarget(saveState, (zUtil_SaveGameState*)g_GameStateOrMapTable);
         return;
     }
 
     Player::SetAutoTurnTargetDirFromWorldPoint(
         saveState,
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos
+        &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos
     );
 
     const int currentSteeringSubstate = playerState->aiCurrentSteeringSubstate;
@@ -1398,22 +1104,24 @@ void __fastcall AINet::TickAiMode2OffsetTargetSteering(
 }
 
 /**
- * Purpose: Runs dynamic-offset pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Runs dynamic-offset pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
-    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState* saveState,
     float unusedForwardDot,
     float unusedLateralDot,
     float targetDistance
-) {
+)
+{
     (void)unusedForwardDot;
     (void)unusedLateralDot;
 
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0) {
         UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
             saveState,
-            (zUtil_SaveGameState *)g_GameStateOrMapTable,
+            (zUtil_SaveGameState*)g_GameStateOrMapTable,
             targetDistance
         );
         return;
@@ -1421,7 +1129,7 @@ void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
 
     Player::SetAutoTurnTargetDirFromWorldPoint(
         saveState,
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos
+        &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos
     );
 
     const int currentSteeringSubstate = playerState->aiCurrentSteeringSubstate;
@@ -1434,26 +1142,22 @@ void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
 }
 
 /**
- * Purpose: Tests attack range and local-player line of sight before steering pursuit. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Tests attack range and local-player line of sight before steering pursuit. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const aiState = saveState->playerState;
+int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const aiState = saveState->playerState;
     if (g_Player_AiMode2State1Finalized == 0) {
         if (g_Player_TotalTimeSecScaled > aiState->aiStateUntilTime) {
-            zUtil_PlayerStateStorage *const localPlayerState =
-                ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
-            const float targetDistSq =
-                zMath::Vec3DeltaLengthSq(&localPlayerState->fxOffsetWorld, &aiState->fxOffsetWorld);
+            zUtil_PlayerStateStorage* const localPlayerState
+                = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
+            const float targetDistSq
+                = zMath::Vec3DeltaLengthSq(&localPlayerState->fxOffsetWorld, &aiState->fxOffsetWorld);
             if (targetDistSq < aiState->aiAttackRadiusSq) {
                 zVec3 lineOfSightPoint = aiState->fxOffsetWorld;
                 lineOfSightPoint.y -= kPlayerAiAttackLosTargetYOffset;
-                if (HasLineOfSightFromLocalPlayerFxOffset(
-                    aiState->rootNode,
-                    &lineOfSightPoint,
-                    1
-                ) != 0) {
+                if (HasLineOfSightFromLocalPlayerFxOffset(aiState->rootNode, &lineOfSightPoint, 1) != 0) {
                     AiEnterMode2SteeringPursuit(saveState);
                     aiState->aiTargetLineOfSightClear = 1;
                     if (aiState->aiNet->attackBuddyNetId != 0) {
@@ -1471,12 +1175,12 @@ int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(
 }
 
 /**
- * Purpose: Propagates an attack-pursuit alert around the AI peer ring. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Propagates an attack-pursuit alert around the AI peer ring. Source model: AINet source-file contribution
+ * over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::AiAlertAttackBuddies(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_SaveGameState *buddySaveState = saveState->aiPeerRingNext;
+void __fastcall AINet::AiAlertAttackBuddies(zUtil_SaveGameState* saveState)
+{
+    zUtil_SaveGameState* buddySaveState = saveState->aiPeerRingNext;
     if (g_Player_AiMode2State1Finalized != 0 || buddySaveState == saveState) {
         return;
     }
@@ -1485,8 +1189,7 @@ void __fastcall AINet::AiAlertAttackBuddies(
         if (buddySaveState->playerState->aiTopLevelState != kPlayerAiMode2TopSteering) {
             AiEnterMode2SteeringPursuit(buddySaveState);
             buddySaveState->playerState->recentHitFlag = 1;
-            buddySaveState->playerState->recentHitExpireTime =
-                g_Time_AccumulatedTimeSec + 10.0f;
+            buddySaveState->playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec + 10.0f;
         }
         buddySaveState = buddySaveState->aiPeerRingNext;
     } while (buddySaveState != saveState);
@@ -1496,14 +1199,13 @@ void __fastcall AINet::AiAlertAttackBuddies(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401c60
  * Original function evidence: retail 0x401c60 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Saves the prior top-level state and enters steering pursuit for the attack window. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Saves the prior top-level state and enters steering pursuit for the attack window. Source model: AINet
+ * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::AiEnterMode2SteeringPursuit(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const aiState = saveState->playerState;
-    zUtil_PlayerStateStorage *const localPlayerState =
-        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState;
+void __fastcall AINet::AiEnterMode2SteeringPursuit(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const aiState = saveState->playerState;
+    zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
     if (g_Player_AiMode2State1Finalized != 0) {
         return;
     }
@@ -1516,8 +1218,7 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
         aiState->aiTopLevelState = kPlayerAiMode2TopSteering;
     }
 
-    AINetNode *const restorePathNode =
-        aiState->aiCurrentPathNode->neighborNodes[aiState->aiCurrentPathNeighborIndex];
+    AINetNode* const restorePathNode = aiState->aiCurrentPathNode->neighborNodes[aiState->aiCurrentPathNeighborIndex];
     aiState->aiRestoreTarget = restorePathNode->position;
 
     switch (aiState->aiCurrentSteeringSubstate) {
@@ -1530,14 +1231,10 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
     }
 
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
-    AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(
-        aiState->aiDynamicOffsetDir,
-        aiState->worldPos,
-        localPlayerState->worldPos
-    );
+    AINET_PATH_COMPUTE_DYNAMIC_OFFSET_DIR(aiState->aiDynamicOffsetDir, aiState->worldPos, localPlayerState->worldPos);
     aiState->aiDynamicOffsetDir.y = 0.0f;
     zMath::Vec3Normalize(&aiState->aiDynamicOffsetDir);
 }
@@ -1551,11 +1248,11 @@ void __fastcall AINet::AiEnterMode2SteeringPursuit(
  * instantiated and emits no code.
  */
 struct AiNetLosFxFrame {
-    const zVec3 *savedEdi;
-    zUtil_PlayerStateStorage *savedEsi;
-    CZNodePartial *savedEbx;
+    const zVec3* savedEdi;
+    zUtil_PlayerStateStorage* savedEsi;
+    CZNodePartial* savedEbx;
     PlayerProbeSampleCandidateBuffer rayData;
-    void *returnAddress;
+    void* returnAddress;
     int directionMode;
 };
 
@@ -1586,14 +1283,15 @@ struct AiNetLosFxFrame {
  * tested node and local player root from raycast candidates.
  */
 __declspec(naked) int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
-    CZNodePartial *node,
-    const zVec3 *point,
+    CZNodePartial* node,
+    const zVec3* point,
     int directionMode
-) {
+)
+{
     using CZClass::gwNodeSetRaycastable;
+    using CZDisplayInstance::RaycastFindClosest;
     using CZDisplayInstance::SetBreakOnFirstCandidate;
     using CZDisplayInstance::SetStopAfterFirstHit;
-    using CZDisplayInstance::RaycastFindClosest;
     /*
      * Frame: [rayData][ebx][esi][edi][return][directionMode].  esi holds the
      * player state, edi the supplied point, ebx the tested node.
@@ -1690,13 +1388,9 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
  * equivalent of the VC5SP3 naked body above; behaviour is identical and only
  * the emitted instruction schedule differs.
  */
-int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(
-    CZNodePartial *node,
-    const zVec3 *point,
-    int directionMode
-) {
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(CZNodePartial* node, const zVec3* point, int directionMode)
+{
+    zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
 
     g_Variant_CurrentTag = playerState->variantTag;
     CZClass::gwNodeSetRaycastable(node, 0);
@@ -1753,22 +1447,34 @@ struct AiNetLosCamLocals {
     PlayerProbeSampleCandidateBuffer rayData;
 };
 struct AiNetLosCamFrame {
-    zUtil_PlayerStateStorage *savedEdi;
-    const zVec3 *savedEsi;
-    CZNodePartial *savedEbx;
+    zUtil_PlayerStateStorage* savedEdi;
+    const zVec3* savedEsi;
+    CZNodePartial* savedEbx;
     AiNetLosCamLocals locals;
-    void *returnAddress;
+    void* returnAddress;
     int directionMode;
 };
 struct AiNetLosCamFrameBeforeEdi {
-    const zVec3 *savedEsi;
-    CZNodePartial *savedEbx;
+    const zVec3* savedEsi;
+    CZNodePartial* savedEbx;
     AiNetLosCamLocals locals;
 };
-struct AiNetLosCamFrame1 { void *pushed[1]; AiNetLosCamFrame frame; };
-struct AiNetLosCamFrame2 { void *pushed[2]; AiNetLosCamFrame frame; };
-struct AiNetLosCamFrame3 { void *pushed[3]; AiNetLosCamFrame frame; };
-struct AiNetLosCamFrame4 { void *pushed[4]; AiNetLosCamFrame frame; };
+struct AiNetLosCamFrame1 {
+    void* pushed[1];
+    AiNetLosCamFrame frame;
+};
+struct AiNetLosCamFrame2 {
+    void* pushed[2];
+    AiNetLosCamFrame frame;
+};
+struct AiNetLosCamFrame3 {
+    void* pushed[3];
+    AiNetLosCamFrame frame;
+};
+struct AiNetLosCamFrame4 {
+    void* pushed[4];
+    AiNetLosCamFrame frame;
+};
 
 /**
  * @recoil-raw-asm recoil:raw-asm:battlesport.ai-net.los-from-camera-target
@@ -1793,15 +1499,16 @@ struct AiNetLosCamFrame4 { void *pushed[4]; AiNetLosCamFrame frame; };
  * player root from raycast candidates.
  */
 __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
-    CZNodePartial *node,
-    const zVec3 *point,
+    CZNodePartial* node,
+    const zVec3* point,
     int directionMode
-) {
+)
+{
     using CZCamera::gwCameraGetTarget;
     using CZClass::gwNodeSetRaycastable;
+    using CZDisplayInstance::RaycastFindClosest;
     using CZDisplayInstance::SetBreakOnFirstCandidate;
     using CZDisplayInstance::SetStopAfterFirstHit;
-    using CZDisplayInstance::RaycastFindClosest;
     /* edi holds the player state, esi the supplied point, ebx the tested node. */
     __asm {
         sub     esp, SIZE AiNetLosCamLocals
@@ -1902,21 +1609,12 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
  * naked body above; behaviour is identical and only the emitted instruction
  * schedule differs.
  */
-int __fastcall AINet::HasLineOfSightFromCameraTarget(
-    CZNodePartial *node,
-    const zVec3 *point,
-    int directionMode
-) {
-    zUtil_PlayerStateStorage *const playerState =
-        (zUtil_PlayerStateStorage *)(g_GameStateOrMapTable->playerState);
+int __fastcall AINet::HasLineOfSightFromCameraTarget(CZNodePartial* node, const zVec3* point, int directionMode)
+{
+    zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
 
     zVec3 cameraTarget;
-    CZCamera::gwCameraGetTarget(
-        g_MainCamera,
-        &cameraTarget.x,
-        &cameraTarget.y,
-        &cameraTarget.z
-    );
+    CZCamera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     g_Variant_CurrentTag = playerState->variantTag;
     CZClass::gwNodeSetRaycastable(node, 0);
@@ -1960,40 +1658,34 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(
 #endif
 
 /**
- * Purpose: Builds a temporary synthetic AI path node back to the requested target. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Builds a temporary synthetic AI path node back to the requested target. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
-    zUtil_SaveGameState *saveState,
-    AINetNode *targetNode
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(zUtil_SaveGameState* saveState, AINetNode* targetNode)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     zVec3 playerPos = playerState->worldPos;
     zVec3 nodePos = playerState->aiCurrentPathNode->position;
-    if (zMath::Vec3DeltaLengthSq(&playerPos, &nodePos) <
-        kPlayerAiSyntheticPathRebuildDistanceSq) {
+    if (zMath::Vec3DeltaLengthSq(&playerPos, &nodePos) < kPlayerAiSyntheticPathRebuildDistanceSq) {
         return;
     }
 
-    AINetNode *const syntheticNode = (AINetNode *)(malloc(sizeof(AINetNode)));
+    AINetNode* const syntheticNode = (AINetNode*)(malloc(sizeof(AINetNode)));
     memset(syntheticNode, 0, sizeof(*syntheticNode));
     syntheticNode->neighborNodes[0] = targetNode;
     syntheticNode->position = playerState->worldPos;
     syntheticNode->nodeIndex = -1;
 
-    AINetPathProbeFan *const fan = (AINetPathProbeFan *)(malloc(sizeof(AINetPathProbeFan)));
+    AINetPathProbeFan* const fan = (AINetPathProbeFan*)(malloc(sizeof(AINetPathProbeFan)));
     syntheticNode->probeFans[0] = fan;
     memset(fan, 0, sizeof(*fan));
-    syntheticNode->probeFans[0]->InitFromSegment(
-        syntheticNode->position,
-        playerState->aiCurrentPathNode->position,
-        10.0f
-    );
+    syntheticNode->probeFans[0]
+        ->InitFromSegment(syntheticNode->position, playerState->aiCurrentPathNode->position, 10.0f);
 
     playerState->aiCurrentPathNode = syntheticNode;
     playerState->aiCurrentPathNeighborIndex = 0;
-    playerState->aiNextPathRebuildTime =
-        g_Player_TotalTimeSecScaled - kPlayerAiSyntheticPathRebuildDelaySec;
+    playerState->aiNextPathRebuildTime = g_Player_TotalTimeSecScaled - kPlayerAiSyntheticPathRebuildDelaySec;
 }
 
 /**
@@ -2001,10 +1693,9 @@ void __fastcall AINet::AiRebuildSyntheticPathToNodeIfFar(
  * playerState->aiTopLevelState through the save-state's playerState pointer.
  * Purpose: Restores a saved AI top-level state for one player save-state node.
  */
-void __fastcall AINet::AiRestoreSavedTopLevelState(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::AiRestoreSavedTopLevelState(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     playerState->aiTopLevelState = playerState->aiSavedTopLevelState;
 }
 
@@ -2012,32 +1703,30 @@ void __fastcall AINet::AiRestoreSavedTopLevelState(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402090
  * Original function evidence: retail 0x402090 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Turns toward the local player while holding throttle at zero. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Turns toward the local player while holding throttle at zero. Source model: AINet source-file contribution
+ * over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
 
     zVec3 targetDelta;
 
     AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(
         targetDelta,
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos,
+        &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos,
         playerState->worldPos
     );
     targetDelta.y = 0.0f;
     zMath::Vec3Normalize(&targetDelta);
 
     const zVec3 steerBasis = playerState->steerBasisNorm;
-    const float turnCross = steerBasis.z * targetDelta.x -
-                            steerBasis.x * targetDelta.z;
-    const float forwardDot = steerBasis.x * targetDelta.x +
-                             steerBasis.z * targetDelta.z;
+    const float turnCross = steerBasis.z * targetDelta.x - steerBasis.x * targetDelta.z;
+    const float forwardDot = steerBasis.x * targetDelta.x + steerBasis.z * targetDelta.z;
     int turnDirection;
     if (forwardDot <= 0.0f) {
         turnDirection = -1;
@@ -2058,32 +1747,30 @@ void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402170
  * Original function evidence: retail 0x402170 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Turns in place toward the local player without changing throttle. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Turns in place toward the local player without changing throttle. Source model: AINet source-file
+ * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
 
     zVec3 targetDelta;
 
     AINET_PATH_COMPUTE_LOCAL_PLAYER_DELTA(
         targetDelta,
-        &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->worldPos,
+        &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos,
         playerState->worldPos
     );
     targetDelta.y = 0.0f;
     zMath::Vec3Normalize(&targetDelta);
 
     const zVec3 steerBasis = playerState->steerBasisNorm;
-    const float turnCross = steerBasis.z * targetDelta.x -
-                            steerBasis.x * targetDelta.z;
-    const float forwardDot = steerBasis.x * targetDelta.x +
-                             steerBasis.z * targetDelta.z;
+    const float turnCross = steerBasis.z * targetDelta.x - steerBasis.x * targetDelta.z;
+    const float forwardDot = steerBasis.x * targetDelta.x + steerBasis.z * targetDelta.z;
     int turnDirection;
     if (forwardDot <= 0.0f) {
         turnDirection = -1;
@@ -2106,12 +1793,13 @@ void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(
  * Battlesport ai_net.cpp source-file contribution.
  */
 void __fastcall AINet::TickAiMode2AltGunAttackWindow(
-    zUtil_SaveGameState *saveState,
+    zUtil_SaveGameState* saveState,
     float targetDistance,
     float forwardDot
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    PlayerGunFireController *const activeAltGunController = playerState->activeAltGunController;
+)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
 
     if (g_Player_TotalTimeSecScaled > playerState->aiStateEndTime) {
         const float startTime = g_Player_TotalTimeSecScaled + playerState->aiNotPursuitDwell;
@@ -2120,19 +1808,13 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
     }
 
     if (playerState->altGunFireHeldFlag == 0) {
-        if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime ||
-            g_Player_TotalTimeSecScaled <= playerState->aiStateStartTime ||
-            playerState->damageProtectionActive != 0 ||
-            forwardDot <= kPlayerAiAltGunAttackForwardMin ||
-            targetDistance >= activeAltGunController->aiAttackRangeMax ||
-            targetDistance <= activeAltGunController->aiAttackRangeMin ||
-            HasLineOfSightFromLocalPlayerFxOffset(
-                playerState->rootNode,
-                &playerState->fxOffsetWorld,
-                1
-            ) == 0 ||
-            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState ==
-                kPlayerLifecycleInactive) {
+        if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime
+            || g_Player_TotalTimeSecScaled <= playerState->aiStateStartTime || playerState->damageProtectionActive != 0
+            || forwardDot <= kPlayerAiAltGunAttackForwardMin
+            || targetDistance >= activeAltGunController->aiAttackRangeMax
+            || targetDistance <= activeAltGunController->aiAttackRangeMin
+            || HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &playerState->fxOffsetWorld, 1) == 0
+            || ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->lifecycleState == kPlayerLifecycleInactive) {
             return;
         }
 
@@ -2145,10 +1827,10 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
             statusScale = 0.5f;
         }
 
-        activeAltGunController->nextDispatchTime =
-            g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay / statusScale;
+        activeAltGunController->nextDispatchTime
+            = g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay / statusScale;
 
-        OptCatalogEntryDef *const optCatalogEntry = activeAltGunController->optCatalogEntry;
+        OptCatalogEntryDef* const optCatalogEntry = activeAltGunController->optCatalogEntry;
         const unsigned int flags = optCatalogEntry->flags;
         const bool hasTrail = (flags & kOptCatalogFlagCreateTrail) != 0;
         if (hasTrail) {
@@ -2157,17 +1839,17 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
                 activeAltGunController->trailRuntimeState,
                 playerState->playerOrdinal
             );
-            activeAltGunController->nextDispatchTime =
-                g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
+            activeAltGunController->nextDispatchTime
+                = g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
             return;
         }
 
         if ((flags & kOptCatalogFlagLockOnTargetRef) != 0) {
             playerState->progressTargetCount = 1;
-            playerState->progressTargetSlots[0].targetPos =
-                &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
-            playerState->progressTargetSlots[0].targetVelocity =
-                &((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->projectileSpawnVel;
+            playerState->progressTargetSlots[0].targetPos
+                = &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
+            playerState->progressTargetSlots[0].targetVelocity
+                = &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->projectileSpawnVel;
             HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x908), 5.0f);
             return;
         }
@@ -2177,25 +1859,22 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
         playerState->progressTargetSlots[0].targetVelocity = 0;
         SolveAltGunLeadTargetPoint(
             saveState,
-            (zUtil_SaveGameState *)g_GameStateOrMapTable,
+            (zUtil_SaveGameState*)g_GameStateOrMapTable,
             &playerState->storedTargetPos
         );
         return;
     }
 
-    if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime &&
-        forwardDot >= kPlayerAiAltGunAttackForwardMin &&
-        targetDistance <= activeAltGunController->aiAttackRangeMax &&
-        ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->lifecycleState !=
-            kPlayerLifecycleInactive) {
-        playerState->storedTargetPos =
-            ((zUtil_SaveGameState *)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
+    if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime
+        && forwardDot >= kPlayerAiAltGunAttackForwardMin && targetDistance <= activeAltGunController->aiAttackRangeMax
+        && ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->lifecycleState != kPlayerLifecycleInactive) {
+        playerState->storedTargetPos = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
         return;
     }
 
     playerState->altGunDispatchRequested = 0;
-    activeAltGunController->nextDispatchTime =
-        g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
+    activeAltGunController->nextDispatchTime
+        = g_Player_TotalTimeSecScaled + activeAltGunController->dispatchRepeatDelay;
 }
 
 /**
@@ -2217,13 +1896,14 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
  * Battlesport ai_net.cpp source-file contribution.
  */
 void __fastcall AINet::SolveAltGunLeadTargetPoint(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetSaveState,
-    zVec3 *outTargetPos
-) {
-    zVec3 *v0;
-    zVec3 *v1;
-    zVec3 *v2;
+    zUtil_SaveGameState* saveState,
+    zUtil_SaveGameState* targetSaveState,
+    zVec3* outTargetPos
+)
+{
+    zVec3* v0;
+    zVec3* v1;
+    zVec3* v2;
     zVec3 leadVectors[3];
     union {
         float inverseProjectileVelocity;
@@ -2231,10 +1911,9 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
     } leadCoefficient;
     float quadraticA;
 
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zUtil_PlayerStateStorage *const targetPlayerState = targetSaveState->playerState;
-    const float projectileVelocity =
-        playerState->activeAltGunController->optCatalogEntry->velocity;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const targetPlayerState = targetSaveState->playerState;
+    const float projectileVelocity = playerState->activeAltGunController->optCatalogEntry->velocity;
     leadCoefficient.inverseProjectileVelocity = 1.0f / projectileVelocity;
 
     v0 = &leadVectors[2];
@@ -2271,13 +1950,14 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
         float discriminant;
         {
             float dotProduct;
-            float unscaledQuadraticA, unscaledDistanceSquared; // Unused captures preserve the retail x87 evaluation order.
+            float unscaledQuadraticA,
+                unscaledDistanceSquared; // Unused captures preserve the retail x87 evaluation order.
             AINET_VECTOR_DOT_XYZ(dotProduct, leadVectors[2], leadVectors[2]);
-            discriminant = (unscaledQuadraticA = quadraticA) * (unscaledDistanceSquared = dotProduct) + leadCoefficient.quadraticB * leadCoefficient.quadraticB;
+            discriminant = (unscaledQuadraticA = quadraticA) * (unscaledDistanceSquared = dotProduct)
+                + leadCoefficient.quadraticB * leadCoefficient.quadraticB;
         }
         AINET_FAST_SQRT_ESTIMATE(fastSqrtEstimate, discriminant);
-        const float leadScaleNumerator =
-            fastSqrtEstimate + leadCoefficient.quadraticB;
+        const float leadScaleNumerator = fastSqrtEstimate + leadCoefficient.quadraticB;
 
         leadScale = leadScaleNumerator / quadraticA;
 
@@ -2304,45 +1984,47 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * variants and mixed native dot/cross failed; use the five exact shared islands.
  * Canonical VC5 confirms all five kernel intervals. Pointer setup,
  * rotation, scaling, control flow, and conversions remain compiler-owned.
- * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model:
+ * AINet source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetState
-) {
-    zUtil_PlayerStateStorage *savedPlayerState; // Unused snapshot preserves retail VC5 x87 evaluation order.
-    zUtil_PlayerStateStorage *const playerState = (savedPlayerState = saveState->playerState);
-    zUtil_PlayerStateStorage *savedTargetPlayerState; // Unused snapshot retained for retail VC5 scheduling.
-    zUtil_PlayerStateStorage *const targetPlayerState = (savedTargetPlayerState = targetState->playerState);
+    zUtil_SaveGameState* saveState,
+    zUtil_SaveGameState* targetState
+)
+{
+    zUtil_PlayerStateStorage* savedPlayerState; // Unused snapshot preserves retail VC5 x87 evaluation order.
+    zUtil_PlayerStateStorage* const playerState = (savedPlayerState = saveState->playerState);
+    zUtil_PlayerStateStorage* savedTargetPlayerState; // Unused snapshot retained for retail VC5 scheduling.
+    zUtil_PlayerStateStorage* const targetPlayerState = (savedTargetPlayerState = targetState->playerState);
     zVec3 targetDir;
     zVec3 targetToPlayerDir;
     zVec3 offsetTarget;
     const float offsetDistance = playerState->aiNet->pursuitParam0;
     {
-        zVec3 *v0 = &targetToPlayerDir;
-        zVec3 *v1 = &targetPlayerState->worldPos;
-        zVec3 *v2 = &playerState->worldPos;
+        zVec3* v0 = &targetToPlayerDir;
+        zVec3* v1 = &targetPlayerState->worldPos;
+        zVec3* v2 = &playerState->worldPos;
         AINET_VECTOR_SUBTRACT(v0, v2, v1);
     }
     targetToPlayerDir.y = 0.0f;
     zMath::Vec3Normalize(&targetToPlayerDir);
 
     targetDir.y = 0.0f;
-    targetDir.x = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.x -
-        g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.z;
-    targetDir.z = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.z +
-        g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.x;
+    targetDir.x = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.x
+        - g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.z;
+    targetDir.z = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.z
+        + g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.x;
     targetDir.x = offsetDistance * targetDir.x;
     targetDir.z = offsetDistance * targetDir.z;
 
     {
-        zVec3 *destination = &offsetTarget;
+        zVec3* destination = &offsetTarget;
         AINET_VECTOR_ADD(destination, targetPlayerState->worldPos, targetDir);
     }
     {
-        zVec3 *v0 = &targetDir;
-        zVec3 *v1 = &playerState->worldPos;
-        zVec3 *v2 = &offsetTarget;
+        zVec3* v0 = &targetDir;
+        zVec3* v1 = &playerState->worldPos;
+        zVec3* v2 = &offsetTarget;
         AINET_VECTOR_SUBTRACT(v0, v2, v1);
     }
     targetDir.y = 0.0f;
@@ -2352,7 +2034,7 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     AINET_PATH_DOT_XZ(forwardDot, playerState->steerBasisNorm, targetDir);
     float turnCross;
     {
-        zVec3 *v2;
+        zVec3* v2;
         AINET_PATH_CROSS_XZ(turnCross, playerState->steerBasisNorm, targetDir);
     }
     if (forwardDot < 0.0f) {
@@ -2382,21 +2064,23 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, pointer,
  * and mixed native dot/cross variants failed. Canonical VC5 confirms the five
  * exact shared kernel intervals; scalar math and control remain C++.
- * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: AINet
+ * source-file contribution over save-state/playerState, not a Player class.
  */
 void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
-    zUtil_SaveGameState *saveState,
-    zUtil_SaveGameState *targetState,
+    zUtil_SaveGameState* saveState,
+    zUtil_SaveGameState* targetState,
     float targetDistance
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
-    zUtil_PlayerStateStorage *const targetPlayerState = targetState->playerState;
+)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const targetPlayerState = targetState->playerState;
     zVec3 steerBasis;
     zVec3 targetDir;
     zVec3 targetPoint;
     int reverseSideOffset;
     {
-        AINet *const aiNet = playerState->aiNet;
+        AINet* const aiNet = playerState->aiNet;
         const float pursuitDistance = aiNet->pursuitParam0;
         const float sideOffsetScale = aiNet->pursuitParam1;
         const float doublePursuitDistance = pursuitDistance + pursuitDistance;
@@ -2405,7 +2089,7 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
         targetPoint.y = pursuitDistance * steerBasis.y;
         targetPoint.z = pursuitDistance * steerBasis.z;
         {
-            zVec3 *destination = &targetPoint;
+            zVec3* destination = &targetPoint;
             AINET_VECTOR_ADD(destination, targetPlayerState->worldPos, targetPoint);
         }
 
@@ -2432,14 +2116,14 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
         }
     }
     {
-        zVec3 *destination = &targetPoint;
+        zVec3* destination = &targetPoint;
         AINET_VECTOR_ADD(destination, targetPoint, targetDir);
     }
 
     {
-        zVec3 *v0;
-        zVec3 *v1;
-        zVec3 *v2;
+        zVec3* v0;
+        zVec3* v1;
+        zVec3* v2;
         v0 = &targetDir;
         v1 = &playerState->worldPos;
         v2 = &targetPoint;
@@ -2457,7 +2141,7 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
     AINET_PATH_DOT_XZ(forwardDot, steerBasis, targetDir);
     float turnCross;
     {
-        zVec3 *v2;
+        zVec3* v2;
         AINET_PATH_CROSS_XZ(turnCross, steerBasis, targetDir);
     }
     if (forwardDot < 0.0f && targetDirDistance < 10.0f) {
@@ -2481,21 +2165,20 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
 }
 
 /**
- * Purpose: Alternates timed forward and reverse path-node steering around the AI home path node. Source model: AINet source-file contribution over save-state/playerState, not a Player class.
+ * Purpose: Alternates timed forward and reverse path-node steering around the AI home path node. Source model: AINet
+ * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2TimedPathSteering(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::TickAiMode2TimedPathSteering(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     if (g_Player_TotalTimeSecScaled > playerState->unknown_0fa4) {
-        AINetNode *const currentPathNode = playerState->aiCurrentPathNode;
-        AINetNode *const pathAnchorNode = playerState->aiHomePathNode;
+        AINetNode* const currentPathNode = playerState->aiCurrentPathNode;
+        AINetNode* const pathAnchorNode = playerState->aiHomePathNode;
 
         if (currentPathNode == pathAnchorNode) {
             AiSteerTowardPathNodeForward(saveState);
-        } else if (currentPathNode->neighborNodes[0] == pathAnchorNode &&
-                   currentPathNode->nodeIndex != -1) {
+        } else if (currentPathNode->neighborNodes[0] == pathAnchorNode && currentPathNode->nodeIndex != -1) {
             AiSteerTowardPathNodeReverse(saveState);
         } else {
             TickAiMode2PathFollow(saveState);
@@ -2523,15 +2206,14 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(
  * Purpose: reimplement AINet::AiSteerTowardPathNodeForward from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
-void __fastcall AINet::AiSteerTowardPathNodeForward(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::AiSteerTowardPathNodeForward(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
-    zVec3 *v2;
+    zVec3* v2;
 
     zVec3 targetDir;
     zVec3 forwardNodePosition = playerState->aiCurrentPathNode->neighborNodes[0]->position;
@@ -2595,15 +2277,14 @@ void __fastcall AINet::AiSteerTowardPathNodeForward(
  * Purpose: reimplement AINet::AiSteerTowardPathNodeReverse from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
-void __fastcall AINet::AiSteerTowardPathNodeReverse(
-    zUtil_SaveGameState *saveState
-) {
-    zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+void __fastcall AINet::AiSteerTowardPathNodeReverse(zUtil_SaveGameState* saveState)
+{
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
-    zVec3 *v0;
-    zVec3 *v1;
+    zVec3* v0;
+    zVec3* v1;
 #endif
-    zVec3 *v2;
+    zVec3* v2;
 
     zVec3 targetDir;
     zVec3 forwardNodePosition = playerState->aiCurrentPathNode->neighborNodes[0]->position;
@@ -2660,10 +2341,11 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(
  * Purpose: Finalizes AI Mode2 State1 by restoring saved top-level state for
  * active AI players and setting the global finalization latch.
  */
-void AINet::AiFinalizeMode2State1ForAllPlayers() {
-    zUtil_SaveGameState *saveState = g_PlayerSaveStateList.head;
+void AINet::AiFinalizeMode2State1ForAllPlayers()
+{
+    zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
-        zUtil_PlayerStateStorage *const playerState = saveState->playerState;
+        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         if (playerState->lifecycleState == 2 && playerState->aiTopLevelState == 1) {
             AiRestoreSavedTopLevelState(saveState);
         }

@@ -1,16 +1,16 @@
 #include "zsnd.h"
 
-#include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zSound/zsnd_a3d_provider.h"
 #include "GameZRecoil/zReader/zreader.h"
+#include "GameZRecoil/zSound/zsnd_a3d_provider.h"
+#include "GameZRecoil/zTime/time.h"
 
 #include "recoil/recoil_types.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-extern "C" void *g_zSnd_BackendDevice;
-extern "C" void *g_zSnd_BackendListenerHandle;
+extern "C" void* g_zSnd_BackendDevice;
+extern "C" void* g_zSnd_BackendListenerHandle;
 
 /*
  * zsnd_3d.cpp physical-contribution routing anchors. The data and bodies below
@@ -22,10 +22,7 @@ extern "C" void *g_zSnd_BackendListenerHandle;
  * compile only from their literal-backed translation unit.
  */
 
-
-
 namespace {
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.g-zsnd-directsoundattenunitygain
@@ -59,9 +56,8 @@ const float g_zSnd_DirectSoundAttenScale = 1000.0f;
  * inside address-backed DirectSound play-handle acquisition callers.
  * Purpose: report whether a DirectSound play handle can be reused.
  */
-bool DirectSoundHandleIsAvailable(
-    zSndPlayHandle *handle
-) {
+bool DirectSoundHandleIsAvailable(zSndPlayHandle* handle)
+{
     if (handle->isActive != 0) {
         return false;
     }
@@ -78,14 +74,13 @@ bool DirectSoundHandleIsAvailable(
  * inside address-backed A3D play-handle acquisition callers.
  * Purpose: report whether an A3D play handle can be reused.
  */
-bool A3dHandleIsAvailable(
-    zSndPlayHandle *handle
-) {
+bool A3dHandleIsAvailable(zSndPlayHandle* handle)
+{
     if (handle->isActive != 0) {
         return false;
     }
 
-    zA3dProviderSource *const source = (zA3dProviderSource *)(handle->backendBuffer);
+    zA3dProviderSource* const source = (zA3dProviderSource*)(handle->backendBuffer);
     int status = 0;
     source->GetStatus((LPDWORD)&status);
     return (status & 1) == 0;
@@ -97,10 +92,8 @@ bool A3dHandleIsAvailable(
  * DirectSound provider status and preserves the caller's status word.
  * Purpose: test whether a DirectSound backend buffer is currently playing.
  */
-inline bool DirectSoundBufferIsPlaying(
-    zSndBuffer *backendBuffer,
-    int *status
-) {
+inline bool DirectSoundBufferIsPlaying(zSndBuffer* backendBuffer, int* status)
+{
     LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
     buffer->GetStatus((LPDWORD)status);
     return (*status & 1) != 0;
@@ -112,9 +105,8 @@ inline bool DirectSoundBufferIsPlaying(
  * DirectSound playing predicate and discard the provider status word.
  * Purpose: test whether a DirectSound backend buffer is currently playing.
  */
-inline bool DirectSoundBufferIsPlaying(
-    zSndBuffer *backendBuffer
-) {
+inline bool DirectSoundBufferIsPlaying(zSndBuffer* backendBuffer)
+{
     int status;
     return DirectSoundBufferIsPlaying(backendBuffer, &status);
 }
@@ -125,11 +117,9 @@ inline bool DirectSoundBufferIsPlaying(
  * provider status and preserves the caller's status word.
  * Purpose: test whether an A3D backend source is currently playing.
  */
-inline bool A3dSourceIsPlaying(
-    zSndBuffer *backendBuffer,
-    int *status
-) {
-    zA3dProviderSource *const source = (zA3dProviderSource *)(backendBuffer);
+inline bool A3dSourceIsPlaying(zSndBuffer* backendBuffer, int* status)
+{
+    zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
     source->GetStatus((LPDWORD)status);
     return (*status & 1) != 0;
 }
@@ -140,9 +130,8 @@ inline bool A3dSourceIsPlaying(
  * playing predicate and discard the provider status word.
  * Purpose: test whether an A3D backend source is currently playing.
  */
-inline bool A3dSourceIsPlaying(
-    zSndBuffer *backendBuffer
-) {
+inline bool A3dSourceIsPlaying(zSndBuffer* backendBuffer)
+{
     int status;
     return A3dSourceIsPlaying(backendBuffer, &status);
 }
@@ -153,9 +142,8 @@ inline bool A3dSourceIsPlaying(
  * query through the active backend tag.
  * Purpose: report whether a backend play handle is currently playing.
  */
-bool BackendHandleIsPlaying(
-    zSndPlayHandle *handle
-) {
+bool BackendHandleIsPlaying(zSndPlayHandle* handle)
+{
     if (g_zSnd_ActiveBackend == 0) {
         return DirectSoundBufferIsPlaying(handle->backendBuffer);
     }
@@ -176,13 +164,12 @@ bool BackendHandleIsPlaying(
  * and copies a zSndPlayHandleSnapshotPayload.
  * Purpose: append one captured payload to the snapshot's intrusive list.
  */
-inline void zSndPlayHandleSnapshot::AppendPayload(
-    const zSndPlayHandleSnapshotPayload &payload
-) {
-    zSndPlayHandleSnapshotItem *const listHead = this->listHead;
-    zSndPlayHandleSnapshotItem *const node = NewNode(listHead, listHead->prev);
+inline void zSndPlayHandleSnapshot::AppendPayload(const zSndPlayHandleSnapshotPayload& payload)
+{
+    zSndPlayHandleSnapshotItem* const listHead = this->listHead;
+    zSndPlayHandleSnapshotItem* const node = NewNode(listHead, listHead->prev);
     listHead->prev = node;
-    zSndPlayHandleSnapshotPayload *const nodePayload = &node->payload;
+    zSndPlayHandleSnapshotPayload* const nodePayload = &node->payload;
     node->prev->next = node;
     if (nodePayload != 0) {
         memcpy(nodePayload, &payload, sizeof(*nodePayload));
@@ -196,21 +183,7 @@ inline void zSndPlayHandleSnapshot::AppendPayload(
  * Purpose: Stores the previous camera listener position used to derive
  * velocity before zSndUpdateListenerState.
  */
-extern "C" zVec3 g_zSnd_PreviousListenerPos = {0};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+extern "C" zVec3 g_zSnd_PreviousListenerPos = { 0 };
 
 /**
  * Original inline helper evidence: no standalone retail function exists.
@@ -219,12 +192,11 @@ extern "C" zVec3 g_zSnd_PreviousListenerPos = {0};
  * immediately after constructing the snapshot object.
  * Purpose: initialize the snapshot backend tag, empty list head, and item count.
  */
-inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
-    unsigned char tag
-) {
+inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(unsigned char tag)
+{
     backendTag = tag;
-    zSndPlayHandleSnapshotItem *const head =
-        (zSndPlayHandleSnapshotItem *)(::operator new(sizeof(zSndPlayHandleSnapshotItem)));
+    zSndPlayHandleSnapshotItem* const head
+        = (zSndPlayHandleSnapshotItem*)(::operator new(sizeof(zSndPlayHandleSnapshotItem)));
     head->next = head;
     head->prev = head;
     listHead = head;
@@ -240,11 +212,6 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
 #pragma runtime_checks("", restore)
 #endif
 
-
-
-
-
-
 // Modern MSVC /RTC traps the recovered unsupported-backend return of the
 // uninitialized status stack slot; keep the retail shape for debug smokes.
 #if defined(_MSC_VER)
@@ -254,28 +221,15 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(
 #pragma runtime_checks("", restore)
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * Purpose: advance backend deferred work, active fades, and the last-voice
  * marker callback timeline.
  */
-extern "C" void __fastcall zSndTick(
-    int skipA3dCommit
-) {
+extern "C" void __fastcall zSndTick(int skipA3dCommit)
+{
     if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
-        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Flush();
-        ((zA3dProviderDevice *)(g_zSnd_BackendDevice))->Clear();
+        ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Flush();
+        ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Clear();
     }
 
     zSndFadeActiveListTickAll(g_FrameDeltaTimeSec);
@@ -286,12 +240,12 @@ extern "C" void __fastcall zSndTick(
      * Data: g_zSndLastVoice.
      * Purpose: drive marker callback state for the currently tracked voice.
      */
-    zSndSample *const sample = g_zSndLastVoice;
+    zSndSample* const sample = g_zSndLastVoice;
     if (sample == 0) {
         return;
     }
 
-    float *const markerValues = sample->markerValues;
+    float* const markerValues = sample->markerValues;
     if (markerValues == 0) {
         g_zSndLastVoiceMarkerIndex = 0;
         g_zSndLastVoice = 0;
@@ -333,13 +287,13 @@ extern "C" void __fastcall zSndTick(
  * @recoil-artifact defines .text recoil:function:0x49f6d0: zSndSample::AcquirePlayHandleDispatch.
  * Purpose: select the active backend-specific play-handle acquisition path.
  */
-zSndPlayHandle * zSndSample::AcquirePlayHandleDispatch() {
-    zSndPlayHandle *voice = 0;
+zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
+{
+    zSndPlayHandle* voice = 0;
 
     if (g_zSnd_ActiveBackend == 1) {
         voice = AcquireA3dVoice();
-    }
-    else if (g_zSnd_ActiveBackend == 0) {
+    } else if (g_zSnd_ActiveBackend == 0) {
         voice = AcquireVoice();
     }
 
@@ -351,8 +305,9 @@ zSndPlayHandle * zSndSample::AcquirePlayHandleDispatch() {
  * @recoil-artifact defines .text recoil:function:0x49f6f0: zSndSample::AcquireA3dVoice.
  * Purpose: select or duplicate an A3D provider play handle for playback.
  */
-zSndPlayHandle * zSndSample::AcquireA3dVoice() {
-    zSndPlayHandle *voice = 0;
+zSndPlayHandle* zSndSample::AcquireA3dVoice()
+{
+    zSndPlayHandle* voice = 0;
     if (this == 0) {
         return voice;
     }
@@ -368,7 +323,7 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     int status;
     unsigned char playingMask = 1;
     if (primaryVoice.isActive == 0) {
-        zA3dProviderSource *const source = (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        zA3dProviderSource* const source = (zA3dProviderSource*)(primaryVoice.backendBuffer);
         source->GetStatus((LPDWORD)&status);
         if (((unsigned char)status & playingMask) == 0) {
             return &primaryVoice;
@@ -384,7 +339,7 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     for (; index < duplicateVoiceCount; ++index) {
         voice = duplicateVoices[index];
         if (voice != 0 && voice->isActive == 0) {
-            zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
+            zA3dProviderSource* const source = (zA3dProviderSource*)(voice->backendBuffer);
             source->GetStatus((LPDWORD)&status);
             if (((unsigned char)status & playingMask) == 0) {
                 break;
@@ -394,26 +349,21 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
     }
 
     if (voice == 0 && index < 5) {
-        voice = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
+        voice = (zSndPlayHandle*)(malloc(sizeof(zSndPlayHandle)));
         memset(voice, 0, sizeof(zSndPlayHandle));
 
-        zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
-        zA3dProviderSource *duplicateSource = 0;
-        const int error = device->DuplicateSource(
-            (zA3dProviderSource *)primaryVoice.backendBuffer,
-            &duplicateSource
-        );
-        voice->backendBuffer = (zSndBuffer *)duplicateSource;
+        zA3dProviderDevice* const device = (zA3dProviderDevice*)(g_zSnd_BackendDevice);
+        zA3dProviderSource* duplicateSource = 0;
+        const int error = device->DuplicateSource((zA3dProviderSource*)primaryVoice.backendBuffer, &duplicateSource);
+        voice->backendBuffer = (zSndBuffer*)duplicateSource;
         if (error < 0) {
             zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0xb2);
             free(voice);
             return 0;
         }
 
-        zSndPlayHandle **const voices = (zSndPlayHandle **)(realloc(
-            duplicateVoices,
-            (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle *)
-        ));
+        zSndPlayHandle** const voices
+            = (zSndPlayHandle**)(realloc(duplicateVoices, (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle*)));
         duplicateVoices = voices;
         voices[duplicateVoiceCount] = voice;
         ++duplicateVoiceCount;
@@ -427,8 +377,9 @@ zSndPlayHandle * zSndSample::AcquireA3dVoice() {
  * @recoil-artifact defines .text recoil:function:0x49f830: zSndSample::AcquireVoice.
  * Purpose: select or duplicate a DirectSound play handle for playback.
  */
-zSndPlayHandle * zSndSample::AcquireVoice() {
-    zSndPlayHandle *voice = 0;
+zSndPlayHandle* zSndSample::AcquireVoice()
+{
+    zSndPlayHandle* voice = 0;
     if (this == 0) {
         return voice;
     }
@@ -465,23 +416,21 @@ zSndPlayHandle * zSndSample::AcquireVoice() {
     }
 
     if (voice == 0 && index < 5) {
-        voice = (zSndPlayHandle *)(malloc(sizeof(zSndPlayHandle)));
+        voice = (zSndPlayHandle*)(malloc(sizeof(zSndPlayHandle)));
         memset(voice, 0, sizeof(zSndPlayHandle));
 
         LPDIRECTSOUND const device = (LPDIRECTSOUND)(g_zSnd_BackendDevice);
         const int error = device->DuplicateSoundBuffer(
             (LPDIRECTSOUNDBUFFER)primaryVoice.backendBuffer,
-            (LPDIRECTSOUNDBUFFER *)&voice->backendBuffer
+            (LPDIRECTSOUNDBUFFER*)&voice->backendBuffer
         );
         if (error != 0) {
             free(voice);
             return 0;
         }
 
-        zSndPlayHandle **const voices = (zSndPlayHandle **)(realloc(
-            duplicateVoices,
-            (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle *)
-        ));
+        zSndPlayHandle** const voices
+            = (zSndPlayHandle**)(realloc(duplicateVoices, (size_t)(duplicateVoiceCount + 1) * sizeof(zSndPlayHandle*)));
         duplicateVoices = voices;
         voices[duplicateVoiceCount] = voice;
         ++duplicateVoiceCount;
@@ -495,15 +444,14 @@ zSndPlayHandle * zSndSample::AcquireVoice() {
  * @recoil-artifact defines .text recoil:function:0x49f960: zSndSample::PlayA3DSimple.
  * Purpose: play a non-positional A3D-capable sample or queue a stream group.
  */
-zSndPlayHandle * zSndSample::PlayA3DSimple(
-    float gainScale
-) {
+zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
+{
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
         return 0;
     }
 
     if (createGuard == 1) {
-        return ((zSndGroup *)(this))->QueueStreamRequestSimple(gainScale);
+        return ((zSndGroup*)(this))->QueueStreamRequestSimple(gainScale);
     }
 
     return PlayA3D(0, gainScale, 0);
@@ -514,9 +462,8 @@ zSndPlayHandle * zSndSample::PlayA3DSimple(
  * @recoil-artifact defines .text recoil:function:0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation.
  * Purpose: convert linear gain into DirectSound attenuation units.
  */
-int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
-    float gainScale
-) {
+int __stdcall zSnd::GainScaleToDirectSoundAttenuation(float gainScale)
+{
     if (gainScale >= g_zSnd_DirectSoundAttenUnityGain) {
         return 0;
     }
@@ -537,9 +484,8 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(
  * Purpose: return the supplied gain scale through the x87 floating-point
  * return path unchanged.
  */
-extern "C" float __stdcall zSndSamplePlaySimple(
-    float value
-) {
+extern "C" float __stdcall zSndSamplePlaySimple(float value)
+{
     return value;
 }
 
@@ -548,24 +494,19 @@ extern "C" float __stdcall zSndSamplePlaySimple(
  * @recoil-artifact defines .text recoil:function:0x49fa10: zSndSample::PlayOnActiveBackend.
  * Purpose: dispatch sample playback to the active sound backend.
  */
-zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
-    zVec3 *worldPos,
+zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
+    zVec3* worldPos,
     float gainScale,
-    zVec3 *velocity,
+    zVec3* velocity,
     int backendArg
-) {
-    zSndPlayHandle *result = 0;
+)
+{
+    zSndPlayHandle* result = 0;
 
     if (g_zSnd_ActiveBackend == 1) {
         result = PlayOnA3D(worldPos, gainScale, velocity, backendArg);
-    }
-    else if (g_zSnd_ActiveBackend == 0) {
-        result = PlayOnDirectSound(
-            zSnd::GainScaleToDirectSoundAttenuation(gainScale),
-            worldPos,
-            velocity,
-            backendArg
-        );
+    } else if (g_zSnd_ActiveBackend == 0) {
+        result = PlayOnDirectSound(zSnd::GainScaleToDirectSoundAttenuation(gainScale), worldPos, velocity, backendArg);
     }
 
     return result;
@@ -576,12 +517,8 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnActiveBackend(
  * @recoil-artifact defines .text recoil:function:0x49fa60: zSndSample::PlayOnA3D.
  * Purpose: start sample playback on the A3D backend.
  */
-zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
-    zVec3 *worldPos,
-    float gainScale,
-    zVec3 *velocity,
-    int backendArg
-) {
+zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg)
+{
     if (createGuard != 0) {
         return 0;
     }
@@ -590,7 +527,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
         return 0;
     }
 
-    zSndPlayHandle *result = AcquirePlayHandleDispatch();
+    zSndPlayHandle* result = AcquirePlayHandleDispatch();
     if (result == 0 || result->backendBuffer == 0) {
         result = &primaryVoice;
     }
@@ -599,11 +536,10 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     result->ownerSample = this;
     memcpy(&result->gainScaled, &gainScale, sizeof(gainScale));
 
-    zA3dProviderSource *const source = (zA3dProviderSource *)(result->backendBuffer);
+    zA3dProviderSource* const source = (zA3dProviderSource*)(result->backendBuffer);
     if (worldPos != 0) {
         source->SetRenderMode(0);
-        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 &&
-            (replayFields.flags & 0x01) == 0) {
+        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
             return 0;
         }
     } else {
@@ -620,8 +556,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
     source->SetWavePosition(backendArg);
     if (markerCount != 0 && playbackEventHandler != 0) {
         for (int index = 0; index < markerCount; ++index) {
-            markerValues[index] = markerTimes[index] +
-                g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
+            markerValues[index] = markerTimes[index] + g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
         }
         g_zSndLastVoice = this;
         g_zSndLastVoiceHandle = result;
@@ -629,7 +564,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
 
     const int playError = source->Play(replayFields.flags & 0x01);
 
-    zA3dProviderDevice *const device = (zA3dProviderDevice *)(g_zSnd_BackendDevice);
+    zA3dProviderDevice* const device = (zA3dProviderDevice*)(g_zSnd_BackendDevice);
     device->Flush();
 
     if (playError != 0) {
@@ -644,12 +579,13 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnA3D(
  * @recoil-artifact defines .text recoil:function:0x49fbb0: zSndSample::PlayOnDirectSound.
  * Purpose: start sample playback on the DirectSound backend.
  */
-zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
+zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
     int attenuation,
-    zVec3 *worldPos,
-    zVec3 *velocity,
+    zVec3* worldPos,
+    zVec3* velocity,
     int backendArg
-) {
+)
+{
     if (createGuard != 0) {
         return 0;
     }
@@ -658,7 +594,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
         return 0;
     }
 
-    zSndPlayHandle *result = AcquirePlayHandleDispatch();
+    zSndPlayHandle* result = AcquirePlayHandleDispatch();
     if (result == 0 || result->backendBuffer == 0) {
         result = &primaryVoice;
     }
@@ -676,8 +612,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
 
     result->gainScaled = attenuation;
     if (worldPos != 0) {
-        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 &&
-            (replayFields.flags & 0x01) == 0) {
+        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
             return 0;
         }
     } else {
@@ -694,8 +629,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
     buffer->SetCurrentPosition(backendArg);
     if (markerCount != 0 && playbackEventHandler != 0) {
         for (int index = 0; index < markerCount; ++index) {
-            markerValues[index] = markerTimes[index] +
-                g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
+            markerValues[index] = markerTimes[index] + g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
         }
         g_zSndLastVoice = this;
         g_zSndLastVoiceHandle = result;
@@ -714,17 +648,14 @@ zSndPlayHandle *__fastcall zSndSample::PlayOnDirectSound(
  * @recoil-artifact defines .text recoil:function:0x49fcf0: zSndSample::PlayA3D.
  * Purpose: play a 3D-capable sample through a queued group or active backend.
  */
-zSndPlayHandle *__fastcall zSndSample::PlayA3D(
-    zVec3 *worldPos,
-    float gainScale,
-    zVec3 *velocity
-) {
+zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale, zVec3* velocity)
+{
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
         return 0;
     }
 
     if (createGuard == 1) {
-        return ((zSndGroup *)(this))->QueueStreamRequestWithWorldPos(worldPos, gainScale, velocity);
+        return ((zSndGroup*)(this))->QueueStreamRequestWithWorldPos(worldPos, gainScale, velocity);
     }
 
     if ((replayFields.flags & 0x08) == 0) {
@@ -732,8 +663,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayA3D(
     }
 
     markerBaseTime = 0.0f;
-    const float globalGain =
-        g_zSnd_GlobalVolumeScalePtr != 0 ? *(float *)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
+    const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0 ? *(float*)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
     return PlayOnActiveBackend(worldPos, replayFields.gain * globalGain * gainScale, velocity, 0);
 }
 
@@ -742,11 +672,8 @@ zSndPlayHandle *__fastcall zSndSample::PlayA3D(
  * @recoil-artifact defines .text recoil:function:0x49fd50: zSndSample::PlayDirectSound.
  * Purpose: play a DirectSound sample variant with gain scaling and marker state.
  */
-zSndPlayHandle *__fastcall zSndSample::PlayDirectSound(
-    int variantIndex,
-    float gainScale,
-    int stopMarkerIndex
-) {
+zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex)
+{
     if (createGuard != 0) {
         return 0;
     }
@@ -758,8 +685,7 @@ zSndPlayHandle *__fastcall zSndSample::PlayDirectSound(
         backendArg = markerAux[variantIndex * 2];
     }
 
-    const float globalGain =
-        g_zSnd_GlobalVolumeScalePtr != 0 ? *(float *)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
+    const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0 ? *(float*)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
     return PlayOnActiveBackend(0, replayFields.gain * gainScale * globalGain, 0, backendArg);
 }
 
@@ -769,11 +695,12 @@ zSndPlayHandle *__fastcall zSndSample::PlayDirectSound(
  * Purpose: stop the active provider buffer/source for this play handle and
  * clear any matching last-voice marker state.
  */
-int zSndPlayHandle::StopIfActive() {
-    zSndPlayHandle *playHandle = this;
+int zSndPlayHandle::StopIfActive()
+{
+    zSndPlayHandle* playHandle = this;
     int status;
     int error;
-    zA3dProviderSource *source;
+    zA3dProviderSource* source;
     LPDIRECTSOUNDBUFFER buffer;
 
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || playHandle == 0) {
@@ -791,7 +718,7 @@ int zSndPlayHandle::StopIfActive() {
 
     switch (g_zSnd_ActiveBackend) {
     case 1:
-        source = (zA3dProviderSource *)(playHandle->backendBuffer);
+        source = (zA3dProviderSource*)(playHandle->backendBuffer);
         if (source == 0) {
             return -1;
         }
@@ -839,14 +766,14 @@ int zSndPlayHandle::StopIfActive() {
  * @recoil-artifact defines .text recoil:function:0x49fec0: zSndSample::StopActiveVoicesIfPlaying.
  * Purpose: stop the sample's primary and duplicate backend voices if present.
  */
-int zSndSample::StopActiveVoicesIfPlaying() {
+int zSndSample::StopActiveVoicesIfPlaying()
+{
     if (this == 0 || createGuard != 0) {
         return 0;
     }
 
     if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderSource *const primarySource =
-            (zA3dProviderSource *)(primaryVoice.backendBuffer);
+        zA3dProviderSource* const primarySource = (zA3dProviderSource*)(primaryVoice.backendBuffer);
         if (primarySource == 0) {
             return 0;
         }
@@ -858,12 +785,16 @@ int zSndSample::StopActiveVoicesIfPlaying() {
 
         {
             for (int index = 0; index < duplicateVoiceCount; ++index) {
-                zSndPlayHandle *const voice = duplicateVoices[index];
+                zSndPlayHandle* const voice = duplicateVoices[index];
                 if (voice != 0) {
-                    zA3dProviderSource *const source = (zA3dProviderSource *)(voice->backendBuffer);
+                    zA3dProviderSource* const source = (zA3dProviderSource*)(voice->backendBuffer);
                     error = source->Stop();
                     if (error != 0) {
-                        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3cb);
+                        return zSnd::ReportDirectSoundError(
+                            error,
+                            "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp",
+                            0x3cb
+                        );
                     }
                 }
             }
@@ -885,12 +816,16 @@ int zSndSample::StopActiveVoicesIfPlaying() {
 
         {
             for (int index = 0; index < duplicateVoiceCount; ++index) {
-                zSndPlayHandle *const voice = duplicateVoices[index];
+                zSndPlayHandle* const voice = duplicateVoices[index];
                 if (voice != 0) {
                     LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(voice->backendBuffer);
                     error = buffer->Stop();
                     if (error != 0) {
-                        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x3de);
+                        return zSnd::ReportDirectSoundError(
+                            error,
+                            "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp",
+                            0x3de
+                        );
                     }
                 }
             }
@@ -907,41 +842,39 @@ int zSndSample::StopActiveVoicesIfPlaying() {
  * @recoil-artifact defines .text recoil:function:0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples.
  * Purpose: Builds a snapshot of the global volume anchor and active sample voices.
  */
-zSndPlayHandleSnapshot * zSndPlayHandleSnapshot::CreateFromActiveSamples() {
-    zSndPlayHandleSnapshotPayload payload = {0};
+zSndPlayHandleSnapshot* zSndPlayHandleSnapshot::CreateFromActiveSamples()
+{
+    zSndPlayHandleSnapshotPayload payload = { 0 };
 
     // BN 0x4a0037 reads this byte from the constructor stack slot before storing
     // zSndPlayHandleSnapshot::backendTag.
     unsigned char backendTag;
     int status;
-    zSndPlayHandleSnapshot *const snapshot = new zSndPlayHandleSnapshot(backendTag);
+    zSndPlayHandleSnapshot* const snapshot = new zSndPlayHandleSnapshot(backendTag);
 
     const int sampleSetCount = zSndSampleSetRegistryGetCount();
     memcpy(&payload.volumeScaleRaw, g_zSnd_GlobalVolumeScalePtr, sizeof(payload.volumeScaleRaw));
     snapshot->AppendPayload(payload);
 
-    for (int sampleSetIndex = 0; (unsigned int)(sampleSetIndex) < (unsigned int)(sampleSetCount);
-        ++sampleSetIndex) {
-        zSndSampleSet *const sampleSet = zSndSampleSetRegistryGetByIndex(sampleSetIndex);
-        for (int sampleIndex = 0;
-            (unsigned int)(sampleIndex) < (unsigned int)(sampleSet->sampleCount);
-            ++sampleIndex) {
-            zSndSample *const sample = sampleSet->GetSampleAt(sampleIndex);
+    for (int sampleSetIndex = 0; (unsigned int)(sampleSetIndex) < (unsigned int)(sampleSetCount); ++sampleSetIndex) {
+        zSndSampleSet* const sampleSet = zSndSampleSetRegistryGetByIndex(sampleSetIndex);
+        for (int sampleIndex = 0; (unsigned int)(sampleIndex) < (unsigned int)(sampleSet->sampleCount); ++sampleIndex) {
+            zSndSample* const sample = sampleSet->GetSampleAt(sampleIndex);
             switch (g_zSnd_ActiveBackend) {
             case 1: {
-                if (sample->primaryVoice.backendBuffer != 0 &&
-                    A3dSourceIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
+                if (sample->primaryVoice.backendBuffer != 0
+                    && A3dSourceIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
                     payload.CaptureFromPlayHandle(&sample->primaryVoice);
                     snapshot->AppendPayload(payload);
                 }
 
                 for (int voiceIndex = 0; voiceIndex < sample->duplicateVoiceCount; ++voiceIndex) {
-                    zSndPlayHandle *const voice = sample->duplicateVoices[voiceIndex];
+                    zSndPlayHandle* const voice = sample->duplicateVoices[voiceIndex];
                     if (voice != 0 && A3dSourceIsPlaying(voice->backendBuffer, &status)) {
                         payload.CaptureFromPlayHandle(voice);
-                        zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
-                        zSndPlayHandleSnapshotItem *const prev = listHead->prev;
-                        zSndPlayHandleSnapshotItem *const node = new zSndPlayHandleSnapshotItem;
+                        zSndPlayHandleSnapshotItem* const listHead = snapshot->listHead;
+                        zSndPlayHandleSnapshotItem* const prev = listHead->prev;
+                        zSndPlayHandleSnapshotItem* const node = new zSndPlayHandleSnapshotItem;
                         node->next = listHead != 0 ? listHead : node;
                         node->prev = prev != 0 ? prev : node;
                         listHead->prev = node;
@@ -954,14 +887,14 @@ zSndPlayHandleSnapshot * zSndPlayHandleSnapshot::CreateFromActiveSamples() {
             }
 
             case 0: {
-                if (sample->primaryVoice.backendBuffer != 0 &&
-                    DirectSoundBufferIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
+                if (sample->primaryVoice.backendBuffer != 0
+                    && DirectSoundBufferIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
                     payload.CaptureFromPlayHandle(&sample->primaryVoice);
                     snapshot->AppendPayload(payload);
                 }
 
                 for (int voiceIndex = 0; voiceIndex < sample->duplicateVoiceCount; ++voiceIndex) {
-                    zSndPlayHandle *const voice = sample->duplicateVoices[voiceIndex];
+                    zSndPlayHandle* const voice = sample->duplicateVoices[voiceIndex];
                     if (voice != 0 && DirectSoundBufferIsPlaying(voice->backendBuffer, &status)) {
                         payload.CaptureFromPlayHandle(voice);
                         snapshot->AppendPayload(payload);
@@ -983,9 +916,8 @@ zSndPlayHandleSnapshot * zSndPlayHandleSnapshot::CreateFromActiveSamples() {
  *
  * Purpose: Captures backend play-handle state into a snapshot payload.
  */
-void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
-    zSndPlayHandle *playHandle
-) {
+void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHandle* playHandle)
+{
     if (playHandle->handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return;
     }
@@ -1008,10 +940,10 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
     }
 
     flags |= 1;
-    zVec3 *const worldPosDest = &worldPos;
-    const zVec3 *const worldPosSrc = &playHandle->worldPos;
-    zVec3 *const velocityDest = &velocityOrDir;
-    const zVec3 *const velocitySrc = &playHandle->velocityOrDir;
+    zVec3* const worldPosDest = &worldPos;
+    const zVec3* const worldPosSrc = &playHandle->worldPos;
+    zVec3* const velocityDest = &velocityOrDir;
+    const zVec3* const velocitySrc = &playHandle->velocityOrDir;
     *worldPosDest = *worldPosSrc;
     *velocityDest = *velocitySrc;
 }
@@ -1022,25 +954,26 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(
  * Purpose: replay an A3D-backed handle with the requested restart and gain delta.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
-    zSndSampleReplayFields *replayFields,
-    zSndPlayHandle *playHandle,
+    zSndSampleReplayFields* replayFields,
+    zSndPlayHandle* playHandle,
     int restartBeforePlay,
     float gainDelta
-) {
+)
+{
     if (gainDelta > 0.0) {
-        gainDelta += *(float *)&playHandle->gainScaled;
-        *(float *)&playHandle->gainScaled = gainDelta;
+        gainDelta += *(float*)&playHandle->gainScaled;
+        *(float*)&playHandle->gainScaled = gainDelta;
 
-        zA3dProviderSource *const gainSource = (zA3dProviderSource *)playHandle->backendBuffer;
+        zA3dProviderSource* const gainSource = (zA3dProviderSource*)playHandle->backendBuffer;
         gainSource->SetGain(zSndSamplePlaySimple(gainDelta));
     }
 
     if (restartBeforePlay != 0) {
-        zA3dProviderSource *const source = (zA3dProviderSource *)playHandle->backendBuffer;
+        zA3dProviderSource* const source = (zA3dProviderSource*)playHandle->backendBuffer;
         source->Rewind();
     }
 
-    zA3dProviderSource *const source = (zA3dProviderSource *)playHandle->backendBuffer;
+    zA3dProviderSource* const source = (zA3dProviderSource*)playHandle->backendBuffer;
     const int error = source->Play((unsigned char)(replayFields->flags) & 1);
     if (error != 0) {
         zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x58a);
@@ -1053,11 +986,12 @@ void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
  * Purpose: replay a DirectSound-backed handle with the requested restart and gain delta.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
-    zSndSampleReplayFields *replayFields,
-    zSndPlayHandle *playHandle,
+    zSndSampleReplayFields* replayFields,
+    zSndPlayHandle* playHandle,
     int restartBeforePlay,
     int gainDelta
-) {
+)
+{
     if (gainDelta != 0) {
         playHandle->gainScaled += gainDelta;
 
@@ -1089,15 +1023,16 @@ void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
  * Purpose: route play-handle replay through the active sound backend.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaBackendDispatch(
-    zSndSample *sourceSample,
-    zSndPlayHandle *playHandle,
+    zSndSample* sourceSample,
+    zSndPlayHandle* playHandle,
     int restartBeforePlay,
     float gainDelta
-) {
-    zSndSampleReplayFields *const replayFields = &sourceSample->replayFields;
+)
+{
+    zSndSampleReplayFields* const replayFields = &sourceSample->replayFields;
     switch (g_zSnd_ActiveBackend) {
     case 1:
-        if (playHandle->backendBuffer != 0 && *(float *)&playHandle->gainScaled != 0.0f) {
+        if (playHandle->backendBuffer != 0 && *(float*)&playHandle->gainScaled != 0.0f) {
             PlayWithDeltaA3D(replayFields, playHandle, restartBeforePlay, gainDelta);
         }
         break;
@@ -1105,12 +1040,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaBackendDispatch(
     case 0: {
         const int directSoundGainDelta = (int)(gainDelta * 10000.0f);
         if (playHandle->backendBuffer != 0) {
-            PlayWithDeltaDirectSound(
-                replayFields,
-                playHandle,
-                restartBeforePlay,
-                directSoundGainDelta
-            );
+            PlayWithDeltaDirectSound(replayFields, playHandle, restartBeforePlay, directSoundGainDelta);
         }
         break;
     }
@@ -1125,20 +1055,21 @@ void __fastcall zSndPlayHandle::PlayWithDeltaBackendDispatch(
  * Purpose: Stops every captured still-playing backend handle in this original
  * translation unit so VC5 retains its register and stack-allocation shape.
  */
-int zSndPlayHandleSnapshot::StopAllIfPlaying() {
+int zSndPlayHandleSnapshot::StopAllIfPlaying()
+{
     int result = 1;
     int status;
-    zSndPlayHandleSnapshot *const snapshot = this;
-    zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
-    zSndPlayHandleSnapshotItem *snapshotItem = listHead->next->next;
+    zSndPlayHandleSnapshot* const snapshot = this;
+    zSndPlayHandleSnapshotItem* const listHead = snapshot->listHead;
+    zSndPlayHandleSnapshotItem* snapshotItem = listHead->next->next;
     int hasItem = (unsigned char)(snapshotItem == listHead) == 0;
     // The byte mask keeps VC5's list-end compare as test dl,dl/test al,al.
     if ((hasItem & 0xff) != 0) {
         do {
             switch (g_zSnd_ActiveBackend) {
             case 0: {
-                LPDIRECTSOUNDBUFFER const buffer =
-                    (LPDIRECTSOUNDBUFFER)(snapshotItem->payload.playHandle->backendBuffer);
+                LPDIRECTSOUNDBUFFER const buffer
+                    = (LPDIRECTSOUNDBUFFER)(snapshotItem->payload.playHandle->backendBuffer);
                 buffer->GetStatus((LPDWORD)&status);
                 if ((status & result) != 0) {
                     snapshotItem->payload.playHandle->StopIfActive();
@@ -1146,8 +1077,8 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying() {
                 break;
             }
             case 1: {
-                zA3dProviderSource *const source =
-                    (zA3dProviderSource *)(snapshotItem->payload.playHandle->backendBuffer);
+                zA3dProviderSource* const source
+                    = (zA3dProviderSource*)(snapshotItem->payload.playHandle->backendBuffer);
                 source->GetStatus((LPDWORD)&status);
                 if ((status & result) != 0) {
                     snapshotItem->payload.playHandle->StopIfActive();
@@ -1169,14 +1100,14 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying() {
  * @recoil-artifact defines .text recoil:function:0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta.
  * Purpose: replay captured handles while applying the current global volume delta.
  */
-int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta() {
-    zSndPlayHandleSnapshot *const snapshot = this;
-    zSndPlayHandleSnapshotItem *const volumeAnchor = snapshot->listHead->next;
+int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
+{
+    zSndPlayHandleSnapshot* const snapshot = this;
+    zSndPlayHandleSnapshotItem* const volumeAnchor = snapshot->listHead->next;
 
-    const float gainDelta =
-        *(float *)(g_zSnd_GlobalVolumeScalePtr) - *(float *)&volumeAnchor->payload.volumeScaleRaw;
+    const float gainDelta = *(float*)(g_zSnd_GlobalVolumeScalePtr) - *(float*)&volumeAnchor->payload.volumeScaleRaw;
 
-    zSndPlayHandleSnapshotItem *item = volumeAnchor->next;
+    zSndPlayHandleSnapshotItem* item = volumeAnchor->next;
     int hasItem = (unsigned char)(-(item == snapshot->listHead)) == 0;
     if (hasItem != 0) {
         do {
@@ -1199,13 +1130,14 @@ int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta() {
  * @recoil-artifact defines .text recoil:function:0x4a05f0: zSndPlayHandleSnapshot::Destroy.
  * Purpose: unlink and free every snapshot node, then delete the snapshot object.
  */
-int zSndPlayHandleSnapshot::Destroy() {
+int zSndPlayHandleSnapshot::Destroy()
+{
     if (this != 0) {
-        zSndPlayHandleSnapshotItem *const head = listHead;
-        zSndPlayHandleSnapshotItem *item = head->next;
+        zSndPlayHandleSnapshotItem* const head = listHead;
+        zSndPlayHandleSnapshotItem* item = head->next;
         int hasItem = (unsigned char)(-(item == head)) == 0;
         while (hasItem != 0) {
-            zSndPlayHandleSnapshotItem *const node = item;
+            zSndPlayHandleSnapshotItem* const node = item;
             item = item->next;
             node->prev->next = node->next;
             node->next->prev = node->prev;
@@ -1228,9 +1160,8 @@ int zSndPlayHandleSnapshot::Destroy() {
  * @recoil-artifact defines .text recoil:function:0x4a0670: zSnd::ApplyMuteStateToActiveVoices.
  * Purpose: update nested mute state and rewrite active voice backend gains.
  */
-int __fastcall zSnd::ApplyMuteStateToActiveVoices(
-    int enableMute
-) {
+int __fastcall zSnd::ApplyMuteStateToActiveVoices(int enableMute)
+{
     if (g_zSnd_PreInitialized == 0) {
         return 0;
     }
@@ -1242,22 +1173,22 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
         --g_zSnd_MuteDepth;
     }
 
-    *(int *)(g_zSnd_MuteOptionValuePtr) = g_zSnd_MuteDepth > 0 ? 1 : 0;
+    *(int*)(g_zSnd_MuteOptionValuePtr) = g_zSnd_MuteDepth > 0 ? 1 : 0;
 
-    zSndPlayHandleSnapshot *const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
-    zSndPlayHandleSnapshotItem *const listHead = snapshot->listHead;
-    zSndPlayHandleSnapshotItem *item = listHead->next->next;
+    zSndPlayHandleSnapshot* const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    zSndPlayHandleSnapshotItem* const listHead = snapshot->listHead;
+    zSndPlayHandleSnapshotItem* item = listHead->next->next;
 
     switch (g_zSnd_ActiveBackend) {
     case 1:
         while (item != listHead) {
             if (zSnd::IsMuted() != 0) {
-                zSndPlayHandle *const playHandle = item->payload.playHandle;
-                zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
+                zSndPlayHandle* const playHandle = item->payload.playHandle;
+                zA3dProviderSource* const source = (zA3dProviderSource*)(playHandle->backendBuffer);
                 source->SetGain(0.0f);
             } else {
-                zSndPlayHandle *const playHandle = item->payload.playHandle;
-                zA3dProviderSource *const source = (zA3dProviderSource *)(playHandle->backendBuffer);
+                zSndPlayHandle* const playHandle = item->payload.playHandle;
+                zA3dProviderSource* const source = (zA3dProviderSource*)(playHandle->backendBuffer);
                 float storedGain;
                 memcpy(&storedGain, &playHandle->gainScaled, sizeof(storedGain));
                 source->SetGain(zSndSamplePlaySimple(storedGain));
@@ -1269,11 +1200,11 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
     case 0:
         while (item != listHead) {
             if (zSnd::IsMuted() != 0) {
-                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                zSndPlayHandle* const playHandle = item->payload.playHandle;
                 LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
                 buffer->SetVolume(-10000);
             } else {
-                zSndPlayHandle *const playHandle = item->payload.playHandle;
+                zSndPlayHandle* const playHandle = item->payload.playHandle;
                 LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
                 buffer->SetVolume(playHandle->gainScaled);
             }
@@ -1292,7 +1223,8 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(
  *
  * Purpose: report active mute state after sound preinitialization.
  */
-int __cdecl zSnd::IsMuted() {
+int __cdecl zSnd::IsMuted()
+{
     if (g_zSnd_PreInitialized == 0) {
         return 0;
     }
@@ -1309,12 +1241,11 @@ int __cdecl zSnd::IsMuted() {
  * Callers seed ECX with the owning snapshot, while the helper only uses its
  * two stack arguments and returns with ret 8.
  */
-zSndPlayHandleSnapshotItem * zSndPlayHandleSnapshot::NewNode(
-    zSndPlayHandleSnapshotItem *listHead,
-    zSndPlayHandleSnapshotItem *prev
-) {
-    zSndPlayHandleSnapshotItem *const result =
-        (zSndPlayHandleSnapshotItem *)(::operator new(sizeof(zSndPlayHandleSnapshotItem)));
+zSndPlayHandleSnapshotItem*
+zSndPlayHandleSnapshot::NewNode(zSndPlayHandleSnapshotItem* listHead, zSndPlayHandleSnapshotItem* prev)
+{
+    zSndPlayHandleSnapshotItem* const result
+        = (zSndPlayHandleSnapshotItem*)(::operator new(sizeof(zSndPlayHandleSnapshotItem)));
     result->next = listHead != 0 ? listHead : result;
     result->prev = prev != 0 ? prev : result;
     return result;
@@ -1324,9 +1255,8 @@ namespace zSnd {
 /**
  * Purpose: Store the archive-bank selector global for sound-bank loading.
  */
-void __fastcall SetUseArchiveBanksFlag(
-    int useArchiveBanks
-) {
+void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks)
+{
     g_zSnd_UseArchiveBanksFlag = useArchiveBanks;
 }
 } // namespace zSnd
@@ -1377,9 +1307,8 @@ char g_zSndBankArchiveNameHigh[0x0c] = "soundsH.zbd";
  * Purpose: find a registered sample set by name and dispatch its
  * initialization routine.
  */
-extern "C" int __fastcall zSndSampleSetInitByName(
-    const char *setName
-) {
+extern "C" int __fastcall zSndSampleSetInitByName(const char* setName)
+{
     return zSndSampleSetRegistryFindByName(setName)->Init();
 }
 
@@ -1390,9 +1319,8 @@ extern "C" int __fastcall zSndSampleSetInitByName(
  *
  * Purpose: find a registered sample set by name and dispatch its destroy routine.
  */
-extern "C" int __fastcall zSndSampleSetDestroyByName(
-    const char *setName
-) {
+extern "C" int __fastcall zSndSampleSetDestroyByName(const char* setName)
+{
     return zSndSampleSetRegistryFindByName(setName)->Destroy();
 }
 
@@ -1401,11 +1329,11 @@ extern "C" int __fastcall zSndSampleSetDestroyByName(
  * @recoil-artifact defines .text recoil:function:0x4a0880: zSndSampleSetRegistryDestroyAll.
  * Purpose: destroy registered sample sets, clear their slots, and reset the active range.
  */
-extern "C" void __cdecl zSndSampleSetRegistryDestroyAll() {
-    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin();
-        it != g_zSnd_SampleSetRegistry.end();
+extern "C" void __cdecl zSndSampleSetRegistryDestroyAll()
+{
+    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin(); it != g_zSnd_SampleSetRegistry.end();
         ++it) {
-        zSndSampleSet *set = *it;
+        zSndSampleSet* set = *it;
         if (set != 0) {
             set->DestroyOwnedData();
             delete set;
@@ -1421,9 +1349,8 @@ extern "C" void __cdecl zSndSampleSetRegistryDestroyAll() {
  * @recoil-artifact defines .text recoil:function:0x4a08d0: zSndSampleSetRegistryGetByIndex.
  * Purpose: Returns the registry entry at a non-negative in-range index.
  */
-extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryGetByIndex(
-    int index
-) {
+extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryGetByIndex(int index)
+{
     if (index < 0) {
         return 0;
     }
@@ -1440,7 +1367,8 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryGetByIndex(
  * @recoil-artifact defines .text recoil:function:0x4a0900: zSndSampleSetRegistryGetCount.
  * Purpose: Returns the number of active sample-set registry entries.
  */
-extern "C" int __cdecl zSndSampleSetRegistryGetCount() {
+extern "C" int __cdecl zSndSampleSetRegistryGetCount()
+{
     return (int)(g_zSnd_SampleSetRegistry.size());
 }
 
@@ -1450,11 +1378,9 @@ extern "C" int __cdecl zSndSampleSetRegistryGetCount() {
  * Purpose: return the registered sample set whose stored name exactly matches
  * the requested name.
  */
-extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryFindByName(
-    const char *setName
-) {
-    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin();
-        it != g_zSnd_SampleSetRegistry.end();
+extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryFindByName(const char* setName)
+{
+    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin(); it != g_zSnd_SampleSetRegistry.end();
         ++it) {
         if (strcmp((*it)->setName, setName) == 0) {
             return *it;
@@ -1470,17 +1396,15 @@ extern "C" zSndSampleSet *__fastcall zSndSampleSetRegistryFindByName(
  * Provisional source-placement hypothesis: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample by name across registered sample sets and pending stream groups.
  */
-zSndSample *__fastcall zSnd::FindSampleByName(
-    const char *sampleName
-) {
+zSndSample* __fastcall zSnd::FindSampleByName(const char* sampleName)
+{
     if (g_zSnd_IsInitialized == 0 || sampleName == 0) {
         return 0;
     }
 
-    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin();
-        it != g_zSnd_SampleSetRegistry.end();
+    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin(); it != g_zSnd_SampleSetRegistry.end();
         ++it) {
-        zSndSample *const sample = (*it)->FindSampleByName(sampleName);
+        zSndSample* const sample = (*it)->FindSampleByName(sampleName);
         if (sample != 0) {
             return sample;
         }
@@ -1494,11 +1418,9 @@ zSndSample *__fastcall zSnd::FindSampleByName(
  * @recoil-artifact defines .text recoil:function:0x4a09e0: zSndSampleSet::RegistryAddEntry.
  * Purpose: Allocates sample entries, stores the set name, and appends this set to the registry.
  */
-zSndSampleSet * zSndSampleSet::RegistryAddEntry(
-    const char *name,
-    int count
-) {
-    samples = (zSndSample *)(calloc((size_t)(count), sizeof(zSndSample)));
+zSndSampleSet* zSndSampleSet::RegistryAddEntry(const char* name, int count)
+{
+    samples = (zSndSample*)(calloc((size_t)(count), sizeof(zSndSample)));
     sampleCount = count;
     resourcesLoaded = 0;
 
@@ -1517,7 +1439,8 @@ zSndSampleSet * zSndSampleSet::RegistryAddEntry(
  *
  * Purpose: release owned sample storage and reset the sample count.
  */
-void zSndSampleSet::DestroyOwnedData() {
+void zSndSampleSet::DestroyOwnedData()
+{
     Destroy();
     if (samples != 0) {
         free(samples);
@@ -1534,16 +1457,13 @@ void zSndSampleSet::DestroyOwnedData() {
  * Purpose: initialize an unloaded sample set from archive banks first, then
  * from loose sample paths, and mark the set loaded.
  */
-int zSndSampleSet::Init() {
-    const char *const archiveNames[3] = {
-        g_zSndBankArchiveNameHigh,
-        g_zSndBankArchiveNameMedium,
-        g_zSndBankArchiveNameLow
-    };
+int zSndSampleSet::Init()
+{
+    const char* const archiveNames[3]
+        = { g_zSndBankArchiveNameHigh, g_zSndBankArchiveNameMedium, g_zSndBankArchiveNameLow };
     int archiveBankIndex = 0;
     int archiveInitialized = 0;
     zIndexArchive archive;
-
 
     if (this == 0 || resourcesLoaded != 0) {
 
@@ -1551,7 +1471,7 @@ int zSndSampleSet::Init() {
     }
 
     if (g_zSnd_UseArchiveBanksFlag != 0) {
-        const int soundLod = *(int *)(g_zSnd_SoundLodValuePtr);
+        const int soundLod = *(int*)(g_zSnd_SoundLodValuePtr);
         if (soundLod == 1) {
             archiveBankIndex = 1;
         } else if (soundLod == 2) {
@@ -1560,10 +1480,9 @@ int zSndSampleSet::Init() {
 
         {
             for (int attempt = 0; attempt < 3 && archiveInitialized == 0; ++attempt) {
-                const char *archivePath = archiveNames[archiveBankIndex];
+                const char* archivePath = archiveNames[archiveBankIndex];
                 if (zReader::FileExists(archivePath) == 0) {
-                    const char *resolvedPath =
-                        zRdrResolvePathInSearchPathList(g_zSnd_SearchPathList, archivePath);
+                    const char* resolvedPath = zRdrResolvePathInSearchPathList(g_zSnd_SearchPathList, archivePath);
                     if (resolvedPath != 0) {
                         archivePath = resolvedPath;
                     } else {
@@ -1591,18 +1510,16 @@ int zSndSampleSet::Init() {
     }
 
     {
-        zSndSample *sample = samples;
+        zSndSample* sample = samples;
         int index = 0;
         if (sampleCount > 0) {
             do {
-                zSndSampleReplayFields *replayFields = &sample->replayFields;
+                zSndSampleReplayFields* replayFields = &sample->replayFields;
                 if ((replayFields->flags & 0x08) == 0) {
-                    const char *const path = zRdrResolvePathInSearchPathList(
-                        g_zSnd_SearchPathList,
-                        replayFields->resourceName
-                    );
+                    const char* const path
+                        = zRdrResolvePathInSearchPathList(g_zSnd_SearchPathList, replayFields->resourceName);
                     if (path != 0) {
-                        zSndWaveData *waveData = new zSndWaveData(path, 1);
+                        zSndWaveData* waveData = new zSndWaveData(path, 1);
 
                         if (waveData != 0 && waveData->parsedOk != 0) {
                             int initResult = sample->InitFromWaveData(waveData);
@@ -1638,7 +1555,8 @@ int zSndSampleSet::Init() {
  * @recoil-artifact defines .text recoil:function:0x4a0e40: zSndSampleSet::Destroy.
  * Purpose: release loaded sample resources and clear the sample-set loaded flag.
  */
-int zSndSampleSet::Destroy() {
+int zSndSampleSet::Destroy()
+{
     if (this == 0 || resourcesLoaded == 0) {
         return 0;
     }
@@ -1657,9 +1575,8 @@ int zSndSampleSet::Destroy() {
  *
  * Purpose: Returns the indexed sample pointer when the signed upper-bound check passes.
  */
-zSndSample * zSndSampleSet::GetSampleAt(
-    int index
-) {
+zSndSample* zSndSampleSet::GetSampleAt(int index)
+{
     if (this != 0 && index < sampleCount) {
         return &samples[index];
     }
@@ -1675,28 +1592,27 @@ zSndSample * zSndSampleSet::GetSampleAt(
  * Provisional source-placement hypothesis: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample in this sample set by source sample id for the active backend.
  */
-zSndSample * zSndSampleSet::FindSampleByName( const char *sampleName ) {
+zSndSample* zSndSampleSet::FindSampleByName(const char* sampleName)
+{
     if (this != 0) {
         switch (g_zSnd_ActiveBackend) {
         case 0: {
-            zSndSample *sample = samples;
+            zSndSample* sample = samples;
             for (int index = 0; index < sampleCount; ++index, ++sample) {
-                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
-                    sample->primaryVoice.backendBuffer != 0) {
+                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 && sample->primaryVoice.backendBuffer != 0) {
                     return sample;
                 }
-        }
-        break;
+            }
+            break;
         }
         case 1: {
-            zSndSample *sample = samples;
+            zSndSample* sample = samples;
             for (int index = 0; index < sampleCount; ++index, ++sample) {
-                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 &&
-                    sample->primaryVoice.backendBuffer != 0) {
+                if (strcmp(sampleName, sample->replayFields.sampleId) == 0 && sample->primaryVoice.backendBuffer != 0) {
                     return sample;
                 }
-        }
-        break;
+            }
+            break;
         }
         }
     }
@@ -1709,16 +1625,15 @@ zSndSample * zSndSampleSet::FindSampleByName( const char *sampleName ) {
  * Purpose: load still-unloaded samples from the supplied index archive and
  * mirror each load result into the sample loaded flag.
  */
-int zSndSampleSet::LoadSamplesFromIndexArchive(
-    zIndexArchive *archive
-) {
-    zSndSample *sample = samples;
+int zSndSampleSet::LoadSamplesFromIndexArchive(zIndexArchive* archive)
+{
+    zSndSample* sample = samples;
     int index = 0;
     if (sampleCount > 0) {
         do {
-            zSndSampleReplayFields *replayFields = &sample->replayFields;
+            zSndSampleReplayFields* replayFields = &sample->replayFields;
             if ((replayFields->flags & 0x08) == 0) {
-                zSndWaveData *waveData = new zSndWaveData(replayFields->resourceName, 0);
+                zSndWaveData* waveData = new zSndWaveData(replayFields->resourceName, 0);
 
                 waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
 
@@ -1747,7 +1662,6 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(
     return 1;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-setglobalvolumescale
  * @recoil-artifact defines .text recoil:function:0x4a1090: zSnd::SetGlobalVolumeScale.
@@ -1755,11 +1669,10 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(
  *
  * Purpose: store and return the global sound-volume scale.
  */
-float __stdcall zSnd::SetGlobalVolumeScale(
-    float scale
-) {
+float __stdcall zSnd::SetGlobalVolumeScale(float scale)
+{
     if (g_zSnd_GlobalVolumeScalePtr != 0) {
-        *(float *)(g_zSnd_GlobalVolumeScalePtr) = scale;
+        *(float*)(g_zSnd_GlobalVolumeScalePtr) = scale;
     }
 
     return scale;
@@ -1770,8 +1683,9 @@ float __stdcall zSnd::SetGlobalVolumeScale(
  * @recoil-artifact defines .text recoil:function:0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev.
  * Purpose: multiply the global sound-volume scale and return its previous value.
  */
-float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(float scale) {
-    float *const globalVolumeScale = (float *)(g_zSnd_GlobalVolumeScalePtr);
+float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(float scale)
+{
+    float* const globalVolumeScale = (float*)(g_zSnd_GlobalVolumeScalePtr);
     // savedScale is unused afterward but is proven by byte matching.
     float savedScale;
     const float previousScale = *globalVolumeScale;
@@ -1786,8 +1700,7 @@ float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(float scale) {
  *
  * Purpose: set the zSound flag-gated playback enable value.
  */
-void __fastcall zSnd::SetFlag10PlaybackEnabled(
-    int enabled
-) {
+void __fastcall zSnd::SetFlag10PlaybackEnabled(int enabled)
+{
     g_zSnd_Flag10PlaybackEnabled = enabled;
 }

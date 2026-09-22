@@ -30,16 +30,10 @@ struct CpuBenchmarkResult {
 
 RECOIL_STATIC_ASSERT(sizeof(CpuBenchmarkResult) == 0x10);
 
-RECOIL_NO_GS char *__fastcall FindFileOnDriveType(
-    int driveType,
-    const char *relativePath,
-    int unused
-);
+RECOIL_NO_GS char* __fastcall FindFileOnDriveType(int driveType, const char* relativePath, int unused);
 
-RECOIL_NO_GS void __fastcall ProbePlatformAndVideoCaps(
-    zSysVideoCapsLevel *outVideoCaps,
-    zSysPlatformCapsLevel *outPlatformCaps
-);
+RECOIL_NO_GS void __fastcall
+ProbePlatformAndVideoCaps(zSysVideoCapsLevel* outVideoCaps, zSysPlatformCapsLevel* outPlatformCaps);
 
 int __cdecl CheckCpuSignatureMask();
 int __cdecl HasCpuidSupportRuntimeOptions();
@@ -47,17 +41,14 @@ unsigned short __cdecl HasCpuidSupport();
 unsigned short __cdecl ReadCpuidVendorAndFamily();
 unsigned int __cdecl ReadCpuidFeatureFlags();
 unsigned int __cdecl ReadCmosRtcSecondsBcd();
-void __fastcall ReadTsc64(
-    unsigned int *outHigh,
-    unsigned int *outLow
-);
+void __fastcall ReadTsc64(unsigned int* outHigh, unsigned int* outLow);
 void __fastcall Sub64(
     unsigned int subHigh,
     unsigned int subLow,
     unsigned int minuendHigh,
     unsigned int minuendLow,
-    unsigned int *outHigh,
-    unsigned int *outLow
+    unsigned int* outHigh,
+    unsigned int* outLow
 );
 int __cdecl ProbeDivZeroFlagBehavior();
 int __cdecl DetectIs8086ByEflagsHiBits();

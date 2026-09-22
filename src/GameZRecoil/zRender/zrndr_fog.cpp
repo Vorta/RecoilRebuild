@@ -13,8 +13,8 @@
 #include "GameZRecoil/zVideo/zvid.h"
 #include "zclass.h"
 
-#include <math.h>
 #include <malloc.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,9 +26,8 @@ namespace zRndr {
  *
  * Purpose: Clamp and commit the active fog color, then rebuild its packed 16-bit ramp.
  */
-void __fastcall FogColorSetRgb01Clamped(
-    zColorRgb *color
-) {
+void __fastcall FogColorSetRgb01Clamped(zColorRgb* color)
+{
     if (color->red > 1.0f) {
         color->red = 1.0f;
     } else if (!(color->red >= 0.0f)) {
@@ -47,9 +46,9 @@ void __fastcall FogColorSetRgb01Clamped(
         color->blue = 0.0f;
     }
 
-    if (fabs(g_fogColorParams.colorRgb01[0] - color->red) < 0.01f &&
-        fabs(g_fogColorParams.colorRgb01[1] - color->green) < 0.01f &&
-        fabs(g_fogColorParams.colorRgb01[2] - color->blue) < 0.01f) {
+    if (fabs(g_fogColorParams.colorRgb01[0] - color->red) < 0.01f
+        && fabs(g_fogColorParams.colorRgb01[1] - color->green) < 0.01f
+        && fabs(g_fogColorParams.colorRgb01[2] - color->blue) < 0.01f) {
         return;
     }
 
@@ -58,7 +57,7 @@ void __fastcall FogColorSetRgb01Clamped(
     g_fogColorParams.colorRgb01[2] = color->blue;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat*)(color));
     }
 
     const int red = (int)(color->red * 255.0f + 0.5f);
@@ -80,9 +79,8 @@ namespace zRndr {
  *
  * Purpose: Clamp and commit the immediate fog target color, then rebuild its packed 16-bit ramp.
  */
-void __fastcall SetFogTargetColorRgb01Clamped(
-    zColorRgb *color
-) {
+void __fastcall SetFogTargetColorRgb01Clamped(zColorRgb* color)
+{
     if (color->red > 1.0f) {
         color->red = 1.0f;
     } else if (!(color->red >= 0.0f)) {
@@ -101,9 +99,9 @@ void __fastcall SetFogTargetColorRgb01Clamped(
         color->blue = 0.0f;
     }
 
-    if (fabs(g_fogTargetParamsDirect.colorRgb01[0] - color->red) < 0.01f &&
-        fabs(g_fogTargetParamsDirect.colorRgb01[1] - color->green) < 0.01f &&
-        fabs(g_fogTargetParamsDirect.colorRgb01[2] - color->blue) < 0.01f) {
+    if (fabs(g_fogTargetParamsDirect.colorRgb01[0] - color->red) < 0.01f
+        && fabs(g_fogTargetParamsDirect.colorRgb01[1] - color->green) < 0.01f
+        && fabs(g_fogTargetParamsDirect.colorRgb01[2] - color->blue) < 0.01f) {
         return;
     }
 
@@ -112,7 +110,7 @@ void __fastcall SetFogTargetColorRgb01Clamped(
     g_fogTargetParamsDirect.colorRgb01[2] = color->blue;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo::SetFogTargetColorFromRgb01((zVideo_ColorRgbFloat *)(color));
+        zVideo::SetFogTargetColorFromRgb01((zVideo_ColorRgbFloat*)(color));
     }
 
     const int red = (int)(color->red * 255.0f + 0.5f);
@@ -134,10 +132,11 @@ namespace zRndr {
  *
  * Purpose: Copy direct fog target parameters into the active fog state when they differ.
  */
-void __cdecl CommitDirectFogParamsIfChanged() {
-    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsDirect.colorRgb01[0]) >= 0.01f ||
-        fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsDirect.colorRgb01[1]) >= 0.01f ||
-        fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsDirect.colorRgb01[2]) >= 0.01f) {
+void __cdecl CommitDirectFogParamsIfChanged()
+{
+    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogTargetParamsDirect.colorRgb01[0]) >= 0.01f
+        || fabs(g_fogParamsActive.colorRgb01[1] - g_fogTargetParamsDirect.colorRgb01[1]) >= 0.01f
+        || fabs(g_fogParamsActive.colorRgb01[2] - g_fogTargetParamsDirect.colorRgb01[2]) >= 0.01f) {
         memcpy(&g_fogParamsActive, &g_fogTargetParamsDirect, sizeof(g_fogParamsActive));
     }
 }
@@ -150,10 +149,11 @@ namespace zRndr {
  *
  * Purpose: Copy fog color parameters into the active fog state when they differ.
  */
-void __cdecl CommitFogColorParamsIfChanged() {
-    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogColorParams.colorRgb01[0]) >= 0.01f ||
-        fabs(g_fogParamsActive.colorRgb01[1] - g_fogColorParams.colorRgb01[1]) >= 0.01f ||
-        fabs(g_fogParamsActive.colorRgb01[2] - g_fogColorParams.colorRgb01[2]) >= 0.01f) {
+void __cdecl CommitFogColorParamsIfChanged()
+{
+    if (fabs(g_fogParamsActive.colorRgb01[0] - g_fogColorParams.colorRgb01[0]) >= 0.01f
+        || fabs(g_fogParamsActive.colorRgb01[1] - g_fogColorParams.colorRgb01[1]) >= 0.01f
+        || fabs(g_fogParamsActive.colorRgb01[2] - g_fogColorParams.colorRgb01[2]) >= 0.01f) {
         memcpy(&g_fogParamsActive, &g_fogColorParams, sizeof(g_fogParamsActive));
     }
 }

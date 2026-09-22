@@ -13,7 +13,7 @@ extern "C" {
  * and the ZAR/ZBD wrapper helpers null-check it before forwarding work.
  * Purpose: store the active ZBD archive manager singleton.
  */
-zZbdManager *g_zUtil_ZbdManager = 0;
+zZbdManager* g_zUtil_ZbdManager = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-x27
  * @recoil-artifact defines .data recoil:data:0x4e3010: g_zUtil_SourceFile_ZutlZarCpp.
@@ -21,8 +21,7 @@ zZbdManager *g_zUtil_ZbdManager = 0;
  * GetLastError format used by the ZAR archive-open diagnostic path.
  * Purpose: name the original zutl_zar.cpp source file in error reports.
  */
-char g_zUtil_SourceFile_ZutlZarCpp[0x27] =
-    "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp";
+char g_zUtil_SourceFile_ZutlZarCpp[0x27] = "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-x19
  * @recoil-artifact defines .data recoil:data:0x4e3038: g_zUtil_GetLastErrorFmt.
@@ -57,13 +56,14 @@ namespace zUtil_ZAR {
  * Purpose: forward a section handler registration to the active ZBD manager.
  */
 void __fastcall RegisterSectionHandler(
-    const char *sectionName,
+    const char* sectionName,
     zZbdSectionCallback onPreLoad,
     zZbdSectionCallback onDataReady,
     int sortOrder,
-    void *userData
-) {
-    zZbdManager *manager = g_zUtil_ZbdManager;
+    void* userData
+)
+{
+    zZbdManager* manager = g_zUtil_ZbdManager;
     if (manager != 0) {
         manager->RegisterSectionHandler(sectionName, onPreLoad, onDataReady, sortOrder, userData);
     }
@@ -76,12 +76,9 @@ void __fastcall RegisterSectionHandler(
  *
  * Purpose: write a ZAR section blob through the callback manager context.
  */
-int __fastcall WriteSectionBlob(
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken,
-    const void *data,
-    unsigned int dataSize
-) {
+int __fastcall
+WriteSectionBlob(zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken, const void* data, unsigned int dataSize)
+{
     return callbackCtx->manager->WriteSectionRecord(callbackCtx, sectionToken, data, dataSize);
 }
 } // namespace zUtil_ZAR
@@ -92,10 +89,9 @@ namespace zUtil {
  * @recoil-artifact defines .text recoil:function:0x4c0030: zUtil::ZBDLoadEntriesGlobal
  * Purpose: load ZBD entries through the active global ZBD manager when present.
  */
-int __fastcall ZBDLoadEntriesGlobal(
-    const char *filename
-) {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
+int __fastcall ZBDLoadEntriesGlobal(const char* filename)
+{
+    zZbdManager* const manager = g_zUtil_ZbdManager;
     if (manager == 0) {
         return 0;
     }
@@ -108,10 +104,9 @@ int __fastcall ZBDLoadEntriesGlobal(
  * @recoil-artifact defines .text recoil:function:0x4c0050: zUtil::zZarLoadFileGlobal
  * Purpose: load a ZAR file through the active global ZBD manager when present.
  */
-int __fastcall zZarLoadFileGlobal(
-    const char *filepath
-) {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
+int __fastcall zZarLoadFileGlobal(const char* filepath)
+{
+    zZbdManager* const manager = g_zUtil_ZbdManager;
     if (manager == 0) {
         return 0;
     }
@@ -126,8 +121,9 @@ int __fastcall zZarLoadFileGlobal(
  *
  * Purpose: request cooperative ZAR loading stop through the active manager.
  */
-void __cdecl zZarRequestStopGlobal() {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
+void __cdecl zZarRequestStopGlobal()
+{
+    zZbdManager* const manager = g_zUtil_ZbdManager;
     if (manager != 0) {
         manager->RequestStop();
     }
@@ -135,7 +131,7 @@ void __cdecl zZarRequestStopGlobal() {
 } // namespace zUtil
 
 namespace zUtil_ZBD {
-extern "C" FILE *__cdecl tmpfile(void); // Calls the CRT import-library thunk.
+extern "C" FILE* __cdecl tmpfile(void); // Calls the CRT import-library thunk.
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-opentempwritestream
  * @recoil-artifact defines .text recoil:function:0x4c0080: zUtil_ZBD::OpenTempWriteStream
@@ -143,8 +139,9 @@ extern "C" FILE *__cdecl tmpfile(void); // Calls the CRT import-library thunk.
  *
  * Purpose: open a temp write stream when a global ZBD manager is active.
  */
-FILE *__cdecl OpenTempWriteStream() {
-    FILE *tempStream = 0;
+FILE* __cdecl OpenTempWriteStream()
+{
+    FILE* tempStream = 0;
     if (g_zUtil_ZbdManager != 0) {
         tempStream = tmpfile();
     }
@@ -159,9 +156,9 @@ FILE *__cdecl OpenTempWriteStream() {
  *
  * Purpose: flush a temp write stream into a named section record.
  */
-void __fastcall FlushTempWriteStreamToSectionRecord(FILE *tempStream,
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken) {
+void __fastcall
+FlushTempWriteStreamToSectionRecord(FILE* tempStream, zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken)
+{
     if (g_zUtil_ZbdManager != 0) {
         g_zUtil_ZbdManager->FlushTempStreamToSectionRecord(tempStream, callbackCtx, sectionToken);
     }
@@ -174,9 +171,9 @@ void __fastcall FlushTempWriteStreamToSectionRecord(FILE *tempStream,
  *
  * Purpose: create a temp read stream from a buffer through the active manager.
  */
-FILE *__fastcall OpenTempReadStream(void *buffer,
-    unsigned int size) {
-    FILE *tempStream = 0;
+FILE* __fastcall OpenTempReadStream(void* buffer, unsigned int size)
+{
+    FILE* tempStream = 0;
     if (g_zUtil_ZbdManager != 0) {
         tempStream = g_zUtil_ZbdManager->CreateTempReadStreamFromBuffer(buffer, size);
     }
@@ -190,7 +187,8 @@ FILE *__fastcall OpenTempReadStream(void *buffer,
  *
  * Purpose: close ZBD temp read-stream state through the active manager.
  */
-void __fastcall CloseTempReadStream(FILE *tempStream) {
+void __fastcall CloseTempReadStream(FILE* tempStream)
+{
     if (g_zUtil_ZbdManager != 0) {
         g_zUtil_ZbdManager->RemoveTempFiles(tempStream);
     }
@@ -204,8 +202,9 @@ namespace zUtil {
  * @recoil-artifact defines .text recoil:function:0x4c0100: zUtil::ZBDInit
  * Purpose: allocate and initialize the global ZBD manager and handler sentinel.
  */
-int __cdecl ZBDInit() {
-    zZbdManager *manager = new zZbdManager;
+int __cdecl ZBDInit()
+{
+    zZbdManager* manager = new zZbdManager;
     if (manager != 0) {
 
         manager->tempBufferSize = 0;
@@ -225,8 +224,9 @@ int __cdecl ZBDInit() {
  *
  * Purpose: destroy and clear the active global ZBD manager.
  */
-void __cdecl ZBDDestroyGlobalManager() {
-    zZbdManager *const manager = g_zUtil_ZbdManager;
+void __cdecl ZBDDestroyGlobalManager()
+{
+    zZbdManager* const manager = g_zUtil_ZbdManager;
     if (manager == 0) {
         return;
     }
@@ -242,7 +242,8 @@ void __cdecl ZBDDestroyGlobalManager() {
  * @recoil-artifact defines .text recoil:function:0x4c01b0: zZbdManager::Destroy
  * Purpose: release manager buffers, archive records, handler nodes, and sentinel.
  */
-void zZbdManager::Destroy() {
+void zZbdManager::Destroy()
+{
     if (tempBuffer != 0) {
         ::operator delete(tempBuffer);
         tempBuffer = 0;
@@ -260,9 +261,10 @@ void zZbdManager::Destroy() {
  * Purpose: compare section handlers by ascending sort order.
  */
 bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
-    const zZbdSectionHandler *nodeA,
-    const zZbdSectionHandler *nodeB
-) {
+    const zZbdSectionHandler* nodeA,
+    const zZbdSectionHandler* nodeB
+)
+{
     return nodeA->sortOrder < nodeB->sortOrder;
 }
 
@@ -272,12 +274,13 @@ bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
  * Purpose: add a unique section handler node to the manager's handler list.
  */
 void zZbdManager::RegisterSectionHandler(
-    const char *sectionName,
+    const char* sectionName,
     zZbdSectionCallback onPreLoad,
     zZbdSectionCallback onDataReady,
     int sortOrder,
-    void *userData
-) {
+    void* userData
+)
+{
     zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
     while (node != sectionHandlers.end()) {
         if (strcmp(node->sectionName, sectionName) == 0) {
@@ -300,9 +303,8 @@ void zZbdManager::RegisterSectionHandler(
  * @recoil-artifact defines .text recoil:function:0x4c0370: zZbdManager::LoadEntries
  * Purpose: create a write archive and invoke registered pre-load handlers.
  */
-int zZbdManager::LoadEntries(
-    const char *filename
-) {
+int zZbdManager::LoadEntries(const char* filename)
+{
     int result = 0;
     if (indexArchive.OpenCreateWrite(filename) != 0) {
         result = 1;
@@ -310,7 +312,7 @@ int zZbdManager::LoadEntries(
 
         zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
         while (node != sectionHandlers.end() && result != 0) {
-            zZbdSectionCallbackCtx callbackCtx = {this, &*node};
+            zZbdSectionCallbackCtx callbackCtx = { this, &*node };
             result = node->InvokePreLoad(&callbackCtx);
             ++node;
         }
@@ -326,23 +328,22 @@ int zZbdManager::LoadEntries(
  * @recoil-artifact defines .text recoil:function:0x4c0400: zZbdManager::LoadZarFile
  * Purpose: load a ZAR archive and dispatch matching section records.
  */
-int zZbdManager::LoadZarFile(
-    const char *filepath
-) {
+int zZbdManager::LoadZarFile(const char* filepath)
+{
     if (indexArchive.Init(filepath) == 0) {
         return 0;
     }
 
     stopRequested = 0;
     for (unsigned int i = 0; i < indexArchive.recordCount; ++i) {
-        const char *recordName = indexArchive.records[i].name;
-        char recordPath[0x50] = {0};
-        char sectionName[0x50] = {0};
-        char sectionToken[0x50] = {0};
+        const char* recordName = indexArchive.records[i].name;
+        char recordPath[0x50] = { 0 };
+        char sectionName[0x50] = { 0 };
+        char sectionToken[0x50] = { 0 };
 
         strncpy(recordPath, recordName, sizeof(recordPath));
-        strncpy(sectionName, strtok( recordPath, k_zar_StrTokSlash ), sizeof(sectionName));
-        strncpy(sectionToken, strtok( 0, " " ), sizeof(sectionToken));
+        strncpy(sectionName, strtok(recordPath, k_zar_StrTokSlash), sizeof(sectionName));
+        strncpy(sectionToken, strtok(0, " "), sizeof(sectionToken));
         strncpy(recordPath, recordName, sizeof(recordPath));
 
         zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
@@ -351,7 +352,7 @@ int zZbdManager::LoadZarFile(
         }
 
         if (node != sectionHandlers.end()) {
-            zZbdSectionCallbackCtx callbackCtx = {this, &*node};
+            zZbdSectionCallbackCtx callbackCtx = { this, &*node };
             unsigned int bufferSize = 0;
             indexArchive.ReadFileByName(recordPath, 0, &bufferSize);
             if (bufferSize > tempBufferSize) {
@@ -382,7 +383,8 @@ int zZbdManager::LoadZarFile(
  *
  * Purpose: set the cooperative stop flag for archive loading.
  */
-void zZbdManager::RequestStop() {
+void zZbdManager::RequestStop()
+{
     stopRequested = 1;
 }
 
@@ -392,18 +394,14 @@ void zZbdManager::RequestStop() {
  * Purpose: format a section/token record path and append the payload.
  */
 int zZbdManager::WriteSectionRecord(
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken,
-    const void *data,
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    const void* data,
     unsigned int dataSize
-) {
-    char recordPath[0x50] = {0};
-    sprintf(
-        recordPath,
-        g_zUtil_ZbdSectionRecordFmt,
-        callbackCtx->sectionHandler->sectionName,
-        sectionToken
-    );
+)
+{
+    char recordPath[0x50] = { 0 };
+    sprintf(recordPath, g_zUtil_ZbdSectionRecordFmt, callbackCtx->sectionHandler->sectionName, sectionToken);
     return indexArchive.AddFileRecord(recordPath, data, dataSize, 0, 0);
 }
 
@@ -412,17 +410,13 @@ int zZbdManager::WriteSectionRecord(
  * @recoil-artifact defines .text recoil:function:0x4c06a0: zZbdSectionHandler::InvokePreLoad
  * Purpose: invoke an optional pre-load section callback with user data.
  */
-int zZbdSectionHandler::InvokePreLoad(
-    zZbdSectionCallbackCtx *callbackCtx
-) {
+int zZbdSectionHandler::InvokePreLoad(zZbdSectionCallbackCtx* callbackCtx)
+{
     if (onPreLoad == 0) {
         return 1;
     }
 
-    typedef int(__fastcall * PreLoadCallback)(
-        zZbdSectionCallbackCtx *,
-        void *
-    );
+    typedef int(__fastcall * PreLoadCallback)(zZbdSectionCallbackCtx*, void*);
     return ((PreLoadCallback)(onPreLoad))(callbackCtx, userData);
 }
 
@@ -434,19 +428,14 @@ int zZbdSectionHandler::InvokePreLoad(
  * Purpose: invoke an optional section data-ready callback with payload data.
  */
 void zZbdSectionHandler::InvokeDataReady(
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken,
-    void *buffer,
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    void* buffer,
     unsigned int size
-) {
+)
+{
     if (onDataReady != 0) {
-        typedef void(__fastcall * DataReadyCallback)(
-            zZbdSectionCallbackCtx *,
-            const char *,
-            void *,
-            unsigned int,
-            void *
-        );
+        typedef void(__fastcall * DataReadyCallback)(zZbdSectionCallbackCtx*, const char*, void*, unsigned int, void*);
         ((DataReadyCallback)(onDataReady))(callbackCtx, sectionToken, buffer, size, userData);
     }
 }
@@ -457,16 +446,17 @@ void zZbdSectionHandler::InvokeDataReady(
  * Purpose: copy a temp stream into a section record and remove temp files.
  */
 void zZbdManager::FlushTempStreamToSectionRecord(
-    FILE *tempStream,
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken
-) {
+    FILE* tempStream,
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken
+)
+{
     fflush(tempStream);
     fseek(tempStream, 0, SEEK_END);
     const int dataSize = ftell(tempStream);
     rewind(tempStream);
 
-    void *sectionData = malloc(dataSize);
+    void* sectionData = malloc(dataSize);
     if (sectionData != 0) {
         fread(sectionData, dataSize, 1, tempStream);
         WriteSectionRecord(callbackCtx, sectionToken, sectionData, dataSize);
@@ -481,11 +471,9 @@ void zZbdManager::FlushTempStreamToSectionRecord(
  * @recoil-artifact defines .text recoil:function:0x4c0780: zZbdManager::CreateTempReadStreamFromBuffer
  * Purpose: create a rewound temp stream containing the supplied buffer.
  */
-FILE * zZbdManager::CreateTempReadStreamFromBuffer(
-    void *buffer,
-    unsigned int size
-) {
-    FILE *const tempStream = tmpfile();
+FILE* zZbdManager::CreateTempReadStreamFromBuffer(void* buffer, unsigned int size)
+{
+    FILE* const tempStream = tmpfile();
     fwrite(buffer, size, 1, tempStream);
     fflush(tempStream);
     rewind(tempStream);
@@ -497,9 +485,8 @@ FILE * zZbdManager::CreateTempReadStreamFromBuffer(
  * @recoil-artifact defines .text recoil:function:0x4c07c0: zZbdManager::RemoveTempFiles
  * Purpose: remove CRT temp files associated with ZBD streaming.
  */
-void zZbdManager::RemoveTempFiles(
-    FILE *tempStream
-) {
+void zZbdManager::RemoveTempFiles(FILE* tempStream)
+{
     (void)tempStream;
 
     _rmtmp();

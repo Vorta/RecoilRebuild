@@ -11,7 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace CZSound {
+namespace CZSound
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-gwsoundnew
      * @recoil-artifact defines .text recoil:function:0x4529c0: CZSound::gwSoundNew
@@ -20,8 +21,9 @@ namespace CZSound {
      * Purpose: allocate a sound node, seed default bounds and attenuation
      * state, activate it, and register it with the sound type list.
      */
-    CZNodePartial *__cdecl gwSoundNew() {
-        CZNodePartial *const node = CZClass::gwNodeNew();
+    CZNodePartial* __cdecl gwSoundNew()
+    {
+        CZNodePartial* const node = CZClass::gwNodeNew();
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x76, "Null node pointer.");
             return 0;
@@ -36,8 +38,7 @@ namespace CZSound {
         node->flags |= 0x100;
         node->classId = 10;
 
-        CZSoundDataPartial *const soundData =
-            (CZSoundDataPartial *)(calloc(1, sizeof(CZSoundDataPartial)));
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(calloc(1, sizeof(CZSoundDataPartial)));
         node->classData = soundData;
         soundData->sample = 0;
         soundData->playHandle = 0;
@@ -64,19 +65,20 @@ namespace CZSound {
      * Purpose: stop and release active playback, reject deletion while attached
      * to world nodes, free world attachment storage, and free the node.
      */
-    int __fastcall DeleteNode(CZNodePartial * node) {
+    int __fastcall DeleteNode(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0xc3, "Null node pointer.");
             return 5;
         }
 
-        CZSoundDataPartial *soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0xc4, "Null class data pointer");
             return 5;
         }
 
-        zSndPlayHandle *playHandle = soundData->playHandle;
+        zSndPlayHandle* playHandle = soundData->playHandle;
         if (playHandle != 0) {
             playHandle->StopIfActive();
             if ((soundData->runtimeFlags & 0x08) != 0) {
@@ -114,10 +116,8 @@ namespace CZSound {
      * Purpose: validate sound parent and child nodes, then remove the child
      * through the shared zClass child-list helper.
      */
-    int __fastcall RemoveChild(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall RemoveChild(CZNodePartial * parent, CZNodePartial * child)
+    {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x100, "Null node pointer.");
             return 5;
@@ -138,16 +138,14 @@ namespace CZSound {
      * Purpose: copy the sample-set name into the sound data, resolve the sound
      * sample, reset playback, and mark the runtime state dirty.
      */
-    int __fastcall SetSampleSetByName(
-        CZNodePartial * node,
-        const char *name
-    ) {
+    int __fastcall SetSampleSetByName(CZNodePartial * node, const char* name)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x11e, "Null node pointer.");
             return 5;
         }
 
-        CZSoundDataPartial *const soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x11f, "Null class data pointer");
             return 5;
@@ -175,22 +173,20 @@ namespace CZSound {
      * Purpose: toggle sound-node activity, stopping managed playback when the
      * node is deactivated.
      */
-    int __fastcall gwSoundSetActive(
-        CZNodePartial * node,
-        int active
-    ) {
+    int __fastcall gwSoundSetActive(CZNodePartial * node, int active)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x149, "Null node pointer.");
             return 5;
         }
 
-        CZSoundDataPartial *const soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x14a, "Null class data pointer");
             return 5;
         }
 
-        zSndPlayHandle *const playHandle = soundData->playHandle;
+        zSndPlayHandle* const playHandle = soundData->playHandle;
         if (playHandle != 0 && active == 0) {
             playHandle->StopIfActive();
             if ((soundData->runtimeFlags & 0x08) != 0) {
@@ -217,18 +213,14 @@ namespace CZSound {
      * Purpose: store the sound node's local position and mark transform and
      * playback state dirty.
      */
-    int __fastcall gwSoundSetPosition(
-        CZNodePartial * node,
-        float x,
-        float y,
-        float z
-    ) {
+    int __fastcall gwSoundSetPosition(CZNodePartial * node, float x, float y, float z)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x17e, "Null node pointer.");
             return 5;
         }
 
-        CZSoundDataPartial *const soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x17f, "Null class data pointer");
             return 5;
@@ -249,18 +241,14 @@ namespace CZSound {
      * Purpose: copy the sound node's local position into the caller-provided
      * output coordinates.
      */
-    int __fastcall gwSoundGetPosition(
-        CZNodePartial * node,
-        float *outX,
-        float *outY,
-        float *outZ
-    ) {
+    int __fastcall gwSoundGetPosition(CZNodePartial * node, float* outX, float* outY, float* outZ)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x1d0, "Null node pointer.");
             return 5;
         }
 
-        CZSoundDataPartial *const soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x1d1, "Null class data pointer");
             return 5;
@@ -280,7 +268,8 @@ namespace CZSound {
      * Purpose: update or create positional and non-positional playback handles
      * for active sound nodes, then clear the dirty playback flag.
      */
-    int __fastcall UpdatePlayback(CZNodePartial * node) {
+    int __fastcall UpdatePlayback(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x224, "Null node pointer.");
             return 5;
@@ -290,14 +279,14 @@ namespace CZSound {
             return 0;
         }
 
-        CZSoundDataPartial *soundData = (CZSoundDataPartial *)(node->classData);
+        CZSoundDataPartial* soundData = (CZSoundDataPartial*)(node->classData);
         if (soundData == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Sound.c", 0x22a, "Null class data pointer");
             return 5;
         }
 
-        if (soundData->playHandle == 0 &&
-            (CZClass::gwNodeGetRoot(node) != node || (soundData->runtimeFlags & 0x02) != 0)) {
+        if (soundData->playHandle == 0
+            && (CZClass::gwNodeGetRoot(node) != node || (soundData->runtimeFlags & 0x02) != 0)) {
             soundData->runtimeFlags |= 0x04;
         }
 
@@ -305,11 +294,7 @@ namespace CZSound {
             ComputeWorldTransform(node, soundData);
             if (soundData->playHandle == 0) {
                 if (soundData->sample != 0) {
-                    soundData->playHandle = soundData->sample->PlayA3D(
-                        &soundData->worldPos,
-                        1.0f,
-                        0
-                    );
+                    soundData->playHandle = soundData->sample->PlayA3D(&soundData->worldPos, 1.0f, 0);
                     if (zSndPlayHandleTryEnableManaged(soundData->playHandle) != 0) {
                         soundData->runtimeFlags |= 0x08;
                     }
@@ -339,31 +324,28 @@ namespace CZSound {
      * world position in sound runtime data.
      * The matrix stack is restored before returning.
      */
-    int __fastcall ComputeWorldTransform(
-        CZNodePartial * node,
-        CZSoundDataPartial * soundData
-    ) {
-        zVec3 localPoint = {0.0f, 0.0f, 0.0f};
-        zMat4x3 slotBuffer = {0};
+    int __fastcall ComputeWorldTransform(CZNodePartial * node, CZSoundDataPartial * soundData)
+    {
+        zVec3 localPoint = { 0.0f, 0.0f, 0.0f };
+        zMat4x3 slotBuffer = { 0 };
 
-        zMath::MatStackPushPtr((float *)(&slotBuffer));
+        zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
 
         zVec3 worldPoint = localPoint;
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3 *matrix = (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
-            worldPoint.x = localPoint.x * matrix->xx + localPoint.y * matrix->yx +
-                           localPoint.z * matrix->zx + matrix->posX;
-            worldPoint.z = localPoint.x * matrix->xz + localPoint.y * matrix->yz +
-                           localPoint.z * matrix->zz + matrix->posZ;
-            worldPoint.y = localPoint.x * matrix->xy + localPoint.y * matrix->yy +
-                           localPoint.z * matrix->zy + matrix->posY;
+            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
+            worldPoint.x
+                = localPoint.x * matrix->xx + localPoint.y * matrix->yx + localPoint.z * matrix->zx + matrix->posX;
+            worldPoint.z
+                = localPoint.x * matrix->xz + localPoint.y * matrix->yz + localPoint.z * matrix->zz + matrix->posZ;
+            worldPoint.y
+                = localPoint.x * matrix->xy + localPoint.y * matrix->yy + localPoint.z * matrix->zy + matrix->posY;
         }
 
         soundData->worldPos = worldPoint;
         zMath::MatStackPopPtr();
         return 0;
     }
-
 }

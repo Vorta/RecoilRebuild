@@ -12,39 +12,39 @@
 /**
  * Purpose: store the CRT basename component during ZRDR path resolution.
  */
-extern "C" char g_zRdr_SplitFileNameBuf[0x100] = {0};
+extern "C" char g_zRdr_SplitFileNameBuf[0x100] = { 0 };
 /**
  * Purpose: store the CRT extension component during ZRDR path resolution.
  */
-extern "C" char g_zRdr_SplitExtBuf[0x100] = {0};
+extern "C" char g_zRdr_SplitExtBuf[0x100] = { 0 };
 /**
  * Purpose: store joined search-directory and filename probes.
  */
-extern "C" char g_zRdr_PathJoinBuf[0x100] = {0};
+extern "C" char g_zRdr_PathJoinBuf[0x100] = { 0 };
 /**
  * Purpose: store the resolved path returned from ZRDR search-path lookup.
  */
-extern "C" char g_zRdr_ResolvedPathBuf[0x100] = {0};
+extern "C" char g_zRdr_ResolvedPathBuf[0x100] = { 0 };
 /**
  * Purpose: store the CRT directory component during ZRDR path resolution.
  */
-extern "C" char g_zRdr_SplitDirBuf[0x100] = {0};
+extern "C" char g_zRdr_SplitDirBuf[0x100] = { 0 };
 /**
  * Purpose: store the CRT drive component during ZRDR path resolution.
  */
-extern "C" char g_zRdr_SplitDriveBuf[4] = {0};
+extern "C" char g_zRdr_SplitDriveBuf[4] = { 0 };
 /**
  * Purpose: store the temporary ZRDR search-path list used by scoped lookups.
  */
-extern "C" zArchiveList *g_zRdr_ScratchSearchPathList = 0;
+extern "C" zArchiveList* g_zRdr_ScratchSearchPathList = 0;
 /**
  * Purpose: store the odometer digits for active wildcard path expansion.
  */
-extern "C" int g_zUtil_ZRDR_WildcardDigits[5] = {0};
+extern "C" int g_zUtil_ZRDR_WildcardDigits[5] = { 0 };
 /**
  * Purpose: store the active in-place wildcard path string.
  */
-extern "C" char *g_zUtil_ZRDR_WildcardPath = 0;
+extern "C" char* g_zUtil_ZRDR_WildcardPath = 0;
 /**
  * Purpose: store the number of active wildcard placeholders, capped at five.
  */
@@ -58,7 +58,7 @@ extern "C" int g_zUtil_ZRDR_WildcardReserved = 0;
 /**
  * Purpose: store pointers to wildcard placeholder bytes inside the active path.
  */
-extern "C" char *g_zUtil_ZRDR_WildcardStarPtrs[5] = {0};
+extern "C" char* g_zUtil_ZRDR_WildcardStarPtrs[5] = { 0 };
 /**
  * Purpose: delimit semicolon-separated ZRDR search paths for CRT tokenization.
  */
@@ -75,14 +75,12 @@ namespace zReader {
  * Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
  * Purpose: test whether a path exists for ZRDR file lookup.
  */
-int __fastcall FileExists(
-    const char *path
-) {
+int __fastcall FileExists(const char* path)
+{
     const int accessResult = _access(path, 0);
     return accessResult == 0;
 }
 } // namespace zReader
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zreader-fileexists-wrapper
@@ -91,12 +89,10 @@ int __fastcall FileExists(
  *
  * Purpose: expose zReader::FileExists through the original wrapper entry point.
  */
-extern "C" int __fastcall zReaderFileExistsWrapper(
-    const char *path
-) {
+extern "C" int __fastcall zReaderFileExistsWrapper(const char* path)
+{
     return zReader::FileExists(path);
 }
-
 
 namespace zUtil {
 /**
@@ -106,9 +102,8 @@ namespace zUtil {
  *
  * Purpose: return the file size for a resolved ZRDR path.
  */
-int __fastcall zRdrGetFileSize(
-    FILE *fileHandle
-) {
+int __fastcall zRdrGetFileSize(FILE* fileHandle)
+{
     if (fileHandle == 0) {
         return 0;
     }
@@ -121,7 +116,6 @@ int __fastcall zRdrGetFileSize(
 }
 } // namespace zUtil
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-createsearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5ca0: zRdrCreateSearchPathList.
@@ -129,14 +123,12 @@ int __fastcall zRdrGetFileSize(
  *
  * Purpose: allocate a search-path list and populate it from a path string.
  */
-extern "C" zArchiveList *__fastcall zRdrCreateSearchPathList(
-    const char *pathText
-) {
-    zArchiveList *list = zArchiveListNew();
+extern "C" zArchiveList* __fastcall zRdrCreateSearchPathList(const char* pathText)
+{
+    zArchiveList* list = zArchiveListNew();
     zUtil::zRdrAddSearchPaths(list, pathText);
     return list;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freesearchpathlist
@@ -145,14 +137,12 @@ extern "C" zArchiveList *__fastcall zRdrCreateSearchPathList(
  *
  * Purpose: free search-path payload strings and destroy the list container.
  */
-extern "C" zArchiveList *__fastcall zRdrFreeSearchPathList(
-    zArchiveList *list
-) {
+extern "C" zArchiveList* __fastcall zRdrFreeSearchPathList(zArchiveList* list)
+{
     zRdrFreePathList(list);
     zArchiveListFree(list);
     return 0;
 }
-
 
 namespace zUtil {
 /**
@@ -160,22 +150,20 @@ namespace zUtil {
  * @recoil-artifact defines .text recoil:function:0x4a5ce0: zUtil::zRdrAddSearchPaths.
  * Purpose: split and append semicolon-delimited paths to a search-path list.
  */
-void __fastcall zRdrAddSearchPaths(
-    zArchiveList *list,
-    const char *pathText
-) {
+void __fastcall zRdrAddSearchPaths(zArchiveList* list, const char* pathText)
+{
     if (pathText == 0) {
         return;
     }
 
-    zArchiveList *activeList = list;
+    zArchiveList* activeList = list;
     while (true) {
         if (activeList != 0) {
-            char *copy = _strdup(pathText);
-            char *token = strtok(copy, g_zRdr_PathDelimStr);
+            char* copy = _strdup(pathText);
+            char* token = strtok(copy, g_zRdr_PathDelimStr);
             while (token != 0) {
-                if (zReaderFileExistsWrapper(token) != 0 &&
-                    zArchiveListFind(activeList, zRdrStrCmpPredicate, token) == 0) {
+                if (zReaderFileExistsWrapper(token) != 0
+                    && zArchiveListFind(activeList, zRdrStrCmpPredicate, token) == 0) {
                     zArchiveListAddHead(activeList, _strdup(token));
                 }
 
@@ -185,7 +173,7 @@ void __fastcall zRdrAddSearchPaths(
             free(copy);
         }
 
-        zArchiveList *scratchList = g_zRdr_ScratchSearchPathList;
+        zArchiveList* scratchList = g_zRdr_ScratchSearchPathList;
         if (activeList == scratchList && activeList != 0) {
             return;
         }
@@ -200,7 +188,6 @@ void __fastcall zRdrAddSearchPaths(
 }
 } // namespace zUtil
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-strcmppredicate
  * @recoil-artifact defines .text recoil:function:0x4a5da0: zRdrStrCmpPredicate.
@@ -208,17 +195,14 @@ void __fastcall zRdrAddSearchPaths(
  *
  * Purpose: compare a payload string against the requested string key.
  */
-extern "C" int __fastcall zRdrStrCmpPredicate(
-    void *str1,
-    void *str2
-) {
+extern "C" int __fastcall zRdrStrCmpPredicate(void* str1, void* str2)
+{
     if (str1 == 0 || str2 == 0) {
         return 1;
     }
 
-    return strcmp((const char *)(str1), (const char *)(str2));
+    return strcmp((const char*)(str1), (const char*)(str2));
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freescratchsearchpathlist
@@ -227,14 +211,14 @@ extern "C" int __fastcall zRdrStrCmpPredicate(
  *
  * Purpose: release the scratch search-path list and clear its global pointer.
  */
-extern "C" void __cdecl zRdrFreeScratchSearchPathList() {
+extern "C" void __cdecl zRdrFreeScratchSearchPathList()
+{
     if (g_zRdr_ScratchSearchPathList != 0) {
         zRdrFreeSearchPathList(g_zRdr_ScratchSearchPathList);
     }
 
     g_zRdr_ScratchSearchPathList = 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-freepathlist
@@ -243,37 +227,29 @@ extern "C" void __cdecl zRdrFreeScratchSearchPathList() {
  *
  * Purpose: free every search-path string payload from a search-path list.
  */
-extern "C" void __fastcall zRdrFreePathList(zArchiveList *list) {
-    zArchiveList *target = list;
+extern "C" void __fastcall zRdrFreePathList(zArchiveList* list)
+{
+    zArchiveList* target = list;
     if (target == 0) {
         target = g_zRdr_ScratchSearchPathList;
     }
 
-    void *payload = zArchiveListRemoveHead(target);
+    void* payload = zArchiveListRemoveHead(target);
     while (payload != 0) {
         free(payload);
         payload = zArchiveListRemoveHead(target);
     }
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-resolvepathinsearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5e50: zRdrResolvePathInSearchPathList.
  * Purpose: resolve a filename through the supplied or scratch ZRDR search path.
  */
-extern "C" char *__fastcall zRdrResolvePathInSearchPathList(
-    zArchiveList *searchPathList,
-    const char *filename
-) {
-    zArchiveList *list = searchPathList;
-    _splitpath(
-        filename,
-        g_zRdr_SplitDriveBuf,
-        g_zRdr_SplitDirBuf,
-        g_zRdr_SplitFileNameBuf,
-        g_zRdr_SplitExtBuf
-    );
+extern "C" char* __fastcall zRdrResolvePathInSearchPathList(zArchiveList* searchPathList, const char* filename)
+{
+    zArchiveList* list = searchPathList;
+    _splitpath(filename, g_zRdr_SplitDriveBuf, g_zRdr_SplitDirBuf, g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
     sprintf(g_zRdr_ResolvedPathBuf, "%s%s", g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
 
     while (true) {
@@ -281,13 +257,10 @@ extern "C" char *__fastcall zRdrResolvePathInSearchPathList(
             list = g_zRdr_ScratchSearchPathList;
         }
 
-        char *matchedDir = (char *)(zArchiveListFindCompare(
-            list,
-            zRdrSearchPathContainsFilePredicate,
-            g_zRdr_ResolvedPathBuf
-        ));
+        char* matchedDir
+            = (char*)(zArchiveListFindCompare(list, zRdrSearchPathContainsFilePredicate, g_zRdr_ResolvedPathBuf));
         if (matchedDir == 0) {
-            zArchiveList *scratch = g_zRdr_ScratchSearchPathList;
+            zArchiveList* scratch = g_zRdr_ScratchSearchPathList;
             if (scratch == 0 || list == scratch) {
                 return 0;
             }
@@ -311,38 +284,30 @@ extern "C" char *__fastcall zRdrResolvePathInSearchPathList(
     }
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-searchpathcontainsfilepredicate
  * @recoil-artifact defines .text recoil:function:0x4a5f20: zRdrSearchPathContainsFilePredicate.
  * Purpose: join a search directory with a filename and report whether it exists.
  */
-extern "C" int __fastcall zRdrSearchPathContainsFilePredicate(
-    void *searchDir,
-    void *filename
-) {
-    sprintf(g_zRdr_PathJoinBuf, "%s\\%s", (const char *)(searchDir), (const char *)(filename));
+extern "C" int __fastcall zRdrSearchPathContainsFilePredicate(void* searchDir, void* filename)
+{
+    sprintf(g_zRdr_PathJoinBuf, "%s\\%s", (const char*)(searchDir), (const char*)(filename));
     return zReader::FileExists(g_zRdr_PathJoinBuf) == 0 ? 1 : 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-openfileresolved
  * @recoil-artifact defines .text recoil:function:0x4a5f50: zRdrOpenFileResolved.
  * Purpose: open the resolved ZRDR search-path match, or fall back to the raw filename.
  */
-extern "C" FILE *__fastcall zRdrOpenFileResolved(
-    zArchiveList *searchPathList,
-    const char *filename,
-    const char *mode
-) {
-    char *resolvedPath = zRdrResolvePathInSearchPathList(searchPathList, filename);
+extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, const char* filename, const char* mode)
+{
+    char* resolvedPath = zRdrResolvePathInSearchPathList(searchPathList, filename);
     if (resolvedPath != 0) {
         return fopen(resolvedPath, mode);
     }
     return fopen(filename, mode);
 }
-
 
 /**
  * Original-source helper evidence: no standalone retail function is present;
@@ -350,28 +315,22 @@ extern "C" FILE *__fastcall zRdrOpenFileResolved(
  * loop after initializing or incrementing the digit state.
  * Purpose: update wildcard digit placeholders in the active ZRDR wildcard path.
  */
-#define ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS()                                \
-    do {                                                                  \
-        for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {  \
-            char digitText[16];                                           \
-            sprintf(                                                      \
-                digitText,                                                \
-                "%d",                                                    \
-                g_zUtil_ZRDR_WildcardDigits[i]                            \
-            );                                                            \
-            *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];             \
-        }                                                                 \
+#define ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS()                                                                             \
+    do {                                                                                                               \
+        for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {                                                \
+            char digitText[16];                                                                                        \
+            sprintf(digitText, "%d", g_zUtil_ZRDR_WildcardDigits[i]);                                                  \
+            *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];                                                          \
+        }                                                                                                              \
     } while (0)
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-initwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a5f90: zUtil_ZRDR::InitWildcardPath.
  * Purpose: initialize wildcard path state from a path template.
  */
-extern "C" char *__fastcall zRdrInitWildcardPath(
-    char *pattern
-) {
+extern "C" char* __fastcall zRdrInitWildcardPath(char* pattern)
+{
     if (pattern == 0) {
         return 0;
     }
@@ -403,13 +362,13 @@ extern "C" char *__fastcall zRdrInitWildcardPath(
     return g_zUtil_ZRDR_WildcardPath;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-nextwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a6070: zUtil_ZRDR::NextWildcardPath.
  * Purpose: advance wildcard digits and return the next generated path.
  */
-extern "C" char *__cdecl zRdrNextWildcardPath() {
+extern "C" char* __cdecl zRdrNextWildcardPath()
+{
     int carryOut = 0;
     int digitIndex = 0;
     if (g_zUtil_ZRDR_WildcardStarCount > 0) {
@@ -436,7 +395,6 @@ extern "C" char *__cdecl zRdrNextWildcardPath() {
 
 #undef ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-shutdownwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a6100: zRdrShutdownWildcardPath.
@@ -444,27 +402,25 @@ extern "C" char *__cdecl zRdrNextWildcardPath() {
  *
  * Purpose: free the active wildcard path buffer and reset wildcard state.
  */
-extern "C" int __cdecl zRdrShutdownWildcardPath() {
+extern "C" int __cdecl zRdrShutdownWildcardPath()
+{
     zRdrFreeScratchSearchPathList();
     return 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zreader-readstring-gamezrecoil-zreader-zreader-cpp
  * @recoil-artifact defines .text recoil:function:0x4a6110: zReaderReadString (GameZRecoil/zReader/zreader.cpp).
  * Purpose: Reads a length-prefixed string payload, allocates a nul-terminated buffer, and returns bytes consumed.
  */
-extern "C" int __fastcall zReaderReadString(
-    void *hFile,
-    zReader::Value *outString
-) {
+extern "C" int __fastcall zReaderReadString(void* hFile, zReader::Value* outString)
+{
     DWORD bytesRead;
     unsigned int length;
     ReadFile((HANDLE)(hFile), &length, 4, &bytesRead, 0);
     int result = (int)(bytesRead);
 
-    char *buffer = (char *)(malloc(length + 1));
+    char* buffer = (char*)(malloc(length + 1));
     outString->str = buffer;
     memset(buffer, 0, length + 1);
 
@@ -476,7 +432,6 @@ extern "C" int __fastcall zReaderReadString(
     return result;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-reset
  * @recoil-artifact defines .text recoil:function:0x4a6190: zIndexArchive::zIndexArchive.
@@ -484,16 +439,15 @@ extern "C" int __fastcall zReaderReadString(
  *
  * Purpose: initialize archive fields to the closed empty state.
  */
-zIndexArchive::zIndexArchive() {
+zIndexArchive::zIndexArchive()
+{
     reservedFree = 0;
     hFile = INVALID_HANDLE_VALUE;
     recordCapacity = 0;
     recordCount = 0;
     records = 0;
     dirty = 0;
-
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-destroy
@@ -502,22 +456,21 @@ zIndexArchive::zIndexArchive() {
  *
  * Purpose: close/free archive records and release the auxiliary reserved buffer.
  */
-zIndexArchive::~zIndexArchive() {
+zIndexArchive::~zIndexArchive()
+{
     CloseAndFreeRecords();
     if (reservedFree != 0) {
         free(reservedFree);
     }
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-init
  * @recoil-artifact defines .text recoil:function:0x4a61d0: zIndexArchive::Init.
  * Purpose: open an archive file for reading and load its trailing index.
  */
-int zIndexArchive::Init(
-    const char *filepath
-) {
+int zIndexArchive::Init(const char* filepath)
+{
     HANDLE file = CreateFileA(
         filepath,
         GENERIC_READ,
@@ -534,7 +487,7 @@ int zIndexArchive::Init(
         initialized = LoadIndexFromTail();
     } else {
         const DWORD lastError = GetLastError();
-        char *message;
+        char* message;
         FormatMessageA(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
             0,
@@ -557,36 +510,26 @@ int zIndexArchive::Init(
     return initialized;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-opencreatewrite
  * @recoil-artifact defines .text recoil:function:0x4a6270: zIndexArchive::OpenCreateWrite.
  * Purpose: create an archive file for writing and initialize record storage.
  */
-int zIndexArchive::OpenCreateWrite(
-    const char *filepath
-) {
-    HANDLE file = CreateFileA(
-        filepath,
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        0,
-        CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,
-        0
-    );
+int zIndexArchive::OpenCreateWrite(const char* filepath)
+{
+    HANDLE file = CreateFileA(filepath, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
     hFile = file;
     return file != INVALID_HANDLE_VALUE ? 1 : 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-closeandfreerecords
  * @recoil-artifact defines .text recoil:function:0x4a62b0: zIndexArchive::CloseAndFreeRecords.
  * Purpose: flush dirty records, close the file handle, and reset record storage.
  */
-int zIndexArchive::CloseAndFreeRecords() {
+int zIndexArchive::CloseAndFreeRecords()
+{
     if (dirty != 0) {
         FlushIndexToTail();
     }
@@ -601,7 +544,6 @@ int zIndexArchive::CloseAndFreeRecords() {
     return 1;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-ensurecapacity
  * @recoil-artifact defines .text recoil:function:0x4a62f0: zIndexArchive::EnsureCapacity.
@@ -609,9 +551,8 @@ int zIndexArchive::CloseAndFreeRecords() {
  *
  * Purpose: grow the record table capacity to hold the requested record count.
  */
-void zIndexArchive::EnsureCapacity(
-    unsigned int requiredCount
-) {
+void zIndexArchive::EnsureCapacity(unsigned int requiredCount)
+{
     if (requiredCount < recordCapacity) {
         return;
     }
@@ -623,9 +564,8 @@ void zIndexArchive::EnsureCapacity(
     }
 
     recordCapacity = newCapacity;
-    records = (zZarFileRecord *)(realloc(records, (size_t)(newCapacity) * sizeof(zZarFileRecord)));
+    records = (zZarFileRecord*)(realloc(records, (size_t)(newCapacity) * sizeof(zZarFileRecord)));
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-freerecordsandreset
@@ -634,7 +574,8 @@ void zIndexArchive::EnsureCapacity(
  *
  * Purpose: free the archive record table and restore the closed empty fields.
  */
-void zIndexArchive::FreeRecordsAndReset() {
+void zIndexArchive::FreeRecordsAndReset()
+{
     if (records == 0) {
         return;
     }
@@ -648,37 +589,31 @@ void zIndexArchive::FreeRecordsAndReset() {
     dirty = 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-flushindextotail
  * @recoil-artifact defines .text recoil:function:0x4a6360: zIndexArchive::FlushIndexToTail.
  * Purpose: append the record table and tail metadata to the archive file.
  */
-void zIndexArchive::FlushIndexToTail() {
+void zIndexArchive::FlushIndexToTail()
+{
     DWORD numberOfBytesWritten = 0;
     const unsigned int footerMagic = 1;
     const unsigned int recordBytes = recordCount * sizeof(zZarFileRecord);
-    unsigned int *const recordCountFooter = &recordCount;
+    unsigned int* const recordCountFooter = &recordCount;
     SetFilePointer((HANDLE)(hFile), 0, 0, FILE_END);
     WriteFile((HANDLE)(hFile), records, recordBytes, &numberOfBytesWritten, 0);
     WriteFile((HANDLE)(hFile), &footerMagic, sizeof(footerMagic), &numberOfBytesWritten, 0);
-    WriteFile(
-        (HANDLE)(hFile),
-        recordCountFooter,
-        sizeof(*recordCountFooter),
-        &numberOfBytesWritten,
-        0
-    );
+    WriteFile((HANDLE)(hFile), recordCountFooter, sizeof(*recordCountFooter), &numberOfBytesWritten, 0);
     dirty = 0;
 }
-
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-loadindexfromtail
  * @recoil-artifact defines .text recoil:function:0x4a63f0: zIndexArchive::LoadIndexFromTail.
  * Purpose: read and validate the archive index footer and record table.
  */
-int zIndexArchive::LoadIndexFromTail() {
+int zIndexArchive::LoadIndexFromTail()
+{
     if (GetFileSize((HANDLE)(hFile), 0) < 8) {
         return 0;
     }
@@ -689,13 +624,7 @@ int zIndexArchive::LoadIndexFromTail() {
     unsigned int footerMagic;
     unsigned int recordCountFromTail;
     ReadFile((HANDLE)(hFile), &footerMagic, sizeof(footerMagic), &numberOfBytesRead, 0);
-    ReadFile(
-        (HANDLE)(hFile),
-        &recordCountFromTail,
-        sizeof(recordCountFromTail),
-        &numberOfBytesRead,
-        0
-    );
+    ReadFile((HANDLE)(hFile), &recordCountFromTail, sizeof(recordCountFromTail), &numberOfBytesRead, 0);
 
     if (footerMagic != 1) {
         return 0;
@@ -710,19 +639,19 @@ int zIndexArchive::LoadIndexFromTail() {
     return 1;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-addfilerecord
  * @recoil-artifact defines .text recoil:function:0x4a64d0: zIndexArchive::AddFileRecord.
  * Purpose: append a named payload to the archive file and record its index data.
  */
 int zIndexArchive::AddFileRecord(
-    const char *name,
-    const void *data,
+    const char* name,
+    const void* data,
     unsigned int dataSize,
-    const char *sourceTempPathOrNull,
-    const zZarFileTime *sourceFileTimeOrNull
-) {
+    const char* sourceTempPathOrNull,
+    const zZarFileTime* sourceFileTimeOrNull
+)
+{
     const unsigned int oldRecordCount = recordCount;
     EnsureCapacity(oldRecordCount + 1);
 
@@ -752,7 +681,6 @@ int zIndexArchive::AddFileRecord(
     return numberOfBytesWritten == dataSize ? 1 : 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-findrecordbynameci
  * @recoil-artifact defines .text recoil:function:0x4a65d0: zIndexArchive::FindRecordByNameCI.
@@ -760,11 +688,10 @@ int zIndexArchive::AddFileRecord(
  *
  * Purpose: find an archive file record by case-insensitive name.
  */
-zZarFileRecord * zIndexArchive::FindRecordByNameCI(
-    const char *filename
-) {
+zZarFileRecord* zIndexArchive::FindRecordByNameCI(const char* filename)
+{
     for (unsigned int i = 0; i < recordCount; ++i) {
-        zZarFileRecord *record = &records[i];
+        zZarFileRecord* record = &records[i];
         if (_stricmp(filename, record->name) == 0) {
             return &records[i];
         }
@@ -773,17 +700,14 @@ zZarFileRecord * zIndexArchive::FindRecordByNameCI(
     return 0;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-openfilebyname
  * @recoil-artifact defines .text recoil:function:0x4a6630: zIndexArchive::OpenFileByName.
  * Purpose: open a file member from the archive and optionally return its size.
  */
-void * zIndexArchive::OpenFileByName(
-    const char *filename,
-    unsigned int *outSize
-) {
-    zZarFileRecord *record = FindRecordByNameCI(filename);
+void* zIndexArchive::OpenFileByName(const char* filename, unsigned int* outSize)
+{
+    zZarFileRecord* record = FindRecordByNameCI(filename);
     if (record == 0) {
         return INVALID_HANDLE_VALUE;
     }
@@ -796,18 +720,14 @@ void * zIndexArchive::OpenFileByName(
     return hFile;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-readfilebyname
  * @recoil-artifact defines .text recoil:function:0x4a6670: zIndexArchive::ReadFileByName.
  * Purpose: read a named archive member into the caller-provided buffer.
  */
-int zIndexArchive::ReadFileByName(
-    const char *filename,
-    void *buffer,
-    unsigned int *bufferSize
-) {
-    zZarFileRecord *const record = FindRecordByNameCI(filename);
+int zIndexArchive::ReadFileByName(const char* filename, void* buffer, unsigned int* bufferSize)
+{
+    zZarFileRecord* const record = FindRecordByNameCI(filename);
     if (record == 0) {
         return 0x10001;
     }

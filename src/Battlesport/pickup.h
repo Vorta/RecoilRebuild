@@ -18,33 +18,24 @@ struct zSndSample;
 struct zUtil_SaveGameState;
 
 struct PickupAirdropSpawnRef {
-    CZNodePartial *carrierNode;
-    CZNodePartial *dropAttachNode;
+    CZNodePartial* carrierNode;
+    CZNodePartial* dropAttachNode;
     zVec3 worldPos;
 
-    PickupAirdropSpawnRef * InitNodesFromCarrierNodeName(
-        const char *carrierNodeName
-    );
-    zVec3 * GetWorldPos();
+    PickupAirdropSpawnRef* InitNodesFromCarrierNodeName(const char* carrierNodeName);
+    zVec3* GetWorldPos();
     int CanSpawnWithClearance(float clearanceRadius);
     int SpawnPickupTypeAndRelay(int pickupTypeIndex);
-    static void __fastcall InitGlobalFromCarrierNodeName(
-        const char *carrierNodeName
-    );
+    static void __fastcall InitGlobalFromCarrierNodeName(const char* carrierNodeName);
     static void __cdecl ShutdownGlobal();
     static int __cdecl TrySpawnRandomPickupFromGlobal();
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupAirdropSpawnRef,
-        worldPos
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupAirdropSpawnRef, worldPos) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(PickupAirdropSpawnRef) == 0x14);
 
 struct PickupBvolHitCallbackContext {
     unsigned char unknown_00[0x24];
-    CZNodePartial *ownerNode;
+    CZNodePartial* ownerNode;
 };
 
 struct PickupNodeRuntimeFields {
@@ -56,22 +47,22 @@ struct PickupNodeRuntimeFields {
 
 struct PickupSpawnDef {
     int pickupId;
-    PickupType *pickupType;
+    PickupType* pickupType;
     int amount;
     zVec3 position;
     zVec3 rotation;
-    CZNodePartial *pickupObj;
+    CZNodePartial* pickupObj;
     int spawnParam;
     int refCount;
     float respawnDelay;
     unsigned char unknown_34[0x04];
     char name[0x18];
-    PickupSpawnDef *next;
+    PickupSpawnDef* next;
 };
 
 struct PickupParsedZrdEntry {
     int unknown_00;
-    PickupType *typeDesc;
+    PickupType* typeDesc;
     int amount;
     zVec3 position;
     zVec3 rotation;
@@ -80,54 +71,14 @@ struct PickupParsedZrdEntry {
     int unknown_2c;
     float respawnDelay;
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        typeDesc
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        amount
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        position
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        rotation
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        unknown_24
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        param
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        unknown_2c
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupParsedZrdEntry,
-        respawnDelay
-    ) == 0x30
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, typeDesc) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, amount) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, position) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, rotation) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, unknown_24) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, param) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, unknown_2c) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, respawnDelay) == 0x30);
 RECOIL_STATIC_ASSERT(sizeof(PickupParsedZrdEntry) == 0x34);
 
 struct PickupPkt11Delta {
@@ -154,48 +105,13 @@ struct PickupPkt11CreateDelta {
     float respawnDelay;
 };
 RECOIL_STATIC_ASSERT(sizeof(PickupPkt11CreateDelta) == 0x34);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        flags
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        pickupId
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        typeKeyIndex
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        amount
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        position
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        rotation
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt11CreateDelta,
-        respawnDelay
-    ) == 0x30
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, flags) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, pickupId) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, typeKeyIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, amount) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, position) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, rotation) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt11CreateDelta, respawnDelay) == 0x30);
 
 struct PickupPkt12AirdropSpawnChuteRelay {
     zNetworkPacketHeader header;
@@ -204,51 +120,33 @@ struct PickupPkt12AirdropSpawnChuteRelay {
     unsigned short reserved_16;
     int nextPickupId;
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt12AirdropSpawnChuteRelay,
-        spawnPos
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt12AirdropSpawnChuteRelay,
-        pickupTypeIndex
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupPkt12AirdropSpawnChuteRelay,
-        nextPickupId
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt12AirdropSpawnChuteRelay, spawnPos) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt12AirdropSpawnChuteRelay, pickupTypeIndex) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(PickupPkt12AirdropSpawnChuteRelay, nextPickupId) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(PickupPkt12AirdropSpawnChuteRelay) == 0x1c);
 
 struct PickupSpawnList {
-    void *unused;
-    PickupSpawnDef *head;
-    PickupSpawnDef *tail;
+    void* unused;
+    PickupSpawnDef* head;
+    PickupSpawnDef* tail;
     int count;
 
     static void __cdecl PrimaryInit();
     static void __cdecl NetCopyInit();
-    static void __fastcall RemoveAndFreeNode(
-        PickupSpawnDef *node,
-        PickupSpawnList *list
-    );
+    static void __fastcall RemoveAndFreeNode(PickupSpawnDef* node, PickupSpawnList* list);
     void Clear();
 };
 
 struct PickupRespawnEntry {
-    PickupSpawnDef *spawn;
+    PickupSpawnDef* spawn;
     float when;
-    PickupRespawnEntry *next;
+    PickupRespawnEntry* next;
 };
 
 struct PickupRespawnQueue {
-    void *unused;
-    PickupRespawnEntry *head;
-    PickupRespawnEntry *tail;
+    void* unused;
+    PickupRespawnEntry* head;
+    PickupRespawnEntry* tail;
     int count;
 
     static void __cdecl Init();
@@ -257,51 +155,38 @@ struct PickupRespawnQueue {
 };
 
 struct PickupType {
-    const char *weaponKeyName;
+    const char* weaponKeyName;
     int msgIdOrClassId;
     int typeIndex;
     int defaultAmount;
-    const char *logicalName;
+    const char* logicalName;
     int nameSuffixMax;
-    CZNodePartial *templateNode;
-    zSndSample *pickupSound;
-    zVidImagePartial *optMetaImage;
+    CZNodePartial* templateNode;
+    zSndSample* pickupSound;
+    zVidImagePartial* optMetaImage;
     int unknown_24;
-    OptCatalogEntryDef *optEntry;
+    OptCatalogEntryDef* optEntry;
     int weaponPresenceCount;
 
-    static PickupType *__fastcall GetByIndexPure(int pickupTypeIndex);
-    static PickupType *__fastcall GetByIndex(int pickupTypeIndex);
-    static int __fastcall FindByLogicalName(
-        const char *logicalName,
-        int *outTypeIndex
-    );
+    static PickupType* __fastcall GetByIndexPure(int pickupTypeIndex);
+    static PickupType* __fastcall GetByIndex(int pickupTypeIndex);
+    static int __fastcall FindByLogicalName(const char* logicalName, int* outTypeIndex);
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupType,
-        optMetaImage
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupType,
-        pickupSound
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupType, optMetaImage) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(PickupType, pickupSound) == 0x1c);
 RECOIL_STATIC_ASSERT(sizeof(PickupType) == 0x30);
 
 namespace PickupTypeKeyTable {
-int __fastcall FindIndex(const char *logicalName);
+int __fastcall FindIndex(const char* logicalName);
 }
 
 namespace PickupTypeMeta {
-PickupType *__fastcall FindByName(const char *typeName);
+PickupType* __fastcall FindByName(const char* typeName);
 }
 
 namespace Net {
-int __fastcall IsOptEntryActiveInAnySlot(OptCatalogEntryDef *optEntry);
+int __fastcall IsOptEntryActiveInAnySlot(OptCatalogEntryDef* optEntry);
 }
 
 extern PickupType g_PickupTypes[40];
@@ -310,146 +195,68 @@ extern PickupRespawnQueue g_PickupRespawnQueue;
 extern PickupSpawnList g_PickupSpawnList_Primary;
 extern int g_NextPickupId;
 extern int g_Pickup_LastVTOLDropIndex;
-extern CZNodePartial *g_Pickup_SceneNode;
+extern CZNodePartial* g_Pickup_SceneNode;
 extern PickupPkt11Delta g_PickupPkt11Flag2Delta;
 extern PickupPkt11Delta g_PickupPkt11Flag8Delta;
 extern PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay;
 
 extern "C" {
-extern PickupAirdropSpawnRef *g_Pickup_GlobalAirdropSpawnRef;
+extern PickupAirdropSpawnRef* g_Pickup_GlobalAirdropSpawnRef;
 }
 
 namespace Pickup {
-int __fastcall Init(
-    CZNodePartial *sceneNode,
-    const char *pickupsCfgPath
-);
+int __fastcall Init(CZNodePartial* sceneNode, const char* pickupsCfgPath);
 int __cdecl InitAndLoadPuppySpawns();
 void __cdecl Shutdown();
-int __fastcall ArchiveWriteAll(
-    zZbdSectionCallbackCtx *callbackCtx,
-    void *userData
-);
+int __fastcall ArchiveWriteAll(zZbdSectionCallbackCtx* callbackCtx, void* userData);
 void __fastcall ArchiveReadRecord(
-    zZbdSectionCallbackCtx *callbackCtx,
-    const char *sectionToken,
-    void *buffer,
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    void* buffer,
     unsigned int size,
-    void *userData
+    void* userData
 );
-int __fastcall ResolveOwnerFromBvolHit(CZNodePartial **nodeInOut);
-PickupSpawnDef *__fastcall FindSpawnByPickupId(
-    int pickupId,
-    PickupSpawnList *list
-);
-int __fastcall SpawnListContainsPickupId(
-    PickupSpawnDef *spawn,
-    PickupSpawnList *list
-);
+int __fastcall ResolveOwnerFromBvolHit(CZNodePartial** nodeInOut);
+PickupSpawnDef* __fastcall FindSpawnByPickupId(int pickupId, PickupSpawnList* list);
+int __fastcall SpawnListContainsPickupId(PickupSpawnDef* spawn, PickupSpawnList* list);
 void __cdecl ReconcilePrimaryAndNetworkCopySpawnLists();
-PickupSpawnDef *__fastcall GetSpawnDefFromNode(CZNodePartial *pickupNode);
-zVidImagePartial *__fastcall FindOptMetaImageByOptEntry(
-    OptCatalogEntryDef *optEntry
-);
-PickupType *__fastcall FindDroppableTypeForPlayerCurrentWeapon(
-    zUtil_SaveGameState *saveState
-);
-void __fastcall RemoveOtherSpawnsWithSameOptEntry(
-    OptCatalogEntryDef *optEntry,
-    CZNodePartial *keepPickupObj
-);
-int __fastcall SendPkt11Flag2Delta(PickupSpawnDef *spawn);
-int __fastcall SendPkt11Flag8Delta(PickupSpawnDef *spawn);
-void __fastcall SendPkt11CreateDelta(PickupSpawnDef *spawn);
-int __fastcall HandlePkt11SpawnDelta(
-    int senderPlayerId,
-    PickupPkt11CreateDelta *packet
-);
-int __fastcall HandlePkt12AirdropSpawnChuteRelay(
-    int senderPlayerId,
-    PickupPkt12AirdropSpawnChuteRelay *packet
-);
-void __fastcall SendPkt12AirdropSpawnChuteRelay(
-    int pickupTypeIndex,
-    zVec3 *spawnPos,
-    int nextPickupId
-);
-int __fastcall AssignBvolGroupAndId(CZNodePartial *pickupObj);
-CZNodePartial *__fastcall CreateObjectInstance(
-    int typeIndex,
-    int overrideAmount
-);
-PickupSpawnDef *__fastcall SpawnAt(
-    int typeIndex,
-    int amount,
-    zVec3 *position,
-    zVec3 *rotation,
-    int spawnParam
-);
-void __fastcall SpawnAtCarrierNodeByName(
-    const char *carrierNodeName,
-    int typeIndex,
-    int amount
-);
-int __fastcall SpawnWithAirdropChute(
-    int typeIndex,
-    zVec3 *position
-);
-PickupSpawnDef *__fastcall SpawnFromParsedZrdEntry(
-    PickupParsedZrdEntry *entry
-);
-PickupSpawnDef *__fastcall CreateSpawnDefAndLink(
-    CZNodePartial *pickupObj,
-    zVec3 *position,
-    zVec3 *rotation,
-    int spawnParam,
-    int linkToScene
-);
-void __fastcall RegisterExistingObject(
-    int unused,
-    CZNodePartial *pickupObj,
-    int eventValue
-);
-void __fastcall SetVariantFromTerrain(
-    CZNodePartial *pickupObj,
-    zVec3 *position
-);
-void __fastcall RespawnSpawnDef(PickupSpawnDef *spawn);
-int __fastcall MapVTOLDropGroupVariantToTypeIndex(
-    int dropGroupIndex,
-    int dropVariantIndex
-);
+PickupSpawnDef* __fastcall GetSpawnDefFromNode(CZNodePartial* pickupNode);
+zVidImagePartial* __fastcall FindOptMetaImageByOptEntry(OptCatalogEntryDef* optEntry);
+PickupType* __fastcall FindDroppableTypeForPlayerCurrentWeapon(zUtil_SaveGameState* saveState);
+void __fastcall RemoveOtherSpawnsWithSameOptEntry(OptCatalogEntryDef* optEntry, CZNodePartial* keepPickupObj);
+int __fastcall SendPkt11Flag2Delta(PickupSpawnDef* spawn);
+int __fastcall SendPkt11Flag8Delta(PickupSpawnDef* spawn);
+void __fastcall SendPkt11CreateDelta(PickupSpawnDef* spawn);
+int __fastcall HandlePkt11SpawnDelta(int senderPlayerId, PickupPkt11CreateDelta* packet);
+int __fastcall HandlePkt12AirdropSpawnChuteRelay(int senderPlayerId, PickupPkt12AirdropSpawnChuteRelay* packet);
+void __fastcall SendPkt12AirdropSpawnChuteRelay(int pickupTypeIndex, zVec3* spawnPos, int nextPickupId);
+int __fastcall AssignBvolGroupAndId(CZNodePartial* pickupObj);
+CZNodePartial* __fastcall CreateObjectInstance(int typeIndex, int overrideAmount);
+PickupSpawnDef* __fastcall SpawnAt(int typeIndex, int amount, zVec3* position, zVec3* rotation, int spawnParam);
+void __fastcall SpawnAtCarrierNodeByName(const char* carrierNodeName, int typeIndex, int amount);
+int __fastcall SpawnWithAirdropChute(int typeIndex, zVec3* position);
+PickupSpawnDef* __fastcall SpawnFromParsedZrdEntry(PickupParsedZrdEntry* entry);
+PickupSpawnDef* __fastcall
+CreateSpawnDefAndLink(CZNodePartial* pickupObj, zVec3* position, zVec3* rotation, int spawnParam, int linkToScene);
+void __fastcall RegisterExistingObject(int unused, CZNodePartial* pickupObj, int eventValue);
+void __fastcall SetVariantFromTerrain(CZNodePartial* pickupObj, zVec3* position);
+void __fastcall RespawnSpawnDef(PickupSpawnDef* spawn);
+int __fastcall MapVTOLDropGroupVariantToTypeIndex(int dropGroupIndex, int dropVariantIndex);
 int __cdecl SelectNextVTOLSpawnTypeIndex();
-const char *__fastcall SelectPuppiesZrdByDifficulty(
-    const char *extraSearchPath
-);
-int __fastcall SpawnListHasEntryNearXZ(
-    zVec3 *position,
-    float clearanceRadius
-);
-void __fastcall RemoveObject(
-    zEffectAnimEntry *animEntry,
-    CZNodePartial *pickupObj,
-    int eventValue
-);
-int __fastcall OnCollected(
-    CZNodePartial *hitNode,
-    zUtil_SaveGameState *saveState
-);
+const char* __fastcall SelectPuppiesZrdByDifficulty(const char* extraSearchPath);
+int __fastcall SpawnListHasEntryNearXZ(zVec3* position, float clearanceRadius);
+void __fastcall RemoveObject(zEffectAnimEntry* animEntry, CZNodePartial* pickupObj, int eventValue);
+int __fastcall OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* saveState);
 int __fastcall GrantAmmoOrWeapon(
-    PickupType *pickupType,
-    char *messageBuffer,
-    zUtil_SaveGameState *saveState,
+    PickupType* pickupType,
+    char* messageBuffer,
+    zUtil_SaveGameState* saveState,
     int weaponBankIndex,
     int weaponSideIndex,
     int pairedWeaponSideIndex,
     int overrideAmount
 );
-int __fastcall ApplyEffect(
-    int pickupTypeId,
-    int overrideAmount,
-    zUtil_SaveGameState *saveState
-);
+int __fastcall ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_SaveGameState* saveState);
 int __fastcall SetNextPickupId(int nextPickupId);
 int __cdecl GetNextPickupId();
 } // namespace Pickup
@@ -458,151 +265,34 @@ namespace PickupTypeTable {
 void __cdecl FreeOptMeta();
 }
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupBvolHitCallbackContext,
-        ownerNode
-    ) == 0x24
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupBvolHitCallbackContext, ownerNode) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(PickupBvolHitCallbackContext) == 0x28);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupNodeRuntimeFields,
-        pickupId
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupNodeRuntimeFields,
-        pickupTypeIndex
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupNodeRuntimeFields,
-        amount
-    ) == 0x20
-);
-RECOIL_STATIC_ASSERT(
-    sizeof(PickupNodeRuntimeFields) == sizeof(((CZNodePartial *)0)->name)
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        amount
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        position
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        rotation
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        pickupObj
-    ) == 0x24
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        pickupType
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        spawnParam
-    ) == 0x28
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        refCount
-    ) == 0x2c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        respawnDelay
-    ) == 0x30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        name
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnDef,
-        next
-    ) == 0x50
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupNodeRuntimeFields, pickupId) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(PickupNodeRuntimeFields, pickupTypeIndex) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(PickupNodeRuntimeFields, amount) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(PickupNodeRuntimeFields) == sizeof(((CZNodePartial*)0)->name));
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, amount) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, position) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, rotation) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, pickupObj) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, pickupType) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, spawnParam) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, refCount) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, respawnDelay) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, name) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnDef, next) == 0x50);
 RECOIL_STATIC_ASSERT(sizeof(PickupSpawnDef) == 0x54);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnEntry,
-        spawn
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnEntry,
-        when
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnEntry,
-        next
-    ) == 0x08
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnEntry, spawn) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnEntry, when) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnEntry, next) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(PickupRespawnEntry) == 0x0c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnList,
-        head
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnList,
-        tail
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupSpawnList,
-        count
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnList, head) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnList, tail) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupSpawnList, count) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(PickupSpawnList) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnQueue,
-        head
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnQueue,
-        tail
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        PickupRespawnQueue,
-        count
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnQueue, head) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnQueue, tail) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(PickupRespawnQueue, count) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(PickupRespawnQueue) == 0x10);
 
 #endif /* BATTLESPORT_PICKUP_H */

@@ -2,8 +2,8 @@
 
 #include "recoil/recoil_types.h"
 #include <stddef.h>
-#include <windows.h>
 #include <vector>
+#include <windows.h>
 
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/recoil_state_dialog_host.h"
@@ -55,26 +55,14 @@ struct HudWeatherFxPointBatch {
     float y;
     float z;
 
-    int ArePointBatchInsideRect(
-        int pointCount,
-        const HudUiRect *viewportRect
-    );
+    int ArePointBatchInsideRect(int pointCount, const HudUiRect* viewportRect);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
 
-struct HudUiSaveLoadEntry : WIN32_FIND_DATAA {
-};
+struct HudUiSaveLoadEntry : WIN32_FIND_DATAA { };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntry) == 0x140);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadEntry,
-        ftLastWriteTime
-    ) == 0x14
-);
-int __fastcall operator<(
-    const HudUiSaveLoadEntry &lhs,
-    const HudUiSaveLoadEntry &rhs
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadEntry, ftLastWriteTime) == 0x14);
+int __fastcall operator<(const HudUiSaveLoadEntry& lhs, const HudUiSaveLoadEntry& rhs);
 
 /**
  * Purpose: own the save/load directory records in the native VC5 vector.
@@ -94,24 +82,9 @@ struct HudUiSaveLoadListItem : HudUiPanel {
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadListItem) == 0x2ac);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadListItem,
-        parent
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadListItem,
-        layoutX
-    ) == 0x2a4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadListItem,
-        layoutY
-    ) == 0x2a8
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, parent) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, layoutX) == 0x2a4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadListItem, layoutY) == 0x2a8);
 struct HudUiSaveLoadDeleteButton : HudUiZrdWidget {
     void OnActivate();
 };
@@ -156,18 +129,8 @@ struct HudUiBackgroundConfirmQuit : HudUiBackground {
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiBackgroundConfirmQuit) == 0xabe4);
 RECOIL_STATIC_ASSERT(sizeof(HudUiConfirmQuitCancelButton) == 0x14c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBackgroundConfirmQuit,
-        okButton
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiBackgroundConfirmQuit,
-        cancelButton
-    ) == 0xaa98
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, okButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiBackgroundConfirmQuit, cancelButton) == 0xaa98);
 
 struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
     /**
@@ -178,7 +141,8 @@ struct HudUiSaveLoadGameNameInput : HudUiNumericTextInput {
      * Purpose: keep game-name text-buffer setup owned by the game-name input
      * member instead of the outer dialog constructor body.
      */
-    HudUiSaveLoadGameNameInput() {
+    HudUiSaveLoadGameNameInput()
+    {
         textInput.AllocTextBuffer(20);
         Update("");
         SetInputActive(1);
@@ -207,89 +171,22 @@ struct HudUiSaveLoadDialog : HudUiBackground {
     void DeleteSaveFile(int confirmDelete);
     void RefreshSaveFileList();
     void SetSelectedEntryIndex(int selectedEntryIndex);
-
 };
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, deleteButton) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, backButton) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, nextEntryButton) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, prevEntryButton) == 0xad30);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, gameNameInput) == 0xae7c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) == 0xb1f0);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) + offsetof(HudUiSaveLoadListItem, layoutX) == 0xb494);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, entryWidgets) + offsetof(HudUiSaveLoadListItem, layoutY) == 0xb498);
 RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        deleteButton
-    ) == 0xa94c
+    offsetof(HudUiSaveLoadDialog, entryWidgets) + sizeof(HudUiSaveLoadListItem) * 8
+        + offsetof(HudUiSaveLoadListItem, layoutY)
+    == 0xc9f8
 );
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        backButton
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        nextEntryButton
-    ) == 0xabe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        prevEntryButton
-    ) == 0xad30
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        gameNameInput
-    ) == 0xae7c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        entryWidgets
-    ) == 0xb1f0
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        entryWidgets
-    ) +
-        offsetof(
-            HudUiSaveLoadListItem,
-            layoutX
-        ) ==
-    0xb494
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        entryWidgets
-    ) +
-        offsetof(
-            HudUiSaveLoadListItem,
-            layoutY
-        ) ==
-    0xb498
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        entryWidgets
-    ) + sizeof(HudUiSaveLoadListItem) * 8 +
-        offsetof(
-            HudUiSaveLoadListItem,
-            layoutY
-        ) ==
-    0xc9f8
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        fileEntries
-    ) == 0xc9fc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveLoadDialog,
-        selectedEntryIndex
-    ) == 0xca0c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, fileEntries) == 0xc9fc);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveLoadDialog, selectedEntryIndex) == 0xca0c);
 
 struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
@@ -299,12 +196,7 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiSaveGameDialog,
-        primaryActionButton
-    ) == 0xca10
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiSaveGameDialog, primaryActionButton) == 0xca10);
 
 struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     HudUiLoadGamePrimaryActionButton primaryActionButton;
@@ -314,12 +206,7 @@ struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiLoadGameDialog,
-        primaryActionButton
-    ) == 0xca10
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiLoadGameDialog, primaryActionButton) == 0xca10);
 
 struct HudWeatherFxParticleQuad {
     int x;
@@ -333,24 +220,9 @@ struct HudWeatherFxParticleQuad {
     int slantOffset;
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxParticleQuad) == 0x20);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxParticleQuad,
-        texCoordUStart
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxParticleQuad,
-        texCoordUEnd
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxParticleQuad,
-        slantOffset
-    ) == 0x1c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, texCoordUStart) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, texCoordUEnd) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxParticleQuad, slantOffset) == 0x1c);
 
 struct HudWeatherFxCameraTargetHistory {
     float x;
@@ -359,12 +231,7 @@ struct HudWeatherFxCameraTargetHistory {
     float unknown0c;
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxCameraTargetHistory) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxCameraTargetHistory,
-        unknown0c
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxCameraTargetHistory, unknown0c) == 0x0c);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfx
@@ -373,53 +240,35 @@ RECOIL_STATIC_ASSERT(
  * lifetime causes VC5 to emit the deleting-destructor contribution.
  */
 struct HudWeatherFx : zVideoFxPass3Element {
-    HudWeatherFxParticleQuad *particleQuads;
+    HudWeatherFxParticleQuad* particleQuads;
     int maxParticles;
     int particleCount;
     unsigned short packedColor16;
     unsigned short reserved46;
     float alphaStartScale;
     float alphaEndScale;
-    CZNodePartial *camera;
+    CZNodePartial* camera;
     int activeParticleCount;
-    zVec3 *particlePositions[2];
+    zVec3* particlePositions[2];
     int sourceBufferIndex;
     int destBufferIndex;
     float windDirection;
     float windVelocity;
     float gravity;
     zVec3 basisVector;
-    const char *textureName;
-    zVidImagePartial *softwareImage;
-    zVideo_TextureRecordPartial *textureRecord;
+    const char* textureName;
+    zVidImagePartial* softwareImage;
+    zVideo_TextureRecordPartial* textureRecord;
 
     HudWeatherFx(int particleCount);
     virtual ~HudWeatherFx();
-    void ResetParticleSlot(
-        int particleIndex,
-        int unusedStack
-    );
+    void ResetParticleSlot(int particleIndex, int unusedStack);
     virtual void ApplyPass3();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFx) == 0x8c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFx,
-        particleQuads
-    ) == 0x38
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFx,
-        particlePositions
-    ) == 0x58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFx,
-        textureRecord
-    ) == 0x88
-);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFx, particleQuads) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFx, particlePositions) == 0x58);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFx, textureRecord) == 0x88);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfxsnow
@@ -437,12 +286,7 @@ struct HudWeatherFxSnow : HudWeatherFx {
     void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxSnow,
-        emitEnabled
-    ) == 0x8c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxSnow, emitEnabled) == 0x8c);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfxrain
@@ -460,12 +304,7 @@ struct HudWeatherFxRain : HudWeatherFx {
     void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxRain) == 0x98);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudWeatherFxRain,
-        emitEnabled
-    ) == 0x8c
-);
+RECOIL_STATIC_ASSERT(offsetof(HudWeatherFxRain, emitEnabled) == 0x8c);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.saveload-transition-state
@@ -490,42 +329,15 @@ struct RecoilStateSaveLoadTransition : RecoilStateDialogHost {
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();
-    static void __fastcall QueueOpenSaveDialog(
-        RecoilSaveLoadPresentationCaptureMode capturePresentationMode
-    );
+    static void __fastcall QueueOpenSaveDialog(RecoilSaveLoadPresentationCaptureMode capturePresentationMode);
     static void __fastcall QueueOpenLoadDialog(RecoilSaveLoadTransitionMode transitionMode);
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransition) == 0x1c);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateSaveLoadTransition,
-        m_dialog
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateSaveLoadTransition,
-        m_dialogKind
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateSaveLoadTransition,
-        m_capturePresentationMode
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateSaveLoadTransition,
-        m_transitionMode
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateSaveLoadTransition,
-        m_pausedAudioSnapshot
-    ) == 0x18
-);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_dialog) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_dialogKind) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_capturePresentationMode) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_transitionMode) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateSaveLoadTransition, m_pausedAudioSnapshot) == 0x18);
 
 union RecoilStateSaveLoadTransitionStorage {
     unsigned long align;
@@ -534,8 +346,7 @@ union RecoilStateSaveLoadTransitionStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateSaveLoadTransitionStorage) == 0x1c);
 
 extern RecoilStateSaveLoadTransitionStorage g_RecoilStateSaveLoadTransition;
-#define g_RecoilStateSaveLoadTransition \
-    (*(RecoilStateSaveLoadTransition *)&g_RecoilStateSaveLoadTransition)
+#define g_RecoilStateSaveLoadTransition (*(RecoilStateSaveLoadTransition*)&g_RecoilStateSaveLoadTransition)
 
 struct HudUiNewGamePanel_StartButton : HudUiZrdWidget {
     void OnActivate();
@@ -550,7 +361,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 /**
  * BN 0x41c313 installs the panel-owned option selector table after the shared base constructor.
  */
-struct HudUiNewGamePanel_Intensity : CHudRadioGroupWidget {};
+struct HudUiNewGamePanel_Intensity : CHudRadioGroupWidget { };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_Intensity) == 0x17c);
 
 struct HudUiNewGamePanel : HudUiBackground {
@@ -565,41 +376,11 @@ struct HudUiNewGamePanel : HudUiBackground {
     void StartGameFromFields();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel) == 0xb0d4);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNewGamePanel,
-        backWidget
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNewGamePanel,
-        startWidget
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNewGamePanel,
-        nameInput
-    ) == 0xabe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNewGamePanel,
-        intensity
-    ) == 0xaf58
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiNewGamePanel,
-        intensity
-    ) +
-        offsetof(
-            CHudRadioGroupWidget,
-            selectedIndex
-        ) ==
-    0xb0d0
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, backWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, startWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, nameInput) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) == 0xaf58);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNewGamePanel, intensity) + offsetof(CHudRadioGroupWidget, selectedIndex) == 0xb0d0);
 
 struct HudUiNewGamePanelOverlayOwner : RecoilStateDialogHost {
     virtual ~HudUiNewGamePanelOverlayOwner();
@@ -619,7 +400,7 @@ extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiOptionsPanelOverlayOwner *StaticInit();
+    static HudUiOptionsPanelOverlayOwner* StaticInit();
     static void RegisterAtExit();
     static void __cdecl AtExitDestructor();
     ~HudUiOptionsPanelOverlayOwner();
@@ -635,8 +416,7 @@ union HudUiOptionsPanelOverlayOwnerStorage {
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwnerStorage) == 0x08);
 
 extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
-#define g_HudUiOptionsPanelOverlayOwner \
-    (*(HudUiOptionsPanelOverlayOwner *)&g_HudUiOptionsPanelOverlayOwner)
+#define g_HudUiOptionsPanelOverlayOwner (*(HudUiOptionsPanelOverlayOwner*)&g_HudUiOptionsPanelOverlayOwner)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-confirm-quit.type
@@ -647,7 +427,7 @@ extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
 struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateConfirmQuit *StaticInit();
+    static RecoilStateConfirmQuit* StaticInit();
     static void RegisterAtExit();
     static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
@@ -664,8 +444,7 @@ union RecoilStateConfirmQuitStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuitStorage) == 0x08);
 
 extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
-#define g_RecoilState_ConfirmQuit \
-    (*(RecoilStateConfirmQuit *)&g_RecoilState_ConfirmQuit)
+#define g_RecoilState_ConfirmQuit (*(RecoilStateConfirmQuit*)&g_RecoilState_ConfirmQuit)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-controls.type
@@ -676,7 +455,7 @@ extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
 struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateControls *StaticInit();
+    static RecoilStateControls* StaticInit();
     static void RegisterAtExit();
     static void __cdecl AtExitDestructor();
     ~RecoilStateControls();
@@ -695,8 +474,7 @@ union RecoilStateControlsStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControlsStorage) == 0x08);
 
 extern RecoilStateControlsStorage g_RecoilStateControls;
-#define g_RecoilStateControls \
-    (*(RecoilStateControls *)&g_RecoilStateControls)
+#define g_RecoilStateControls (*(RecoilStateControls*)&g_RecoilStateControls)
 
 struct CHudUiControlsDialogResumeWidget : HudUiZrdWidget {
     /**
@@ -705,7 +483,10 @@ struct CHudUiControlsDialogResumeWidget : HudUiZrdWidget {
      * CHudUiControlsDialogResumeWidget vptr.
      * Purpose: construct the controls-dialog resume widget subobject.
      */
-    CHudUiControlsDialogResumeWidget() : HudUiZrdWidget() {}
+    CHudUiControlsDialogResumeWidget()
+        : HudUiZrdWidget()
+    {
+    }
     virtual void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(CHudUiControlsDialogResumeWidget) == 0x14c);
@@ -729,58 +510,28 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
 struct HudUiControlsDialog : HudUiBackground {
     CHudUiControlsDialogResumeWidget resumeWidget;
     HudUiControlsDialog_CommandsWidget commandsWidget;
-    struct CMouseOrJoystickSelector : CHudRadioGroupWidget {} mouseOrJoystickSelector;
-    struct CThrottleModeSelector : CHudRadioGroupWidget {} throttleModeSelector;
-    struct CSteeringModeSelector : CHudRadioGroupWidget {} steeringModeSelector;
-    struct CCursorModeSelector : CHudRadioGroupWidget {} cursorModeSelector;
-    struct CCameraModeSelector : CHudRadioGroupWidget {} cameraModeSelector;
+    struct CMouseOrJoystickSelector : CHudRadioGroupWidget {
+    } mouseOrJoystickSelector;
+    struct CThrottleModeSelector : CHudRadioGroupWidget {
+    } throttleModeSelector;
+    struct CSteeringModeSelector : CHudRadioGroupWidget {
+    } steeringModeSelector;
+    struct CCursorModeSelector : CHudRadioGroupWidget {
+    } cursorModeSelector;
+    struct CCameraModeSelector : CHudRadioGroupWidget {
+    } cameraModeSelector;
 
     HudUiControlsDialog();
     void Destructor();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog) == 0xb350);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        resumeWidget
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        commandsWidget
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        mouseOrJoystickSelector
-    ) == 0xabe4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        throttleModeSelector
-    ) == 0xad60
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        steeringModeSelector
-    ) == 0xaedc
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        cursorModeSelector
-    ) == 0xb058
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiControlsDialog,
-        cameraModeSelector
-    ) == 0xb1d4
-);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, resumeWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, commandsWidget) == 0xaa98);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, mouseOrJoystickSelector) == 0xabe4);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, throttleModeSelector) == 0xad60);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, steeringModeSelector) == 0xaedc);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, cursorModeSelector) == 0xb058);
+RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, cameraModeSelector) == 0xb1d4);
 
 struct HudUiCheatCodeTitleWidget : HudUiZrdWidget {
     /**
@@ -811,28 +562,10 @@ struct HudUiCheatCodeDialog : HudUiBackground {
     HudUiCheatCodeDialog();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiCheatCodeDialog) == 0xae0c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, titleWidget) == 0xa94c);
+RECOIL_STATIC_ASSERT(offsetof(HudUiCheatCodeDialog, cheatInputWidget) == 0xaa98);
 RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCheatCodeDialog,
-        titleWidget
-    ) == 0xa94c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCheatCodeDialog,
-        cheatInputWidget
-    ) == 0xaa98
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        HudUiCheatCodeDialog,
-        cheatInputWidget
-    ) +
-        offsetof(
-            HudUiNumericTextInput,
-            textInput
-        ) ==
-    0xabe4
+    offsetof(HudUiCheatCodeDialog, cheatInputWidget) + offsetof(HudUiNumericTextInput, textInput) == 0xabe4
 );
 
 /**
@@ -847,7 +580,7 @@ struct RecoilStateCheatCode : RecoilStateDialogHost {
 
     RecoilStateCheatCode();
     static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateCheatCode *ConstructGlobal();
+    static RecoilStateCheatCode* ConstructGlobal();
     static void StaticInit();
     static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
@@ -855,18 +588,8 @@ struct RecoilStateCheatCode : RecoilStateDialogHost {
     ~RecoilStateCheatCode();
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCode) == 0x10);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateCheatCode,
-        m_prevHalfResAdjustMode
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        RecoilStateCheatCode,
-        m_audioSnapshot
-    ) == 0x0c
-);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_prevHalfResAdjustMode) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
 
 union RecoilStateCheatCodeStorage {
     unsigned long align;
@@ -875,12 +598,11 @@ union RecoilStateCheatCodeStorage {
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCodeStorage) == 0x10);
 
 extern RecoilStateCheatCodeStorage g_RecoilStateCheatCode;
-#define g_RecoilStateCheatCode \
-    (*(RecoilStateCheatCode *)&g_RecoilStateCheatCode)
+#define g_RecoilStateCheatCode (*(RecoilStateCheatCode*)&g_RecoilStateCheatCode)
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
-extern zSndSample *g_Hud_LowMeterBeepSample;
-extern zSndSample *g_Hud_LowMeterLoopSample;
+extern zSndSample* g_Hud_LowMeterBeepSample;
+extern zSndSample* g_Hud_LowMeterLoopSample;
 extern int g_Hud_LowMeterLoopActive;
 extern float g_Hud_LowMeterBeepInterval;
 extern float g_Hud_LowMeterNextBeepTime;
@@ -899,7 +621,7 @@ int QueueCheatCodeState();
 } // namespace HudUiCallback
 
 namespace HudCheat {
-int __fastcall ExecuteCommandString(CString *commandString);
+int __fastcall ExecuteCommandString(CString* commandString);
 void ClearNanitePanelCheatSentinel();
 } // namespace HudCheat
 

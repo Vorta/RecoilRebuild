@@ -10,8 +10,7 @@ extern "C" {
  * passed to DIReportError when DirectInputCreateA fails.
  * Purpose: Supplies the original init source-file path for diagnostics.
  */
-char g_zInput_SourceFile_ZinInitCpp[0x28] =
-    "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
+char g_zInput_SourceFile_ZinInitCpp[0x28] = "D:\\Proj\\GameZRecoil\\zInput\\zin_init.cpp";
 }
 
 namespace zInput {
@@ -19,12 +18,8 @@ namespace zInput {
 const unsigned char kSuspendFlag = 2;
 const unsigned int kDirectInputVersion = 0x500;
 
-inline zInput_BindMapOverlayStackNode *__fastcall BindMapOverlayDetachHead(
-    zInput_BindMapOverlayStackNode **head
-);
-inline void __fastcall BindMapOverlayDeleteNodeList(
-    zInput_BindMapOverlayStackNode **head
-);
+inline zInput_BindMapOverlayStackNode* __fastcall BindMapOverlayDetachHead(zInput_BindMapOverlayStackNode** head);
+inline void __fastcall BindMapOverlayDeleteNodeList(zInput_BindMapOverlayStackNode** head);
 
 /**
  * Original-source helper evidence: zInput suspend flag test.
@@ -33,9 +28,8 @@ inline void __fastcall BindMapOverlayDeleteNodeList(
  * 0x471c80.
  * Purpose: Convert a device registry flag byte into an unsuspended boolean.
  */
-inline int IsUnsuspended(
-    unsigned char flags
-) {
+inline int IsUnsuspended(unsigned char flags)
+{
     return (~flags & kSuspendFlag) >> 1;
 }
 
@@ -48,17 +42,17 @@ inline int IsUnsuspended(
  * Purpose: perform zInput global-state static construction and register its
  * CRT shutdown callback.
  */
-void __cdecl GlobalStateStaticInitAndRegisterAtExit() {
+void __cdecl GlobalStateStaticInitAndRegisterAtExit()
+{
     GlobalStateStaticInit();
     GlobalStateRegisterAtExit();
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void (__cdecl *ZInputCrtInitializerFn)();
+typedef void(__cdecl* ZInputCrtInitializerFn)();
 /* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
 #pragma data_seg(".CRT$XCU")
-ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
-    GlobalStateStaticInitAndRegisterAtExit;
+ZInputCrtInitializerFn s_zInputCrtInit_GlobalState = GlobalStateStaticInitAndRegisterAtExit;
 #pragma data_seg()
 #endif
 
@@ -70,7 +64,8 @@ ZInputCrtInitializerFn s_zInputCrtInit_GlobalState =
  * to zInput_GlobalState::Constructor.
  * Purpose: run zInput global-state static construction.
  */
-void *GlobalStateStaticInit() {
+void* GlobalStateStaticInit()
+{
     return GlobalStateConstructor(&g_zInput_GlobalStateStorage);
 }
 
@@ -82,7 +77,8 @@ void *GlobalStateStaticInit() {
  * atexit provider.
  * Purpose: register the zInput global-state static destructor.
  */
-int GlobalStateRegisterAtExit() {
+int GlobalStateRegisterAtExit()
+{
     return atexit(GlobalStateAtExitDestructor);
 }
 
@@ -94,7 +90,8 @@ int GlobalStateRegisterAtExit() {
  * to zInput_GlobalState::Destructor.
  * Purpose: expose the zInput global-state destructor as a CRT atexit callback.
  */
-void __cdecl GlobalStateAtExitDestructor() {
+void __cdecl GlobalStateAtExitDestructor()
+{
     GlobalStateDestructor(&g_zInput_GlobalStateStorage);
 }
 
@@ -107,9 +104,8 @@ void __cdecl GlobalStateAtExitDestructor() {
  * size field intact.
  * Purpose: tear down the zInput bind-map overlay static lifetime state.
  */
-void __fastcall GlobalStateDestructor(
-    zInput_GlobalState *self
-) {
+void __fastcall GlobalStateDestructor(zInput_GlobalState* self)
+{
     BindMapOverlayDeleteNodeList(&self->bindMapOverlayNodeFreeList);
     BindMapOverlayDeleteNodeList(&self->bindMapOverlayNodeBlockList);
     self->bindMapOverlayNodeBlockList = 0;
@@ -131,9 +127,8 @@ void __fastcall GlobalStateDestructor(
  * duplicate aggregate mirror.
  * Purpose: initialize the zInput bind-map overlay static lifetime state.
  */
-void *__fastcall GlobalStateConstructor(
-    zInput_GlobalState *self
-) {
+void* __fastcall GlobalStateConstructor(zInput_GlobalState* self)
+{
     self->bindMapOverlayNodeBlockList = 0;
     self->bindMapOverlayNodeFreeList = 0;
     self->bindMapOverlayReserved = 0;
@@ -155,7 +150,8 @@ void *__fastcall GlobalStateConstructor(
  * tests in that order, sets only the needed suspend bits, stores 0 to
  * g_zInput_MouseActive, and tail-jumps to MouseUpdateAcquireState.
  */
-void __cdecl OnAppDeactivate() {
+void __cdecl OnAppDeactivate()
+{
     if (JoystickIsUnsuspended() != 0) {
         JoystickSuspend();
     }
@@ -182,7 +178,8 @@ void __cdecl OnAppDeactivate() {
  * then mouse suspend state, stores 1 to g_zInput_MouseActive, and tail-jumps
  * to MouseUpdateAcquireState.
  */
-void __cdecl OnAppActivate() {
+void __cdecl OnAppActivate()
+{
     if (g_zInput_hWnd == 0) {
         return;
     }
@@ -201,10 +198,8 @@ void __cdecl OnAppActivate() {
  * Purpose: initialize DirectInput, clear device status state, create keyboard,
  * mouse, and joystick devices, then acquire keyboard and mouse poll refs.
  */
-int __fastcall Init(
-    HWND hWnd,
-    HINSTANCE hInstance
-) {
+int __fastcall Init(HWND hWnd, HINSTANCE hInstance)
+{
     if (g_zInput_hWnd != 0) {
         return 1;
     }
@@ -217,12 +212,7 @@ int __fastcall Init(
     g_zInputJoystickPollRefCount = 0;
     g_zInputMousePollRefCount = 0;
 
-    const HRESULT hr = DirectInputCreateA(
-        hInstance,
-        kDirectInputVersion,
-        (LPDIRECTINPUTA *)(&g_zInput_GlobalState),
-        0
-    );
+    const HRESULT hr = DirectInputCreateA(hInstance, kDirectInputVersion, (LPDIRECTINPUTA*)(&g_zInput_GlobalState), 0);
     if (hr != 0) {
         DIReportError(hr, g_zInput_SourceFile_ZinInitCpp, 0x93);
         return -1;
@@ -244,7 +234,8 @@ int __fastcall Init(
  * Purpose: shut down joystick, keyboard, mouse, and DirectInput state, then
  * clear the input window handle.
  */
-int __cdecl Shutdown() {
+int __cdecl Shutdown()
+{
     if (g_zInput_hWnd == 0) {
         return 1;
     }
@@ -272,7 +263,8 @@ int __cdecl Shutdown() {
  * Evidence: BN assembly at 0x471c50 calls KeyboardResetTransitionState,
  * calls DIResetTransitionState, then tail-calls MouseResetTransitionState.
  */
-void __cdecl ResetAllTransitionState() {
+void __cdecl ResetAllTransitionState()
+{
     KeyboardResetTransitionState();
     DIResetTransitionState();
     MouseResetTransitionState();
@@ -285,7 +277,8 @@ void __cdecl ResetAllTransitionState() {
  * Purpose: report whether the mouse suspend bit in the zInput device registry
  * is clear.
  */
-int __cdecl MouseIsUnsuspended() {
+int __cdecl MouseIsUnsuspended()
+{
     return IsUnsuspended(g_zInputMouseFlags);
 }
 
@@ -296,7 +289,8 @@ int __cdecl MouseIsUnsuspended() {
  * Purpose: report whether the joystick suspend bit in the zInput device
  * registry is clear.
  */
-int __cdecl JoystickIsUnsuspended() {
+int __cdecl JoystickIsUnsuspended()
+{
     return IsUnsuspended(g_zInputJoystickFlags);
 }
 
@@ -310,7 +304,8 @@ int __cdecl JoystickIsUnsuspended() {
  * Evidence: BN names the retail callee as zInputKeyboard::IsUnsuspended and
  * shows the same bit-1 clear test used by the mouse and joystick helpers.
  */
-int __cdecl zInputKeyboardIsUnsuspended() {
+int __cdecl zInputKeyboardIsUnsuspended()
+{
     return (~g_zInput_DeviceRegistry & 2U) >> 1;
 }
 namespace zInput {
@@ -322,15 +317,14 @@ namespace zInput {
  * Purpose: detach the current overlay list head while preserving the recovered
  * prev/next cleanup shape used by zInput global-state teardown.
  */
-inline zInput_BindMapOverlayStackNode *__fastcall BindMapOverlayDetachHead(
-    zInput_BindMapOverlayStackNode **head
-) {
-    zInput_BindMapOverlayStackNode *node = *head;
+inline zInput_BindMapOverlayStackNode* __fastcall BindMapOverlayDetachHead(zInput_BindMapOverlayStackNode** head)
+{
+    zInput_BindMapOverlayStackNode* node = *head;
     if (node == 0) {
         return 0;
     }
 
-    zInput_BindMapOverlayStackNode *const next = node->next;
+    zInput_BindMapOverlayStackNode* const next = node->next;
     *head = next;
     if (next != 0) {
         next->prev = 0;
@@ -348,10 +342,9 @@ inline zInput_BindMapOverlayStackNode *__fastcall BindMapOverlayDetachHead(
  * Purpose: delete one recovered overlay node list in zInput global-state
  * teardown.
  */
-inline void __fastcall BindMapOverlayDeleteNodeList(
-    zInput_BindMapOverlayStackNode **head
-) {
-    zInput_BindMapOverlayStackNode *node = BindMapOverlayDetachHead(head);
+inline void __fastcall BindMapOverlayDeleteNodeList(zInput_BindMapOverlayStackNode** head)
+{
+    zInput_BindMapOverlayStackNode* node = BindMapOverlayDetachHead(head);
     while (node != 0) {
         operator delete(node);
         node = BindMapOverlayDetachHead(head);
@@ -368,7 +361,8 @@ inline void __fastcall BindMapOverlayDeleteNodeList(
  * Evidence: reset-helper dependency is the address-backed
  * MouseResetTransitionState implementation at 0x470610.
  */
-void __cdecl MouseResumeFromSuspend() {
+void __cdecl MouseResumeFromSuspend()
+{
     if ((g_zInputMouseFlags & kSuspendFlag) != 0) {
         MouseResetTransitionState();
     }
@@ -386,7 +380,8 @@ void __cdecl MouseResumeFromSuspend() {
  * Evidence: reset-helper dependency is the address-backed
  * DIResetTransitionState implementation at 0x472410.
  */
-void __cdecl JoystickResumeFromSuspend() {
+void __cdecl JoystickResumeFromSuspend()
+{
     if ((g_zInputJoystickFlags & kSuspendFlag) != 0) {
         DIResetTransitionState();
     }
@@ -404,7 +399,8 @@ void __cdecl JoystickResumeFromSuspend() {
  * Evidence: reset-helper dependency is the address-backed
  * KeyboardResetTransitionState implementation at 0x46f450.
  */
-void __cdecl KeyboardResumeFromSuspend() {
+void __cdecl KeyboardResumeFromSuspend()
+{
     if ((g_zInput_DeviceRegistry & kSuspendFlag) != 0) {
         KeyboardResetTransitionState();
     }
@@ -418,7 +414,8 @@ void __cdecl KeyboardResumeFromSuspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the mouse suspend bit in the zInput device registry.
  */
-void __cdecl MouseSuspend() {
+void __cdecl MouseSuspend()
+{
     g_zInputMouseFlags |= kSuspendFlag;
 }
 
@@ -428,7 +425,8 @@ void __cdecl MouseSuspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the joystick suspend bit in the zInput device registry.
  */
-void __cdecl JoystickSuspend() {
+void __cdecl JoystickSuspend()
+{
     g_zInputJoystickFlags |= kSuspendFlag;
 }
 
@@ -438,7 +436,8 @@ void __cdecl JoystickSuspend() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the keyboard suspend bit in the zInput device registry.
  */
-void __cdecl KeyboardSuspend() {
+void __cdecl KeyboardSuspend()
+{
     g_zInput_DeviceRegistry |= kSuspendFlag;
 }
 
@@ -449,7 +448,8 @@ void __cdecl KeyboardSuspend() {
  * Purpose: Increment the keyboard polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int __cdecl KeyboardAddRef() {
+int __cdecl KeyboardAddRef()
+{
     if ((g_zInput_DeviceRegistry & 1) != 0) {
         if (g_zInputKeyboardPollRefCount == 0) {
             KeyboardResetTransitionState();
@@ -467,7 +467,8 @@ int __cdecl KeyboardAddRef() {
  * Purpose: Increment the joystick polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int __cdecl DIAddJoystickRef() {
+int __cdecl DIAddJoystickRef()
+{
     if ((g_zInputJoystickFlags & 1) != 0) {
         if (g_zInputJoystickPollRefCount == 0) {
             DIResetTransitionState();
@@ -484,7 +485,8 @@ int __cdecl DIAddJoystickRef() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Decrement the joystick polling reference count without underflow.
  */
-int __cdecl DIReleaseJoystickRef() {
+int __cdecl DIReleaseJoystickRef()
+{
     short refCount = g_zInputJoystickPollRefCount;
     if ((unsigned short)(refCount) > 0) {
         --refCount;
@@ -501,7 +503,8 @@ int __cdecl DIReleaseJoystickRef() {
  * Purpose: Increment the mouse polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int __cdecl MouseAddRef() {
+int __cdecl MouseAddRef()
+{
     if ((g_zInputMouseFlags & 1) != 0) {
         if (g_zInputMousePollRefCount == 0) {
             MouseResetTransitionState();
@@ -518,7 +521,8 @@ int __cdecl MouseAddRef() {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Return the current joystick polling reference count.
  */
-int __cdecl DIGetJoystickRefCount() {
+int __cdecl DIGetJoystickRefCount()
+{
     return g_zInputJoystickPollRefCount;
 }
 
@@ -527,9 +531,8 @@ int __cdecl DIGetJoystickRefCount() {
  * @recoil-artifact defines .text recoil:function:0x471de0: zInput::PollActiveDevices.
  * Purpose: Poll enabled mouse, joystick, and keyboard devices with the caller's dispatch mode.
  */
-void __fastcall PollActiveDevices(
-    unsigned char dispatchCallbacks
-) {
+void __fastcall PollActiveDevices(unsigned char dispatchCallbacks)
+{
     const unsigned char savedDispatchCallbacks = dispatchCallbacks;
     if (g_zInputMouseFlags == 1 && (unsigned short)(g_zInputMousePollRefCount) > 0) {
         MousePollAndStoreState(savedDispatchCallbacks);

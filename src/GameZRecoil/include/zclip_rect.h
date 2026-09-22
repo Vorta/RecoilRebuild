@@ -30,60 +30,15 @@ struct zClipUV {
     float v;
 };
 
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        flags
-    ) == 0x00
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        xMin
-    ) == 0x04
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        yMin
-    ) == 0x08
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        zMin
-    ) == 0x0c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        xMax
-    ) == 0x10
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        yMax
-    ) == 0x14
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        zMax
-    ) == 0x18
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        xMaxAlt
-    ) == 0x1c
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(
-        zClipRectPartial,
-        yMaxAlt
-    ) == 0x20
-);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, flags) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMin) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, zMin) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMax) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMax) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, zMax) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, xMaxAlt) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zClipRectPartial, yMaxAlt) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(zClipRectPartial) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zClipVert) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
@@ -91,58 +46,22 @@ RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
 extern zClipVert g_Clip_PolyVerts[0x40];
 extern zClipVert g_Clip_PolyVertsScratch[0x40];
 extern zClipUV g_Clip_PolyUvsStorage[0x40];
-extern zClipUV *g_Clip_PolyUvs;
+extern zClipUV* g_Clip_PolyUvs;
 extern zClipRectPartial gClipRect_Primary;
 
 namespace zClipRect {
-int __fastcall ClipPolyNearZ(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPolyNearZ_WithAttr0(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPolyZRange_NoUV(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPolyZRange_NoUV_WithAttribs(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPolyZRange_WithAttr012(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly_NoUV_Alt(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly_NoUV(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly_WithAttr012(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly_NoUV_WithAttr0_Alt(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall ClipPoly_NoUV_WithAttr012_Alt(
-    zClipRectPartial *clipRect,
-    int *vertexCount
-);
-int __fastcall TrivialRejectPolyXY(
-    zClipRectPartial *clipRect,
-    int vertexCount
-);
+int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPolyZRange_NoUV(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly_WithAttr012(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* vertexCount);
+int __fastcall TrivialRejectPolyXY(zClipRectPartial* clipRect, int vertexCount);
 } // namespace zClipRect
 
 #endif // GAMEZRECOIL_INCLUDE_ZCLIPRECT_H

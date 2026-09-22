@@ -13,29 +13,25 @@
  * @recoil-artifact defines .data recoil:data:0x4df4e0: g_zDEClient_QuickSandInstanceTessellationFailedMsg.
  * Purpose: Reports quicksand instancing failure when tessellation fails.
  */
-char g_zDEClient_QuickSandInstanceTessellationFailedMsg[] =
-    "Failed to instance quick sand: Tesselation Failed";
+char g_zDEClient_QuickSandInstanceTessellationFailedMsg[] = "Failed to instance quick sand: Tesselation Failed";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-quicksandinstanceclipfailedmsg
  * @recoil-artifact defines .data recoil:data:0x4df514: g_zDEClient_QuickSandInstanceClipFailedMsg.
  * Purpose: Reports quicksand instancing failure when feature clipping fails.
  */
-char g_zDEClient_QuickSandInstanceClipFailedMsg[] =
-    "Failed to instance quick sand: Clip Failed";
+char g_zDEClient_QuickSandInstanceClipFailedMsg[] = "Failed to instance quick sand: Clip Failed";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-sourcefile-zdecqsandcpp
  * @recoil-artifact defines .data recoil:data:0x4df540: g_zDEClient_SourceFile_ZdecQsandCpp.
  * Purpose: Provides the original source path for quicksand feature diagnostics.
  */
-char g_zDEClient_SourceFile_ZdecQsandCpp[] =
-    "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp";
+char g_zDEClient_SourceFile_ZdecQsandCpp[] = "D:\\Proj\\GameZRecoil\\zDEClient\\zdec_qsand.cpp";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.g-zdeclient-quicksandinstancebuildfailedmsg
  * @recoil-artifact defines .data recoil:data:0x4df570: g_zDEClient_QuickSandInstanceBuildFailedMsg.
  * Purpose: Reports quicksand instancing failure when display construction fails.
  */
-char g_zDEClient_QuickSandInstanceBuildFailedMsg[] =
-    "Failed to instance quick sand: Build Failed";
+char g_zDEClient_QuickSandInstanceBuildFailedMsg[] = "Failed to instance quick sand: Build Failed";
 
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceTessellationFailedMsg) == 0x32);
 RECOIL_STATIC_ASSERT(sizeof(g_zDEClient_QuickSandInstanceClipFailedMsg) == 0x2b);
@@ -51,9 +47,8 @@ namespace zDEClient_QSand {
  * Purpose: release a quicksand feature instance, including its generated point
  * buffer and clip-patch output.
  */
-void __fastcall DestroyFeature(
-    zDEClient_QSandFeature *featureInstance
-) {
+void __fastcall DestroyFeature(zDEClient_QSandFeature* featureInstance)
+{
     if (featureInstance == 0) {
         return;
     }
@@ -68,7 +63,8 @@ void __fastcall DestroyFeature(
 
     free(featureInstance);
 }
-} /* namespace zDEClient_QSand */ namespace zDEClient {
+} /* namespace zDEClient_QSand */
+namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-copyqsandeventtemplatedefaults
  * @recoil-artifact defines .text recoil:function:0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
@@ -76,16 +72,12 @@ void __fastcall DestroyFeature(
  * Purpose: copy the configured quicksand event template defaults into a
  * caller-owned event template.
  */
-void __fastcall CopyQSandEventTemplateDefaults(
-    zDEClient_QSandEventTemplate *eventTemplate
-) {
-    memcpy(
-        eventTemplate,
-        &g_zDEClient_QuickSandEventTemplateDefaults,
-        sizeof(zDEClient_QSandEventTemplate)
-    );
+void __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate)
+{
+    memcpy(eventTemplate, &g_zDEClient_QuickSandEventTemplateDefaults, sizeof(zDEClient_QSandEventTemplate));
 }
-} /* namespace zDEClient */ namespace zDEClient_QSand {
+} /* namespace zDEClient */
+namespace zDEClient_QSand {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-instanceeventmayberelay
  * @recoil-artifact defines .text recoil:function:0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
@@ -93,11 +85,9 @@ void __fastcall CopyQSandEventTemplateDefaults(
  * Purpose: let the registered quicksand relay callback veto instancing before
  * building and submitting the quicksand feature locally.
  */
-int __fastcall InstanceEventMaybeRelay(
-    zDEClient_QSandEventTemplate *eventTemplate
-) {
-    if (g_zDEClientQSandNetRelayCallback != 0 &&
-        g_zDEClientQSandNetRelayCallback(eventTemplate) == 0) {
+int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTemplate)
+{
+    if (g_zDEClientQSandNetRelayCallback != 0 && g_zDEClientQSandNetRelayCallback(eventTemplate) == 0) {
         return -1;
     }
 
@@ -108,7 +98,7 @@ int __fastcall InstanceEventMaybeRelay(
     const float vertexMergeEpsilon = zModel_Const::GetVertexMergeEpsilon();
     zModel_Const::SetVertexMergeEpsilon(0.00499999989f);
 
-    zDEClient_QSandFeature *const featureInstance = InitFeatureFromEventTemplate(eventTemplate);
+    zDEClient_QSandFeature* const featureInstance = InitFeatureFromEventTemplate(eventTemplate);
     if (featureInstance == 0) {
         zError::ReportOld(
             0x100,
@@ -122,12 +112,7 @@ int __fastcall InstanceEventMaybeRelay(
 
     if (Build(featureInstance) == 0) {
         DestroyFeature(featureInstance);
-        zError::ReportOld(
-            0x100,
-            g_zDEClient_SourceFile_ZdecQsandCpp,
-            0x92,
-            g_zDEClient_QuickSandInstanceClipFailedMsg
-        );
+        zError::ReportOld(0x100, g_zDEClient_SourceFile_ZdecQsandCpp, 0x92, g_zDEClient_QuickSandInstanceClipFailedMsg);
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
@@ -161,29 +146,22 @@ namespace zDEClient_QSand {
  * Purpose: create a quicksand feature from an event template, fit it to the
  * owning feature grid cell, and generate its circular point bounds.
  */
-zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
-    zDEClient_QSandEventTemplate *eventTemplate
-) {
-    zDEClient_QSandFeature *featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
-    zVec3 *currentPoint = featureInstance->points;
+zDEClient_QSandFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate* eventTemplate)
+{
+    zDEClient_QSandFeature* featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
+    zVec3* currentPoint = featureInstance->points;
 
-    CZNodePartial *world = zDEClient::GetCameraNode();
-    CZWorldDataPartial *worldData = (CZWorldDataPartial *)(world->classData);
+    CZNodePartial* world = zDEClient::GetCameraNode();
+    CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
     if (worldData == 0) {
         return 0;
     }
 
     int gridCol;
     int gridRow;
-    CZWorld::WorldToGridCoordsClamped(
-        world,
-        &gridCol,
-        eventTemplate->center.x,
-        eventTemplate->center.z,
-        &gridRow
-    );
+    CZWorld::WorldToGridCoordsClamped(world, &gridCol, eventTemplate->center.x, eventTemplate->center.z, &gridRow);
 
-    zDEClient_FeatureGridCell *featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
+    zDEClient_FeatureGridCell* featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -201,16 +179,14 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
 
     const float localXPlusRadius = localX + radius;
     if (localXPlusRadius > worldData->areaCellSizeX) {
-        featureInstance->eventTemplate.center.x -=
-            (localXPlusRadius - worldData->areaCellSizeX) + 1.0f;
+        featureInstance->eventTemplate.center.x -= (localXPlusRadius - worldData->areaCellSizeX) + 1.0f;
     } else if (localX - radius < 0.0f) {
         featureInstance->eventTemplate.center.x += (radius - localX) + 1.0f;
     }
 
     const float localZMinusRadius = localZ - radius;
     if (localZMinusRadius < worldData->areaCellSizeZ) {
-        featureInstance->eventTemplate.center.z +=
-            (worldData->areaCellSizeZ - localZMinusRadius) + 1.0f;
+        featureInstance->eventTemplate.center.z += (worldData->areaCellSizeZ - localZMinusRadius) + 1.0f;
     } else {
         const float localZPlusRadius = localZ + radius;
         if (localZPlusRadius > 0.0f) {
@@ -235,14 +211,14 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
         angle += angleStep;
     }
 
-    zVec3 *const points = featureInstance->points;
+    zVec3* const points = featureInstance->points;
     featureInstance->boundsMinX = points[0].x;
     featureInstance->boundsMaxX = points[0].x;
     featureInstance->boundsMinZ = points[0].z;
     featureInstance->boundsMaxZ = points[0].z;
 
     for (int i_674 = 1; i_674 < eventTemplate->pointCount; ++i_674) {
-        zVec3 *const point = &points[i_674];
+        zVec3* const point = &points[i_674];
         if (featureInstance->boundsMinX > point->x) {
             featureInstance->boundsMinX = point->x;
         }
@@ -263,27 +239,27 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
     if (featureGridCell->featureCount > 0) {
         const int nodeCount = featureGridCell->nodeCount;
         if (nodeCount > 0) {
-            zGeometry_ClipPatchNodeView **nodeCursor = featureGridCell->nodes;
+            zGeometry_ClipPatchNodeView** nodeCursor = featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
-                zGeometry_ClipPatchNodeView *node = *nodeCursor;
+                zGeometry_ClipPatchNodeView* node = *nodeCursor;
                 if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {
-                    zDEClient_FeatureContextOverlapView *context =
-                        (zDEClient_FeatureContextOverlapView *)(node->callbackContext);
+                    zDEClient_FeatureContextOverlapView* context
+                        = (zDEClient_FeatureContextOverlapView*)(node->callbackContext);
                     if (context != 0) {
                         const int featureType = context->featureType;
                         if (featureType == 1) {
-                            if (context->bounds_38 + 5.0f > featureInstance->boundsMinX &&
-                                context->bounds_30 - 5.0f < featureInstance->boundsMaxX &&
-                                context->bounds_3c + 5.0f > featureInstance->boundsMinZ &&
-                                context->bounds_34 - 5.0f < featureInstance->boundsMaxZ) {
+                            if (context->bounds_38 + 5.0f > featureInstance->boundsMinX
+                                && context->bounds_30 - 5.0f < featureInstance->boundsMaxX
+                                && context->bounds_3c + 5.0f > featureInstance->boundsMinZ
+                                && context->bounds_34 - 5.0f < featureInstance->boundsMaxZ) {
                                 DestroyFeature(featureInstance);
                                 return 0;
                             }
                         } else if (featureType == 3) {
-                            if (context->bounds_3c + 5.0f > featureInstance->boundsMinX &&
-                                context->bounds_34 - 5.0f < featureInstance->boundsMaxX &&
-                                context->bounds_40 + 5.0f > featureInstance->boundsMinZ &&
-                                context->bounds_38 - 5.0f < featureInstance->boundsMaxZ) {
+                            if (context->bounds_3c + 5.0f > featureInstance->boundsMinX
+                                && context->bounds_34 - 5.0f < featureInstance->boundsMaxX
+                                && context->bounds_40 + 5.0f > featureInstance->boundsMinZ
+                                && context->bounds_38 - 5.0f < featureInstance->boundsMaxZ) {
                                 DestroyFeature(featureInstance);
                                 return 0;
                             }
@@ -307,16 +283,14 @@ zDEClient_QSandFeature *__fastcall InitFeatureFromEventTemplate(
  * event template, including point storage, clip output, and default material
  * binding.
  */
-zDEClient_QSandFeature *__fastcall CreateFeatureStructFromEventTemplate(
-    zDEClient_QSandEventTemplate *eventTemplate
-) {
-    zDEClient_QSandFeature *result =
-        (zDEClient_QSandFeature *)(malloc(sizeof(zDEClient_QSandFeature)));
+zDEClient_QSandFeature* __fastcall CreateFeatureStructFromEventTemplate(zDEClient_QSandEventTemplate* eventTemplate)
+{
+    zDEClient_QSandFeature* result = (zDEClient_QSandFeature*)(malloc(sizeof(zDEClient_QSandFeature)));
     memset(result, 0, sizeof(zDEClient_QSandFeature));
 
     result->featureType = 3;
     memcpy(&result->eventTemplate, eventTemplate, sizeof(result->eventTemplate));
-    result->points = (zVec3 *)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
+    result->points = (zVec3*)(malloc(result->eventTemplate.pointCount * sizeof(zVec3)));
     result->clipPatchOutput = zGeometry_ClipPatchOutput::Create();
 
     if ((result->eventTemplate.featureFlags & 0x1008) != 0 && result->eventTemplate.material == 0) {
@@ -336,9 +310,8 @@ zDEClient_QSandFeature *__fastcall CreateFeatureStructFromEventTemplate(
  * clipped point list.
  * Only positive results replace the point list; negative results become zero.
  */
-int __fastcall Build(
-    zDEClient_QSandFeature *featureInstance
-) {
+int __fastcall Build(zDEClient_QSandFeature* featureInstance)
+{
     int result = zGeometry_Model::ClipPatch(
         featureInstance->eventTemplate.pointCount,
         featureInstance->points,
@@ -364,7 +337,6 @@ int __fastcall Build(
     return result;
 }
 
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-createfeature
  * @recoil-artifact defines .text recoil:function:0x4564b0: zDEClient_QSand::CreateFeature
@@ -372,11 +344,10 @@ int __fastcall Build(
  * Purpose: create quicksand side and cap display geometry from the clipped
  * feature points and attach both display instances to generated feature nodes.
  */
-int __fastcall CreateFeature(
-    zDEClient_QSandFeature *featureInstance
-) {
-    CZNodePartial *node = 0;
-    zDiPartial *displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
+int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance)
+{
+    CZNodePartial* node = 0;
+    zDiPartial* displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
         &node
@@ -394,15 +365,15 @@ int __fastcall CreateFeature(
     }
 
     CZClass::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
-    node->callbackContext = (CZNodePartial *)(featureInstance);
+    node->callbackContext = (CZNodePartial*)(featureInstance);
 
-    zVec3 *const points = featureInstance->points;
+    zVec3* const points = featureInstance->points;
     const int pointCount = featureInstance->eventTemplate.pointCount;
     const int featureFlags = featureInstance->eventTemplate.featureFlags;
     const int uvCenterIndex = pointCount * 3;
     const bool hasMaterialUv = (featureFlags & 0x1008) != 0;
 
-    zModel_MaterialPartial *sideMaterial = 0;
+    zModel_MaterialPartial* sideMaterial = 0;
     float featureRadius = 0.0f;
     float uvScale = 0.0f;
     if (hasMaterialUv) {
@@ -413,18 +384,16 @@ int __fastcall CreateFeature(
 
     featureInstance->eventTemplate.center.y -= featureInstance->eventTemplate.depth;
 
-    zClipUV *uvPairs = 0;
+    zClipUV* uvPairs = 0;
     if (hasMaterialUv) {
-        uvPairs = (zClipUV *)(malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
+        uvPairs = (zClipUV*)(malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
-    zVec3 *const midPoints = (zVec3 *)(malloc((size_t)(pointCount) * sizeof(zVec3)));
+    zVec3* const midPoints = (zVec3*)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
     const zVec3 center = featureInstance->eventTemplate.center;
-    const float lowCenterY =
-        featureInstance->eventTemplate.center.y - featureInstance->eventTemplate.depth;
-    const float topCenterY =
-        featureInstance->eventTemplate.center.y + featureInstance->eventTemplate.depth;
+    const float lowCenterY = featureInstance->eventTemplate.center.y - featureInstance->eventTemplate.depth;
+    const float topCenterY = featureInstance->eventTemplate.center.y + featureInstance->eventTemplate.depth;
 
     if (hasMaterialUv) {
         uvPairs[uvCenterIndex].u = uvScale * featureRadius;
@@ -432,12 +401,11 @@ int __fastcall CreateFeature(
     }
 
     for (int i = 0; i < pointCount; ++i) {
-        const zVec3 *const point = &points[i];
-        zVec3 *const midPoint = &midPoints[i];
+        const zVec3* const point = &points[i];
+        zVec3* const midPoint = &midPoints[i];
 
         midPoint->x = (center.x - point->x) * 0.5f + point->x;
-        midPoint->y =
-            ((center.y - point->y) * 0.5f + point->y) - featureInstance->eventTemplate.depth;
+        midPoint->y = ((center.y - point->y) * 0.5f + point->y) - featureInstance->eventTemplate.depth;
         midPoint->z = (center.z - point->z) * 0.5f + point->z;
 
         if (hasMaterialUv) {
@@ -457,8 +425,8 @@ int __fastcall CreateFeature(
         polygonPoints[3] = midPoints[i_837];
 
         zClipUV polygonUvs[4];
-        zClipUV *uvList = 0;
-        zModel_MaterialPartial *material = 0;
+        zClipUV* uvList = 0;
+        zModel_MaterialPartial* material = 0;
         if (hasMaterialUv) {
             polygonUvs[0] = uvPairs[i_837];
             polygonUvs[1] = uvPairs[nextIndex];
@@ -481,8 +449,8 @@ int __fastcall CreateFeature(
         polygonPoints[2] = midPoints[nextIndex];
 
         zClipUV polygonUvs[3];
-        zClipUV *uvList = 0;
-        zModel_MaterialPartial *material = 0;
+        zClipUV* uvList = 0;
+        zModel_MaterialPartial* material = 0;
         if (hasMaterialUv) {
             polygonUvs[0] = uvPairs[uvCenterIndex];
             polygonUvs[1] = uvPairs[pointCount + i_860];
@@ -494,8 +462,8 @@ int __fastcall CreateFeature(
         zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, material, uvList);
     }
 
-    CZNodePartial *capNode = 0;
-    zDiPartial *const capDisplayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
+    CZNodePartial* capNode = 0;
+    zDiPartial* const capDisplayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
         &capNode
@@ -513,7 +481,7 @@ int __fastcall CreateFeature(
     }
 
     CZClass::gwNodeSetName(capNode, g_zDEClient_FeatureNodeName);
-    capNode->callbackContext = (CZNodePartial *)(featureInstance);
+    capNode->callbackContext = (CZNodePartial*)(featureInstance);
 
     for (int i_901 = 0; i_901 < pointCount; ++i_901) {
         const int nextIndex = (i_901 + 1) % pointCount;
@@ -525,8 +493,8 @@ int __fastcall CreateFeature(
         polygonPoints[2] = points[nextIndex];
 
         zClipUV polygonUvs[3];
-        zClipUV *uvList = 0;
-        zModel_MaterialPartial *material = 0;
+        zClipUV* uvList = 0;
+        zModel_MaterialPartial* material = 0;
         if (hasMaterialUv) {
             polygonUvs[0] = uvPairs[uvCenterIndex];
             polygonUvs[1] = uvPairs[pointCount + i_901];

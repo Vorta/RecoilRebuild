@@ -27,7 +27,7 @@ int g_CZClass_NodeCount = 0;
  * @recoil-artifact defines .data recoil:data:0x4f4a94: g_CZClass_NodeTableBase.
  * Purpose: retain candidate storage; original pointer identity is unresolved.
  */
-CZNodePartial *g_CZClass_NodeTableBase = 0;
+CZNodePartial* g_CZClass_NodeTableBase = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodeactivecount
  * @recoil-artifact defines .data recoil:data:0x4f4a98: g_CZClass_NodeActiveCount.
@@ -57,7 +57,7 @@ int g_CZClass_CoreInitialized = 0;
  * @recoil-artifact defines .data recoil:data:0x4f4aa8: g_CZClass_LastZbdPath.
  * Purpose: retain candidate storage; original buffer identity and extent are unresolved.
  */
-char g_CZClass_LastZbdPath[0x30] = {0};
+char g_CZClass_LastZbdPath[0x30] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-nodearray
  * @recoil-artifact defines .data recoil:data:0x539c94: g_CZClass_NodeArray.
@@ -65,7 +65,7 @@ char g_CZClass_LastZbdPath[0x30] = {0};
  * this global node pool pointer, and Class.c alloc/free paths index through it.
  * Purpose: store the active zClass node-slot array backing runtime scene nodes.
  */
-CZNodeFreeListSlot *g_CZClass_NodeArray = 0;
+CZNodeFreeListSlot* g_CZClass_NodeArray = 0;
 /**
  * BN evidence: Class.c alloc/free paths update this count, while CZClass::Init,
  * ShutdownCore, and ZBD reads reset or recompute it from the node pool.
@@ -86,7 +86,7 @@ int g_CZClass_NodeFreeHeadIndex = -1;
  * BN data inventory declares char[0x30] at 0x539ca8.
  * Purpose: store the current ZBD path prefix used by zClass loading.
  */
-char g_CZClass_CurrentZbdPath[0x30] = {0};
+char g_CZClass_CurrentZbdPath[0x30] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-maincamera
  * @recoil-artifact defines .data recoil:data:0x4f36bc: g_MainCamera.
@@ -94,13 +94,13 @@ char g_CZClass_CurrentZbdPath[0x30] = {0};
  * global before CZCamera operations and world-node attachment calls.
  * Purpose: store the current main camera node used by gameplay and rendering.
  */
-CZNodePartial *g_MainCamera = 0;
+CZNodePartial* g_MainCamera = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-player-runtimediscene
  * @recoil-artifact defines .data recoil:data:0x4f36b8: g_Player_RuntimeDiScene.
  * Purpose: Stores g Player RuntimeDiScene data used by engine.zclass.player_runtime_di_scene_global.
  */
-CZNodePartial *g_Player_RuntimeDiScene = 0;
+CZNodePartial* g_Player_RuntimeDiScene = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-renderboundscontextactive
  * @recoil-artifact defines .data recoil:data:0x4ddd28: g_CZClass_RenderBoundsContextActive.
@@ -155,7 +155,7 @@ int g_CZClass_RenderAlphaScaleStackTop = -1;
  * BN data inventory declares float[0x10] at 0x539830.
  * Purpose: store nested render alpha scale values for traversal restore.
  */
-float g_CZClass_RenderAlphaScaleStack[0x10] = {0};
+float g_CZClass_RenderAlphaScaleStack[0x10] = { 0 };
 extern char g_CZClass_SourceFile_SwitchC[0x24];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-softwarepathstatestacktop
@@ -171,7 +171,7 @@ int g_CZClass_SoftwarePathStateStackTop = -1;
  * BN data inventory declares a 64-byte stack, matching four color/alpha states.
  * Purpose: store nested software render color and alpha state.
  */
-CZRenderColorAlphaState g_CZClass_SoftwarePathRenderStateStack[4] = {0};
+CZRenderColorAlphaState g_CZClass_SoftwarePathRenderStateStack[4] = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.g-zclass-loddistancestatestacktop
  * @recoil-artifact defines .data recoil:data:0x4ddd30: g_CZClass_LodDistanceStateStackTop.
@@ -186,10 +186,11 @@ int g_CZClass_LodDistanceStateStackTop = 0;
  * BN data inventory declares a 64-byte stack, matching four LOD states.
  * Purpose: store nested LOD distance state for render traversal.
  */
-CZLodDistanceState g_CZClass_LodDistanceStateStack[4] = {0};
+CZLodDistanceState g_CZClass_LodDistanceStateStack[4] = { 0 };
 }
 
-namespace {
+namespace
+{
 
     const int kQueuedTreeBucket = 7;
     const int kTypeListInsertedFlag = 0x01;
@@ -215,10 +216,10 @@ namespace {
     };
 
     struct CZCameraBBoxQueryDataPartial {
-        CZNodePartial *worldNode;
-        CZNodePartial *windowNode;
-        CZNodePartial *horizonNode;
-        CZNodePartial *horizonXZNode;
+        CZNodePartial* worldNode;
+        CZNodePartial* windowNode;
+        CZNodePartial* horizonNode;
+        CZNodePartial* horizonXZNode;
         int cameraFlags;
         zVec3 targetOrEuler;
         zVec3 posOffset;
@@ -231,12 +232,7 @@ namespace {
 
     RECOIL_STATIC_ASSERT(sizeof(CZCameraViewTargetStatePartial) == 0x30);
     RECOIL_STATIC_ASSERT(sizeof(CZCameraViewOverlayPartial) == 0x30);
-    RECOIL_STATIC_ASSERT(
-        offsetof(
-            CZCameraBBoxQueryDataPartial,
-            viewOverlay
-        ) == 0x80
-    );
+    RECOIL_STATIC_ASSERT(offsetof(CZCameraBBoxQueryDataPartial, viewOverlay) == 0x80);
 
     /**
      * Original-source helper evidence: no standalone retail function is
@@ -263,11 +259,9 @@ namespace {
      * present; observed in 0x448e90 primary/secondary box merge logic.
      * Purpose: produce the union of two node bounding boxes.
      */
-    zBBox3f MergeBBoxes(
-        const zBBox3f *a,
-        const zBBox3f *b
-    ) {
-        zBBox3f merged = {0};
+    zBBox3f MergeBBoxes(const zBBox3f* a, const zBBox3f* b)
+    {
+        zBBox3f merged = { 0 };
         merged.min.x = a->min.x < b->min.x ? a->min.x : b->min.x;
         merged.min.y = a->min.y < b->min.y ? a->min.y : b->min.y;
         merged.min.z = a->min.z < b->min.z ? a->min.z : b->min.z;
@@ -282,16 +276,14 @@ namespace {
      * present; observed in 0x448e90 cached-bounds update logic.
      * Purpose: copy a typed bounding box into the node cached-bounds storage.
      */
-    void CopyBBoxToCachedBounds(
-        CZNodePartial * node,
-        const zBBox3f *bbox
-    ) {
+    void CopyBBoxToCachedBounds(CZNodePartial * node, const zBBox3f* bbox)
+    {
         memcpy(node->cachedBounds, bbox, sizeof(*bbox));
     }
-
 }
 
-namespace CZClass {
+namespace CZClass
+{
     int __fastcall TryFreeNode(CZNodePartial * node);
 
     /**
@@ -300,11 +292,12 @@ namespace CZClass {
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
-    CZNodePartial *__cdecl gwNodeNew() {
+    CZNodePartial* __cdecl gwNodeNew()
+    {
         const int index = g_CZClass_NodeFreeHeadIndex;
         if (index != -1) {
-            CZNodeFreeListSlot *slot = &g_CZClass_NodeArray[index];
-            CZNodePartial *node = &slot->node;
+            CZNodeFreeListSlot* slot = &g_CZClass_NodeArray[index];
+            CZNodePartial* node = &slot->node;
             g_CZClass_NodeFreeHeadIndex = (int)(slot->freeTag << 8) >> 8;
 
             memset(node, 0, offsetof(CZNodeFreeListSlot, freeTag));
@@ -341,7 +334,8 @@ namespace CZClass {
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: validate node ownership and dispatch deletion by classId.
      */
-    int __fastcall DeleteNodeByType(CZNodePartial * node) {
+    int __fastcall DeleteNodeByType(CZNodePartial * node)
+    {
         int result; // Case 0 leaves this uninitialized, as reproduced by VC5 byte comparison.
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x231, "Null node pointer.");
@@ -408,7 +402,8 @@ namespace CZClass {
      * Purpose: release owned node lists/data and return the node slot to the
      * global zClass free-list while preserving the slot free-tag flags.
      */
-    int __fastcall FreeNodeToFreeList(CZNodePartial * node) {
+    int __fastcall FreeNodeToFreeList(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x28e, "Null node pointer.");
             return 5;
@@ -437,10 +432,9 @@ namespace CZClass {
             node->classId = 0;
         }
 
-        const ptrdiff_t index = (CZNodeFreeListSlot *)(node)-g_CZClass_NodeArray;
-        unsigned int *freeTag = &g_CZClass_NodeArray[index].freeTag;
-        *freeTag =
-            (*freeTag & 0xff000000) | ((unsigned int)(g_CZClass_NodeFreeHeadIndex) & 0x00ffffff);
+        const ptrdiff_t index = (CZNodeFreeListSlot*)(node)-g_CZClass_NodeArray;
+        unsigned int* freeTag = &g_CZClass_NodeArray[index].freeTag;
+        *freeTag = (*freeTag & 0xff000000) | ((unsigned int)(g_CZClass_NodeFreeHeadIndex) & 0x00ffffff);
         --g_CZClass_ActiveNodeCount;
         g_CZClass_NodeFreeHeadIndex = (int)(index);
 
@@ -453,7 +447,8 @@ namespace CZClass {
      * Purpose: remove a node from active lists, then either free it
      * immediately or enqueue it for deferred freeing.
      */
-    int __fastcall TryFreeNode(CZNodePartial * node) {
+    int __fastcall TryFreeNode(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x2f0, "Null node pointer.");
             return 5;
@@ -479,10 +474,8 @@ namespace CZClass {
      * Purpose: search a zClass node subtree by exact node name, returning the
      * first matching node in forward child-list order.
      */
-    CZNodePartial *__fastcall FindNodeRecursiveByName(
-        CZNodePartial * root,
-        const char *name
-    ) {
+    CZNodePartial* __fastcall FindNodeRecursiveByName(CZNodePartial * root, const char* name)
+    {
         if (root == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x33a, "Null node pointer.");
             return 0;
@@ -493,7 +486,7 @@ namespace CZClass {
         }
 
         for (int i = 0; i < root->listCountB; ++i) {
-            CZNodePartial *const childMatch = FindNodeRecursiveByName(root->listB[i], name);
+            CZNodePartial* const childMatch = FindNodeRecursiveByName(root->listB[i], name);
             if (childMatch != 0) {
                 return childMatch;
             }
@@ -509,10 +502,8 @@ namespace CZClass {
      * Purpose: toggle the active flag for supported node classes and delegate
      * sound-node activity changes to the sound owner.
      */
-    int __fastcall gwNodeSetActive(
-        CZNodePartial * node,
-        int active
-    ) {
+    int __fastcall gwNodeSetActive(CZNodePartial * node, int active)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x38d, "Null node pointer.");
             return 5;
@@ -551,10 +542,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x447d20: CZClass::gwNodeSetFlag16
      * Purpose: set or clear node flag bit 16.
      */
-    int __fastcall gwNodeSetFlag16(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetFlag16(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3b7, "Null node pointer.");
             return 5;
@@ -574,10 +563,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x447d70: CZClass::gwNodeSetFlag17
      * Purpose: set or clear node flag bit 17.
      */
-    int __fastcall gwNodeSetFlag17(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetFlag17(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3c6, "Null node pointer.");
             return 5;
@@ -598,10 +585,8 @@ namespace CZClass {
      * Purpose: copy or truncate a caller-supplied name into a zClass node's
      * fixed-size name buffer.
      */
-    int __fastcall gwNodeSetName(
-        CZNodePartial * node,
-        const char *name
-    ) {
+    int __fastcall gwNodeSetName(CZNodePartial * node, const char* name)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x3df, "Null node pointer.");
             return 5;
@@ -622,7 +607,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x447e30: CZClass::gwNodeGetName
      * Purpose: return the fixed-size name buffer for a zClass node.
      */
-    char *__fastcall gwNodeGetName(CZNodePartial * node) {
+    char* __fastcall gwNodeGetName(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x40d, "Null node pointer.");
             return 0;
@@ -637,21 +623,14 @@ namespace CZClass {
      * Purpose: replace a node's display-instance reference, maintain zDi
      * reference counts, rebuild its bounds, and queue transform updates.
      */
-    int __fastcall gwNodeSetDisplayInstance(
-        CZNodePartial * node,
-        zDiPartial * displayInstance
-    ) {
+    int __fastcall gwNodeSetDisplayInstance(CZNodePartial * node, zDiPartial * displayInstance)
+    {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x424,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x424, "Null node pointer.");
             return 5;
         }
 
-        zDiPartial *oldDisplayInstance = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        zDiPartial* oldDisplayInstance = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (oldDisplayInstance != 0) {
             zDi::Release(oldDisplayInstance);
         }
@@ -660,8 +639,8 @@ namespace CZClass {
         if (displayInstance != 0) {
             zDi::AddRef(displayInstance);
             zDi::RebuildBounds(
-                (zDiPartial *)((unsigned int)(node->userDataOrDiRef)),
-                (zBoundsMinMaxPartial *)(&((CZNodeFreeListSlot *)node)->primaryBounds)
+                (zDiPartial*)((unsigned int)(node->userDataOrDiRef)),
+                (zBoundsMinMaxPartial*)(&((CZNodeFreeListSlot*)node)->primaryBounds)
             );
             node->flags |= 0x200;
         } else {
@@ -683,17 +662,10 @@ namespace CZClass {
      * Purpose: read the user-data or display-instance reference stored on a
      * zClass node.
      */
-    int __fastcall gwNodeGetUserData(
-        CZNodePartial * node,
-        unsigned int *outData
-    ) {
+    int __fastcall gwNodeGetUserData(CZNodePartial * node, unsigned int* outData)
+    {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x464,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x464, "Null node pointer.");
             return 5;
         }
 
@@ -707,10 +679,8 @@ namespace CZClass {
      * Purpose: install or clear the node action callback in its priority
      * bucket using head insertion for newly active callback nodes.
      */
-    int __fastcall gwNodeSetActionCallback(
-        CZNodePartial * node,
-        void *actionCallback
-    ) {
+    int __fastcall gwNodeSetActionCallback(CZNodePartial * node, void* actionCallback)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x47e, "Null node pointer.");
             return 5;
@@ -749,10 +719,8 @@ namespace CZClass {
      * Purpose: install or clear a node action callback using tail insertion
      * for newly active callback buckets.
      */
-    int __fastcall gwNodeSetActionCallbackTail(
-        CZNodePartial * node,
-        void *actionCallback
-    ) {
+    int __fastcall gwNodeSetActionCallbackTail(CZNodePartial * node, void* actionCallback)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x4c3, "Null node pointer.");
             return 5;
@@ -791,10 +759,8 @@ namespace CZClass {
      * Purpose: move an active callback node between priority buckets and store
      * the caller-supplied priority value.
      */
-    int __fastcall gwNodeSetPriority(
-        CZNodePartial * node,
-        int priority
-    ) {
+    int __fastcall gwNodeSetPriority(CZNodePartial * node, int priority)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x4fc, "Null node pointer.");
             return 5;
@@ -818,10 +784,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448100: CZClass::gwNodeSetCellPickable
      * Purpose: set or clear the cell-pickable flag on a node.
      */
-    int __fastcall gwNodeSetCellPickable(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetCellPickable(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x529, "Null node pointer.");
             return 5;
@@ -841,10 +805,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448140: CZClass::gwNodeGetCellPickable
      * Purpose: read the cell-pickable flag from a node.
      */
-    int __fastcall gwNodeGetCellPickable(
-        CZNodePartial * node,
-        int *outValue
-    ) {
+    int __fastcall gwNodeGetCellPickable(CZNodePartial * node, int* outValue)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x542, "Null node pointer.");
             return 5;
@@ -859,10 +821,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448180: CZClass::gwNodeGetNodeType
      * Purpose: read the byte-sized node type metadata value.
      */
-    int __fastcall gwNodeGetNodeType(
-        CZNodePartial * node,
-        int *outValue
-    ) {
+    int __fastcall gwNodeGetNodeType(CZNodePartial * node, int* outValue)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x556, "Null node pointer.");
             return 5;
@@ -877,10 +837,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x4481b0: CZClass::gwNodeSetRaycastable
      * Purpose: set or clear the raycastable flag on a node.
      */
-    int __fastcall gwNodeSetRaycastable(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetRaycastable(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x56c, "Null node pointer.");
             return 5;
@@ -900,10 +858,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x4481f0: CZClass::gwNodeGetRaycastable
      * Purpose: read the raycastable flag from a node.
      */
-    int __fastcall gwNodeGetRaycastable(
-        CZNodePartial * node,
-        int *outValue
-    ) {
+    int __fastcall gwNodeGetRaycastable(CZNodePartial * node, int* outValue)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x584, "Null node pointer.");
             return 5;
@@ -918,10 +874,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448230: CZClass::gwNodeSetPickable
      * Purpose: set or clear the pickable flag on a node.
      */
-    int __fastcall gwNodeSetPickable(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetPickable(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x59a, "Null node pointer.");
             return 5;
@@ -941,10 +895,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448270: CZClass::gwNodeGetPickable
      * Purpose: read the pickable flag from a node.
      */
-    int __fastcall gwNodeGetPickable(
-        CZNodePartial * node,
-        int *outValue
-    ) {
+    int __fastcall gwNodeGetPickable(CZNodePartial * node, int* outValue)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5b2, "Null node pointer.");
             return 5;
@@ -960,10 +912,8 @@ namespace CZClass {
      * Purpose: set or clear the node flag that marks an installed hit
      * callback handler.
      */
-    int __fastcall gwNodeSetHasHitCallback(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetHasHitCallback(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5c7, "Null node pointer.");
             return 5;
@@ -983,10 +933,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x4482f0: CZClass::gwNodeSetBypassFarClip
      * Purpose: set or clear the node flag that bypasses far-clip culling.
      */
-    int __fastcall gwNodeSetBypassFarClip(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetBypassFarClip(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5e1, "Null node pointer.");
             return 5;
@@ -1007,17 +955,10 @@ namespace CZClass {
      * Purpose: store the low byte of the caller-supplied node type metadata
      * value.
      */
-    int __fastcall gwNodeSetNodeType(
-        CZNodePartial * node,
-        int nodeType
-    ) {
+    int __fastcall gwNodeSetNodeType(CZNodePartial * node, int nodeType)
+    {
         if (node == 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\Class.c",
-                0x5f9,
-                "Null node pointer."
-            );
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x5f9, "Null node pointer.");
             return 5;
         }
 
@@ -1031,10 +972,8 @@ namespace CZClass {
      * Purpose: clear the node variant-gate flag when the caller supplies a
      * zero gate value.
      */
-    int __fastcall gwNodeClearVariantGate(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeClearVariantGate(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x60f, "Null node pointer.");
             return 5;
@@ -1052,10 +991,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x4483a0: CZClass::gwNodeSetVertexAlphaOverride.
      * Purpose: set or clear the caller-owned node vertex-alpha override flag.
      */
-    int __fastcall gwNodeSetVertexAlphaOverride(
-        CZNodePartial * node,
-        int value
-    ) {
+    int __fastcall gwNodeSetVertexAlphaOverride(CZNodePartial * node, int value)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x62d, "Null node pointer.");
             return 5;
@@ -1077,10 +1014,8 @@ namespace CZClass {
      * Purpose: dispatch child attachment by parent classId across the
      * data-driven zClass node subsystem.
      */
-    int __fastcall AddChild(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall AddChild(CZNodePartial * parent, CZNodePartial * child)
+    {
         if (child == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x666, "Null node pointer.");
             return 5;
@@ -1151,23 +1086,15 @@ namespace CZClass {
      * Purpose: append child and parent references to the generic listB/listA
      * node-link arrays and queue parent transform/bounds updates.
      */
-    int __fastcall AddChildGeneric(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall AddChildGeneric(CZNodePartial * parent, CZNodePartial * child)
+    {
         const int newChildCount = parent->listCountB + 1;
-        parent->listB = (CZNodePartial **)(realloc(
-            parent->listB,
-            (size_t)(newChildCount) * sizeof(parent->listB[0])
-        ));
+        parent->listB = (CZNodePartial**)(realloc(parent->listB, (size_t)(newChildCount) * sizeof(parent->listB[0])));
         parent->listB[newChildCount - 1] = child;
         ++parent->listCountB;
 
         const int newParentCount = child->listCountA + 1;
-        child->listA = (CZNodePartial **)(realloc(
-            child->listA,
-            (size_t)(newParentCount) * sizeof(child->listA[0])
-        ));
+        child->listA = (CZNodePartial**)(realloc(child->listA, (size_t)(newParentCount) * sizeof(child->listA[0])));
         child->listA[newParentCount - 1] = parent;
         ++child->listCountA;
         if (child->listCountA > 1) {
@@ -1191,10 +1118,8 @@ namespace CZClass {
      * Purpose: dispatch child removal by parent classId across the data-driven
      * zClass node subsystem.
      */
-    int __fastcall RemoveChild(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall RemoveChild(CZNodePartial * parent, CZNodePartial * child)
+    {
         if (parent == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x713, "Null node pointer.");
             return 5;
@@ -1261,10 +1186,8 @@ namespace CZClass {
      * Purpose: remove matching child and parent references from generic
      * listB/listA node-link arrays and queue parent transform/bounds updates.
      */
-    int __fastcall RemoveChildGeneric(
-        CZNodePartial * parent,
-        CZNodePartial * child
-    ) {
+    int __fastcall RemoveChildGeneric(CZNodePartial * parent, CZNodePartial * child)
+    {
         int childIndex = -1;
         for (int i = 0; i < parent->listCountB; ++i) {
             if (parent->listB[i] == child) {
@@ -1324,10 +1247,8 @@ namespace CZClass {
      * @recoil-artifact defines .text recoil:function:0x448760: CZClass::gwNodeGetBBox.
      * Purpose: copy the cached node bounding box when it is currently valid.
      */
-    int __fastcall gwNodeGetBBox(
-        CZNodePartial * node,
-        zBBox3f * outBBox
-    ) {
+    int __fastcall gwNodeGetBBox(CZNodePartial * node, zBBox3f * outBBox)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x7f9, "Null node pointer.");
             return 5;
@@ -1340,7 +1261,7 @@ namespace CZClass {
             return 1;
         }
 
-        memcpy(outBBox, (const zBBox3f *)(node->cachedBounds), sizeof(*outBBox));
+        memcpy(outBBox, (const zBBox3f*)(node->cachedBounds), sizeof(*outBBox));
         return 0;
     }
 
@@ -1350,10 +1271,8 @@ namespace CZClass {
      * Purpose: return cached bounds corners in world/node space for object,
      * camera, animate, and untransformed node classes.
      */
-    int __fastcall gwNodeGetWorldBBoxCorners(
-        CZNodePartial * node,
-        zBBoxCorners * outCorners
-    ) {
+    int __fastcall gwNodeGetWorldBBoxCorners(CZNodePartial * node, zBBoxCorners * outCorners)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x81b, "Null node pointer.");
             return 5;
@@ -1367,48 +1286,60 @@ namespace CZClass {
         }
 
         if (node->classId == 5) {
-            const CZObject3DDataPartial *objectData =
-                (const CZObject3DDataPartial *)(node->classData);
+            const CZObject3DDataPartial* objectData = (const CZObject3DDataPartial*)(node->classData);
             if ((objectData->flags & 0x08) == 0) {
                 zMathMatTransformBBoxToCorners(
-                    (const zMat4x3 *)(objectData->localMatrix),
-                    (const zBBox3f *)node->cachedBounds,
+                    (const zMat4x3*)(objectData->localMatrix),
+                    (const zBBox3f*)node->cachedBounds,
                     outCorners
                 );
                 return 0;
             }
         } else if (node->classId == 1) {
-            const CZCameraDataPartial *cameraData =
-                (const CZCameraDataPartial *)(node->classData);
+            const CZCameraDataPartial* cameraData = (const CZCameraDataPartial*)(node->classData);
             zMathMatTransformBBoxToCorners(
-                &((const CZCameraBBoxQueryDataPartial *)(cameraData))
-                    ->viewOverlay.cachedViewMatrix,
-                (const zBBox3f *)node->cachedBounds,
+                &((const CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix,
+                (const zBBox3f*)node->cachedBounds,
                 outCorners
             );
             return 0;
         } else if (node->classId == 8) {
-            const CZAnimateDataPartial *animateData =
-                (const CZAnimateDataPartial *)(node->classData);
+            const CZAnimateDataPartial* animateData = (const CZAnimateDataPartial*)(node->classData);
             if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
                 zMathMatTransformBBoxToCorners(
-                    (const zMat4x3 *)(animateData->animatedTransform),
-                    (const zBBox3f *)node->cachedBounds,
+                    (const zMat4x3*)(animateData->animatedTransform),
+                    (const zBBox3f*)node->cachedBounds,
                     outCorners
                 );
                 return 0;
             }
         }
 
-        zVec3 *out = outCorners->corners;
-        out[0].x = node->cachedBounds[0]; out[0].y = node->cachedBounds[1]; out[0].z = node->cachedBounds[5];
-        out[1].x = node->cachedBounds[3]; out[1].y = node->cachedBounds[1]; out[1].z = node->cachedBounds[5];
-        out[2].x = node->cachedBounds[3]; out[2].y = node->cachedBounds[1]; out[2].z = node->cachedBounds[2];
-        out[3].x = node->cachedBounds[0]; out[3].y = node->cachedBounds[1]; out[3].z = node->cachedBounds[2];
-        out[4].x = node->cachedBounds[0]; out[4].y = node->cachedBounds[4]; out[4].z = node->cachedBounds[5];
-        out[5].x = node->cachedBounds[3]; out[5].y = node->cachedBounds[4]; out[5].z = node->cachedBounds[5];
-        out[6].x = node->cachedBounds[3]; out[6].y = node->cachedBounds[4]; out[6].z = node->cachedBounds[2];
-        out[7].x = node->cachedBounds[0]; out[7].y = node->cachedBounds[4]; out[7].z = node->cachedBounds[2];
+        zVec3* out = outCorners->corners;
+        out[0].x = node->cachedBounds[0];
+        out[0].y = node->cachedBounds[1];
+        out[0].z = node->cachedBounds[5];
+        out[1].x = node->cachedBounds[3];
+        out[1].y = node->cachedBounds[1];
+        out[1].z = node->cachedBounds[5];
+        out[2].x = node->cachedBounds[3];
+        out[2].y = node->cachedBounds[1];
+        out[2].z = node->cachedBounds[2];
+        out[3].x = node->cachedBounds[0];
+        out[3].y = node->cachedBounds[1];
+        out[3].z = node->cachedBounds[2];
+        out[4].x = node->cachedBounds[0];
+        out[4].y = node->cachedBounds[4];
+        out[4].z = node->cachedBounds[5];
+        out[5].x = node->cachedBounds[3];
+        out[5].y = node->cachedBounds[4];
+        out[5].z = node->cachedBounds[5];
+        out[6].x = node->cachedBounds[3];
+        out[6].y = node->cachedBounds[4];
+        out[6].z = node->cachedBounds[2];
+        out[7].x = node->cachedBounds[0];
+        out[7].y = node->cachedBounds[4];
+        out[7].z = node->cachedBounds[2];
         return 0;
     }
 
@@ -1419,10 +1350,8 @@ namespace CZClass {
      *
      * Purpose: return cached bounds corners after combining the view and node transforms.
      */
-    int __fastcall gwNodeGetViewBBoxCorners(
-        CZNodePartial * node,
-        zBBoxCorners * outCorners
-    ) {
+    int __fastcall gwNodeGetViewBBoxCorners(CZNodePartial * node, zBBoxCorners * outCorners)
+    {
         int returnCode = 0;
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x85f, "Null node pointer.");
@@ -1437,33 +1366,28 @@ namespace CZClass {
         }
 
         int currentIsIdentity = zMathMatIsCurrentIdentity();
-        zMat4x3 *currentMatrix = zMathMatGetCurrent();
+        zMat4x3* currentMatrix = zMathMatGetCurrent();
         int skipTransform = 0;
-        const zMat4x3 *nodeMatrix = 0;
+        const zMat4x3* nodeMatrix = 0;
 
         switch (node->classId) {
         case 5: {
-            const CZObject3DDataPartial *objectData =
-                (const CZObject3DDataPartial *)(node->classData);
+            const CZObject3DDataPartial* objectData = (const CZObject3DDataPartial*)(node->classData);
             skipTransform = ((unsigned int)objectData->flags >> 3) & 0x01;
-            nodeMatrix = (const zMat4x3 *)(objectData->localMatrix);
+            nodeMatrix = (const zMat4x3*)(objectData->localMatrix);
             break;
         }
         case 8: {
-            const CZAnimateDataPartial *animateData =
-                (const CZAnimateDataPartial *)(node->classData);
-            if ((node->flags & 0x04) == 0 ||
-                (animateData->statusFlags & 0x04) == 0) {
+            const CZAnimateDataPartial* animateData = (const CZAnimateDataPartial*)(node->classData);
+            if ((node->flags & 0x04) == 0 || (animateData->statusFlags & 0x04) == 0) {
                 skipTransform = 1;
             }
-            nodeMatrix = (const zMat4x3 *)(animateData->animatedTransform);
+            nodeMatrix = (const zMat4x3*)(animateData->animatedTransform);
             break;
         }
         case 1: {
-            const CZCameraDataPartial *cameraData =
-                (const CZCameraDataPartial *)(node->classData);
-            nodeMatrix = &((const CZCameraBBoxQueryDataPartial *)(cameraData))
-                ->viewOverlay.cachedViewMatrix;
+            const CZCameraDataPartial* cameraData = (const CZCameraDataPartial*)(node->classData);
+            nodeMatrix = &((const CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix;
             break;
         }
         case 2:
@@ -1488,18 +1412,34 @@ namespace CZClass {
         }
 
         zMat4x3 combinedMatrix;
-        const zMat4x3 *transformMatrix;
+        const zMat4x3* transformMatrix;
         if (currentIsIdentity != 0) {
             if (skipTransform != 0) {
-                zVec3 *out = outCorners->corners;
-                out[0].x = node->cachedBounds[0]; out[0].y = node->cachedBounds[1]; out[0].z = node->cachedBounds[5];
-                out[1].x = node->cachedBounds[3]; out[1].y = node->cachedBounds[1]; out[1].z = node->cachedBounds[5];
-                out[2].x = node->cachedBounds[3]; out[2].y = node->cachedBounds[1]; out[2].z = node->cachedBounds[2];
-                out[3].x = node->cachedBounds[0]; out[3].y = node->cachedBounds[1]; out[3].z = node->cachedBounds[2];
-                out[4].x = node->cachedBounds[0]; out[4].y = node->cachedBounds[4]; out[4].z = node->cachedBounds[5];
-                out[5].x = node->cachedBounds[3]; out[5].y = node->cachedBounds[4]; out[5].z = node->cachedBounds[5];
-                out[6].x = node->cachedBounds[3]; out[6].y = node->cachedBounds[4]; out[6].z = node->cachedBounds[2];
-                out[7].x = node->cachedBounds[0]; out[7].y = node->cachedBounds[4]; out[7].z = node->cachedBounds[2];
+                zVec3* out = outCorners->corners;
+                out[0].x = node->cachedBounds[0];
+                out[0].y = node->cachedBounds[1];
+                out[0].z = node->cachedBounds[5];
+                out[1].x = node->cachedBounds[3];
+                out[1].y = node->cachedBounds[1];
+                out[1].z = node->cachedBounds[5];
+                out[2].x = node->cachedBounds[3];
+                out[2].y = node->cachedBounds[1];
+                out[2].z = node->cachedBounds[2];
+                out[3].x = node->cachedBounds[0];
+                out[3].y = node->cachedBounds[1];
+                out[3].z = node->cachedBounds[2];
+                out[4].x = node->cachedBounds[0];
+                out[4].y = node->cachedBounds[4];
+                out[4].z = node->cachedBounds[5];
+                out[5].x = node->cachedBounds[3];
+                out[5].y = node->cachedBounds[4];
+                out[5].z = node->cachedBounds[5];
+                out[6].x = node->cachedBounds[3];
+                out[6].y = node->cachedBounds[4];
+                out[6].z = node->cachedBounds[2];
+                out[7].x = node->cachedBounds[0];
+                out[7].y = node->cachedBounds[4];
+                out[7].z = node->cachedBounds[2];
                 return returnCode;
             }
             transformMatrix = nodeMatrix;
@@ -1513,9 +1453,9 @@ namespace CZClass {
             double zzPartial;
             double posYPartial;
             double xxValue, yxValue; // Unused captures preserve the observed VC5 store sequence.
-            const zMat4x3 *left = currentMatrix;
-            const zMat4x3 *right = nodeMatrix;
-            zMat4x3 *product = &combinedMatrix;
+            const zMat4x3* left = currentMatrix;
+            const zMat4x3* right = nodeMatrix;
+            zMat4x3* product = &combinedMatrix;
             xxPartial = left->zx * right->xz + left->yx * right->xy;
             product->xx = xxValue = xxPartial + left->xx * right->xx;
             product->yx = yxValue = left->xx * right->yx + left->yx * right->yy + left->zx * right->yz;
@@ -1533,11 +1473,12 @@ namespace CZClass {
             product->posX = left->xx * right->posX + left->yx * right->posY + left->zx * right->posZ + left->posX;
             posYPartial = left->yy * right->posY + left->zy * right->posZ;
             product->posY = posYPartial + left->xy * right->posX + left->posY;
-            product->posZ = (float)(left->xz * right->posX + left->yz * right->posY) + left->zz * right->posZ + left->posZ;
+            product->posZ
+                = (float)(left->xz * right->posX + left->yz * right->posY) + left->zz * right->posZ + left->posZ;
             transformMatrix = product;
         }
 
-        zMathMatTransformBBoxToCorners(transformMatrix, (const zBBox3f *)node->cachedBounds, outCorners);
+        zMathMatTransformBBoxToCorners(transformMatrix, (const zBBox3f*)node->cachedBounds, outCorners);
         return returnCode;
     }
 
@@ -1547,7 +1488,8 @@ namespace CZClass {
      * Purpose: process pending transform and bounds work for one scene node
      * and run class-specific camera, world, object, and animate updates.
      */
-    int __fastcall gwNodeUpdate(CZNodePartial * node) {
+    int __fastcall gwNodeUpdate(CZNodePartial * node)
+    {
         int result = 0;
         int needsBBoxRecalc = 0;
 
@@ -1565,12 +1507,11 @@ namespace CZClass {
 
         switch (node->classId) {
         case 5: {
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             if ((objectData->flags & 0x01) != 0) {
                 if ((objectData->flags & 0x10) == 0) {
                     // Preserve translation before MatLoadIdentity overwrites its storage.
-                    const zVec3 position = *(const zVec3 *)&objectData->localMatrix[9];
+                    const zVec3 position = *(const zVec3*)&objectData->localMatrix[9];
                     zMath::MatStackPushPtr(objectData->localMatrix);
                     zMath::MatLoadIdentity();
                     zMath::MatApplyLocalTRS(&objectData->rotation, &position, &objectData->scale);
@@ -1583,20 +1524,15 @@ namespace CZClass {
             break;
         }
         case 1: {
-            const zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-            CZCameraDataPartial *cameraData = (CZCameraDataPartial *)(node->classData);
+            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+            CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
             if ((cameraData->cameraFlags & 0x04) != 0) {
                 if ((cameraData->cameraFlags & 0x02) == 0) {
                     zMath::MatStackPushPtr(
-                        (float *)(&((CZCameraBBoxQueryDataPartial *)(cameraData))
-                            ->viewOverlay.cachedViewMatrix)
+                        (float*)(&((CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix)
                     );
                     zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(
-                        &cameraData->posOffset,
-                        &cameraData->targetOrEuler,
-                        &unitScale
-                    );
+                    zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
                     zMath::MatStackPopPtr();
                 }
                 gwNodeRecalcBBox(node);
@@ -1609,9 +1545,8 @@ namespace CZClass {
         case 7:
             break;
         case 8: {
-            CZAnimateDataPartial *animateData = (CZAnimateDataPartial *)(node->classData);
-            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0 &&
-                animateData->flags != 0) {
+            CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
+            if ((node->flags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0 && animateData->flags != 0) {
                 if ((animateData->flags & 0x01) != 0) {
                     zMath::MatStackPushPtr(animateData->animatedTransform);
                     zMath::MatLoadIdentity();
@@ -1657,7 +1592,8 @@ namespace CZClass {
      * Purpose: select or merge primary and child bounds, cache the result, and
      * propagate parent/world-grid bounds updates.
      */
-    int __fastcall gwNodeRecalcBBox(CZNodePartial * node) {
+    int __fastcall gwNodeRecalcBBox(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0x9d0, "Null node pointer.");
             return 5;
@@ -1666,13 +1602,13 @@ namespace CZClass {
             return 0;
         }
 
-        zBBox3f merged = {0};
-        const zBBox3f *bboxSource = 0;
+        zBBox3f merged = { 0 };
+        const zBBox3f* bboxSource = 0;
         const bool hasPrimaryBBox = (node->flags & 0x200) != 0;
         const bool hasChildBBox = (node->flags & 0x400) != 0;
-        CZNodeFreeListSlot *nodeSlot = (CZNodeFreeListSlot *)(node);
-        const zBBox3f *primaryBBox = hasPrimaryBBox ? &nodeSlot->primaryBounds : 0;
-        const zBBox3f *secondaryBBox = hasChildBBox ? &nodeSlot->secondaryBounds : 0;
+        CZNodeFreeListSlot* nodeSlot = (CZNodeFreeListSlot*)(node);
+        const zBBox3f* primaryBBox = hasPrimaryBBox ? &nodeSlot->primaryBounds : 0;
+        const zBBox3f* secondaryBBox = hasChildBBox ? &nodeSlot->secondaryBounds : 0;
         if (hasPrimaryBBox && hasChildBBox) {
             merged.min.x = primaryBBox->min.x < secondaryBBox->min.x ? primaryBBox->min.x : secondaryBBox->min.x;
             merged.min.y = primaryBBox->min.y < secondaryBBox->min.y ? primaryBBox->min.y : secondaryBBox->min.y;
@@ -1700,19 +1636,23 @@ namespace CZClass {
         float minZ = 0.0f;
         float maxZ = 0.0f;
         for (int i = 0; i < node->listCountA; ++i) {
-            CZNodePartial *parent = node->listA[i];
+            CZNodePartial* parent = node->listA[i];
             if (parent->classId == 2) {
                 if (!worldRectComputed) {
-                    zBBoxCorners corners = {0};
+                    zBBoxCorners corners = { 0 };
                     gwNodeGetWorldBBoxCorners(node, &corners);
                     minX = maxX = corners.corners[0].x;
                     minZ = maxZ = corners.corners[0].z;
                     for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                        const zVec3 *corner = &corners.corners[cornerIndex];
-                        if (corner->x < minX) minX = corner->x;
-                        else if (corner->x > maxX) maxX = corner->x;
-                        if (corner->z < minZ) minZ = corner->z;
-                        else if (corner->z > maxZ) maxZ = corner->z;
+                        const zVec3* corner = &corners.corners[cornerIndex];
+                        if (corner->x < minX)
+                            minX = corner->x;
+                        else if (corner->x > maxX)
+                            maxX = corner->x;
+                        if (corner->z < minZ)
+                            minZ = corner->z;
+                        else if (corner->z > maxZ)
+                            maxZ = corner->z;
                     }
                     worldRectComputed = true;
                 }
@@ -1720,24 +1660,12 @@ namespace CZClass {
                 int gridCol = -1;
                 int gridRow = -1;
                 if ((node->flags & 0x80) == 0) {
-                CZWorld::WorldRectToGridIndex(
-                    parent,
-                    &gridCol,
-                    minX,
-                    maxX,
-                    minZ,
-                    maxZ,
-                    &gridRow
-                );
+                    CZWorld::WorldRectToGridIndex(parent, &gridCol, minX, maxX, minZ, maxZ, &gridRow);
                 }
 
                 if (gridCol == node->gridCol && gridRow == node->gridRow) {
                     if (node->gridCol >= 0 && node->gridRow >= 0) {
-                    CZWorld::EnsureGridCellDisplayPosition(
-                        parent,
-                        node->gridCol,
-                        node->gridRow
-                    );
+                        CZWorld::EnsureGridCellDisplayPosition(parent, node->gridCol, node->gridRow);
                     }
                 } else {
                     CZWorld::RemoveChildAtGrid(parent, node);
@@ -1762,7 +1690,8 @@ namespace CZClass {
      * Purpose: merge valid child world-bounds corners into the node's
      * secondary bounding box.
      */
-    int __fastcall gwNodeComputeChildBBox(CZNodePartial * node) {
+    int __fastcall gwNodeComputeChildBBox(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xaa3, "Null node pointer.");
             return 5;
@@ -1773,13 +1702,13 @@ namespace CZClass {
             return 0;
         }
 
-        CZNodeFreeListSlot *nodeSlot = (CZNodeFreeListSlot *)node;
+        CZNodeFreeListSlot* nodeSlot = (CZNodeFreeListSlot*)node;
         zBBoxCorners corners;
         int childIndex = 0;
         int nextChildIndex = node->listCountB;
 
         for (; childIndex < node->listCountB; ++childIndex) {
-            CZNodePartial *child = node->listB[childIndex];
+            CZNodePartial* child = node->listB[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
@@ -1793,7 +1722,7 @@ namespace CZClass {
             nodeSlot->secondaryBounds.max.z = nodeSlot->secondaryBounds.min.z = corners.corners[0].z;
 
             for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                const zVec3 *corner = &corners.corners[cornerIndex];
+                const zVec3* corner = &corners.corners[cornerIndex];
                 if (corner->x < nodeSlot->secondaryBounds.min.x) {
                     nodeSlot->secondaryBounds.min.x = corner->x;
                 } else if (corner->x > nodeSlot->secondaryBounds.max.x) {
@@ -1818,7 +1747,7 @@ namespace CZClass {
         }
 
         for (childIndex = nextChildIndex; childIndex < node->listCountB; ++childIndex) {
-            CZNodePartial *child = node->listB[childIndex];
+            CZNodePartial* child = node->listB[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
             }
@@ -1826,7 +1755,7 @@ namespace CZClass {
             gwNodeGetWorldBBoxCorners(child, &corners);
 
             for (int cornerIndex = 0; cornerIndex < 8; ++cornerIndex) {
-                const zVec3 *corner = &corners.corners[cornerIndex];
+                const zVec3* corner = &corners.corners[cornerIndex];
                 if (corner->x < nodeSlot->secondaryBounds.min.x) {
                     nodeSlot->secondaryBounds.min.x = corner->x;
                 } else if (corner->x > nodeSlot->secondaryBounds.max.x) {
@@ -1854,18 +1783,16 @@ namespace CZClass {
      * Purpose: rebuild display-instance bounds into the node primary box and
      * update the primary-bounds-valid flag.
      */
-    int __fastcall gwNodeUpdateDisplayInstance(CZNodePartial * node) {
+    int __fastcall gwNodeUpdateDisplayInstance(CZNodePartial * node)
+    {
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xb31, "Null node pointer.");
             return 5;
         }
 
-        zDiPartial *di = (zDiPartial *)((unsigned int)(node->userDataOrDiRef));
+        zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            zDi::RebuildBounds(
-                di,
-                (zBoundsMinMaxPartial *)(&((CZNodeFreeListSlot *)(node))->primaryBounds)
-            );
+            zDi::RebuildBounds(di, (zBoundsMinMaxPartial*)(&((CZNodeFreeListSlot*)(node))->primaryBounds));
             node->flags |= 0x200;
         } else {
             node->flags &= ~0x200;
@@ -1886,21 +1813,19 @@ namespace CZClass {
      * Source-shape note: the complete definition is emitted by Switch.c;
      * Class.c retains callers and the public declaration.
      */
-
 }
 
-namespace CZNode {
+namespace CZNode
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.buildnodetoancestormatrix
      * @recoil-artifact defines .text recoil:function:0x449480: CZNode::gwNodeBuildNodeToAncestorMatrix
      * Purpose: apply a node's parent-chain transforms into the current matrix.
      */
-    int __fastcall gwNodeBuildNodeToAncestorMatrix(
-        CZNodePartial * node,
-        int matMode
-    ) {
-        zVec3 unitScale = {1.0f, 1.0f, 1.0f};
-        zVec3 zeroAngles = {0};
+    int __fastcall gwNodeBuildNodeToAncestorMatrix(CZNodePartial * node, int matMode)
+    {
+        zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
+        zVec3 zeroAngles = { 0 };
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xb66, "Null node pointer.");
@@ -1908,18 +1833,17 @@ namespace CZNode {
         }
 
         if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
-            CZObject3DDataPartial *objectData =
-                (CZObject3DDataPartial *)(node->classData);
+            CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
             if ((objectData->flags & 0x20) == 0) {
-                zMath::MatLoadCurrentFrom((const zMat4x3 *)(objectData->cachedWorldMatrix));
+                zMath::MatLoadCurrentFrom((const zMat4x3*)(objectData->cachedWorldMatrix));
                 return 0;
             }
         }
 
-        CZNodePartial *parentChain[15] = {0};
+        CZNodePartial* parentChain[15] = { 0 };
         int chainCount = 1;
         parentChain[0] = node;
-        CZNodePartial *current = node;
+        CZNodePartial* current = node;
         while (current != 0) {
             if (current->listCountA > 1) {
                 zError::ReportOld(
@@ -1944,7 +1868,7 @@ namespace CZNode {
         }
 
         for (int i = 0; i < chainCount; ++i) {
-            CZNodePartial *chainNode = parentChain[i];
+            CZNodePartial* chainNode = parentChain[i];
             if (chainNode->classId != 2 && (chainNode->flags & 0x01) != 0) {
                 UpdateTree(chainNode);
                 break;
@@ -1952,33 +1876,26 @@ namespace CZNode {
         }
 
         for (int i_1435 = chainCount - 1; i_1435 >= 0; --i_1435) {
-            CZNodePartial *ancestor = parentChain[i_1435];
+            CZNodePartial* ancestor = parentChain[i_1435];
             const int ancestorFlags = ancestor->flags & ~kNodeTransformDirtyPropagatedFlag;
             ancestor->flags = ancestorFlags;
             switch (ancestor->classId) {
             case 5: {
-                CZObject3DDataPartial *objectData =
-                    (CZObject3DDataPartial *)(ancestor->classData);
+                CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(ancestor->classData);
                 const int objectFlags = objectData->flags;
                 if ((objectFlags & 0x08) == 0) {
                     if ((ancestorFlags & kSingleParentFlag) != 0) {
                         if ((objectFlags & 0x20) != 0) {
-                            zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), matMode);
+                            zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), matMode);
                             zMat4x3 currentMatrix;
                             zMath::MatCopyCurrentTo(&currentMatrix);
-                            memcpy(
-                                objectData->cachedWorldMatrix,
-                                &currentMatrix,
-                                sizeof(currentMatrix)
-                            );
+                            memcpy(objectData->cachedWorldMatrix, &currentMatrix, sizeof(currentMatrix));
                             objectData->flags &= ~0x20;
                         } else {
-                            zMath::MatLoadCurrentFrom(
-                                (const zMat4x3 *)(objectData->cachedWorldMatrix)
-                            );
+                            zMath::MatLoadCurrentFrom((const zMat4x3*)(objectData->cachedWorldMatrix));
                         }
                     } else {
-                        zMath::MatMultiply((const zMat4x3 *)(objectData->localMatrix), matMode);
+                        zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), matMode);
                     }
                 } else if ((ancestorFlags & kSingleParentFlag) != 0 && (objectFlags & 0x20) != 0) {
                     zMat4x3 currentMatrix;
@@ -1992,45 +1909,28 @@ namespace CZNode {
             case 6:
                 break;
             case 9: {
-                CZLightDataPartial *lightData =
-                    (CZLightDataPartial *)(ancestor->classData);
-                zMath::MatApplyLocalTRS(
-                    &lightData->localRotation,
-                    &lightData->localPosition,
-                    &unitScale
-                );
+                CZLightDataPartial* lightData = (CZLightDataPartial*)(ancestor->classData);
+                zMath::MatApplyLocalTRS(&lightData->localRotation, &lightData->localPosition, &unitScale);
                 break;
             }
             case 10: {
-                CZSoundDataPartial *soundData =
-                    (CZSoundDataPartial *)(ancestor->classData);
+                CZSoundDataPartial* soundData = (CZSoundDataPartial*)(ancestor->classData);
                 zMath::MatApplyLocalTRS(&zeroAngles, &soundData->localPosition, &unitScale);
                 break;
             }
             case 1: {
-                CZCameraDataPartial *cameraData =
-                    (CZCameraDataPartial *)(ancestor->classData);
+                CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(ancestor->classData);
                 if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatApplyLocalTRS(
-                        &cameraData->posOffset,
-                        &cameraData->targetOrEuler,
-                        &unitScale
-                    );
+                    zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
                 } else {
-                    zMath::MatMultiply(
-                        &((CZCameraBBoxQueryDataPartial *)(cameraData))
-                            ->viewOverlay.cachedViewMatrix,
-                        1
-                    );
+                    zMath::MatMultiply(&((CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix, 1);
                 }
                 break;
             }
             case 8: {
-                CZAnimateDataPartial *animateData =
-                    (CZAnimateDataPartial *)(ancestor->classData);
-                if ((ancestorFlags & 0x04) != 0 &&
-                    (animateData->statusFlags & 0x04) != 0) {
-                    zMath::MatMultiply((const zMat4x3 *)(animateData->animatedTransform), matMode);
+                CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(ancestor->classData);
+                if ((ancestorFlags & 0x04) != 0 && (animateData->statusFlags & 0x04) != 0) {
+                    zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), matMode);
                 }
                 break;
             }
@@ -2061,14 +1961,11 @@ namespace CZNode {
      * @recoil-artifact defines .text recoil:function:0x4497b0: CZNode::GetWorldPosition
      * Purpose: resolve a node's world-space translation into the output vector.
      */
-    int __fastcall GetWorldPosition(
-        CZNodePartial * node,
-        zVec3 * outPosition
-    ) {
+    int __fastcall GetWorldPosition(CZNodePartial * node, zVec3 * outPosition)
+    {
         if (node != 0) {
             if (node->classId == 5 && (node->flags & kSingleParentFlag) != 0) {
-                CZObject3DDataPartial *objectData =
-                    (CZObject3DDataPartial *)(node->classData);
+                CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
                 if ((objectData->flags & 0x20) == 0) {
                     memcpy(outPosition, &objectData->cachedWorldMatrix[9], sizeof(*outPosition));
                     return 0;
@@ -2096,10 +1993,8 @@ namespace CZNode {
      * @recoil-artifact defines .text recoil:function:0x449850: CZNode::TransformPoint.
      * Purpose: transform a point from node-local space into world space.
      */
-    int __fastcall TransformPoint(
-        CZNodePartial * node,
-        zVec3 * point
-    ) {
+    int __fastcall TransformPoint(CZNodePartial * node, zVec3 * point)
+    {
         if (node != 0) {
             if (point->x == 0.0f && point->y == 0.0f && point->z == 0.0f) {
                 GetWorldPosition(node, point);
@@ -2124,19 +2019,16 @@ namespace CZNode {
      * Purpose: compute a node world position and derive orientation angles
      * from transformed basis points.
      */
-    int __fastcall GetWorldPosAndOrientation(
-        CZNodePartial * node,
-        zVec3 * inOutPosition,
-        zVec3 * outOrientation
-    ) {
-        zVec3 localOrientationBasis[2] = {{0.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}};
+    int __fastcall GetWorldPosAndOrientation(CZNodePartial * node, zVec3 * inOutPosition, zVec3 * outOrientation)
+    {
+        zVec3 localOrientationBasis[2] = { { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } };
 
         if (node == 0) {
             return 1;
         }
 
-        zMat4x3 matrix = {0};
-        zMath::MatStackPushPtr((float *)(&matrix));
+        zMat4x3 matrix = { 0 };
+        zMath::MatStackPushPtr((float*)(&matrix));
         zMath::MatLoadIdentity();
         gwNodeBuildNodeToAncestorMatrix(node, 1);
 
@@ -2148,51 +2040,41 @@ namespace CZNode {
             zMath::MatTransformPointBatchInPlace(inOutPosition, 1);
         }
 
-        zVec3 worldPosition = {matrix.posX, matrix.posY, matrix.posZ};
+        zVec3 worldPosition = { matrix.posX, matrix.posY, matrix.posZ };
         zVec3 worldOrientationBasis[2];
         memcpy(worldOrientationBasis, localOrientationBasis, sizeof(worldOrientationBasis));
         if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3 *currentMatrix =
-                (const zMat4x3 *)(*zMath::g_currentMatrixPtrSlot);
+            const zMat4x3* currentMatrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
             for (int i = 0; i < 2; ++i) {
                 const zVec3 point = localOrientationBasis[i];
-                worldOrientationBasis[i].x =
-                    point.x * currentMatrix->xx +
-                    point.y * currentMatrix->yx +
-                    point.z * currentMatrix->zx +
-                    currentMatrix->posX;
-                worldOrientationBasis[i].y =
-                    point.x * currentMatrix->xy +
-                    point.y * currentMatrix->yy +
-                    point.z * currentMatrix->zy +
-                    currentMatrix->posY;
-                worldOrientationBasis[i].z =
-                    point.x * currentMatrix->xz +
-                    point.y * currentMatrix->yz +
-                    point.z * currentMatrix->zz +
-                    currentMatrix->posZ;
+                worldOrientationBasis[i].x = point.x * currentMatrix->xx + point.y * currentMatrix->yx
+                    + point.z * currentMatrix->zx + currentMatrix->posX;
+                worldOrientationBasis[i].y = point.x * currentMatrix->xy + point.y * currentMatrix->yy
+                    + point.z * currentMatrix->zy + currentMatrix->posY;
+                worldOrientationBasis[i].z = point.x * currentMatrix->xz + point.y * currentMatrix->yz
+                    + point.z * currentMatrix->zz + currentMatrix->posZ;
             }
         }
 
         zMath::MatLoadIdentity();
-        *outOrientation = zMath::Vec3DirectionAnglesBetweenPoints(
-            &worldPosition, &worldOrientationBasis[0]);
-        outOrientation->z =
-            zMathVec3ElevationAngleBetweenPoints(&worldPosition, &worldOrientationBasis[1]);
+        *outOrientation = zMath::Vec3DirectionAnglesBetweenPoints(&worldPosition, &worldOrientationBasis[0]);
+        outOrientation->z = zMathVec3ElevationAngleBetweenPoints(&worldPosition, &worldOrientationBasis[1]);
 
         zMath::MatStackPopPtr();
         return 0;
     }
 }
 
-namespace CZClass {
+namespace CZClass
+{
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetroot
      * @recoil-artifact defines .text recoil:function:0x449ab0: CZClass::gwNodeGetRoot
      * Purpose: walk a node's single-parent chain and return the root node.
      */
-    CZNodePartial *__fastcall gwNodeGetRoot(CZNodePartial * node) {
-        CZNodePartial *current = node;
+    CZNodePartial* __fastcall gwNodeGetRoot(CZNodePartial * node)
+    {
+        CZNodePartial* current = node;
         while (current != 0) {
             switch (current->listCountA) {
             case 0:
@@ -2222,10 +2104,9 @@ namespace CZClass {
      * Purpose: walk a node's single-parent chain through listA links and
      * return the child directly owned by the world node.
      */
-    CZNodePartial *__fastcall gwNodeGetWorldChild(
-        CZNodePartial * node
-    ) {
-        CZNodePartial *current = node;
+    CZNodePartial* __fastcall gwNodeGetWorldChild(CZNodePartial * node)
+    {
+        CZNodePartial* current = node;
         while (current != 0) {
             switch (current->listCountA) {
             case 0:
@@ -2260,10 +2141,8 @@ namespace CZClass {
      * Purpose: propagate the single-parent flag through a data-driven zClass
      * child subtree when listA ownership count changes.
      */
-    int __fastcall SetSingleParentFlagRecursive(
-        CZNodePartial * node,
-        int setFlag
-    ) {
+    int __fastcall SetSingleParentFlagRecursive(CZNodePartial * node, int setFlag)
+    {
         if (node == 0) {
             return 1;
         }
@@ -2283,12 +2162,10 @@ namespace CZClass {
 
         return 0;
     }
-
 }
 
-namespace CZNode {
-
-
+namespace CZNode
+{
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setcontextrecursive
@@ -2301,11 +2178,8 @@ namespace CZNode {
      * Purpose: assign a callback context and OR flag bits through a node
      * subtree using the zClass child-list links.
      */
-    void __fastcall SetContextRecursive(
-        CZNodePartial * self,
-        CZNodePartial * context,
-        int flagMask
-    ) {
+    void __fastcall SetContextRecursive(CZNodePartial * self, CZNodePartial * context, int flagMask)
+    {
         self->callbackContext = context;
         self->flags |= flagMask;
 
@@ -2326,13 +2200,11 @@ namespace CZNode {
      * Purpose: set display-instance flag bit 0 for each display instance
      * reachable through a node's child-list subtree.
      */
-    void __fastcall SetDiFlagBit0Recursive(
-        CZNodePartial * node,
-        int enabled
-    ) {
+    void __fastcall SetDiFlagBit0Recursive(CZNodePartial * node, int enabled)
+    {
         unsigned int userData;
         CZClass::gwNodeGetUserData(node, &userData);
-        zDiPartial *di = (zDiPartial *)(userData);
+        zDiPartial* di = (zDiPartial*)(userData);
         if (di != 0) {
             zDi::SetFlagBit0(di, enabled);
         }
@@ -2346,7 +2218,6 @@ namespace CZNode {
      * Source-shape routing markers: these definitions are emitted by
      * cls_util.c while Class.c retains related callers.
      */
-
 }
 /*
  * Provenance-only routing markers: these definitions compile through the

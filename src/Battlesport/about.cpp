@@ -8,13 +8,10 @@
  * Purpose: construct the authored About dialog over the MFC CDialog provider
  * base with the recovered dialog resource id and caller-supplied parent.
  */
-CAboutDlg::CAboutDlg(
-    CWnd *parentWnd
-)
-    : CDialog(
-          CAboutDlg::IDD,
-          parentWnd
-      ) {}
+CAboutDlg::CAboutDlg(CWnd* parentWnd)
+    : CDialog(CAboutDlg::IDD, parentWnd)
+{
+}
 
 /**
  * Purpose: returns the authored empty About dialog message-map table used by
