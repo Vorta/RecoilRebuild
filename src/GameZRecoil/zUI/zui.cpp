@@ -3533,9 +3533,10 @@ void HudUiChatComposeTextInput::OnAccept() {
 }
 
 /**
- * Purpose: construct the common HUD element base and embedded slot widgets
- * through ordinary C++ member construction; the shared retail identity with
- * the compatibility constructor wrapper remains unresolved.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zui.hud-ui-slot.constructor
+ * @recoil-artifact defines .text recoil:function:0x40db20: HudUiSlot::HudUiSlot.
+ * Historical explicit versus implicit spelling and emission TU remain unresolved.
+ * Purpose: construct the element at (0, 0) and the two embedded slot widgets.
  */
 HudUiSlot::HudUiSlot() : HudUiElement(
         0,

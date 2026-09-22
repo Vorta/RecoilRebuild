@@ -6634,6 +6634,16 @@ void CHudUiOptionsPanelSoundVolume::SyncFromOptions() {
     SetNormalizedValueAndRebuild(zOpt::GetSoundVolumeOption());
 }
 
+namespace {
+
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Recovered from exact address-backed caller CHudUiOptionsPanelSoundVolume::OnActivate at 0x40cc30.
+ * Purpose: return HudUiFillBitmap::normalizedValue with its x87 argument-load sequence.
+ */
+inline float HudUiFillBitmapGetNormalizedValue(const HudUiFillBitmap *widget) { return widget->normalizedValue; }
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspanel-soundvolume-onactivate
  * @recoil-artifact defines .text recoil:function:0x40cc30: CHudUiOptionsPanelSoundVolume::OnActivate.
@@ -6641,7 +6651,7 @@ void CHudUiOptionsPanelSoundVolume::SyncFromOptions() {
  */
 void CHudUiOptionsPanelSoundVolume::OnActivate() {
     HudUiFillBitmapSlider::OnActivate();
-    zOpt::SetSoundVolumeOption(normalizedValue);
+    zOpt::SetSoundVolumeOption(HudUiFillBitmapGetNormalizedValue(this));
     SetNormalizedValueAndRebuild(zOpt::GetSoundVolumeOption());
 }
 
@@ -7202,14 +7212,6 @@ void __fastcall HudUiMgr::StaticDestructor(
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-destructor-huduimessage
- * @recoil-artifact defines .text recoil:function:0x40d590: HudUiMessage::Destructor.
- * Purpose: Tears down the side widget, embedded text panel, and base widget in retail destruction order.
- */
-HudUiMessage::~HudUiMessage() {
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-unwinddestructfirstitem
  * @recoil-artifact defines .text recoil:function:0x40d600: HudUiTripletPanel::UnwindDestructFirstItem.
  * Purpose: Destroys the first item widget during constructor unwind cleanup.
@@ -7271,15 +7273,6 @@ HudUiMgrData::~HudUiMgrData() {
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduislot-destructor-huduislot
- * @recoil-artifact defines .text recoil:function:0x40d780: HudUiSlot::~HudUiSlot.
- * Purpose: let VC5 tear down the marker and slot widget members in source
- * member order.
- */
-HudUiSlot::~HudUiSlot() {
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgrdata-huduimgrdata
  * @recoil-artifact defines .text recoil:function:0x40d7e0: HudUiMgrData::HudUiMgrData.
  * Retail BN shows one complete manager constructor containing both meter-base
@@ -7322,12 +7315,11 @@ HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate() : HudUiBar() {
  * Purpose: Constructs the weapon-message widget, embedded text panel, side widget, and clears image slots.
  */
 HudUiMessage::HudUiMessage() : HudUiWidget(0), panel(), widget(0) {
-    memset(
-        variantImages,
-        0,
-        sizeof(variantImages) + sizeof(activeSideImages) + sizeof(sideImageSwaps)
-    );
-    panel.activeSideIndex = 0;
+    variantImages[0] = variantImages[1] = variantImages[2] =
+        variantImages[3] = variantImages[4] =
+        activeSideImages[0] = activeSideImages[1] =
+        sideImageSwaps[0] = sideImageSwaps[1] = 0;
+    activeSideIndex = 0;
 }
 
 /**
@@ -7342,10 +7334,9 @@ HudUiCounter::HudUiCounter() : HudUiWidget(0) {
 }
 
 /**
- * Original function; retail address 0x40db20.
- * Purpose: Constructs the HUD element base and embedded slot widgets for a
- * weapon/sensor HUD slot; the shared retail identity with the ordinary C++
- * constructor remains unresolved.
+ * Compatibility wrapper; the native constructor supplies retail 0x40db20.
+ * Purpose: preserve explicit placement-construction callers through the
+ * ordinary HudUiSlot constructor.
  */
 HudUiSlot * HudUiSlot::Constructor() {
     new (this) HudUiSlot;
@@ -8067,9 +8058,10 @@ void __fastcall HudUiMgr::SetModeCounterState(
 HudUiTripletPanel::HudUiTripletPanel() : HudUiElement(0, 0) {
     visibleCount = 0;
 
-    ((HudUiElement *)(&items[0]))->SetVisible(0);
-    ((HudUiElement *)(&items[1]))->SetVisible(0);
-    ((HudUiElement *)(&items[2]))->SetVisible(0);
+    HudUiWidget *const firstItem = items;
+    firstItem->SetVisible(0);
+    items[1].SetVisible(0);
+    items[2].SetVisible(0);
 
     g_HudUiMgr.AddChild(this);
 }
@@ -10323,7 +10315,7 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(
     float valueOrClearToken
 ) {
     HudUiMessage &message = g_HudUiMgrMessages[messageIndex];
-    if (ownerSideIndex != message.panel.activeSideIndex) {
+    if (ownerSideIndex != message.activeSideIndex) {
         return;
     }
 
@@ -10351,21 +10343,21 @@ void __fastcall HudUiMessage::SelectVariantDisplay(
     if (variantIndex == 0 || variantIndex == 3) {
         message.activeSideImages[0] = message.sideImageSwaps[0];
         message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[1]);
-        message.panel.activeSideIndex = 0;
+        message.activeSideIndex = 0;
     }
 
     if (variantIndex == 5) {
-        message.panel.activeSideIndex = 0;
+        message.activeSideIndex = 0;
     }
 
     if (variantIndex == 1 || variantIndex == 4) {
         message.activeSideImages[1] = message.sideImageSwaps[1];
         message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[0]);
-        message.panel.activeSideIndex = 1;
+        message.activeSideIndex = 1;
     }
 
     if (variantIndex == 6) {
-        message.panel.activeSideIndex = 1;
+        message.activeSideIndex = 1;
     }
 }
 
@@ -10422,21 +10414,21 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
             if (variantIndex == 0 || variantIndex == 3) {
                 message.activeSideImages[0] = message.sideImageSwaps[0];
                 message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[1]);
-                message.panel.activeSideIndex = 0;
+                message.activeSideIndex = 0;
             }
 
             if (variantIndex == 5) {
-                message.panel.activeSideIndex = 0;
+                message.activeSideIndex = 0;
             }
 
             if (variantIndex == 1 || variantIndex == 4) {
                 message.activeSideImages[1] = message.sideImageSwaps[1];
                 message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[0]);
-                message.panel.activeSideIndex = 1;
+                message.activeSideIndex = 1;
             }
 
             if (variantIndex == 6) {
-                message.panel.activeSideIndex = 1;
+                message.activeSideIndex = 1;
             }
         }
 
@@ -10451,26 +10443,26 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
             if (variantIndex == 0 || variantIndex == 3) {
                 message.activeSideImages[0] = message.sideImageSwaps[0];
                 message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[1]);
-                message.panel.activeSideIndex = 0;
+                message.activeSideIndex = 0;
             }
 
             if (variantIndex == 5) {
-                message.panel.activeSideIndex = 0;
+                message.activeSideIndex = 0;
             }
 
             if (variantIndex == 1 || variantIndex == 4) {
                 message.activeSideImages[1] = message.sideImageSwaps[1];
                 message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[0]);
-                message.panel.activeSideIndex = 1;
+                message.activeSideIndex = 1;
             }
 
             if (variantIndex == 6) {
-                message.panel.activeSideIndex = 1;
+                message.activeSideIndex = 1;
             }
         }
 
         HudUiMessage &message = g_HudUiMgrMessages[weaponBankIndex];
-        if (weaponSideIndex != message.panel.activeSideIndex) {
+        if (weaponSideIndex != message.activeSideIndex) {
             return;
         }
 
@@ -10490,24 +10482,24 @@ void __fastcall HudUiMessage::UpdateSelectedWeaponDisplay(
         if (variantIndex == 0 || variantIndex == 3) {
             message.activeSideImages[0] = message.sideImageSwaps[0];
             message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[1]);
-            message.panel.activeSideIndex = 0;
+            message.activeSideIndex = 0;
         }
 
         if (variantIndex == 5) {
-            message.panel.activeSideIndex = 0;
+            message.activeSideIndex = 0;
         }
 
         if (variantIndex == 1 || variantIndex == 4) {
             message.activeSideImages[1] = message.sideImageSwaps[1];
             message.widget.SetImageBorrowedAndInvalidate(message.activeSideImages[0]);
-            message.panel.activeSideIndex = 1;
+            message.activeSideIndex = 1;
         }
 
         if (variantIndex == 6) {
-            message.panel.activeSideIndex = 1;
+            message.activeSideIndex = 1;
         }
 
-        if (weaponSideIndex != message.panel.activeSideIndex) {
+        if (weaponSideIndex != message.activeSideIndex) {
             return;
         }
 
@@ -11728,9 +11720,9 @@ int HudUiMessage::LoadWeaponLayoutFromNode(
     variantImages[4] = zImage::TexDirFindOrCreateByPath(payload[5].value.str);
     sideImageSwaps[0] = zImage::TexDirFindOrCreateByPath(payload[6].value.str);
     sideImageSwaps[1] = zImage::TexDirFindOrCreateByPath(payload[7].value.str);
-    HudUiPanelFull *const messagePanel = &panel;
-    messagePanel->layoutX = payload[8].value.i32;
-    messagePanel->layoutY = payload[9].value.i32;
+    HudUiPanel *const messagePanel = &panel;
+    layoutX = payload[8].value.i32;
+    layoutY = payload[9].value.i32;
 
     RebuildWeaponLayout();
 
@@ -11797,15 +11789,15 @@ void HudUiMessage::RebuildWeaponLayout() {
     const int anchorX = layoutWidget2->GetCenterX();
     const int anchorY = layoutWidget2->GetCenterY();
 
-    const int clipLeft = panel.layoutX + (g_HudUiMgrHudOriginX / 2);
+    const int clipLeft = layoutX + (g_HudUiMgrHudOriginX / 2);
     zVidImagePartial *const baseImage = variantImages[0];
     HudUiRect widgetClipRect;
     widgetClipRect.left = clipLeft;
-    widgetClipRect.top = panel.layoutY;
+    widgetClipRect.top = layoutY;
     widgetClipRect.right = clipLeft + baseImage->width;
-    widgetClipRect.bottom = panel.layoutY + baseImage->height;
+    widgetClipRect.bottom = layoutY + baseImage->height;
 
-    SetPos(clipLeft + anchorX, panel.layoutY + anchorY);
+    SetPos(clipLeft + anchorX, layoutY + anchorY);
     SetBltSourceAndClipRect(0, &widgetClipRect);
 
     HudUiRect panelClipRect;

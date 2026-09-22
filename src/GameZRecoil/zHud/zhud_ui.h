@@ -1606,12 +1606,6 @@ struct HudUiNanitePanel : HudUiTripletPanel {
     void InitLayout(zReader::Node *layoutRoot);
 };
 
-struct HudUiPanelFull : HudUiPanel {
-    int activeSideIndex;
-    int layoutX;
-    int layoutY;
-};
-
 struct HudUiPanelFontParams {
     const char *faceName;
     int height;
@@ -1621,6 +1615,7 @@ struct HudUiPanelFontParams {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-message.type
+ * @recoil-artifact emits .text recoil:function:0x40d590: VC5 implicit destructor for native member and base cleanup.
  * @recoil-artifact emits .text recoil:function:0x40daa0: VC5 scalar deleting destructor emitted for this virtual-destructor model.
  * Purpose: Record compiler-generated lifecycle code emitted by the complete HudUiMessage type.
  */
@@ -1628,11 +1623,13 @@ struct HudUiMessage : HudUiWidget {
     zVidImagePartial *variantImages[5];
     zVidImagePartial *activeSideImages[2];
     zVidImagePartial *sideImageSwaps[2];
-    HudUiPanelFull panel;
+    HudUiPanel panel;
+    int activeSideIndex;
+    int layoutX;
+    int layoutY;
     HudUiWidget widget;
 
     HudUiMessage();
-    ~HudUiMessage();
     /**
      * Purpose: preserve compatibility callers while routing through the true
      * C++ destructor used by HudUiMgrData member arrays.
@@ -1993,6 +1990,7 @@ struct HudUiClampedIntStepButton : HudUiZrdWidget {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-slot.type
+ * @recoil-artifact emits .text recoil:function:0x40d780: VC5 implicit destructor for native member and base cleanup.
  * @recoil-artifact emits .text recoil:function:0x40dbd0: VC5 scalar deleting destructor emitted for this virtual-destructor model.
  * BN constructors at 0x40db20 initialize HudUiElement at object offset zero,
  * then construct the slot and marker widgets at offsets 0x48 and 0x104.
@@ -2008,7 +2006,6 @@ struct HudUiSlot : HudUiElement {
     HudUiWidget trackMarkerWidget;
 
     HudUiSlot();
-    ~HudUiSlot();
     HudUiSlot * Constructor();
     /**
      * Purpose: preserve compatibility callers while routing through the true
@@ -4870,15 +4867,15 @@ RECOIL_STATIC_ASSERT(
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiPanelFull,
+        HudUiMessage,
         layoutX
-    ) == 0x2a8
+    ) == 0x388
 );
 RECOIL_STATIC_ASSERT(
     offsetof(
-        HudUiPanelFull,
+        HudUiMessage,
         layoutY
-    ) == 0x2ac
+    ) == 0x38c
 );
 RECOIL_STATIC_ASSERT(sizeof(HudUiPanelFontParams) == 0x10);
 RECOIL_STATIC_ASSERT(
@@ -4887,6 +4884,7 @@ RECOIL_STATIC_ASSERT(
         widget
     ) == 0x390
 );
+RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, activeSideIndex) == 0x384);
 RECOIL_STATIC_ASSERT(sizeof(HudUiMessage) == 0x44c);
 RECOIL_STATIC_ASSERT(
     offsetof(
