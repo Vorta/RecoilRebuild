@@ -4901,116 +4901,303 @@ zRndr_SpanOcclusion_InsertSpanNode_Local(zRndr::SpanNodePartial** spanList, int 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-insertspannode-nodepthtest
  * @recoil-artifact defines .text recoil:function:0x4912a0: zRndrSpanOcclusionInsertSpanNodeNoDepthTest.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: insert the pending span into a column without depth-order testing.
  *
- * Evidence: BN keeps the same fastcall callback shape as the local inserter and
- * forwards into the no-depth insertion helper that preserves the column-list
- * split/visible-span contract.
+ * Leaf fastcall callback. Every overlap case, including list exhaustion, owns
+ * its emission: publish g_spanLastNode, advance the cursor, then read the node
+ * back into pending before merging adjacent output fragments.
  */
 void __fastcall
 zRndrSpanOcclusionInsertSpanNodeNoDepthTest(zRndr::SpanNodePartial** spanList, int columnIndex, int* spanCount)
 {
     using namespace zRndr;
 
-    *spanCount = 0;
-    if (g_spanColumnHeadTable == 0 || g_spanAllocCursor == 0 || columnIndex < 0) {
-        return;
-    }
-
     SpanNodePartial* pending = g_spanAllocCursor;
-    SpanNodePartial* previous = 0;
-    SpanNodePartial* current = g_spanColumnHeadTable[columnIndex];
-
-    while (current != 0 && pending->sampleXMin > current->sampleXMax) {
-        previous = current;
-        current = current->next;
-    }
-
+    SpanNodePartial** columnHeadTable = g_spanColumnHeadTable;
+    SpanNodePartial* current = columnHeadTable[columnIndex];
+    *spanCount = 0;
     if (current == 0 || pending->sampleXMax < current->sampleXMin) {
-        pending->next = current;
-        if (previous != 0) {
-            previous->next = pending;
-        } else {
-            g_spanColumnHeadTable[columnIndex] = pending;
-        }
-        g_spanIterPrevLink = previous;
-        g_spanIterNode = pending;
-        spanList[0] = pending;
-        *spanCount = 1;
-        g_spanLastNode = pending;
+        g_spanAllocCursor->next = current;
+        g_spanColumnHeadTable[columnIndex] = g_spanAllocCursor;
+        spanList[*spanCount] = g_spanAllocCursor;
+        ++*spanCount;
         ++g_spanAllocCursor;
         return;
     }
 
-    while (current != 0 && current->sampleXMin <= pending->sampleXMax) {
-        const int currentMin = current->sampleXMin;
-        const int currentMax = current->sampleXMax;
-        const float currentInvDepth = current->invDepth;
-        const float currentInvDepthStep = current->invDepthStep;
-        const float currentDepthSlope = current->depthSlope;
+    pending->next = 0;
+    g_spanIterNode = current;
+    g_spanIterPrevLink = 0;
 
-        if (currentMin < pending->sampleXMin) {
-            if (currentMax >= pending->sampleXMin) {
-                current->sampleXMax = pending->sampleXMin - 1;
-                current->invDepthStep = currentInvDepth + (float)(current->sampleXMax - currentMin) * currentDepthSlope;
+    SpanNodePartial* previous = 0;
+    while (current != 0) {
+        previous = g_spanIterPrevLink;
+        current = g_spanIterNode;
 
-                if (currentMax > pending->sampleXMax) {
-                    SpanNodePartial* rightSplit = pending + 1;
-                    rightSplit->sampleXMin = pending->sampleXMax + 1;
-                    rightSplit->sampleXMax = currentMax;
-                    rightSplit->invDepth
-                        = currentInvDepth + (float)(rightSplit->sampleXMin - currentMin) * currentDepthSlope;
-                    rightSplit->invDepthStep = currentInvDepthStep;
-                    rightSplit->depthSlope = currentDepthSlope;
-                    rightSplit->next = current->next;
-
-                    pending->next = rightSplit;
-                    current->next = pending;
-                    spanList[0] = pending;
-                    *spanCount = 1;
-                    g_spanLastNode = pending;
-                    g_spanIterPrevLink = current;
-                    g_spanIterNode = pending;
-                    g_spanLastNode = rightSplit;
-                    g_spanAllocCursor += 2;
-                    return;
-                }
-            }
-
+        while (current != 0 && pending->sampleXMin > current->sampleXMax) {
             previous = current;
             current = current->next;
-            continue;
         }
-
-        if (currentMax <= pending->sampleXMax) {
-            SpanNodePartial* next = current->next;
+        if (current == 0) {
+            pending->next = 0;
+            g_spanIterNode = g_spanAllocCursor;
+            g_spanIterPrevLink = previous;
             if (previous != 0) {
-                previous->next = next;
-            } else {
-                g_spanColumnHeadTable[columnIndex] = next;
+                previous->next = g_spanAllocCursor;
             }
-            current = next;
-            continue;
+            g_spanLastNode = g_spanAllocCursor;
+            ++g_spanAllocCursor;
+            pending = g_spanLastNode;
+
+            if (*spanCount > 0) {
+                SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                    g_spanIterNode = lastVisible;
+                    return;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+            }
+            return;
         }
 
-        current->sampleXMin = pending->sampleXMax + 1;
-        current->invDepth = currentInvDepth + (float)(current->sampleXMin - currentMin) * currentDepthSlope;
-        break;
-    }
+        if (pending->sampleXMax < current->sampleXMin) {
+            g_spanIterNode = current;
+            g_spanIterPrevLink = previous;
+            if (previous != 0) {
+                previous->next = g_spanAllocCursor;
+            }
+            g_spanAllocCursor->next = g_spanIterNode;
+            g_spanLastNode = g_spanAllocCursor;
+            ++g_spanAllocCursor;
+            pending = g_spanLastNode;
 
-    pending->next = current;
-    if (previous != 0) {
-        previous->next = pending;
-    } else {
-        g_spanColumnHeadTable[columnIndex] = pending;
+            if (*spanCount > 0) {
+                SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                    g_spanIterNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+            }
+
+            if (g_spanLastNode->sampleXMin <= g_spanColumnHeadTable[columnIndex]->sampleXMin) {
+                g_spanColumnHeadTable[columnIndex] = g_spanLastNode;
+            }
+            return;
+        }
+
+        if (current->sampleXMax <= pending->sampleXMax) {
+            if (current->sampleXMin < pending->sampleXMin) {
+                if (current->sampleXMax >= pending->sampleXMin) {
+                    g_spanIterNode = current;
+                    g_spanIterPrevLink = previous;
+                    const int oldMin = current->sampleXMin;
+                    const int newMax = pending->sampleXMin - 1;
+                    current->sampleXMax = newMax;
+                    current->invDepthStep = current->invDepth + (float)(newMax - oldMin) * current->depthSlope;
+                }
+                continue;
+            }
+
+            if (current->sampleXMax < pending->sampleXMax) {
+                const float slope = pending->depthSlope;
+                const int coveredMax = current->sampleXMax;
+                const int rightMin = coveredMax + 1;
+                SpanNodePartial* right = pending + 1;
+                right->next = pending->next;
+                right->sampleXMax = pending->sampleXMax;
+                right->invDepthStep = pending->invDepthStep;
+                right->depthSlope = pending->depthSlope;
+                pending->sampleXMax = coveredMax;
+                pending->invDepthStep = pending->invDepth + (float)(coveredMax - pending->sampleXMin) * slope;
+                right->sampleXMin = rightMin;
+                right->invDepth = pending->invDepth + (float)(rightMin - pending->sampleXMin) * slope;
+
+                g_spanAllocCursor->next = current->next;
+                g_spanIterNode = g_spanAllocCursor;
+                g_spanIterPrevLink = previous;
+                if (previous != 0) {
+                    previous->next = g_spanAllocCursor;
+                }
+                g_spanLastNode = g_spanAllocCursor;
+                ++g_spanAllocCursor;
+                pending = g_spanLastNode;
+
+                if (*spanCount > 0) {
+                    SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                    if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                        lastVisible->sampleXMax = pending->sampleXMax;
+                        lastVisible->invDepthStep = pending->invDepthStep;
+                        lastVisible->next = pending->next;
+                        g_spanLastNode = lastVisible;
+                        g_spanIterNode = lastVisible;
+                    } else {
+                        spanList[*spanCount] = pending;
+                        ++*spanCount;
+                    }
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+
+                if (g_spanLastNode->sampleXMin <= g_spanColumnHeadTable[columnIndex]->sampleXMin) {
+                    g_spanColumnHeadTable[columnIndex] = g_spanLastNode;
+                }
+
+                pending = g_spanAllocCursor;
+                pending->next = 0;
+                continue;
+            }
+
+            pending->next = current->next;
+            g_spanIterNode = g_spanAllocCursor;
+            g_spanIterPrevLink = previous;
+            if (previous != 0) {
+                previous->next = g_spanAllocCursor;
+            }
+            g_spanLastNode = g_spanAllocCursor;
+            ++g_spanAllocCursor;
+            pending = g_spanLastNode;
+
+            if (*spanCount > 0) {
+                SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                    g_spanIterNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+            }
+
+            if (g_spanLastNode->sampleXMin <= g_spanColumnHeadTable[columnIndex]->sampleXMin) {
+                g_spanColumnHeadTable[columnIndex] = g_spanLastNode;
+            }
+            return;
+        } else if (pending->sampleXMin <= current->sampleXMin) {
+            if (current->sampleXMin <= pending->sampleXMax) {
+                g_spanIterNode = current;
+                g_spanIterPrevLink = previous;
+                const int oldMax = current->sampleXMax;
+                const int newMin = pending->sampleXMax + 1;
+                current->sampleXMin = newMin;
+                current->invDepth = current->invDepthStep + (float)(newMin - oldMax) * current->depthSlope;
+                if (g_spanIterPrevLink != 0) {
+                    g_spanIterPrevLink->next = g_spanAllocCursor;
+                }
+                g_spanAllocCursor->next = g_spanIterNode;
+                g_spanLastNode = g_spanAllocCursor;
+                ++g_spanAllocCursor;
+                pending = g_spanLastNode;
+
+                if (*spanCount > 0) {
+                    SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                    if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                        lastVisible->sampleXMax = pending->sampleXMax;
+                        lastVisible->invDepthStep = pending->invDepthStep;
+                        lastVisible->next = pending->next;
+                        g_spanLastNode = lastVisible;
+                        g_spanIterNode = lastVisible;
+                    } else {
+                        spanList[*spanCount] = pending;
+                        ++*spanCount;
+                    }
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+
+                if (g_spanLastNode->sampleXMin <= g_spanColumnHeadTable[columnIndex]->sampleXMin) {
+                    g_spanColumnHeadTable[columnIndex] = g_spanLastNode;
+                }
+                return;
+            } else {
+                continue;
+            }
+        } else {
+            if (pending->sampleXMax >= current->sampleXMax) {
+                continue;
+            }
+
+            g_spanIterNode = current;
+            g_spanIterPrevLink = previous;
+            // Copy the node before trimming its right remainder; the old
+            // next, minimum and left depth are superseded by the split.
+            SpanNodePartial rightFragment;
+            rightFragment.next = current->next;
+            rightFragment.sampleXMin = current->sampleXMin;
+            rightFragment.sampleXMax = current->sampleXMax;
+            rightFragment.invDepth = current->invDepth;
+            rightFragment.invDepthStep = current->invDepthStep;
+            rightFragment.depthSlope = current->depthSlope;
+            rightFragment.sampleXMin = pending->sampleXMax + 1;
+            rightFragment.invDepth = rightFragment.invDepthStep
+                + (float)(rightFragment.sampleXMin - rightFragment.sampleXMax) * current->depthSlope;
+            g_spanIterNode->sampleXMax = pending->sampleXMin - 1;
+            g_spanIterNode->invDepthStep = g_spanIterNode->invDepth
+                + (float)(g_spanIterNode->sampleXMax - g_spanIterNode->sampleXMin) * g_spanIterNode->depthSlope;
+
+            g_spanAllocCursor->next = g_spanIterNode->next;
+            g_spanIterNode->next = g_spanAllocCursor;
+            g_spanLastNode = g_spanAllocCursor;
+            ++g_spanAllocCursor;
+            pending = g_spanLastNode;
+
+            if (*spanCount > 0) {
+                SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                if (pending->sampleXMin == lastVisible->sampleXMax + 1) {
+                    lastVisible->sampleXMax = pending->sampleXMax;
+                    lastVisible->invDepthStep = pending->invDepthStep;
+                    lastVisible->next = pending->next;
+                    g_spanLastNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = pending;
+                    ++*spanCount;
+                }
+            } else {
+                spanList[*spanCount] = pending;
+                ++*spanCount;
+            }
+
+            g_spanIterNode = g_spanLastNode;
+            g_spanAllocCursor->sampleXMin = rightFragment.sampleXMin;
+            g_spanAllocCursor->sampleXMax = rightFragment.sampleXMax;
+            g_spanAllocCursor->invDepth = rightFragment.invDepth;
+            g_spanAllocCursor->invDepthStep = rightFragment.invDepthStep;
+            g_spanAllocCursor->depthSlope = rightFragment.depthSlope;
+            g_spanAllocCursor->next = g_spanIterNode->next;
+            g_spanIterNode->next = g_spanAllocCursor;
+            g_spanLastNode = g_spanAllocCursor;
+            ++g_spanAllocCursor;
+            return;
+        }
     }
-    g_spanIterPrevLink = previous;
-    g_spanIterNode = pending;
-    spanList[0] = pending;
-    *spanCount = 1;
-    g_spanLastNode = pending;
-    ++g_spanAllocCursor;
 }
 
 /**
