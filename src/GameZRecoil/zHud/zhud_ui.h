@@ -37,7 +37,6 @@ struct HudUiTextStack4;
 struct HudUiTimerPanel;
 struct HudUiTimerPanelFloat;
 struct HudUiCounterTextPanel;
-struct HudUiTripletPanel;
 struct HudUiNanitePanel;
 struct HudUiTransitionTextPanel;
 struct HudUiScoreboardEntry;
@@ -46,6 +45,7 @@ struct HudUiCircle;
 struct HudUiBar;
 struct CHudRadioGroupWidget;
 struct HudUiSlot;
+struct HudUiMeterDimensionsCandidate;
 struct HudUiManagerMeterBaseCandidate;
 struct HudUiManagerMeterCandidate;
 struct HudUiShieldMeterCandidate;
@@ -235,10 +235,10 @@ struct HudUiElement {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-widget.type
  * @recoil-artifact emits .text recoil:function:0x4b3ce0: VC5 scalar deleting destructor emitted for this virtual-destructor model.
- * @recoil-artifact emits .text recoil:function:0x40d5f0: VC5 destructor cleanup forwarding thunk to the HudUiWidget destructor core.
  * @recoil-artifact emits .text recoil:function:0x40f2d0: VC5 default-constructor closure supplies the zero alignment argument for arrays.
  *
  * Purpose: Record compiler-generated lifecycle and cleanup code emitted by the complete HudUiWidget type.
+ * The shared destruction tail at 0x40d5f0 reaches this destructor; its original emitter remains unresolved.
  */
 struct HudUiWidget : HudUiElement {
     unsigned int ownsImage;
@@ -283,8 +283,14 @@ zVidImagePartial* __fastcall ApplyImageWidget(
     HudUiRect* outRectOrNull
 );
 int __fastcall ApplyCornerTextQuad(zReader::Node* node, HudUiBar* target, const int* offsetXY, HudUiRect* outRect);
-int __fastcall
-ApplyMeterQuad(zReader::Node* node, HudUiBar* target, int xBase, int yBase, const int* offsetXY, HudUiRect* outRect);
+int __fastcall ApplyMeterQuad(
+    zReader::Node* node,
+    HudUiMeterDimensionsCandidate* target,
+    int xBase,
+    int yBase,
+    const int* offsetXY,
+    HudUiRect* outRect
+);
 } // namespace HudUiLayoutNode
 
 struct HudUiMgrSensorBlock;
@@ -456,7 +462,6 @@ extern char g_HudSensorTracker_ReadFileFailedFmt[18];
 extern char g_HudCfgKey_Fonts[6];
 extern char g_HudZrd_Key_Sound[6];
 extern int g_HudUiMgrObjectiveChatComposeActive;
-struct HudUiObjectiveBar;
 extern HudUiWidget g_HudUiMgrSensorPanel;
 extern HudUiWidget g_HudUiMgrSensorOverlay;
 extern HudUiManagerMeterCandidate g_HudUiMgrSensorMeter;
@@ -1361,23 +1366,20 @@ struct HudUiMessageBoxCancelButton : HudUiZrdWidget {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-triplet-panel.type
  * @recoil-artifact emits .text recoil:function:0x40f2b0: VC5 scalar deleting destructor emitted for this virtual-destructor model.
- * Purpose: Record compiler-generated lifecycle code emitted by the complete HudUiTripletPanel type.
+ * Purpose: Record compiler-generated lifecycle code emitted by the complete HudUiNanitePanel type.
  */
-struct HudUiTripletPanel : HudUiElement {
+struct HudUiNanitePanel : HudUiElement {
     int visibleCount;
     unsigned char unknown_38[0x04];
     HudUiWidget items[3];
 
-    HudUiTripletPanel();
+    HudUiNanitePanel();
     void Draw();
     void SetVisibleCount(int count);
+    void InitLayout(zReader::Node* layoutRoot);
     void ShutdownItems();
     void DestructorCore();
     void UnwindDestructFirstItem();
-};
-
-struct HudUiNanitePanel : HudUiTripletPanel {
-    void InitLayout(zReader::Node* layoutRoot);
 };
 
 struct HudUiPanelFontParams {
@@ -1465,6 +1467,14 @@ struct HudUiSliderBorder : HudUiPolyline {
     void SetBounds(int originX, int originY, int halfWidth, int height);
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-counter.type
+ * @recoil-artifact emits .text recoil:function:0x40d5f0: Nonexclusive current-source implicit-destructor witness for the shared destruction tail.
+ *
+ * Purpose: Let native Counter array cleanup forward to Widget destruction.
+ * This current emission witness does not identify the original emitter or TU,
+ * the complete original fold population, or its winning contribution.
+ */
 struct HudUiCounter : HudUiWidget {
     zVidImagePartial* stateImages[3];
     HudUiRect clipViewportRect;
@@ -1480,27 +1490,28 @@ struct HudUiCounter : HudUiWidget {
 struct HudUiBar : HudUiElement {
     HudUiBarPoint points[21];
     int drawVertexCount;
-    union {
-        struct {
-            int drawParam;
-            int quadHeight;
-            float quadLeftX;
-        };
-        struct {
-            unsigned int color565;
-            int fillPixelsMax;
-            unsigned int meterFlags;
-        };
-        struct {
-            unsigned int objectiveDrawParam;
-            float slideRangeX;
-            unsigned int chatComposeActive;
-        };
-    };
+    int drawParam;
 
     HudUiBar();
     void Draw();
     void SetPointXY(int pointIndex, float x, float y);
+};
+
+struct HudUiTailBar : HudUiBar {
+    int quadHeight;
+    float quadLeftX;
+
+    HudUiTailBar()
+        : HudUiBar()
+        , quadHeight(0)
+        , quadLeftX(0.0f)
+    {
+    }
+};
+
+struct HudUiMeterDimensionsCandidate : HudUiBar {
+    int height;
+    int width;
 };
 
 /**
@@ -1508,22 +1519,15 @@ struct HudUiBar : HudUiElement {
  * manager construction calls this base twice before installing the same
  * most-derived manager-meter table for its two embedded leaves.
  */
-struct HudUiManagerMeterBaseCandidate : HudUiBar {
+struct HudUiManagerMeterBaseCandidate : HudUiMeterDimensionsCandidate {
     HudUiManagerMeterBaseCandidate();
 };
 
 struct HudUiManagerMeterCandidate : HudUiManagerMeterBaseCandidate { };
 
-/**
- * Provisional shield-meter sibling for retail constructor 0x40fb70. Its
- * direct HudUiBar construction is distinct from the manager-meter branch.
- */
-struct HudUiShieldMeterCandidate : HudUiBar {
+struct HudUiShieldMeterCandidate : HudUiMeterDimensionsCandidate {
     HudUiShieldMeterCandidate();
-    ~HudUiShieldMeterCandidate() { }
 };
-
-struct HudUiObjectiveBar : HudUiBar { };
 
 struct HudUiMgrSensorBlock {
     int state;
@@ -1780,7 +1784,9 @@ struct HudUiMgrObjectiveBlock {
     float objectiveMeterFillAnimTimerSec;
     unsigned int objectiveMeterFillAnimEnabled;
     HudUiPanel* objectiveDescTextPanel;
-    HudUiObjectiveBar objectiveBar;
+    HudUiBar objectiveBar;
+    float slideRangeX;
+    unsigned int chatComposeActive;
     HudUiChatComposeTextInput chatComposeTextInput;
     HudUiCounterTextPanel* counterTextPanel;
 
@@ -1886,7 +1892,7 @@ struct HudUiMgrData : HudUiContainer {
     unsigned int statsListState4;
     unsigned int statsListState5;
     HudLoadingCheckpointTable loadingCheckpointTable;
-    HudUiBar tailBar;
+    HudUiTailBar tailBar;
 
     HudUiMgrData();
     ~HudUiMgrData();
@@ -1932,7 +1938,7 @@ struct HudUiMgrData : HudUiContainer {
 #define g_HudUiMgrObjectiveMeterFillAnimEnabled (g_HudUiMgr.objective.objectiveMeterFillAnimEnabled)
 #define g_HudUiMgrObjectiveDescTextPanel (g_HudUiMgr.objective.objectiveDescTextPanel)
 #define g_HudUiMgrObjectiveBar (g_HudUiMgr.objective.objectiveBar)
-#define g_HudUiMgrObjectiveChatComposeActive (g_HudUiMgr.objective.objectiveBar.chatComposeActive)
+#define g_HudUiMgrObjectiveChatComposeActive (g_HudUiMgr.objective.chatComposeActive)
 #define g_HudUiMgrObjectiveChatComposeTextInput (g_HudUiMgr.objective.chatComposeTextInput)
 #define g_HudUiMgrObjectiveCounterTextPanel (g_HudUiMgr.objective.counterTextPanel)
 #define g_HudUiMgrSensorBlock (g_HudUiMgr.sensor)
@@ -2829,7 +2835,7 @@ struct HudUiTimerPanel : HudUiPanel {
     void SetTimeSeconds(int hours, int minutes, int seconds);
 };
 
-struct HudUiCounterTextPanel : HudUiPanel {
+struct HudUiCounterTextPanel : HudUiPanelSimple {
     HudUiCounterTextPanel();
 };
 
@@ -3238,10 +3244,9 @@ RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, bkMode) == 0x14);
 RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, shadowEnabled) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, fontWeight) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(HudFontStyle, alignMode) == 0x20);
-RECOIL_STATIC_ASSERT(sizeof(HudUiTripletPanel) == 0x270);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTripletPanel, visibleCount) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiTripletPanel, items) == 0x3c);
-RECOIL_STATIC_ASSERT(sizeof(HudUiNanitePanel) == sizeof(HudUiTripletPanel));
+RECOIL_STATIC_ASSERT(sizeof(HudUiNanitePanel) == 0x270);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNanitePanel, visibleCount) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(HudUiNanitePanel, items) == 0x3c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, variantImages) == 0xbc);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, activeSideImages) == 0xd0);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMessage, sideImageSwaps) == 0xd8);
@@ -3277,26 +3282,22 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, caretHalfWidth) == 0x108);
 RECOIL_STATIC_ASSERT(offsetof(HudUiSliderBorder, inputActive) == 0x10c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, sliderVisibleWhenInputActive) == 0x370);
 RECOIL_STATIC_ASSERT(offsetof(HudUiNumericTextInput, rawKeyFilterEnabled) == 0x371);
-RECOIL_STATIC_ASSERT(sizeof(HudUiBar) == 0x140);
+RECOIL_STATIC_ASSERT(sizeof(HudUiBar) == 0x138);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBar, points) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBar, drawVertexCount) == 0x130);
 RECOIL_STATIC_ASSERT(offsetof(HudUiBar, drawParam) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, quadHeight) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiBar, quadLeftX) == 0x13c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiTailBar) == 0x140);
+RECOIL_STATIC_ASSERT(offsetof(HudUiTailBar, quadHeight) == 0x138);
+RECOIL_STATIC_ASSERT(offsetof(HudUiTailBar, quadLeftX) == 0x13c);
+RECOIL_STATIC_ASSERT(sizeof(HudUiMeterDimensionsCandidate) == 0x140);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, points) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, drawVertexCount) == 0x130);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, drawParam) == 0x134);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, height) == 0x138);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, width) == 0x13c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterBaseCandidate) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiManagerMeterBaseCandidate, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiManagerMeterBaseCandidate, drawVertexCount) == 0x130);
-RECOIL_STATIC_ASSERT(offsetof(HudUiManagerMeterBaseCandidate, color565) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiManagerMeterBaseCandidate, fillPixelsMax) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiManagerMeterBaseCandidate, meterFlags) == 0x13c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterCandidate) == 0x140);
 RECOIL_STATIC_ASSERT(sizeof(HudUiShieldMeterCandidate) == 0x140);
-RECOIL_STATIC_ASSERT(sizeof(HudUiObjectiveBar) == 0x140);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, points) == 0x34);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, drawVertexCount) == 0x130);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, drawParam) == 0x134);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, slideRangeX) == 0x138);
-RECOIL_STATIC_ASSERT(offsetof(HudUiObjectiveBar, chatComposeActive) == 0x13c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextInput) == 0x110);
 RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, buffer) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, capacity) == 0x08);
@@ -3326,6 +3327,8 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveWidget) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveSensorRect) == 0xd8);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveMeter) == 0x19c);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, objectiveBar) == 0x2e8);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, slideRangeX) == 0x420);
+RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, chatComposeActive) == 0x424);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, chatComposeTextInput) == 0x428);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrObjectiveBlock, counterTextPanel) == 0x538);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMgrData, currentLayout) == 0x18);

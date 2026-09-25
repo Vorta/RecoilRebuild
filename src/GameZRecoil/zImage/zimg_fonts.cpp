@@ -183,27 +183,27 @@ int __fastcall zImage_Font::IsImageColumnTransparent(zVidImagePartial* image, in
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-measurestring
  * @recoil-artifact defines .text recoil:function:0x46f260: zImage_Font::MeasureString.
- * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
- * Purpose: measure wrapped font text width and total line advance.
+ * @recoil-match instruction
  *
- * Evidence: BN gets the requested font with fallback, uses image height as
- * line advance, treats space, carriage return, and newline specially, clamps
- * printable glyph indexes to the 95-glyph table, and writes both outputs.
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
+ * Purpose: measure multiline font text width and total line advance.
+ * Evidence: BN resolves the font with fallback and uses image height as line advance;
+ * it handles space/CR/LF, clamps indexes to 95 glyphs, and writes both outputs.
  */
 void __fastcall zImage_Font::MeasureString(const char* text, int fontIndex, int* outWidthPx, int* outLineAdvance)
 {
+    int currentLineWidth = 0;
+    int maxLineWidth = 0;
     zImage_Font* const font = GetByIndexOrDefault(fontIndex);
     if (font == 0) {
         return;
     }
 
     const int lineAdvance = font->image->height;
-    int currentLineWidth = 0;
-    int maxLineWidth = 0;
     int totalLineAdvance = lineAdvance;
 
-    for (const char* cursor = text; *cursor != '\0'; ++cursor) {
-        const signed char ch = *cursor;
+    signed char ch;
+    while ((ch = *text++) != '\0') {
         if (ch == ' ') {
             currentLineWidth += font->spaceWidth;
         } else if (ch == '\r') {

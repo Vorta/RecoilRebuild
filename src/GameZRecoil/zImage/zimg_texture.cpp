@@ -648,38 +648,34 @@ void __fastcall ClearZeroAlphaPixelsInPlace(zVidImagePartial* image)
     }
 
     const int bytesPerPixel = QueryBytesPerPixel(image);
-    if (image->pixelCount <= 0) {
-        return;
-    }
-
-    unsigned char* alpha = (unsigned char*)(image->alphaMap);
-    if (bytesPerPixel == 1) {
-        unsigned char* pixels = (unsigned char*)(image->pixels);
-        for (int i = 0; i < image->pixelCount; ++i) {
-            if (alpha[i] == 0) {
-                pixels[i] = 0;
+    switch (bytesPerPixel) {
+    case 4: {
+        unsigned int* pixel = (unsigned int*)(image->pixels);
+        for (int i = 0; i < image->pixelCount; ++i, ++pixel) {
+            if (((unsigned char*)(image->alphaMap))[i] == 0) {
+                *pixel = 0;
             }
         }
-        return;
+        break;
     }
-
-    if (bytesPerPixel == 2) {
-        unsigned short* pixels = (unsigned short*)(image->pixels);
-        for (int i = 0; i < image->pixelCount; ++i) {
-            if (alpha[i] == 0) {
-                pixels[i] = 0;
+    case 2: {
+        unsigned short* pixel = (unsigned short*)(image->pixels);
+        for (int i = 0; i < image->pixelCount; ++i, ++pixel) {
+            if (((unsigned char*)(image->alphaMap))[i] == 0) {
+                *pixel = 0;
             }
         }
-        return;
+        break;
     }
-
-    if (bytesPerPixel == 4) {
-        unsigned int* pixels = (unsigned int*)(image->pixels);
-        for (int i = 0; i < image->pixelCount; ++i) {
-            if (alpha[i] == 0) {
-                pixels[i] = 0;
+    case 1: {
+        unsigned char* pixel = (unsigned char*)(image->pixels);
+        for (int i = 0; i < image->pixelCount; ++i, ++pixel) {
+            if (((unsigned char*)(image->alphaMap))[i] == 0) {
+                *pixel = 0;
             }
         }
+        break;
+    }
     }
 }
 } // namespace zVid_Image
@@ -691,8 +687,8 @@ namespace zImage {
  * @recoil-match byte
  *
  * Purpose: load or reuse the texture-directory image for a path.
- * Evidence: BN calls the dynamic texture-pack lookup first, then the builtin
- * lookup, and clears zero-alpha pixels on a loaded image before returning it.
+ * Evidence: retail calls the builtin image lookup first, then the dynamic
+ * texture-pack lookup, and clears zero-alpha pixels before returning the image.
  */
 zVidImagePartial* __fastcall TexDirFindOrCreateByPath(const char* path)
 {
@@ -728,8 +724,8 @@ extern "C" zVidImagePartial* __fastcall zVidTexturePackLoadImageByName(const cha
             continue;
         }
 
-        for (int recordIndex = 0; recordIndex < entry->header.recordCount && result == 0; ++recordIndex) {
-            zVidTexturePackRecord* record = &entry->records[recordIndex];
+        zVidTexturePackRecord* record = entry->records;
+        for (int recordIndex = 0; recordIndex < entry->header.recordCount && result == 0; ++recordIndex, ++record) {
             if (_stricmp(record->name, imageName) != 0) {
                 continue;
             }
@@ -782,6 +778,7 @@ extern "C" void __cdecl zVidTexturePackEnsureDefaultImagePackLoaded()
  */
 extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntry* entry)
 {
+    int rBits, gBits, bBits;
     if (g_zVid_TexturePackLoadState == 0) {
         return 0;
     }
@@ -791,11 +788,14 @@ extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntr
         return 0;
     }
 
-    if (fread(&entry->header, sizeof(entry->header), 1, entry->fileHandle) != 1 || entry->header.fileFormat != 1) {
+    if (fread(&entry->header, sizeof(entry->header), 1, entry->fileHandle) != 1) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
+        return 0;
     }
-    if (entry->fileHandle == 0) {
+    if (entry->header.fileFormat != 1) {
+        fclose(entry->fileHandle);
+        entry->fileHandle = 0;
         return 0;
     }
 
@@ -805,18 +805,14 @@ extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntr
         != (size_t)(entry->header.recordCount)) {
         fclose(entry->fileHandle);
         entry->fileHandle = 0;
+        free(entry->records);
+        entry->records = 0;
+        return 0;
     }
 
-    if (entry->fileHandle != 0) {
-        entry->paletteTableBaseIndex = g_zVid_PaletteRemapVariantTableCount;
-        if (entry->header.paletteTableCount <= 0) {
-            return entry->fileHandle;
-        }
-
+    entry->paletteTableBaseIndex = g_zVid_PaletteRemapVariantTableCount;
+    if (entry->header.paletteTableCount > 0) {
         int tableIndex = g_zVid_PaletteRemapVariantTableCount;
-        int rBits = 0;
-        int gBits = 0;
-        int bBits = 0;
         zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
         g_zVid_PaletteRemapVariantTableCount += entry->header.paletteTableCount;
@@ -826,41 +822,38 @@ extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntr
         ));
 
         while (tableIndex < g_zVid_PaletteRemapVariantTableCount) {
-            unsigned short* table = (unsigned short*)(malloc((size_t)kZVidPaletteColorCount * sizeof(unsigned short)));
-            g_zVid_PaletteRemapVariantTables[tableIndex] = table;
-            if (fread(table, sizeof(unsigned short), kZVidPaletteColorCount, entry->fileHandle)
+            g_zVid_PaletteRemapVariantTables[tableIndex]
+                = (unsigned short*)(malloc((size_t)kZVidPaletteColorCount * sizeof(unsigned short)));
+            if (fread(
+                    g_zVid_PaletteRemapVariantTables[tableIndex],
+                    sizeof(unsigned short),
+                    kZVidPaletteColorCount,
+                    entry->fileHandle
+                )
                 != (size_t)kZVidPaletteColorCount) {
                 fclose(entry->fileHandle);
                 entry->fileHandle = 0;
-                break;
+                free(entry->records);
+                entry->records = 0;
+                return 0;
             }
 
             if (gBits == 5) {
-                {
-                    for (int colorIndex = 0; colorIndex < kZVidPaletteColorCount; ++colorIndex) {
-                        unsigned short* color = &table[colorIndex];
-                        const unsigned short value = *color;
-                        const unsigned short shifted = (unsigned short)(value >> 1);
-                        const unsigned short lowXor
-                            = (unsigned char)((unsigned char)(value) ^ (unsigned char)(shifted));
-                        *color = (unsigned short)((lowXor & 0x1f) ^ shifted);
-                    }
+                for (int colorIndex = 0; colorIndex < kZVidPaletteColorCount; ++colorIndex) {
+                    int color = g_zVid_PaletteRemapVariantTables[tableIndex][colorIndex];
+                    g_zVid_PaletteRemapVariantTables[tableIndex][colorIndex]
+                        = (unsigned short)(((color ^ (color >> 1)) & 0x1f) ^ (color >> 1));
                 }
             }
 
-            g_zVid_PaletteRemapVariantTables[tableIndex]
-                = zVidPaletteRemapBuildAllRecipeVariantsForPalette(table, kZVidPaletteColorCount);
+            g_zVid_PaletteRemapVariantTables[tableIndex] = zVidPaletteRemapBuildAllRecipeVariantsForPalette(
+                g_zVid_PaletteRemapVariantTables[tableIndex],
+                kZVidPaletteColorCount
+            );
             ++tableIndex;
         }
-
-        if (entry->fileHandle != 0) {
-            return entry->fileHandle;
-        }
     }
-
-    free(entry->records);
-    entry->records = 0;
-    return 0;
+    return entry->fileHandle;
 }
 
 extern "C" zVidImagePartial *__fastcall
@@ -878,8 +871,8 @@ zVidTexturePackLoadBuiltinImageByName(
             continue;
         }
 
-        for (int recordIndex = 0; recordIndex < entry->header.recordCount && result == 0; ++recordIndex) {
-            zVidTexturePackRecord* record = &entry->records[recordIndex];
+        zVidTexturePackRecord* record = entry->records;
+        for (int recordIndex = 0; recordIndex < entry->header.recordCount && result == 0; ++recordIndex, ++record) {
             if (_stricmp(record->name, imageName) != 0) {
                 continue;
             }
@@ -1279,37 +1272,35 @@ void __fastcall ApplyRecipeToPaletteVariant(
 
     const float variantWeight = (float)(variantIndex) * 0.0322580636f;
     const float inverseVariantWeight = 1.0f - variantWeight;
-    float r;
-    float g;
-    float b;
+    zVideo_ColorRgbFloat decoded;
     zVideo_ColorRgbFloat color;
 
     while (colorCount > 0) {
         const int packed = *sourceColors;
-        r = 0.0f;
-        g = 0.0f;
+        decoded.r = 0.0f;
+        decoded.g = 0.0f;
         if (gBits == 5) {
             const int red = packed & 0x7c00;
             const int green = packed & 0x03e0;
-            r = (float)(red) * 3.15020152e-05f;
-            g = (float)(green) * 0.00100806449f;
+            decoded.r = (float)(red) * 3.15020152e-05f;
+            decoded.g = (float)(green) * 0.00100806449f;
         } else {
             const int red = packed & 0xf800;
             const int green = packed & 0x07e0;
-            r = (float)(red) * 1.57510076e-05f;
-            g = (float)(green) * 0.000496031775f;
+            decoded.r = (float)(red) * 1.57510076e-05f;
+            decoded.g = (float)(green) * 0.000496031775f;
         }
         const int blue = packed & 0x001f;
-        b = (float)(blue) * 0.0322580636f;
+        decoded.b = (float)(blue) * 0.0322580636f;
 
-        color.r = ((recipe->color0.red - r) * inverseVariantWeight * recipe->color0Strength
-                      + (recipe->color1.red - r) * variantWeight * recipe->color1Strength + r)
+        color.r = ((recipe->color0.red - decoded.r) * inverseVariantWeight * recipe->color0Strength
+                      + (recipe->color1.red - decoded.r) * variantWeight * recipe->color1Strength + decoded.r)
             * 255.0f;
-        color.g = ((recipe->color1.green - g) * variantWeight * recipe->color1Strength
-                      + (recipe->color0.green - g) * inverseVariantWeight * recipe->color0Strength + g)
+        color.g = ((recipe->color1.green - decoded.g) * variantWeight * recipe->color1Strength
+                      + (recipe->color0.green - decoded.g) * inverseVariantWeight * recipe->color0Strength + decoded.g)
             * 255.0f;
-        color.b = ((recipe->color1.blue - b) * variantWeight * recipe->color1Strength
-                      + (recipe->color0.blue - b) * inverseVariantWeight * recipe->color0Strength + b)
+        color.b = ((recipe->color1.blue - decoded.b) * variantWeight * recipe->color1Strength
+                      + (recipe->color0.blue - decoded.b) * inverseVariantWeight * recipe->color0Strength + decoded.b)
             * 255.0f;
 
         *destColors = zVidPackColorRgbFloats(&color);
@@ -1861,67 +1852,75 @@ int __fastcall ReadHeader(FILE* file, zVidImagePartial* image)
  */
 int __fastcall ReadData(FILE* file, zVidImagePartial* image, int bytesPerPixel)
 {
+    int rBits;
+    int gBits;
+    int bBits;
+
     if (bytesPerPixel == 0) {
         bytesPerPixel = QueryBytesPerPixel(image);
     }
 
     if (bytesPerPixel == QueryBytesPerPixel(image)) {
-        const int pixelBytes = QueryPixelDataBytes(image);
-        if (fread(image->pixels, 1, pixelBytes, file) != (size_t)(pixelBytes)) {
-            return -1;
-        }
+        do {
+            const int pixelBytes = QueryPixelDataBytes(image);
+            if (fread(image->pixels, 1, pixelBytes, file) != (size_t)(pixelBytes)) {
+                break;
+            }
 
-        if ((image->formatFlagsPacked & 0x08) != 0) {
-            image->alphaMap = (char*)(malloc((size_t)(image->pixelCount)));
-            if (fread(image->alphaMap, 1, image->pixelCount, file) != (size_t)(image->pixelCount)) {
+            if ((image->formatFlagsPacked & 0x08) != 0) {
+                image->alphaMap = (char*)(malloc((size_t)(image->pixelCount)));
+                const size_t bytesRead = fread(image->alphaMap, 1, image->pixelCount, file);
                 image->formatFlagsPacked |= 0x40;
-                return -1;
-            }
-            image->formatFlagsPacked |= 0x40;
-        }
-
-        if ((image->formatFlagsPacked & 0x10) == 0 && image->paletteMetaPacked != 0) {
-            const int paletteBytes = bytesPerPixel * image->paletteMetaPacked;
-            image->palette = malloc((size_t)(paletteBytes));
-            if (fread(image->palette, 1, paletteBytes, file) != (size_t)(paletteBytes)) {
-                image->formatFlagsPacked |= 0x80;
-                return -1;
-            }
-            image->formatFlagsPacked |= 0x80;
-        }
-
-        if (bytesPerPixel == 2 && (image->formatFlagsPacked & 0x10) == 0) {
-            int rBits = 0;
-            int gBits = 0;
-            int bBits = 0;
-            zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
-            if (gBits == 5) {
-                unsigned short* colors = image->paletteMetaPacked == 0 ? (unsigned short*)(image->pixels)
-                                                                       : (unsigned short*)(image->palette);
-                int count = image->paletteMetaPacked == 0 ? image->pixelCount : image->paletteMetaPacked;
-                while (count > 0) {
-                    const unsigned short value = *colors;
-                    *colors = (unsigned short)(((value >> 1) & 0x7fe0) | (value & 0x1f));
-                    ++colors;
-                    --count;
+                if (bytesRead != (size_t)(image->pixelCount)) {
+                    break;
                 }
             }
-        }
 
-        if (image->paletteMetaPacked != 0) {
-            image->palette = zVidPaletteRemapBuildAllRecipeVariantsForPalette(
-                (unsigned short*)(image->palette),
-                image->paletteMetaPacked
-            );
-        }
+            if ((image->formatFlagsPacked & 0x10) == 0 && image->paletteMetaPacked != 0) {
+                image->palette = malloc((size_t)(bytesPerPixel * image->paletteMetaPacked));
+                const size_t bytesRead = fread(image->palette, 1, bytesPerPixel * image->paletteMetaPacked, file);
+                image->formatFlagsPacked |= 0x80;
+                if (bytesRead != (size_t)(bytesPerPixel * image->paletteMetaPacked)) {
+                    break;
+                }
+            }
 
+            if (bytesPerPixel == 1) {
+                // Byte pixels need no packed-color conversion.
+            } else if (bytesPerPixel == 2) {
+                if ((image->formatFlagsPacked & 0x10) == 0) {
+                    zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
+                    if (gBits == 5) {
+                        unsigned short* colors;
+                        int count;
+                        if (image->paletteMetaPacked == 0) {
+                            colors = (unsigned short*)(image->pixels);
+                            count = image->pixelCount;
+                        } else {
+                            colors = (unsigned short*)(image->palette);
+                            count = image->paletteMetaPacked;
+                        }
+                        while (count > 0) {
+                            *colors = (unsigned short)(((*colors >> 1) & 0x7fe0) | (*colors & 0x1f));
+                            ++colors;
+                            --count;
+                        }
+                    }
+                    if (image->paletteMetaPacked != 0) {
+                        image->palette = zVidPaletteRemapBuildAllRecipeVariantsForPalette(
+                            (unsigned short*)(image->palette),
+                            image->paletteMetaPacked
+                        );
+                    }
+                }
+            }
+
+            return 0;
+        } while (false);
+    } else if (bytesPerPixel > QueryBytesPerPixel(image)) {
         return 0;
     }
-
-    if (bytesPerPixel <= QueryBytesPerPixel(image)) {
-        return -1;
-    }
-    return 0;
+    return -1;
 }
 
 /**

@@ -769,7 +769,7 @@ HudUiBar::HudUiBar()
  */
 void HudUiBar::SetPointXY(int pointIndex, float x, float y)
 {
-    if (pointIndex >= 0 && pointIndex < 21) {
+    if (pointIndex < 21 && pointIndex > -1) {
         points[pointIndex].x = x;
         points[pointIndex].y = y;
 

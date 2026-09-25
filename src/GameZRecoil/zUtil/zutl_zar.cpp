@@ -249,10 +249,10 @@ extern "C" void __fastcall zRdrFreePathList(zArchiveList* list)
 extern "C" char* __fastcall zRdrResolvePathInSearchPathList(zArchiveList* searchPathList, const char* filename)
 {
     zArchiveList* list = searchPathList;
-    _splitpath(filename, g_zRdr_SplitDriveBuf, g_zRdr_SplitDirBuf, g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
-    sprintf(g_zRdr_ResolvedPathBuf, "%s%s", g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
-
     while (true) {
+        _splitpath(filename, g_zRdr_SplitDriveBuf, g_zRdr_SplitDirBuf, g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
+        sprintf(g_zRdr_ResolvedPathBuf, "%s%s", g_zRdr_SplitFileNameBuf, g_zRdr_SplitExtBuf);
+
         if (list == 0 && g_zRdr_ScratchSearchPathList != 0) {
             list = g_zRdr_ScratchSearchPathList;
         }
@@ -267,9 +267,8 @@ extern "C" char* __fastcall zRdrResolvePathInSearchPathList(zArchiveList* search
 
             list = 0;
         } else {
-            const size_t matchedDirLength = strlen(matchedDir);
-            if (matchedDir[matchedDirLength - 1] == '\\') {
-                matchedDir[matchedDirLength - 1] = '\0';
+            if (matchedDir[strlen(matchedDir) - 1] == '\\') {
+                matchedDir[strlen(matchedDir) - 1] = '\0';
             }
 
             sprintf(
@@ -303,10 +302,10 @@ extern "C" int __fastcall zRdrSearchPathContainsFilePredicate(void* searchDir, v
 extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, const char* filename, const char* mode)
 {
     char* resolvedPath = zRdrResolvePathInSearchPathList(searchPathList, filename);
-    if (resolvedPath != 0) {
-        return fopen(resolvedPath, mode);
+    if (resolvedPath == 0) {
+        return fopen(filename, mode);
     }
-    return fopen(filename, mode);
+    return fopen(resolvedPath, mode);
 }
 
 /**

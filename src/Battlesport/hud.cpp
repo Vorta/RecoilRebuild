@@ -32,6 +32,7 @@
 #include "GameZRecoil/zVideo/zvid.h"
 #include "GameZRecoil/zWeapon/zwep.h"
 
+#include <algorithm>
 #include <math.h>
 #include <new>
 #if defined(_MSC_VER) && _MSC_VER < 1200
@@ -6858,20 +6859,20 @@ void __fastcall HudUiMgr::StaticDestructor(HudUiContainer* self)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-unwinddestructfirstitem
- * @recoil-artifact defines .text recoil:function:0x40d600: HudUiTripletPanel::UnwindDestructFirstItem.
+ * @recoil-artifact defines .text recoil:function:0x40d600: HudUiNanitePanel::UnwindDestructFirstItem.
  * Purpose: Destroys the first item widget during constructor unwind cleanup.
  */
-void HudUiTripletPanel::UnwindDestructFirstItem()
+void HudUiNanitePanel::UnwindDestructFirstItem()
 {
     items[0].DestructorCore();
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-destructorcore
- * @recoil-artifact defines .text recoil:function:0x40d610: HudUiTripletPanel::DestructorCore.
+ * @recoil-artifact defines .text recoil:function:0x40d610: HudUiNanitePanel::DestructorCore.
  * Purpose: Tears down the three triplet item widgets in reverse construction order.
  */
-void HudUiTripletPanel::DestructorCore()
+void HudUiNanitePanel::DestructorCore()
 {
     {
         for (int index = 2; index >= 0; --index) {
@@ -6926,8 +6927,6 @@ HudUiMgrData::~HudUiMgrData() { }
 HudUiMgrData::HudUiMgrData()
     : reticleWidget(0)
 {
-    tailBar.quadHeight = 0;
-    tailBar.quadLeftX = 0.0f;
 }
 
 /**
@@ -6943,16 +6942,14 @@ inline void HudUiContainer::SetEnabled(int enabledValue)
 }
 
 /**
- * Original function; retail address 0x40d9e0.
- * Retail manager construction calls this base twice before installing the
- * same manager-leaf vtable for the objective and sensor members.
- * Purpose: construct the manager-meter base and clear its fill state.
+ * Provisional intermediate meter construction for retail 0x40d9e0.
+ * Purpose: initialize the two dimension words.
+ * Called for each manager meter before installing the final table.
  */
 HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate()
-    : HudUiBar()
 {
-    fillPixelsMax = 0;
-    meterFlags = 0;
+    height = 0;
+    width = 0;
 }
 
 /**
@@ -7020,16 +7017,8 @@ void HudUiSlot::Draw()
  * Purpose: initialize the objective counter text panel defaults and register it with the HUD manager.
  */
 HudUiCounterTextPanel::HudUiCounterTextPanel()
-    : HudUiPanel()
+    : HudUiPanelSimple()
 {
-    textColor0 = 0x0020bf40;
-    textColor1 = 0x0020bf40;
-    textDirty = 1;
-    HudUiPanel::SetFont(g_HudFontName_Arial, 0x0a, 0x1f4, 6, 0, 0, 2);
-    shadowEnabled = 1;
-    shadowOffsetX = -1;
-    shadowOffsetY = -1;
-
     HudUiPanel* const panel = this;
     panel->SetTextFmt("%d", 0);
     panel->UpdateTextBoundsFromContent();
@@ -7076,7 +7065,7 @@ HudUiTriplet::HudUiTriplet()
             headerPanels[headerIndex]->SetTextColorsAndMarkDirty(0x0020bf40, 0x0020bf40);
             ConfigurePanelFont(headerPanels[headerIndex]);
             headerPanels[headerIndex]->SetVisible(0);
-            HudUiContainer::AddChild((HudUiElement*)(headerPanels[headerIndex]));
+            HudUiContainer::AddChild((HudUiElement*)headerPanels[headerIndex]);
         }
     }
 
@@ -7096,7 +7085,7 @@ HudUiTriplet::HudUiTriplet()
                 rowCells[row * 3 + column]->SetTextColorsAndMarkDirty(0x0020bf40, 0x0020bf40);
                 ConfigurePanelFont(rowCells[row * 3 + column]);
                 rowCells[row * 3 + column]->SetVisible(0);
-                HudUiContainer::AddChild((HudUiElement*)(rowCells[row * 3 + column]));
+                HudUiContainer::AddChild((HudUiElement*)rowCells[row * 3 + column]);
             }
 
             rowCells[row * 3]->SetTextAlignment(2);
@@ -7123,18 +7112,21 @@ HudUiTriplet::~HudUiTriplet()
             HudUiPanel* header = headerPanels[headerIndex];
             if (header != 0) {
                 delete header;
-                headerPanels[headerIndex] = 0;
             }
+            headerPanels[headerIndex] = 0;
         }
     }
 
     {
-        int rowCellIndex;
-        for (rowCellIndex = 0; rowCellIndex < 24; ++rowCellIndex) {
-            HudUiPanel* rowCell = rowCells[rowCellIndex];
-            if (rowCell != 0) {
-                delete rowCell;
-                rowCells[rowCellIndex] = 0;
+        int row;
+        for (row = 0; row < 8; ++row) {
+            int column;
+            for (column = 0; column < 3; ++column) {
+                HudUiPanel* rowCell = rowCells[row * 3 + column];
+                if (rowCell != 0) {
+                    delete rowCell;
+                }
+                rowCells[row * 3 + column] = 0;
             }
         }
     }
@@ -7143,6 +7135,8 @@ HudUiTriplet::~HudUiTriplet()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-rebuilddisplay
  * @recoil-artifact defines .text recoil:function:0x40e140: HudUiTriplet::RebuildDisplay.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
  * Purpose: sort scoreboard entries and refresh the visible triplet rows and headers for score or lap mode.
  */
@@ -7150,51 +7144,53 @@ void HudUiTriplet::RebuildDisplay()
 {
     HudUiScoreboardEntry* const begin = entries.begin();
     HudUiScoreboardEntry* const end = entries.end();
-    if (begin != 0 && begin != end) {
-        if (end - begin <= 16) {
-            HudUiListMenuEntry::InsertionSortRange(begin, end, 0);
-        } else {
-            HudUiListMenuEntry::SortRange(begin, end, 0);
+    if (end - begin <= 16) {
+        HudUiListMenuEntry::InsertionSortRange(begin, end, 0);
+    } else {
+        HudUiListMenuEntry::SortRange(begin, end, 0);
 
-            HudUiScoreboardEntry* insert = begin + 16;
-            HudUiListMenuEntry::InsertionSortRange(begin, insert, 0);
+        HudUiScoreboardEntry* insert = begin + 16;
+        HudUiListMenuEntry::InsertionSortRange(begin, insert, 0);
 
-            while (insert != end) {
-                HudUiScoreboardEntry pivot = *insert;
-                HudUiListMenuEntry::InsertPivotIntoSortedPrefix(insert, pivot);
-                ++insert;
-            }
+        while (insert != end) {
+            HudUiScoreboardEntry pivot = *insert;
+            HudUiListMenuEntry::InsertPivotIntoSortedPrefix(insert, pivot);
+            ++insert;
         }
     }
 
     HudUiScoreboardEntry* entry = entries.begin();
-    const size_t entryCount = entries.begin() != 0 ? (size_t)(entries.end() - entries.begin()) : 0;
-    size_t rowIndex = 0;
+    int rowIndex = 0;
     while (entry != entries.end() && rowIndex < 8) {
         {
-            size_t column;
+            int column;
             for (column = 0; column < 3; ++column) {
-                HudUiPanel* const cell = rowCells[rowIndex * 3 + column];
-                cell->textColor0 = entry->playerColorPackedRgb;
-                cell->textColor1 = entry->playerColorPackedRgb;
-                cell->textDirty = 1;
-                HudUiElement* const element = (HudUiElement*)(cell);
+                rowCells[rowIndex * 3 + column]->SetTextColorsAndMarkDirty(
+                    entry->playerColorPackedRgb,
+                    entry->playerColorPackedRgb
+                );
                 if (column == 2) {
                     if (entry->lapCount >= 0) {
-                        ((HudUiElement*)(rowCells[rowIndex * 3 + 2]))->SetVisible(1);
+                        ((HudUiElement*)rowCells[rowIndex * 3 + column])->SetVisible(1);
                     }
                 } else {
-                    element->SetVisible(1);
+                    rowCells[rowIndex * 3 + column]->SetVisible(1);
                 }
-                element->flags = (element->flags & 0x10u) | 0x0cu;
-                cell->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
+                HudUiPanel* const flagCell = rowCells[rowIndex * 3 + column];
+                if ((~((unsigned int)(unsigned char)flagCell->flags) & 0x10u) != 0) {
+                    flagCell->flags = 0x0cu;
+                } else {
+                    flagCell->flags = 0x1cu;
+                }
+                rowCells[rowIndex * 3 + column]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
             }
         }
 
-        const int y = baseY + (int)(rowIndex + 1) * rowPitchY;
-        ((HudUiElement*)(rowCells[rowIndex * 3]))->SetPos(baseX, y);
-        ((HudUiElement*)(rowCells[rowIndex * 3 + 1]))->SetPos(baseX + lapsColumnOffsetX, y);
-        ((HudUiElement*)(rowCells[rowIndex * 3 + 2]))->SetPos(baseX + killsColumnOffsetX, y);
+        ((HudUiElement*)rowCells[rowIndex * 3])->SetPos(baseX, baseY + (rowIndex + 1) * rowPitchY);
+        ((HudUiElement*)rowCells[rowIndex * 3 + 1])
+            ->SetPos(baseX + lapsColumnOffsetX, baseY + (rowIndex + 1) * rowPitchY);
+        ((HudUiElement*)rowCells[rowIndex * 3 + 2])
+            ->SetPos(baseX + killsColumnOffsetX, baseY + (rowIndex + 1) * rowPitchY);
 
         if (g_HudSensorTracker.raceCheckpointMode != 0) {
             rowCells[rowIndex * 3]->SetTextFmt("%s", entry->displayName);
@@ -7203,7 +7199,7 @@ void HudUiTriplet::RebuildDisplay()
         } else {
             rowCells[rowIndex * 3]->SetTextFmt("%s", entry->displayName);
             rowCells[rowIndex * 3 + 1]->SetTextFmt("%d", entry->score);
-            ((HudUiElement*)(rowCells[rowIndex * 3 + 2]))->SetVisible(0);
+            ((HudUiElement*)rowCells[rowIndex * 3 + 2])->SetVisible(0);
         }
 
         ++entry;
@@ -7212,50 +7208,43 @@ void HudUiTriplet::RebuildDisplay()
 
     for (; rowIndex < 8; ++rowIndex) {
         {
-            size_t column;
+            int column;
             for (column = 0; column < 3; ++column) {
-                HudUiPanel* const cell = rowCells[rowIndex * 3 + column];
-                HudUiElement* const element = (HudUiElement*)(cell);
-                element->flags &= 0x10u;
-                element->SetVisible(0);
+                unsigned int oldCellFlags = (unsigned char)rowCells[rowIndex * 3 + column]->flags;
+                if ((~oldCellFlags & 0x10u) != 0) {
+                    rowCells[rowIndex * 3 + column]->flags = 0;
+                } else {
+                    rowCells[rowIndex * 3 + column]->flags = 0x10u;
+                }
+                rowCells[rowIndex * 3 + column]->SetVisible(0);
             }
         }
     }
 
-    if (entryCount == 0) {
-        return;
-    }
+    if (entries.size() > 0) {
+        ((HudUiElement*)headerPanels[0])->SetPos(baseX, baseY);
+        ((HudUiElement*)headerPanels[1])->SetPos(baseX + lapsColumnOffsetX, baseY);
+        ((HudUiElement*)headerPanels[2])->SetPos(baseX + killsColumnOffsetX, baseY);
 
-    ((HudUiElement*)(headerPanels[0]))->SetPos(baseX, baseY);
-    ((HudUiElement*)(headerPanels[1]))->SetPos(baseX + lapsColumnOffsetX, baseY);
-    ((HudUiElement*)(headerPanels[2]))->SetPos(baseX + killsColumnOffsetX, baseY);
+        headerPanels[0]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
+        headerPanels[1]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
+        headerPanels[2]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
 
-    headerPanels[0]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
-    headerPanels[1]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
-    headerPanels[2]->SetFont(g_HudFontName_Arial, fontSize, 0x1f4, fontWeight, 0, 0, 2);
-
-    ((HudUiElement*)(headerPanels[0]))->SetVisible(1);
-    if (g_HudSensorTracker.raceCheckpointMode != 0) {
-        headerPanels[1]->SetTextFmt(
-            g_HudUiCounterText_PlayerIndexFmt,
-            zLoc::GetMessageString(0x113),
-            g_HudSensorTracker.runtimeGoalValue
-        );
-        headerPanels[2]->SetTextFmt(
-            g_HudUiCounterText_PlayerIndexFmt,
-            zLoc::GetMessageString(0x114),
-            g_HudSensorTracker.runtimeGoalValue
-        );
-        ((HudUiElement*)(headerPanels[1]))->SetVisible(1);
-        ((HudUiElement*)(headerPanels[2]))->SetVisible(1);
-    } else {
-        headerPanels[1]->SetTextFmt(
-            g_HudUiCounterText_PlayerIndexFmt,
-            zLoc::GetMessageString(0x114),
-            g_HudSensorTracker.runtimeGoalValue
-        );
-        ((HudUiElement*)(headerPanels[1]))->SetVisible(1);
-        ((HudUiElement*)(headerPanels[2]))->SetVisible(0);
+        ((HudUiElement*)headerPanels[0])->SetVisible(1);
+        if (g_HudSensorTracker.raceCheckpointMode != 0) {
+            // Separate locals keep each retail goal load attached to one call.
+            int lapsGoal = g_HudSensorTracker.runtimeGoalValue;
+            headerPanels[1]->SetTextFmt(g_HudUiCounterText_PlayerIndexFmt, zLoc::GetMessageString(0x113), lapsGoal);
+            int killsGoal = g_HudSensorTracker.runtimeGoalValue;
+            headerPanels[2]->SetTextFmt("%s", zLoc::GetMessageString(0x114), killsGoal);
+            ((HudUiElement*)headerPanels[1])->SetVisible(1);
+            ((HudUiElement*)headerPanels[2])->SetVisible(1);
+        } else {
+            int scoreGoal = g_HudSensorTracker.runtimeGoalValue;
+            headerPanels[1]->SetTextFmt(g_HudUiCounterText_PlayerIndexFmt, zLoc::GetMessageString(0x114), scoreGoal);
+            ((HudUiElement*)headerPanels[1])->SetVisible(1);
+            ((HudUiElement*)headerPanels[2])->SetVisible(0);
+        }
     }
 }
 
@@ -7687,11 +7676,11 @@ void __fastcall HudUiMgr::SetModeCounterState(int counterIndex, int state)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-constructor
- * @recoil-artifact defines .text recoil:function:0x40f200: HudUiTripletPanel::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x40f200: HudUiNanitePanel::Constructor.
  * Purpose: Constructs the base panel, initializes the three item widgets hidden, and attaches the panel to the HUD
  * manager.
  */
-HudUiTripletPanel::HudUiTripletPanel()
+HudUiNanitePanel::HudUiNanitePanel()
     : HudUiElement(0, 0)
 {
     visibleCount = 0;
@@ -7714,10 +7703,10 @@ HudUiTripletPanel::HudUiTripletPanel()
  */
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduinanitepanel-initlayout
+ * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-initlayout
  * @recoil-artifact defines .text recoil:function:0x40f2e0: HudUiNanitePanel::InitLayout.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: preserve the recovered HUD behavior for HudUiNanitePanel::InitLayout.
+ * Purpose: preserve the recovered HUD behavior for the manager's triplet panel layout.
  */
 void HudUiNanitePanel::InitLayout(zReader::Node* layoutRoot)
 {
@@ -7748,10 +7737,10 @@ void HudUiNanitePanel::InitLayout(zReader::Node* layoutRoot)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-shutdownitems-stub
- * @recoil-artifact defines .text recoil:function:0x40f3e0: HudUiTripletPanel::ShutdownItems.
+ * @recoil-artifact defines .text recoil:function:0x40f3e0: HudUiNanitePanel::ShutdownItems.
  * Purpose: Preserves the retail no-op shutdown calls made for each nanite triplet item.
  */
-void HudUiTripletPanel::ShutdownItems()
+void HudUiNanitePanel::ShutdownItems()
 {
     g_HudUiMgrNanitePanel.items[0].Shutdown();
     g_HudUiMgrNanitePanel.items[1].Shutdown();
@@ -7760,12 +7749,12 @@ void HudUiTripletPanel::ShutdownItems()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-draw
- * @recoil-artifact defines .text recoil:function:0x40f400: HudUiTripletPanel::Draw.
+ * @recoil-artifact defines .text recoil:function:0x40f400: HudUiNanitePanel::Draw.
  * @recoil-match byte
  *
  * Purpose: Draws the triplet panel base and visible item widgets from back to front.
  */
-void HudUiTripletPanel::Draw()
+void HudUiNanitePanel::Draw()
 {
     DrawBase();
 
@@ -7784,12 +7773,12 @@ void HudUiTripletPanel::Draw()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-setvisiblecount
- * @recoil-artifact defines .text recoil:function:0x40f460: HudUiTripletPanel::SetVisibleCount.
+ * @recoil-artifact defines .text recoil:function:0x40f460: HudUiNanitePanel::SetVisibleCount.
  * @recoil-match byte
  *
  * Purpose: Applies the visible item count, updates child visibility, and invalidates the panel.
  */
-void HudUiTripletPanel::SetVisibleCount(int count)
+void HudUiNanitePanel::SetVisibleCount(int count)
 {
     if (visibleCount == count) {
         return;
@@ -8002,15 +7991,15 @@ inline HudUiPanelSimple::HudUiPanelSimple(const char* text, int initX, int initY
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduishieldmetercandidate-huduishieldmetercandidate
  * @recoil-artifact defines .text recoil:function:0x40fb70: HudUiShieldMeterCandidate::HudUiShieldMeterCandidate.
- * Retail constructs this shield sibling directly from HudUiBar rather than
- * through the manager-meter base branch.
- * Purpose: construct the shield meter and clear its fill state.
+ * Purpose: initialize the shield meter's two dimension words after core construction.
+ * Retail visibly calls the core constructor, installs the final table, and
+ * clears the two dimension words. The shared implicit base must leave no
+ * additional construction stage in this candidate.
  */
 HudUiShieldMeterCandidate::HudUiShieldMeterCandidate()
-    : HudUiBar()
 {
-    fillPixelsMax = 0;
-    meterFlags = 0;
+    height = 0;
+    width = 0;
 }
 
 /**
@@ -8452,7 +8441,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
 
         HudUiRect meterRect = { 0 };
         HudUiLayoutNode::ApplyMeterQuad(&sensorPayload[7], &g_HudUiMgrSensorMeter, 0, 0, overlayAnchor, &meterRect);
-        g_HudUiMgrSensorMeter.color565 = 0x7e0;
+        g_HudUiMgrSensorMeter.drawParam = 0x7e0;
         ((HudUiElement*)(&g_HudUiMgrSensorMeter))->SetBltSourceAndClipRect(g_HudUiMgrSensorPanel.image, &meterRect);
 
         g_HudUiMgr.AddChild((HudUiElement*)(&g_HudUiMgrSensorPanel));
@@ -8476,7 +8465,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
             objectiveCenter,
             &objectiveBarRect
         );
-        g_HudUiMgrObjectiveBar.slideRangeX = (float)(panelCenter[0] - objectiveBarRect.left);
+        g_HudUiMgr.objective.slideRangeX = (float)(objectiveBarRect.right - objectiveBarRect.left);
 
         int red = 0;
         int green = 0;
@@ -8508,9 +8497,9 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
             &objectiveBarRect
         );
         HudUiMgrObjective::UpdateMeterXPoints();
-        const int meterTop = (int)(g_HudUiMgrObjectiveMeter.points[1].y)
-            - (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax)));
-        g_HudUiMgrObjectiveMeter.color565 = 0x1f;
+        const int meterTop
+            = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - (int)(ceil((double)(g_HudUiMgrObjectiveMeter.height)));
+        g_HudUiMgrObjectiveMeter.drawParam = 0x1f;
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(meterTop);
         g_HudUiMgrObjectiveMeter.points[3].y = (float)(meterTop);
 
@@ -8823,7 +8812,7 @@ void UpdateFrame()
             HudUiMgrObjective::StartHide();
         }
     } else {
-        if ((g_HudUiMgr.objective.objectiveBar.chatComposeActive) != 0) {
+        if ((g_HudUiMgr.objective.chatComposeActive) != 0) {
             g_HudUiMgrObjectiveSummaryTextPanel->Draw();
             g_HudUiMgrObjectiveDescTextPanel->Draw();
         }
@@ -9165,7 +9154,7 @@ void __fastcall SetVisibleAndResetMeterFill(int visible)
         g_HudUiMgrObjectiveMeter.SetVisible(1);
 
         const int meterTop = (int)(g_HudUiMgrObjectiveMeter.points[1].y)
-            - (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax) * 0.0));
+            - (int)(ceil((double)(g_HudUiMgrObjectiveMeter.height) * 0.0));
         g_HudUiMgrObjectiveMeterFillAnimTimerSec = 0.0f;
         g_HudUiMgrObjectiveMeterFillAnimEnabled = 1;
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(meterTop);
@@ -9188,14 +9177,14 @@ void TickMeterFillAnimation()
     g_HudUiMgrObjectiveMeterFillAnimTimerSec += g_Time_UnscaledDeltaTimeSec;
 
     if (g_HudUiMgrObjectiveMeterFillAnimTimerSec >= 3.0f) {
-        const int fillPixels = (int)(ceil((double)(g_HudUiMgrObjectiveMeter.fillPixelsMax)));
+        const int fillPixels = (int)(ceil((double)(g_HudUiMgrObjectiveMeter.height)));
         const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
         g_HudUiMgrObjectiveMeterFillAnimEnabled = 0;
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
         g_HudUiMgrObjectiveMeter.points[3].y = (float)(top);
     } else {
         const double fillRatio = (double)(g_HudUiMgrObjectiveMeterFillAnimTimerSec * 0.333332986f)
-            * (double)(g_HudUiMgrObjectiveMeter.fillPixelsMax);
+            * (double)(g_HudUiMgrObjectiveMeter.height);
         const int fillPixels = (int)(ceil(fillRatio));
         const int top = (int)(g_HudUiMgrObjectiveMeter.points[1].y) - fillPixels;
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(top);
@@ -9272,7 +9261,7 @@ Show(zVidImagePartial* objectiveImage, const char* summaryFormat, const char* de
  */
 void Begin()
 {
-    if ((g_HudUiMgr.objective.objectiveBar.chatComposeActive) != 0) {
+    if ((g_HudUiMgr.objective.chatComposeActive) != 0) {
         return;
     }
 
@@ -9315,7 +9304,7 @@ void StartHide()
         case 1: {
             if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
                 const float fade = g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
-                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgrObjectiveBar.slideRangeX;
+                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgr.objective.slideRangeX;
                 HudUiMgrObjectiveSetSlidePosition(slideX);
                 HudUiMgrObjectiveUpdateWidgetRightX();
                 if (g_HudUiMgrObjectiveSensorRect.image != 0) {
@@ -9331,7 +9320,7 @@ void StartHide()
                 continue;
             }
 
-            const float slideX = g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgrObjectiveBar.slideRangeX;
+            const float slideX = g_HudUiMgrObjectiveBar.points[1].x + g_HudUiMgr.objective.slideRangeX;
             g_HudUiMgrObjectivePhase = 2;
             g_HudUiMgrObjectivePhaseTimerSec = 0.0f;
             HudUiMgrObjectiveSetSlidePosition(slideX);
@@ -9352,7 +9341,7 @@ void StartHide()
         case 3: {
             if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
                 const float fade = 1.0f - g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
-                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgrObjectiveBar.slideRangeX;
+                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgr.objective.slideRangeX;
                 HudUiMgrObjectiveSetSlidePosition(slideX);
                 HudUiMgrObjectiveUpdateHwDirtyRectIfNeeded();
                 HudUiMgrObjectiveUpdateWidgetRightX();
@@ -9445,14 +9434,14 @@ void __fastcall SetShieldMessageRatio(float ratio)
     }
 
     if (ratio < 0.25f) {
-        g_HudUiMgrShieldMessageWidget->meter.color565 = zVidPackColorRGB(255, 0, 0) & 0xffffu;
+        g_HudUiMgrShieldMessageWidget->meter.drawParam = zVidPackColorRGB(255, 0, 0) & 0xffffu;
     } else {
-        g_HudUiMgrShieldMessageWidget->meter.color565 = zVidPackColorRGB(255, 255, 0) & 0xffffu;
+        g_HudUiMgrShieldMessageWidget->meter.drawParam = zVidPackColorRGB(255, 255, 0) & 0xffffu;
     }
 
     HudUiShieldMessageWidget* const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
-    HudUiBar* const meter = &shieldMessageWidget->meter;
-    const int fillPixels = (int)(ceil((double)(meter->fillPixelsMax) * (double)(ratio)));
+    HudUiMeterDimensionsCandidate* const meter = &shieldMessageWidget->meter;
+    const int fillPixels = (int)(ceil((double)(meter->height) * (double)(ratio)));
     const int top = (int)(meter->points[1].y) - fillPixels;
     meter->points[0].y = (float)(top);
     meter->points[3].y = (float)(top);
@@ -9743,7 +9732,7 @@ void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack)
         healthRatio = 0.0f;
     }
 
-    const int fillPixels = (int)(ceil((double)(g_HudUiMgrSensorMeter.fillPixelsMax) * (double)(healthRatio)));
+    const int fillPixels = (int)(ceil((double)(g_HudUiMgrSensorMeter.height) * (double)(healthRatio)));
     const int top = (int)(g_HudUiMgrSensorMeter.points[1].y) - fillPixels;
     g_HudUiMgrSensorMeter.points[0].y = (float)(top);
     g_HudUiMgrSensorMeter.points[3].y = (float)(top);
@@ -10354,7 +10343,7 @@ void HudLayoutHW::UpdateObjectiveDirtyRect()
 
     widget2.InvalidateRect(&dirtyRect);
     g_HudUiMgrNanitePanel.HudUiElement::Invalidate();
-    g_HudUiMgrNanitePanel.HudUiTripletPanel::Draw();
+    g_HudUiMgrNanitePanel.HudUiNanitePanel::Draw();
 }
 
 /**
@@ -10370,7 +10359,7 @@ void HudLayoutHW::OnActivated()
     g_HudUiMgr.SetChildFlags(0x0e);
     SetChildFlags(0x0e);
 
-    widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
+    widget3.flags = (unsigned int)((unsigned char)(widget3.flags) & 0x10u);
 
     g_HudUiMgrObjectiveWidget.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
     g_HudUiMgrObjectiveMeter.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveMeter.flags) & 0x10u);
@@ -10465,7 +10454,7 @@ void HudLayoutHW::Enable()
     g_HudUiMgr.SetChildFlags(0x0e);
     SetChildFlags(0x0e);
 
-    widget2.flags = (unsigned int)((unsigned char)(widget2.flags) & 0x10u);
+    widget3.flags = (unsigned int)((unsigned char)(widget3.flags) & 0x10u);
 
     g_HudUiMgrObjectiveWidget.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
     g_HudUiMgrObjectiveMeter.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveMeter.flags) & 0x10u);
@@ -10986,47 +10975,54 @@ int __fastcall ApplyCornerTextQuad(zReader::Node* node, HudUiBar* target, const 
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyMeterQuad.
  */
-int __fastcall
-ApplyMeterQuad(zReader::Node* node, HudUiBar* target, int xBase, int yBase, const int* offsetXY, HudUiRect* outRect)
+int __fastcall ApplyMeterQuad(
+    zReader::Node* node,
+    HudUiMeterDimensionsCandidate* target,
+    int xBase,
+    int yBase,
+    const int* offsetXY,
+    HudUiRect* outRect
+)
 {
     if (node->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
     }
 
     zReader::Node* const arrayBase = node->value.nodes;
-    int left = arrayBase[1].value.i32;
-    const int top = arrayBase[2].value.i32;
-    int right = arrayBase[3].value.i32 + 1;
-    const int bottom = arrayBase[4].value.i32 + 1;
+    HudUiRect quad;
+    quad.left = arrayBase[1].value.i32;
+    quad.top = arrayBase[2].value.i32;
+    quad.right = arrayBase[3].value.i32 + 1;
+    quad.bottom = arrayBase[4].value.i32 + 1;
 
     if (outRect != 0) {
-        outRect->left = left;
-        outRect->top = top;
-        outRect->right = right;
-        outRect->bottom = bottom;
+        outRect->left = quad.left;
+        outRect->top = quad.top;
+        outRect->right = quad.right;
+        outRect->bottom = quad.bottom;
     }
 
-    right += xBase;
-    int topY = top + yBase;
-    int bottomY = bottom + yBase;
+    quad.right += xBase;
+    quad.top += yBase;
+    quad.bottom += yBase;
 
     if (offsetXY != 0) {
-        left += offsetXY[0];
-        topY += offsetXY[1];
-        right += offsetXY[0];
-        bottomY += offsetXY[1];
+        quad.left += offsetXY[0];
+        quad.top += offsetXY[1];
+        quad.right += offsetXY[0];
+        quad.bottom += offsetXY[1];
     }
 
-    const int width = right - left;
-    const int height = bottomY - topY;
-    HudUiBar* const bar = (HudUiBar*)(target);
-    bar->SetPointXY(0, (float)(left), (float)(topY));
-    bar->SetPointXY(1, (float)(left), (float)(height + topY));
-    bar->SetPointXY(2, (float)(width + left + 1), (float)(height + topY));
-    bar->SetPointXY(3, (float)(width + left + 1), (float)(topY));
+    const int width = quad.right - quad.left;
+    const int height = quad.bottom - quad.top;
+    HudUiBar* const bar = target;
+    bar->SetPointXY(0, (float)(quad.left), (float)(quad.top));
+    bar->SetPointXY(1, (float)(quad.left), (float)(height + quad.top));
+    bar->SetPointXY(2, (float)(width + quad.left + 1), (float)(height + quad.top));
+    bar->SetPointXY(3, (float)(width + quad.left + 1), (float)(quad.top));
 
-    target->fillPixelsMax = height;
-    target->meterFlags = (unsigned int)(width);
+    target->height = height;
+    target->width = width;
     return 1;
 }
 
@@ -11337,36 +11333,61 @@ inline void HudRuntimeRegisterChatComposeKeyRange(int firstComboIdx, int lastCom
 /**
  * Original helper evidence: no standalone retail function; observed callers
  * 0x414710, 0x414930, and 0x414980 in the hud.cpp list-menu layer.
- * Purpose: expose the recovered comparator as a boolean ordering predicate for
- * local sort helpers.
+ * Purpose: preserve the comparator's integer result for the VC5 sort tests.
  */
-inline bool HudRuntimeListMenuEntryComesBefore(const HudUiScoreboardEntry& lhs, const HudUiScoreboardEntry& rhs)
+inline int HudRuntimeListMenuEntryComesBefore(const HudUiScoreboardEntry& lhs, const HudUiScoreboardEntry& rhs)
 {
-    return HudUiListMenuEntry::CompareSortKey(&lhs, &rhs) != 0;
+    return HudUiListMenuEntry::CompareSortKey(&lhs, &rhs);
 }
 
 /**
  * Original helper evidence: no standalone retail function; observed caller
  * 0x414710 in the hud.cpp list-menu layer.
- * Purpose: select the median scoreboard entry among first, middle, and last
- * candidates for quicksort partitioning.
+ * Purpose: mirror VC5 algorithm's by-value median selection for partitioning.
+ */
+inline HudUiScoreboardEntry
+HudRuntimeListMenuMedianOfThree(HudUiScoreboardEntry first, HudUiScoreboardEntry middle, HudUiScoreboardEntry last)
+{
+    if (HudRuntimeListMenuEntryComesBefore(first, middle)) {
+        return HudRuntimeListMenuEntryComesBefore(middle, last) ? middle
+            : HudRuntimeListMenuEntryComesBefore(first, last)   ? last
+                                                                : first;
+    }
+    return HudRuntimeListMenuEntryComesBefore(first, last) ? first
+        : HudRuntimeListMenuEntryComesBefore(middle, last) ? last
+                                                           : middle;
+}
+
+/**
+ * Purpose: insert a by-value scoreboard entry into the sorted prefix, as in
+ * VC5 algorithm's unguarded insertion
+ * helper.
+ */
+inline void HudRuntimeListMenuUnguardedInsert(HudUiScoreboardEntry* slot, HudUiScoreboardEntry value)
+{
+    for (HudUiScoreboardEntry* previous = slot; HudRuntimeListMenuEntryComesBefore(value, *--previous);
+        slot = previous) {
+        *slot = *previous;
+    }
+    *slot = value;
+}
+
+/**
+ * Purpose: partition around a by-value pivot using VC5 algorithm's iterator
+ * swap and predecrement of the right
+ * cursor.
  */
 inline HudUiScoreboardEntry*
-HudRuntimeListMenuMedianOfThree(HudUiScoreboardEntry* first, HudUiScoreboardEntry* middle, HudUiScoreboardEntry* last)
+HudRuntimeListMenuPartition(HudUiScoreboardEntry* first, HudUiScoreboardEntry* last, HudUiScoreboardEntry pivot)
 {
-    if (HudRuntimeListMenuEntryComesBefore(*first, *middle)) {
-        if (HudRuntimeListMenuEntryComesBefore(*middle, *last)) {
-            return middle;
+    for (;; ++first) {
+        for (; HudRuntimeListMenuEntryComesBefore(*first, pivot); ++first) { }
+        for (; HudRuntimeListMenuEntryComesBefore(pivot, *--last);) { }
+        if (last <= first) {
+            return first;
         }
-
-        return HudRuntimeListMenuEntryComesBefore(*first, *last) ? last : first;
+        std::iter_swap(first, last);
     }
-
-    if (HudRuntimeListMenuEntryComesBefore(*first, *last)) {
-        return first;
-    }
-
-    return HudRuntimeListMenuEntryComesBefore(*middle, *last) ? last : middle;
 }
 } // namespace
 
@@ -11545,42 +11566,25 @@ namespace HudUiListMenuEntry {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.sortrange
  * @recoil-artifact defines .text recoil:function:0x414710: HudUiListMenuEntry::SortRange.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.
  */
 void __fastcall SortRange(HudUiScoreboardEntry* begin, HudUiScoreboardEntry* end, int unusedFlags)
 {
     while (end - begin > 16) {
-        HudUiScoreboardEntry* left = begin;
-        HudUiScoreboardEntry* right = end - 1;
-        HudUiScoreboardEntry* const middle = begin + ((end - begin) / 2);
-        HudUiScoreboardEntry pivot = *HudRuntimeListMenuMedianOfThree(begin, middle, right);
-
-        for (;;) {
-            while (HudRuntimeListMenuEntryComesBefore(*left, pivot)) {
-                ++left;
-            }
-
-            while (HudRuntimeListMenuEntryComesBefore(pivot, *right)) {
-                --right;
-            }
-
-            if (right <= left) {
-                break;
-            }
-
-            HudUiScoreboardEntry temp = *left;
-            *left = *right;
-            *right = temp;
-            ++left;
-        }
-
-        if (end - left <= left - begin) {
-            SortRange(left, end, unusedFlags);
-            end = left;
+        HudUiScoreboardEntry* middle = HudRuntimeListMenuPartition(
+            begin,
+            end,
+            HudRuntimeListMenuMedianOfThree(*begin, *(begin + (end - begin) / 2), *(end - 1))
+        );
+        if (end - middle <= middle - begin) {
+            SortRange(middle, end, 0);
+            end = middle;
         } else {
-            SortRange(begin, left, unusedFlags);
-            begin = left;
+            SortRange(begin, middle, 0);
+            begin = middle;
         }
     }
 }
@@ -11588,6 +11592,8 @@ void __fastcall SortRange(HudUiScoreboardEntry* begin, HudUiScoreboardEntry* end
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.insertpivotintosortedprefix
  * @recoil-artifact defines .text recoil:function:0x414930: HudUiListMenuEntry::InsertPivotIntoSortedPrefix.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: shift a sorted prefix forward and store the pivot entry at its sorted position.
  */
@@ -11607,39 +11613,23 @@ void InsertPivotIntoSortedPrefix(HudUiScoreboardEntry* slot, HudUiScoreboardEntr
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.insertionsortrange
  * @recoil-artifact defines .text recoil:function:0x414980: HudUiListMenuEntry::InsertionSortRange.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: insertion-sort a scoreboard-entry range in place using the recovered list-menu ordering.
  */
 void __fastcall InsertionSortRange(HudUiScoreboardEntry* begin, HudUiScoreboardEntry* end, int)
 {
-    if (begin == end) {
-        return;
-    }
-
-    HudUiScoreboardEntry* current = begin + 1;
-    while (current != end) {
-        HudUiScoreboardEntry candidate = *current;
-        if (HudRuntimeListMenuEntryComesBefore(candidate, *begin)) {
-            HudUiScoreboardEntry* shiftCursor = current;
-            while (shiftCursor != begin) {
-                *shiftCursor = *(shiftCursor - 1);
-                --shiftCursor;
+    if (begin != end) {
+        for (HudUiScoreboardEntry* current = begin; ++current != end;) {
+            HudUiScoreboardEntry candidate = *current;
+            if (!HudRuntimeListMenuEntryComesBefore(candidate, *begin)) {
+                HudRuntimeListMenuUnguardedInsert(current, candidate);
+            } else {
+                std::copy_backward(begin, current, current + 1);
+                *begin = candidate;
             }
-
-            *begin = candidate;
-        } else {
-            HudUiScoreboardEntry* insertSlot = current;
-            HudUiScoreboardEntry* previousEntry = insertSlot - 1;
-            while (HudRuntimeListMenuEntryComesBefore(candidate, *previousEntry)) {
-                *insertSlot = *previousEntry;
-                insertSlot = previousEntry;
-                --previousEntry;
-            }
-
-            *insertSlot = candidate;
         }
-
-        ++current;
     }
 }
 } // namespace HudUiListMenuEntry
