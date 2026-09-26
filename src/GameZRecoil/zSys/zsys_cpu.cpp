@@ -478,6 +478,7 @@ zSys::CpuBenchmarkResult* CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::
  * @recoil-artifact defines .text recoil:function:0x4b37f0: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-mhz-via-bsf-loop-qpc recoil:function:0x4b37f0
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x4b37f0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the fixed BSF/QPC loop; VC5 C++ did not
@@ -646,6 +647,7 @@ zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(zSys::Cp
  * @recoil-artifact defines .text recoil:function:0x4b38e0: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-rdtsc-qpc recoil:function:0x4b38e0
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x4b38e0 contains this exact CPU timing body.
  * Purpose: measures CPU MHz with the RDTSC/QPC sampling loop; VC5 C++ cannot
@@ -982,6 +984,7 @@ void __fastcall ReadTsc64(unsigned int* outHigh, unsigned int* outLow)
  * @recoil-artifact defines .text recoil:function:0x4b3b50: CPU timing result.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsys.cpu-benchmark-resolver.measure-cpu-mhz-cmos-rtc recoil:function:0x4b3b50
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x4b3b50 contains this exact CPU timing body.
  * Purpose: measures CPU MHz against CMOS RTC second transitions; VC5 C++ did

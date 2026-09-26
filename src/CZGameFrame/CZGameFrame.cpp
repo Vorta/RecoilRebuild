@@ -111,6 +111,7 @@ int CZGameFrame::IsWindowValid(CWnd* pWnd) const
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-buildwindowtitle
  * @recoil-artifact defines .text recoil:function:0x4438c0: CZGameFrame::BuildWindowTitle.
  *
+ *
  * Purpose: construct the fixed Zipper Interactive title used by the game frame.
  */
 CString CZGameFrame::BuildWindowTitle()
@@ -122,6 +123,7 @@ CString CZGameFrame::BuildWindowTitle()
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onclose
  * @recoil-artifact defines .text recoil:function:0x4438f0: CZGameFrame::OnClose.
  *
+ *
  * Purpose: forward close handling to the MFC CFrameWnd provider base.
  */
 void CZGameFrame::OnClose()
@@ -132,6 +134,7 @@ void CZGameFrame::OnClose()
 /**
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onpaint
  * @recoil-artifact defines .text recoil:function:0x443900: CZGameFrame::OnPaint.
+ *
  *
  * Purpose: paint the startup game bitmap into the frame unless the 3dfx client
  * rectangle update path is active.
@@ -180,6 +183,7 @@ void CZGameFrame::OnPaint()
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onsize
  * @recoil-artifact defines .text recoil:function:0x443a20: CZGameFrame::OnSize.
  *
+ *
  * Purpose: let MFC handle resizing and refresh the cached video client rect
  * when the update mask requests it.
  */
@@ -204,6 +208,7 @@ void __cdecl zVid::UpdateCachedClientRectIfUpdateMaskEnabled()
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onmove
  * @recoil-artifact defines .text recoil:function:0x443a50: CZGameFrame::OnMove.
  *
+ *
  * Purpose: dispatch default MFC move handling and refresh the cached video
  * client rect when the update mask requests it.
  */
@@ -216,6 +221,7 @@ void CZGameFrame::OnMove(int, int)
 /**
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-oncreate
  * @recoil-artifact defines .text recoil:function:0x443a60: CZGameFrame::OnCreate.
+ *
  *
  * Purpose: finish MFC frame creation by loading the game bitmap and shutting
  * down the startup mouse device path.
@@ -239,6 +245,7 @@ int CZGameFrame::OnCreate(CREATESTRUCTA* createStruct)
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-ondestroy
  * @recoil-artifact defines .text recoil:function:0x443ab0: CZGameFrame::OnDestroy.
  *
+ *
  * Purpose: release network/video/audio frame resources before the MFC destroy
  * handler and bitmap cleanup run.
  */
@@ -254,6 +261,7 @@ void CZGameFrame::OnDestroy()
 /**
  * @recoil-anchor recoil:anchor:src-czgameframe-czgameframe-function-czgameframe-onactivate
  * @recoil-artifact defines .text recoil:function:0x443ae0: CZGameFrame::OnActivate.
+ *
  *
  * Purpose: forward activation to MFC and synchronize Recoil app, input, game,
  * and video activation state.

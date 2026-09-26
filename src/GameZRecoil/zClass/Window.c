@@ -26,6 +26,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindownew
      * @recoil-artifact defines .text recoil:function:0x44f7a0: CZWindow::gwWindowNew.
+     *
+     *
      * Purpose: allocate a window node, initialize its window data record from
      * the active render region, and insert it into the window type bucket.
      */
@@ -91,6 +93,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetresolution
      * @recoil-artifact defines .text recoil:function:0x44f8b0: CZWindow::gwWindowSetResolution.
+     *
+     *
      * Purpose: validate a window node and store the requested render
      * resolution in its window data record.
      */
@@ -125,6 +129,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetresolution
      * @recoil-artifact defines .text recoil:function:0x44f930: CZWindow::gwWindowGetResolution.
+     *
+     *
      * Purpose: validate a window node and return the stored render resolution.
      */
     int __fastcall gwWindowGetResolution(CZNodePartial * node, int* outWidth, int* outHeight)
@@ -158,6 +164,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetsize
      * @recoil-artifact defines .text recoil:function:0x44f9c0: CZWindow::gwWindowSetSize.
+     *
+     *
      * Purpose: validate a window node and store the requested viewport size in
      * its window data record.
      */
@@ -192,6 +200,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetsize
      * @recoil-artifact defines .text recoil:function:0x44fa40: CZWindow::gwWindowGetSize.
+     *
+     *
      * Purpose: validate a window node and return the stored viewport size.
      */
     int __fastcall gwWindowGetSize(CZNodePartial * node, int* outWidth, int* outHeight)
@@ -225,6 +235,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetbuffer
      * @recoil-artifact defines .text recoil:function:0x44fad0: CZWindow::gwWindowSetBuffer.
+     * @recoil-match byte
+     *
      * Purpose: validate a window node and store the selected render-buffer
      * index.
      */
@@ -258,6 +270,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetclearpolygon
      * @recoil-artifact defines .text recoil:function:0x44fb40: CZWindow::gwWindowSetClearPolygon.
+     * @recoil-match byte
+     *
      * Purpose: validate a window node and toggle the high-bit enabled flag on
      * the clear-polygon index field.
      */
@@ -296,6 +310,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowaddclearpolygonvertex
      * @recoil-artifact defines .text recoil:function:0x44fbd0: CZWindow::gwWindowAddClearPolygonVertex.
+     *
+     *
      * Purpose: validate a window node and append one vertex to the active
      * clear polygon, preserving the vertex-count flag bits.
      */
@@ -359,6 +375,8 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowcloseclearpolygon
      * @recoil-artifact defines .text recoil:function:0x44fcf0: CZWindow::gwWindowCloseClearPolygon.
+     *
+     *
      * Purpose: submit the active clear polygon to the renderer and advance the
      * stored clear-polygon index.
      */

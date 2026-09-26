@@ -1473,6 +1473,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcoplanartolerance
      * @recoil-artifact defines .text recoil:function:0x481550: zModel_Const::SetCoplanarTolerance
+     *
+     *
      * Purpose: set the global coplanar polygon tolerance.
      */
     void __stdcall SetCoplanarTolerance(float tolerance)
@@ -1486,6 +1488,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcolineartolerance
      * @recoil-artifact defines .text recoil:function:0x481560: zModel_Const::SetColinearTolerance
+     *
+     *
      * Purpose: set the global colinear polygon tolerance.
      */
     void __stdcall SetColinearTolerance(float tolerance)
@@ -1537,6 +1541,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.writetostream
      * @recoil-artifact defines .text recoil:function:0x4815c0: zModel_DiPool::WriteToStream
+     *
+     *
      * Purpose: serialize the display-instance pool and its dynamic arrays to a stream.
      */
     int __fastcall WriteToStream(void* stream)
@@ -1749,6 +1755,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrybyindexfromstream
      * @recoil-artifact defines .text recoil:function:0x481aa0: zModel_DiPool::ReadEntryByIndexFromStream
+     * @recoil-match byte
+     *
      * Purpose: load one serialized display-instance entry by pool index.
      */
     RECOIL_NO_GS zDiPartial* __fastcall ReadEntryByIndexFromStream(void* stream, int index)
@@ -1800,6 +1808,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readheaderfromstream
      * @recoil-artifact defines .text recoil:function:0x481bc0: zModel_DiPool::ReadHeaderFromStream
+     * @recoil-match byte
+     *
      * Purpose: read display-instance pool header fields from a stream.
      */
     int __fastcall ReadHeaderFromStream(void* stream, int* outCapacity, int* outInUseCount, int* outFreeHeadIndex)
@@ -1828,6 +1838,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readentrydynamicdatafromstream
      * @recoil-artifact defines .text recoil:function:0x481c50: zModel_DiPool::ReadEntryDynamicDataFromStream
+     *
+     *
      * Purpose: read one display-instance entry's dynamic arrays and repair material pointers.
      */
     int __fastcall ReadEntryDynamicDataFromStream(void* stream, zDiPartial* entry)
@@ -1987,6 +1999,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.readfromstream
      * @recoil-artifact defines .text recoil:function:0x481fa0: zModel_DiPool::ReadFromStream
+     * @recoil-match byte
+     *
      * Purpose: read the display-instance pool and all dynamic entry payloads from a stream.
      */
     int __fastcall ReadFromStream(void* stream)
@@ -2036,6 +2050,8 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.allocfromfreelist
      * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
+     *
+     *
      * Purpose: allocate and initialize a display-instance pool entry from the free list.
      */
     zDiPartial* __cdecl AllocFromFreeList()
@@ -2095,6 +2111,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freecontents
      * @recoil-artifact defines .text recoil:function:0x482160: zDi::FreeContents
+     *
+     *
      * Purpose: release all heap-owned arrays and materials held by a display instance.
      */
     int __fastcall FreeContents(zDiPartial * self)
@@ -2157,6 +2175,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.clonetoinstance
      * @recoil-artifact defines .text recoil:function:0x482270: zDi::CloneToInstance
+     *
+     *
      * Purpose: clone a display instance, optionally cloning or sharing its material references.
      */
     zDiPartial* __fastcall CloneToInstance(zDiPartial * self, int cloneMaterials, int cloneAuxOnly)
@@ -2388,6 +2408,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertex
      * @recoil-artifact defines .text recoil:function:0x482720: zModel_Const::AddOrMergeVertex
+     *
+     *
      * Purpose: find an existing nearby vertex or append a new display-instance vertex.
      */
     int __fastcall AddOrMergeVertex(zDiPartial * self, zVec3 * point)
@@ -2431,6 +2453,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertexandnormal
      * @recoil-artifact defines .text recoil:function:0x482860: zModel_Const::AddOrMergeVertexAndNormal
+     *
+     *
      * Purpose: find or append a vertex plus its blend-normal delta.
      */
     int __fastcall AddOrMergeVertexAndNormal(zDiPartial * self, zVec3 * point, zVec3 * normal)
@@ -2485,6 +2509,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.findorappendnormalindex
      * @recoil-artifact defines .text recoil:function:0x482a10: zModel_Const::FindOrAppendNormalIndex
+     *
+     *
      * Purpose: find an existing nearby normal or append a new normal.
      */
     int __fastcall FindOrAppendNormalIndex(zDiPartial * self, zVec3 * normal)
@@ -2528,6 +2554,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
      * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::check_colinearity
+     *
+     *
      * Purpose: remove colinear vertices from a polygon point array in place.
      */
     int __fastcall check_colinearity(int* vertexCount, zVec3* points, zClipUV*, zVec3*, zClipUV*)
@@ -2588,6 +2616,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
      * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
+     *
+     *
      * Purpose: compute and normalize the cross product from three polygon vertices.
      */
     zVec3* __fastcall
@@ -2627,6 +2657,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
      * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
+     *
+     *
      * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
      */
     int __fastcall IsPolygonCoplanar(int vertexCount, zVec3* vertices)
@@ -2655,6 +2687,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
      * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
+     *
+     *
      * Purpose: compute a normalized plane equation for a polygon.
      */
     zGeometry_PlaneEquationPartial* __fastcall ComputePolygonPlaneEquation(
@@ -2706,6 +2740,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.splitpolygonchunkedbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
+     *
+     *
      * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
      */
     void __fastcall SplitPolygonChunkedByVertexLimit(
@@ -2791,6 +2827,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
+     *
+     *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
     void __fastcall AddPolygonSplitByVertexLimit(
@@ -2901,6 +2939,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.quantizeandnormalizeuvpairs
      * @recoil-artifact defines .text recoil:function:0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
+     *
+     *
      * Purpose: quantize UV pairs and normalize them to a local tile origin.
      */
     void __fastcall QuantizeAndNormalizeUvPairs(int vertexCount, zClipUV* uvPairs)
@@ -2981,6 +3021,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
      * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
+     *
+     *
      * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
      */
     int __fastcall AddPolygonEx(
@@ -3158,6 +3200,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.hasspecialflagsorauxmaterialdata
      * @recoil-artifact defines .text recoil:function:0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
+     *
+     *
      * Purpose: test whether a display instance needs special render/material handling.
      */
     int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial * self)
@@ -3185,6 +3229,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildbounds
      * @recoil-artifact defines .text recoil:function:0x483ad0: zDi::RebuildBounds
+     *
+     *
      * Purpose: rebuild display-instance bounds, center, and approximate bounding radius.
      */
     void __fastcall RebuildBounds(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
@@ -3220,6 +3266,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildaabb
      * @recoil-artifact defines .text recoil:function:0x483b80: zDi::BuildAabb
+     *
+     *
      * Purpose: build a display-instance axis-aligned bounds box from vertices and point data.
      */
     void __fastcall BuildAabb(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
@@ -3320,6 +3368,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildoriginsymmetricaabb
      * @recoil-artifact defines .text recoil:function:0x483e60: zDi::BuildOriginSymmetricAabb
+     *
+     *
      * Purpose: symmetrize display-instance bounds around the origin according to mode flags.
      */
     void __fastcall BuildOriginSymmetricAabb(zDiPartial * self, zBoundsMinMaxPartial * outBoundsMinMax)
@@ -3376,6 +3426,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
      * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
+     *
+     *
      * Retail 0x4c4228..0x4c4241 passes self in ECX, exclusions in EDX,
      * and blendY on the stack. VC5 skips floating-point fastcall arguments when
      * assigning registers: the source order is self, blendY, exclusions. This
@@ -3477,6 +3529,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setshowbackfaceforallentries
      * @recoil-artifact defines .text recoil:function:0x484170: zDi::SetShowBackFaceForAllEntries
+     * @recoil-match byte
+     *
      * Purpose: update the show-backface bit on every display-instance polygon entry.
      */
     void __fastcall SetShowBackFaceForAllEntries(zDiPartial * self, int enabled)
@@ -3534,6 +3588,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.resetcurrentvariant
      * @recoil-artifact defines .text recoil:function:0x484230: zDi::ResetCurrentVariant
+     * @recoil-match byte
+     *
      * Purpose: reset the current material cycle frame on the first entry.
      */
     void __fastcall ResetCurrentVariant(zDiPartial * self)
@@ -3551,6 +3607,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturecount
      * @recoil-artifact defines .text recoil:function:0x484250: zDi::SetCurrentVariantCycleTextureCount
+     *
+     *
      * Purpose: configure the current material cycle texture count.
      */
     int __fastcall SetCurrentVariantCycleTextureCount(zDiPartial * self, int textureCount)
@@ -3670,6 +3728,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setobject3dcolormodeformaterials
      * @recoil-artifact defines .text recoil:function:0x484350: zDi::SetObject3DColorModeForMaterials
+     *
+     *
      * Purpose: apply an object3D color mode to untextured materials.
      */
     void __fastcall SetObject3DColorModeForMaterials(zDiPartial * self, int colorMode)
@@ -3696,6 +3756,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
      * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
+     *
+     *
      * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
      */
     void __fastcall RebuildGeneratedUvPairsForEntry(zDiPartial * self, int entryIndex)
@@ -3822,6 +3884,8 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
      * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
+     *
+     *
      * Purpose: solve the 2D scalar gradient over a triangle.
      */
     zClipUV __stdcall SolveTriScalarGradient2D(
@@ -3861,6 +3925,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforquerypoint
      * @recoil-artifact defines .text recoil:function:0x484960: zDi::BuildPickCandidateForQueryPoint.
+     *
+     *
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
      * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
@@ -3937,6 +4003,8 @@ namespace zModelConst
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addfacetoplayerprobesamplebuckets
      * @recoil-artifact defines .text recoil:function:0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
+     *
+     *
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
      * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
@@ -4017,6 +4085,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.picktestmeshatqueryxz
      * @recoil-artifact defines .text recoil:function:0x484e00: CZDisplayInstance::PickTestMeshAtQueryXZ.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4089,6 +4159,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.appendpickcandidatesforface
      * @recoil-artifact defines .text recoil:function:0x484fc0: CZDisplayInstance::AppendPickCandidatesForFace.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4209,6 +4281,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentvsbboxfaces
      * @recoil-artifact defines .text recoil:function:0x485380: CZDisplayInstance::BuildPickCandidatesForSegmentVsBBoxFaces.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4321,6 +4395,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.trygetpolygonhitatqueryxz
      * @recoil-artifact defines .text recoil:function:0x4856d0: CZDisplayInstance::TryGetPolygonHitAtQueryXZ.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4371,6 +4447,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygon
      * @recoil-artifact defines .text recoil:function:0x4857f0: CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4472,6 +4550,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygonwithuv
      * @recoil-artifact defines .text recoil:function:0x485d10: CZDisplayInstance::BuildPickCandidateForSegmentVsPolygonWithUv.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -4675,6 +4755,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentbatchvspolygon
      * @recoil-artifact defines .text recoil:function:0x486290: CZDisplayInstance::BuildPickCandidatesForSegmentBatchVsPolygon.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5114,6 +5196,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygon
      * @recoil-artifact defines .text recoil:function:0x487350: CZDisplayInstance::FilterRegionsAgainstPolygon.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5199,6 +5283,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygonwithdamagemaskuv
      * @recoil-artifact defines .text recoil:function:0x487540: CZDisplayInstance::FilterRegionsAgainstPolygonWithDamageMaskUv.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5328,6 +5414,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstmeshfaces
      * @recoil-artifact defines .text recoil:function:0x487900: CZDisplayInstance::FilterRegionsAgainstMeshFaces.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -5364,6 +5452,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainsthexahedronfaces
      * @recoil-artifact defines .text recoil:function:0x4879c0: CZDisplayInstance::FilterRegionsAgainstHexahedronFaces.
+     * @recoil-match byte
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.

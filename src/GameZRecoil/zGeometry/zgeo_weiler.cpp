@@ -216,6 +216,8 @@ int __fastcall GetInputContourAPointList(zGeometry_WeilerStatePartial* self, zVe
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-init-0x464680
  * @recoil-artifact defines .text recoil:function:0x464680: zGeometry_Weiler::Init
+ * @recoil-match byte
+ *
  * Purpose: Allocate and initialize Weiler clip state from an input contour.
  */
 zGeometry_WeilerStatePartial* __fastcall Init(zVec3* points, int pointCount, int contourSource)
@@ -311,6 +313,8 @@ void __fastcall DestroyState(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-clippointlist
  * @recoil-artifact defines .text recoil:function:0x464810: zGeometry_Weiler::ClipPointList
+ *
+ *
  * Purpose: Initialize clip output state, handle preclassified contour relationships, dispatch the Weiler clipping
  * pipeline, and restore caller-visible output state.
  */
@@ -565,6 +569,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-initinputcontourpair
  * @recoil-artifact defines .text recoil:function:0x464b90: zGeometry_Weiler::InitInputContourPair
+ * @recoil-match byte
+ *
  * Purpose: Allocate forward and reverse contour segment rings for an input contour.
  */
 int __fastcall InitInputContourPair(zGeometry_WeilerStatePartial* self, zVec3* points, int pointCount, int contourType)
@@ -603,6 +609,8 @@ int __fastcall InitInputContourPair(zGeometry_WeilerStatePartial* self, zVec3* p
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyinputcontourpairbounds
  * @recoil-artifact defines .text recoil:function:0x464c90: zGeometry_Weiler::ClassifyInputContourPairBounds
+ *
+ *
  * Purpose: Preclassify the two input contours by comparing their XY bounding boxes.
  */
 int __fastcall ClassifyInputContourPairBounds(zGeometry_WeilerStatePartial* self)
@@ -695,6 +703,8 @@ int __fastcall ClassifyInputContourPairBounds(zGeometry_WeilerStatePartial* self
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputpreclassifiedcontourpairresult
  * @recoil-artifact defines .text recoil:function:0x464ea0: zGeometry_Weiler::OutputPreclassifiedContourPairResult
+ *
+ *
  * Purpose: Resolve a preclassified containment result by rejecting unmatched outside points.
  */
 int __fastcall OutputPreclassifiedContourPairResult(
@@ -752,6 +762,8 @@ int __fastcall OutputPreclassifiedContourPairResult(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-preclassifyinputcontourpair
  * @recoil-artifact defines .text recoil:function:0x464f70: zGeometry_Weiler::PreclassifyInputContourPair
+ *
+ *
  * Purpose: Preclassify overlapping input contours by splitting coincident segments and merging contour type flags.
  */
 int __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self)
@@ -1171,6 +1183,8 @@ int __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifycontainedcontour
  * @recoil-artifact defines .text recoil:function:0x465ac0: zGeometry_Weiler::ClassifyContainedContour
+ *
+ *
  * Purpose: Classify contained contour pairs by intersecting segment rings, splitting at crossings, and repairing
  * crossing back-references.
  */
@@ -1826,6 +1840,8 @@ void __fastcall Destroy(zGeometry_WeilerBufferPartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-getappendspace
  * @recoil-artifact defines .text recoil:function:0x467660: zGeometry_WeilerBuffer::GetAppendSpace
+ * @recoil-match byte
+ *
  * Purpose: Reserve contiguous append slots, growing backing storage when needed.
  */
 void* __fastcall GetAppendSpace(zGeometry_WeilerBufferPartial* self, int appendCount, void** outBase)
@@ -1854,6 +1870,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-ensurecontouroutput
  * @recoil-artifact defines .text recoil:function:0x4676c0: zGeometry_Weiler::EnsureContourOutput
+ * @recoil-match byte
+ *
  * Purpose: Ensure a contour segment has an attached contour output record.
  */
 int __fastcall EnsureContourOutput(zGeometry_WeilerStatePartial* self, zGeometry_WeilerContourSegmentPartial* segment)
@@ -1887,6 +1905,8 @@ int __fastcall EnsureContourOutput(zGeometry_WeilerStatePartial* self, zGeometry
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-mergecontours
  * @recoil-artifact defines .text recoil:function:0x467710: zGeometry_Weiler::MergeContours
+ *
+ *
  * Purpose: Merge classified Weiler contour segments into contour output chains.
  */
 int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
@@ -2377,6 +2397,8 @@ int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-newcontour
  * @recoil-artifact defines .text recoil:function:0x4680b0: zGeometry_Weiler::NewContour
+ *
+ *
  * Purpose: Rebuild contour output type and point counts, clear stale segment output ownership, and track
  * all-single-sided state.
  */
@@ -2449,6 +2471,8 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputcontoursforclipmode
  * @recoil-artifact defines .text recoil:function:0x4681a0: zGeometry_Weiler::OutputContoursForClipMode
+ *
+ *
  * Purpose: Route contour outputs to polygon sets A, B, and C according to clip mode bits and contour type.
  */
 int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial* self)
@@ -2527,6 +2551,8 @@ int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputcontourtopolygonset
  * @recoil-artifact defines .text recoil:function:0x4682c0: zGeometry_Weiler::OutputContourToPolygonSet
+ *
+ *
  * Purpose: Append a polygon span and copy contour segment points into the output point list.
  */
 int __fastcall OutputContourToPolygonSet(
@@ -2581,6 +2607,8 @@ int __fastcall OutputContourToPolygonSet(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-togglepointaxesforcontoursource
  * @recoil-artifact defines .text recoil:function:0x4683a0: zGeometry_Weiler::TogglePointAxesForContourSource
+ *
+ *
  * Purpose: Swap point axes in the active input contour buffer for the contour source.
  */
 void __fastcall TogglePointAxesForContourSource(zGeometry_WeilerStatePartial* self)
@@ -2610,6 +2638,8 @@ namespace zGeometry_WeilerContourSegment {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-updatebounds-0x468410
  * @recoil-artifact defines .text recoil:function:0x468410: zGeometry_WeilerContourSegment::UpdateBounds
+ * @recoil-match byte
+ *
  * Purpose: Refresh a contour segment's cached XY bounds from its endpoints.
  */
 void __fastcall UpdateBounds(zGeometry_WeilerContourSegmentPartial* segment)
@@ -2643,6 +2673,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-buildpointsidetablesforcontourpair
  * @recoil-artifact defines .text recoil:function:0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
+ *
+ *
  * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
  */
 void __fastcall BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial* self)
@@ -2683,6 +2715,8 @@ void __fastcall BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-dividecontoursegmentatpoint
  * @recoil-artifact defines .text recoil:function:0x468580: zGeometry_Weiler::DivideContourSegmentAtPoint
+ *
+ *
  * Purpose: Split a contour segment at a crossing point while preserving contour links.
  */
 int __fastcall DivideContourSegmentAtPoint(
@@ -2738,6 +2772,8 @@ int __fastcall DivideContourSegmentAtPoint(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-createforwardsegmentpairatpoint
  * @recoil-artifact defines .text recoil:function:0x468650: zGeometry_Weiler::CreateForwardSegmentPairAtPoint
+ *
+ *
  * Purpose: Insert matching forward contour split segments at a shared point.
  */
 int __fastcall CreateForwardSegmentPairAtPoint(
@@ -2787,6 +2823,8 @@ int __fastcall CreateForwardSegmentPairAtPoint(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputselectedinputcontourtopolygonseta
  * @recoil-artifact defines .text recoil:function:0x468700: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
+ *
+ *
  * Purpose: Append the selected input contour into polygon set A of the caller-owned Weiler clip output.
  */
 int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial* self, int mode)
@@ -2825,6 +2863,8 @@ int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePart
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-generateoutsideresults
  * @recoil-artifact defines .text recoil:function:0x4687b0: zGeometry_Weiler::GenerateOutsideResults
+ *
+ *
  * Purpose: Emit an outside-result polygon span and wrapped B/A point bridge when clip mode requests outside output.
  */
 int __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
@@ -2925,6 +2965,8 @@ int __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifypointincontourpointlistxy
  * @recoil-artifact defines .text recoil:function:0x468a10: zGeometry_Weiler::ClassifyPointInContourPointListXY
+ *
+ *
  * Purpose: Classify a test point as outside, on, or inside an XY contour by crossing parity.
  */
 int __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints)
@@ -2990,6 +3032,8 @@ int __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointC
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-intersect2d
  * @recoil-artifact defines .text recoil:function:0x468c40: zGeometry_Weiler::Intersect2d
+ *
+ *
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 rendering is limited at the classifier callsite and
  * computed Y store, so assembly is source of truth. Purpose: Build the crossing record, if any, for the classified
  * intersection between two XY edges.
@@ -3123,6 +3167,8 @@ int __fastcall Intersect2d(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyintersect2d
  * @recoil-artifact defines .text recoil:function:0x468fa0: zGeometry_Weiler::ClassifyIntersect2d
+ *
+ *
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 sign-class HLIL is limited, so assembly is source of
  * truth. Purpose: Classify two XY edges into the Weiler intersection case table, including contour-side disambiguation
  * for vertex cases.
@@ -3302,6 +3348,8 @@ GetNextContourSegmentForTraversal(zGeometry_WeilerContourSegmentPartial* segment
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyadjacentedgepairagainstcontoursegment
  * @recoil-artifact defines .text recoil:function:0x469450: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
+ *
+ *
  * Purpose: Classify whether an adjacent edge pair crosses or lies to one side of a contour segment.
  */
 int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
@@ -3337,6 +3385,8 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyadjacentedgepairagainstadjacentedgepair
  * @recoil-artifact defines .text recoil:function:0x469560: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
+ *
+ *
  * Purpose: Classify two linked adjacent edge pairs by their endpoint wedge relationship.
  */
 int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
@@ -3438,6 +3488,8 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-recenterpointsetsifoutofrange
  * @recoil-artifact defines .text recoil:function:0x469960: zGeometry_Weiler::RecenterPointSetsIfOutOfRange
+ *
+ *
  * Purpose: Translate input points when their coordinates are outside the local range.
  */
 void __fastcall RecenterPointSetsIfOutOfRange(zGeometry_WeilerStatePartial* self)
@@ -3572,6 +3624,8 @@ void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-restoreoutputzfrominputplane
  * @recoil-artifact defines .text recoil:function:0x469b60: zGeometry_Weiler::RestoreOutputZFromInputPlane
+ *
+ *
  * Purpose: Restore output point Z values from the input contour B plane.
  */
 void __fastcall RestoreOutputZFromInputPlane(zGeometry_WeilerStatePartial* self)
@@ -3617,6 +3671,8 @@ namespace zGeometry_Vec3 {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-isbetweenendpointsxy
  * @recoil-artifact defines .text recoil:function:0x469ca0: zGeometry_Vec3::IsBetweenEndpointsXY
+ *
+ *
  * Purpose: Test whether a point lies within the inclusive XY endpoint span of a segment.
  */
 int __fastcall IsBetweenEndpointsXY(zVec3* testPoint, zVec3* startPoint, zVec3* endPoint)
@@ -3642,6 +3698,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-selectforwardstartpointincontoura
  * @recoil-artifact defines .text recoil:function:0x469d60: zGeometry_Weiler::SelectForwardStartPointInContourA
+ *
+ *
  * Purpose: Choose the forward start point on contour A for outside-results bridge traversal.
  */
 void __fastcall
@@ -3802,6 +3860,8 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-snappointsxyifnear
  * @recoil-artifact defines .text recoil:function:0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
+ *
+ *
  * Purpose: Snap target polygon points to nearby source vertices or XY edges.
  */
 int __fastcall SnapPointsXYIfNear(
@@ -3853,6 +3913,8 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-validatexings
  * @recoil-artifact defines .text recoil:function:0x46a1f0: zGeometry_Weiler::ValidateXings
+ *
+ *
  * Purpose: Walk the Weiler crossing array, report the first invalid crossing, and return the validation status.
  */
 int __fastcall ValidateXings(int xingCount, zGeometry_WeilerXingPartial* xingArray, int* failedXingIndex)

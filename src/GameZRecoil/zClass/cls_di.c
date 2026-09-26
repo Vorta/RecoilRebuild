@@ -1195,6 +1195,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setbreakonfirstcandidate
      * @recoil-artifact defines .text recoil:function:0x443c50: CZDisplayInstance::SetBreakOnFirstCandidate.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1207,6 +1209,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setstopafterfirsthit
      * @recoil-artifact defines .text recoil:function:0x443c60: CZDisplayInstance::SetStopAfterFirstHit.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1219,6 +1223,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.findbestpickcandidatebelowpoint
      * @recoil-artifact defines .text recoil:function:0x443c70: CZDisplayInstance::FindBestPickCandidateBelowPoint.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1255,6 +1261,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelistbelowpoint
      * @recoil-artifact defines .text recoil:function:0x443d20: CZDisplayInstance::BuildPickCandidateListBelowPoint.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1354,6 +1362,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelist
      * @recoil-artifact defines .text recoil:function:0x443f80: CZDisplayInstance::BuildPickCandidateList.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1519,6 +1529,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesrecursive
      * @recoil-artifact defines .text recoil:function:0x444310: CZDisplayInstance::BuildPickCandidatesRecursive.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1568,6 +1580,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforlight
      * @recoil-artifact defines .text recoil:function:0x4443e0: CZDisplayInstance::BuildPickCandidatesForLight.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1610,6 +1624,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointbatch
      * @recoil-artifact defines .text recoil:function:0x4444b0: CZDisplayInstance::BuildPickCandidatesForPointBatch.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1749,6 +1765,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpoints
      * @recoil-artifact defines .text recoil:function:0x444890: CZDisplayInstance::BuildPickCandidatesForPoints.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1932,6 +1950,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointsrecursive
      * @recoil-artifact defines .text recoil:function:0x444c50: CZDisplayInstance::BuildPickCandidatesForPointsRecursive.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1983,6 +2003,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointsforlight
      * @recoil-artifact defines .text recoil:function:0x444d10: CZDisplayInstance::BuildPickCandidatesForPointsForLight.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2030,6 +2052,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastselectclosesthitbetweenpoints
      * @recoil-artifact defines .text recoil:function:0x444de0: CZDisplayInstance::RaycastSelectClosestHitBetweenPoints.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2090,6 +2114,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastfindclosest
      * @recoil-artifact defines .text recoil:function:0x444e90: CZDisplayInstance::RaycastFindClosest.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2274,6 +2300,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegment
      * @recoil-artifact defines .text recoil:function:0x4455f0: CZDisplayInstance::BuildPickCandidatesForSegment.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2304,6 +2332,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentchildfallback
      * @recoil-artifact defines .text recoil:function:0x445650: CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2481,6 +2511,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentrecursive
      * @recoil-artifact defines .text recoil:function:0x445a00: CZDisplayInstance::BuildPickCandidatesForSegmentRecursive.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2536,6 +2568,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentforcamera
      * @recoil-artifact defines .text recoil:function:0x445b20: CZDisplayInstance::BuildPickCandidatesForSegmentForCamera.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2579,6 +2613,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentforlight
      * @recoil-artifact defines .text recoil:function:0x445c20: CZDisplayInstance::BuildPickCandidatesForSegmentForLight.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2631,6 +2667,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildprobehitbatchesforsegments
      * @recoil-artifact defines .text recoil:function:0x445d40: CZDisplayInstance::BuildProbeHitBatchesForSegments.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2711,6 +2749,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsingridwindow
      * @recoil-artifact defines .text recoil:function:0x445f60: CZDisplayInstance::BuildPickCandidatesForSegmentsInGridWindow.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -2840,6 +2880,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsrecursive
      * @recoil-artifact defines .text recoil:function:0x446440: CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3041,6 +3083,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsforanimate
      * @recoil-artifact defines .text recoil:function:0x446880: CZDisplayInstance::BuildPickCandidatesForSegmentsForAnimate.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3099,6 +3143,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsforlight
      * @recoil-artifact defines .text recoil:function:0x446970: CZDisplayInstance::BuildPickCandidatesForSegmentsForLight.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3157,6 +3203,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregionsagainstsphere
      * @recoil-artifact defines .text recoil:function:0x446a80: CZDisplayInstance::FilterRegionsAgainstSphere.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3362,6 +3410,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregions-tryappendnode
      * @recoil-artifact defines .text recoil:function:0x446f60: CZDisplayInstance::FilterRegionsTryAppendNode.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3493,6 +3543,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.ispickquerypointoutsideviewbboxxz
      * @recoil-artifact defines .text recoil:function:0x4472c0: CZDisplayInstance::IsPickQueryPointOutsideViewBBoxXZ.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3544,6 +3596,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.picktestbbox2d
      * @recoil-artifact defines .text recoil:function:0x4473e0: CZDisplayInstance::PickTestBBox2D.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3604,6 +3658,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterpointsbbox
      * @recoil-artifact defines .text recoil:function:0x447540: CZDisplayInstance::FilterPointsBBox.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -3667,6 +3723,8 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.frustumtestandpick
      * @recoil-artifact defines .text recoil:function:0x4476f0: CZDisplayInstance::FrustumTestAndPick.
+     *
+     *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.

@@ -72,6 +72,8 @@ namespace zReader {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zreader-fileexists
  * @recoil-artifact defines .text recoil:function:0x4a5c20: zReader::FileExists.
+ * @recoil-match byte
+ *
  * Uses the imported CRT `_access` provider and returns a 1/0 existence flag.
  * Purpose: test whether a path exists for ZRDR file lookup.
  */
@@ -148,6 +150,8 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-addsearchpaths
  * @recoil-artifact defines .text recoil:function:0x4a5ce0: zUtil::zRdrAddSearchPaths.
+ *
+ *
  * Purpose: split and append semicolon-delimited paths to a search-path list.
  */
 void __fastcall zRdrAddSearchPaths(zArchiveList* list, const char* pathText)
@@ -244,6 +248,8 @@ extern "C" void __fastcall zRdrFreePathList(zArchiveList* list)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-resolvepathinsearchpathlist
  * @recoil-artifact defines .text recoil:function:0x4a5e50: zRdrResolvePathInSearchPathList.
+ * @recoil-match byte
+ *
  * Purpose: resolve a filename through the supplied or scratch ZRDR search path.
  */
 extern "C" char* __fastcall zRdrResolvePathInSearchPathList(zArchiveList* searchPathList, const char* filename)
@@ -286,6 +292,8 @@ extern "C" char* __fastcall zRdrResolvePathInSearchPathList(zArchiveList* search
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-searchpathcontainsfilepredicate
  * @recoil-artifact defines .text recoil:function:0x4a5f20: zRdrSearchPathContainsFilePredicate.
+ * @recoil-match byte
+ *
  * Purpose: join a search directory with a filename and report whether it exists.
  */
 extern "C" int __fastcall zRdrSearchPathContainsFilePredicate(void* searchDir, void* filename)
@@ -297,6 +305,8 @@ extern "C" int __fastcall zRdrSearchPathContainsFilePredicate(void* searchDir, v
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-openfileresolved
  * @recoil-artifact defines .text recoil:function:0x4a5f50: zRdrOpenFileResolved.
+ * @recoil-match byte
+ *
  * Purpose: open the resolved ZRDR search-path match, or fall back to the raw filename.
  */
 extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, const char* filename, const char* mode)
@@ -326,6 +336,8 @@ extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, c
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-initwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a5f90: zUtil_ZRDR::InitWildcardPath.
+ *
+ *
  * Purpose: initialize wildcard path state from a path template.
  */
 extern "C" char* __fastcall zRdrInitWildcardPath(char* pattern)
@@ -364,6 +376,8 @@ extern "C" char* __fastcall zRdrInitWildcardPath(char* pattern)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-nextwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a6070: zUtil_ZRDR::NextWildcardPath.
+ *
+ *
  * Purpose: advance wildcard digits and return the next generated path.
  */
 extern "C" char* __cdecl zRdrNextWildcardPath()
@@ -410,6 +424,8 @@ extern "C" int __cdecl zRdrShutdownWildcardPath()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zreader-readstring-gamezrecoil-zreader-zreader-cpp
  * @recoil-artifact defines .text recoil:function:0x4a6110: zReaderReadString (GameZRecoil/zReader/zreader.cpp).
+ * @recoil-match byte
+ *
  * Purpose: Reads a length-prefixed string payload, allocates a nul-terminated buffer, and returns bytes consumed.
  */
 extern "C" int __fastcall zReaderReadString(void* hFile, zReader::Value* outString)
@@ -466,6 +482,8 @@ zIndexArchive::~zIndexArchive()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-init
  * @recoil-artifact defines .text recoil:function:0x4a61d0: zIndexArchive::Init.
+ *
+ *
  * Purpose: open an archive file for reading and load its trailing index.
  */
 int zIndexArchive::Init(const char* filepath)
@@ -512,6 +530,8 @@ int zIndexArchive::Init(const char* filepath)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-opencreatewrite
  * @recoil-artifact defines .text recoil:function:0x4a6270: zIndexArchive::OpenCreateWrite.
+ * @recoil-match byte
+ *
  * Purpose: create an archive file for writing and initialize record storage.
  */
 int zIndexArchive::OpenCreateWrite(const char* filepath)
@@ -525,6 +545,8 @@ int zIndexArchive::OpenCreateWrite(const char* filepath)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-closeandfreerecords
  * @recoil-artifact defines .text recoil:function:0x4a62b0: zIndexArchive::CloseAndFreeRecords.
+ * @recoil-match byte
+ *
  * Purpose: flush dirty records, close the file handle, and reset record storage.
  */
 int zIndexArchive::CloseAndFreeRecords()
@@ -591,6 +613,8 @@ void zIndexArchive::FreeRecordsAndReset()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-flushindextotail
  * @recoil-artifact defines .text recoil:function:0x4a6360: zIndexArchive::FlushIndexToTail.
+ * @recoil-match byte
+ *
  * Purpose: append the record table and tail metadata to the archive file.
  */
 void zIndexArchive::FlushIndexToTail()
@@ -609,6 +633,8 @@ void zIndexArchive::FlushIndexToTail()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-loadindexfromtail
  * @recoil-artifact defines .text recoil:function:0x4a63f0: zIndexArchive::LoadIndexFromTail.
+ * @recoil-match byte
+ *
  * Purpose: read and validate the archive index footer and record table.
  */
 int zIndexArchive::LoadIndexFromTail()
@@ -641,6 +667,8 @@ int zIndexArchive::LoadIndexFromTail()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-addfilerecord
  * @recoil-artifact defines .text recoil:function:0x4a64d0: zIndexArchive::AddFileRecord.
+ *
+ *
  * Purpose: append a named payload to the archive file and record its index data.
  */
 int zIndexArchive::AddFileRecord(
@@ -702,6 +730,8 @@ zZarFileRecord* zIndexArchive::FindRecordByNameCI(const char* filename)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-openfilebyname
  * @recoil-artifact defines .text recoil:function:0x4a6630: zIndexArchive::OpenFileByName.
+ * @recoil-match byte
+ *
  * Purpose: open a file member from the archive and optionally return its size.
  */
 void* zIndexArchive::OpenFileByName(const char* filename, unsigned int* outSize)
@@ -722,6 +752,8 @@ void* zIndexArchive::OpenFileByName(const char* filename, unsigned int* outSize)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-readfilebyname
  * @recoil-artifact defines .text recoil:function:0x4a6670: zIndexArchive::ReadFileByName.
+ * @recoil-match byte
+ *
  * Purpose: read a named archive member into the caller-provided buffer.
  */
 int zIndexArchive::ReadFileByName(const char* filename, void* buffer, unsigned int* bufferSize)

@@ -12,6 +12,7 @@ namespace NetUi {
  * @recoil-anchor recoil:anchor:battlesport-winsock-netui-verifywinsock2orpromptcontinue
  * @recoil-artifact defines .text recoil:function:0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
  *
+ *
  * Purpose: verify Winsock 2.0 availability and ask the user whether network
  * flows should continue when startup or version checks fail.
  */

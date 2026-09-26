@@ -383,6 +383,8 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryappendbridgeedge
  * @recoil-artifact defines .text recoil:function:0x46bd50: zGeometry_TriangulateHole::TryAppendBridgeEdge
+ *
+ *
  * Purpose: Append a bridge edge when it is unique and does not cross live edges.
  */
 int __fastcall TryAppendBridgeEdge(
@@ -425,6 +427,8 @@ namespace zGeometry_Segment {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-intersectssegmentxy
  * @recoil-artifact defines .text recoil:function:0x46be20: zGeometry_Segment::IntersectsSegmentXY
+ *
+ *
  * Purpose: Test whether two XY segments intersect with both parametric coordinates in the half-open unit range.
  */
 int __fastcall
@@ -517,6 +521,8 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryemittrianglefromedgepair
  * @recoil-artifact defines .text recoil:function:0x46bfc0: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
+ *
+ *
  * Purpose: Emit a triangle from two incident live edges and their closing edge.
  */
 void __fastcall TryEmitTriangleFromEdgePair(
@@ -571,6 +577,8 @@ namespace zGeometry {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepolygonwithhole
  * @recoil-artifact defines .text recoil:function:0x46c070: zGeometry::TriangulatePolygonWithHole
+ *
+ *
  * Purpose: Bridge an inner polygon ring to an outer ring and emit triangle soup.
  */
 zGeometry_TriangleSoup* __fastcall
@@ -705,6 +713,8 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-cachecombinedplane
  * @recoil-artifact defines .text recoil:function:0x46c390: zGeometry_TriangulateHole::CacheCombinedPlane
+ * @recoil-match byte
+ *
  * Purpose: Cache the plane equation used to project the inner ring.
  */
 void __fastcall CacheCombinedPlane(int pointCount, zVec3* points)
@@ -717,6 +727,8 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-computenewellplane
  * @recoil-artifact defines .text recoil:function:0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
+ *
+ *
  * Purpose: Compute a normalized Newell plane equation from a point ring.
  */
 void __fastcall ComputeNewellPlane(int pointCount, zVec3* points, zGeometry_PlaneEquationPartial* outPlane)
@@ -769,6 +781,8 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-projectinnerringontocachedplane
  * @recoil-artifact defines .text recoil:function:0x46c570: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
+ *
+ *
  * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
  */
 void __fastcall ProjectInnerRingOntoCachedPlane(int pointCount, zVec3* points)
@@ -809,6 +823,8 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-ensurepositivecrossz
  * @recoil-artifact defines .text recoil:function:0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
+ *
+ *
  * Purpose: Ensure the first two polygon edges produce a positive Z cross.
  */
 int __fastcall EnsurePositiveCrossZ(int pointCount, zVec3* points, int allowReverse)
@@ -861,6 +877,8 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-convexify
  * @recoil-artifact defines .text recoil:function:0x46c760: zGeometry_Polygon::convexify
+ *
+ *
  * Purpose: Convert polygon spans into convex polygon output, copying already
  * convex spans and triangulating non-convex spans through the polygon splitter.
  */
@@ -967,6 +985,8 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepointdwordoffsetsrecursive
  * @recoil-artifact defines .text recoil:function:0x46cb50: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
+ *
+ *
  * Purpose: Recursively split a polygon point-dword offset list and append the
  * resulting triangle offset lists.
  */
@@ -1156,6 +1176,8 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-trysplitpointdwordoffsetsatbestdiagonal
  * @recoil-artifact defines .text recoil:function:0x46ced0: zGeometry_Polygon::TrySplitPointDwordOffsetsAtBestDiagonal
+ *
+ *
  * Purpose: Split a polygon point-dword offset list across the chosen diagonal
  * into two smaller polygon offset lists.
  */

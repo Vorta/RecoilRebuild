@@ -69,6 +69,7 @@ namespace zDEClient {
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-copyqsandeventtemplatedefaults
  * @recoil-artifact defines .text recoil:function:0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
  *
+ *
  * Purpose: copy the configured quicksand event template defaults into a
  * caller-owned event template.
  */
@@ -81,6 +82,7 @@ namespace zDEClient_QSand {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-instanceeventmayberelay
  * @recoil-artifact defines .text recoil:function:0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
+ * @recoil-match byte
  *
  * Purpose: let the registered quicksand relay callback veto instancing before
  * building and submitting the quicksand feature locally.
@@ -340,6 +342,7 @@ int __fastcall Build(zDEClient_QSandFeature* featureInstance)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-createfeature
  * @recoil-artifact defines .text recoil:function:0x4564b0: zDEClient_QSand::CreateFeature
+ *
  *
  * Purpose: create quicksand side and cap display geometry from the clipped
  * feature points and attach both display instances to generated feature nodes.

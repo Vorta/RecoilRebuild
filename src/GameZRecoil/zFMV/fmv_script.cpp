@@ -283,6 +283,8 @@ void zFMV_Script::Reset(int destroyActions)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-loadactionsfromzrd
  * @recoil-artifact defines .text recoil:function:0x4626b0: zFMV_Script::LoadActionsFromZrd.
+ *
+ *
  * Purpose: load FMV path metadata and construct actions from a named zReader sequence.
  */
 int zFMV_Script::LoadActionsFromZrd(const char* zrdPath, const char* tagPrefix)
@@ -427,6 +429,8 @@ void CZFMVActionWait::Begin(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionwait-update
  * @recoil-artifact defines .text recoil:function:0x462ee0: CZFMVActionWait::Update.
+ * @recoil-match byte
+ *
  * Purpose: keep the wait action active until its duration has elapsed.
  */
 int CZFMVActionWait::Update(double timeSec)
@@ -507,6 +511,8 @@ int zFMV_Script::RunBlocking(int abortOnKey)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-begincurrentaction
  * @recoil-artifact defines .text recoil:function:0x462f90: zFMV_Script::BeginCurrentAction.
+ * @recoil-match byte
+ *
  * Purpose: prepare render/input/sound state and begin the current action.
  */
 int zFMV_Script::BeginCurrentAction(double startTimeSec)
@@ -568,6 +574,8 @@ int zFMV_Script::Update(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-beginattime
  * @recoil-artifact defines .text recoil:function:0x4630a0: zFMV_Script::BeginAtTime.
+ * @recoil-match byte
+ *
  * Purpose: begin the current action using the current multimedia timer time.
  */
 int zFMV_Script::BeginAtTime()
@@ -578,6 +586,8 @@ int zFMV_Script::BeginAtTime()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-updateattime
  * @recoil-artifact defines .text recoil:function:0x4630e0: zFMV_Script::UpdateAtTime.
+ * @recoil-match byte
+ *
  * Purpose: update the script using the current multimedia timer time.
  */
 int zFMV_Script::UpdateAtTime()
@@ -742,6 +752,8 @@ void CZFMVActionFade::Begin(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionfade-update
  * @recoil-artifact defines .text recoil:function:0x463440: CZFMVActionFade::Update.
+ *
+ *
  * Purpose: composite the captured frame with a timed fade overlay.
  */
 int CZFMVActionFade::Update(double timeSec)
@@ -840,6 +852,8 @@ CZFMVActionPlayAvi::~CZFMVActionPlayAvi()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplayavi-update
  * @recoil-artifact defines .text recoil:function:0x4636d0: CZFMVActionPlayAvi::Update.
+ *
+ *
  * Purpose: advance AVI frame playback, blit the decoded frame, and update surfaces.
  */
 int CZFMVActionPlayAvi::Update(double timeSec)
@@ -879,6 +893,8 @@ int CZFMVActionPlayAvi::Update(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplayavi-begin
  * @recoil-artifact defines .text recoil:function:0x463790: CZFMVActionPlayAvi::Begin.
+ *
+ *
  * Purpose: allocate and initialize the AVI stream and active destination rectangle.
  */
 void CZFMVActionPlayAvi::Begin(double)

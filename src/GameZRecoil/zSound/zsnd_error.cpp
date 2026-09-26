@@ -28,6 +28,8 @@ namespace zSnd {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reportmcierror
  * @recoil-artifact defines .text recoil:function:0x4a3ea0: zSnd::ReportMciError.
+ *
+ *
  * Purpose: print a formatted MCI error message for a source-file line.
  */
 RECOIL_NO_GS int __fastcall ReportMciError(unsigned int mciError, const char* sourceFile, int lineNumber)
@@ -41,6 +43,7 @@ RECOIL_NO_GS int __fastcall ReportMciError(unsigned int mciError, const char* so
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reporta3derror
  * @recoil-artifact defines .text recoil:function:0x4a3ef0: zSnd::ReportA3DError.
+ *
  *
  * Purpose: translate an A3D provider error code into the original diagnostic
  * text and report it through zError.
@@ -240,6 +243,7 @@ int __fastcall ReportA3DError(int a3dError, const char* sourceFile, int sourceLi
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reportdirectsounderror
  * @recoil-artifact defines .text recoil:function:0x4a4330: zSnd::ReportDirectSoundError.
+ * @recoil-match byte
  *
  * Purpose: translate a DirectSound provider error code into the original
  * diagnostic text and report it through zError.

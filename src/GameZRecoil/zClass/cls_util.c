@@ -248,6 +248,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.setnodearraysize
      * @recoil-artifact defines .text recoil:function:0x4518b0: CZClass::SetNodeArraySize.
+     * @recoil-match byte
+     *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: set the core zClass node-array capacity before initialization.
      */
@@ -297,6 +299,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.init
      * @recoil-artifact defines .text recoil:function:0x451900: CZClass::Init
+     * @recoil-match byte
+     *
      * Source owner: engine.zclass.lifecycle_node_array_control.
      * Purpose: initialize zClass node storage and register the GWWorld ZBD handler.
      */
@@ -376,6 +380,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.destroynoderecursive
      * @recoil-artifact defines .text recoil:function:0x451a60: CZUtil::DestroyNodeRecursive.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_util.c.
      * Purpose: recursively remove children, release display/class data, and
      * return nodes to the zClass free list.
@@ -435,6 +441,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodedisplayinstance
      * @recoil-artifact defines .text recoil:function:0x451b20: CZUtil::CopyNodeDisplayInstance
+     * @recoil-match byte
+     *
      * Purpose: copy or clone a source node's display instance into the destination.
      */
     int __fastcall CopyNodeDisplayInstance(CZNodePartial * source, CZNodePartial * dest)
@@ -483,6 +491,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodebasedata
      * @recoil-artifact defines .text recoil:function:0x451bd0: CZUtil::CopyNodeBaseData
+     * @recoil-match byte
+     *
      * Purpose: copy common node flags, callbacks, type, and graphics state.
      */
     int __fastcall CopyNodeBaseData(CZNodePartial * source, CZNodePartial * dest)
@@ -702,6 +712,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copycameranode
      * @recoil-artifact defines .text recoil:function:0x451f70: CZUtil::CopyCameraNode
+     * @recoil-match byte
+     *
      * Purpose: allocate and populate a copied camera node and its copied children.
      */
     CZNodePartial* __fastcall CopyCameraNode(CZNodePartial * source)
@@ -767,6 +779,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copylightnode-unimplemented
      * @recoil-artifact defines .text recoil:function:0x4520c0: CZUtil::CopyLightNode
+     * @recoil-match byte
+     *
      * Purpose: preserve the retail unimplemented light-node copy path.
      */
     CZNodePartial* __fastcall CopyLightNode(CZNodePartial*)
@@ -778,6 +792,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysoundnode-unimplemented
      * @recoil-artifact defines .text recoil:function:0x4520e0: CZUtil::CopySoundNode
+     * @recoil-match byte
+     *
      * Purpose: preserve the retail unimplemented sound-node copy path.
      */
     CZNodePartial* __fastcall CopySoundNode(CZNodePartial*)
@@ -789,6 +805,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyobject3dnode
      * @recoil-artifact defines .text recoil:function:0x452100: CZUtil::CopyObject3DNode
+     * @recoil-match byte
+     *
      * Purpose: allocate and populate a copied Object3D node and its copied children.
      */
     CZNodePartial* __fastcall CopyObject3DNode(CZNodePartial * source)
@@ -863,6 +881,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyanimatenode-unimplemented
      * @recoil-artifact defines .text recoil:function:0x452230: CZUtil::CopyAnimateNode
+     * @recoil-match byte
+     *
      * Purpose: preserve the retail unimplemented animate-node copy path.
      */
     CZNodePartial* __fastcall CopyAnimateNode(CZNodePartial*)
@@ -876,6 +896,7 @@ namespace CZUtil
      * @recoil-artifact defines .text recoil:function:0x452250: CZUtil::CopyLodNode
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.copy-lod-range recoil:function:0x452250
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.copy-lod-range
+     * @recoil-match byte
      *
      * Purpose: allocate and populate a copied LOD node and its copied children.
      * Raw assembly: Pro-reviewed after native VC5 C++ range-estimate variants failed.
@@ -954,6 +975,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copysequencenode-unimplemented
      * @recoil-artifact defines .text recoil:function:0x4523c0: CZUtil::CopySequenceNode
+     * @recoil-match byte
+     *
      * Purpose: preserve the retail unimplemented sequence-node copy path.
      */
     CZNodePartial* __fastcall CopySequenceNode(CZNodePartial*)
@@ -965,6 +988,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copyswitchnode-stub
      * @recoil-artifact defines .text recoil:function:0x4523e0: CZUtil::CopySwitchNode
+     * @recoil-match byte
+     *
      * Purpose: preserve the retail switch-node copy stub behavior.
      */
     CZNodePartial* __fastcall CopySwitchNode(CZNodePartial*)
@@ -976,6 +1001,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodedispatch
      * @recoil-artifact defines .text recoil:function:0x452400: CZUtil::CopyNodeDispatch
+     * @recoil-match byte
+     *
      * Purpose: dispatch node-copy work by class id.
      */
     CZNodePartial* __fastcall CopyNodeDispatch(CZNodePartial * source)
@@ -1033,6 +1060,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynodewithcloneoptions
      * @recoil-artifact defines .text recoil:function:0x452500: CZUtil::CopyNodeWithCloneOptions
+     * @recoil-match byte
+     *
      * Purpose: copy a node while temporarily overriding clone-mode globals.
      */
     CZNodePartial* __fastcall CopyNodeWithCloneOptions(CZNodePartial * source, int cloneDiMode, int diArg0)
@@ -1056,6 +1085,8 @@ namespace CZUtil
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-util.copynode
      * @recoil-artifact defines .text recoil:function:0x452560: CZUtil::CopyNode
+     * @recoil-match byte
+     *
      * Purpose: copy a node while temporarily overriding all display-instance clone options.
      */
     CZNodePartial* __fastcall CopyNode(CZNodePartial * source, int cloneDiMode, int diArg0, int diArg1)
@@ -1087,6 +1118,7 @@ namespace CZBBox
      * @recoil-artifact defines .text recoil:function:0x4525d0: CZBBox::MinMaxToBoundingSphere.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.minmax-radius recoil:function:0x4525d0
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.minmax-radius
+     * @recoil-match byte
      *
      * Purpose: write the min/max bbox center and retail approximate
      * bounding-sphere radius.
@@ -1126,6 +1158,7 @@ namespace CZBBox
      * @recoil-artifact defines .text recoil:function:0x452650: CZBBox::CornersToBoundingSphere.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.corners-radius recoil:function:0x452650
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.corners-radius
+     * @recoil-match byte
      *
      * Purpose: scan eight bbox corners, write the center, and write the
      * retail approximate bounding-sphere radius.

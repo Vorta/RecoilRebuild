@@ -41,6 +41,8 @@ namespace zSndFadeDispatchList {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.pushback
  * @recoil-artifact defines .text recoil:function:0x4a3a80: zSndFadeDispatchList::PushBack.
+ *
+ *
  * Purpose: append a completed fade entry to the dispatch list for completion
  * handling.
  */
@@ -53,6 +55,8 @@ void __fastcall PushBack(zSndFadeEntry* fadeEntry)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeentry-tickandmaybedispatch
  * @recoil-artifact defines .text recoil:function:0x4a3ad0: zSndFadeEntry::UpdateAndQueueCompletion.
+ *
+ *
  * Purpose: advance one fade entry toward its target, apply the backend
  * volume/gain value, and queue completed entries for dispatch.
  */
@@ -100,6 +104,8 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeactivelist-tickall
  * @recoil-artifact defines .text recoil:function:0x4a3c20: zSndFadeActiveList::TickAll.
+ *
+ *
  * Purpose: tick active fades, compact unfinished entries, and delete completed
  * fade-list nodes.
  */
@@ -139,6 +145,8 @@ namespace zSndFadeLists {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.stopallandshutdown
  * @recoil-artifact defines .text recoil:function:0x4a3d20: zSndFadeLists::StopAllAndShutdown.
+ *
+ *
  * Purpose: stop active fade handles and drain both recovered fade lists during
  * sound-system shutdown.
  */
@@ -173,6 +181,8 @@ void __cdecl StopAllAndShutdown()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelist-deletenodeandadvancecursor
  * @recoil-artifact defines .text recoil:function:0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
+ *
+ *
  * Purpose: remove the current fade-list node, release its storage, and advance
  * the caller's cursor to the next node.
  */

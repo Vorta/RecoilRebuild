@@ -174,6 +174,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileOpenMode) == 0x02);
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-initstdlogfiles
  * @recoil-artifact defines .text recoil:function:0x4a5780: RecoilApp::InitStdLogFiles.
  *
+ *
  * Purpose: redirects stdout and stderr to per-run log files and writes their
  * startup banners.
  */
@@ -3046,6 +3047,8 @@ int __fastcall WaitForLocalPlayerColorIndex(int maxWaitSeconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-remote-players-and-spawn-lists
  * @recoil-artifact defines .text recoil:function:0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists.
+ *
+ *
  * Purpose: Clear remote player HUD rows and network spawn-point lists.
  */
 void __cdecl ResetRemotePlayersAndSpawnLists()
@@ -3111,6 +3114,8 @@ void __cdecl UnregisterGameplayPacketHandlers()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-hud-timer-panel-net-state-long-countdown
  * @recoil-artifact defines .text recoil:function:0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown.
+ *
+ *
  * Purpose: Reset the replicated HUD timer state to the long race countdown
  * defaults and update the displayed timer panel.
  */
@@ -3571,6 +3576,8 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reassign-player-colors-and-refresh-rows
  * @recoil-artifact defines .text recoil:function:0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows.
+ *
+ *
  * Purpose: Refresh player-row colors after network color assignment changes.
  */
 int __cdecl ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader*)
@@ -3774,6 +3781,8 @@ int __fastcall HandlePkt0EPlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerL
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-are-all-players-at-lap-target
  * @recoil-artifact defines .text recoil:function:0x433200: GameNet::AreAllPlayersAtLapTarget.
+ *
+ *
  * Purpose: Mark the multiplayer lap-target check as started and report
  * whether every player row has reached the race goal.
  */
@@ -3948,6 +3957,8 @@ int __fastcall HandlePkt0CHudTimerStatusBits(int, NetPkt0C_HudTimerStatusBits* p
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
  * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09PlayerScoreboardSnapshot.
+ *
+ *
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */
 void __cdecl SendPkt09PlayerScoreboardSnapshot()
@@ -5459,6 +5470,8 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-destructor-recoilapp-mfcolemodule
  * @recoil-artifact defines .text recoil:function:0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule.
+ *
+ *
  * Purpose: destroys the app state's chunked queue storage before chaining to the MFC base destructor.
  */
 RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule()
@@ -5469,6 +5482,8 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-initinstance
  * @recoil-artifact defines .text recoil:function:0x4429d0: RecoilApp_MfcOleModule::InitInstance.
+ *
+ *
  * Purpose: create, connect, show, and update the primary Recoil frame window.
  */
 int RecoilApp_MfcOleModule::InitInstance()
@@ -5544,6 +5559,8 @@ inline void PrintEngineInitNonzeroStatus(const char* format, int result)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-engineinit
  * @recoil-artifact defines .text recoil:function:0x442a50: RecoilApp::EngineInit.
+ *
+ *
  * Purpose: initialize core engine subsystems and print their startup status
  * lines before frame timing and input state are reset.
  */
@@ -5623,6 +5640,8 @@ CZRecoilFrame* RecoilApp::GetMainWnd() const
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-startengineandqueuestartupstate
  * @recoil-artifact defines .text recoil:function:0x442c10: RecoilApp::StartEngineAndQueueStartupState.
+ *
+ *
  * Purpose: starts gameplay systems and queues the pending startup app state.
  */
 int RecoilApp::StartEngineAndQueueStartupState()
@@ -5701,6 +5720,8 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
  * @recoil-artifact emits .text recoil:function:0x4430cc: CException catch body.
  * @recoil-artifact emits .text recoil:function:0x4430ea: CException catch continuation.
  * @recoil-artifact emits .text recoil:function:0x4430f3: Common compiler-generated EH epilogue.
+ *
+ *
  * Purpose: runs the app-shell message loop, queued state transitions, and exception dialogs.
  */
 int RecoilApp_MfcOleModule::Run()
@@ -5909,6 +5930,8 @@ RecoilApp_IState* RecoilApp::GetCurrentState() const
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queueswitchcurrentstate
  * @recoil-artifact defines .text recoil:function:0x443160: RecoilApp::QueueSwitchCurrentState.
+ * @recoil-match byte
+ *
  * Purpose: enqueue a switch-current-state request and run the immediate exit/enter callbacks.
  */
 RecoilApp_IState* RecoilApp::QueueSwitchCurrentState(RecoilApp_IState* state, int stateParam)
@@ -5929,6 +5952,8 @@ RecoilApp_IState* RecoilApp::QueueSwitchCurrentState(RecoilApp_IState* state, in
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queuepushstate
  * @recoil-artifact defines .text recoil:function:0x443310: RecoilApp::QueuePushState.
+ * @recoil-match byte
+ *
  * Purpose: enqueue a push-state request and run the pushed state's enter callback.
  */
 RecoilApp_IState* RecoilApp::QueuePushState(RecoilApp_IState* state, int suspendParam)
@@ -5945,6 +5970,8 @@ RecoilApp_IState* RecoilApp::QueuePushState(RecoilApp_IState* state, int suspend
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-queueexitcurrentstate
  * @recoil-artifact defines .text recoil:function:0x4434b0: RecoilApp::QueueExitCurrentState.
+ * @recoil-match byte
+ *
  * Purpose: enqueue an exit-current-state request and run the current state's exit callback.
  */
 RecoilApp_IState* RecoilApp::QueueExitCurrentState(int stateParam)
@@ -5963,6 +5990,8 @@ RecoilApp_IState* RecoilApp::QueueExitCurrentState(int stateParam)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-onidleordispatch
  * @recoil-artifact defines .text recoil:function:0x443650: RecoilApp::OnIdleOrDispatch.
+ *
+ *
  * Purpose: handles idle/dispatch notifications for CD sound and the current state.
  */
 int RecoilApp::OnIdleOrDispatch(unsigned int wParam, unsigned int lParam)
@@ -6489,6 +6518,8 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-static-init
  * @recoil-artifact defines .text recoil:function:0x435a40: RecoilStateSaveLoadTransition::StaticInit.
+ *
+ *
  * Purpose: Constructs the global save/load transition object.
  */
 void __cdecl RecoilStateSaveLoadTransition::StaticInit()
@@ -6499,6 +6530,8 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-register-at-exit
  * @recoil-artifact defines .text recoil:function:0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit.
+ *
+ *
  * Purpose: Registers the save/load transition singleton destructor with atexit.
  */
 void __cdecl RecoilStateSaveLoadTransition::RegisterAtExit()
@@ -6589,6 +6622,8 @@ void HudUiLoadGameDialog::ProcessDialogResult()
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-constructor
  * @recoil-artifact defines .text recoil:function:0x435c80: Save/load state construction.
  * @recoil-artifact emits .rdata recoil:data:0x4d1728: Compiler-generated state dispatch table.
+ *
+ *
  * Purpose: Construct the complete polymorphic save/load state, including its
  * dispatch table, before the application can queue its entry callback.
  */
@@ -6601,6 +6636,8 @@ RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-destructor
  * @recoil-artifact defines .text recoil:function:0x435cc0: Save/load state destruction.
+ *
+ *
  * Purpose: Delete the active save or load dialog before inherited state cleanup.
  */
 RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition()

@@ -209,6 +209,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.alloclink
      * @recoil-artifact defines .text recoil:function:0x44e630: CZTypeList::AllocLink.
+     *
+     *
      * Purpose: allocate or recycle a type-list link while maintaining live
      * link accounting.
      */
@@ -285,6 +287,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingremovals
      * @recoil-artifact defines .text recoil:function:0x44e700: CZTypeList::ProcessPendingRemovals.
+     *
+     *
      * Purpose: unlink deferred-removal entries from one type-list bucket and
      * recycle their list links.
      */
@@ -341,6 +345,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processdeferredwork
      * @recoil-artifact defines .text recoil:function:0x44e920: CZClass::ProcessDeferredWork.
+     *
+     *
      * Purpose: process dirty deferred-removal buckets and then drain pending
      * node frees while deferred work is enabled.
      */
@@ -387,6 +393,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateallbuckets
      * @recoil-artifact defines .text recoil:function:0x44ea70: CZTypeList::UpdateAllBuckets.
+     * @recoil-match byte
+     *
      * Purpose: update each non-empty callback-priority bucket and then flush
      * queued node update work.
      */
@@ -404,6 +412,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatebucket
      * @recoil-artifact defines .text recoil:function:0x44eaa0: CZTypeList::UpdateBucket.
+     * @recoil-match byte
+     *
      * Purpose: run eligible action callbacks in one bucket while deferring
      * list mutations until the pass completes.
      */
@@ -503,6 +513,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences
      * @recoil-artifact defines .text recoil:function:0x44ebe0: CZTypeList::UpdateSequences.
+     *
+     *
      * Purpose: update all non-pending sequence nodes while deferring list
      * mutations during the pass.
      */
@@ -531,6 +543,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateanimations
      * @recoil-artifact defines .text recoil:function:0x44ec30: CZTypeList::UpdateAnimations.
+     *
+     *
      * Purpose: update active animation nodes while deferring list mutations
      * during the pass.
      */
@@ -579,6 +593,7 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.countnodes
      * @recoil-artifact defines .text recoil:function:0x44ec90: CZTypeList::CountNodes.
+     * @recoil-match byte
      *
      * Purpose: count the links currently present in one type-list bucket.
      */
@@ -777,6 +792,8 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.markpendingremoval
      * @recoil-artifact defines .text recoil:function:0x44eed0: CZTypeList::MarkPendingRemoval.
+     *
+     *
      * Purpose: mark a matching type-list link for deferred removal and set
      * the bucket dirty flag.
      */
@@ -807,6 +824,8 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletenodefromlists
      * @recoil-artifact defines .text recoil:function:0x44f000: CZList::DeleteNodeFromLists.
+     *
+     *
      * Purpose: queue a node for removal from every type, callback, and
      * update list that can reference it.
      */
@@ -865,6 +884,8 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletealloftype
      * @recoil-artifact defines .text recoil:function:0x44f120: CZList::DeleteAllOfType.
+     *
+     *
      * Purpose: repeatedly delete every node in one type-list bucket and
      * verify that the bucket is empty afterward.
      */
@@ -916,6 +937,7 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
      * @recoil-artifact defines .text recoil:function:0x44f1d0: CZList::_gwListDeleteANode.
+     * @recoil-match byte
      *
      * Purpose: delete one node according to its class-specific child,
      * ownership, and object-data cleanup rules.
@@ -1163,6 +1185,7 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.renderactivecameras
      * @recoil-artifact defines .text recoil:function:0x44f630: CZList::RenderActiveCameras (GameZRecoil/zClass/List.c).
+     * @recoil-match byte
      *
      * Purpose: walk the active camera bucket and render each enabled camera through
      * the current software or scene-render path.

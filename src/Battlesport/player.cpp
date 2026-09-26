@@ -1904,6 +1904,8 @@ void PlayerRefreshPreviousWeaponControllerHud(PlayerGunFireController* controlle
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-selectmodalstatebymastertype-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-no-authored-globals-touched
  * @recoil-artifact defines .text recoil:function:0x438540: Player::SelectModalStateByMasterType. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; no authored globals touched.
+ * @recoil-match byte
+ *
  * Purpose: select the modal state matching a master type and stop existing modal loop handles before installing it as
  * primary.
  */
@@ -2019,6 +2021,8 @@ void zUtil_SaveGameState::StopModalLoopSfxHandle(int modalSfxIndex)
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemodalloopsfx-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-reads-accepted-g-framedeltatimesec-and-original-inline-helpers-playerfloatfrombits-playerclamp01
  * @recoil-artifact defines .text recoil:function:0x4386c0: Player::UpdateModalLoopSfx. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; reads accepted g_FrameDeltaTimeSec and original inline helpers PlayerFloatFromBits/PlayerClamp01.
+ *
+ *
  * Purpose: maintain modal and master loop SFX handles, blend pitch and enable scales from movement state, and update 3D
  * dispatch positions.
  */
@@ -2688,6 +2692,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildmissionsavedata
  * @recoil-artifact defines .text recoil:function:0x41f010: Player::BuildMissionSaveData
+ *
+ *
  * Purpose: copy the live local-player mission state into the save-section payload.
  */
 void __fastcall BuildMissionSaveData(PlayerMissionSaveData* outData)
@@ -2757,6 +2763,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applymissionsavedata
  * @recoil-artifact defines .text recoil:function:0x41f1d0: Player::ApplyMissionSaveData
+ *
+ *
  * Purpose: restore the live local-player mission state from the save-section payload.
  */
 void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
@@ -2897,6 +2905,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-registersections
  * @recoil-artifact defines .text recoil:function:0x41f5b0: Player::zZarRegisterSections
+ *
+ *
  * BN evidence: resets g_Player_RuntimeInputFlags and registers VehicleList and
  * Player callbacks through zUtil_ZAR::RegisterSectionHandler with sort orders 100
  * and 200.
@@ -3032,6 +3042,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readvehiclelistsection
  * @recoil-artifact defines .text recoil:function:0x41f850: Player::zZarReadVehicleListSection
+ *
+ *
  * BN evidence: __fastcall ZAR data-ready callback; validates the 0x80-byte
  * VehicleList record, finds the save state by root-node token, restores pose,
  * AI, status, visual, and lifecycle fields, and refreshes node state.
@@ -3146,6 +3158,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-shutdownmissionruntime
  * @recoil-artifact defines .text recoil:function:0x41fb80: Player::ShutdownMissionRuntime
+ *
+ *
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
  */
@@ -3210,6 +3224,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-destroysavegamestate
  * @recoil-artifact defines .text recoil:function:0x41fd20: Player::DestroySaveGameState
+ *
+ *
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Tear down a mission save state, its sensor track node, and owned resources.
  */
@@ -3296,6 +3312,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-initmissionruntimefromworldandcamera
  * @recoil-artifact defines .text recoil:function:0x41fe90: Player::InitMissionRuntimeFromWorldAndCamera
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: initialize mission player runtime from world/camera nodes, attach
  * one-time HUD panels, load player/vehicle tuning, create the stealth
@@ -3690,6 +3708,8 @@ namespace Checkpoint {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-checkpoint-instantiatenamedobjects
  * @recoil-artifact defines .text recoil:function:0x420c60: Checkpoint::InstantiateNamedObjects
+ *
+ *
  * Purpose: Resolves checkpoint nodes by name and recursively stamps their race
  * checkpoint flags and callback context.
  */
@@ -3713,6 +3733,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-initstatefromnameandmastercommondata
  * @recoil-artifact defines .text recoil:function:0x420d10: Player::InitStateFromNameAndMasterCommonData
+ *
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a save-state record to master common data by name and
  * initialize the player's common bootstrap state.
@@ -3949,6 +3971,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-bindmodalstatefrommastermodaldata
  * @recoil-artifact defines .text recoil:function:0x421470: Player::BindModalStateFromMasterModalData
+ *
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a modal state to matching master modal data, cache its model
  * nodes, and populate support/collision probe points when needed.
@@ -4017,6 +4041,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-initspawnstatefromprimarymodaldata
  * @recoil-artifact defines .text recoil:function:0x421790: Player::InitSpawnStateFromPrimaryModalData
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: reset spawn-time state from the primary modal data, build world
  * probe-point caches, and align the root node to the sampled surface.
@@ -4050,6 +4076,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-samplegroundandalignroottosurface
  * @recoil-artifact defines .text recoil:function:0x421830: Player::SampleGroundAndAlignRootToSurface
+ *
+ *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: sample ground under the player, update the active variant tag, and
  * optionally pitch/roll the root node to the selected surface normal.
@@ -4132,6 +4160,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-clonetype6nodefromtemplateandrename
  * @recoil-artifact defines .text recoil:function:0x421a40: Player::CloneType6NodeFromTemplateAndRename
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: clone a type-6 template node into the runtime scene and give it a
  * new active runtime name.
@@ -4168,6 +4198,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatpose
  * @recoil-artifact defines .text recoil:function:0x421ab0: Player::CreateFromNamesAtPose
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: create and link a player save state from template/object names at
  * the requested spawn pose.
@@ -4349,6 +4381,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatposegetstate
  * @recoil-artifact defines .text recoil:function:0x421ea0: Player::CreateFromNamesAtPoseGetState
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: create a player from names and return the newly appended save-state
  * tail.
@@ -4454,6 +4488,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastercommondatafromnode
  * @recoil-artifact defines .text recoil:function:0x422170: Player::LoadMasterCommonDataFromNode.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
  * BN evidence: current decompilation shows fastcall ECX=PlayerMasterCommonData,
@@ -4627,6 +4663,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastermodaldatafromnode
  * @recoil-artifact defines .text recoil:function:0x4226d0: Player::LoadMasterModalDataFromNode.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
  * BN evidence: current decompilation shows fastcall ECX=PlayerMasterModalData,
@@ -4859,6 +4897,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-refreshhudfromstate
  * @recoil-artifact defines .text recoil:function:0x4231b0: Player::RefreshHudFromState.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh the HUD weapon, health, mode, damage, and status displays
  * from the current player save-state fields.
@@ -4974,6 +5014,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processpendingcontactqueues
  * @recoil-artifact defines .text recoil:function:0x423460: Player::ProcessPendingContactQueues.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessPendingContactQueues from the recovered
  * Battlesport gameplay source file.
@@ -5048,6 +5090,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildpendingcontactqueues
  * @recoil-artifact defines .text recoil:function:0x4236b0: Player::BuildPendingContactQueues.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::BuildPendingContactQueues from the recovered
  * Battlesport gameplay source file.
@@ -5179,6 +5223,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcontactsforsegments
  * @recoil-artifact defines .text recoil:function:0x423b10: Player::CollectPendingContactsForSegments.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::CollectPendingContactsForSegments from the recovered
  * Battlesport gameplay source file.
@@ -5228,6 +5274,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-classifypendingcontactsforsegment
  * @recoil-artifact defines .text recoil:function:0x423c20: Player::ClassifyPendingContactsForSegment.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ClassifyPendingContactsForSegment from the recovered
  * Battlesport gameplay source file.
@@ -5300,6 +5348,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-selectandresolvepreferredpendingcollisioncontact
  * @recoil-artifact defines .text recoil:function:0x423fc0: Player::SelectAndResolvePreferredPendingCollisionContact.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::SelectAndResolvePreferredPendingCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -5372,6 +5422,8 @@ namespace PlayerPickupContact {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-playerpickupcontact-passescollectiontest
  * @recoil-artifact defines .text recoil:function:0x424150: PlayerPickupContact::PassesCollectionTest.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement PlayerPickupContact::PassesCollectionTest from the recovered
  * Battlesport gameplay source file.
@@ -5452,6 +5504,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingcollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424270: Player::ResolvePendingCollisionContact.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -5587,6 +5641,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-preparependingworldcollisionresponse
  * @recoil-artifact defines .text recoil:function:0x4248e0: Player::PreparePendingWorldCollisionResponse.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::PreparePendingWorldCollisionResponse from the recovered
  * Battlesport gameplay source file.
@@ -5649,6 +5705,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
  * Battlesport gameplay source file.
@@ -5695,6 +5753,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-vec3-fastnormalize
  * @recoil-artifact defines .text recoil:function:0x424bf0: Player::Vec3FastNormalize
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: scale short nonzero contact deltas with the fast approximate
  * square-root normalizer used by collision contact resolution.
@@ -5729,6 +5789,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-constraintounitdistancefrom
  * @recoil-artifact defines .text recoil:function:0x424c90: Player::ConstrainToUnitDistanceFrom
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: constrain a nearby position to the contact resolve distance around
  * a center point.
@@ -5757,6 +5819,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processtransfercontactqueue
  * @recoil-artifact defines .text recoil:function:0x424d00: Player::ProcessTransferContactQueue.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessTransferContactQueue from the recovered
  * Battlesport gameplay source file.
@@ -5802,6 +5866,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-tryresolvependingcollisionprobesweep
  * @recoil-artifact defines .text recoil:function:0x424ed0: Player::TryResolvePendingCollisionProbeSweep.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::TryResolvePendingCollisionProbeSweep from the recovered
  * Battlesport gameplay source file.
@@ -5871,6 +5937,8 @@ namespace Checkpoint {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-checkpoint-updateplayerlapprogressandnotifynet
  * @recoil-artifact defines .text recoil:function:0x425150: Checkpoint::UpdatePlayerLapProgressAndNotifyNet
+ *
+ *
  * Purpose: Marks checkpoint visits, completes laps after all checkpoint flags
  * are set, and notifies networking of lap progress.
  */
@@ -5912,6 +5980,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcollisioncontactsforquadprobe
  * @recoil-artifact defines .text recoil:function:0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::CollectPendingCollisionContactsForQuadProbe from the recovered
  * Battlesport gameplay source file.
@@ -5962,6 +6032,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applypendingcollisionprobevelocity
  * @recoil-artifact defines .text recoil:function:0x425770: Player::ApplyPendingCollisionProbeVelocity.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ApplyPendingCollisionProbeVelocity from the recovered
  * Battlesport gameplay source file.
@@ -6019,6 +6091,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-registergameplaycommandcallbacksandcreateffeffects
  * @recoil-artifact defines .text recoil:function:0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RegisterGameplayCommandCallbacksAndCreateFfEffects from the recovered
  * Battlesport gameplay source file.
@@ -6057,6 +6131,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-ticklocalplayercontrols
  * @recoil-artifact defines .text recoil:function:0x425a20: Player::TickLocalPlayerControls.
+ *
  *
  * Purpose: advance local player control input, camera, movement, weapon, and
  * HUD interaction state for the current frame.
@@ -6364,6 +6439,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-floatsign
  * @recoil-artifact defines .text recoil:function:0x426350: Player::FloatSign.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::FloatSign from the recovered
  * Battlesport gameplay source file.
@@ -6526,6 +6603,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-tickmastertypeandforcefeedback
  * @recoil-artifact defines .text recoil:function:0x4266b0: Player::TickMasterTypeAndForceFeedback.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::TickMasterTypeAndForceFeedback from the recovered
  * Battlesport gameplay source file.
@@ -6581,6 +6660,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypetrack
  * @recoil-artifact defines .text recoil:function:0x426770: Player::UpdateMasterTypeTrack.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeTrack from the recovered
  * Battlesport gameplay source file.
@@ -6806,6 +6887,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover
  * @recoil-artifact defines .text recoil:function:0x427140: Player::UpdateMasterTypeHover.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeHover from the recovered
  * Battlesport gameplay source file.
@@ -6903,6 +6986,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427440: Player::UpdateMasterTypeHoverFromModalProbe.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeHoverFromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -7054,6 +7139,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib
  * @recoil-artifact defines .text recoil:function:0x4279f0: Player::UpdateMasterTypeAmphib.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered
  * Battlesport gameplay source file.
@@ -7178,6 +7265,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -7260,6 +7349,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
  * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered
  * Battlesport gameplay source file.
@@ -7338,6 +7429,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasicortrack-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x428350: Player::UpdateMasterTypeBasicOrTrackFromModalProbe.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrackFromModalProbe from the recovered
  * Battlesport gameplay source file.
@@ -7386,6 +7479,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatebankvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x4283f0: Player::UpdateBankVelocityFromSteerInput.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\player.cpp.
  * Purpose: reimplement Player::UpdateBankVelocityFromSteerInput from the recovered
  * Battlesport gameplay source file.
@@ -7445,6 +7540,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypesub
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
  * Battlesport gameplay source file.
@@ -7560,6 +7657,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubmodewaterprobestate
  * @recoil-artifact defines .text recoil:function:0x4289f0: Player::UpdateSubModeWaterProbeState.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateSubModeWaterProbeState from the recovered
  * Battlesport gameplay source file.
@@ -7657,6 +7756,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
+ *
+ *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
  */
@@ -7699,6 +7800,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-probemodalsampleheights
  * @recoil-artifact defines .text recoil:function:0x428d60: Player::ProbeModalSampleHeights.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source model: bounded Player modal-probe subsystem helper over zUtil_SaveGameState,
  * PlayerModalState, PlayerMasterModalData, accepted zClass/zDI dependencies, and
@@ -7827,6 +7930,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-selectprobesampleheightfromcandidates
  * @recoil-artifact defines .text recoil:function:0x4290f0: Player::SelectProbeSampleHeightFromCandidates.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectProbeSampleHeightFromCandidates from the recovered
  * Battlesport gameplay source file.
@@ -7900,6 +8005,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyamphibspeedoscillation
  * @recoil-artifact defines .text recoil:function:0x429240: Player::ApplyAmphibSpeedOscillation.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered
  * Battlesport gameplay source file.
@@ -8015,6 +8122,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
  * @recoil-artifact defines .text recoil:function:0x429560: Player::RebuildSteerBasisFromMotionAxes.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
  * Battlesport gameplay source file.
@@ -8087,6 +8196,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
  * steering yaw acceleration and clamp it to the active yaw velocity limit.
@@ -8133,6 +8244,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered
  * Battlesport gameplay source file.
@@ -8236,6 +8349,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatebankandturndynamics
  * @recoil-artifact defines .text recoil:function:0x429b40: Player::UpdateBankAndTurnDynamics.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateBankAndTurnDynamics from the recovered
  * Battlesport gameplay source file.
@@ -8288,6 +8403,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computeturnslipdelta
  * @recoil-artifact defines .text recoil:function:0x429d30: Player::ComputeTurnSlipDelta.
+ *
+ *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered
  * Battlesport gameplay source file.
@@ -8643,6 +8760,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatedebugoverlayhud
  * @recoil-artifact defines .text recoil:function:0x42aa50: Player::UpdateDebugOverlayHud.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh weapon HUD values, objective counter text, and the debug
  * overlay lines for the current player save state.
@@ -8748,6 +8867,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypetrack
  * @recoil-artifact defines .text recoil:function:0x42ac90: Player::TransitionToMasterTypeTrack
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter track mode after cooldown and source-mode transition rules
  * allow it.
@@ -8853,6 +8974,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypeamphib
  * @recoil-artifact defines .text recoil:function:0x42aeb0: Player::TransitionToMasterTypeAmphib
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter amphib mode when unlocked, off cooldown, and accepted by the
  * source-mode transition rules.
@@ -8954,6 +9077,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypehover
  * @recoil-artifact defines .text recoil:function:0x42b0f0: Player::TransitionToMasterTypeHover
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter hover mode when unlocked, off cooldown, and accepted by the
  * source-mode transition rules.
@@ -9024,6 +9149,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypesub
  * @recoil-artifact defines .text recoil:function:0x42b2a0: Player::TransitionToMasterTypeSub
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter sub mode after applying gun-slot offsets, transition gates,
  * source-mode cleanup, modal selection, alternate-weapon validation, and FX
@@ -9214,6 +9341,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-reactivatecoptersndnodesifhealthy
  * @recoil-artifact defines .text recoil:function:0x42b5a0: Player::ReactivateCopterSndNodesIfHealthy
+ * @recoil-match byte
+ *
  * Purpose: reactivate each cached copter sound node whose healthy node remains
  * active, then restart the cached chopper sample through the node play handle.
  */
@@ -9248,6 +9377,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-cachedisablecoptersndnodesandstopsample
  * @recoil-artifact defines .text recoil:function:0x42b630: Player::CacheDisableCopterSndNodesAndStopSample
+ *
+ *
  * Purpose: lazily cache the two copter healthy/sound scene nodes, disable the
  * sound nodes, and stop active chopper sample voices.
  */
@@ -9283,6 +9414,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-findnearestthirdpersoncameraprobepoint
  * @recoil-artifact defines .text recoil:function:0x42b6e0: Player::FindNearestThirdPersonCameraProbePoint.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_camera.c.
  * Purpose: reimplement Player::FindNearestThirdPersonCameraProbePoint from the recovered
  * Battlesport gameplay source file.
@@ -9344,6 +9477,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-synclocalposefromrootnode
  * @recoil-artifact defines .text recoil:function:0x42b810: Player::SyncLocalPoseFromRootNode.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SyncLocalPoseFromRootNode from the recovered
  * Battlesport gameplay source file.
@@ -9468,6 +9603,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-setautoturntargetdirfromworldpoint
  * @recoil-artifact defines .text recoil:function:0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SetAutoTurnTargetDirFromWorldPoint from the recovered
  * Battlesport gameplay source file.
@@ -9492,6 +9629,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-asynccommandcallback
  * @recoil-artifact defines .text recoil:function:0x42bb30: Player::AsyncCommandCallback
+ *
+ *
  * Purpose: Dispatches script async command events that toggle HUD/gameplay
  * state, apply debug damage, and spawn debug pickup carrier nodes.
  */
@@ -9712,6 +9851,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatepostmoveenvironment
  * @recoil-artifact defines .text recoil:function:0x42bf90: Player::UpdatePostMoveEnvironment.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdatePostMoveEnvironment from the recovered
  * Battlesport gameplay source file.
@@ -9765,6 +9906,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processenvproberesults
  * @recoil-artifact defines .text recoil:function:0x42c0d0: Player::ProcessEnvProbeResults.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ProcessEnvProbeResults from the recovered
  * Battlesport gameplay source file.
@@ -9849,6 +9992,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateverticalvelocityandtransform
  * @recoil-artifact defines .text recoil:function:0x42c2e0: Player::UpdateVerticalVelocityAndTransform.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateVerticalVelocityAndTransform from the recovered
  * Battlesport gameplay source file.
@@ -9926,6 +10071,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom1probe
  * @recoil-artifact defines .text recoil:function:0x42c520: Player::ComputeSurfaceFrom1Probe.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom1Probe from the recovered
  * Battlesport gameplay source file.
@@ -9961,6 +10108,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom2probes
  * @recoil-artifact defines .text recoil:function:0x42c640: Player::ComputeSurfaceFrom2Probes.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom2Probes from the recovered
  * Battlesport gameplay source file.
@@ -10022,6 +10171,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyterraintilt
  * @recoil-artifact defines .text recoil:function:0x42c8d0: Player::ApplyTerrainTilt.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyTerrainTilt from the recovered
  * Battlesport gameplay source file.
@@ -10069,6 +10220,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom3probes
  * @recoil-artifact defines .text recoil:function:0x42ca40: Player::ComputeSurfaceFrom3Probes.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom3Probes from the recovered
  * Battlesport gameplay source file.
@@ -10102,6 +10255,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resetterraincontactimpulsesandplayimpactsfx
  * @recoil-artifact defines .text recoil:function:0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ResetTerrainContactImpulsesAndPlayImpactSfx from the recovered
  * Battlesport gameplay source file.
@@ -10129,7 +10284,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- *
+ * @recoil-match byte
  *
  * Purpose: Returns the shared mask bits of three environment probe samples.
  */
@@ -10249,6 +10404,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-solveheightonsurface
  * @recoil-artifact defines .text recoil:function:0x42cde0: Player::SolveHeightOnSurface.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SolveHeightOnSurface from the recovered
  * Battlesport gameplay source file.
@@ -10269,6 +10426,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computetrianglenormal
  * @recoil-artifact defines .text recoil:function:0x42ce50: Player::ComputeTriangleNormal.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeTriangleNormal from the recovered
  * Battlesport gameplay source file.
@@ -10329,6 +10488,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildenvironmentproberesult
  * @recoil-artifact defines .text recoil:function:0x42cf90: Player::BuildEnvironmentProbeResult.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::BuildEnvironmentProbeResult from the recovered
  * Battlesport gameplay source file.
@@ -10452,6 +10613,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-findthirdprobeandcomputenormal
  * @recoil-artifact defines .text recoil:function:0x42d320: Player::FindThirdProbeAndComputeNormal.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::FindThirdProbeAndComputeNormal from the recovered
  * Battlesport gameplay source file.
@@ -10544,6 +10707,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyenvironmentproberesult
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered
  * Battlesport gameplay source file.
@@ -10695,6 +10860,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildorientationfromnormal
  * @recoil-artifact defines .text recoil:function:0x42da40: Player::RebuildOrientationFromNormal.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RebuildOrientationFromNormal from the recovered
  * Battlesport gameplay source file.

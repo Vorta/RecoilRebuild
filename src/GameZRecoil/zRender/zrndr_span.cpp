@@ -311,6 +311,7 @@ namespace {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fogtargetcolorstaged-setrgb01clamped
  * @recoil-artifact defines .text recoil:function:0x49b5a0: zRndrFogTargetColorStagedSetRgb01Clamped
+ * @recoil-match byte
  *
  * Purpose: Clamp and stage the pending fog target color, then rebuild its packed 16-bit ramp.
  */
@@ -363,6 +364,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitstagedfogparamsifchanged
  * @recoil-artifact defines .text recoil:function:0x49b710: zRndr::CommitStagedFogParamsIfChanged
+ * @recoil-match byte
  *
  * Purpose: Copy staged fog target parameters into the active fog state when they differ.
  */
@@ -380,6 +382,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-blendpackedcolor565withfoginplace
  * @recoil-artifact defines .text recoil:function:0x49b780: zRndr::BlendPackedColor565WithFogInPlace
+ *
  *
  * Inferred implementation placement: the reviewed renderer fog/span family.
  * The original filename remains unresolved; BN names are navigation labels.
@@ -758,6 +761,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(int texU, int texV, int pixelC
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-masked-16-from-tex16-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49b7e0: Current C++ definition under the canonical compiler settings.
+ *
  *
  * Original function evidence: retail 0x49b7e0 has this portable conditional definition.
  * Purpose: Preserve portable masked tex16 behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -1288,6 +1292,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(int texU, int texV, int pixelCo
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-masked-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49bbf0: Current C++ definition under the canonical compiler settings.
  *
+ *
  * Original function evidence: retail 0x49bbf0 has this portable conditional definition.
  * Purpose: Preserve portable masked palettized behavior when the ESP-pivot raw-assembly exception is disabled.
  */
@@ -1426,6 +1431,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16frompal8to565
  * @recoil-artifact defines .text recoil:function:0x49c020: zRndr::SpanMasked16FromPal8To565
  *
+ *
  * Source-shape evidence: BN's retail body owns the same generic V-shift pal8
  * 565 loop as 0x49c230, including the nonzero source gate, alpha > 3 gate,
  * alpha >= 0xfc palette copy, and destination-word palette lookup in the
@@ -1481,6 +1487,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16fromtex16to565
  * @recoil-artifact defines .text recoil:function:0x49c150: zRndr::SpanMasked16FromTex16To565
  *
+ *
  * Source-shape evidence: BN samples a nonzero tex16 mask and copies it only
  * for alpha >= 0xfc; the partial-alpha branch emits channel math that collapses
  * to preserving the current destination word.
@@ -1514,6 +1521,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8
  * @recoil-artifact defines .text recoil:function:0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
+ *
  *
  * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
  * palette copy path, but the partial-alpha path reloads the current destination
@@ -1555,6 +1563,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
+ *
  *
  * Source-shape evidence: BN inlines the odd tex16 alpha-map scalar path,
  * duplicates one sampled texel into a packed pair, reduces alpha to five bits,
@@ -1635,6 +1644,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
  *
+ *
  * Source-shape evidence: BN matches the tex16 alpha-map odd/pair loop with
  * 555-specific red and green masks in the packed two-pixel blend.
  * Purpose: Alpha-blend 16-bit texture samples into a 555 span using per-texel alpha.
@@ -1713,6 +1723,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
  *
+ *
  * Source-shape evidence: BN samples a 16-bit texel through the active U/V
  * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
  * >= 0xfc, and otherwise blends 565 channels toward the texel.
@@ -1752,6 +1763,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
  *
+ *
  * Source-shape evidence: BN matches the tex16 constant-alpha loop shape with a
  * stricter alpha > 7 gate and 555 red/green/blue channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using the active constant alpha.
@@ -1789,6 +1801,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
+ *
  *
  * Source-shape evidence: BN uses the same active U/V index for tex16 and
  * alpha-map reads, scales the alpha byte by the float stored in
@@ -1839,6 +1852,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
  *
+ *
  * Source-shape evidence: BN matches the tex16 alpha-map scaling loop with a
  * 555-specific alpha > 7 gate and 555 channel masks.
  * Purpose: Blend 16-bit texture samples into a 555 span using scaled alpha-map values.
@@ -1885,6 +1899,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
+ *
  *
  * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
@@ -2084,6 +2099,7 @@ namespace zRndr {
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
  *
+ *
  * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
@@ -2279,6 +2295,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
  *
+ *
  * Source-shape evidence: BN expands each sampled pal8 texel through the active
  * palette before the odd scalar and packed two-pixel 565 alpha-map blend.
  * Purpose: Alpha-blend palettized texture samples into a 565 span using per-texel alpha.
@@ -2354,6 +2371,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
+ *
  *
  * Source-shape evidence: BN matches the pal8 alpha-map odd/pair loop with
  * active-palette expansion and 555-specific packed blend masks.
@@ -2431,6 +2449,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
  *
+ *
  * Source-shape evidence: BN samples an 8-bit texel, expands it through the
  * active palette before the alpha gate, skips only when alpha <= 3, copies for
  * alpha >= 0xfc, and otherwise blends 565 channels toward the palette color.
@@ -2470,6 +2489,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
  *
+ *
  * Source-shape evidence: BN matches the fast pal8 constant-alpha loop shape
  * with alpha <= 7 skip behavior and 555 channel masks.
  * Purpose: Blend palettized texture samples into a 555 span using fast constant alpha.
@@ -2507,6 +2527,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
+ *
  *
  * Source-shape evidence: BN samples pal8 texels and the alpha map through the
  * same active U/V index, expands the texel through the active palette, scales
@@ -2558,6 +2579,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
  *
+ *
  * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
  * active palette expansion and 555-specific alpha > 7 gate.
  * Purpose: Blend palettized texture samples into a 555 span using scaled alpha-map values.
@@ -2606,6 +2628,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
+ *
  *
  * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends
@@ -2813,6 +2836,7 @@ namespace zRndr {
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
  *
+ *
  * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
  * Source-shape evidence: the VC5 x86 path keeps the retail MMX paired-index
@@ -3016,6 +3040,7 @@ namespace zRndr {
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogtarget565-setpackedcolorandramp
  * @recoil-artifact defines .text recoil:function:0x49e0e0: zRndr::FogTarget565SetPackedColorAndRamp
  *
+ *
  * Inferred placement: renderer span family; the original filename is unresolved.
  * Data evidence: stores RGB565 component fields, writes packedColor16 as a
  * 16-bit field, replicates the packed 565 color, and fills packedColorRamp[31..0].
@@ -3044,6 +3069,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmmxsetpixelformatmasks
  * @recoil-artifact defines .text recoil:function:0x49e140: zRndr::SpanMmxSetPixelFormatMasks
+ * @recoil-match byte
  *
  * Purpose: Replicate the active 555/565 pixel-format masks into the four-lane MMX span-mask globals.
  */
@@ -3088,6 +3114,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan565scalar
  * @recoil-artifact defines .text recoil:function:0x49e200: zRndr::FogBlendSpan565Scalar
+ *
  *
  * Purpose: Blend a 565 span with the active fog color using scalar pair processing.
  */
@@ -3142,6 +3169,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan555scalar
  * @recoil-artifact defines .text recoil:function:0x49e300: zRndr::FogBlendSpan555Scalar
+ *
  *
  * Purpose: Blend a 555 span with the active fog color using scalar pair processing.
  */
@@ -3198,6 +3226,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49e400: zRndr::FogBlendSpan565Mmx
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
+ *
  *
  * Source-shape evidence: BN retail keeps scalar edge calls in C++ call shape
  * and uses a narrow MMX quad body over gRndr_SpanShade16_MmxFogFactors and
@@ -3327,6 +3356,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49e560: zRndr::FogBlendSpan555Mmx
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
+ *
  *
  * Source-shape evidence: BN retail matches the 565 scalar-edge/MMX-quad shape
  * with 555 red extraction and packed red terms. The guarded VC5 x86 path keeps
@@ -3736,6 +3766,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(int texU, int texV, int pixelCou
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-copy-16-from-tex16-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49e6c0: Current C++ definition under the canonical compiler settings.
  *
+ *
  * Original function evidence: retail 0x49e6c0 has this portable conditional definition.
  * Purpose: Preserve portable tex16 copy behavior when the ESP-pivot raw-assembly exception is disabled.
  */
@@ -3857,6 +3888,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmmxsettexuvmasksandvshift
  * @recoil-artifact defines .text recoil:function:0x49ea40: zRndr::SpanMmxSetTexUvMasksAndVShift
+ * @recoil-match byte
  *
  * Purpose: Mirror the active texture U/V masks and selected V shift into the two-lane MMX span globals.
  */
@@ -3880,6 +3912,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ea80: zRndr::SpanCopy16FromTex16
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
+ *
  *
  * Source-shape evidence: BN handles an optional unaligned leading texel, sets
  * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
@@ -3991,6 +4024,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
+ *
  *
  * Source-shape evidence: BN matches the generic tex16 copy body with the
  * caller-supplied V shift feeding the MMX packed-index loop and odd tail. This
@@ -4398,6 +4432,7 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(int texU, int texV, int pixelCoun
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-copy-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49edc0: Current C++ definition under the canonical compiler settings.
+ *
  *
  * Original function evidence: retail 0x49edc0 has this portable conditional definition.
  * Purpose: Preserve portable palettized copy behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -4885,6 +4920,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(int texU, int texV, int pixelCou
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-shade-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49f180: Current C++ definition under the canonical compiler settings.
+ *
  *
  * Original function evidence: retail 0x49f180 has this portable conditional definition.
  * Purpose: Preserve portable palettized shade behavior when the ESP-pivot raw-assembly exception is disabled.

@@ -408,6 +408,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodereflistindices
      * @recoil-artifact defines .text recoil:function:0x4543f0: CZZbd::WriteNodeRefListIndices.
+     *
+     *
      * Evidence: BN name/source-file comment and write-node callers convert node
      * pointer lists through the shared scratch buffer before fwrite.
      * Purpose: serialize a node-reference list as node-table indices.
@@ -441,6 +443,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writesinglenodeclassdata
      * @recoil-artifact defines .text recoil:function:0x4544b0: CZZbd::WriteSingleNodeClassData.
+     *
+     *
      * Evidence: BN name/source-file comment and class-id switch serialize the
      * node class payloads and nested node-reference lists.
      * Purpose: write one node's class-specific ZBD payload.
@@ -594,6 +598,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodetable
      * @recoil-artifact defines .text recoil:function:0x454890: CZZbd::WriteNodeTable.
+     *
+     *
      * Evidence: BN name/source-file comment and cls_zbd.c writes copy the node
      * array, append payloads, and patch encoded class-data offsets.
      * Purpose: serialize the live ZBD node table and associated payload blocks.
@@ -663,6 +669,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writezbdfile
      * @recoil-artifact defines .text recoil:function:0x454a50: CZZbd::WriteZBDFile.
+     *
+     *
      * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
      * the header, texture directory, material pool, DI pool, and node table.
      * Purpose: write a GameZ ZBD archive and patch the header offsets.
@@ -725,6 +733,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodereflistindices
      * @recoil-artifact defines .text recoil:function:0x454bf0: CZZbd::ReadNodeRefListIndices.
+     * @recoil-match byte
+     *
      * Evidence: BN name/source-file comment and read-node callers read integer
      * indices into the destination list before resolving node pointers.
      * Purpose: deserialize a node-reference list from node-table indices.
@@ -752,6 +762,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readsinglenodeclassdata
      * @recoil-artifact defines .text recoil:function:0x454c60: CZZbd::ReadSingleNodeClassData.
+     *
+     *
      * Evidence: BN name/source-file comment and class-id switch allocate/read
      * the node class payloads, node-reference lists, and type-list entries.
      * Purpose: read one node's class-specific ZBD payload.
@@ -976,6 +988,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodetable
      * @recoil-artifact defines .text recoil:function:0x455350: CZZbd::ReadNodeTable.
+     *
+     *
      * Evidence: BN name/source-file comment and cls_zbd.c reload path read the
      * node slots, rebuild class payloads, and reconnect world light/sound data.
      * Purpose: deserialize the ZBD node table into the runtime node array.
@@ -1046,6 +1060,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readzbdfile
      * @recoil-artifact defines .text recoil:function:0x455520: CZZbd::ReadZBDFile.
+     *
+     *
      * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
      * texture, material, model, and node-table sections from header offsets.
      * Purpose: read a GameZ ZBD archive into the engine resource state.
@@ -1124,6 +1140,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.openandreadzbdheader
      * @recoil-artifact defines .text recoil:function:0x4556a0: CZZbd::OpenAndReadZBDHeader.
+     *
+     *
      * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
      * this shared header validation before reading ZBD sections.
      * Purpose: open a ZBD file, read its header, and reject bad magic/version.
@@ -1187,6 +1205,8 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesrecursive-local
      * @recoil-artifact defines .text recoil:function:0x4557a0: CZZbd::ReloadDisplayInstancesRecursive_Local.
+     *
+     *
      * Evidence: BN name/source-file comment and recursive caller path seek to
      * the serialized node slot, load the DI entry, and optionally visit children.
      * Purpose: replace one node's display instance from a ZBD and recurse.

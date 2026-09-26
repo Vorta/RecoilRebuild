@@ -162,6 +162,7 @@ namespace CZAnimate
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.sampletransform
      * @recoil-artifact defines .text recoil:function:0x453d20: CZAnimate::SampleTransform
      *
+     *
      * Purpose: sample interpolated rotation, position, and scale keyframe data
      * for the current animation time.
      */

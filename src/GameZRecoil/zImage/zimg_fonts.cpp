@@ -33,6 +33,8 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-fontsloadfrompath
  * @recoil-artifact defines .text recoil:function:0x46efe0: zImage::FontsLoadFromPath.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: load the FONTS node, create font records, load each font image,
  * and build glyph rectangles for the font table.
@@ -96,6 +98,8 @@ int __fastcall FontsLoadFromPath(const char* path)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-buildglyphrects
  * @recoil-artifact defines .text recoil:function:0x46f130: zImage_Font::BuildGlyphRects.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: scan the font image into glyph rectangles and compute the space
  * width used by font text layout.

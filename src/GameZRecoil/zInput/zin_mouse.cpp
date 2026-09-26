@@ -19,6 +19,8 @@ struct DipropDwordInit {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyclientcursorpostoos
  * @recoil-artifact defines .text recoil:function:0x470020: zInput::MouseApplyClientCursorPosToOS.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Convert the cached client mouse point to screen coordinates and
  * apply it through the Win32 cursor provider.
@@ -35,6 +37,8 @@ void __cdecl MouseApplyClientCursorPosToOS()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-updateclientrectandcenter
  * @recoil-artifact defines .text recoil:function:0x470060: zInput::MouseUpdateClientRectAndCenter.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
  * scaling factors from the current input window client rectangle.
@@ -51,6 +55,8 @@ void __cdecl MouseUpdateClientRectAndCenter()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setnormalizedcursorpos
  * @recoil-artifact defines .text recoil:function:0x4700a0: zInput::MouseSetNormalizedCursorPos.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Clamp normalized cursor coordinates, convert them to cached client
  * coordinates, and apply the cursor position to the OS.
@@ -82,6 +88,8 @@ void __stdcall MouseSetNormalizedCursorPos(float normX, float normY)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-recentercursor
  * @recoil-artifact defines .text recoil:function:0x470150: zInput::MouseRecenterCursor.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Move the cached mouse cursor position to the client center and
  * apply the position to the OS cursor.
@@ -113,6 +121,8 @@ void __cdecl MouseRecenterCursorX()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-isinitialized
  * @recoil-artifact defines .text recoil:function:0x470190: zInput::MouseIsInitialized.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
  */
@@ -124,6 +134,8 @@ int __cdecl MouseIsInitialized()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setclientsizeandcenter
  * @recoil-artifact defines .text recoil:function:0x4701a0: zInput::MouseSetClientSizeAndCenter.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Store explicit mouse client dimensions, signed center coordinates,
  * and inverse center scale factors.
@@ -141,6 +153,8 @@ void __fastcall MouseSetClientSizeAndCenter(int width, int height)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-initdevice
  * @recoil-artifact defines .text recoil:function:0x4701f0: zInput::MouseInitDevice.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Create and configure the DirectInput mouse device, initialize the
  * shared mouse snapshot, acquire the device, and center the cursor state.
@@ -181,6 +195,7 @@ int __cdecl MouseInitDevice()
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getbuttontransitionstate
  * @recoil-artifact defines .text recoil:function:0x4702e0: zInput::MouseGetButtonTransitionState.
  *
+ *
  * Purpose: compare the current and previous mouse button byte and return the
  * transition mask for a 1-based mouse button number.
  *
@@ -208,6 +223,8 @@ int __fastcall MouseGetButtonTransitionState(int buttonNumber)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-updateacquirestate
  * @recoil-artifact defines .text recoil:function:0x470310: zInput::MouseUpdateAcquireState.
+ * @recoil-match byte
+ *
  * Purpose: Applies the current mouse-active flag to the DirectInput device
  * acquisition state and flips the flag only on real provider failures.
  *
@@ -239,6 +256,8 @@ void __cdecl MouseUpdateAcquireState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-shutdowndevice
  * @recoil-artifact defines .text recoil:function:0x470360: zInput::MouseShutdownDevice.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: deactivate mouse acquisition, release the mouse DirectInput device,
  * and clear mouse device lifetime state.
@@ -289,6 +308,8 @@ void __fastcall MousePollAndStoreState(unsigned char dispatchCallbacks)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-pollstate
  * @recoil-artifact defines .text recoil:function:0x4703c0: zInput::MousePollState.
+ *
+ *
  * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
  */
 int __fastcall MousePollState(unsigned char dispatchCallbacks)
@@ -333,6 +354,7 @@ int __fastcall MousePollState(unsigned char dispatchCallbacks)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyaccumulateddelta
  * @recoil-artifact defines .text recoil:function:0x4704f0: zInput::MouseApplyAccumulatedDelta.
+ *
  *
  * Purpose: apply mouse sensitivity to accumulated deltas, update the client
  * cursor snapshot, clamp non-wrapping movement, and refresh normalized fields.
@@ -405,6 +427,7 @@ int __fastcall MouseGetStateSnapshot(MouseStateSnapshot* outState)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-resettransitionstate
  * @recoil-artifact defines .text recoil:function:0x470610: zInput::MouseResetTransitionState.
+ *
  *
  * Purpose: copy current mouse state into previous state, clear transition deltas,
  * and refresh the derived mouse snapshot when mouse input is initialized.

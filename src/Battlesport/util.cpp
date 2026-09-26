@@ -55,6 +55,8 @@ namespace HudUi {
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-hudui-showmessagebox
  * @recoil-artifact defines .text recoil:function:0x438350: HudUi::ShowMessageBox.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
  * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
  * Source model: HudUiMessageBoxDialog.cpp entrypoint wrapper that constructs
@@ -77,6 +79,7 @@ int __fastcall ShowMessageBox(const char* messageText, const char* titleText, vo
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-init
  * @recoil-artifact defines .text recoil:function:0x4383e0: zUtilSaveGameStateListInit.
+ *
  *
  * Purpose: initialize a save-state list sentinel and allocate zeroed player
  * state storage for the owning save-game state.
@@ -102,6 +105,7 @@ zUtil_SaveGameState* __fastcall zUtilSaveGameStateListInit(zUtil_SaveGameState* 
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestate-freeownedresources
  * @recoil-artifact defines .text recoil:function:0x438430: zUtil_SaveGameState::FreeOwnedResources
+ *
  *
  * Purpose: detach save-state back-references, free modal-state nodes, and
  * release the owned player-state storage.

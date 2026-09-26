@@ -2773,7 +2773,7 @@ typedef HudUiShieldMessageWidget HudUiShieldMessageWidgetState;
  * references Draw at 0x40f040 as the only derived override found for this
  * class.
  */
-struct HudUiTimerPanelFloat : HudUiPanel {
+struct HudUiTimerPanelFloat : HudUiPanelSimple {
     float sampleElapsedSec;
     float displayValue;
     float sampleFrameCount;
@@ -2817,7 +2817,7 @@ struct HudUiStatsListElement : HudUiElement {
     HudUiTriplet* triplet;
 };
 
-struct HudUiTimerPanel : HudUiPanel {
+struct HudUiTimerPanel : HudUiPanelSimple {
     float elapsedSeconds;
     int stopped;
     int secondsStep;
@@ -2847,11 +2847,11 @@ struct HudUiCounterTextPanel : HudUiPanelSimple {
  */
 struct HudUiScoreboardEntry {
     HudUiScoreboardEntry()
-        : score(0)
-        , lapCount(0)
-        , playerColorPackedRgb(0)
     {
         displayName[0] = 0;
+        score = 0;
+        lapCount = 0;
+        playerColorPackedRgb = 0;
     }
     int playerKey;
     char displayName[0x40];

@@ -212,6 +212,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.setviewdistance
      * @recoil-artifact defines .text recoil:function:0x449ba0: CZCamera::SetViewDistance.
+     *
+     *
      * Purpose: configure adaptive camera clip-distance scaling from view distance.
      */
     void __fastcall SetViewDistance(int enableAutoClip, float distance)
@@ -227,6 +229,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameranew
      * @recoil-artifact defines .text recoil:function:0x449be0: CZCamera::gwCameraNew.
+     *
+     *
      * Purpose: allocate and initialize a camera node and its class data.
      */
     CZNodePartial* __cdecl gwCameraNew()
@@ -260,6 +264,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameraaddchild
      * @recoil-artifact defines .text recoil:function:0x449c90: CZCamera::gwCameraAddChild.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
      * Purpose: validate camera parent/child inputs before using the generic
      * zClass listA/listB child-link routine.
@@ -281,6 +287,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameraremovechild
      * @recoil-artifact defines .text recoil:function:0x449cd0: CZCamera::gwCameraRemoveChild.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
      * Purpose: validate camera parent/child inputs before using the generic
      * zClass listA/listB child-unlink routine.
@@ -313,6 +321,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetflagbit0
      * @recoil-artifact defines .text recoil:function:0x449d20: CZCamera::gwCameraSetFlagBit0.
+     *
+     *
      * Camera data flag bit 0 gates the zSound listener-state update in
      * BuildWorldTransform.
      * Purpose: validate a camera node and set or clear camera flag bit 0.
@@ -377,6 +387,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetworld
      * @recoil-artifact defines .text recoil:function:0x449dd0: CZCamera::gwCameraSetWorld.
+     * @recoil-match byte
+     *
      * Purpose: validate camera and world nodes before assigning the camera world.
      */
     gwCameraSetWorld(CZNodePartial * camera, CZNodePartial * world)
@@ -456,6 +468,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetposition
      * @recoil-artifact defines .text recoil:function:0x449ea0: CZCamera::gwCameraSetPosition.
+     *
+     *
      * Purpose: set the camera position offset and dirty dependent transforms.
      */
     gwCameraSetPosition(CZNodePartial * camera, float x, float y, float z)
@@ -507,6 +521,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslate
      * @recoil-artifact defines .text recoil:function:0x449fb0: CZCamera::gwCameraTranslate.
+     *
+     *
      * Purpose: translate the camera position offset and dirty dependent transforms.
      */
     gwCameraTranslate(CZNodePartial * camera, float dx, float dy, float dz)
@@ -532,6 +548,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetposition
      * @recoil-artifact defines .text recoil:function:0x44a060: CZCamera::gwCameraGetPosition.
+     *
+     *
      * Purpose: return the camera position offset components.
      */
     gwCameraGetPosition(CZNodePartial * camera, float* outX, float* outY, float* outZ)
@@ -552,6 +570,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasettarget
      * @recoil-artifact defines .text recoil:function:0x44a0f0: CZCamera::gwCameraSetTarget.
+     *
+     *
      * Purpose: set the selected camera target vector and update children.
      */
     gwCameraSetTarget(CZNodePartial * camera, float x, float y, float z)
@@ -577,6 +597,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslatetarget
      * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslateTarget.
+     *
+     *
      * Purpose: translate the selected camera target vector and update children.
      */
     gwCameraTranslateTarget(CZNodePartial * camera, float dx, float dy, float dz)
@@ -602,6 +624,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragettarget
      * @recoil-artifact defines .text recoil:function:0x44a250: CZCamera::gwCameraGetTarget.
+     *
+     *
      * Purpose: return the selected camera target vector components.
      */
     gwCameraGetTarget(CZNodePartial * camera, float* outX, float* outY, float* outZ)
@@ -623,6 +647,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetnearfarclip
      * @recoil-artifact defines .text recoil:function:0x44a2f0: CZCamera::gwCameraSetNearFarClip.
+     *
+     *
      * Purpose: store near/far clip distances and dirty frustum vectors.
      */
     gwCameraSetNearFarClip(CZNodePartial * camera, float nearClip, float farClip)
@@ -643,6 +669,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetnearfarclip
      * @recoil-artifact defines .text recoil:function:0x44a380: CZCamera::gwCameraGetNearFarClip.
+     *
+     *
      * Purpose: return the camera near/far clip distances.
      */
     gwCameraGetNearFarClip(CZNodePartial * camera, float* outNear, float* outFar)
@@ -662,6 +690,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetviewport
      * @recoil-artifact defines .text recoil:function:0x44a410: CZCamera::gwCameraSetViewport.
+     *
+     *
      * Purpose: update viewport dimensions and derived frustum scale values.
      */
     gwCameraSetViewport(CZNodePartial * camera, float viewportWidth, float viewportHeight)
@@ -702,6 +732,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetviewport
      * @recoil-artifact defines .text recoil:function:0x44a580: CZCamera::gwCameraGetViewport.
+     *
+     *
      * Purpose: return the camera viewport dimensions.
      */
     gwCameraGetViewport(CZNodePartial * camera, float* outWidth, float* outHeight)
@@ -721,6 +753,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetfov
      * @recoil-artifact defines .text recoil:function:0x44a610: CZCamera::gwCameraSetFOV.
+     *
+     *
      * Purpose: set camera frustum dimensions and derived projection scale values.
      */
     gwCameraSetFOV(CZNodePartial * camera, float fovX, float fovY)
@@ -754,6 +788,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetfov
      * @recoil-artifact defines .text recoil:function:0x44a760: CZCamera::gwCameraGetFOV.
+     *
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
      * Touched diagnostic string data: 0x4dd9d4, 0x4dd9bc, 0x4ddd44,
      * and 0x4ddd68.
@@ -777,6 +813,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetclipdistance
      * @recoil-artifact defines .text recoil:function:0x44a7f0: CZCamera::gwCameraGetClipDistance.
+     *
+     *
      * Purpose: return the camera clip distance.
      */
     gwCameraGetClipDistance(CZNodePartial * camera, float* outClipDistance)
@@ -795,6 +833,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetclipdistance
      * @recoil-artifact defines .text recoil:function:0x44a870: CZCamera::gwCameraSetClipDistance.
+     *
+     *
      * Purpose: store the camera clip distance and inverse squared distance.
      */
     gwCameraSetClipDistance(CZNodePartial * camera, float clipDistance)
@@ -814,6 +854,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasethorizon
      * @recoil-artifact defines .text recoil:function:0x44a910: CZCamera::gwCameraSetHorizon.
+     *
+     *
      * Purpose: assign the horizon node that follows the camera position.
      */
     gwCameraSetHorizon(CZNodePartial * camera, CZNodePartial * horizonNode)
@@ -832,6 +874,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasethorizonxz
      * @recoil-artifact defines .text recoil:function:0x44a980: CZCamera::gwCameraSetHorizonXZ.
+     *
+     *
      * Purpose: assign the horizon node that follows camera X/Z position.
      */
     gwCameraSetHorizonXZ(CZNodePartial * camera, CZNodePartial * horizonXZNode)
@@ -849,6 +893,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameraupdate
      * @recoil-artifact defines .text recoil:function:0x44a9f0: CZCamera::gwCameraUpdate.
+     * @recoil-match byte
+     *
      * Purpose: validate the camera node and run the camera update implementation.
      */
     int __fastcall gwCameraUpdate(CZNodePartial * camera)
@@ -869,6 +915,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.updateimpl
      * @recoil-artifact defines .text recoil:function:0x44aa30: CZCamera::UpdateImpl.
+     *
+     *
      * Purpose: rebuild camera transforms, frustum planes, and clip centers.
      */
     int __fastcall UpdateImpl(CZNodePartial * camera, zVec3 * posOffset)
@@ -927,6 +975,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildworldtransform
      * @recoil-artifact defines .text recoil:function:0x44abf0: CZCamera::BuildWorldTransform.
+     *
+     *
      * Purpose: build the camera world transform and update the zSound
      * listener bridge previous-position state.
      */
@@ -990,6 +1040,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44ada0
      * @recoil-artifact defines .text recoil:function:0x44ada0: CZCamera::RenderTraverse.
+     *
+     *
      * Purpose: frustum-test and render a camera node traversal branch.
      */
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
@@ -1072,6 +1124,7 @@ namespace CZSound
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44af60
      * @recoil-artifact defines .text recoil:function:0x44af60: CZSound::RenderTraverse
+     *
      *
      * Purpose: cull a sound node, push its local transform, render the node and
      * children, and restore traversal state.
@@ -1156,6 +1209,8 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b140
      * @recoil-artifact defines .text recoil:function:0x44b140: CZLight::RenderTraverse
+     *
+     *
      * Purpose: cull an enabled light node, push render-bounds context when
      * needed, apply local transform, render the node subtree, and restore state.
      */
@@ -1657,6 +1712,7 @@ namespace CZAnimate
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b710
      * @recoil-artifact defines .text recoil:function:0x44b710: CZAnimate::RenderTraverse
      *
+     *
      * Purpose: cull an animate node, push its animated transform when active,
      * render the node and children, and restore traversal state.
      */
@@ -1745,6 +1801,7 @@ namespace CZLod
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b8c0
      * @recoil-artifact defines .text recoil:function:0x44b8c0: CZLod::RenderTraverse
+     *
      *
      * Purpose: cull and render an LOD node, applying range, scale, alpha, and
      * vertex-alpha fades while maintaining the render traversal stacks.
@@ -1950,6 +2007,7 @@ namespace CZSequence
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44bea0
      * @recoil-artifact defines .text recoil:function:0x44bea0: CZSequence::RenderTraverse
      *
+     *
      * Purpose: cull an active sequence node, push traversal state, and render
      * only the currently selected child entry.
      */
@@ -2014,6 +2072,7 @@ namespace CZSwitch
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44bfb0
      * @recoil-artifact defines .text recoil:function:0x44bfb0: CZSwitch::RenderTraverse
      *
+     *
      * Purpose: cull the switch node, push the clip mask, and render only the
      * active child-mask entries.
      */
@@ -2075,6 +2134,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwnoderenderdispatch
      * @recoil-artifact defines .text recoil:function:0x44c0e0: CZClass::gwNodeRenderDispatch.
+     *
+     *
      * Purpose: route visible scene nodes to the class-specific render
      * traversal after variant-tag filtering.
      */
@@ -2114,6 +2175,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.fastanglexz
      * @recoil-artifact defines .text recoil:function:0x44c1b0: CZCamera::FastAngleXZ.
+     *
+     *
      * Purpose: approximate the XZ-plane angle between two points.
      */
     float __fastcall FastAngleXZ(zVec3 * point1, zVec3 * point2)
@@ -2144,6 +2207,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.findconvexhullxz
      * @recoil-artifact defines .text recoil:function:0x44c230: CZCamera::FindConvexHullXZ.
+     *
+     *
      * Purpose: build the XZ convex hull ordering for frustum footprint points.
      */
     int __fastcall FindConvexHullXZ(zVec3 * points, int count)
@@ -2215,6 +2280,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtiles
      * @recoil-artifact defines .text recoil:function:0x44c3c0: CZCamera::BuildFrustumGridTiles
+     *
+     *
      * Purpose: build clamped in-world frustum grid rings from the active
      * camera footprint.
      */
@@ -2422,6 +2489,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtilesfromparams
      * @recoil-artifact defines .text recoil:function:0x44c8e0: CZCamera::BuildFrustumGridTilesFromParams
+     *
+     *
      * Purpose: build frustum grid rings while preserving raw out-of-bounds
      * grid offsets for wrapped/clamped world positions.
      */
@@ -2673,6 +2742,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderfrustumgridtiles
      * @recoil-artifact defines .text recoil:function:0x44ce70: CZCamera::RenderFrustumGridTiles.
+     *
+     *
      * Purpose: render world grid tiles selected by the camera frustum.
      */
     int __fastcall RenderFrustumGridTiles(
@@ -2823,6 +2894,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetvarianttagoverride
      * @recoil-artifact defines .text recoil:function:0x44d260: CZCamera::gwCameraSetVariantTagOverride.
+     *
+     *
      * Purpose: validate and store the camera variant tag override.
      */
     gwCameraSetVariantTagOverride(CZNodePartial * camera, zTag4Partial * variantTag)
@@ -2897,6 +2970,8 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderscene
      * @recoil-artifact defines .text recoil:function:0x44d3a0: CZCamera::RenderScene.
+     *
+     *
      * Purpose: update camera scene state and render the active world.
      */
     RenderScene(CZNodePartial * camera, int updateFxPass3Local)
@@ -2990,6 +3065,8 @@ namespace CZCamera
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.zvideo-sw-renderframe
  * @recoil-artifact defines .text recoil:function:0x44d600: zVideo_sw::RenderFrame.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Data evidence: BN writes the render-frame active view context at 0x5398fc,
  * updates the active variant tag at 0x5398f8, dispatches the three renderer

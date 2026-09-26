@@ -2218,6 +2218,8 @@ static int zVideoTestSpherePlane(zVec3* delta, zVec3* normal, float radius, int 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-init
  * @recoil-artifact defines .text recoil:function:0x475c40: zModelDisplayInit
+ *
+ *
  * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
  */
 int __cdecl zModelDisplayInit()
@@ -2322,6 +2324,8 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-init
      * @recoil-artifact defines .text recoil:function:0x475e70: zModel::Init
+     *
+     *
      * Purpose: initialize zModel material and display-instance pools and choose the render path.
      */
     int __cdecl Init()
@@ -2384,6 +2388,8 @@ namespace zModel_Display
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdown
      * @recoil-artifact defines .text recoil:function:0x475fa0: zModel_Display::Shutdown
+     * @recoil-match byte
+     *
      * Purpose: shut down display materials and release the display-instance pool.
      */
     int __cdecl Shutdown()
@@ -2407,6 +2413,8 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setdisplayinstancepoolcapacity
      * @recoil-artifact defines .text recoil:function:0x475ff0: zModel::SetDisplayInstancePoolCapacity
+     * @recoil-match byte
+     *
      * Purpose: set the display-instance pool capacity before zModel initialization.
      */
     void __fastcall SetDisplayInstancePoolCapacity(int capacity)
@@ -2523,6 +2531,8 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setditextureworldpermeter
      * @recoil-artifact defines .text recoil:function:0x4760d0: zModel::SetDiTextureWorldPerMeter
+     * @recoil-match byte
+     *
      * Purpose: enable display-instance texture scrolling and store its U/V rates.
      */
     int __fastcall
@@ -2545,6 +2555,7 @@ namespace zClipAlt
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-setsourcerect
      * @recoil-artifact defines .text recoil:function:0x476120: zClipAlt::SetSourceRect.
+     *
      *
      * Purpose: cache the source rectangle extents used to remap alternate clipped
      * points into the active target rectangle.
@@ -2688,6 +2699,8 @@ namespace zTag4
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-ztag4-clear
      * @recoil-artifact defines .text recoil:function:0x476320: zTag4::Clear
+     *
+     *
      * Purpose: reset a variant tag set to the empty sentinel state.
      */
     void __fastcall Clear(zTag4Partial * tag)
@@ -2732,6 +2745,8 @@ namespace VariantTag
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-varianttag-tagsoverlap
      * @recoil-artifact defines .text recoil:function:0x476370: VariantTag::TagsOverlap
+     *
+     *
      * Purpose: test whether two variant tag sets pass the active filter.
      */
     int __fastcall TagsOverlap(const zTag4Partial* tagA, const zTag4Partial* tagB)
@@ -2907,6 +2922,7 @@ namespace zClipAlt
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-remappointxyinplace
      * @recoil-artifact defines .text recoil:function:0x4766a0: zClipAlt::RemapPointXYInPlace
      *
+     *
      * Purpose: reject a point outside the alternate clip rectangle or remap its XY
      * coordinates into source-rectangle space in place.
      */
@@ -2929,6 +2945,8 @@ namespace zScene
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zscene-testprojectedspherevisible
      * @recoil-artifact defines .text recoil:function:0x476700: zScene::TestProjectedSphereVisible
+     *
+     *
      * Purpose: project a bounding sphere and test representative span-buffer columns for visibility.
      */
     int __fastcall TestProjectedSphereVisible(zVec3 * center, float radius)
@@ -3056,6 +3074,8 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zdi-evalboundingspherelightingflags
      * @recoil-artifact defines .text recoil:function:0x476a50: zDi::EvalBoundingSphereLightingFlags
+     *
+     *
      * Purpose: evaluate fog, active-light, and lens-flare visibility flags for a display instance.
      */
     void __fastcall EvalBoundingSphereLightingFlags(
@@ -3147,6 +3167,8 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodesoftware
      * @recoil-artifact defines .text recoil:function:0x476cf0: zModel::RenderNodeSoftware
+     *
+     *
      * Purpose: render a display-instance node through the software renderer path.
      */
     void __fastcall RenderNodeSoftware(CZNodePartial * node, int clipMask)
@@ -3511,6 +3533,8 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodehardware
      * @recoil-artifact defines .text recoil:function:0x477b30: zModel::RenderNodeHardware
+     *
+     *
      * Purpose: render a display-instance node through the hardware renderer path.
      */
     void __fastcall RenderNodeHardware(CZNodePartial * node, int clipMask)
@@ -4037,6 +4061,8 @@ namespace zModel
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-frustumtestsphereclipmask
  * @recoil-artifact defines .text recoil:function:0x478c70: zVideoFrustumTestSphereClipMask.
+ *
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zModel/zModel_Display.cpp.
  * Purpose: reject or clip a sphere against the active view frustum planes.
  *
@@ -4137,6 +4163,8 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-instance-updatescrollingtexturesifneeded
  * @recoil-artifact defines .text recoil:function:0x478fc0: zModelInstanceUpdateScrollingTexturesIfNeeded
+ *
+ *
  * Purpose: update all scrolling-texture surface entries once per video frame.
  */
 int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePartial* instance)
@@ -4171,6 +4199,8 @@ int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePart
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-renderpointqueueentry
  * @recoil-artifact defines .text recoil:function:0x479020: zModelRenderPointQueueEntry
+ *
+ *
  * Purpose: project and submit one display-instance point/lens-flare queue entry.
  */
 void __fastcall
@@ -4213,6 +4243,8 @@ zModelRenderPointQueueEntry(const zVec3* pointPos, int packedColor16, zModel_Poi
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-instance-updatescrollingtextures
  * @recoil-artifact defines .text recoil:function:0x4791c0: zModelInstanceUpdateScrollingTextures
+ *
+ *
  * Purpose: advance scrolling texture UVs for one surface entry and wrap them into range.
  */
 void __fastcall zModelInstanceUpdateScrollingTextures(
@@ -4306,6 +4338,8 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-optcatalog-applydamagemaskstamponhit
      * @recoil-artifact defines .text recoil:function:0x479660: OptCatalog::ApplyDamageMaskStampOnHit
+     *
+     *
      * Purpose: stamp the active damage mask onto an eligible OptCatalog hit surface.
      */
     void __fastcall ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial * hitEvent)
@@ -4553,6 +4587,8 @@ int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void* slotPtr)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-setactiveviewcontext
  * @recoil-artifact defines .text recoil:function:0x479ce0: zVideoSetActiveViewContext.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Data evidence: BN stores the supplied camera context into the projection
  * context cache at 0x576214, updates gClipRect_Primary at 0x576218, and writes
@@ -4655,6 +4691,7 @@ namespace zClipAlt
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-settargetrect
      * @recoil-artifact defines .text recoil:function:0x479f90: zClipAlt::SetTargetRect
      *
+     *
      * Purpose: configure the alternate clipping rectangle and source-to-target
      * coordinate remap scale and bias.
      */
@@ -4693,6 +4730,8 @@ namespace zClipAlt
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-updateprojectionstatefromcameradata
  * @recoil-artifact defines .text recoil:function:0x47a0c0: zVideoUpdateProjectionStateFromCameraData.
+ *
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: provide the recovered zVideoUpdateProjectionStateFromCameraData behavior.
  */
@@ -4754,6 +4793,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-nouv
      * @recoil-artifact defines .text recoil:function:0x47a200: zClipRect::ClipPolyZRange_NoUV
+     *
+     *
      * Purpose: Clip the scratch polygon vertex stream against the configured Z range without attributes.
      */
     int __fastcall ClipPolyZRange_NoUV(zClipRectPartial * clipRect, int* vertexCount)
@@ -4837,6 +4878,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-nouv-withattribs
      * @recoil-artifact defines .text recoil:function:0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
+     *
+     *
      * Purpose: Clip the scratch polygon vertex stream against the configured Z range while preserving three attributes.
      */
     int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial * clipRect, int* vertexCount)
@@ -4941,6 +4984,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz
      * @recoil-artifact defines .text recoil:function:0x47aa80: zClipRect::ClipPolyNearZ
+     *
+     *
      * Purpose: Clip the scratch polygon vertex and UV streams against the configured near Z plane.
      */
     int __fastcall ClipPolyNearZ(zClipRectPartial * clipRect, int* vertexCount)
@@ -5042,6 +5087,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz-withattr0
      * @recoil-artifact defines .text recoil:function:0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
+     *
+     *
      * Purpose: Clip the scratch polygon vertex, UV, and first-attribute streams against near Z.
      */
     int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial * clipRect, int* vertexCount)
@@ -5144,6 +5191,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-alt
      * @recoil-artifact defines .text recoil:function:0x47b540: zClipRect::ClipPoly_NoUV_Alt
+     *
+     *
      * Purpose: Clip the active polygon vertex stream against enabled XY bounds without UVs.
      */
     int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial * clipRect, int* vertexCount)
@@ -5346,6 +5395,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-withattr012-alt
      * @recoil-artifact defines .text recoil:function:0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
+     *
+     *
      * Purpose: Clip active polygon vertex and three-attribute streams against enabled XY bounds.
      */
     int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial * clipRect, int* vertexCount)
@@ -5680,6 +5731,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv
      * @recoil-artifact defines .text recoil:function:0x47cdc0: zClipRect::ClipPoly_NoUV
+     *
+     *
      * Purpose: Clip the primary polygon vertex stream against enabled XY bounds without UVs.
      */
     int __fastcall ClipPoly_NoUV(zClipRectPartial * clipRect, int* vertexCount)
@@ -5882,6 +5935,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly
      * @recoil-artifact defines .text recoil:function:0x47d3f0: zClipRect::ClipPoly
+     *
+     *
      * Purpose: Clip active polygon vertex and UV streams against enabled XY bounds.
      */
     int __fastcall ClipPoly(zClipRectPartial * clipRect, int* vertexCount)
@@ -6136,6 +6191,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-withattr0-alt
      * @recoil-artifact defines .text recoil:function:0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
+     *
+     *
      * Purpose: Clip the active polygon vertex and first-attribute streams against enabled XY bounds.
      */
     int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial * clipRect, int* vertexCount)
@@ -6382,6 +6439,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-withattr012
      * @recoil-artifact defines .text recoil:function:0x47e900: zClipRect::ClipPolyZRange_WithAttr012
+     *
+     *
      * Purpose: Clip the scratch polygon vertex, UV, and three-attribute streams against the Z range.
      */
     int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial * clipRect, int* vertexCount)
@@ -6496,6 +6555,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-withattr012
      * @recoil-artifact defines .text recoil:function:0x47efd0: zClipRect::ClipPoly_WithAttr012
+     *
+     *
      * Purpose: Clip active polygon vertex, UV, and three-attribute streams against enabled XY bounds.
      */
     int __fastcall ClipPoly_WithAttr012(zClipRectPartial * clipRect, int* vertexCount)
@@ -6882,6 +6943,8 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-trivialrejectpolyxy
      * @recoil-artifact defines .text recoil:function:0x4803b0: zClipRect::TrivialRejectPolyXY
+     *
+     *
      * Evidence: Current BN/status show this as a leaf zClipRect namespace helper over g_Clip_PolyVerts.
      * Purpose: Reject polygons whose active vertices all fall outside one enabled XY clip plane.
      */
@@ -6950,6 +7013,7 @@ namespace zModel
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-updatesmallpolyrejectthresholds
      * @recoil-artifact defines .text recoil:function:0x4804c0: zModel::UpdateSmallPolyRejectThresholds
      *
+     *
      * Purpose: cache the doubled and twenty-times small-polygon reject-area
      * thresholds used by projected model clipping.
      */
@@ -6966,6 +7030,7 @@ namespace zReader
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zreader-findglobalstringprefixindex
      * @recoil-artifact defines .text recoil:function:0x4804e0: zReader::FindGlobalStringPrefixIndex
+     *
      *
      * Purpose: find the global string-table prefix that matches the start of a
      * reader token and is followed by the token end or whitespace.

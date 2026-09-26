@@ -241,6 +241,8 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadconfigresources
  * @recoil-artifact defines .text recoil:function:0x4558f0: zDEClient::LoadConfigResources.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: load declient.zrd crater and quicksand resource defaults, bind the
  * active camera, and register feature reload callbacks.
@@ -483,6 +485,8 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(zModel_MaterialPar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-shutdownglobals
  * @recoil-artifact defines .text recoil:function:0x455e40: zDEClient::ShutdownGlobals.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: clear feature runtime state, free loaded quicksand and crater
  * config arrays, and mark quicksand resources shut down.

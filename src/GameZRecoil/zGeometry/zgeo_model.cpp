@@ -56,6 +56,8 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findorcreaterandomdebugmaterial
  * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
+ *
+ *
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */
 zModel_MaterialPartial* __cdecl FindOrCreateRandomDebugMaterial()
@@ -80,6 +82,8 @@ zModel_MaterialPartial* __cdecl FindOrCreateRandomDebugMaterial()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addpolygontodi
  * @recoil-artifact defines .text recoil:function:0x46a770: zGeometry_Model::AddPolygonToDi
+ * @recoil-match byte
+ *
  * Purpose: validate a generated polygon, choose a debug material when needed,
  * and forward the point list to the DI polygon sink.
  */
@@ -110,6 +114,8 @@ AddPolygonToDi(zDiPartial* di, int pointCount, zVec3* points, zModel_MaterialPar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-buildpolygonuvlist
  * @recoil-artifact defines .text recoil:function:0x46a7f0: zGeometry_Model::BuildPolygonUvList
+ *
+ *
  * Purpose: Allocate and fill clipped polygon UVs from the source polygon UV basis.
  */
 zClipUV* __fastcall
@@ -161,6 +167,8 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-solveuvaxiscoefficientsxz
  * @recoil-artifact defines .text recoil:function:0x46a8e0: zGeometry_Polygon::SolveUvAxisCoefficientsXZ
+ *
+ *
  * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
  */
 void __fastcall SolveUvAxisCoefficientsXZ(
@@ -310,6 +318,8 @@ int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial* clipPolygon, zVec3
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-upsertpointlistxy
  * @recoil-artifact defines .text recoil:function:0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
+ *
+ *
  * Purpose: Update matching clip-polygon points and insert candidate points that lie on clip-polygon edges.
  */
 int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int pointCount, zVec3* points)
@@ -356,6 +366,8 @@ int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findpointinsertionedgexyindex
  * @recoil-artifact defines .text recoil:function:0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
+ *
+ *
  * Purpose: Find the clip-polygon edge that contains a candidate point in XY.
  */
 int __fastcall FindPointInsertionEdgeXYIndex(zGeometry_ClipPolygonPartial* clipPolygon, zVec3* point)
@@ -541,6 +553,8 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-snappointsnearnodemodelxy
  * @recoil-artifact defines .text recoil:function:0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
+ *
+ *
  * Purpose: Snap clip polygon points to nearby model polygon edges in XY space.
  */
 int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolygon, zGeometry_ClipPatchNodeView* node)
@@ -634,6 +648,8 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-clippatch
  * @recoil-artifact defines .text recoil:function:0x46b1f0: zGeometry_Model::ClipPatch
+ *
+ *
  * Purpose: Clip an outline against visible feature-grid nodes and build patch output.
  */
 int __fastcall ClipPatch(
@@ -830,6 +846,8 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-processnodepolygonsetxy
  * @recoil-artifact defines .text recoil:function:0x46b550: zGeometry_ClipPolygon::ProcessNodePolygonSetXY
+ *
+ *
  * Purpose: Process a node polygon set against the clip polygon in XY space.
  */
 int __fastcall ProcessNodePolygonSetXY(
@@ -876,6 +894,8 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-getlinearbufferofpolygonvertices
  * @recoil-artifact defines .text recoil:function:0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
+ *
+ *
  * Purpose: Expand a model polygon's indexed vertices into a linear point buffer.
  */
 zVec3* __fastcall
@@ -895,6 +915,8 @@ GetLinearBufferOfPolygonVertices(zModel_DrawBatchBasePartial* model, zModel_Poly
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-processclippatchnode
  * @recoil-artifact defines .text recoil:function:0x46b6d0: zGeometry_Model::ProcessClipPatchNode
+ *
+ *
  * Purpose: Clip one model node against the active patch polygon and return DI output.
  */
 int __fastcall
@@ -1096,6 +1118,8 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addpointlistpolygontodi
  * @recoil-artifact defines .text recoil:function:0x46ba90: zGeometry_Model::AddPointListPolygonToDi
+ *
+ *
  * Purpose: add a clipped child polygon to a DI, rebuilding UVs from the source
  * model polygon when UV basis data is present.
  */
@@ -1184,6 +1208,8 @@ int __fastcall AddIndexedPolygonToDi(zDiPartial* di, zModel_DrawBatchBasePartial
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-isfullyinsideclippolygonxy
  * @recoil-artifact defines .text recoil:function:0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
+ *
+ *
  * Purpose: Test whether every model polygon lies fully inside the clip polygon.
  */
 int __fastcall IsFullyInsideClipPolygonXY(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatchBasePartial* model)

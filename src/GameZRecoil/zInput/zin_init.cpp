@@ -98,6 +98,8 @@ void __cdecl GlobalStateAtExitDestructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstatedestructor
  * @recoil-artifact defines .text recoil:function:0x471a20: zInput_GlobalState::Destructor.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly drains the overlay free-list, drains the auxiliary block-list,
  * clears both list heads plus stack head/reserved/depth, and leaves the block
@@ -170,6 +172,8 @@ void __cdecl OnAppDeactivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-onappactivate
  * @recoil-artifact defines .text recoil:function:0x471b20: zInput::OnAppActivate.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: resume suspended input devices when a window is active, then mark
  * the mouse active and update DirectInput acquisition state.
@@ -194,6 +198,8 @@ void __cdecl OnAppActivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-init
  * @recoil-artifact defines .text recoil:function:0x471b50: zInput::Init.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: initialize DirectInput, clear device status state, create keyboard,
  * mouse, and joystick devices, then acquire keyboard and mouse poll refs.
@@ -230,6 +236,8 @@ int __fastcall Init(HWND hWnd, HINSTANCE hInstance)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-shutdown
  * @recoil-artifact defines .text recoil:function:0x471c10: zInput::Shutdown.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: shut down joystick, keyboard, mouse, and DirectInput state, then
  * clear the input window handle.
@@ -273,6 +281,8 @@ void __cdecl ResetAllTransitionState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-mouse-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c60: zInput::MouseIsUnsuspended.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the mouse suspend bit in the zInput device registry
  * is clear.
@@ -285,6 +295,8 @@ int __cdecl MouseIsUnsuspended()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-joystick-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c70: zInput::JoystickIsUnsuspended.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the joystick suspend bit in the zInput device
  * registry is clear.
@@ -298,6 +310,8 @@ int __cdecl JoystickIsUnsuspended()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-zinput-keyboard-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c80: zInputKeyboardIsUnsuspended.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the keyboard device registry suspend bit is clear.
  *
@@ -354,6 +368,8 @@ inline void __fastcall BindMapOverlayDeleteNodeList(zInput_BindMapOverlayStackNo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-mouse-resumefromsuspend
  * @recoil-artifact defines .text recoil:function:0x471c90: zInput::MouseResumeFromSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset mouse transition state if it was suspended, then clear the
  * mouse suspend bit.
@@ -373,6 +389,8 @@ void __cdecl MouseResumeFromSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-joystick-resumefromsuspend
  * @recoil-artifact defines .text recoil:function:0x471cb0: zInput::JoystickResumeFromSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset joystick transition state if it was suspended, then clear the
  * joystick suspend bit.
@@ -392,6 +410,8 @@ void __cdecl JoystickResumeFromSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-keyboard-resumefromsuspend
  * @recoil-artifact defines .text recoil:function:0x471cd0: zInput::KeyboardResumeFromSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: reset keyboard transition state if it was suspended, then clear the
  * keyboard suspend bit.
@@ -411,6 +431,8 @@ void __cdecl KeyboardResumeFromSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-mouse-suspend
  * @recoil-artifact defines .text recoil:function:0x471cf0: zInput::MouseSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the mouse suspend bit in the zInput device registry.
  */
@@ -422,6 +444,8 @@ void __cdecl MouseSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-joystick-suspend
  * @recoil-artifact defines .text recoil:function:0x471d00: zInput::JoystickSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the joystick suspend bit in the zInput device registry.
  */
@@ -433,6 +457,8 @@ void __cdecl JoystickSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-keyboard-suspend
  * @recoil-artifact defines .text recoil:function:0x471d10: zInput::KeyboardSuspend.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: set the keyboard suspend bit in the zInput device registry.
  */
@@ -444,6 +470,8 @@ void __cdecl KeyboardSuspend()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-keyboard-addref
  * @recoil-artifact defines .text recoil:function:0x471d20: zInput::KeyboardAddRef.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the keyboard polling reference count and reset transition
  * state when the first active reference is acquired.
@@ -463,6 +491,8 @@ int __cdecl KeyboardAddRef()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-di-addjoystickref
  * @recoil-artifact defines .text recoil:function:0x471d50: zInput::DIAddJoystickRef.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the joystick polling reference count and reset transition
  * state when the first active reference is acquired.
@@ -482,6 +512,8 @@ int __cdecl DIAddJoystickRef()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-di-releasejoystickref
  * @recoil-artifact defines .text recoil:function:0x471d80: zInput::DIReleaseJoystickRef.
+ *
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Decrement the joystick polling reference count without underflow.
  */
@@ -499,6 +531,8 @@ int __cdecl DIReleaseJoystickRef()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-mouse-addref
  * @recoil-artifact defines .text recoil:function:0x471da0: zInput::MouseAddRef.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Increment the mouse polling reference count and reset transition
  * state when the first active reference is acquired.
@@ -518,6 +552,8 @@ int __cdecl MouseAddRef()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-di-getjoystickrefcount
  * @recoil-artifact defines .text recoil:function:0x471dd0: zInput::DIGetJoystickRefCount.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Return the current joystick polling reference count.
  */
@@ -529,6 +565,8 @@ int __cdecl DIGetJoystickRefCount()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-pollactivedevices
  * @recoil-artifact defines .text recoil:function:0x471de0: zInput::PollActiveDevices.
+ * @recoil-match byte
+ *
  * Purpose: Poll enabled mouse, joystick, and keyboard devices with the caller's dispatch mode.
  */
 void __fastcall PollActiveDevices(unsigned char dispatchCallbacks)

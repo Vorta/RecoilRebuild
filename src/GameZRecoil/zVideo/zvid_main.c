@@ -1558,6 +1558,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepixels
      * @recoil-artifact defines .text recoil:function:0x4a6710: zVideo::GetSwSurfacePixels.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the current locked software surface pixel pointer.
      *
@@ -1585,6 +1587,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfaceheight
      * @recoil-artifact defines .text recoil:function:0x4a6730: zVideo::GetSwSurfaceHeight.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached software surface height.
      *
@@ -1598,6 +1602,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepitch
      * @recoil-artifact defines .text recoil:function:0x4a6740: zVideo::GetSwSurfacePitch.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached software surface pitch.
      *
@@ -1648,6 +1654,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonswbuffer
      * @recoil-artifact defines .text recoil:function:0x4a6770: zVideo::RunPostprocessOnSwBuffer.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: provide the recovered zVideo::RunPostprocessOnSwBuffer behavior.
      */
@@ -1684,6 +1692,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacelockedflag
      * @recoil-artifact defines .text recoil:function:0x4a67e0: zVideo::GetSwSurfaceLockedFlag.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns whether the software surface state currently holds a lock.
      *
@@ -1697,6 +1707,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepixels
      * @recoil-artifact defines .text recoil:function:0x4a67f0: zVideo::GetPrimarySurfacePixels.
+     *
+     *
      * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
      */
     void* __cdecl GetPrimarySurfacePixels()
@@ -1720,6 +1732,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfaceheight
      * @recoil-artifact defines .text recoil:function:0x4a6810: zVideo::GetPrimarySurfaceHeight.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached primary surface height.
      *
@@ -1734,6 +1748,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepitch
      * @recoil-artifact defines .text recoil:function:0x4a6820: zVideo::GetPrimarySurfacePitch.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached primary surface pitch.
      *
@@ -1761,6 +1777,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonprimarybuffer
      * @recoil-artifact defines .text recoil:function:0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
+     *
+     *
      * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
      */
     int __cdecl RunPostprocessOnPrimaryBuffer()
@@ -1849,6 +1867,8 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-loadpalettefileandapplybrightness
      * @recoil-artifact defines .text recoil:function:0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: provide the recovered zVideo::LoadPaletteFileAndApplyBrightness behavior.
      */
@@ -2000,6 +2020,8 @@ namespace zVideo_dd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-preparewindowformode
      * @recoil-artifact defines .text recoil:function:0x4a6930: zVideo_dd::PrepareWindowForMode.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: switch the main window to fullscreen DirectDraw style and snapshot
      * the system palette when the desktop is palettized.

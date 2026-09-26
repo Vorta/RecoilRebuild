@@ -74,6 +74,8 @@ int __cdecl Shutdown();
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.init
  * @recoil-artifact defines .text recoil:function:0x4a20d0: zSndCd::Init.
+ *
+ *
  * Purpose: Open the MCI CD device, cache track metadata, and build the CD track list.
  */
 RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
@@ -197,6 +199,8 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.resettrackstate
  * @recoil-artifact defines .text recoil:function:0x4a2490: zSndCd::ResetTrackState.
+ *
+ *
  * Purpose: Reset cached CD play-from/current/play-to positions to track one.
  */
 int __cdecl ResetTrackState()
@@ -211,6 +215,8 @@ int __cdecl ResetTrackState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a24d0: zSndCd::Shutdown.
+ *
+ *
  * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
  * release configured track-list entries.
  */
@@ -264,6 +270,8 @@ int __fastcall PlayTrackWithMode(int trackIndex, int playbackMode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.applyplaybackmode
  * @recoil-artifact defines .text recoil:function:0x4a2600: zSndCd::ApplyPlaybackMode.
+ *
+ *
  * Purpose: Apply the requested CD playback mode and issue the MCI play command.
  */
 RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
@@ -309,6 +317,8 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.onmcinotify
  * @recoil-artifact defines .text recoil:function:0x4a26b0: zSndCd::OnMciNotify.
+ *
+ *
  * Purpose: Restart looping CD playback when the MCI notify callback completes.
  */
 void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
@@ -324,6 +334,8 @@ void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.stop
  * @recoil-artifact defines .text recoil:function:0x4a26f0: zSndCd::Stop.
+ *
+ *
  * Purpose: stop the current MCI CD playback and reset the cached track state.
  */
 RECOIL_NO_GS int __cdecl Stop()
@@ -347,6 +359,8 @@ RECOIL_NO_GS int __cdecl Stop()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.playtrack
  * @recoil-artifact defines .text recoil:function:0x4a2750: zSndCd::PlayTrack.
+ *
+ *
  * Purpose: Seek to a CD track and reset cached playback state for that track.
  */
 RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
@@ -374,6 +388,8 @@ RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.isstereoauxenabled
  * @recoil-artifact defines .text recoil:function:0x4a27d0: zSndCd::IsStereoAuxEnabled.
+ *
+ *
  * Purpose: report whether CD audio has an initialized stereo AUX mixer.
  */
 int __cdecl IsStereoAuxEnabled()
@@ -392,6 +408,8 @@ int __cdecl IsStereoAuxEnabled()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.getvolume
  * @recoil-artifact defines .text recoil:function:0x4a27f0: zSndCd::GetVolume.
+ *
+ *
  * Purpose: read the AUX mixer volume into mono or stereo output channels.
  */
 int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secondaryVolumeOut)
@@ -427,6 +445,8 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
+ *
+ *
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */
 int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryVolume)
@@ -456,6 +476,8 @@ int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryV
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.gettrackcount
  * @recoil-artifact defines .text recoil:function:0x4a2930: zSndCd::GetTrackCount.
+ *
+ *
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */
 int __cdecl GetTrackCount()

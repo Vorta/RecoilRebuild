@@ -36,6 +36,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.init
      * @recoil-artifact defines .text recoil:function:0x460020: zEffect::Init.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: reset the runtime effect manager and initialize zEffect animation
      * state.
@@ -71,6 +73,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.initfrompath
      * @recoil-artifact defines .text recoil:function:0x460070: zEffect::InitFromPath.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: load runtime effect templates from a zReader tree and prepare the
      * runtime free list and texture cycling data.
@@ -172,6 +176,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.reset
      * @recoil-artifact defines .text recoil:function:0x460330: zEffect::Reset.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: free loaded runtime template data, delete recycled effect nodes,
      * destroy the free list, and reinitialize zEffect state.

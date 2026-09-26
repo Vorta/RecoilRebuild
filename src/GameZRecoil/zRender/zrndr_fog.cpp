@@ -23,6 +23,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogcolor-setrgb01clamped
  * @recoil-artifact defines .text recoil:function:0x49b1e0: zRndr::FogColorSetRgb01Clamped
+ * @recoil-match byte
  *
  * Purpose: Clamp and commit the active fog color, then rebuild its packed 16-bit ramp.
  */
@@ -76,6 +77,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-setfogtargetcolorrgb01clamped
  * @recoil-artifact defines .text recoil:function:0x49b350: zRndr::SetFogTargetColorRgb01Clamped
+ * @recoil-match byte
  *
  * Purpose: Clamp and commit the immediate fog target color, then rebuild its packed 16-bit ramp.
  */
@@ -129,6 +131,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitdirectfogparamsifchanged
  * @recoil-artifact defines .text recoil:function:0x49b4c0: zRndr::CommitDirectFogParamsIfChanged
+ * @recoil-match byte
  *
  * Purpose: Copy direct fog target parameters into the active fog state when they differ.
  */
@@ -146,6 +149,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-commitfogcolorparamsifchanged
  * @recoil-artifact defines .text recoil:function:0x49b530: zRndr::CommitFogColorParamsIfChanged
+ * @recoil-match byte
  *
  * Purpose: Copy fog color parameters into the active fog state when they differ.
  */

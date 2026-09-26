@@ -56,6 +56,8 @@ static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-reset
  * @recoil-artifact defines .text recoil:function:0x4a5670: Time::Reset.
+ *
+ *
  * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
  */
 void __cdecl Reset()
@@ -73,6 +75,8 @@ void __cdecl Reset()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-tick-time-cpp
  * @recoil-artifact defines .text recoil:function:0x4a56d0: Time::Tick (Time.cpp).
+ *
+ *
  * Purpose: Advances scaled and unscaled frame time, applying the configured maximum-delta clamp.
  */
 void __cdecl Tick()

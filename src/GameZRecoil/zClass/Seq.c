@@ -29,6 +29,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequencenew
      * @recoil-artifact defines .text recoil:function:0x453ee0: CZSequence::gwSequenceNew
+     * @recoil-match byte
      *
      * Purpose: allocate a sequence node, attach zeroed sequence class data,
      * seed the forward step, and register the node with the type list.
@@ -52,6 +53,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequenceaddchild
      * @recoil-artifact defines .text recoil:function:0x453f40: CZSequence::gwSequenceAddChild
+     *
      *
      * Purpose: append a child node, grow the sequence entry storage, and insert
      * the child delay record at the requested sequence index.
@@ -103,6 +105,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-removechild
      * @recoil-artifact defines .text recoil:function:0x454000: CZSequence::RemoveChild
+     * @recoil-match byte
      *
      * Purpose: remove a child from both the zClass child list and the sequence
      * entry list, then clamp the active index back to the first entry if needed.
@@ -153,6 +156,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setactive
      * @recoil-artifact defines .text recoil:function:0x4540c0: CZSequence::SetActive
+     * @recoil-match byte
      *
      * Purpose: set whether the sequence advances and renders its active child.
      */
@@ -178,6 +182,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setrepeat
      * @recoil-artifact defines .text recoil:function:0x454100: CZSequence::SetRepeat
+     * @recoil-match byte
      *
      * Purpose: set whether the sequence remains active when traversal reaches
      * either end of the entry list.
@@ -204,6 +209,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setloop
      * @recoil-artifact defines .text recoil:function:0x454140: CZSequence::SetLoop
+     * @recoil-match byte
      *
      * Purpose: set whether sequence traversal wraps at the entry-list bounds
      * instead of reversing direction.
@@ -230,6 +236,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-setpause
      * @recoil-artifact defines .text recoil:function:0x454180: CZSequence::SetPause
+     * @recoil-match byte
      *
      * Purpose: set the pause flag that suppresses time advancement while
      * keeping the sequence active state unchanged.
@@ -256,6 +263,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-update
      * @recoil-artifact defines .text recoil:function:0x4541c0: CZSequence::Update
+     *
      *
      * Purpose: accumulate frame time and advance the active sequence entry,
      * applying repeat, wrap, and direction-reversal behavior at the bounds.
@@ -339,6 +347,8 @@ namespace CZLod
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
      * @recoil-artifact defines .text recoil:function:0x4542a0: CZLod::gwLodNew.
+     *
+     *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
      *

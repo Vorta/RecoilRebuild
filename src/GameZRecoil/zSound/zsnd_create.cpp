@@ -71,6 +71,7 @@ int __fastcall zSndSample::InitFromWaveData(zSndWaveData* waveData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata-a3d
  * @recoil-artifact defines .text recoil:function:0x4a2ec0: zSndSample::InitFromWaveDataA3D.
+ * @recoil-match byte
  *
  * Evidence: BN source comment and functional target evidence place the A3D WAV
  * upload path in zsnd_create.cpp, with NewSource, SetWaveFormat,
@@ -184,6 +185,7 @@ int __fastcall zSndSample::InitFromWaveDataA3D(zSndWaveData* waveData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata-directsound
  * @recoil-artifact defines .text recoil:function:0x4a3180: zSndSample::InitFromWaveDataDirectSound.
+ *
  *
  * Evidence: BN source comment and assembly show the DirectSound path in
  * zsnd_create.cpp with a 20-byte legacy buffer descriptor, provider calls
@@ -328,6 +330,7 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(zSndWaveData* waveData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-lockbackendbuffers
  * @recoil-artifact defines .text recoil:function:0x4a34e0: zSndSample::LockBackendBuffers.
+ * @recoil-match byte
  *
  * Evidence: BN assembly dispatches active backend 0 to the DirectSound Lock
  * slot and active backend 1 to the A3D Lock slot, with zsnd_create.cpp error
@@ -374,6 +377,7 @@ int __fastcall zSndSample::LockBackendBuffers(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-unlockbackendbuffers
  * @recoil-artifact defines .text recoil:function:0x4a3590: zSndSample::UnlockBackendBuffers.
+ * @recoil-match byte
  *
  * Evidence: BN assembly dispatches active backend 0 to the DirectSound Unlock
  * slot and active backend 1 to the A3D commit-write slot, with zsnd_create.cpp
@@ -518,6 +522,7 @@ int zSndSample::DestroyOwnedData()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-createqueuedstreamingsample
  * @recoil-artifact defines .text recoil:function:0x4a3850: zSndSampleCreateQueuedStreamingSample.
+ *
  *
  * Evidence: BN assembly allocates a zeroed zSndSample, constructs a temporary
  * zSndWaveData around caller-owned PCM storage, dispatches InitFromWaveData,

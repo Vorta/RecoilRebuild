@@ -28,6 +28,8 @@ char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-exitprocesswithcleanup
  * @recoil-artifact defines .text recoil:function:0x4a5980: zSys::ExitProcessWithCleanup.
+ *
+ *
  * Purpose: Runs shutdown cleanup hooks, closes CRT streams, and terminates the process.
  * Retail keeps VC5's unreachable pop/ret epilogue after the noreturn ExitProcess import.
  */
@@ -77,6 +79,8 @@ int __cdecl zVid::QueryCachedClientRectUpdateMaskIf3dfx()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-findfileondrivetype
  * @recoil-artifact defines .text recoil:function:0x4a59e0: zSys::FindFileOnDriveType.
+ *
+ *
  * Purpose: Scans logical drives of a requested type and returns the first path containing a file.
  */
 RECOIL_NO_GS char* __fastcall zSys::FindFileOnDriveType(int driveType, const char* relativePath, int)
@@ -143,6 +147,8 @@ namespace zLoc {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-loadmessagesdll
  * @recoil-artifact defines .text recoil:function:0x4a5ad0: zLoc::LoadMessagesDll.
+ * @recoil-match byte
+ *
  * Purpose: Loads the localization messages DLL and resolves its ZLocGetID export.
  */
 int __fastcall LoadMessagesDll(const char* dllPath)
@@ -160,6 +166,8 @@ int __fastcall LoadMessagesDll(const char* dllPath)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-unloadmessagesdll
  * @recoil-artifact defines .text recoil:function:0x4a5b00: zLoc::UnloadMessagesDll.
+ * @recoil-match byte
+ *
  * Purpose: Releases the loaded localization messages DLL and clears the cached module handle.
  */
 void __cdecl UnloadMessagesDll()
@@ -207,6 +215,8 @@ char* __fastcall ResolveMessageKeyOrFallback(const char* key)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-formatmessage
  * @recoil-artifact defines .text recoil:function:0x4a5b60: zLoc::FormatMessage.
+ *
+ *
  * Purpose: Formats a message resource from the loaded DLL into a caller-provided buffer.
  */
 unsigned int FormatMessage(char* outBuffer, int maxChars, unsigned int messageId, ...)

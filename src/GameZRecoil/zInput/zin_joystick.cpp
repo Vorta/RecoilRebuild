@@ -124,6 +124,8 @@ const int kDiInputLost = (int)(0x8007001e);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-initjoystickdevice
  * @recoil-artifact defines .text recoil:function:0x471e40: zInput::DIInitJoystickDevice.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Enumerate and configure the DirectInput joystick device, cache
  * capabilities, apply startup axis ranges, acquire the device, and mark it initialized.
@@ -183,6 +185,8 @@ int __fastcall DIInitJoystickDevice(HWND hwnd)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-enumdevicescallback-selectfirstjoystick
  * @recoil-artifact defines .text recoil:function:0x471f60: zInput::DIEnumDevicesCallbackSelectFirstJoystick.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Create the first enumerated joystick device and store the upgraded
  * IDirectInputDevice2A pointer for zInput joystick setup.
@@ -203,6 +207,8 @@ int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(const DIDeviceInstance* i
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-acquirejoystickdevice
  * @recoil-artifact defines .text recoil:function:0x471fb0: zInput::DIAcquireJoystickDevice.
+ * @recoil-match byte
+ *
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
 int __cdecl DIAcquireJoystickDevice()
@@ -218,6 +224,8 @@ int __cdecl DIAcquireJoystickDevice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-applyaxisconfig
  * @recoil-artifact defines .text recoil:function:0x471fd0: zInput::DIApplyAxisConfig.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply the recovered four-axis joystick range and deadzone
  * configuration to the active DirectInput joystick device.
@@ -275,6 +283,8 @@ int __fastcall DIApplyAxisConfig(JoystickAxisConfig* axisCfg)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisdeadzone
  * @recoil-artifact defines .text recoil:function:0x4721a0: zInput::DISetAxisDeadzone.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis deadzone property by object offset.
  */
@@ -299,6 +309,8 @@ int __fastcall DISetAxisDeadzone(int axisOffset, int deadzone)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-setaxisrange
  * @recoil-artifact defines .text recoil:function:0x4721e0: zInput::DISetAxisRange.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Apply one DirectInput axis range property by object offset.
  */
@@ -325,6 +337,8 @@ int __fastcall DISetAxisRange(int axisOffset, int rangeMin, int rangeMax)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getaxisrange
  * @recoil-artifact defines .text recoil:function:0x472230: zInput::DIGetAxisRange.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Read one DirectInput axis range property by object offset.
  */
@@ -352,6 +366,8 @@ int __fastcall DIGetAxisRange(int axisOffset, int* pOutMin, int* pOutMax)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.joystick-shutdowndevice
  * @recoil-artifact defines .text recoil:function:0x472280: zInput::JoystickShutdownDevice.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: unacquire and release the joystick DirectInput device during zInput
  * shutdown.
@@ -375,6 +391,8 @@ int __cdecl JoystickShutdownDevice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-isjoystickdeviceready
  * @recoil-artifact defines .text recoil:function:0x4722b0: zInput::DIIsJoystickDeviceReady.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Report whether joystick input is initialized and has an active
  * DirectInput device pointer.
@@ -387,6 +405,7 @@ int __cdecl DIIsJoystickDeviceReady()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-polljoystickstate
  * @recoil-artifact defines .text recoil:function:0x4722c0: zInput::DIPollJoystickState.
+ *
  *
  * Purpose: poll the DirectInput joystick, normalize absent axes, and update
  * the current/previous joystick state snapshots.
@@ -434,6 +453,7 @@ DIJOYSTATE2* __fastcall DIPollJoystickState(unsigned char dispatchCallbacks)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getcurrentstate
  * @recoil-artifact defines .text recoil:function:0x472390: zInput::DIGetCurrentState.
+ * @recoil-match byte
  *
  * Purpose: return the current DirectInput joystick state snapshot.
  */
@@ -445,6 +465,8 @@ DIJOYSTATE2* __cdecl DIGetCurrentState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-getbuttontransitionstate
  * @recoil-artifact defines .text recoil:function:0x4723a0: zInput::DIGetButtonTransitionState.
+ * @recoil-match byte
+ *
  * Purpose: Return the pressed, held, released, or idle transition state for a
  * 1-based joystick button slot from the paired DirectInput state snapshots.
  */
@@ -460,6 +482,8 @@ int __fastcall DIGetButtonTransitionState(int buttonIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-waitforbuttonpress
  * @recoil-artifact defines .text recoil:function:0x4723d0: zInput::DIWaitForButtonPress.
+ * @recoil-match byte
+ *
  * Purpose: Poll joystick state until a newly pressed button is found or the
  * caller requests a single scan.
  */
@@ -486,6 +510,7 @@ int __fastcall DIWaitForButtonPress(int loopUntilPressed)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-resettransitionstate
  * @recoil-artifact defines .text recoil:function:0x472410: zInput::DIResetTransitionState.
+ * @recoil-match byte
  *
  * Purpose: clear joystick button transition bytes and reset POV transition
  * state while preserving the untouched first button byte.
@@ -515,6 +540,8 @@ void __cdecl DIResetTransitionState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-createforcefeedbackeffect
  * @recoil-artifact defines .text recoil:function:0x472450: zInputDICreateForceFeedbackEffect.
+ *
+ *
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * The retail order shelf places this body between joystick transition reset
  * and the adjacent force-feedback capability query; no separate zin_ff.cpp
@@ -534,6 +561,8 @@ zInput_DiEffect* __fastcall zInputDICreateForceFeedbackEffect(const GUID* rguidE
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-hasforcefeedback
  * @recoil-artifact defines .text recoil:function:0x472480: zInputDIHasForceFeedback.
+ *
+ *
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * No separate zin_ff.cpp contribution is proven by the retail order shelf.
  * Purpose: return the detected DirectInput joystick force-feedback capability.
@@ -547,6 +576,8 @@ namespace zInput {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-reporterror
  * @recoil-artifact defines .text recoil:function:0x472490: zInput::DIReportError.
+ * @recoil-match byte
+ *
  * Binary Ninja shows the original zin_joystick.cpp routine inlining the
  * ordered DirectInput HRESULT compare tree before the shared sprintf/report
  * tail; there is no standalone retail error-name helper.

@@ -285,6 +285,8 @@ extern "C" void __fastcall zSndTick(int skipA3dCommit)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquireplayhandledispatch
  * @recoil-artifact defines .text recoil:function:0x49f6d0: zSndSample::AcquirePlayHandleDispatch.
+ *
+ *
  * Purpose: select the active backend-specific play-handle acquisition path.
  */
 zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
@@ -303,6 +305,8 @@ zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquirea3dvoice
  * @recoil-artifact defines .text recoil:function:0x49f6f0: zSndSample::AcquireA3dVoice.
+ *
+ *
  * Purpose: select or duplicate an A3D provider play handle for playback.
  */
 zSndPlayHandle* zSndSample::AcquireA3dVoice()
@@ -375,6 +379,8 @@ zSndPlayHandle* zSndSample::AcquireA3dVoice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquirevoice
  * @recoil-artifact defines .text recoil:function:0x49f830: zSndSample::AcquireVoice.
+ *
+ *
  * Purpose: select or duplicate a DirectSound play handle for playback.
  */
 zSndPlayHandle* zSndSample::AcquireVoice()
@@ -442,6 +448,8 @@ zSndPlayHandle* zSndSample::AcquireVoice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3dsimple
  * @recoil-artifact defines .text recoil:function:0x49f960: zSndSample::PlayA3DSimple.
+ *
+ *
  * Purpose: play a non-positional A3D-capable sample or queue a stream group.
  */
 zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
@@ -460,6 +468,8 @@ zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-gainscaletodirectsoundattenuation
  * @recoil-artifact defines .text recoil:function:0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation.
+ *
+ *
  * Purpose: convert linear gain into DirectSound attenuation units.
  */
 int __stdcall zSnd::GainScaleToDirectSoundAttenuation(float gainScale)
@@ -492,6 +502,8 @@ extern "C" float __stdcall zSndSamplePlaySimple(float value)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playonactivebackend
  * @recoil-artifact defines .text recoil:function:0x49fa10: zSndSample::PlayOnActiveBackend.
+ *
+ *
  * Purpose: dispatch sample playback to the active sound backend.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
@@ -515,6 +527,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playona3d
  * @recoil-artifact defines .text recoil:function:0x49fa60: zSndSample::PlayOnA3D.
+ *
+ *
  * Purpose: start sample playback on the A3D backend.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg)
@@ -577,6 +591,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playondirectsound
  * @recoil-artifact defines .text recoil:function:0x49fbb0: zSndSample::PlayOnDirectSound.
+ *
+ *
  * Purpose: start sample playback on the DirectSound backend.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
@@ -646,6 +662,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3d
  * @recoil-artifact defines .text recoil:function:0x49fcf0: zSndSample::PlayA3D.
+ *
+ *
  * Purpose: play a 3D-capable sample through a queued group or active backend.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale, zVec3* velocity)
@@ -670,6 +688,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale,
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playdirectsound
  * @recoil-artifact defines .text recoil:function:0x49fd50: zSndSample::PlayDirectSound.
+ *
+ *
  * Purpose: play a DirectSound sample variant with gain scaling and marker state.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex)
@@ -692,6 +712,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float g
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-stopifactive
  * @recoil-artifact defines .text recoil:function:0x49fda0: zSndPlayHandle::StopIfActive.
+ *
+ *
  * Purpose: stop the active provider buffer/source for this play handle and
  * clear any matching last-voice marker state.
  */
@@ -764,6 +786,8 @@ int zSndPlayHandle::StopIfActive()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-stopactivevoicesifplaying
  * @recoil-artifact defines .text recoil:function:0x49fec0: zSndSample::StopActiveVoicesIfPlaying.
+ *
+ *
  * Purpose: stop the sample's primary and duplicate backend voices if present.
  */
 int zSndSample::StopActiveVoicesIfPlaying()
@@ -840,6 +864,8 @@ int zSndSample::StopActiveVoicesIfPlaying()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshot-createfromactivesamples
  * @recoil-artifact defines .text recoil:function:0x49fff0: zSndPlayHandleSnapshot::CreateFromActiveSamples.
+ *
+ *
  * Purpose: Builds a snapshot of the global volume anchor and active sample voices.
  */
 zSndPlayHandleSnapshot* zSndPlayHandleSnapshot::CreateFromActiveSamples()
@@ -951,6 +977,8 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHan
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-playwithdelta-a3d
  * @recoil-artifact defines .text recoil:function:0x4a0380: zSndPlayHandle::PlayWithDeltaA3D.
+ *
+ *
  * Purpose: replay an A3D-backed handle with the requested restart and gain delta.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
@@ -983,6 +1011,8 @@ void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-playwithdelta-directsound
  * @recoil-artifact defines .text recoil:function:0x4a0400: zSndPlayHandle::PlayWithDeltaDirectSound.
+ * @recoil-match byte
+ *
  * Purpose: replay a DirectSound-backed handle with the requested restart and gain delta.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
@@ -1020,6 +1050,8 @@ void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-playwithdelta-backenddispatch
  * @recoil-artifact defines .text recoil:function:0x4a0490: zSndPlayHandle::PlayWithDeltaBackendDispatch.
+ *
+ *
  * Purpose: route play-handle replay through the active sound backend.
  */
 void __fastcall zSndPlayHandle::PlayWithDeltaBackendDispatch(
@@ -1098,6 +1130,8 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshot-restoreallwithglobalvolumedelta
  * @recoil-artifact defines .text recoil:function:0x4a0590: zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta.
+ *
+ *
  * Purpose: replay captured handles while applying the current global volume delta.
  */
 int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
@@ -1128,6 +1162,8 @@ int zSndPlayHandleSnapshot::RestoreAllWithGlobalVolumeDelta()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandlesnapshot-destroy
  * @recoil-artifact defines .text recoil:function:0x4a05f0: zSndPlayHandleSnapshot::Destroy.
+ *
+ *
  * Purpose: unlink and free every snapshot node, then delete the snapshot object.
  */
 int zSndPlayHandleSnapshot::Destroy()
@@ -1158,6 +1194,8 @@ int zSndPlayHandleSnapshot::Destroy()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-applymutestatetoactivevoices
  * @recoil-artifact defines .text recoil:function:0x4a0670: zSnd::ApplyMuteStateToActiveVoices.
+ *
+ *
  * Purpose: update nested mute state and rewrite active voice backend gains.
  */
 int __fastcall zSnd::ApplyMuteStateToActiveVoices(int enableMute)
@@ -1327,6 +1365,8 @@ extern "C" int __fastcall zSndSampleSetDestroyByName(const char* setName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-destroyall
  * @recoil-artifact defines .text recoil:function:0x4a0880: zSndSampleSetRegistryDestroyAll.
+ *
+ *
  * Purpose: destroy registered sample sets, clear their slots, and reset the active range.
  */
 extern "C" void __cdecl zSndSampleSetRegistryDestroyAll()
@@ -1347,6 +1387,8 @@ extern "C" void __cdecl zSndSampleSetRegistryDestroyAll()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-getbyindex
  * @recoil-artifact defines .text recoil:function:0x4a08d0: zSndSampleSetRegistryGetByIndex.
+ *
+ *
  * Purpose: Returns the registry entry at a non-negative in-range index.
  */
 extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryGetByIndex(int index)
@@ -1365,6 +1407,8 @@ extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryGetByIndex(int index)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-getcount
  * @recoil-artifact defines .text recoil:function:0x4a0900: zSndSampleSetRegistryGetCount.
+ *
+ *
  * Purpose: Returns the number of active sample-set registry entries.
  */
 extern "C" int __cdecl zSndSampleSetRegistryGetCount()
@@ -1375,6 +1419,8 @@ extern "C" int __cdecl zSndSampleSetRegistryGetCount()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-findbyname
  * @recoil-artifact defines .text recoil:function:0x4a0920: zSndSampleSetRegistryFindByName.
+ *
+ *
  * Purpose: return the registered sample set whose stored name exactly matches
  * the requested name.
  */
@@ -1393,6 +1439,8 @@ extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryFindByName(const char*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-findsamplebyname
  * @recoil-artifact defines .text recoil:function:0x4a0990: zSnd::FindSampleByName.
+ *
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample by name across registered sample sets and pending stream groups.
  */
@@ -1416,6 +1464,8 @@ zSndSample* __fastcall zSnd::FindSampleByName(const char* sampleName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-registryaddentry
  * @recoil-artifact defines .text recoil:function:0x4a09e0: zSndSampleSet::RegistryAddEntry.
+ *
+ *
  * Purpose: Allocates sample entries, stores the set name, and appends this set to the registry.
  */
 zSndSampleSet* zSndSampleSet::RegistryAddEntry(const char* name, int count)
@@ -1454,6 +1504,8 @@ void zSndSampleSet::DestroyOwnedData()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-init
  * @recoil-artifact defines .text recoil:function:0x4a0c40: zSndSampleSet::Init.
+ *
+ *
  * Purpose: initialize an unloaded sample set from archive banks first, then
  * from loose sample paths, and mark the set loaded.
  */
@@ -1553,6 +1605,8 @@ int zSndSampleSet::Init()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-destroy
  * @recoil-artifact defines .text recoil:function:0x4a0e40: zSndSampleSet::Destroy.
+ *
+ *
  * Purpose: release loaded sample resources and clear the sample-set loaded flag.
  */
 int zSndSampleSet::Destroy()
@@ -1622,6 +1676,8 @@ zSndSample* zSndSampleSet::FindSampleByName(const char* sampleName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-loadsamplesfromindexarchive
  * @recoil-artifact defines .text recoil:function:0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive.
+ *
+ *
  * Purpose: load still-unloaded samples from the supplied index archive and
  * mirror each load result into the sample loaded flag.
  */
@@ -1681,6 +1737,8 @@ float __stdcall zSnd::SetGlobalVolumeScale(float scale)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-mulglobalvolumescaleandgetprev
  * @recoil-artifact defines .text recoil:function:0x4a10b0: zSnd::MulGlobalVolumeScaleAndGetPrev.
+ * @recoil-match byte
+ *
  * Purpose: multiply the global sound-volume scale and return its previous value.
  */
 float __stdcall zSnd::MulGlobalVolumeScaleAndGetPrev(float scale)

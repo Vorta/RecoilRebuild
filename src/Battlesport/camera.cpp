@@ -62,6 +62,7 @@ enum HudPhysicalPlayerCameraState {
  * @recoil-anchor recoil:anchor:battlesport.hud.tickactivecamerastate
  * @recoil-artifact defines .text recoil:function:0x404e90: Player::TickActiveCameraState.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
+ * @recoil-match byte
  *
  * Purpose: Update the active player camera and its cached direction.
  */
@@ -575,6 +576,7 @@ void __fastcall ApplyCameraState(int newState)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.togglesteeringmodeandresetmouselook
  * @recoil-artifact defines .text recoil:function:0x405ec0: Player::ToggleSteeringModeAndResetMouseLook
+ * @recoil-match byte
  *
  * Purpose: Reset active mouse-look state and toggle the steering-mode option.
  * Source owner: battlesport_gameplay.player_camera_control_state_bridge,
@@ -797,6 +799,7 @@ void __fastcall RestoreThirdPersonCameraFromObstructionState(zUtil_SaveGameState
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.unbindcurrentsavestateifsingleplayer
  * @recoil-artifact defines .text recoil:function:0x406430: Player::UnbindCurrentSaveStateIfSinglePlayer
+ * @recoil-match byte
  *
  * Purpose: Clear the current save-state binding when the mission is not in
  * network play.
@@ -815,6 +818,7 @@ void UnbindCurrentSaveStateIfSinglePlayer()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.bindactivegamestateascurrentsavestate
  * @recoil-artifact defines .text recoil:function:0x406450: Player::BindActiveGameStateAsCurrentSaveState
+ * @recoil-match byte
  *
  * Purpose: Bind the active local game-state record as the current save state
  * for camera/control paths.

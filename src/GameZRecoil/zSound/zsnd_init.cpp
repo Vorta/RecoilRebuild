@@ -315,6 +315,7 @@ const GUID kIID_IA3dListener = { 0xc398e563, 0xd90b, 0x11d1, { 0x90, 0xfb, 0x00,
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsnd-preinitializeruntimestate
  * @recoil-artifact defines .text recoil:function:0x4a12c0: zSndPreInitializeRuntimeState.
  *
+ *
  * Purpose: reset sound runtime globals, cache option pointers, and prepare the
  * selected backend for later initialization.
  */
@@ -400,6 +401,7 @@ int __cdecl Shutdown()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndsystem-init
  * @recoil-artifact defines .text recoil:function:0x4a1420: zSndSystemInit.
+ *
  *
  * Purpose: initialize the selected sound backend, load the sound configuration
  * tree, and dispatch the supported syntax parser.
@@ -733,6 +735,7 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-inita3d
  * @recoil-artifact defines .text recoil:function:0x4a1d10: zSndBackendInitA3D.
  *
+ *
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.
  */
@@ -794,6 +797,7 @@ extern "C" int __cdecl zSndBackendInitA3D()
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-initdirectsound
  * @recoil-artifact defines .text recoil:function:0x4a1e50: zSndBackendInitDirectSound.
  *
+ *
  * Purpose: create the DirectSound device, set cooperative level, cache device
  * caps, and create the primary listener buffer.
  */
@@ -830,6 +834,7 @@ namespace zSndBackend {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a1f40: zSndBackend::Shutdown.
+ *
  *
  * Purpose: shut down CD, streaming, sample-set, and backend provider state for
  * the active sound system.

@@ -859,6 +859,8 @@ int CBriefingActionQueue::AddPlaySampleByName(const char* sampleName, float gain
 /**
  * @recoil-anchor recoil:anchor:battlesport.briefing.briefingactionplaysample-tick
  * @recoil-artifact defines .text recoil:function:0x404aa0: BriefingAction_PlaySample::Tick.
+ * @recoil-match byte
+ *
  * Purpose: stop any current briefing voice sample and start the queued sample.
  */
 int BriefingActionPlaySample::Tick(float)

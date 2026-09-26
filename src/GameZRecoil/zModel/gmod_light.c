@@ -279,6 +279,8 @@ namespace zModel_Light
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygontestradiusxz
      * @recoil-artifact defines .text recoil:function:0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
+     *
+     *
      * Purpose: evaluate active light contribution flags and per-light weights
      * for a bounding sphere in view-space XZ/radius terms.
      */
@@ -388,6 +390,8 @@ namespace zModel_Light
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-setactivelights
      * @recoil-artifact defines .text recoil:function:0x487f10: zModel_Light::SetActiveLights
+     *
+     *
      * Purpose: build active-light vertex attributes for software and hardware
      * render paths, including fog target, point-light, attr1, and attr2 state.
      */
@@ -761,6 +765,8 @@ namespace zModel_Light
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-buildlightweights
  * @recoil-artifact defines .text recoil:function:0x488d60: zModel_Light::BuildLightWeights
+ *
+ *
  * Purpose: build software-path per-vertex light weights, choose and commit fog
  * target state, blend the packed fog color, and report whether lighting applied.
  */
@@ -994,6 +1000,8 @@ namespace zModel_Light
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evaldistanceweight
      * @recoil-artifact defines .text recoil:function:0x4894f0: zModel_Light::EvalDistanceWeight
+     *
+     *
      * Purpose: compute a light's range falloff as full, zero, or a linear blend
      * between the inner and outer range.
      */

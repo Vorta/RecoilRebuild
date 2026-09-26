@@ -387,6 +387,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvariantoverridepackedidsifcomplete
      * @recoil-artifact defines .text recoil:function:0x458b20: zEffect::SetVariantOverridePackedIdsIfComplete.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeffect.cpp.
      * Purpose: enable the packed variant override only when the active id bytes are
      * populated.
@@ -410,6 +412,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayontimer
      * @recoil-artifact defines .text recoil:function:0x458b50: zEffect::TickResetDelayOnTimer.
+     *
+     *
      * Purpose: Advance timer-gated reset delay and clear transform/velocity when it expires.
      */
     float __fastcall TickResetDelayOnTimer(zEffectAnimEntry * self, float deltaSec)
@@ -427,6 +431,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayonhit
      * @recoil-artifact defines .text recoil:function:0x458bb0: zEffect::TickResetDelayOnHit.
+     *
+     *
      * Purpose: Advance hit-gated reset delay and clear transform/velocity when it expires.
      */
     int __fastcall TickResetDelayOnHit(zEffectAnimEntry * self, CZNodePartial * hitNode, int, float damageAmount)
@@ -444,6 +450,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenpoints
      * @recoil-artifact defines .text recoil:function:0x458c10: zEffect::UpdateBeamNodeBetweenPoints.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
      * Purpose: position, orient, scale, and return the length of a beam node
      * spanning two world points.
@@ -479,6 +487,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenfractions
      * @recoil-artifact defines .text recoil:function:0x458ce0: zEffect::UpdateBeamNodeBetweenFractions.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
      * Purpose: position, orient, scale, and return the length of a beam node
      * spanning two fractional points on a world-space segment.
@@ -519,6 +529,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesamplerefoffsetevent
      * @recoil-artifact defines .text recoil:function:0x458e10: zEffect::HandleSampleRefOffsetEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: play a referenced sound sample either directly or at a referenced
      * node world position plus the event offset.
@@ -542,6 +554,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleeffecttemplateoffsetevent
      * @recoil-artifact defines .text recoil:function:0x458eb0: zEffect::HandleEffectTemplateOffsetEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: spawn a referenced effect template at a node or reset-scratch
      * position plus the event offset.
@@ -574,6 +588,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesoundevent
      * @recoil-artifact defines .text recoil:function:0x458f70: zEffect::HandleSoundEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: activate, attach, detach, and position a runtime sound reference.
      */
@@ -618,6 +634,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightevent
      * @recoil-artifact defines .text recoil:function:0x459080: zEffect::HandleLightEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: activate a runtime light reference and apply serialized light
      * state fields selected by the event mask.
@@ -712,6 +730,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightanimevent
      * @recoil-artifact defines .text recoil:function:0x459280: zEffect::HandleLightAnimEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate a light reference's range and specular color over a timed
      * event slice.
@@ -839,6 +859,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlecameraparamsevent
      * @recoil-artifact defines .text recoil:function:0x459580: zEffect::HandleCameraParamsEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply immediate near/far clip, clip distance, FOV, and viewport
      * camera parameters from an event mask.
@@ -897,6 +919,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatecameraparamsovertime
      * @recoil-artifact defines .text recoil:function:0x4596c0: zEffect::AnimateCameraParamsOverTime.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: interpolate selected camera parameters across the current timed
      * event slice and clamp to final values when complete.
@@ -1045,6 +1069,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlerotationevent
      * @recoil-artifact defines .text recoil:function:0x459ae0: zEffect::HandleRotationEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: set or translate target node rotation or camera position with
      * optional basis-node rotation composition.
@@ -1127,6 +1153,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlepositionevent
      * @recoil-artifact defines .text recoil:function:0x459ce0: zEffect::HandlePositionEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: set or translate a target node position or camera target using an
      * optional basis node and serialized offset.
@@ -1197,6 +1225,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenodeanimevent
      * @recoil-artifact defines .text recoil:function:0x459e70: zEffect::HandleNodeAnimEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: run per-frame node motion, physics-like velocity, rotation, scale,
      * DI blend, and collision gating for a node animation event.
@@ -1507,6 +1537,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.findnearestpickcandidatebelowpoint
      * @recoil-artifact defines .text recoil:function:0x45a920: zEffect::FindNearestPickCandidateBelowPoint.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: choose the nearest DI pick candidate below a world-space point.
      */
@@ -1546,6 +1578,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatenodeovertime
      * @recoil-artifact defines .text recoil:function:0x45a9d0: zEffect::AnimateNodeOverTime.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: interpolate a node's position, rotation, scale, and DI blend state
      * over a timed event.
@@ -1752,6 +1786,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.advancekeyframesample
      * @recoil-artifact defines .text recoil:function:0x45ae30: zEffect_Anim::AdvanceKeyframeSample.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance a keyframe event cursor past the current sample and report
      * whether another sample remains in the event record.
@@ -1785,6 +1821,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatekeyframesample
      * @recoil-artifact defines .text recoil:function:0x45ae90: zEffect_Anim::AnimateKeyframeSample.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply position, rotation, and scale channels for one keyframe
      * sample over the current frame slice.
@@ -1913,6 +1951,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.advancekeyframe
      * @recoil-artifact defines .text recoil:function:0x45b120: zEffect_Anim::AdvanceKeyframe.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance a serialized keyframe event for a runtime sequence.
      */
@@ -1960,6 +2000,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.evaluatekeyframe
      * @recoil-artifact defines .text recoil:function:0x45b210: zEffect_Anim::EvaluateKeyframe.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply immediate lit and alpha-scale values to an animation target
      * node.
@@ -1987,6 +2029,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runkeyframes
      * @recoil-artifact defines .text recoil:function:0x45b280: zEffect_Anim::RunKeyframes.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate a target node's lit state and alpha scale across a timed
      * keyframe record.
@@ -2047,6 +2091,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleaddchildevent
      * @recoil-artifact defines .text recoil:function:0x45b3b0: zEffect::HandleAddChildEvent.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: add a child node to a parent node when the relationship is not
      * already present.
@@ -2087,6 +2133,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleattachevent
      * @recoil-artifact defines .text recoil:function:0x45b440: zEffect::HandleAttachEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: attach the serialized variant state to a referenced target node.
      */
@@ -2116,6 +2164,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handledetachevent
      * @recoil-artifact defines .text recoil:function:0x45b4a0: zEffect::HandleDetachEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: detach and animate a beam segment between stored or referenced
      * points over a timed event.
@@ -2297,6 +2347,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handletransformrefsevent
      * @recoil-artifact defines .text recoil:function:0x45b8b0: zEffect::HandleTransformRefsEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: launch a child animation using two stored or referenced transform
      * points.
@@ -2379,6 +2431,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacestopevent
      * @recoil-artifact defines .text recoil:function:0x45bb00: zEffect::HandleSurfaceStopEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: stop a named runtime surface sequence when it is currently playing.
      */
@@ -2407,6 +2461,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfaceplayevent
      * @recoil-artifact defines .text recoil:function:0x45bbb0: zEffect::HandleSurfacePlayEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: set a named runtime surface sequence into play state.
      */
@@ -2432,6 +2488,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacerefevent
      * @recoil-artifact defines .text recoil:function:0x45bc60: zEffect::HandleSurfaceRefEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: start a referenced child animation from surface event data and
      * optionally wait for its activation to finish.
@@ -2540,6 +2598,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanuplightrefs
      * @recoil-artifact defines .text recoil:function:0x45bf60: zEffect::CleanupLightRefs.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: deactivate and detach runtime light references owned by an animation
      * entry.
@@ -2573,6 +2633,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanupsoundrefs
      * @recoil-artifact defines .text recoil:function:0x45bfd0: zEffect::CleanupSoundRefs.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: deactivate and detach runtime sound references owned by an animation
      * entry.
@@ -2611,6 +2673,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stop
      * @recoil-artifact defines .text recoil:function:0x45c040: zEffectAnim::Stop.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: initiate stop-delay processing or finalize an active animation entry.
      */
@@ -2710,6 +2774,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterstopevent
      * @recoil-artifact defines .text recoil:function:0x45c240: zEffect::HandleEmitterStopEvent.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: request stop or finish state on a named emitter animation entry.
      */
@@ -2765,6 +2831,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterloopevent
      * @recoil-artifact defines .text recoil:function:0x45c310: zEffect::HandleEmitterLoopEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: test loop stop limits, reset the emitter runtime, and continue or
      * stop looping.
@@ -2805,6 +2873,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
      * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: evaluate a conditional event chain and skip to the matching branch
      * or chain end.
@@ -2894,6 +2964,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.traceupwardhitfromnodeorpos
      * @recoil-artifact defines .text recoil:function:0x45c530: zEffect::TraceUpwardHitFromNodeOrPos.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: cast upward from a node or explicit position and report whether
      * the trace hit a DI candidate.
@@ -2946,6 +3018,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.getconditionalrefposdistancesq
      * @recoil-artifact defines .text recoil:function:0x45c640: zEffect::GetConditionalRefPosDistanceSq.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: compute squared distance from a node's world position to the
      * current conditional reference position.
@@ -2966,6 +3040,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
      * chain.
@@ -3027,6 +3103,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreencolorfxevent
      * @recoil-artifact defines .text recoil:function:0x45c710: zEffect::HandleScreenColorFxEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate and queue the screen color effect for the current frame.
      */
@@ -3094,6 +3172,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreenoverlayfxevent
      * @recoil-artifact defines .text recoil:function:0x45c920: zEffect::HandleScreenOverlayFxEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate and queue a screen overlay element anchored by time, screen
      * coordinates, or a projected world node.
@@ -3196,6 +3276,8 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handletopmessageevent
      * @recoil-artifact defines .text recoil:function:0x45cbc0: zEffect::HandleTopMessageEvent.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: push a top HUD message using a localized message id or fallback
      * text key from the animation text-id table.
@@ -3225,6 +3307,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequenceevents
      * @recoil-artifact defines .text recoil:function:0x45cc00: zEffect_Anim::RunSequenceEvents.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance a runtime event stream by trigger timing and dispatch
      * eligible sequence records.
@@ -3495,6 +3579,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequence
      * @recoil-artifact defines .text recoil:function:0x45d010: zEffect_Anim::RunSequence.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: run an active animation entry, including conditional/variant gates,
      * sequence stepping, completion callback dispatch, and stop cleanup.
@@ -3611,6 +3697,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.capturenodestates
      * @recoil-artifact defines .text recoil:function:0x45d240: zEffect_Anim::CaptureNodeStates.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: save active and transform state for each tracked node before an
      * animation reset.
@@ -3670,6 +3758,8 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.restorenodestates
      * @recoil-artifact defines .text recoil:function:0x45d310: zEffect_Anim::RestoreNodeStates.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: restore captured node active, transform, and zDi blend state for an
      * animation entry.
@@ -3732,6 +3822,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.finalizestop
      * @recoil-artifact defines .text recoil:function:0x45d3d0: zEffectAnim::FinalizeStop.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: detach active runtime state, clear cleanup references, and settle the
      * stopped activation state.
@@ -3778,6 +3870,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopsequencecallback
      * @recoil-artifact defines .text recoil:function:0x45d4c0: zEffectAnim::RunStopSequenceCallback.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the stop sequence until no runnable events remain, then
      * finalize the stopped entry.
@@ -3828,6 +3922,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stopandcleanup
      * @recoil-artifact defines .text recoil:function:0x45d570: zEffectAnim::StopAndCleanup.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: stop or rebind an animation entry and run immediate or sequenced
      * cleanup for its runtime state.
@@ -3924,6 +4020,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.resetfornode
      * @recoil-artifact defines .text recoil:function:0x45d6c0: zEffectAnim::ResetForNode.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: restore an animation entry to its bound node and reset its runtime
      * emitter state.
@@ -3964,6 +4062,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopdelaycallback
      * @recoil-artifact defines .text recoil:function:0x45d770: zEffectAnim::RunStopDelayCallback.
+     *
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: accumulate stop-delay time and trigger cleanup once the delay expires.
      */
@@ -3998,6 +4098,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity
      * @recoil-artifact defines .text recoil:function:0x45d7b0: zEffectAnim::SetTransformRotAndVelocity.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an animation entry, apply transform and velocity state,
      * and queue the command type 1 activation record when recording is enabled.
@@ -4067,6 +4169,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.activateruntime
      * @recoil-artifact defines .text recoil:function:0x45d930: zEffectAnim::ActivateRuntime.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: bind or clone an animation entry, reset its runtime node state, and
      * install the sequence callback for active playback.
@@ -4179,6 +4283,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.checkactivationprereqs
      * @recoil-artifact defines .text recoil:function:0x45db20: zEffectAnim::CheckActivationPrereqs (zeff_anim.c)
+     * @recoil-match byte
+     *
      * Purpose: Resolve and evaluate activation prerequisites for an animation entry.
      */
     int __fastcall CheckActivationPrereqs(zEffectAnimEntry * self)
@@ -4278,6 +4384,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity
      * @recoil-artifact defines .text recoil:function:0x45dcb0: zEffectAnim::SetVelocity.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an animation entry, reset bound transform state, store
      * velocity, and queue the type-2 activation record.
@@ -4343,6 +4451,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity
      * @recoil-artifact defines .text recoil:function:0x45de00: zEffectAnim::SetPositionRefAndVelocity.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an entry with a position reference and optional velocity
      * vector.
@@ -4430,6 +4540,8 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs
      * @recoil-artifact defines .text recoil:function:0x45df90: zEffectAnim::SetTransformRefs.
+     *
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an entry with two stored transform references.
      */

@@ -2110,6 +2110,8 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-baseconstructor
  * @recoil-artifact defines .text recoil:function:0x41a190: Parameterized network text-input construction.
+ *
+ *
  * Retail constructs the numeric-input base at 0x4b49e0 before installing the
  * intermediate table at 0x4cfa70. The explicit argument sizes its text buffer.
  * Purpose: Construct the network text-input layer with its requested buffer,
@@ -2274,6 +2276,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
  * @recoil-anchor recoil:anchor:battlesport.mission.huduinetgamesetuptextinput-onactivatefocusandcursor
  * @recoil-artifact defines .text recoil:function:0x41a7b0: Network input focus transfer.
  *
+ *
  * Purpose: Commit previous focus, transfer keyboard capture, and refresh the cursor.
  * The network-input table installed by 0x41a190 points directly to this
  * body from its activation slot (+0x30). The name follows the inherited
@@ -2389,6 +2392,8 @@ HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-constructor
  * @recoil-artifact defines .text recoil:function:0x41aba0: HudUiNetGameSetupOverlayOwner constructor.
+ *
+ *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: initialize the overlay owner state with no active setup panel and
  * no pending reconfigure request.
@@ -2402,6 +2407,8 @@ HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-destructor
  * @recoil-artifact defines .text recoil:function:0x41abe0: HudUiNetGameSetupOverlayOwner destructor.
+ *
+ *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: disable and delete any live multiplayer setup panel before clearing
  * the owner singleton's panel pointer.
@@ -3293,6 +3300,8 @@ int NetSessionBrowserDialog::ValidatePlayerName()
  * @recoil-artifact defines .text recoil:function:0x41b780: NetSessionBrowserDialog::OnHelpDocs.
  * @recoil-artifact emits .text recoil:data:0x41b898: VC5-generated five-entry switch jump table.
  * @recoil-artifact emits .text recoil:data:0x41b8ac: VC5-generated FindExecutableA result classifier table.
+ *
+ *
  * Purpose: Open the bundled help document or show the matching shell error.
  */
 void NetSessionBrowserDialog::OnHelpDocs()
@@ -3620,6 +3629,8 @@ HudUiElement* g_HudUiNetExitPanel_SavedInputFocus = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-constructor
  * @recoil-artifact defines .text recoil:function:0x41bd80: HudUiNetExitPanel constructor.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: initialize the network exit panel, bind its exit and resume widgets, and capture input focus state.
  */
@@ -3734,6 +3745,8 @@ void CHudUiNetExitPanelResumeWidget::HidePreview()
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-createglobal
  * @recoil-artifact defines .text recoil:function:0x41c000: HudUiNetExitPanel::CreateGlobal.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
  */

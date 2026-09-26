@@ -289,6 +289,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.allocnodefromfreelist
      * @recoil-artifact defines .text recoil:function:0x4478c0: CZClass::gwNodeNew.
+     *
+     *
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
@@ -331,6 +333,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.deletenodebytype
      * @recoil-artifact defines .text recoil:function:0x447980: CZClass::DeleteNodeByType.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: validate node ownership and dispatch deletion by classId.
      */
@@ -399,6 +403,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.freenodetofreelist
      * @recoil-artifact defines .text recoil:function:0x447a70: CZClass::FreeNodeToFreeList.
+     * @recoil-match byte
+     *
      * Purpose: release owned node lists/data and return the node slot to the
      * global zClass free-list while preserving the slot free-tag flags.
      */
@@ -444,6 +450,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.tryfreenode
      * @recoil-artifact defines .text recoil:function:0x447b60: CZClass::TryFreeNode.
+     * @recoil-match byte
+     *
      * Purpose: remove a node from active lists, then either free it
      * immediately or enqueue it for deferred freeing.
      */
@@ -468,6 +476,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.findnoderecursivebyname
      * @recoil-artifact defines .text recoil:function:0x447bc0: CZClass::FindNodeRecursiveByName
+     * @recoil-match byte
+     *
      * BN caveat: the inlined strcmp-style comparison has a known sbb
      * flag-generation limitation; assembly still proves the typed node-name
      * comparison and forward child recursion.
@@ -498,6 +508,7 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactive
      * @recoil-artifact defines .text recoil:function:0x447c60: CZClass::gwNodeSetActive.
+     * @recoil-match byte
      *
      * Purpose: toggle the active flag for supported node classes and delegate
      * sound-node activity changes to the sound owner.
@@ -540,6 +551,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetflag16
      * @recoil-artifact defines .text recoil:function:0x447d20: CZClass::gwNodeSetFlag16
+     * @recoil-match byte
+     *
      * Purpose: set or clear node flag bit 16.
      */
     int __fastcall gwNodeSetFlag16(CZNodePartial * node, int value)
@@ -561,6 +574,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetflag17
      * @recoil-artifact defines .text recoil:function:0x447d70: CZClass::gwNodeSetFlag17
+     * @recoil-match byte
+     *
      * Purpose: set or clear node flag bit 17.
      */
     int __fastcall gwNodeSetFlag17(CZNodePartial * node, int value)
@@ -582,6 +597,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetname
      * @recoil-artifact defines .text recoil:function:0x447dc0: CZClass::gwNodeSetName
+     * @recoil-match byte
+     *
      * Purpose: copy or truncate a caller-supplied name into a zClass node's
      * fixed-size name buffer.
      */
@@ -605,6 +622,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetname
      * @recoil-artifact defines .text recoil:function:0x447e30: CZClass::gwNodeGetName
+     * @recoil-match byte
+     *
      * Purpose: return the fixed-size name buffer for a zClass node.
      */
     char* __fastcall gwNodeGetName(CZNodePartial * node)
@@ -620,6 +639,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetdisplayinstance
      * @recoil-artifact defines .text recoil:function:0x447e60: CZClass::gwNodeSetDisplayInstance
+     * @recoil-match byte
+     *
      * Purpose: replace a node's display-instance reference, maintain zDi
      * reference counts, rebuild its bounds, and queue transform updates.
      */
@@ -659,6 +680,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetuserdata
      * @recoil-artifact defines .text recoil:function:0x447f00: CZClass::gwNodeGetUserData
+     * @recoil-match byte
+     *
      * Purpose: read the user-data or display-instance reference stored on a
      * zClass node.
      */
@@ -676,6 +699,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactioncallback
      * @recoil-artifact defines .text recoil:function:0x447f30: CZClass::gwNodeSetActionCallback
+     * @recoil-match byte
+     *
      * Purpose: install or clear the node action callback in its priority
      * bucket using head insertion for newly active callback nodes.
      */
@@ -716,6 +741,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetactioncallbacktail
      * @recoil-artifact defines .text recoil:function:0x447fe0: CZClass::gwNodeSetActionCallbackTail.
+     * @recoil-match byte
+     *
      * Purpose: install or clear a node action callback using tail insertion
      * for newly active callback buckets.
      */
@@ -756,6 +783,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetpriority
      * @recoil-artifact defines .text recoil:function:0x448090: CZClass::gwNodeSetPriority
+     * @recoil-match byte
+     *
      * Purpose: move an active callback node between priority buckets and store
      * the caller-supplied priority value.
      */
@@ -782,6 +811,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetcellpickable
      * @recoil-artifact defines .text recoil:function:0x448100: CZClass::gwNodeSetCellPickable
+     * @recoil-match byte
+     *
      * Purpose: set or clear the cell-pickable flag on a node.
      */
     int __fastcall gwNodeSetCellPickable(CZNodePartial * node, int value)
@@ -803,6 +834,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetcellpickable
      * @recoil-artifact defines .text recoil:function:0x448140: CZClass::gwNodeGetCellPickable
+     * @recoil-match byte
+     *
      * Purpose: read the cell-pickable flag from a node.
      */
     int __fastcall gwNodeGetCellPickable(CZNodePartial * node, int* outValue)
@@ -819,6 +852,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetnodetype
      * @recoil-artifact defines .text recoil:function:0x448180: CZClass::gwNodeGetNodeType
+     * @recoil-match byte
+     *
      * Purpose: read the byte-sized node type metadata value.
      */
     int __fastcall gwNodeGetNodeType(CZNodePartial * node, int* outValue)
@@ -835,6 +870,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetraycastable
      * @recoil-artifact defines .text recoil:function:0x4481b0: CZClass::gwNodeSetRaycastable
+     * @recoil-match byte
+     *
      * Purpose: set or clear the raycastable flag on a node.
      */
     int __fastcall gwNodeSetRaycastable(CZNodePartial * node, int value)
@@ -856,6 +893,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetraycastable
      * @recoil-artifact defines .text recoil:function:0x4481f0: CZClass::gwNodeGetRaycastable
+     * @recoil-match byte
+     *
      * Purpose: read the raycastable flag from a node.
      */
     int __fastcall gwNodeGetRaycastable(CZNodePartial * node, int* outValue)
@@ -872,6 +911,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetpickable
      * @recoil-artifact defines .text recoil:function:0x448230: CZClass::gwNodeSetPickable
+     * @recoil-match byte
+     *
      * Purpose: set or clear the pickable flag on a node.
      */
     int __fastcall gwNodeSetPickable(CZNodePartial * node, int value)
@@ -893,6 +934,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetpickable
      * @recoil-artifact defines .text recoil:function:0x448270: CZClass::gwNodeGetPickable
+     * @recoil-match byte
+     *
      * Purpose: read the pickable flag from a node.
      */
     int __fastcall gwNodeGetPickable(CZNodePartial * node, int* outValue)
@@ -909,6 +952,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesethashitcallback
      * @recoil-artifact defines .text recoil:function:0x4482b0: CZClass::gwNodeSetHasHitCallback
+     * @recoil-match byte
+     *
      * Purpose: set or clear the node flag that marks an installed hit
      * callback handler.
      */
@@ -931,6 +976,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetbypassfarclip
      * @recoil-artifact defines .text recoil:function:0x4482f0: CZClass::gwNodeSetBypassFarClip
+     * @recoil-match byte
+     *
      * Purpose: set or clear the node flag that bypasses far-clip culling.
      */
     int __fastcall gwNodeSetBypassFarClip(CZNodePartial * node, int value)
@@ -952,6 +999,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetnodetype
      * @recoil-artifact defines .text recoil:function:0x448330: CZClass::gwNodeSetNodeType
+     * @recoil-match byte
+     *
      * Purpose: store the low byte of the caller-supplied node type metadata
      * value.
      */
@@ -969,6 +1018,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeclearvariantgate
      * @recoil-artifact defines .text recoil:function:0x448360: CZClass::gwNodeClearVariantGate
+     * @recoil-match byte
+     *
      * Purpose: clear the node variant-gate flag when the caller supplies a
      * zero gate value.
      */
@@ -989,6 +1040,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodesetvertexalphaoverride
      * @recoil-artifact defines .text recoil:function:0x4483a0: CZClass::gwNodeSetVertexAlphaOverride.
+     * @recoil-match byte
+     *
      * Purpose: set or clear the caller-owned node vertex-alpha override flag.
      */
     int __fastcall gwNodeSetVertexAlphaOverride(CZNodePartial * node, int value)
@@ -1010,6 +1063,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.addchild
      * @recoil-artifact defines .text recoil:function:0x4483f0: CZClass::AddChild.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: dispatch child attachment by parent classId across the
      * data-driven zClass node subsystem.
@@ -1082,6 +1137,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.addchildgeneric
      * @recoil-artifact defines .text recoil:function:0x4484d0: CZClass::AddChildGeneric.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: append child and parent references to the generic listB/listA
      * node-link arrays and queue parent transform/bounds updates.
@@ -1114,6 +1171,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.removechild
      * @recoil-artifact defines .text recoil:function:0x448570: CZClass::RemoveChild.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: dispatch child removal by parent classId across the data-driven
      * zClass node subsystem.
@@ -1182,6 +1241,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.removechildgeneric
      * @recoil-artifact defines .text recoil:function:0x448660: CZClass::RemoveChildGeneric.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: remove matching child and parent references from generic
      * listB/listA node-link arrays and queue parent transform/bounds updates.
@@ -1245,6 +1306,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetbbox
      * @recoil-artifact defines .text recoil:function:0x448760: CZClass::gwNodeGetBBox.
+     * @recoil-match byte
+     *
      * Purpose: copy the cached node bounding box when it is currently valid.
      */
     int __fastcall gwNodeGetBBox(CZNodePartial * node, zBBox3f * outBBox)
@@ -1268,6 +1331,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetworldbboxcorners
      * @recoil-artifact defines .text recoil:function:0x4487c0: CZClass::gwNodeGetWorldBBoxCorners.
+     * @recoil-match byte
+     *
      * Purpose: return cached bounds corners in world/node space for object,
      * camera, animate, and untransformed node classes.
      */
@@ -1485,6 +1550,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeupdate
      * @recoil-artifact defines .text recoil:function:0x448cc0: CZClass::gwNodeUpdate.
+     * @recoil-match byte
+     *
      * Purpose: process pending transform and bounds work for one scene node
      * and run class-specific camera, world, object, and animate updates.
      */
@@ -1589,6 +1656,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnoderecalcbbox
      * @recoil-artifact defines .text recoil:function:0x448e90: CZClass::gwNodeRecalcBBox.
+     *
+     *
      * Purpose: select or merge primary and child bounds, cache the result, and
      * propagate parent/world-grid bounds updates.
      */
@@ -1687,6 +1756,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodecomputechildbbox
      * @recoil-artifact defines .text recoil:function:0x4491b0: CZClass::gwNodeComputeChildBBox.
+     * @recoil-match byte
+     *
      * Purpose: merge valid child world-bounds corners into the node's
      * secondary bounding box.
      */
@@ -1780,6 +1851,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodeupdatedisplayinstance
      * @recoil-artifact defines .text recoil:function:0x449420: CZClass::gwNodeUpdateDisplayInstance.
+     * @recoil-match byte
+     *
      * Purpose: rebuild display-instance bounds into the node primary box and
      * update the primary-bounds-valid flag.
      */
@@ -1820,6 +1893,8 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.buildnodetoancestormatrix
      * @recoil-artifact defines .text recoil:function:0x449480: CZNode::gwNodeBuildNodeToAncestorMatrix
+     *
+     *
      * Purpose: apply a node's parent-chain transforms into the current matrix.
      */
     int __fastcall gwNodeBuildNodeToAncestorMatrix(CZNodePartial * node, int matMode)
@@ -1959,6 +2034,8 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.getworldposition
      * @recoil-artifact defines .text recoil:function:0x4497b0: CZNode::GetWorldPosition
+     * @recoil-match byte
+     *
      * Purpose: resolve a node's world-space translation into the output vector.
      */
     int __fastcall GetWorldPosition(CZNodePartial * node, zVec3 * outPosition)
@@ -1991,6 +2068,8 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.transformpoint
      * @recoil-artifact defines .text recoil:function:0x449850: CZNode::TransformPoint.
+     * @recoil-match byte
+     *
      * Purpose: transform a point from node-local space into world space.
      */
     int __fastcall TransformPoint(CZNodePartial * node, zVec3 * point)
@@ -2016,6 +2095,8 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.getworldposandorientation
      * @recoil-artifact defines .text recoil:function:0x4498e0: CZNode::GetWorldPosAndOrientation.
+     *
+     *
      * Purpose: compute a node world position and derive orientation angles
      * from transformed basis points.
      */
@@ -2070,6 +2151,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetroot
      * @recoil-artifact defines .text recoil:function:0x449ab0: CZClass::gwNodeGetRoot
+     * @recoil-match byte
+     *
      * Purpose: walk a node's single-parent chain and return the root node.
      */
     CZNodePartial* __fastcall gwNodeGetRoot(CZNodePartial * node)
@@ -2100,6 +2183,8 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnodegetworldchild
      * @recoil-artifact defines .text recoil:function:0x449af0: CZClass::gwNodeGetWorldChild.
+     * @recoil-match byte
+     *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Class.c.
      * Purpose: walk a node's single-parent chain through listA links and
      * return the child directly owned by the world node.

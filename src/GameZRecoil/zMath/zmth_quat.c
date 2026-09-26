@@ -5,6 +5,7 @@
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromeuler
  * @recoil-artifact defines .text recoil:function:0x4757c0: zMathQuatFromEuler
  *
+ *
  * Purpose: converts three Euler rotation angles into a quaternion.
  * Data: reads no authored zMath globals; VC5 materializes literal and x87
  * range-check constants while lowering the sin/cos half-angle calls.
@@ -66,6 +67,7 @@ void __fastcall zMathQuatMultiplyInverse(const zQuat* quatA, const zQuat* quatB,
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-tomatrix
  * @recoil-artifact defines .text recoil:function:0x475a80: zMathQuatToMatrix
  *
+ *
  * Purpose: expands a quaternion into the rotational part of a 4x3 matrix.
  */
 void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
@@ -98,6 +100,7 @@ void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromrotationvector
  * @recoil-artifact defines .text recoil:function:0x475b80: zMathQuatFromRotationVector
+ *
  *
  * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
  */

@@ -155,6 +155,8 @@ namespace zGame
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_loadfromregistry
      * @recoil-artifact defines .text recoil:function:0x4b2960: zGame::OptionsLoadFromRegistry.
+     * @recoil-match byte
+     *
      * Purpose: load registered option payloads from the configured registry keys.
      */
     RECOIL_NO_GS int __cdecl OptionsLoadFromRegistry()
@@ -237,6 +239,8 @@ namespace zGame
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_savetoregistry
      * @recoil-artifact defines .text recoil:function:0x4b2bf0: zGame::OptionsSaveToRegistry.
+     * @recoil-match byte
+     *
      * Purpose: persist registered option payloads to the configured registry keys.
      */
     RECOIL_NO_GS int __cdecl OptionsSaveToRegistry()
@@ -334,6 +338,8 @@ namespace zGame
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_getorcreateoption
      * @recoil-artifact defines .text recoil:function:0x4b2e80: zGame::OptionsGetOrCreateOption.
+     * @recoil-match byte
+     *
      * Purpose: return an existing option entry or allocate and link a typed option record.
      */
     zOptionEntryPartial* __fastcall
@@ -574,6 +580,8 @@ namespace zSys
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-copydefault
  * @recoil-artifact defines .text recoil:function:0x4b3090: zGame_OptionsRuntimeConfig::CopyDefault.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: copy the probed default runtime configuration into this active config.
  */
@@ -590,6 +598,8 @@ zGame_OptionsRuntimeConfig* zGame_OptionsRuntimeConfig::CopyDefault()
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-initfromsystem
  * @recoil-artifact defines .text recoil:function:0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: populate runtime option defaults from CPU, memory, video, and sound probes.
  */
@@ -634,6 +644,8 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem()
  * @recoil-artifact defines .text recoil:function:0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
+ *
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: load the CPUID vendor string into the runtime configuration when
  * available; VC5 C++ has no CPUID intrinsic, so this documented raw-assembly
@@ -742,6 +754,8 @@ namespace zSys
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-gettotalphyskb
      * @recoil-artifact defines .text recoil:function:0x4b3230: zSys::GetTotalPhysKb.
+     * @recoil-match byte
+     *
      * Purpose: read Windows memory status and return physical memory in kilobytes.
      */
     RECOIL_NO_GS unsigned int __cdecl GetTotalPhysKb()
@@ -781,6 +795,8 @@ namespace zGame
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_shutdownregistrycontext
      * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::OptionsShutdownRegistryContext.
+     *
+     *
      * Purpose: free the option-entry list and registry-key context globals.
      */
     void __cdecl OptionsShutdownRegistryContext()

@@ -166,6 +166,8 @@ extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuependingloadsfromconfignode
  * @recoil-artifact defines .text recoil:function:0x4a4530: zSndGroupQueuePendingLoadsFromConfigNode.
+ *
+ *
  * Purpose: queue every parsed sound group from a top-level config array for
  * deferred stream loading.
  */
@@ -196,6 +198,8 @@ extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(zReader::Node
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadfromconfignode
  * @recoil-artifact defines .text recoil:function:0x4a4590: zSndGroupLoadFromConfigNode.
+ *
+ *
  * Purpose: allocate and populate one sound group from a zReader array node.
  */
 extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* readerNode)
@@ -331,6 +335,8 @@ extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* read
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadconfigblock
  * @recoil-artifact defines .text recoil:function:0x4a49b0: zSndGroupLoadConfigBlock.
+ *
+ *
  * Purpose: parse one sound-group config block, including nested blocks and
  * per-entry playback controls.
  */
@@ -436,6 +442,8 @@ namespace zSndStreamMgr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-updateactiverequestpredicate
  * @recoil-artifact defines .text recoil:function:0x4a4c40: zSndStreamMgr::UpdateActiveRequestPredicate.
+ * @recoil-match byte
+ *
  * Purpose: advance one active stream request and record finished requests for
  * recycling.
  */
@@ -471,6 +479,8 @@ int __fastcall UpdateActiveRequestPredicate(void* payload, void*)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statebegingroup
  * @recoil-artifact defines .text recoil:function:0x4a4cb0: zSndStreamRequest::StateBeginGroup.
+ *
+ *
  * Purpose: initialize stream-request playback state and select the first
  * playable group entry.
  */
@@ -494,6 +504,8 @@ int zSndStreamRequest::StateBeginGroup()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-selectweightedentry
  * @recoil-artifact defines .text recoil:function:0x4a4d10: zSndGroup::SelectWeightedEntry.
+ *
+ *
  * Purpose: choose a playable config block using remaining play count and
  * weighted random selection.
  */
@@ -559,6 +571,7 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
  * @recoil-artifact defines .text recoil:function:0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
  * @recoil-artifact emits .data recoil:data:0x4e2f9c: Native shared "NULL" comparison literal.
  *
+ *
  * Purpose: play due stream entries and advance their state.
  * Uses signed play-count decrement so 0xffff remains the original infinite-play
  * sentinel.
@@ -622,6 +635,8 @@ void zSndStreamRequest::StatePlayCurrentEntry()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statewaitrepeatdelay
  * @recoil-artifact defines .text recoil:function:0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay.
+ *
+ *
  * Purpose: wait for the repeat delay before selecting the next playable group
  * entry.
  */
@@ -682,6 +697,8 @@ namespace zSndStreamMgr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-shutdown
  * @recoil-artifact defines .text recoil:function:0x4a50a0: zSndStreamMgr::Shutdown.
+ *
+ *
  * Purpose: drain stream-manager lists, release pending stream configs, clear
  * stream-manager root/list globals, and return success.
  */
@@ -743,6 +760,8 @@ namespace {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-matchrequestpredicate
  * @recoil-artifact defines .text recoil:function:0x4a51e0: zSndStreamRequest::MatchRequestPredicate.
+ * @recoil-match byte
+ *
  * Purpose: compare an active stream-list payload against the requested play
  * handle and return zero only for a match.
  */
@@ -756,6 +775,8 @@ int __fastcall MatchStreamRequestPredicate(void* payload, void* userData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-stopifactive
  * @recoil-artifact defines .text recoil:function:0x4a51f0: zSndStreamRequest::StopIfActive.
+ * @recoil-match byte
+ *
  * Purpose: find an active stream request matching the play handle and move it
  * into the stop state.
  */
@@ -786,6 +807,8 @@ extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(void* payload, vo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestsimple
  * @recoil-artifact defines .text recoil:function:0x4a5230: zSndGroup::QueueStreamRequestSimple.
+ *
+ *
  * Purpose: queue a non-positional stream request for this sound group.
  */
 zSndPlayHandle* zSndGroup::QueueStreamRequestSimple(float gain)
@@ -796,6 +819,8 @@ zSndPlayHandle* zSndGroup::QueueStreamRequestSimple(float gain)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequest
  * @recoil-artifact defines .text recoil:function:0x4a5250: zSndGroup::QueueStreamRequest.
+ *
+ *
  * Purpose: allocate or recycle a stream request, fill its group playback state,
  * and begin queued stream playback.
  */
@@ -881,6 +906,8 @@ extern "C" int __cdecl zSndStreamMgrEnsureInit()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestwithworldpos
  * @recoil-artifact defines .text recoil:function:0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos.
+ *
+ *
  * Purpose: queue a positional stream request for this sound group.
  */
 zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequestWithWorldPos(zVec3* worldPos, float gain, zVec3* velocity)

@@ -13,6 +13,7 @@ const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setfreqscaled
  * @recoil-artifact defines .text recoil:function:0x4a10e0: zSndPlayHandle::SetFreqScaled
  *
+ *
  * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
  * active DirectSound or A3D backend handle.
  */
@@ -64,6 +65,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setenablescale
  * @recoil-artifact defines .text recoil:function:0x4a11d0: zSndPlayHandle::SetEnableScale
+ *
  *
  * Purpose: apply global volume scaling to the backend handle and refresh its
  * active 3D/backend state.

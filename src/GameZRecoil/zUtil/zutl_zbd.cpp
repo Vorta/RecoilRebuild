@@ -53,6 +53,8 @@ namespace zUtil_ZAR {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-registersectionhandler
  * @recoil-artifact defines .text recoil:function:0x4bffe0: zUtil_ZAR::RegisterSectionHandler
+ *
+ *
  * Purpose: forward a section handler registration to the active ZBD manager.
  */
 void __fastcall RegisterSectionHandler(
@@ -87,6 +89,8 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zbd-loadentriesglobal
  * @recoil-artifact defines .text recoil:function:0x4c0030: zUtil::ZBDLoadEntriesGlobal
+ *
+ *
  * Purpose: load ZBD entries through the active global ZBD manager when present.
  */
 int __fastcall ZBDLoadEntriesGlobal(const char* filename)
@@ -102,6 +106,8 @@ int __fastcall ZBDLoadEntriesGlobal(const char* filename)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zar-loadfileglobal
  * @recoil-artifact defines .text recoil:function:0x4c0050: zUtil::zZarLoadFileGlobal
+ *
+ *
  * Purpose: load a ZAR file through the active global ZBD manager when present.
  */
 int __fastcall zZarLoadFileGlobal(const char* filepath)
@@ -200,6 +206,8 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zbd-init
  * @recoil-artifact defines .text recoil:function:0x4c0100: zUtil::ZBDInit
+ *
+ *
  * Purpose: allocate and initialize the global ZBD manager and handler sentinel.
  */
 int __cdecl ZBDInit()
@@ -240,6 +248,8 @@ void __cdecl ZBDDestroyGlobalManager()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-destroy
  * @recoil-artifact defines .text recoil:function:0x4c01b0: zZbdManager::Destroy
+ *
+ *
  * Purpose: release manager buffers, archive records, handler nodes, and sentinel.
  */
 void zZbdManager::Destroy()
@@ -271,6 +281,8 @@ bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-registersectionhandler
  * @recoil-artifact defines .text recoil:function:0x4c0280: zZbdManager::RegisterSectionHandler
+ *
+ *
  * Purpose: add a unique section handler node to the manager's handler list.
  */
 void zZbdManager::RegisterSectionHandler(
@@ -301,6 +313,8 @@ void zZbdManager::RegisterSectionHandler(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-loadentries
  * @recoil-artifact defines .text recoil:function:0x4c0370: zZbdManager::LoadEntries
+ * @recoil-match byte
+ *
  * Purpose: create a write archive and invoke registered pre-load handlers.
  */
 int zZbdManager::LoadEntries(const char* filename)
@@ -326,6 +340,8 @@ int zZbdManager::LoadEntries(const char* filename)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-loadzarfile
  * @recoil-artifact defines .text recoil:function:0x4c0400: zZbdManager::LoadZarFile
+ *
+ *
  * Purpose: load a ZAR archive and dispatch matching section records.
  */
 int zZbdManager::LoadZarFile(const char* filepath)
@@ -391,6 +407,8 @@ void zZbdManager::RequestStop()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-writesectionrecord
  * @recoil-artifact defines .text recoil:function:0x4c0630: zZbdManager::WriteSectionRecord
+ *
+ *
  * Purpose: format a section/token record path and append the payload.
  */
 int zZbdManager::WriteSectionRecord(
@@ -408,6 +426,8 @@ int zZbdManager::WriteSectionRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdsectionhandler-invokepreload
  * @recoil-artifact defines .text recoil:function:0x4c06a0: zZbdSectionHandler::InvokePreLoad
+ *
+ *
  * Purpose: invoke an optional pre-load section callback with user data.
  */
 int zZbdSectionHandler::InvokePreLoad(zZbdSectionCallbackCtx* callbackCtx)
@@ -443,6 +463,8 @@ void zZbdSectionHandler::InvokeDataReady(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-flushtempstreamtosectionrecord
  * @recoil-artifact defines .text recoil:function:0x4c0700: zZbdManager::FlushTempStreamToSectionRecord
+ * @recoil-match byte
+ *
  * Purpose: copy a temp stream into a section record and remove temp files.
  */
 void zZbdManager::FlushTempStreamToSectionRecord(
@@ -469,6 +491,8 @@ void zZbdManager::FlushTempStreamToSectionRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-createtempreadstreamfrombuffer
  * @recoil-artifact defines .text recoil:function:0x4c0780: zZbdManager::CreateTempReadStreamFromBuffer
+ * @recoil-match byte
+ *
  * Purpose: create a rewound temp stream containing the supplied buffer.
  */
 FILE* zZbdManager::CreateTempReadStreamFromBuffer(void* buffer, unsigned int size)
@@ -483,6 +507,8 @@ FILE* zZbdManager::CreateTempReadStreamFromBuffer(void* buffer, unsigned int siz
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-removetempfiles
  * @recoil-artifact defines .text recoil:function:0x4c07c0: zZbdManager::RemoveTempFiles
+ * @recoil-match byte
+ *
  * Purpose: remove CRT temp files associated with ZBD streaming.
  */
 void zZbdManager::RemoveTempFiles(FILE* tempStream)

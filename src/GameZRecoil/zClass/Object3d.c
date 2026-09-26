@@ -55,6 +55,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.propagatetransformdirty
      * @recoil-artifact defines .text recoil:function:0x44d9e0: CZObject3D::PropagateTransformDirty
+     * @recoil-match byte
+     *
      * Purpose: reset local Object3D transform fields to identity defaults and
      * queue a transform/bounds dirty update for the node subtree.
      */
@@ -98,6 +100,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dinit
      * @recoil-artifact defines .text recoil:function:0x44daa0: CZObject3D::gwObject3DInit
+     * @recoil-match byte
+     *
      * Purpose: allocate an Object3D node, attach zeroed Object3D data, and
      * initialize/queue its default transform state.
      */
@@ -128,6 +132,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3daddchild
      * @recoil-artifact defines .text recoil:function:0x44db10: CZObject3D::gwObject3DAddChild
+     * @recoil-match byte
+     *
      * Purpose: validate parent, child, and Object3D class data before delegating
      * to the generic child-add helper.
      */
@@ -153,6 +159,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.removechild
      * @recoil-artifact defines .text recoil:function:0x44db60: CZObject3D::RemoveChild
+     * @recoil-match byte
+     *
      * Purpose: validate parent, child, and Object3D class data before delegating
      * to the generic child-removal helper.
      */
@@ -178,6 +186,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetvisibleflag
      * @recoil-artifact defines .text recoil:function:0x44dbb0: CZObject3D::gwObject3DSetVisibleFlag
+     *
+     *
      * Purpose: validate Object3D data and set or clear the visible render flag.
      */
     gwObject3DSetVisibleFlag(CZNodePartial * node, int visible)
@@ -214,6 +224,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetcoloralpha
      * @recoil-artifact defines .text recoil:function:0x44dc30: CZObject3D::gwObject3DSetColorAlpha
+     *
+     *
      * Purpose: validate Object3D data, clamp alpha/color inputs, and store the
      * software color override state.
      */
@@ -253,6 +265,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetalphascale
      * @recoil-artifact defines .text recoil:function:0x44dd90: CZObject3D::gwObject3DSetAlphaScale
+     * @recoil-match byte
+     *
      * Purpose: validate Object3D data and store the alpha-scale render value.
      */
     gwObject3DSetAlphaScale(CZNodePartial * node, float alphaScale)
@@ -288,6 +302,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetalphascale
      * @recoil-artifact defines .text recoil:function:0x44de10: CZObject3D::gwObject3DGetAlphaScale
+     * @recoil-match byte
+     *
      * Purpose: validate Object3D data and return the stored alpha-scale value.
      */
     gwObject3DGetAlphaScale(CZNodePartial * node, float* outAlphaScale)
@@ -322,6 +338,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetlitflag
      * @recoil-artifact defines .text recoil:function:0x44de80: CZObject3D::gwObject3DSetLitFlag
+     * @recoil-match byte
+     *
      * Purpose: validate Object3D data and set or clear the lit/model-reference
      * render flag.
      */
@@ -362,6 +380,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetscale
      * @recoil-artifact defines .text recoil:function:0x44df00: CZObject3D::gwObject3DSetScale
+     *
+     *
      * Purpose: validate Object3D data, store local scale, update identity state,
      * and queue transform/bounds propagation.
      */
@@ -399,6 +419,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetscale
      * @recoil-artifact defines .text recoil:function:0x44dfd0: CZObject3D::gwObject3DGetScale
+     *
+     *
      * Purpose: validate Object3D data and return the local scale vector.
      */
     gwObject3DGetScale(CZNodePartial * node, float* outX, float* outY, float* outZ)
@@ -421,6 +443,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetrotation
      * @recoil-artifact defines .text recoil:function:0x44e030: CZObject3D::gwObject3DSetRotation
+     *
+     *
      * Purpose: validate Object3D data, store local rotation, update identity
      * state, and queue transform/bounds propagation.
      */
@@ -458,6 +482,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetrotation
      * @recoil-artifact defines .text recoil:function:0x44e110: CZObject3D::gwObject3DGetRotation
+     *
+     *
      * Purpose: validate Object3D data and return the local rotation vector.
      */
     gwObject3DGetRotation(CZNodePartial * node, float* outX, float* outY, float* outZ)
@@ -480,6 +506,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dtranslaterotation
      * @recoil-artifact defines .text recoil:function:0x44e170: CZObject3D::gwObject3DTranslateRotation
+     *
+     *
      * Purpose: validate Object3D data, add local rotation deltas, update
      * identity state, and queue transform/bounds propagation.
      */
@@ -518,6 +546,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetposition
      * @recoil-artifact defines .text recoil:function:0x44e270: CZObject3D::gwObject3DGetPosition
+     *
+     *
      * Purpose: validate Object3D data and return translation components from
      * the local matrix.
      */
@@ -552,6 +582,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetposition
      * @recoil-artifact defines .text recoil:function:0x44e300: CZObject3D::gwObject3DSetPosition
+     *
+     *
      * Purpose: validate Object3D data, store local matrix translation, update
      * identity state, and queue transform/bounds propagation.
      */
@@ -586,6 +618,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dtranslateposition
      * @recoil-artifact defines .text recoil:function:0x44e3d0: CZObject3D::gwObject3DTranslatePosition
+     *
+     *
      * Purpose: validate Object3D data, add local translation deltas, update
      * identity state, and queue transform/bounds propagation.
      */
@@ -632,6 +666,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetmatrix
      * @recoil-artifact defines .text recoil:function:0x44e4f0: CZObject3D::gwObject3DSetMatrix
+     *
+     *
      * Purpose: validate Object3D data, copy local matrix storage when needed,
      * mark matrix-authored transform state, and enqueue transform propagation.
      */
@@ -673,6 +709,8 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetmatrixptr
      * @recoil-artifact defines .text recoil:function:0x44e5b0: CZObject3D::gwObject3DGetMatrixPtr
+     * @recoil-match byte
+     *
      * Purpose: validate Object3D data and return a pointer to the local matrix
      * storage.
      */
@@ -732,6 +770,8 @@ namespace CZObject3DModelRefLerpQueue
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.add
      * @recoil-artifact defines .text recoil:function:0x438020: CZObject3DModelRefLerpQueue::Add
+     *
+     *
      * Purpose: allocate and append a model-reference lerp task, normalize fade
      * direction/rate, and enable the node's lit/model-reference flag.
      */
@@ -812,6 +852,8 @@ namespace CZObject3DModelRefLerpQueue
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.update
      * @recoil-artifact defines .text recoil:function:0x4381d0: CZObject3DModelRefLerpQueue::Update
+     *
+     *
      * Purpose: advance queued model-reference fades by frame time, apply alpha
      * scale, invoke completion callbacks, and unlink finished tasks.
      */
