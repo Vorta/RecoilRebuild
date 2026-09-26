@@ -7667,7 +7667,7 @@ void __stdcall HudScoreboard::DispatchSetScale(float deltaTime)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduishieldmessagewidget-applylayout
  * @recoil-artifact defines .text recoil:function:0x40eb00: HudUiShieldMessageWidget::ApplyLayout.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Binary Ninja evidence: stdcall layout callback ignores ECX and uses the
@@ -7732,7 +7732,7 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(zReader::Node* layoutRoot)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-shutdown-stub
  * @recoil-artifact defines .text recoil:function:0x40ec90: HudLayoutBase::ShutdownShieldWidget.
- *
+ * @recoil-match byte
  *
  * Purpose: route the HUD layout shutdown slot through the recovered no-op widget method.
  */
@@ -7815,7 +7815,7 @@ void HudUiTimerPanel::Update(float deltaSeconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanel-huduitimerpanel
  * @recoil-artifact defines .text recoil:function:0x40ed80: HudUiTimerPanel::HudUiTimerPanel.
- *
+ * @recoil-match byte
  *
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: initialize the timer panel font, colors, text, and default stopped state.
@@ -7834,7 +7834,7 @@ HudUiTimerPanel::HudUiTimerPanel()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanel-updatehmsfromseconds
  * @recoil-artifact defines .text recoil:function:0x40ee60: HudUiTimerPanel::UpdateHMSFromSeconds.
- *
+ * @recoil-match byte
  *
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: cache elapsed seconds and update the visible timer text.
@@ -7873,7 +7873,7 @@ void HudUiTimerPanel::SetTimeSeconds(int hours, int minutes, int seconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanelfloat-constructordefault
  * @recoil-artifact defines .text recoil:function:0x40ef60: HudUiTimerPanelFloat::HudUiTimerPanelFloat.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize the floating timer panel class state and hide it until
  * gameplay enables the overlay.
@@ -11417,7 +11417,7 @@ int __fastcall ApplyCornerTextQuad(zReader::Node* node, HudUiBar* target, const 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.applymeterquad
  * @recoil-artifact defines .text recoil:function:0x413c10: HudUiLayoutNode::ApplyMeterQuad.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyMeterQuad.
@@ -11476,7 +11476,7 @@ int __fastcall ApplyMeterQuad(
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.applyimagewidget
  * @recoil-artifact defines .text recoil:function:0x413d30: HudUiLayoutNode::ApplyImageWidget.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyImageWidget.
