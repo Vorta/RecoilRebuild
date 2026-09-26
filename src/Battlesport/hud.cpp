@@ -8167,8 +8167,8 @@ inline HudUiShieldMessageWidget::HudUiShieldMessageWidget()
  */
 inline HudUiStatsListElement::HudUiStatsListElement()
     : HudUiElement(0, 0)
-    , triplet(new HudUiTriplet)
 {
+    triplet = new HudUiTriplet;
 }
 
 /**
@@ -8182,14 +8182,13 @@ inline HudUiStringMenu::HudUiStringMenu()
     int y = 0x5f;
     {
         int itemIndex;
-        for (itemIndex = 0; itemIndex < (int)(sizeof(items) / sizeof(items[0])); ++itemIndex) {
+        for (itemIndex = 0; itemIndex < (int)(sizeof(items) / sizeof(items[0])); ++itemIndex, y += 0x0f) {
             HudUiPanelSimple& item = items[itemIndex];
 
             HudUiElement* const child = (HudUiElement*)(&item);
             child->SetPos(5, y);
             AddChild(child);
             child->SetVisible(1);
-            y += 0x0f;
         }
     }
 
@@ -8207,26 +8206,20 @@ inline void RegisterScoreboardWindowClass()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport-hud-timer-register-archive-handler
- * Purpose: register this timer as the context for its timer-data archive callbacks.
- * Original inline member helper hypothesis in retail 0x40f4c0; the timer object
- * supplies the registered callback context.
+ * Inferred original inline helper: retail InitHudLayouts 0x40f4c0 stores the
+ * flag inline, and VC5 /Ob1 reproduces its retail inlining of the panel
+ * constructors' SetTextColor/SetShadow calls only with this expansion present.
+ * Purpose: mark the HUD layout singletons as initialized.
  */
-inline void HudUiTimerPanel::RegisterArchiveHandler()
+inline void SetHudLayoutsInitialized(int initialized)
 {
-    zUtil_ZAR::RegisterSectionHandler(
-        g_HudUiTimerPanel_NodeName,
-        (zZbdSectionCallback)(&HudUiTimerPanel::ZarWriteTimerDataCallback),
-        (zZbdSectionCallback)(&HudUiTimerPanel::ZarReadTimerData),
-        0x64,
-        this
-    );
+    g_HudUiMgrHudLayoutsInitialized = initialized;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgr-inithudlayouts
  * @recoil-artifact defines .text recoil:function:0x40f4c0: HudUiMgr::InitHudLayouts / InitHudLayouts.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize the software and hardware HUD layout singletons for the current display sections.
  */
@@ -8264,13 +8257,17 @@ int __fastcall HudUiMgr::InitHudLayouts(const HudUiRect* displaySection, const H
 
     RegisterScoreboardWindowClass();
 
-    g_HudUiMgrTimerPanel->RegisterArchiveHandler();
+    zUtil_ZAR::RegisterSectionHandler(
+        g_HudUiTimerPanel_NodeName,
+        (zZbdSectionCallback)(&HudUiTimerPanel::ZarWriteTimerDataCallback),
+        (zZbdSectionCallback)(&HudUiTimerPanel::ZarReadTimerData),
+        0x64,
+        g_HudUiMgrTimerPanel
+    );
 
-    g_HudUiMgrHudLayoutsInitialized = 1;
-    if (g_HudUiMgrStatsList != 0) {
-        g_HudUiMgrStatsList->SetVisible(1);
-        g_HudUiMgr.AddChild(g_HudUiMgrStatsList);
-    }
+    SetHudLayoutsInitialized(1);
+    g_HudUiMgrStatsList->SetVisible(1);
+    g_HudUiMgr.AddChild(g_HudUiMgrStatsList);
     return 1;
 }
 
@@ -8303,7 +8300,7 @@ void HudUiStatsListElement::Update(float deltaSeconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduistatslistelement-destructor-huduistatslistelement
  * @recoil-artifact defines .text recoil:function:0x40fa40: HudUiStatsListElement::~HudUiStatsListElement.
- *
+ * @recoil-match byte
  *
  * Purpose: Destroy the owned scoreboard triplet and clear the member during stats-list teardown.
  */
@@ -8316,7 +8313,7 @@ HudUiStatsListElement::~HudUiStatsListElement()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduipanelsimple-constructor
  * @recoil-artifact defines .text recoil:function:0x40fac0: HudUiPanelSimple::HudUiPanelSimple.
- *
+ * @recoil-match byte
  *
  * Purpose: construct a simple HUD text panel with the default green font and shadow state.
  *
@@ -8351,9 +8348,19 @@ HudUiShieldMeterCandidate::HudUiShieldMeterCandidate()
 }
 
 /**
+ * Retail 0x40fb90 copies the elapsed seconds through the x87 stack (fld/fstp
+ * into its blob slot), the shape VC5 emits for an inline float return.
+ * Purpose: read a timer panel's elapsed seconds for archive serialization.
+ */
+inline float TimerPanelElapsedSeconds(const HudUiTimerPanel* timer)
+{
+    return timer->elapsedSeconds;
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitimerpanel-zarwritetimerdatacallback
  * @recoil-artifact defines .text recoil:function:0x40fb90: HudUiTimerPanel::ZarWriteTimerDataCallback.
- *
+ * @recoil-match byte
  *
  * Source owner: hud_ui.hud_ui_timer_panel_class.
  * Purpose: write the timer elapsed-seconds blob into the HUD timer data section.
@@ -8363,12 +8370,8 @@ void __fastcall HudUiTimerPanel::ZarWriteTimerDataCallback(
     HudUiTimerPanel* userData
 )
 {
-    zUtil_ZAR::WriteSectionBlob(
-        sectionCtx,
-        g_HudUiTimerPanel_TimerDataSectionName,
-        &userData->elapsedSeconds,
-        sizeof(userData->elapsedSeconds)
-    );
+    float value = TimerPanelElapsedSeconds(userData);
+    zUtil_ZAR::WriteSectionBlob(sectionCtx, g_HudUiTimerPanel_TimerDataSectionName, &value, sizeof(value));
 }
 
 /**
@@ -8494,24 +8497,25 @@ void HudUiMgr::ShutdownResources()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgr-activatehud
  * @recoil-artifact defines .text recoil:function:0x40ff50: HudUiMgr::ActivateHud.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: activate the HUD viewport, reset shield message state, and enable
  * the sensor HUD block.
  */
-void __fastcall HudUiMgr::ActivateHud(const HudUiRect* hudRectOrNull, const HudUiRect* viewRectOrNull)
+int __fastcall HudUiMgr::ActivateHud(const HudUiRect* hudRectOrNull, const HudUiRect* viewRectOrNull)
 {
     OnViewportChanged(hudRectOrNull, viewRectOrNull);
     g_HudUiMgrShieldMessageWidget->viewportResetFrame = -1;
     g_HudUiMgrShieldMessageWidget->state = 0;
     g_HudUiMgrSensorBlock.state = 1;
+    return 1;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgr-onviewportchanged
  * @recoil-artifact defines .text recoil:function:0x40ff80: HudUiMgr::OnViewportChanged.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update HUD/view rectangle globals and refresh active viewport HUD
@@ -8532,9 +8536,10 @@ void __fastcall HudUiMgr::OnViewportChanged(const HudUiRect* hudRectOrNull, cons
     }
 
     const int viewWidth = viewRectOrNull->right - viewRectOrNull->left;
-    const float viewWidthFloat = (float)(viewWidth);
     const int viewHeight = viewRectOrNull->bottom - viewRectOrNull->top;
-    const float viewHeightFloat = (float)(viewHeight);
+    zVec2 viewSize;
+    viewSize.x = (float)(viewWidth);
+    viewSize.y = (float)(viewHeight);
 
     g_HudUiMgrHudRectW = (float)(hudRectOrNull->right - hudRectOrNull->left);
     g_HudUiMgrHudRectH = (float)(hudRectOrNull->bottom - hudRectOrNull->top);
@@ -8542,9 +8547,9 @@ void __fastcall HudUiMgr::OnViewportChanged(const HudUiRect* hudRectOrNull, cons
     g_HudUiMgrReticleMapBiasY = (float)(hudRectOrNull->top);
 
     const int snapRadius = viewWidth / 10;
-    g_HudUiMgrReticleMapScaleHalfW = (g_HudUiMgrHudRectW / viewWidthFloat) * viewWidthFloat * 0.5f;
+    g_HudUiMgrReticleMapScaleHalfW = (g_HudUiMgrHudRectW / viewSize.x) * viewSize.x * 0.5f;
     g_HudUiMgrReticleSnapRadiusSq = snapRadius * snapRadius;
-    g_HudUiMgrReticleMapScaleHalfH = (g_HudUiMgrHudRectH / viewHeightFloat) * viewHeightFloat * 0.5f;
+    g_HudUiMgrReticleMapScaleHalfH = (g_HudUiMgrHudRectH / viewSize.y) * viewSize.y * 0.5f;
 
     HudUiMgrSensor::SetViewportRect(
         g_HudUiMgrSensorFxRect.left,
@@ -8559,16 +8564,12 @@ void __fastcall HudUiMgr::OnViewportChanged(const HudUiRect* hudRectOrNull, cons
 
     HudUiMgrObjective::Update();
 
-    if (g_HudUiTopMessageStack != 0) {
-        g_HudUiTopMessageStack->SetTextColors(0x0020bf40, 0x0020bf40);
-        g_HudUiTopMessageStack->SetXAll(zVideo::GetPrimarySurfaceWidth() / 2);
-    }
+    g_HudUiTopMessageStack->SetTextColors(0x0020bf40, 0x0020bf40);
+    g_HudUiTopMessageStack->SetXAll(zVideo::GetPrimarySurfaceWidth() / 2);
 
-    if (g_HudUiChatMessageStack != 0) {
-        g_HudUiChatMessageStack->SetTextColors(0x0020bf40, 0x0020bf40);
-        g_HudUiChatMessageStack->SetXAll(zVideo::GetPrimarySurfaceWidth() / 2);
-        g_HudUiChatMessageStack->SetYDescending(zVideo::GetPrimarySurfaceHeight() - 0x88);
-    }
+    g_HudUiChatMessageStack->SetTextColors(0x0020bf40, 0x0020bf40);
+    g_HudUiChatMessageStack->SetXAll(zVideo::GetPrimarySurfaceWidth() / 2);
+    g_HudUiChatMessageStack->SetYDescending(zVideo::GetPrimarySurfaceHeight() - 0x88);
 }
 
 /**
@@ -9041,42 +9042,37 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.setviewportrect
  * @recoil-artifact defines .text recoil:function:0x410d10: HudUiMgrSensor::SetViewportRect.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zhud_ui.cpp.
  * Purpose: store raw/scaled HUD sensor viewport bounds and update the active source rectangle.
  */
 void __fastcall SetViewportRect(int x, int y, int width, int height)
 {
-    const int right = x + width;
-    const int bottom = y + height;
+    int right;
+    int bottom;
 
     g_HudUiMgrSensorBlock.sensorRectRaw.left = x;
-    g_HudUiMgrSensorBlock.sensorRectRaw.right = right;
+    g_HudUiMgrSensorBlock.sensorRectRaw.right = right = x + width;
     g_HudUiMgrSensorBlock.sensorRectRaw.top = y;
-    g_HudUiMgrSensorBlock.sensorRectRaw.bottom = bottom;
+    g_HudUiMgrSensorBlock.sensorRectRaw.bottom = bottom = y + height;
 
-    if (zOpt::GetReplicateMode() == 0) {
+    if (zOpt::GetReplicateMode() != 0) {
+        g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = (float)(x / 2);
+        g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = (float)(y / 2);
+        g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = (float)(width / 2) + g_HudUiMgrSensorBlock.sensorPiVSrcRect.left;
+        g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom
+            = (float)(height / 2) + g_HudUiMgrSensorBlock.sensorPiVSrcRect.top;
+        g_HudUiMgrSensorBlock.sensorRectScaled.left = x / 2;
+        g_HudUiMgrSensorBlock.sensorRectScaled.top = y / 2;
+        g_HudUiMgrSensorBlock.sensorRectScaled.right = g_HudUiMgrSensorBlock.sensorRectScaled.left + width / 2;
+        g_HudUiMgrSensorBlock.sensorRectScaled.bottom = g_HudUiMgrSensorBlock.sensorRectScaled.top + height / 2;
+    } else {
         g_HudUiMgrSensorBlock.sensorRectScaled = g_HudUiMgrSensorBlock.sensorRectRaw;
         g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = (float)(x);
         g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = (float)(y);
         g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = (float)(right);
         g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom = (float)(bottom);
-    } else {
-        const int halfX = x / 2;
-        const int halfY = y / 2;
-        const int halfWidth = width / 2;
-        const int halfHeight = height / 2;
-
-        g_HudUiMgrSensorBlock.sensorPiVSrcRect.left = (float)(halfX);
-        g_HudUiMgrSensorBlock.sensorPiVSrcRect.top = (float)(halfY);
-        g_HudUiMgrSensorBlock.sensorRectScaled.left = halfX;
-        g_HudUiMgrSensorBlock.sensorRectScaled.top = halfY;
-        g_HudUiMgrSensorBlock.sensorPiVSrcRect.right = (float)(halfWidth) + g_HudUiMgrSensorBlock.sensorPiVSrcRect.left;
-        g_HudUiMgrSensorBlock.sensorRectScaled.right = halfX + halfWidth;
-        g_HudUiMgrSensorBlock.sensorRectScaled.bottom = halfY + halfHeight;
-        g_HudUiMgrSensorBlock.sensorPiVSrcRect.bottom
-            = (float)(halfHeight) + g_HudUiMgrSensorBlock.sensorPiVSrcRect.top;
     }
 
     g_HudUiMgrSensorBlock.sensorClampHalfW
@@ -13252,4 +13248,3 @@ void zFMV_Action::RunBlockingTimed()
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
 extern int g_HudSortRangeIdCounterAlignment2;
-extern int g_HudSortRangeIdCounterAlignment3;

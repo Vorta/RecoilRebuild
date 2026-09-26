@@ -408,7 +408,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath);
 int __fastcall
 UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normalizedY, zVec3* worldHitPoint);
 void __fastcall OnViewportChanged(const HudUiRect* hudRectOrNull, const HudUiRect* viewRectOrNull);
-void __fastcall ActivateHud(const HudUiRect* hudRectOrNull, const HudUiRect* viewRectOrNull);
+int __fastcall ActivateHud(const HudUiRect* hudRectOrNull, const HudUiRect* viewRectOrNull);
 void DestroySensorWindow();
 int EnableHud();
 int DisableHud();
