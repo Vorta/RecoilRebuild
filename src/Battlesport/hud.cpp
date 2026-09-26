@@ -7955,21 +7955,18 @@ void HudUiCounter::ReleaseStateImages()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduicounter-updatelayoutposition
  * @recoil-artifact defines .text recoil:function:0x40f130: HudUiCounter::UpdateLayoutPosition.
- *
+ * @recoil-match byte
  *
  * Purpose: Places the counter relative to the HUD origin and rebuilds the local clip viewport rectangle.
  */
 void HudUiCounter::UpdateLayoutPosition()
 {
-    const int localX = layoutX;
-    const int localY = layoutY;
-    SetPos(g_HudUiMgrHudOriginX + localX, g_HudUiMgrHudOriginY + localY);
+    SetPos(g_HudUiMgrHudOriginX + layoutX, g_HudUiMgrHudOriginY + layoutY);
 
-    zVidImagePartial* const image = stateImages[0];
-    clipViewportRect.left = localX;
-    clipViewportRect.top = localY;
-    clipViewportRect.right = localX + image->width;
-    clipViewportRect.bottom = localY + image->height;
+    clipViewportRect.left = layoutX;
+    clipViewportRect.top = layoutY;
+    clipViewportRect.right = layoutX + stateImages[0]->width;
+    clipViewportRect.bottom = layoutY + stateImages[0]->height;
 }
 
 /**
@@ -8024,7 +8021,7 @@ HudUiNanitePanel::HudUiNanitePanel()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduitripletpanel-initlayout
  * @recoil-artifact defines .text recoil:function:0x40f2e0: HudUiNanitePanel::InitLayout.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: preserve the recovered HUD behavior for the manager's triplet panel layout.
@@ -8037,19 +8034,39 @@ void HudUiNanitePanel::InitLayout(zReader::Node* layoutRoot)
     anchor[0] = layoutWidget2->GetCenterX();
     anchor[1] = layoutWidget2->GetCenterY();
 
-    zReader::Node* const layoutPayload = layoutRoot->value.nodes;
     HudUiRect clipRect;
-    HudUiLayoutNode::ReadRectOffsetAndSize(&layoutPayload[1], &clipRect, 0, 0, 0);
+    HudUiLayoutNode::ReadRectOffsetAndSize(&layoutRoot->value.nodes[1], &clipRect, 0, 0, 0);
 
-    zVidImagePartial* const sharedImage
-        = HudUiLayoutNode::ApplyImageWidget(&layoutPayload[2], &items[0], baseX, 0, anchor, 0, 0);
-    HudUiLayoutNode::ApplyImageWidget(&layoutPayload[3], &items[1], baseX, 0, anchor, sharedImage, 0);
-    HudUiLayoutNode::ApplyImageWidget(&layoutPayload[4], &items[2], baseX, 0, anchor, sharedImage, 0);
+    zVidImagePartial* const sharedImage = HudUiLayoutNode::ApplyImageWidget(
+        &layoutRoot->value.nodes[2],
+        &g_HudUiMgrNanitePanel.items[0],
+        baseX,
+        0,
+        anchor,
+        0,
+        0
+    );
+    HudUiLayoutNode::ApplyImageWidget(
+        &layoutRoot->value.nodes[3],
+        &g_HudUiMgrNanitePanel.items[1],
+        baseX,
+        0,
+        anchor,
+        sharedImage,
+        0
+    );
+    HudUiLayoutNode::ApplyImageWidget(
+        &layoutRoot->value.nodes[4],
+        &g_HudUiMgrNanitePanel.items[2],
+        baseX,
+        0,
+        anchor,
+        sharedImage,
+        0
+    );
 
     HudUiWidget* const anchorItem = &items[2];
-    const int y = anchorItem->GetCenterY();
-    const int x = anchorItem->GetCenterX();
-    SetPos(x, y);
+    SetPos(anchorItem->GetCenterX(), anchorItem->GetCenterY());
 
     clipRect.left += baseX;
     clipRect.right += baseX;
@@ -13233,3 +13250,6 @@ void zFMV_Action::RunBlockingTimed()
  * Purpose: align the ID counter so SortRange's unchanged source emits the retail order.
  */
 extern int g_HudSortRangeIdCounterAlignment0;
+extern int g_HudSortRangeIdCounterAlignment1;
+extern int g_HudSortRangeIdCounterAlignment2;
+extern int g_HudSortRangeIdCounterAlignment3;
