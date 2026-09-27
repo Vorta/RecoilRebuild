@@ -7213,17 +7213,6 @@ inline void HudUiContainer::SetEnabled(int enabledValue)
 }
 
 /**
- * Provisional intermediate meter construction for retail 0x40d9e0.
- * Purpose: initialize the two dimension words.
- * Called for each manager meter before installing the final table.
- */
-HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate()
-{
-    height = 0;
-    width = 0;
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-huduimessage
  * @recoil-artifact defines .text recoil:function:0x40da00: HudUiMessage::HudUiMessage.
  * @recoil-match byte
@@ -7731,12 +7720,14 @@ int __stdcall HudUiShieldMessageWidget::ApplyLayout(zReader::Node* layoutRoot)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-shutdown-stub
- * @recoil-artifact defines .text recoil:function:0x40ec90: HudLayoutBase::ShutdownShieldWidget.
+ * @recoil-artifact defines .text recoil:function:0x40ec90: HudUiShieldMessageWidget::ShutdownShieldWidget.
  * @recoil-match byte
  *
- * Purpose: route the HUD layout shutdown slot through the recovered no-op widget method.
+ * Evidence: retail ShutdownResources calls it with ECX=g_HudUiMgrShieldMessageWidget;
+ * the body reads the global like HudUiNanitePanel::ShutdownItems.
+ * Purpose: shut down the shield widget through the recovered no-op widget method.
  */
-void HudLayoutBase::ShutdownShieldWidget()
+void HudUiShieldMessageWidget::ShutdownShieldWidget()
 {
     g_HudUiMgrShieldMessageWidget->widget.Shutdown();
 }
@@ -8332,22 +8323,6 @@ inline HudUiPanelSimple::HudUiPanelSimple(const char* text, int initX, int initY
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduishieldmetercandidate-huduishieldmetercandidate
- * @recoil-artifact defines .text recoil:function:0x40fb70: HudUiShieldMeterCandidate::HudUiShieldMeterCandidate.
- *
- *
- * Purpose: initialize the shield meter's two dimension words after core construction.
- * Retail visibly calls the core constructor, installs the final table, and
- * clears the two dimension words. The shared implicit base must leave no
- * additional construction stage in this candidate.
- */
-HudUiShieldMeterCandidate::HudUiShieldMeterCandidate()
-{
-    height = 0;
-    width = 0;
-}
-
-/**
  * Retail 0x40fb90 copies the elapsed seconds through the x87 stack (fld/fstp
  * into its blob slot), the shape VC5 emits for an inline float return.
  * Purpose: read a timer panel's elapsed seconds for archive serialization.
@@ -8393,7 +8368,7 @@ void __stdcall HudUiTimerPanel::ZarReadTimerData(const float* buffer, int byteCo
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimgr-shutdownresources
  * @recoil-artifact defines .text recoil:function:0x40fbd0: HudUiMgr::ShutdownResources.
- *
+ * @recoil-match byte
  *
  * Purpose: release HUD image resources, destroy allocated HUD widgets, and reset manager-owned globals during shutdown.
  */
@@ -8414,10 +8389,10 @@ void HudUiMgr::ShutdownResources()
     zVid_Image::ReleaseIfNotDefault(g_HudUiMgrSensorTargetMarkerImages[4]);
 
     g_HudUiMgrNanitePanel.ShutdownItems();
-    HudLayoutBase::ShutdownShieldWidget();
+    g_HudUiMgrShieldMessageWidget->ShutdownShieldWidget();
 
     {
-        for (size_t index = 1; index < 10; ++index) {
+        for (int index = 1; index < 10; ++index) {
             g_HudUiMgrMessages[index].ReleaseImages();
         }
     }
@@ -8432,63 +8407,45 @@ void HudUiMgr::ShutdownResources()
         }
     }
 
-    zGame::ReturnOnlyStub();
+    g_HudLayoutSW.ReleaseImages();
     g_HudLayoutHW.ReleaseImages();
 
-    if (g_HudUiMgrTimerPanelFloat != 0) {
-        delete ((HudUiPanel*)(g_HudUiMgrTimerPanelFloat));
-        g_HudUiMgrTimerPanelFloat = 0;
-    }
+    delete (HudUiPanel*)g_HudUiMgrTimerPanelFloat;
+    g_HudUiMgrTimerPanelFloat = 0;
 
+    // Retail loads each non-virtual owner pointer as the destructor receiver
+    // and keeps a copy for operator delete (ECX first, then ESI), the shape of
+    // an explicit destructor call on the global followed by operator delete.
+    HudUiStringMenu* const doomedStringMenu = g_HudUiMgrStringMenu;
     if (g_HudUiMgrStringMenu != 0) {
-        delete g_HudUiMgrStringMenu;
-        g_HudUiMgrStringMenu = 0;
+        g_HudUiMgrStringMenu->~HudUiStringMenu();
+        operator delete(doomedStringMenu);
     }
+    g_HudUiMgrStringMenu = 0;
 
+    HudUiShieldMessageWidget* const doomedShieldMessageWidget = g_HudUiMgrShieldMessageWidget;
     if (g_HudUiMgrShieldMessageWidget != 0) {
-        delete g_HudUiMgrShieldMessageWidget;
-        g_HudUiMgrShieldMessageWidget = 0;
+        g_HudUiMgrShieldMessageWidget->~HudUiShieldMessageWidget();
+        operator delete(doomedShieldMessageWidget);
     }
+    g_HudUiMgrShieldMessageWidget = 0;
 
-    if (g_HudUiMgrObjectiveCounterTextPanel != 0) {
-        delete ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel));
-        g_HudUiMgrObjectiveCounterTextPanel = 0;
-    }
-
-    if (g_HudUiMgrTimerPanel != 0) {
-        delete ((HudUiPanel*)(g_HudUiMgrTimerPanel));
-        g_HudUiMgrTimerPanel = 0;
-    }
-
-    if (g_HudUiMgrStatsList != 0) {
-        delete g_HudUiMgrStatsList;
-        g_HudUiMgrStatsList = 0;
-    }
-
-    if (g_HudUiMgrObjectiveSummaryTextPanel != 0) {
-        delete g_HudUiMgrObjectiveSummaryTextPanel;
-        g_HudUiMgrObjectiveSummaryTextPanel = 0;
-    }
-
-    if (g_HudUiMgrObjectiveDescTextPanel != 0) {
-        delete g_HudUiMgrObjectiveDescTextPanel;
-        g_HudUiMgrObjectiveDescTextPanel = 0;
-    }
-
-    if (g_HudUiMgrObjectiveLabelTextPanel != 0) {
-        delete g_HudUiMgrObjectiveLabelTextPanel;
-        g_HudUiMgrObjectiveLabelTextPanel = 0;
-    }
-
-    if (g_HudUiTopMessageStack != 0) {
-        delete ((HudUiTopMessageStack*)(g_HudUiTopMessageStack));
-        g_HudUiTopMessageStack = 0;
-    }
-
-    if (g_HudUiChatMessageStack != 0) {
-        delete ((HudUiChatMessageStack*)(g_HudUiChatMessageStack));
-        g_HudUiChatMessageStack = 0;
-    }
+    delete (HudUiPanel*)g_HudUiMgrObjectiveCounterTextPanel;
+    g_HudUiMgrObjectiveCounterTextPanel = 0;
+    delete (HudUiPanel*)g_HudUiMgrTimerPanel;
+    g_HudUiMgrTimerPanel = 0;
+    delete g_HudUiMgrStatsList;
+    g_HudUiMgrStatsList = 0;
+    delete g_HudUiMgrObjectiveSummaryTextPanel;
+    g_HudUiMgrObjectiveSummaryTextPanel = 0;
+    delete g_HudUiMgrObjectiveDescTextPanel;
+    g_HudUiMgrObjectiveDescTextPanel = 0;
+    delete g_HudUiMgrObjectiveLabelTextPanel;
+    g_HudUiMgrObjectiveLabelTextPanel = 0;
+    delete ((HudUiTopMessageStack*)(g_HudUiTopMessageStack));
+    g_HudUiTopMessageStack = 0;
+    delete ((HudUiChatMessageStack*)(g_HudUiChatMessageStack));
+    g_HudUiChatMessageStack = 0;
 
     g_HudUiMgrHudLayoutsInitialized = 0;
     g_HudUiMgrHudLoaded = 0;
@@ -9573,7 +9530,7 @@ void TickMeterFillAnimation()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.updatemeterxpoints
  * @recoil-artifact defines .text recoil:function:0x4118b0: HudUiMgrObjective::UpdateMeterXPoints.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: recompute the objective meter X edges from the objective widget
@@ -10401,6 +10358,15 @@ inline HudLayoutBase::HudLayoutBase()
 HudLayoutSW::HudLayoutSW() { }
 
 /**
+ * Logical fold alias of the shared RET representative 0x4076f0
+ * (recoil:logical-function:0x4076f0:hud-layout-sw-release-images).
+ * Evidence: retail ShutdownResources passes &g_HudLayoutSW in ECX to 0x4076f0
+ * immediately before HudLayoutHW::ReleaseImages on the sibling layout.
+ * Purpose: release software-layout images; the software layout owns none.
+ */
+void HudLayoutSW::ReleaseImages() { }
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-setactive
  * @recoil-artifact defines .text recoil:function:0x412bd0: HudLayoutBase::SetActive.
  * @recoil-match byte
@@ -11093,10 +11059,12 @@ void DestroySensorWindow()
 
     playback->StopAndClose();
 
-    playback = g_HudUiSensorWindowPlayback;
-    if (playback != 0) {
-        playback->~CZFMVPlayback();
-        ::operator delete(playback);
+    // Same non-virtual delete lowering as ShutdownResources: receiver in ECX,
+    // operator delete argument kept in ESI.
+    CZFMVPlayback* const doomedPlayback = g_HudUiSensorWindowPlayback;
+    if (g_HudUiSensorWindowPlayback != 0) {
+        g_HudUiSensorWindowPlayback->~CZFMVPlayback();
+        ::operator delete(doomedPlayback);
     }
 
     g_HudUiSensorWindowPlayback = 0;
@@ -11865,7 +11833,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.getfxrect
  * @recoil-artifact defines .text recoil:function:0x414300: HudUiMgrSensor::GetFxRect.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: return the recovered HUD value exposed by HudUiMgrSensor::GetFxRect.
@@ -12672,7 +12640,7 @@ void CHudUiMainMenuDialogLoadButton::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-recoilstatemainmenutransition
  * @recoil-artifact defines .text recoil:function:0x415170: RecoilStateMainMenuTransition::RecoilStateMainMenuTransition.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize the static main-menu transition app state and clear its
  * dialog/audio ownership fields.
@@ -12997,7 +12965,7 @@ void RecoilStateMainMenuTransition::ClearPausedAudioSnapshot()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-queueenter
  * @recoil-artifact defines .text recoil:function:0x415650: RecoilStateMainMenuTransition::QueueEnter.
- *
+ * @recoil-match byte
  *
  * Purpose: record the requested main-menu entry route and queue the global
  * transition state on RecoilApp's app-state stack.
@@ -13012,7 +12980,7 @@ void __fastcall RecoilStateMainMenuTransition::QueueEnter(RecoilMainMenuEntryRou
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-setdeferredvideomodeindex
  * @recoil-artifact defines .text recoil:function:0x415670: RecoilStateMainMenuTransition::SetDeferredVideoModeIndex.
- *
+ * @recoil-match byte
  *
  * Purpose: store the requested video-mode index on the global main-menu
  * transition state for deferred application during transition shutdown.
@@ -13025,7 +12993,7 @@ void __fastcall RecoilStateMainMenuTransition::SetDeferredVideoModeIndex(zVidMod
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduibackgroundconfirmquit-constructor
  * @recoil-artifact defines .text recoil:function:0x415680: HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiBackgroundConfirmQuit.cpp.
  * Purpose: Construct the confirm-quit dialog, bind its OK/cancel buttons, and load its ZRD layout.
@@ -13107,7 +13075,7 @@ void RecoilStateConfirmQuit::AtExitDestructor()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-recoilstateconfirmquit
  * @recoil-artifact defines .text recoil:function:0x415850: RecoilStateConfirmQuit::RecoilStateConfirmQuit.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: initialize the confirm-quit app state and clear its dialog pointer.
@@ -13247,4 +13215,3 @@ void zFMV_Action::RunBlockingTimed()
  */
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
-extern int g_HudSortRangeIdCounterAlignment2;

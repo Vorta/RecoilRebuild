@@ -48,7 +48,6 @@ struct HudUiSlot;
 struct HudUiMeterDimensionsCandidate;
 struct HudUiManagerMeterBaseCandidate;
 struct HudUiManagerMeterCandidate;
-struct HudUiShieldMeterCandidate;
 struct GameNetPlayerRow;
 struct zZbdSectionCallbackCtx;
 struct zSndSample;
@@ -325,7 +324,6 @@ struct HudLayoutBase : HudUiContainer {
     HudUiWidget widget0;
 
     HudLayoutBase();
-    static void ShutdownShieldWidget();
     void Destructor();
     virtual int SetActive(int active);
     virtual void UpdateAll(float deltaSeconds);
@@ -338,6 +336,7 @@ struct HudLayoutBase : HudUiContainer {
 
 struct HudLayoutSW : HudLayoutBase {
     HudLayoutSW();
+    void ReleaseImages();
     virtual int SetActive(int active);
 };
 
@@ -1509,25 +1508,67 @@ struct HudUiTailBar : HudUiBar {
     }
 };
 
-struct HudUiMeterDimensionsCandidate : HudUiBar {
+/**
+ * Provisional manager-meter base owning the meter dimension words.
+ * Evidence: retail tables 0x4ce398 (this class), 0x4ce320 (manager meter),
+ * 0x4ce280 (HudUiTailBar) and 0x4d3ce8 (HudUiBar) are byte-identical, so the
+ * meter classes add state but no virtual overrides.
+ * Purpose: hold and clear the meter height and width words.
+ */
+struct HudUiManagerMeterBaseCandidate : HudUiBar {
     int height;
     int width;
+
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-manager-meter-base.constructor
+     * @recoil-artifact defines .text recoil:function:0x40d9e0: HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate.
+     *
+     *
+     * Purpose: clear the meter dimension words after bar construction.
+     * Inline: retail 0x40fb70 expands it inside the out-of-line manager-meter
+     * constructor, while HudUiMgrData's two embedded meters call this copy.
+     */
+    HudUiManagerMeterBaseCandidate()
+    {
+        height = 0;
+        width = 0;
+    }
 };
 
 /**
- * Provisional manager-meter base for retail constructor 0x40d9e0. Retail
- * manager construction calls this base twice before installing the same
- * most-derived manager-meter table for its two embedded leaves.
+ * Provisional intermediate meter class; ApplyMeterQuad receives meters
+ * through it. Evidence: its implicit construction level reproduces the
+ * retail HudUiMgrData meters calling the base constructor out of line.
+ * Purpose: name the meter type shared by layout meter updates.
  */
-struct HudUiManagerMeterBaseCandidate : HudUiMeterDimensionsCandidate {
-    HudUiManagerMeterBaseCandidate();
+struct HudUiMeterDimensionsCandidate : HudUiManagerMeterBaseCandidate { };
+
+/**
+ * Provisional manager meter. Evidence: the shield widget meter (retail
+ * 0x40fb70) and both HudUiMgrData meters install the same table 0x4ce320,
+ * so they share this class.
+ * Purpose: the complete manager and shield meter type.
+ */
+struct HudUiManagerMeterCandidate : HudUiMeterDimensionsCandidate {
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-manager-meter.constructor
+     * @recoil-artifact defines .text recoil:function:0x40fb70: HudUiManagerMeterCandidate::HudUiManagerMeterCandidate.
+     *
+     *
+     * Purpose: construct a manager meter through its dimension base.
+     * Inline: InitHudLayouts calls this out-of-line copy for the shield
+     * widget meter; the copy expands the base dimension clears.
+     */
+    HudUiManagerMeterCandidate() { }
 };
 
-struct HudUiManagerMeterCandidate : HudUiManagerMeterBaseCandidate { };
-
-struct HudUiShieldMeterCandidate : HudUiMeterDimensionsCandidate {
-    HudUiShieldMeterCandidate();
-};
+/**
+ * The shield widget's meter is a manager meter (retail 0x40fb70 installs table
+ * 0x4ce320). The role name also keeps this header's C1 ID-counter total
+ * unchanged for counter-sensitive consumers (0x4026d0, 0x42cbd0).
+ * Purpose: name the shield widget meter type.
+ */
+typedef HudUiManagerMeterCandidate HudUiShieldMeterCandidate;
 
 struct HudUiMgrSensorBlock {
     int state;
@@ -1825,6 +1866,16 @@ struct HudUiMgrReticleMapCache {
 struct HudUiMgrMessageSelectionState {
     int activeWeaponMessageIndex;
     int activeWeaponSideIndex;
+
+    /**
+     * User-authorized exception: match-proofs.md "0x40fb70 VC5 inline-budget
+     * alignment exception". This empty inline constructor emits no code; its
+     * expansion in HudUiMgrData supplies the late /Ob1 inline expansion that
+     * keeps both embedded meters calling the out-of-line base constructor
+     * (retail 0x40d9e0). Evidence in build/diagnostics/authored-byte-work-20260926.md.
+     * Purpose: default-construct the selection pair without initializing it.
+     */
+    HudUiMgrMessageSelectionState() { }
 };
 
 struct HudLoadingCheckpointTable {
@@ -2763,9 +2814,8 @@ struct HudUiShieldMessageWidget {
     unsigned char unknown_4bc[0x08];
 
     static int __stdcall ApplyLayout(zReader::Node* layoutRoot);
+    void ShutdownShieldWidget();
 };
-
-typedef HudUiShieldMessageWidget HudUiShieldMessageWidgetState;
 
 /**
  * HudUiTimerPanelFloat owner evidence: BN constructor 0x40ef60 installs the
@@ -3297,7 +3347,6 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, height) == 0x138);
 RECOIL_STATIC_ASSERT(offsetof(HudUiMeterDimensionsCandidate, width) == 0x13c);
 RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterBaseCandidate) == 0x140);
 RECOIL_STATIC_ASSERT(sizeof(HudUiManagerMeterCandidate) == 0x140);
-RECOIL_STATIC_ASSERT(sizeof(HudUiShieldMeterCandidate) == 0x140);
 RECOIL_STATIC_ASSERT(sizeof(HudUiTextInput) == 0x110);
 RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, buffer) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(HudUiTextInput, capacity) == 0x08);
