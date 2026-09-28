@@ -166,8 +166,7 @@ int __fastcall InstanceEvent(zDEClient_CraterEventTemplate* eventTemplate, int p
     zGeometry_ClipPatchOutput::ApplyNodeDiPairs(featureInstance->clipPatchOutput);
     zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
 
-    if (playEffectAnim != 0 && featureInstance->displaySourceEntry != 0
-        && featureInstance->displaySourceEntry->effectAnimEntry != 0) {
+    if (playEffectAnim != 0 && featureInstance->displaySourceEntry->effectAnimEntry != 0) {
         zEffectAnim::SetTransformRotAndVelocityThunk(
             featureInstance->displaySourceEntry->effectAnimEntry,
             0,
@@ -591,22 +590,20 @@ void __cdecl ClearFeatureDisplayNodes()
         }
     }
 
-    CZNodePartial* child = CZClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
-    while (child != 0) {
+    CZNodePartial* child;
+    while ((child = CZClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName)) != 0) {
+        unsigned int displayInstanceValue = 0;
         while (child->listCountA > 0) {
             CZClass::RemoveChild(child->listA[0], child);
         }
 
-        unsigned int displayInstanceValue = 0;
         CZClass::gwNodeGetUserData(child, &displayInstanceValue);
         if (displayInstanceValue != 0) {
-            zDiPartial* displayInstance = (zDiPartial*)((unsigned int)(displayInstanceValue));
             CZClass::gwNodeSetDisplayInstance(child, 0);
-            zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            zModel_DiPool::FreeIfUnreferenced((zDiPartial*)(displayInstanceValue));
         }
 
         CZClass::DeleteNodeByType(child);
-        child = CZClass::FindByTypeAndName(6, g_zDEClient_FeatureNodeName);
     }
 }
 
@@ -620,19 +617,18 @@ void __cdecl ClearFeatureDisplayNodes()
  */
 int __fastcall AppendFeatureEntry(int featureType, const void* featureEventData)
 {
-    size_t eventDataBytes = 0;
-    if (featureType == 1) {
-        eventDataBytes = sizeof(zDEClient_CraterEventTemplate);
-    } else if (featureType == 3) {
-        eventDataBytes = sizeof(zDEClient_QSandEventTemplate);
-    } else {
-        return 0;
-    }
-
     zDEClient_FeatureEntry featureEntry;
     featureEntry.featureType = featureType;
-    memset(&featureEntry.eventData, 0, sizeof(featureEntry.eventData));
-    memcpy(&featureEntry.eventData, featureEventData, eventDataBytes);
+    switch (featureType) {
+    case 1:
+        featureEntry.eventData.crater = *(const zDEClient_CraterEventTemplate*)(featureEventData);
+        break;
+    case 3:
+        featureEntry.eventData.quickSand = *(const zDEClient_QSandEventTemplate*)(featureEventData);
+        break;
+    default:
+        return 0;
+    }
     featureEntry.reloadFlag = 0;
 
     g_zDEClient_FeatureList.push_back(featureEntry);
@@ -679,22 +675,17 @@ int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx* callbackCtx)
         featureEntry.reloadFlag = 0;
 
         char sectionName[0x40];
-        const char* sectionNameFormat;
-        int sectionIndex;
         switch (featureEntry.featureType) {
         case 1:
-            sectionNameFormat = g_zDEClient_CraterNameFmt;
-            sectionIndex = craterSectionIndex++;
+            sprintf(sectionName, g_zDEClient_CraterNameFmt, craterSectionIndex++);
             break;
         case 3:
-            sectionNameFormat = g_zDEClient_QuickSandNameFmt;
-            sectionIndex = qSandSectionIndex++;
+            sprintf(sectionName, g_zDEClient_QuickSandNameFmt, qSandSectionIndex++);
             break;
         default:
             continue;
         }
 
-        sprintf(sectionName, sectionNameFormat, sectionIndex);
         result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, &featureEntry, sizeof(featureEntry));
     }
 

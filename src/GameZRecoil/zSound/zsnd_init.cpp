@@ -325,14 +325,19 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
         return 0;
     }
 
-    const int activeBackend = g_zSnd_ActiveBackend;
     g_zSnd_PreInitialized = 1;
     g_zSnd_IsInitialized = 0;
     g_zSnd_WindowHandle = hwnd;
 
-    if (activeBackend == 0 || activeBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
         g_zSnd_BackendDevice = 0;
         g_zSnd_BackendListenerHandle = 0;
+        break;
+    case 0:
+        g_zSnd_BackendDevice = 0;
+        g_zSnd_BackendListenerHandle = 0;
+        break;
     }
 
     g_zSndCdFlags &= ~0x03;
@@ -401,7 +406,7 @@ int __cdecl Shutdown()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndsystem-init
  * @recoil-artifact defines .text recoil:function:0x4a1420: zSndSystemInit.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize the selected sound backend, load the sound configuration
  * tree, and dispatch the supported syntax parser.
@@ -416,15 +421,18 @@ extern "C" int __fastcall zSndSystemInit(unsigned int hwnd, const char* zrdPath)
         g_zSnd_WindowHandle = hwnd;
     }
 
-    if (g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
         if (zSndBackendInitA3D() == 0) {
             g_zSnd_ActiveBackend = 0;
             return zSndSystemInit(hwnd, zrdPath);
         }
-    } else if (g_zSnd_ActiveBackend == 0) {
+        break;
+    case 0:
         if (zSndBackendInitDirectSound() == 0) {
             return 0;
         }
+        break;
     }
 
     g_zSnd_IsInitialized = 1;
@@ -434,15 +442,18 @@ extern "C" int __fastcall zSndSystemInit(unsigned int hwnd, const char* zrdPath)
         return 0;
     }
 
-    int syntax = 0;
+    int syntax;
     if (zReader::GetInt(g_zSnd_ConfigRootNode, g_zSndConfig_SyntaxKey, &syntax) == 0) {
         syntax = 1;
     }
 
-    if (syntax == 2) {
+    switch (syntax) {
+    case 2:
         zSndSystemInitNamedSetsSyntax(g_zSnd_ConfigRootNode);
-    } else if (syntax == 1) {
+        break;
+    case 1:
         zSndSystemInitLegacySetsSyntax(g_zSnd_ConfigRootNode);
+        break;
     }
 
     return 1;
@@ -469,7 +480,7 @@ extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRo
         }
     }
 
-    float speedOfSound = 0.0f;
+    float speedOfSound;
     if (zReader::GetFloat(g_zSnd_ConfigRootNode, g_zSndConfig_SpeedOfSoundKey, &speedOfSound) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
@@ -748,18 +759,19 @@ extern "C" int __cdecl zSndBackendInitA3D()
     HRESULT a3dError
         = CoCreateInstance(kCLSID_A3DApi, 0, CLSCTX_INPROC_SERVER, kIID_IA3d3, (void**)(&g_zSnd_BackendDevice));
     if (a3dError < 0) {
-        if (a3dError == CLASS_E_NOAGGREGATION) {
+        switch (a3dError) {
+        case CLASS_E_NOAGGREGATION:
             printf(g_zSnd_A3DInitError_AggregateMsg);
             return 0;
-        }
 
-        if (a3dError == REGDB_E_CLASSNOTREG) {
+        case REGDB_E_CLASSNOTREG:
             printf(g_zSnd_A3DInitError_NotRegisteredMsg);
             return 0;
-        }
 
-        printf(g_zSnd_A3DInitError_UnknownMsg);
-        return 0;
+        default:
+            printf(g_zSnd_A3DInitError_UnknownMsg);
+            return 0;
+        }
     }
 
     ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Init(0, 0x28, 0x0c);
@@ -784,11 +796,9 @@ extern "C" int __cdecl zSndBackendInitA3D()
 
     ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Clear();
 
-    zA3dProviderSource* outBuffer = 0;
+    zA3dProviderSource* outBuffer;
     ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->NewSource(0, &outBuffer);
-    if (outBuffer != 0) {
-        outBuffer->Release();
-    }
+    outBuffer->Release();
 
     return 1;
 }
@@ -819,7 +829,8 @@ extern "C" int __cdecl zSndBackendInitDirectSound()
         return zSnd::ReportDirectSoundError(directSoundError, g_zSnd_SourceFile_zsnd_init_cpp, 0x271);
     }
 
-    DSBUFFERDESC desc = { 0 };
+    DSBUFFERDESC desc;
+    memset(&desc, 0, sizeof(desc));
     desc.dwSize = sizeof(desc);
     desc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN;
     directSoundError = g_zSnd_BackendDevice->CreateSoundBuffer(&desc, &g_zSnd_BackendListenerHandle, 0);
@@ -834,7 +845,7 @@ namespace zSndBackend {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a1f40: zSndBackend::Shutdown.
- *
+ * @recoil-match byte
  *
  * Purpose: shut down CD, streaming, sample-set, and backend provider state for
  * the active sound system.
@@ -849,7 +860,8 @@ int __cdecl Shutdown()
     zSndStreamMgr::Shutdown();
     zSndSampleSetRegistryDestroyAll();
 
-    if (g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1: {
         void*& auxObject = *(void**)&g_zSnd_BackendAuxHandleOrConfig;
         if (auxObject != 0) {
             ((IUnknown*)auxObject)->Release();
@@ -867,7 +879,10 @@ int __cdecl Shutdown()
         }
 
         CoUninitialize();
-    } else if (g_zSnd_ActiveBackend == 0) {
+        break;
+    }
+
+    case 0:
         if (g_zSnd_BackendListenerHandle != 0) {
             g_zSnd_BackendListenerHandle->Release();
             g_zSnd_BackendListenerHandle = 0;
@@ -877,6 +892,7 @@ int __cdecl Shutdown()
             g_zSnd_BackendDevice->Release();
             g_zSnd_BackendDevice = 0;
         }
+        break;
     }
 
     g_zSnd_IsInitialized = 0;

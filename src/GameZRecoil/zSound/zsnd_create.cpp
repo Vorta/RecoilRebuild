@@ -535,10 +535,6 @@ extern "C" zSndSample* __fastcall
 zSndSampleCreateQueuedStreamingSample(WAVEFORMATEX* audioFormat, void* audioBuffer, int bufferBytes)
 {
     zSndSample* sample = (zSndSample*)(calloc(1, sizeof(zSndSample)));
-    if (sample == 0) {
-        return 0;
-    }
-
     zSndWaveData waveData("", 0);
     waveData.fmt = audioFormat;
     waveData.pcmData = audioBuffer;

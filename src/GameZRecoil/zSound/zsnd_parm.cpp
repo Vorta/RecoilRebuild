@@ -30,33 +30,37 @@ int zSndPlayHandle::SetFreqScaled(float scale)
 
     // Original inline clamp observed in caller 0x4a10e0; keep normalized sound
     // pitch and frequency scales in the [0, 1] range before backend dispatch.
-    float clampedScale = scale;
-    if (clampedScale > 1.0f) {
-        clampedScale = 1.0f;
-    } else if (clampedScale < 0.0f) {
-        clampedScale = 0.0f;
+    if (scale > 1.0f) {
+        scale = 1.0f;
+    } else if (scale < 0.0f) {
+        scale = 0.0f;
     }
-    const float playbackRate
-        = (sample->playbackParam2 - sample->playbackParam3) * clampedScale + sample->playbackParam3;
 
-    if (g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1: {
         zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
         if (source == 0) {
             return -1;
         }
 
-        source->SetPitch(playbackRate / sample->sampleRate);
-    } else if (g_zSnd_ActiveBackend == 0) {
+        source->SetPitch(
+            ((sample->playbackParam2 - sample->playbackParam3) * scale + sample->playbackParam3) / sample->sampleRate
+        );
+        return 1;
+    }
+    case 0: {
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
         if (buffer == 0) {
             return -1;
         }
 
-        const int error = buffer->SetFrequency((int)(playbackRate));
+        const int error = buffer->SetFrequency((int)((sample->playbackParam2 - sample->playbackParam3) * scale
+            + sample->playbackParam3));
         if (error != 0) {
             return zSnd::ReportDirectSoundError(error, kZSndParmSourceFile, 218);
         }
-        return 1;
+        break;
+    }
     }
 
     return 1;

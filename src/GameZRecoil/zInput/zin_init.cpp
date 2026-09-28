@@ -98,7 +98,7 @@ void __cdecl GlobalStateAtExitDestructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstatedestructor
  * @recoil-artifact defines .text recoil:function:0x471a20: zInput_GlobalState::Destructor.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * BN assembly drains the overlay free-list, drains the auxiliary block-list,
@@ -358,10 +358,9 @@ inline zInput_BindMapOverlayStackNode* __fastcall BindMapOverlayDetachHead(zInpu
  */
 inline void __fastcall BindMapOverlayDeleteNodeList(zInput_BindMapOverlayStackNode** head)
 {
-    zInput_BindMapOverlayStackNode* node = BindMapOverlayDetachHead(head);
-    while (node != 0) {
+    zInput_BindMapOverlayStackNode* node;
+    while ((node = BindMapOverlayDetachHead(head)) != 0) {
         operator delete(node);
-        node = BindMapOverlayDetachHead(head);
     }
 }
 

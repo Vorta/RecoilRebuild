@@ -514,6 +514,7 @@ int zSndStreamRequest::StateBeginGroup()
  */
 zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
 {
+    zSndGroupConfigBlock* result = 0;
     if (configBlockCount == 1) {
         return configBlocks[0].maxPlayCount != 0 ? configBlocks : 0;
     }
@@ -525,19 +526,19 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
         }
     }
 
-    zSndGroupConfigBlock* result = 0;
-    int selectedIndex = 0;
-    const float selection = (float)(rand()) * 3.05185094e-05f * totalWeight;
     const float selectSlop = totalWeight * 0.00100000005f;
+    const float selection = totalWeight * ((float)(rand()) * 3.05185094e-05f);
+    // Retail 0x4a4dc9 reads this index unassigned when no entry is selected.
+    int selectedIndex;
     float cumulativeWeight = 0.0f;
-    for (; selectedIndex < configBlockCount; ++selectedIndex) {
-        zSndGroupConfigBlock& entry = configBlocks[selectedIndex];
-        if (entry.maxPlayCount != 0) {
-            cumulativeWeight += entry.weight;
+    for (i = 0; i < configBlockCount; ++i) {
+        if (configBlocks[i].maxPlayCount != 0) {
+            cumulativeWeight += configBlocks[i].weight;
             if (cumulativeWeight + selectSlop >= selection) {
-                result = &entry;
+                selectedIndex = i;
+                result = &configBlocks[i];
                 if (dynamicWeightsEnabled != 0) {
-                    entry.weight *= dynamicWeightScale;
+                    result->weight = dynamicWeightScale * result->weight;
                 }
                 break;
             }
@@ -547,21 +548,18 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
     if (dynamicWeightsEnabled != 0) {
         float renormalizeTotal = 0.0f;
         for (int i = 0; i < configBlockCount; ++i) {
-            zSndGroupConfigBlock& entry = configBlocks[i];
-            if (entry.maxPlayCount != 0) {
-                if (i != selectedIndex && entry.weight < 0.00100000005f) {
-                    entry.weight = 0.00100000005f;
+            if (configBlocks[i].maxPlayCount != 0) {
+                if (i != selectedIndex && configBlocks[i].weight < 0.00100000005f) {
+                    configBlocks[i].weight = 0.00100000005f;
                 }
-                renormalizeTotal += entry.weight;
+                renormalizeTotal += configBlocks[i].weight;
             }
         }
 
-        if (renormalizeTotal != 0.0f) {
-            const float scale = 100.0f / renormalizeTotal;
-            for (int i = 0; i < configBlockCount; ++i) {
-                if (configBlocks[i].maxPlayCount != 0) {
-                    configBlocks[i].weight *= scale;
-                }
+        const float scale = 100.0f / renormalizeTotal;
+        for (i = 0; i < configBlockCount; ++i) {
+            if (configBlocks[i].maxPlayCount != 0) {
+                configBlocks[i].weight = scale * configBlocks[i].weight;
             }
         }
     }
@@ -584,20 +582,19 @@ void zSndStreamRequest::StatePlayCurrentEntry()
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
 
     while (currentEntry != 0) {
-        zSndGroupConfigBlock* entry = currentEntry;
-        if (elapsedSec < entry->delayPlaySec) {
+        if (elapsedSec < currentEntry->delayPlaySec) {
             break;
         }
 
-        if (entry->currentPlayCount != 0) {
-            if (entry->cachedSample == 0) {
-                const char* sampleName = entry->streamName;
+        if (currentEntry->maxPlayCount != 0) {
+            if (currentEntry->cachedSample == 0) {
+                const char* sampleName = currentEntry->streamName;
                 if (strcmp(sampleName, "NULL") != 0) {
-                    entry->cachedSample = zSnd::FindSampleByName(sampleName);
+                    currentEntry->cachedSample = zSnd::FindSampleByName(sampleName);
                 }
             }
 
-            zSndSample* sample = entry->cachedSample;
+            zSndSample* sample = currentEntry->cachedSample;
             if (sample != 0) {
                 if (hasWorldPos != 0) {
                     sample->PlayA3D(&worldPos, gain, &velocity);
@@ -606,13 +603,13 @@ void zSndStreamRequest::StatePlayCurrentEntry()
                 }
             }
 
-            if ((short)(entry->currentPlayCount) > 0) {
-                --entry->currentPlayCount;
+            if ((short)(currentEntry->maxPlayCount) > 0) {
+                --currentEntry->maxPlayCount;
             }
         }
 
         elapsedSec = 0.0f;
-        currentEntry = entry->child;
+        currentEntry = currentEntry->child;
     }
 
     if (currentEntry != 0) {
@@ -704,18 +701,20 @@ namespace zSndStreamMgr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreammgr-shutdown
  * @recoil-artifact defines .text recoil:function:0x4a50a0: zSndStreamMgr::Shutdown.
- *
+ * @recoil-match byte
  *
  * Purpose: drain stream-manager lists, release pending stream configs, clear
  * stream-manager root/list globals, and return success.
  */
 int __cdecl Shutdown()
 {
-    if (g_zSndStream_RootNode != 0 && CZClass::IsInitialized() != 0) {
-        CZClass::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
-        CZObject3D::DeleteNode(g_zSndStream_RootNode);
+    if (g_zSndStream_RootNode != 0) {
+        if (CZClass::IsInitialized() != 0) {
+            CZClass::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
+            CZObject3D::DeleteNode(g_zSndStream_RootNode);
+        }
+        g_zSndStream_RootNode = 0;
     }
-    g_zSndStream_RootNode = 0;
 
     if (g_zSndStream_ActiveList != 0) {
         void* payload = zArchiveListRemoveHead(g_zSndStream_ActiveList);
@@ -723,8 +722,7 @@ int __cdecl Shutdown()
             free(payload);
             payload = zArchiveListRemoveHead(g_zSndStream_ActiveList);
         }
-        zArchiveListFree(g_zSndStream_ActiveList);
-        g_zSndStream_ActiveList = 0;
+        g_zSndStream_ActiveList = (zArchiveList*)zArchiveListFree(g_zSndStream_ActiveList);
     }
 
     if (g_zSndStream_FreeList != 0) {
@@ -733,8 +731,7 @@ int __cdecl Shutdown()
             free(payload);
             payload = zArchiveListRemoveHead(g_zSndStream_FreeList);
         }
-        zArchiveListFree(g_zSndStream_FreeList);
-        g_zSndStream_FreeList = 0;
+        g_zSndStream_FreeList = (zArchiveList*)zArchiveListFree(g_zSndStream_FreeList);
     }
 
     if (g_zSndStream_PendingList != 0) {
@@ -744,9 +741,9 @@ int __cdecl Shutdown()
                 for (int i = 0; i < pendingConfig->configBlockCount; ++i) {
                     zSndGroupConfigBlock* child = pendingConfig->configBlocks[i].child;
                     while (child != 0) {
-                        zSndGroupConfigBlock* const next = child->child;
-                        free(child);
-                        child = next;
+                        zSndGroupConfigBlock* const freeBlock = child;
+                        child = child->child;
+                        free(freeBlock);
                     }
                 }
 
@@ -756,8 +753,7 @@ int __cdecl Shutdown()
             pendingConfig = (zSndGroup*)(zArchiveListRemoveHead(g_zSndStream_PendingList));
         }
 
-        zArchiveListFree(g_zSndStream_PendingList);
-        g_zSndStream_PendingList = 0;
+        g_zSndStream_PendingList = (zArchiveList*)zArchiveListFree(g_zSndStream_PendingList);
     }
     return 1;
 }

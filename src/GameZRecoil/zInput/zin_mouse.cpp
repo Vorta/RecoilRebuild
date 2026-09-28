@@ -166,7 +166,7 @@ void __fastcall MouseSetClientSizeAndCenter(int width, int height)
  */
 int __cdecl MouseInitDevice()
 {
-    DIDevice* baseDevice = 0;
+    DIDevice* baseDevice;
     g_zInput_GlobalState->CreateDevice(GUID_SysMouse, (LPDIRECTINPUTDEVICEA*)(&baseDevice), 0);
     baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void**)(&g_zInput_MouseDevice));
     baseDevice->Release();
@@ -354,7 +354,7 @@ int __fastcall MousePollState(unsigned char dispatchCallbacks)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyaccumulateddelta
  * @recoil-artifact defines .text recoil:function:0x4704f0: zInput::MouseApplyAccumulatedDelta.
- *
+ * @recoil-match byte
  *
  * Purpose: apply mouse sensitivity to accumulated deltas, update the client
  * cursor snapshot, clamp non-wrapping movement, and refresh normalized fields.
@@ -372,38 +372,34 @@ void __cdecl MouseApplyAccumulatedDelta()
     g_zInput_MouseStateSnapshot.deltaY
         = (int)((float)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseSensitivityY);
 
-    int cursorX = g_zInput_MouseStateSnapshot.cursorClientX + g_zInput_MouseStateSnapshot.deltaX;
-    int cursorY = g_zInput_MouseStateSnapshot.cursorClientY + g_zInput_MouseStateSnapshot.deltaY;
-    g_zInput_MouseStateSnapshot.cursorClientX = cursorX;
-    g_zInput_MouseStateSnapshot.cursorClientY = cursorY;
+    g_zInput_MouseStateSnapshot.cursorClientX += g_zInput_MouseStateSnapshot.deltaX;
+    g_zInput_MouseStateSnapshot.cursorClientY += g_zInput_MouseStateSnapshot.deltaY;
 
     if (g_zInput_MouseWrapModeFlag == 0) {
-        if (cursorX < 0) {
-            cursorX = 0;
+        if (g_zInput_MouseStateSnapshot.cursorClientX < 0) {
             g_zInput_MouseStateSnapshot.cursorClientX = 0;
         }
-        if (cursorX >= g_zInput_MouseClientWidth) {
-            cursorX = g_zInput_MouseClientWidth - 1;
-            g_zInput_MouseStateSnapshot.cursorClientX = cursorX;
+        if (g_zInput_MouseStateSnapshot.cursorClientX >= g_zInput_MouseClientWidth) {
+            g_zInput_MouseStateSnapshot.cursorClientX = g_zInput_MouseClientWidth - 1;
         }
-        if (cursorY < 0) {
-            cursorY = 0;
+        if (g_zInput_MouseStateSnapshot.cursorClientY < 0) {
             g_zInput_MouseStateSnapshot.cursorClientY = 0;
         }
-        if (cursorY >= g_zInput_MouseClientHeight) {
-            cursorY = g_zInput_MouseClientHeight - 1;
-            g_zInput_MouseStateSnapshot.cursorClientY = cursorY;
+        if (g_zInput_MouseStateSnapshot.cursorClientY >= g_zInput_MouseClientHeight) {
+            g_zInput_MouseStateSnapshot.cursorClientY = g_zInput_MouseClientHeight - 1;
         }
     }
 
     g_zInput_MouseStateSnapshot.cursorNormX
-        = (float)((double)(cursorX - g_zInput_MouseClientCenterX) * g_zInput_MouseInvClientCenterX);
+        = (float)(g_zInput_MouseStateSnapshot.cursorClientX - g_zInput_MouseClientCenterX)
+        * g_zInput_MouseInvClientCenterX;
     g_zInput_MouseStateSnapshot.cursorNormY
-        = (float)((double)(cursorY - g_zInput_MouseClientCenterY) * g_zInput_MouseInvClientCenterY);
+        = (float)(g_zInput_MouseStateSnapshot.cursorClientY - g_zInput_MouseClientCenterY)
+        * g_zInput_MouseInvClientCenterY;
     g_zInput_MouseStateSnapshot.deltaNormX
-        = (float)((double)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX);
+        = (float)(g_zInput_MouseStateSnapshot.deltaX) * g_zInput_MouseInvClientCenterX;
     g_zInput_MouseStateSnapshot.deltaNormY
-        = (float)((double)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY);
+        = (float)(g_zInput_MouseStateSnapshot.deltaY) * g_zInput_MouseInvClientCenterY;
 }
 
 /**
@@ -443,15 +439,12 @@ void __cdecl MouseResetTransitionState()
         return;
     }
 
-    g_zInput_MousePreviousState.lY = g_zInput_MouseCurrentState.lY;
     g_zInput_MouseStateSnapshot.deltaX = 0;
     g_zInput_MouseStateSnapshot.deltaY = 0;
     g_zInput_MouseStateSnapshot.button1Transition = 0;
     g_zInput_MouseStateSnapshot.button2Transition = 0;
     g_zInput_MouseStateSnapshot.button3Transition = 0;
-    g_zInput_MousePreviousState.lX = g_zInput_MouseCurrentState.lX;
-    g_zInput_MousePreviousState.lZ = g_zInput_MouseCurrentState.lZ;
-    g_zInput_MousePreviousState.rgbButtons = g_zInput_MouseCurrentState.rgbButtons;
+    g_zInput_MousePreviousState = g_zInput_MouseCurrentState;
     MouseApplyAccumulatedDelta();
 }
 

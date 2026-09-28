@@ -280,16 +280,13 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
         return 0;
     }
 
-    register int currentTrack = g_zSndCdCurrentTrack;
-    register int trackCount = g_zSndCdTrackCountCached;
-    register int playToTrack;
-    if (playbackMode == 2) {
+    const int currentTrack = g_zSndCdCurrentTrack;
+    const int trackCount = g_zSndCdTrackCountCached;
+    int playToTrack;
+    if (playbackMode == 2 || playbackMode == 5) {
         playToTrack = currentTrack + 1;
     } else {
         playToTrack = trackCount + 1;
-        if (playbackMode == 5) {
-            playToTrack = currentTrack + 1;
-        }
     }
 
     g_zSndCdPlayToTrack = playToTrack;
@@ -419,26 +416,23 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
     }
 
     const int stereoAuxEnabled = IsStereoAuxEnabled();
-    DWORD volume = 0;
+    DWORD volume;
     const DWORD mciError = auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume);
     if (mciError != 0) {
-        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x194);
-        return 0;
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x194);
     }
 
-    const unsigned short primaryVolume = (unsigned short)(volume & 0xffff);
-    g_zSndCdAuxVolumePrimary = primaryVolume;
-    if (stereoAuxEnabled == 0) {
-        g_zSndCdAuxVolumeSecondary = primaryVolume;
-        *secondaryVolumeOut = primaryVolume;
-        *primaryVolumeOut = primaryVolume;
-        return 1;
+    g_zSndCdAuxVolumePrimary = (unsigned short)(volume & 0xffff);
+    if (stereoAuxEnabled != 0) {
+        *primaryVolumeOut = g_zSndCdAuxVolumePrimary;
+        g_zSndCdAuxVolumeSecondary = (unsigned short)((volume >> 16) & 0xffff);
+        *secondaryVolumeOut = g_zSndCdAuxVolumeSecondary;
+    } else {
+        g_zSndCdAuxVolumeSecondary = g_zSndCdAuxVolumePrimary;
+        *secondaryVolumeOut = g_zSndCdAuxVolumeSecondary;
+        *primaryVolumeOut = g_zSndCdAuxVolumeSecondary;
     }
 
-    *primaryVolumeOut = primaryVolume;
-    const unsigned short secondaryVolume = (unsigned short)((volume >> 16) & 0xffff);
-    g_zSndCdAuxVolumeSecondary = secondaryVolume;
-    *secondaryVolumeOut = secondaryVolume;
     return 1;
 }
 
@@ -456,16 +450,15 @@ int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryV
     }
 
     DWORD volume;
-    if (IsStereoAuxEnabled() == 0) {
-        volume = (DWORD)(((int)(primaryVolume) + (int)(secondaryVolume)) / 2);
-    } else {
+    if (IsStereoAuxEnabled() != 0) {
         volume = ((DWORD)(secondaryVolume) << 16) | (DWORD)(primaryVolume);
+    } else {
+        volume = (unsigned short)(((int)(primaryVolume) + (int)(secondaryVolume)) / 2);
     }
 
     const DWORD mciError = auxSetVolume((UINT)(g_zSndCdAuxDeviceId), volume);
     if (mciError != 0) {
-        zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
-        return 0;
+        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
     }
 
     g_zSndCdAuxVolumePrimary = primaryVolume;

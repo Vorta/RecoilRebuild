@@ -309,7 +309,7 @@ zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquirea3dvoice
  * @recoil-artifact defines .text recoil:function:0x49f6f0: zSndSample::AcquireA3dVoice.
- *
+ * @recoil-match byte
  *
  * Purpose: select or duplicate an A3D provider play handle for playback.
  */
@@ -352,8 +352,8 @@ zSndPlayHandle* zSndSample::AcquireA3dVoice()
             if (((unsigned char)status & playingMask) == 0) {
                 break;
             }
+            voice = 0;
         }
-        voice = 0;
     }
 
     if (voice == 0 && index < 5) {
@@ -361,9 +361,10 @@ zSndPlayHandle* zSndSample::AcquireA3dVoice()
         memset(voice, 0, sizeof(zSndPlayHandle));
 
         zA3dProviderDevice* const device = (zA3dProviderDevice*)(g_zSnd_BackendDevice);
-        zA3dProviderSource* duplicateSource = 0;
-        const int error = device->DuplicateSource((zA3dProviderSource*)primaryVoice.backendBuffer, &duplicateSource);
-        voice->backendBuffer = (zSndBuffer*)duplicateSource;
+        const int error = device->DuplicateSource(
+            (zA3dProviderSource*)primaryVoice.backendBuffer,
+            (zA3dProviderSource**)&voice->backendBuffer
+        );
         if (error < 0) {
             zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0xb2);
             free(voice);
@@ -762,7 +763,7 @@ int zSndPlayHandle::StopIfActive()
 
         error = source->Stop();
         if (error != 0) {
-            return zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x38c);
+            error = zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x38c);
         }
 
         return error;
@@ -789,7 +790,7 @@ int zSndPlayHandle::StopIfActive()
         buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
         error = buffer->Stop();
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x39a);
+            error = zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x39a);
         }
 
         return error;
@@ -1391,14 +1392,14 @@ extern "C" int __fastcall zSndSampleSetDestroyByName(const char* setName)
  */
 extern "C" void __cdecl zSndSampleSetRegistryDestroyAll()
 {
-    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin(); it != g_zSnd_SampleSetRegistry.end();
-        ++it) {
-        zSndSampleSet* set = *it;
+    const zSndSampleSetRegistry::iterator end = g_zSnd_SampleSetRegistry.end();
+    for (zSndSampleSetRegistry::iterator it = g_zSnd_SampleSetRegistry.begin(); it != end; ++it) {
+        zSndSampleSet* const set = *it;
         if (set != 0) {
             set->DestroyOwnedData();
             delete set;
-            *it = 0;
         }
+        *it = 0;
     }
 
     g_zSnd_SampleSetRegistry.clear();
@@ -1533,8 +1534,9 @@ int zSndSampleSet::Init()
 {
     const char* const archiveNames[3]
         = { g_zSndBankArchiveNameHigh, g_zSndBankArchiveNameMedium, g_zSndBankArchiveNameLow };
-    int archiveBankIndex = 0;
-    int archiveInitialized = 0;
+    // Retail 0x4a0cc7 reads this slot unassigned for sound LOD values outside 0..2.
+    unsigned int archiveBankIndex;
+    unsigned int attempt = 0;
     zIndexArchive archive;
 
     if (this == 0 || resourcesLoaded != 0) {
@@ -1543,34 +1545,35 @@ int zSndSampleSet::Init()
     }
 
     if (g_zSnd_UseArchiveBanksFlag != 0) {
-        const int soundLod = *(int*)(g_zSnd_SoundLodValuePtr);
-        if (soundLod == 1) {
+        switch (*(int*)(g_zSnd_SoundLodValuePtr)) {
+        case 0:
+            archiveBankIndex = 0;
+            break;
+        case 1:
             archiveBankIndex = 1;
-        } else if (soundLod == 2) {
+            break;
+        case 2:
             archiveBankIndex = 2;
+            break;
         }
 
-        {
-            for (int attempt = 0; attempt < 3 && archiveInitialized == 0; ++attempt) {
-                const char* archivePath = archiveNames[archiveBankIndex];
-                if (zReader::FileExists(archivePath) == 0) {
-                    const char* resolvedPath = zRdrResolvePathInSearchPathList(g_zSnd_SearchPathList, archivePath);
-                    if (resolvedPath != 0) {
-                        archivePath = resolvedPath;
-                    } else {
-                        archivePath = 0;
-                    }
+        int archiveInitialized = 0;
+        while (archiveInitialized == 0 && attempt < sizeof(archiveNames) / sizeof(archiveNames[0])) {
+            const char* const archivePath = archiveNames[archiveBankIndex];
+            ++attempt;
+            if (zReader::FileExists(archivePath) != 0) {
+                archiveInitialized = archive.Init(archivePath);
+            } else {
+                const char* const resolvedPath = zRdrResolvePathInSearchPathList(g_zSnd_SearchPathList, archivePath);
+                if (resolvedPath != 0) {
+                    archiveInitialized = archive.Init(resolvedPath);
                 }
+            }
 
-                if (archivePath != 0) {
-                    archiveInitialized = archive.Init(archivePath);
-                }
-
-                if (archiveInitialized == 0) {
-                    ++archiveBankIndex;
-                    if (archiveBankIndex >= 3) {
-                        archiveBankIndex = 0;
-                    }
+            if (archiveInitialized == 0) {
+                ++archiveBankIndex;
+                if (archiveBankIndex >= sizeof(archiveNames) / sizeof(archiveNames[0])) {
+                    archiveBankIndex = 0;
                 }
             }
         }
@@ -1593,7 +1596,7 @@ int zSndSampleSet::Init()
                     if (path != 0) {
                         zSndWaveData* waveData = new zSndWaveData(path, 1);
 
-                        if (waveData != 0 && waveData->parsedOk != 0) {
+                        if (waveData->parsedOk != 0) {
                             int initResult = sample->InitFromWaveData(waveData);
                             int flags = replayFields->flags;
                             initResult &= 1;

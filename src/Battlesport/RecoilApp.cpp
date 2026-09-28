@@ -786,7 +786,7 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent()
 
     zUtil::SetMissionZrdrPathsAndMountZbd(m_missionId);
 
-    char missionFmvTag[sizeof(g_RecoilApp_MissionFmvTagTemplate)];
+    char missionFmvTag[3];
     memcpy(missionFmvTag, g_RecoilApp_MissionFmvTagTemplate, sizeof(missionFmvTag));
     missionFmvTag[1] = (char)(m_missionId + '0');
 
@@ -865,7 +865,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
     const int completedObjectiveCount = g_HudSensorTracker.completedObjectiveCount;
 
     if (zVid::GetAccelerationOption() != 0) {
-        BOOL screenSaverRunning = FALSE;
+        BOOL screenSaverRunning;
         SystemParametersInfoA(SPI_SETSCREENSAVERRUNNING, 1, &screenSaverRunning, 0);
     }
 
@@ -913,7 +913,6 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
     Briefing::StopAndShutdownThread(1);
     HudUiMgr::ApplyHudModeSwitch(ZOPT_HUD_TYPE_STANDARD);
 
-    const char* startAnimNodeName;
     if (pPendingLoadGameStartPath != 0) {
         if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
             g_RecoilApp.m_transitionFadeTimer += 5.0f;
@@ -922,16 +921,13 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
             zOpt::SetMuteSoundOption(1);
         }
 
-        char* const pendingLoadPath = pPendingLoadGameStartPath;
-        zUtil::zZarLoadFileGlobal(pendingLoadPath);
-        free(pendingLoadPath);
+        zUtil::zZarLoadFileGlobal(pPendingLoadGameStartPath);
+        free(pPendingLoadGameStartPath);
         pPendingLoadGameStartPath = 0;
-        startAnimNodeName = "LOAD_GAME_START";
+        g_HudSensorTracker.RunStartAnimsFromZrd("StartAnims.zrd", "LOAD_GAME_START");
     } else {
-        startAnimNodeName = g_RecoilApp_NewGameStartAnimStateName;
+        g_HudSensorTracker.RunStartAnimsFromZrd("StartAnims.zrd", g_RecoilApp_NewGameStartAnimStateName);
     }
-
-    g_HudSensorTracker.RunStartAnimsFromZrd("StartAnims.zrd", startAnimNodeName);
 
     pRenderSection = zOpt::GetRenderSection();
     pDisplaySection = zOpt::GetDisplaySection();
@@ -977,13 +973,11 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 
     if (zSnd::GetCDAudioOption() != 0) {
         const int missionId = g_HudSensorTracker.GetMissionId();
-        const int trackCount = zSndCd::GetTrackCount();
-        zSndCd::PlayTrackWithMode((missionId % (trackCount - 2)) + 2, 5);
+        zSndCd::PlayTrackWithMode((missionId % (zSndCd::GetTrackCount() - 2)) + 2, 5);
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
         if (zNetwork::IsHost() == 0) {
-            HudUiMgr::EnableTopAndChatStacks();
             if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
                 g_RecoilApp.m_transitionFadeTimer += 5.0f;
             } else {
@@ -1017,9 +1011,6 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
     pRenderSection = zOpt::GetRenderSection();
     pDisplaySection = zOpt::GetDisplaySection();
     pWindowSection = zOpt::GetWindowSection();
-    zOpt_ViewRectSection* const renderSection = pRenderSection;
-    zOpt_ViewRectSection* const displaySection = pDisplaySection;
-    zOpt_ViewRectSection* const windowSection = pWindowSection;
     CZTypeList::UpdateAllBuckets();
 
     if (g_RecoilApp_QuitAfterCredits != 0) {
@@ -1029,58 +1020,64 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
     zSndTick(0);
 
     if (g_Player_HorizonNodeFollowCameraEnabled != 0 && g_Player_HorizonNode != 0) {
-        zVec3 cameraPosition = { 0 };
+        zVec3 cameraPosition;
         CZNode::GetWorldPosition(g_MainCamera, &cameraPosition);
         CZObject3D::gwObject3DSetPosition(g_Player_HorizonNode, cameraPosition.x, cameraPosition.y, cameraPosition.z);
     }
 
     const int oldClearState = zVideo::GetClearScreenBufferEnabled();
     const int layoutDelay = HudUiMgr::TickLayoutDelay();
-    const int savedClearState = zVideo::ExchangeClearScreenBufferEnabled(layoutDelay | oldClearState);
-    zOpt_ViewRectSection* const clearRect = layoutDelay != 0 ? windowSection : renderSection;
+    const int savedClearState = zVideo::ExchangeClearScreenBufferEnabled(oldClearState | layoutDelay);
+    zOpt_ViewRectSection* const clearRect = layoutDelay != 0 ? pWindowSection : pRenderSection;
 
     if (zVid::GetAccelerationOption() != 0) {
-        zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32*)(clearRect), (zVidRect32*)(windowSection));
+        zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32*)(clearRect), (zVidRect32*)(pWindowSection));
     } else {
         zVideo::CallClearPrimarySurfaceAndZBuffer((zVidRect32*)(clearRect));
     }
     zVideo::ExchangeClearScreenBufferEnabled(savedClearState);
 
-    void* pixels;
-    int pitchBytes;
-    int bitsPerPixel;
     if (zOpt::GetReplicateMode() != 0) {
-        pitchBytes = zVideo::GetSwSurfacePitch();
-        bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-        pixels = zVideo::GetSwSurfacePixels();
+        zRndr::SetFrameBufferRegion(
+            zVideo::GetSwSurfacePixels(),
+            pRenderSection,
+            zOpt::GetDisplaySectionBitsPerPixel(),
+            zVideo::GetSwSurfacePitch()
+        );
     } else {
-        pitchBytes = zVideo::GetPrimarySurfacePitch();
-        bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-        pixels = zVideo::GetPrimarySurfacePixels();
+        zRndr::SetFrameBufferRegion(
+            zVideo::GetPrimarySurfacePixels(),
+            pRenderSection,
+            zOpt::GetDisplaySectionBitsPerPixel(),
+            zVideo::GetPrimarySurfacePitch()
+        );
     }
-
-    zRndr::SetFrameBufferRegion(pixels, renderSection, bitsPerPixel, pitchBytes);
     CZList::RenderActiveCameras();
-    zVideo::FxPass3SetInputRectByIndex(0, (HudUiRect*)(renderSection));
+    zVideo::FxPass3SetInputRectByIndex(0, (HudUiRect*)(pRenderSection));
 
     HudUiMgrSensor::GetFxRect(&g_HudUiMgrSensor_FxRectScratch);
-    int fxTop = g_HudUiMgrSensor_FxRectScratch.top;
-    int fxBottom = g_HudUiMgrSensor_FxRectScratch.bottom;
+    int fxTop;
+    int fxBottom;
     if (zOpt::GetReplicateMode() != 0) {
-        fxTop = fxTop / 2;
-        fxBottom = fxBottom / 2;
+        fxTop = g_HudUiMgrSensor_FxRectScratch.top / 2;
+        fxBottom = g_HudUiMgrSensor_FxRectScratch.bottom / 2;
         g_HudUiMgrSensor_FxRectScratch.left = g_HudUiMgrSensor_FxRectScratch.left / 2;
-        g_HudUiMgrSensor_FxRectScratch.right = g_HudUiMgrSensor_FxRectScratch.right / 2;
         g_HudUiMgrSensor_FxRectScratch.top = fxTop;
         g_HudUiMgrSensor_FxRectScratch.bottom = fxBottom;
+        g_HudUiMgrSensor_FxRectScratch.right = g_HudUiMgrSensor_FxRectScratch.right / 2;
+    } else {
+        fxBottom = g_HudUiMgrSensor_FxRectScratch.bottom;
+        fxTop = g_HudUiMgrSensor_FxRectScratch.top;
     }
 
-    HudUiRect* fxRectOrNull = 0;
-    if (fxBottom > renderSection->bottomExclusive) {
-        if (fxTop < renderSection->bottomExclusive) {
-            g_HudUiMgrSensor_FxRectScratch.top = renderSection->bottomExclusive;
+    HudUiRect* fxRectOrNull;
+    if (fxBottom > pRenderSection->bottomExclusive) {
+        if (fxTop < pRenderSection->bottomExclusive) {
+            g_HudUiMgrSensor_FxRectScratch.top = pRenderSection->bottomExclusive;
         }
         fxRectOrNull = &g_HudUiMgrSensor_FxRectScratch;
+    } else {
+        fxRectOrNull = 0;
     }
     zVideo::FxPass3SetInputRectByIndex(1, fxRectOrNull);
 
@@ -1098,7 +1095,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
             return 1;
         }
 
-        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
@@ -1110,7 +1107,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         zVideo::DispatchUnlockSwSurfaceState();
 
         if (shouldPresent != 0) {
-            g_zVideo_pfnBltSwToPrimaryRectDirect((zVidRect32*)(renderSection), (zVidRect32*)(displaySection));
+            g_zVideo_pfnBltSwToPrimaryRectDirect((zVidRect32*)(pRenderSection), (zVidRect32*)(pDisplaySection));
         }
 
         zVideo::RunPostprocessOnPrimaryBuffer();
@@ -1121,7 +1118,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
-        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
         zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 2.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
@@ -1140,7 +1137,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         }
 
         g_HudSensorTracker.UpdateObjectiveFlow();
-        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(windowSection));
+        zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
         zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 1.0f);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
@@ -1151,7 +1148,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
     }
 
     if (shouldPresent != 0) {
-        zVideo::AdjustSurfacesIfEnabled((zVidRect32*)(windowSection), (zVidRect32*)(windowSection), 0, 0);
+        zVideo::AdjustSurfacesIfEnabled((zVidRect32*)(pWindowSection), (zVidRect32*)(pWindowSection), 0, 0);
     }
 
     return 0;
@@ -1162,30 +1159,29 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
  */
 int CRecoilAppPlayState::OnUpdateShouldQuit()
 {
-    if (g_RecoilApp.m_transitionFadeTimer > 0.0f) {
+    if (g_RecoilApp.m_transitionFadeTimer > 0.0) {
         g_zVideo_SoftwareModeHotkeyEnabled = ZVIDEO_SOFTWARE_MODE_HOTKEY_DISABLED;
         TickAndRenderFrame(0);
 
-        zOpt_ViewRectSection* const windowSection = pWindowSection;
-        if (g_RecoilApp.m_transitionFadeTimer >= 1.0f) {
+        if (g_RecoilApp.m_transitionFadeTimer > 1.0) {
             const int previousClearState = zVideo::ExchangeClearScreenBufferEnabled(ZVIDEO_CLEAR_SCREEN_BUFFER_ENABLED);
             ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->transitionDamageSuppressed = 1;
             if (zVid::GetAccelerationOption() != 0) {
-                zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32*)windowSection, (zVidRect32*)windowSection);
+                zVideo::CallClearSwSurfaceAndZBuffer((zVidRect32*)pWindowSection, (zVidRect32*)pWindowSection);
             } else {
-                zVideo::CallClearPrimarySurfaceAndZBuffer((zVidRect32*)windowSection);
+                zVideo::CallClearPrimarySurfaceAndZBuffer((zVidRect32*)pWindowSection);
             }
             zVideo::ExchangeClearScreenBufferEnabled(previousClearState);
         } else {
             const double overlayAlpha
-                = g_RecoilApp.m_transitionFadeTimer > 0.0f ? (double)(g_RecoilApp.m_transitionFadeTimer) : 0.0;
+                = g_RecoilApp.m_transitionFadeTimer > 0.0 ? (double)(g_RecoilApp.m_transitionFadeTimer) : 0.0;
             zRndrOverlayRectSubmit(0, 0, overlayAlpha);
         }
 
-        zVideo::AdjustSurfacesIfEnabled((zVidRect32*)windowSection, (zVidRect32*)windowSection, 0, 0);
+        zVideo::AdjustSurfacesIfEnabled((zVidRect32*)pWindowSection, (zVidRect32*)pWindowSection, 0, 0);
         g_RecoilApp.m_transitionFadeTimer -= g_FrameDeltaTimeSec;
 
-        if (g_RecoilApp.m_transitionFadeTimer <= 0.0f) {
+        if (g_RecoilApp.m_transitionFadeTimer <= 0.0) {
             zOpt::SetMuteSoundOption(0);
             HudUiMgr::TriggerCurrentLayoutOnActivated();
             ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->transitionDamageSuppressed = 0;
@@ -1260,7 +1256,7 @@ void CRecoilAppPlayState::OnDeactivate()
     HudUiLoadingCheckpoint::AdvanceAndLog(g_RecoilApp_LeavingPlayStateMsg);
 
     if (zVid::GetAccelerationOption() != 0) {
-        BOOL screenSaverRunning = FALSE;
+        BOOL screenSaverRunning;
         SystemParametersInfoA(SPI_SETSCREENSAVERRUNNING, 0, &screenSaverRunning, 0);
     }
 
@@ -1391,17 +1387,16 @@ void __fastcall zInputDIPlayAltFireEffect(zInput_FFEffectSet* effectSet, float g
  */
 void zInput_FFEffectSet::PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ, float gain)
 {
-    zInput_DiEffect* const effect = CollisionImpact;
-    if (effect == 0) {
+    if (CollisionImpact == 0) {
         return;
     }
-    effect->Stop();
+    CollisionImpact->Stop();
     int direction;
     {
         const float kPi = 3.14159274f;
+        const float sourceBearing = (float)(atan2(-impactWorldPosXZ->x, -impactWorldPosXZ->z));
         const zInput_PlayerStatePartial* const playerState = g_GameStateOrMapTable->playerState;
-        const float sourceBearing = (float)(atan2(-impactWorldPosXZ->z, -impactWorldPosXZ->x));
-        const float playerBearing = (float)(atan2(-playerState->cameraDirNextZ, -playerState->cameraDirNextX));
+        const float playerBearing = (float)(atan2(-playerState->cameraDirNextX, -playerState->cameraDirNextZ));
         float relativeBearing = kPi - (sourceBearing - playerBearing);
         {
             const float kTwoPi = 6.28318548f;
@@ -1416,21 +1411,22 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ
             direction = (int)(relativeBearing * kRadToDeg) * 100;
         }
     }
-    if (gain > 1.0f) {
-        gain = 1.0f;
-    } else if (gain < 0.2f) {
-        gain = 0.2f;
-    }
     {
         LONG polarDirection[2] = { direction, 0 };
-        DIEFFECT desc = { 0 };
+        DIEFFECT desc;
+        memset(&desc, 0, sizeof(desc));
+        if (gain > 1.0f) {
+            gain = 1.0f;
+        } else if (gain < 0.2f) {
+            gain = 0.2f;
+        }
         desc.dwSize = sizeof(desc);
-        desc.dwFlags = 0x20;
         desc.dwGain = (DWORD)(gain * 10000.0f);
+        desc.dwFlags = 0x20;
         desc.cAxes = 2;
         desc.rglDirection = polarDirection;
-        effect->SetParameters(&desc, 0x44);
-        effect->Start(1, 0);
+        CollisionImpact->SetParameters(&desc, 0x44);
+        CollisionImpact->Start(1, 0);
     }
 }
 
@@ -1439,17 +1435,16 @@ void zInput_FFEffectSet::PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ
  */
 void zInput_FFEffectSet::PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ, float gain)
 {
-    zInput_DiEffect* const effect = DamageHit;
-    if (effect == 0) {
+    if (DamageHit == 0) {
         return;
     }
-    effect->Stop();
+    DamageHit->Stop();
     int direction;
     {
         const float kPi = 3.14159274f;
+        const float sourceBearing = (float)(atan2(damageSourceWorldPosXZ->x, damageSourceWorldPosXZ->z));
         const zInput_PlayerStatePartial* const playerState = g_GameStateOrMapTable->playerState;
-        const float sourceBearing = (float)(atan2(damageSourceWorldPosXZ->z, damageSourceWorldPosXZ->x));
-        const float playerBearing = (float)(atan2(-playerState->cameraDirNextZ, -playerState->cameraDirNextX));
+        const float playerBearing = (float)(atan2(-playerState->cameraDirNextX, -playerState->cameraDirNextZ));
         float relativeBearing = kPi - (sourceBearing - playerBearing);
         {
             const float kTwoPi = 6.28318548f;
@@ -1464,21 +1459,22 @@ void zInput_FFEffectSet::PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ
             direction = (int)(relativeBearing * kRadToDeg) * 100;
         }
     }
-    if (gain > 1.0f) {
-        gain = 1.0f;
-    } else if (gain < 0.25f) {
-        gain = 0.25f;
-    }
     {
         LONG polarDirection[2] = { direction, 0 };
-        DIEFFECT desc = { 0 };
+        DIEFFECT desc;
+        memset(&desc, 0, sizeof(desc));
+        if (gain > 1.0f) {
+            gain = 1.0f;
+        } else if (gain < 0.25f) {
+            gain = 0.25f;
+        }
         desc.dwSize = sizeof(desc);
-        desc.dwFlags = 0x20;
         desc.dwGain = (DWORD)(gain * 10000.0f);
+        desc.dwFlags = 0x20;
         desc.cAxes = 2;
         desc.rglDirection = polarDirection;
-        effect->SetParameters(&desc, 0x44);
-        effect->Start(1, 0);
+        DamageHit->SetParameters(&desc, 0x44);
+        DamageHit->Start(1, 0);
     }
 }
 
@@ -2173,37 +2169,29 @@ void CZRecoilFrame::OnMenuToggleFullscreen()
  */
 RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs()
 {
-    static const unsigned char kFindExecutableErrorMap[0x20]
-        = { 0, 4, 1, 1, 4, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3 };
-
     char associatedExecutablePath[0x100];
     HINSTANCE findResult = FindExecutableA("Docs\\Index.html", 0, associatedExecutablePath);
 
     char messageBoxTitle[0x80];
     strcpy(messageBoxTitle, zLoc::GetMessageString(0x19));
 
-    const UINT resultCode = (UINT)((UINT_PTR)(findResult));
-    if (resultCode <= 0x1f) {
-        switch (kFindExecutableErrorMap[resultCode]) {
-        case 0:
-            ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x20), messageBoxTitle, 0x30);
-            return;
+    switch ((UINT)((UINT_PTR)(findResult))) {
+    case 0:
+        ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x20), messageBoxTitle, 0x30);
+        return;
 
-        case 1:
-            ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x22), messageBoxTitle, 0x30);
-            return;
+    case SE_ERR_NOASSOC:
+        ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x21), messageBoxTitle, 0x30);
+        return;
 
-        case 2:
-            ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x24), messageBoxTitle, 0x30);
-            return;
+    case ERROR_FILE_NOT_FOUND:
+    case ERROR_PATH_NOT_FOUND:
+        ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x22), messageBoxTitle, 0x30);
+        return;
 
-        case 3:
-            ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x21), messageBoxTitle, 0x30);
-            return;
-
-        default:
-            break;
-        }
+    case ERROR_BAD_FORMAT:
+        ((CWnd*)(this))->MessageBoxA(zLoc::GetMessageString(0x24), messageBoxTitle, 0x30);
+        return;
     }
 
     ShellExecuteA(g_RecoilApp_hWndMain, "open", "Docs\\Index.html", 0, 0, SW_HIDE);
@@ -3054,12 +3042,12 @@ void __cdecl ResetRemotePlayersAndSpawnLists()
     while (row != 0) {
         HudUi::RemoveScoreboardEntryRow(row);
         g_HudUiTopMessageStack->RemoveChild((HudUiElement*)(&row->hudWidget));
-        row = row->next;
+        row = row != 0 ? row->next : 0;
     }
 
     GameNetSpawnPoint* spawnPoint = g_GameNetSpawnPointHead;
     while (spawnPoint != 0) {
-        GameNetSpawnPoint* const next = spawnPoint->next;
+        GameNetSpawnPoint* const next = spawnPoint != 0 ? spawnPoint->next : 0;
         ::operator delete(spawnPoint);
         spawnPoint = next;
     }
@@ -3071,9 +3059,11 @@ void __cdecl ResetRemotePlayersAndSpawnLists()
 
     row = g_GameNetPlayerRowHead;
     while (row != 0) {
-        GameNetPlayerRow* const next = row->next;
-        row->DestroyEmbeddedPanel();
-        ::operator delete(row);
+        GameNetPlayerRow* const next = row != 0 ? row->next : 0;
+        if (row != 0) {
+            row->DestroyEmbeddedPanel();
+            ::operator delete(row);
+        }
         row = next;
     }
 
@@ -3342,10 +3332,9 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
         zNetwork_DPlay::EnumPlayers();
     }
 
-    CZNodePartial* const sourceNode = CZClass::FindByTypeAndName(6, "bft_99");
-    CZNodePartial* clonedNode = 0;
-    if (sourceNode != 0) {
-        clonedNode = CZUtil::CopyNodeWithCloneOptions(sourceNode, 1, 1);
+    CZNodePartial* clonedNode = CZClass::FindByTypeAndName(6, "bft_99");
+    if (clonedNode != 0) {
+        clonedNode = CZUtil::CopyNodeWithCloneOptions(clonedNode, 1, 1);
     }
 
     if (clonedNode == 0) {
@@ -3365,19 +3354,17 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
         packet->vehicleRotationAngles.y,
         netNodeName
     );
-    if (saveState != 0) {
-        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        playerState->lifecycleState = 3;
-        playerState->amphibUnlocked = 1;
-        playerState->hoverUnlocked = 1;
-        playerState->subUnlocked = 1;
-        for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
-            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-            bank.controllerA.flags |= 4u;
-            bank.controllerA.ammoOrCharge = ::kGameNetRemoteUnlimitedAmmo;
-            bank.controllerB.flags |= 4u;
-            bank.controllerB.ammoOrCharge = ::kGameNetRemoteUnlimitedAmmo;
-        }
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    playerState->lifecycleState = 3;
+    playerState->amphibUnlocked = 1;
+    playerState->hoverUnlocked = 1;
+    playerState->subUnlocked = 1;
+    for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
+        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
+        bank.controllerA.flags |= 4u;
+        bank.controllerA.ammoOrCharge = 123456792.0f;
+        bank.controllerB.flags |= 4u;
+        bank.controllerB.ammoOrCharge = 123456792.0f;
     }
 
     GameNetPlayerRowListState* const rowList = &g_GameNetPlayerRowList;
@@ -3405,13 +3392,11 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     hudWidget->SetVisible(0);
     g_HudUiTopMessageStack->AddChild((HudUiElement*)(hudWidget));
 
-    if (saveState != 0) {
-        saveState->netPlayerRow = row;
-        if (row->playerNode->listCountA == 0) {
-            CZClass::AddChild(g_Player_RuntimeDiScene, row->playerNode);
-        }
-        CZClass::gwNodeSetActive(row->playerNode, 1);
+    saveState->netPlayerRow = row;
+    if (row->playerNode->listCountA == 0) {
+        CZClass::AddChild(g_Player_RuntimeDiScene, row->playerNode);
     }
+    CZClass::gwNodeSetActive(row->playerNode, 1);
 
     RefreshPlayerListMenu(row);
     ReassignPlayerColorsAndRefreshRows(0, 0);
@@ -3590,7 +3575,7 @@ int __cdecl ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader*)
         HudUi::RefreshScoreboardEntryRow(row);
         row->ApplyPlayerColorTint();
 
-        row = row->next;
+        row = row != 0 ? row->next : 0;
     }
 
     return 1;
@@ -3616,7 +3601,7 @@ int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketH
         Player::RemoveAllDeployedMines(saveState);
     }
 
-    char message[0x80] = { 0 };
+    char message[0x80];
     zLoc::FormatMessage(message, sizeof(message), 0x913, row->displayName);
     HudUi::ShowTopMessageLine(message, 5.0f);
     HudUi::RemoveScoreboardEntryRow(row);
@@ -3792,7 +3777,7 @@ int __cdecl AreAllPlayersAtLapTarget()
             return 0;
         }
 
-        row = row->next;
+        row = row != 0 ? row->next : 0;
     }
 
     return 1;
@@ -3881,32 +3866,32 @@ void __fastcall SendPkt0DHudTimerPanelState(HudTimerPanelNetState* timerState)
  */
 int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState* timerState)
 {
-    const int result = zNetwork::IsHost();
-    if (result == 0) {
-        return result;
+    int result = zNetwork::IsHost();
+    if (result != 0) {
+        g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
+        g_NetPkt0C_HudTimerStatusBitsBuf.timerSeconds = HudUiTimerPanel::GetSeconds();
+
+        short statusBits = 0;
+        if (timerState->timerDirectionNeg != 0) {
+            statusBits = 1;
+        }
+        if (timerState->timeWarningShown != 0) {
+            statusBits |= 2;
+        }
+        if (timerState->oneMinuteWarningShown != 0) {
+            statusBits |= 4;
+        }
+
+        g_NetPkt0C_HudTimerStatusBitsBuf.statusBitsPackedHiWord = statusBits;
+        g_HudTimerPanelNetState.statusBitsResendDeadline = g_Time_AccumulatedTimeSec + 30.0f;
+        zNetworkSendPacketReliable(&g_NetPkt0C_HudTimerStatusBitsBuf.header);
+        result = HandlePkt0CHudTimerStatusBits(
+            g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0,
+            &g_NetPkt0C_HudTimerStatusBitsBuf
+        );
     }
 
-    g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
-    g_NetPkt0C_HudTimerStatusBitsBuf.timerSeconds = HudUiTimerPanel::GetSeconds();
-
-    short statusBits = 0;
-    if (timerState->timerDirectionNeg != 0) {
-        statusBits = 1;
-    }
-    if (timerState->timeWarningShown != 0) {
-        statusBits |= 2;
-    }
-    if (timerState->oneMinuteWarningShown != 0) {
-        statusBits |= 4;
-    }
-
-    g_NetPkt0C_HudTimerStatusBitsBuf.statusBitsPackedHiWord = statusBits;
-    g_HudTimerPanelNetState.statusBitsResendDeadline = g_Time_AccumulatedTimeSec + 30.0f;
-    zNetworkSendPacketReliable(&g_NetPkt0C_HudTimerStatusBitsBuf.header);
-    return HandlePkt0CHudTimerStatusBits(
-        g_NetPkt0C_HudTimerStatusBitsBuf.header.payloadDword0,
-        &g_NetPkt0C_HudTimerStatusBitsBuf
-    );
+    return result;
 }
 
 /**
@@ -3972,7 +3957,7 @@ void __cdecl SendPkt09PlayerScoreboardSnapshot()
     while (row != 0) {
         entry->playerKey = row->playerKey;
         entry->packedScoreAndLapCount = (unsigned short)((row->lapCount << 9) + (row->score & 0x1ff));
-        row = row->next;
+        row = row != 0 ? row->next : 0;
         ++entry;
     }
 
@@ -4244,25 +4229,23 @@ namespace zDEClient_Crater {
  */
 int __fastcall Execute(zDEClient_CraterEventTemplate* eventTemplate)
 {
-    if (eventTemplate->radius <= 0.0f) {
-        eventTemplate->radius = -eventTemplate->radius;
-        return 1;
-    }
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
-    if (eventTemplate->damageOwnerNode != saveState->playerState->rootNode) {
+    if (eventTemplate->radius > 0.0f) {
+        if (eventTemplate->damageOwnerNode == ((zUtil_SaveGameState*)(g_GameStateOrMapTable))->playerState->rootNode) {
+            g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
+            g_NetPkt0F_CraterEventRelayBuf.craterTypeId
+                = zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
+            g_NetPkt0F_CraterEventRelayBuf.center = eventTemplate->center;
+            g_NetPkt0F_CraterEventRelayBuf.radius = eventTemplate->radius;
+            if (zNetwork::IsHost() != 0) {
+                NetRelayCallback(zNetworkGetLocalPlayerKey(), &g_NetPkt0F_CraterEventRelayBuf);
+                return 0;
+            }
+            zNetworkSendPacketReliable(&g_NetPkt0F_CraterEventRelayBuf.header);
+        }
         return 0;
     }
-    g_NetPkt0F_CraterEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
-    g_NetPkt0F_CraterEventRelayBuf.craterTypeId
-        = zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
-    g_NetPkt0F_CraterEventRelayBuf.center = eventTemplate->center;
-    g_NetPkt0F_CraterEventRelayBuf.radius = eventTemplate->radius;
-    if (zNetwork::IsHost() != 0) {
-        NetRelayCallback(zNetworkGetLocalPlayerKey(), &g_NetPkt0F_CraterEventRelayBuf);
-        return 0;
-    }
-    zNetworkSendPacketReliable(&g_NetPkt0F_CraterEventRelayBuf.header);
-    return 0;
+    eventTemplate->radius = -eventTemplate->radius;
+    return 1;
 }
 
 /**
@@ -5715,9 +5698,8 @@ int RecoilApp_MfcOleModule::Run()
 {
     RecoilApp* const app = (RecoilApp*)this;
 
+    CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
     try {
-        CWinThread::SetThreadPriority(THREAD_PRIORITY_HIGHEST);
-
         for (;;) {
             while (PeekMessageA(&m_msgCur, 0, 0, 0, PM_NOREMOVE) != 0) {
                 if (PumpMessage() == 0) {
@@ -5813,46 +5795,48 @@ int RecoilApp_MfcOleModule::Run()
     } catch (CFileException* fileException) {
         const char* message = g_RecoilApp_Run_FileErrorUnknownMessage;
         switch (fileException->m_cause) {
-        case CFileException::endOfFile:
-            message = g_RecoilApp_Run_FileErrorEndOfFileMessage;
-            break;
-        case CFileException::diskFull:
-            message = g_RecoilApp_Run_FileErrorDiskFullMessage;
-            break;
-        case CFileException::lockViolation:
-            message = g_RecoilApp_Run_FileErrorLockViolationMessage;
-            break;
-        case CFileException::sharingViolation:
-            message = g_RecoilApp_Run_FileErrorSharingViolationMessage;
-            break;
-        case CFileException::hardIO:
-            message = g_RecoilApp_Run_FileErrorHardIoMessage;
-            break;
-        case CFileException::badSeek:
-            message = g_RecoilApp_Run_FileErrorBadSeekMessage;
-            break;
-        case CFileException::directoryFull:
-            message = g_RecoilApp_Run_FileErrorDirectoryFullMessage;
-            break;
-        case CFileException::removeCurrentDir:
-            message = g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage;
-            break;
-        case CFileException::invalidFile:
-            message = g_RecoilApp_Run_FileErrorInvalidFileMessage;
-            break;
-        case CFileException::accessDenied:
-            message = g_RecoilApp_Run_FileErrorAccessDeniedMessage;
-            break;
-        case CFileException::tooManyOpenFiles:
-            message = g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage;
-            break;
-        case CFileException::badPath:
-            message = g_RecoilApp_Run_FileErrorBadPathMessage;
+        case CFileException::none:
+        case CFileException::generic:
+            message = "";
             break;
         case CFileException::fileNotFound:
             message = g_RecoilApp_Run_FileErrorFileNotFoundMessage;
             break;
-        default:
+        case CFileException::badPath:
+            message = g_RecoilApp_Run_FileErrorBadPathMessage;
+            break;
+        case CFileException::tooManyOpenFiles:
+            message = g_RecoilApp_Run_FileErrorTooManyOpenFilesMessage;
+            break;
+        case CFileException::accessDenied:
+            message = g_RecoilApp_Run_FileErrorAccessDeniedMessage;
+            break;
+        case CFileException::invalidFile:
+            message = g_RecoilApp_Run_FileErrorInvalidFileMessage;
+            break;
+        case CFileException::removeCurrentDir:
+            message = g_RecoilApp_Run_FileErrorRemoveCurrentDirMessage;
+            break;
+        case CFileException::directoryFull:
+            message = g_RecoilApp_Run_FileErrorDirectoryFullMessage;
+            break;
+        case CFileException::badSeek:
+            message = g_RecoilApp_Run_FileErrorBadSeekMessage;
+            break;
+        case CFileException::hardIO:
+            message = g_RecoilApp_Run_FileErrorHardIoMessage;
+            break;
+        case CFileException::sharingViolation:
+            message = g_RecoilApp_Run_FileErrorSharingViolationMessage;
+            break;
+        case CFileException::lockViolation:
+            message = g_RecoilApp_Run_FileErrorLockViolationMessage;
+            break;
+        case CFileException::diskFull:
+            message = g_RecoilApp_Run_FileErrorDiskFullMessage;
+            break;
+        case CFileException::endOfFile:
+            message = g_RecoilApp_Run_FileErrorEndOfFileMessage;
             break;
         }
         ::MessageBoxExA(0, message, g_RecoilApp_Run_FileErrorTitle, MB_OK | MB_ICONSTOP, 0);
@@ -5867,8 +5851,6 @@ int RecoilApp_MfcOleModule::Run()
         );
         ::exit(0);
     }
-
-    return 0;
 }
 
 /**
@@ -6238,6 +6220,7 @@ void HudUiSaveLoadDialog::InitializeFileEntries()
  */
 void HudUiSaveLoadDialog::DeleteSaveFile(int confirmDelete)
 {
+    int shouldDelete = 1;
     char* const gameName = gameNameInput.GetBuffer();
     if (gameName == 0 || gameName[0] == '\0') {
         return;
@@ -6251,7 +6234,6 @@ void HudUiSaveLoadDialog::DeleteSaveFile(int confirmDelete)
         return;
     }
 
-    int shouldDelete = 1;
     if (confirmDelete != 0) {
         char titleText[128];
         char messageText[128];
@@ -6268,13 +6250,10 @@ void HudUiSaveLoadDialog::DeleteSaveFile(int confirmDelete)
     gameNameInput.Update("");
     RefreshSaveFileList();
 
-    int selectedIndex = selectedEntryIndex;
-    const int entryCount = SaveLoadEntryCount(this);
-    if ((unsigned int)(selectedIndex) >= (unsigned int)(entryCount - 1)) {
-        selectedIndex = entryCount - 1;
-    }
-
-    SetSelectedEntryIndex(selectedIndex);
+    SetSelectedEntryIndex(
+        (unsigned int)(selectedEntryIndex) < (unsigned int)(SaveLoadEntryCount(this) - 1) ? selectedEntryIndex
+                                                                                          : SaveLoadEntryCount(this) - 1
+    );
 }
 
 /**
@@ -6479,7 +6458,7 @@ void HudUiSaveLoadDialog::RefreshSaveFileList()
         }
     }
 
-    std::sort(entries->begin(), entries->end());
+    std::sort(fileEntries.begin(), fileEntries.end());
 }
 
 /**
@@ -6664,21 +6643,13 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent()
         zSndSampleSetInitByName("DIALOG");
     }
 
-    HudUiSaveLoadDialog* dialog = 0;
-    if (m_dialogKind == RECOIL_SAVELOAD_DIALOG_SAVE) {
-        HudUiSaveGameDialog* const storage = (HudUiSaveGameDialog*)::operator new(sizeof(HudUiSaveGameDialog));
-        if (storage != 0) {
-            dialog = new (storage) HudUiSaveGameDialog;
-        }
+    if (m_dialogKind != RECOIL_SAVELOAD_DIALOG_LOAD) {
+        m_dialog = new HudUiSaveGameDialog;
     } else {
-        HudUiLoadGameDialog* const storage = (HudUiLoadGameDialog*)::operator new(sizeof(HudUiLoadGameDialog));
-        if (storage != 0) {
-            dialog = new (storage) HudUiLoadGameDialog;
-        }
+        m_dialog = new HudUiLoadGameDialog;
     }
 
-    m_dialog = dialog;
-    dialog->SetEnabled(1);
+    m_dialog->SetEnabled(1);
     return 1;
 }
 

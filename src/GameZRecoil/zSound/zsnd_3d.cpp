@@ -120,14 +120,12 @@ int __fastcall zSndPlayHandle::Update3DA3D(zVec3* worldPos, zVec3* velocity, int
         return 1;
     }
 
-    int const sourceGainScaled = gainScaled;
-    zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
-    if (source == 0) {
+    if (backendBuffer == 0) {
         return -1;
     }
 
     if (worldPos != 0) {
-        source->SetPosition3f(worldPos->x, worldPos->y, worldPos->z);
+        ((zA3dProviderSource*)backendBuffer)->SetPosition3f(worldPos->x, worldPos->y, worldPos->z);
     }
 
     if (velocity != 0) {
@@ -135,12 +133,12 @@ int __fastcall zSndPlayHandle::Update3DA3D(zVec3* worldPos, zVec3* velocity, int
     }
 
     if (zSnd::IsMuted() != 0) {
-        source->SetGain(0.0f);
+        ((zA3dProviderSource*)backendBuffer)->SetGain(0.0f);
     } else {
-        source->SetGain(zSndSamplePlaySimple(*(float*)&sourceGainScaled));
+        ((zA3dProviderSource*)backendBuffer)->SetGain(zSndSamplePlaySimple(*(float*)&gainScaled));
     }
 
-    source->SetDopplerScale(velocityScaleMode != 0 ? 1.0f : 0.0f);
+    ((zA3dProviderSource*)backendBuffer)->SetDopplerScale(velocityScaleMode != 0 ? 1.0 : 0.0);
     return 1;
 }
 

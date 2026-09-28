@@ -509,7 +509,7 @@ void __fastcall SetFatalDisconnectCallback(zNetworkFatalDisconnectCallback callb
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-clearserviceproviderlist
  * @recoil-artifact defines .text recoil:function:0x489fa0: zNetwork::ClearServiceProviderList.
- *
+ * @recoil-match byte
  *
  * Purpose: release DirectPlay service-provider entries and clear the provider
  * vector range.
@@ -518,7 +518,8 @@ void __cdecl ClearServiceProviderList()
 {
     zNetworkServiceProviderListVec::iterator it = g_zNetwork_ServiceProviderList->begin();
     const zNetworkServiceProviderListVec::iterator end = g_zNetwork_ServiceProviderList->end();
-    for (; it != end; ++it) {
+    zNetworkServiceProviderListVec::iterator clearIt = it;
+    for (; it != end; ++it, ++clearIt) {
         zNetworkDPlayServiceProviderInfo* const info = *it;
         if (info != 0) {
             free(info->displayName);
@@ -528,7 +529,7 @@ void __cdecl ClearServiceProviderList()
             ::operator delete(info);
         }
 
-        *it = 0;
+        *clearIt = 0;
     }
 
     g_zNetwork_ServiceProviderList->clear();
@@ -879,25 +880,24 @@ namespace zNetworkDPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-openselectedsessionandreadstatusfields
  * @recoil-artifact defines .text recoil:function:0x48a520: zNetworkDPlay::OpenSelectedSessionAndReadStatusFields.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: open an enumerated DirectPlay session and copy its status fields.
  */
 int __fastcall OpenSelectedSessionAndReadStatusFields(zNetworkSessionDescStatusFields* statusFields)
 {
-    zNetworkDPlaySessionDescCache* const sessionCache = (zNetworkDPlaySessionDescCache*)
+    g_zNetwork_CurrentSessionDescCache = (zNetworkDPlaySessionDescCache*)
         zArchiveListGet(g_zNetwork_EnumeratedSessionList, statusFields->selectedSessionIndex);
-    g_zNetwork_CurrentSessionDescCache = sessionCache;
-    if (sessionCache == 0) {
+    if (g_zNetwork_CurrentSessionDescCache == 0) {
         return 0;
     }
 
-    sessionCache->openMode = 1;
-    sessionCache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
+    g_zNetwork_CurrentSessionDescCache->openMode = 1;
+    g_zNetwork_CurrentSessionDescCache->desc.dwSize = sizeof(zNetworkDPlaySessionDesc);
 
-    zNetwork_DPlay4* const directPlay = g_zNetwork_pDirectPlay4;
-    const int openResult = directPlay->Open((LPDPSESSIONDESC2)&sessionCache->desc, 1);
+    const int openResult
+        = g_zNetwork_pDirectPlay4->Open((LPDPSESSIONDESC2)&g_zNetwork_CurrentSessionDescCache->desc, 1);
     if (openResult < 0) {
         switch (openResult) {
         case (int)(0x80070057):
@@ -1073,20 +1073,16 @@ int __fastcall OpenSelectedSessionAndReadStatusFields(zNetworkSessionDescStatusF
     }
 
     if (QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->Close();
+        g_zNetwork_pDirectPlay4->Close();
         return 0;
     }
 
-    statusFields->eventCode = sessionCache->desc.dwUser1;
-    statusFields->statusFlags = sessionCache->desc.dwUser2;
-    statusFields->valueOrTime = sessionCache->desc.dwUser3;
-    statusFields->auxParam = sessionCache->desc.dwUser4;
-    statusFields->maxPlayers = sessionCache->desc.dwMaxPlayers;
-    memcpy(
-        statusFields->sessionNameBuf,
-        sessionCache->desc.lpszSessionNameA,
-        strlen(sessionCache->desc.lpszSessionNameA) + 1
-    );
+    statusFields->eventCode = g_zNetwork_CurrentSessionDescCache->desc.dwUser1;
+    statusFields->statusFlags = g_zNetwork_CurrentSessionDescCache->desc.dwUser2;
+    statusFields->valueOrTime = g_zNetwork_CurrentSessionDescCache->desc.dwUser3;
+    statusFields->auxParam = g_zNetwork_CurrentSessionDescCache->desc.dwUser4;
+    statusFields->maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
+    strcpy(statusFields->sessionNameBuf, g_zNetwork_CurrentSessionDescCache->desc.lpszSessionNameA);
     return 1;
 }
 
@@ -1362,13 +1358,14 @@ namespace zNetworkDPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-receivependingmessages
  * @recoil-artifact defines .text recoil:function:0x48ae70: zNetworkDPlay::ReceivePendingMessages.
- *
+ * @recoil-match byte
  *
  * Purpose: receive pending DirectPlay messages, grow the receive buffer, and
  * dispatch player or system packets.
  */
 int __fastcall ReceivePendingMessages(int messageBudget)
 {
+    int pumpResult = 0;
     if (g_zNetwork_SessionRuntimeInitialized == 0) {
         return 0;
     }
@@ -1378,39 +1375,38 @@ int __fastcall ReceivePendingMessages(int messageBudget)
     }
 
     int processedCount = 0;
-    int pumpResult = 0;
-    while (true) {
-        unsigned int receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
-        unsigned int fromPlayer = 0;
-        unsigned int toPlayer = 0;
-        const int hresult = g_zNetwork_pDirectPlay4->Receive(
-            (LPDPID)&fromPlayer,
-            (LPDPID)&toPlayer,
-            1,
-            g_zNetwork_ReceiveBuffer,
-            (LPDWORD)&receiveBufferCapacity
-        );
-
-        if (hresult == kDPlayBufferTooSmall) {
-            const unsigned int oldCapacity = g_zNetwork_ReceiveBufferCapacity;
-            g_zNetwork_ReceiveBuffer = realloc(g_zNetwork_ReceiveBuffer, receiveBufferCapacity);
-            zError::ReportOld(
-                0x100,
-                g_zNetwork_SourceFile_ZnetDplayCpp,
-                0x299,
-                g_zNetwork_ReceiveBufferIncreasedFmt,
-                oldCapacity,
-                receiveBufferCapacity
+    int hresult;
+    do {
+        unsigned int receiveBufferCapacity;
+        unsigned int fromPlayer;
+        unsigned int toPlayer;
+        do {
+            receiveBufferCapacity = g_zNetwork_ReceiveBufferCapacity;
+            fromPlayer = 0;
+            toPlayer = 0;
+            hresult = g_zNetwork_pDirectPlay4->Receive(
+                (LPDPID)&fromPlayer,
+                (LPDPID)&toPlayer,
+                1,
+                g_zNetwork_ReceiveBuffer,
+                (LPDWORD)&receiveBufferCapacity
             );
-            g_zNetwork_ReceiveBufferCapacity = receiveBufferCapacity;
-            continue;
-        }
 
-        if (hresult < 0) {
-            break;
-        }
+            if (hresult == kDPlayBufferTooSmall) {
+                g_zNetwork_ReceiveBuffer = realloc(g_zNetwork_ReceiveBuffer, receiveBufferCapacity);
+                zError::ReportOld(
+                    0x100,
+                    g_zNetwork_SourceFile_ZnetDplayCpp,
+                    0x299,
+                    g_zNetwork_ReceiveBufferIncreasedFmt,
+                    g_zNetwork_ReceiveBufferCapacity,
+                    receiveBufferCapacity
+                );
+                g_zNetwork_ReceiveBufferCapacity = receiveBufferCapacity;
+            }
+        } while (hresult == kDPlayBufferTooSmall);
 
-        if (receiveBufferCapacity >= 4) {
+        if (hresult >= 0 && receiveBufferCapacity >= 4) {
             --messageBudget;
             ++processedCount;
             if (fromPlayer == 0) {
@@ -1422,11 +1418,7 @@ int __fastcall ReceivePendingMessages(int messageBudget)
                 );
             }
         }
-
-        if (messageBudget == 0 || pumpResult != 0) {
-            break;
-        }
-    }
+    } while (hresult >= 0 && messageBudget != 0 && pumpResult == 0);
 
     return processedCount;
 }
@@ -1805,8 +1797,8 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey)
  */
 int __cdecl AllocFreePlayerColorIndex()
 {
-    const int maxPlayers = g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
-    for (int colorIndex = 1; (unsigned int)(colorIndex) <= (unsigned int)(maxPlayers); ++colorIndex) {
+    for (unsigned int colorIndex = 1; colorIndex <= g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
+        ++colorIndex) {
         if (g_zNetwork_PlayerColorInUseFlags[colorIndex] == 0) {
             g_zNetwork_PlayerColorInUseFlags[colorIndex] = 1;
             return colorIndex;

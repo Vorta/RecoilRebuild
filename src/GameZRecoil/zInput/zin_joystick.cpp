@@ -195,13 +195,13 @@ int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(const DIDeviceInstance* i
 {
     LPDIRECTINPUTDEVICEA baseDevice;
     const int hr = g_zInput_GlobalState->CreateDevice(instance->guidInstance, &baseDevice, 0);
-    if (hr != 0) {
-        return 1;
+    if (hr == 0) {
+        baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void**)(&g_zInput_JoystickDevice));
+        baseDevice->Release();
+        return 0;
     }
 
-    baseDevice->QueryInterface(IID_IDirectInputDevice2A, (void**)(&g_zInput_JoystickDevice));
-    baseDevice->Release();
-    return 0;
+    return 1;
 }
 
 /**
@@ -241,39 +241,35 @@ int __fastcall DIApplyAxisConfig(JoystickAxisConfig* axisCfg)
     }
 
     int result = 1;
-    JoystickAxisConfigEntry& axisX = axisCfg->axes[0];
-    if (DISetAxisRange(DIJOFS_X, axisX.lMin, axisX.lMax) < 0) {
-        DIGetAxisRange(DIJOFS_X, &axisX.lMin, &axisX.lMax);
+    if (DISetAxisRange(DIJOFS_X, axisCfg->axes[0].lMin, axisCfg->axes[0].lMax) < 0) {
+        DIGetAxisRange(DIJOFS_X, &axisCfg->axes[0].lMin, &axisCfg->axes[0].lMax);
     }
-    axisX.midpoint = (float)(axisX.lMin + axisX.lMax) * 0.5f;
-    axisX.normScale = 2.0f / (float)(axisX.lMax - axisX.lMin);
-    result &= DISetAxisDeadzone(DIJOFS_X, axisX.deadzone) >= 0 ? 1 : 0;
+    axisCfg->axes[0].midpoint = (float)(axisCfg->axes[0].lMin + axisCfg->axes[0].lMax) * 0.5f;
+    axisCfg->axes[0].normScale = 2.0f / (float)(axisCfg->axes[0].lMax - axisCfg->axes[0].lMin);
+    result &= DISetAxisDeadzone(DIJOFS_X, axisCfg->axes[0].deadzone) >= 0 ? 1 : 0;
 
-    JoystickAxisConfigEntry& axisY = axisCfg->axes[1];
-    if (DISetAxisRange(DIJOFS_Y, axisY.lMin, axisY.lMax) < 0) {
-        DIGetAxisRange(DIJOFS_Y, &axisY.lMin, &axisY.lMax);
+    if (DISetAxisRange(DIJOFS_Y, axisCfg->axes[1].lMin, axisCfg->axes[1].lMax) < 0) {
+        DIGetAxisRange(DIJOFS_Y, &axisCfg->axes[1].lMin, &axisCfg->axes[1].lMax);
     }
-    axisY.midpoint = (float)(axisY.lMin + axisY.lMax) * 0.5f;
-    axisY.normScale = 2.0f / (float)(axisY.lMax - axisY.lMin);
-    result &= DISetAxisDeadzone(DIJOFS_Y, axisY.deadzone) >= 0 ? 1 : 0;
+    axisCfg->axes[1].midpoint = (float)(axisCfg->axes[1].lMin + axisCfg->axes[1].lMax) * 0.5f;
+    axisCfg->axes[1].normScale = 2.0f / (float)(axisCfg->axes[1].lMax - axisCfg->axes[1].lMin);
+    result &= DISetAxisDeadzone(DIJOFS_Y, axisCfg->axes[1].deadzone) >= 0 ? 1 : 0;
 
     if (g_zInput_JoystickAxisCount > 2) {
-        JoystickAxisConfigEntry& axisZ = axisCfg->axes[2];
-        if (DISetAxisRange(DIJOFS_Z, axisZ.lMin, axisZ.lMax) < 0) {
-            DIGetAxisRange(DIJOFS_Z, &axisZ.lMin, &axisZ.lMax);
+        if (DISetAxisRange(DIJOFS_Z, axisCfg->axes[2].lMin, axisCfg->axes[2].lMax) < 0) {
+            DIGetAxisRange(DIJOFS_Z, &axisCfg->axes[2].lMin, &axisCfg->axes[2].lMax);
         }
-        axisZ.midpoint = (float)(axisZ.lMin + axisZ.lMax) * 0.5f;
-        axisZ.normScale = 2.0f / (float)(axisZ.lMax - axisZ.lMin);
-        result &= DISetAxisDeadzone(DIJOFS_Z, axisZ.deadzone) >= 0 ? 1 : 0;
+        axisCfg->axes[2].midpoint = (float)(axisCfg->axes[2].lMin + axisCfg->axes[2].lMax) * 0.5f;
+        axisCfg->axes[2].normScale = 2.0f / (float)(axisCfg->axes[2].lMax - axisCfg->axes[2].lMin);
+        result &= DISetAxisDeadzone(DIJOFS_Z, axisCfg->axes[2].deadzone) >= 0 ? 1 : 0;
     }
     if (g_zInput_JoystickAxisCount > 3) {
-        JoystickAxisConfigEntry& axisRz = axisCfg->axes[3];
-        if (DISetAxisRange(DIJOFS_RZ, axisRz.lMin, axisRz.lMax) < 0) {
-            DIGetAxisRange(DIJOFS_RZ, &axisRz.lMin, &axisRz.lMax);
+        if (DISetAxisRange(DIJOFS_RZ, axisCfg->axes[3].lMin, axisCfg->axes[3].lMax) < 0) {
+            DIGetAxisRange(DIJOFS_RZ, &axisCfg->axes[3].lMin, &axisCfg->axes[3].lMax);
         }
-        axisRz.midpoint = (float)(axisRz.lMin + axisRz.lMax) * 0.5f;
-        axisRz.normScale = 2.0f / (float)(axisRz.lMax - axisRz.lMin);
-        result &= DISetAxisDeadzone(DIJOFS_RZ, axisRz.deadzone) >= 0 ? 1 : 0;
+        axisCfg->axes[3].midpoint = (float)(axisCfg->axes[3].lMin + axisCfg->axes[3].lMax) * 0.5f;
+        axisCfg->axes[3].normScale = 2.0f / (float)(axisCfg->axes[3].lMax - axisCfg->axes[3].lMin);
+        result &= DISetAxisDeadzone(DIJOFS_RZ, axisCfg->axes[3].deadzone) >= 0 ? 1 : 0;
     }
 
     g_zInput_JoystickAxisConfig = *axisCfg;

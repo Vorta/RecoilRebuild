@@ -60,15 +60,27 @@ inline int ApplyKeyboardPollEvent(DIDeviceObjectData& event)
     switch (event.dwOfs) {
     case 0x38:
     case 0xb8:
-        UpdateKeyboardModifierState(0x100, (event.dwData & 0x80) != 0);
+        if ((event.dwData & 0x80) != 0) {
+            g_zInput_KbdModifierState |= 0x100;
+        } else {
+            g_zInput_KbdModifierState &= ~0x100;
+        }
         break;
     case 0x1d:
     case 0x9d:
-        UpdateKeyboardModifierState(0x200, (event.dwData & 0x80) != 0);
+        if ((event.dwData & 0x80) != 0) {
+            g_zInput_KbdModifierState |= 0x200;
+        } else {
+            g_zInput_KbdModifierState &= ~0x200;
+        }
         break;
     case 0x2a:
     case 0x36:
-        UpdateKeyboardModifierState(0x400, (event.dwData & 0x80) != 0);
+        if ((event.dwData & 0x80) != 0) {
+            g_zInput_KbdModifierState |= 0x400;
+        } else {
+            g_zInput_KbdModifierState &= ~0x400;
+        }
         break;
     default:
         if (g_zInput_KbdModifierState != 0 && g_zInputKbdKeyDispatchTable[event.dwOfs].state != 0) {
@@ -91,8 +103,8 @@ inline int ApplyKeyboardPollEvent(DIDeviceObjectData& event)
     if ((event.dwData & 0x80) != 0) {
         dispatch.state = dispatch.state == 1 ? 3 : 1;
         if (g_zInput_KbdRawEventCallback != 0) {
-            KeyboardRawEventCallbackFn callback = (KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback);
-            callback(KeyboardTranslateDikToAscii((int)(dispatchIndex)), g_zInput_KbdRawEventCallbackCtx);
+            const int ascii = KeyboardTranslateDikToAscii((int)(dispatchIndex));
+            ((KeyboardRawEventCallbackFn)(g_zInput_KbdRawEventCallback))(ascii, g_zInput_KbdRawEventCallbackCtx);
         }
     } else {
         dispatch.state |= 4;
@@ -330,13 +342,15 @@ void __fastcall KeyboardPollState(unsigned char dispatchCallbacks)
             return;
         }
     }
-    for (unsigned int i = 0; i < inOutCount; ++i) {
-        ApplyKeyboardPollEvent(g_zInput_KbdEventBuffer[i]);
+    DIDeviceObjectData* event = g_zInput_KbdEventBuffer;
+    for (unsigned int i = 0; i < inOutCount; ++i, ++event) {
+        ApplyKeyboardPollEvent(*event);
     }
 
     if (dispatchCallbacks != 0) {
-        for (unsigned int i_2239 = 0; i_2239 < inOutCount; ++i_2239) {
-            const int dispatchIndex = KeyboardEventDispatchIndex(g_zInput_KbdEventBuffer[i_2239]);
+        const DIDeviceObjectData* dispatchEvent = g_zInput_KbdEventBuffer;
+        for (unsigned int i_2239 = 0; i_2239 < inOutCount; ++i_2239, ++dispatchEvent) {
+            const int dispatchIndex = KeyboardEventDispatchIndex(*dispatchEvent);
             if (dispatchIndex < 0 || dispatchIndex >= 0x7de) {
                 continue;
             }
