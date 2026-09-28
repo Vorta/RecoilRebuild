@@ -2710,9 +2710,7 @@ namespace zTag4
         }
 
         tag->count = 0;
-        tag->tags[0] = 0xff;
-        tag->tags[1] = 0xff;
-        tag->tags[2] = 0xff;
+        memset(tag->tags, 0xff, sizeof(tag->tags));
     }
 } // namespace zTag4
 
@@ -2745,35 +2743,25 @@ namespace VariantTag
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-varianttag-tagsoverlap
      * @recoil-artifact defines .text recoil:function:0x476370: VariantTag::TagsOverlap
-     *
+     * @recoil-match byte
      *
      * Purpose: test whether two variant tag sets pass the active filter.
      */
     int __fastcall TagsOverlap(const zTag4Partial* tagA, const zTag4Partial* tagB)
     {
-        if (g_Variant_FilterEnabled == 0) {
+        if (g_Variant_FilterEnabled == 0 || tagA->count == 0 || tagB->count == 0) {
             return 1;
         }
 
-        const unsigned char countA = tagA->count;
-        if (countA == 0 || tagB->count == 0) {
-            return 1;
-        }
+        for (int indexA = 0; indexA < tagA->count; ++indexA) {
+            const unsigned char tagIdA = tagA->tags[indexA];
+            if (tagIdA == 0xff) {
+                return 1;
+            }
 
-        {
-            for (int indexA = 0; indexA < countA; ++indexA) {
-                const unsigned char tagIdA = tagA->tags[indexA];
-                if (tagIdA == 0xff) {
+            for (int indexB = 0; indexB < tagB->count; ++indexB) {
+                if (tagB->tags[indexB] == 0xff || tagIdA == tagB->tags[indexB]) {
                     return 1;
-                }
-
-                {
-                    for (int indexB = 0; indexB < tagB->count; ++indexB) {
-                        const unsigned char tagIdB = tagB->tags[indexB];
-                        if (tagIdB == 0xff || tagIdA == tagIdB) {
-                            return 1;
-                        }
-                    }
                 }
             }
         }
@@ -2930,13 +2918,13 @@ namespace zClipAlt
     {
         g_Clip_PolyVerts[0].x = point[0];
         g_Clip_PolyVerts[0].y = point[1];
-        if (zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, 1) == 0) {
-            return 0;
+        if (zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, 1) != 0) {
+            point[0] = g_zClipAlt_RemapScaleX * point[0] + g_zClipAlt_RemapBiasX;
+            point[1] = g_zClipAlt_RemapScaleY * point[1] + g_zClipAlt_RemapBiasY;
+            return 1;
         }
 
-        point[0] = g_zClipAlt_RemapScaleX * point[0] + g_zClipAlt_RemapBiasX;
-        point[1] = g_zClipAlt_RemapScaleY * point[1] + g_zClipAlt_RemapBiasY;
-        return 1;
+        return 0;
     }
 } // namespace zClipAlt
 

@@ -781,16 +781,18 @@ namespace zMath
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-loadprojection
  * @recoil-artifact defines .text recoil:function:0x472fb0: zMathMatLoadProjection
- *
+ * @recoil-match byte
  *
  * Purpose: builds the current projection-node matrix from the parent slot,
  * camera scratch B, and a caller-supplied yaw/Z offset.
  */
 void __stdcall zMathMatLoadProjection(float zOffset)
 {
-    float parentYaw = 0.0f;
+    float parentYaw;
     if (zMath::g_currentMatrixIdentityFlagSlot[-1] == 0) {
         parentYaw = zMathMatExtractYaw((const zMat4x3*)(zMath::g_currentMatrixPtrSlot[-1]));
+    } else {
+        parentYaw = 0.0f;
     }
 
     zMath::MatLoadIdentity();
@@ -799,9 +801,8 @@ void __stdcall zMathMatLoadProjection(float zOffset)
 
     zMat4x3* current = (zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
     const zMat4x3* parent = (const zMat4x3*)(zMath::g_currentMatrixPtrSlot[-1]);
-    current->posX = parent->posX;
-    current->posY = parent->posY;
-    current->posZ = parent->posZ;
+    // Retail copies the translation row as one zVec3 (dword block copy).
+    *(zVec3*)(&current->posX) = *(const zVec3*)(&parent->posX);
 
     zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));

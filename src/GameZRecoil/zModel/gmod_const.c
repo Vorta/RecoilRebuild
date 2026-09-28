@@ -2661,19 +2661,17 @@ namespace zModel_Const
         zGeometry_PlaneEquationPartial plane;
         ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
 
-        if (vertexCount <= 0) {
-            return 1;
-        }
-
+        int coplanar = 1;
         for (int i = 0; i < vertexCount; ++i) {
             const zVec3* const vertex = &vertices[i];
             const double distance = vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
             if (fabs(distance) > g_zModel_CoplanarTolerance) {
-                return 0;
+                coplanar = 0;
+                break;
             }
         }
 
-        return 1;
+        return coplanar;
     }
 } // namespace zModel_Const
 
@@ -3195,7 +3193,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.hasspecialflagsorauxmaterialdata
      * @recoil-artifact defines .text recoil:function:0x483a60: zDi::HasSpecialFlagsOrAuxMaterialData
-     *
+     * @recoil-match byte
      *
      * Purpose: test whether a display instance needs special render/material handling.
      */
@@ -3205,7 +3203,13 @@ namespace zDi
             return 0;
         }
 
-        if ((self->flags & 0x04) != 0 || (self->flags & 0x08) != 0 || (self->flags & 0x20) != 0) {
+        if ((self->flags & 0x04) != 0) {
+            return 1;
+        }
+        if ((self->flags & 0x08) != 0) {
+            return 1;
+        }
+        if ((self->flags & 0x20) != 0) {
             return 1;
         }
 
@@ -5411,7 +5415,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstmeshfaces
      * @recoil-artifact defines .text recoil:function:0x487900: CZDisplayInstance::FilterRegionsAgainstMeshFaces.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -5424,19 +5428,14 @@ namespace CZDisplayInstance
             return 0;
         }
 
-        if (faceCount > 0) {
-            {
-                for (int vertexIndex = faceCount - 1; vertexIndex >= 0; --vertexIndex) {
-                    const int nextIndex = vertexIndex == faceCount - 1 ? 0 : vertexIndex + 1;
-                    g_zModel_PointInPolygonVertices[vertexIndex] = meshVertices[vertexIndex];
-
-                    zVec3* edgeNormal = &g_zModel_PointInPolygonEdgeNormals[vertexIndex];
-                    edgeNormal->x = meshVertices[nextIndex].z - meshVertices[vertexIndex].z;
-                    edgeNormal->y = 0.0f;
-                    edgeNormal->z = meshVertices[vertexIndex].x - meshVertices[nextIndex].x;
-                    zMath::Vec3Normalize(edgeNormal);
-                }
-            }
+        int nextIndex = 0;
+        for (int vertexIndex = faceCount - 1; vertexIndex >= 0; --vertexIndex) {
+            g_zModel_PointInPolygonVertices[vertexIndex] = meshVertices[vertexIndex];
+            g_zModel_PointInPolygonEdgeNormals[vertexIndex].z = meshVertices[vertexIndex].x - meshVertices[nextIndex].x;
+            g_zModel_PointInPolygonEdgeNormals[vertexIndex].x = meshVertices[nextIndex].z - meshVertices[vertexIndex].z;
+            g_zModel_PointInPolygonEdgeNormals[vertexIndex].y = 0.0f;
+            zMath::Vec3Normalize(&g_zModel_PointInPolygonEdgeNormals[vertexIndex]);
+            nextIndex = vertexIndex;
         }
 
         g_zModel_PointInPolygonVertexCount = faceCount;

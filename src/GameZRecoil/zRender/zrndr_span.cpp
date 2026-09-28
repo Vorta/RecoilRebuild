@@ -390,22 +390,15 @@ namespace zRndr {
  */
 void __fastcall BlendPackedColor565WithFogInPlace(int* ioPackedColor, int blend255)
 {
-    const int fogGreen = g_fogParamsActive.packedColorGreen;
-    const int packedColor = *ioPackedColor;
-    const int greenMask = (int)(g_pixelPackGreenMask);
-    const int blueMask = (int)(g_pixelPackBlueMask);
+    const int greenDelta
+        = ((g_fogParamsActive.packedColorGreen - ((int)(g_pixelPackGreenMask) & *ioPackedColor)) * blend255) >> 8;
+    const int blueDelta
+        = ((g_fogParamsActive.packedColorBlue - ((int)(g_pixelPackBlueMask) & *ioPackedColor)) * blend255) >> 8;
+    const int redDelta
+        = ((g_fogParamsActive.packedColorRed - ((int)(g_pixelPackRedMask) & *ioPackedColor)) * blend255) >> 8;
 
-    const int greenDelta = ((fogGreen - (greenMask & packedColor)) * blend255) >> 8;
-    const int blueDelta = ((g_fogParamsActive.packedColorBlue - (blueMask & packedColor)) * blend255) >> 8;
-    const int redMask = (int)(g_pixelPackRedMask);
-    const int redDelta = ((g_fogParamsActive.packedColorRed - (redMask & packedColor)) * blend255) >> 8;
-
-    int blendedColor = redDelta & redMask;
-    blendedColor += blueDelta;
-    blendedColor += greenDelta & greenMask;
-    blendedColor += packedColor;
-
-    *ioPackedColor = blendedColor;
+    *ioPackedColor = (redDelta & (int)(g_pixelPackRedMask)) + blueDelta + (greenDelta & (int)(g_pixelPackGreenMask))
+        + *ioPackedColor;
 }
 } // namespace zRndr
 
@@ -1733,19 +1726,22 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    do {
+        const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const int srcColor = (short)(texels16[vIndex + uIndex]);
-        if (g_spanActiveConstAlphaBits > 3) {
-            if (g_spanActiveConstAlphaBits >= 0xfc) {
+        if ((unsigned int)(g_spanActiveConstAlphaBits) > 3) {
+            if ((unsigned int)(g_spanActiveConstAlphaBits) >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * g_spanActiveConstAlphaBits) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * g_spanActiveConstAlphaBits) >> 8;
+                const int greenDelta
+                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                const int redDelta
+                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
                 int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * g_spanActiveConstAlphaBits) >> 8;
+                const int blueDelta
+                    = (((srcColor & 0x001f) - (blended & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
                 blended += (greenDelta & 0xffffffe0) + blueDelta;
                 *dst = (unsigned short)(blended);
             }
@@ -1754,7 +1750,7 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1772,19 +1768,22 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(int texU, int texV, int pix
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    do {
+        const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const int srcColor = (short)(texels16[vIndex + uIndex]);
-        if (g_spanActiveConstAlphaBits > 7) {
-            if (g_spanActiveConstAlphaBits >= 0xfc) {
+        if ((unsigned int)(g_spanActiveConstAlphaBits) > 7) {
+            if ((unsigned int)(g_spanActiveConstAlphaBits) >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * g_spanActiveConstAlphaBits) >> 8;
+                const int redDelta
+                    = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
                 int blended = dstColor + (redDelta & 0xfffffc00);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * g_spanActiveConstAlphaBits) >> 8;
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * g_spanActiveConstAlphaBits) >> 8;
+                const int greenDelta
+                    = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                const int blueDelta
+                    = (((srcColor & 0x001f) - (blended & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
                 blended += (greenDelta & 0xffffffe0) + blueDelta;
                 *dst = (unsigned short)(blended);
             }
@@ -1793,7 +1792,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(int texU, int texV, int pix
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -2458,8 +2457,8 @@ namespace zRndr {
 void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(int texU, int texV, int pixelCount, int texVShift)
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    do {
+        const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
         const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
@@ -2480,7 +2479,7 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(int texU, int texV, int 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -2497,8 +2496,8 @@ namespace zRndr {
 void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(int texU, int texV, int pixelCount, int texVShift)
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    do {
+        const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const unsigned char sourceIndex = g_spanActiveTexPixels[vIndex + uIndex];
         const int srcColor = (short)(g_spanActiveTexPalette[sourceIndex]);
@@ -2519,7 +2518,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(int texU, int texV, int 
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
         ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 

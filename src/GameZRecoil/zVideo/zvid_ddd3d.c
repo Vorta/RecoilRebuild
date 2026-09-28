@@ -787,29 +787,24 @@ namespace zVideo_dd3d
      */
     int __fastcall UploadImageToSurface(IDirectDrawSurface * uploadSurface, zVidImagePartial * image, int useAlpha)
     {
-        DDSURFACEDESC lockedDescOut = { 0 };
+        DDSURFACEDESC lockedDescOut;
+        unsigned char* srcPixels = (unsigned char*)(image->pixels);
         zVideo_dd::LockSurfaceWaitRestore((IDirectDrawSurface3*)(uploadSurface), &lockedDescOut);
 
         unsigned char* dstPixels = (unsigned char*)(lockedDescOut.lpSurface);
-        unsigned char* srcPixels = (unsigned char*)(image->pixels);
-        if (useAlpha != 0) {
-            ConvertImagePixelsForTexture((unsigned short*)(dstPixels), image, lockedDescOut.lPitch, useAlpha);
-        } else {
-            const int width = image->width;
-            const int height = image->height;
-            if (lockedDescOut.lPitch == width) {
-                const int bytesPerPixel = (g_zVideo_DisplayModeBpp + 7) >> 3;
-                memcpy(dstPixels, srcPixels, (size_t)(height * bytesPerPixel * width));
+        if (useAlpha == 0) {
+            if (lockedDescOut.lPitch == image->width) {
+                memcpy(dstPixels, srcPixels, (size_t)(image->height * (g_zVideo_DisplayModeBpp / 8) * image->width));
             } else {
-                const int rowCopyBytes = (g_zVideo_DisplayModeBpp * width + 7) >> 3;
-                {
-                    for (int row = 0; row < height; ++row) {
-                        memcpy(dstPixels, srcPixels, (size_t)(rowCopyBytes));
-                        dstPixels += lockedDescOut.lPitch;
-                        srcPixels += width << 1;
-                    }
+                const int rowCopyBytes = g_zVideo_DisplayModeBpp * image->width / 8;
+                for (int row = 0; row < image->height; ++row) {
+                    memcpy(dstPixels, srcPixels, (size_t)(rowCopyBytes));
+                    dstPixels += lockedDescOut.lPitch;
+                    srcPixels += image->width << 1;
                 }
             }
+        } else {
+            ConvertImagePixelsForTexture((unsigned short*)(dstPixels), image, lockedDescOut.lPitch, useAlpha);
         }
 
         zVideo_dd::UnlockSurfaceWaitRestore((IDirectDrawSurface3*)(uploadSurface));

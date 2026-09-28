@@ -3719,7 +3719,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.capturenodestates
      * @recoil-artifact defines .text recoil:function:0x45d240: zEffect_Anim::CaptureNodeStates.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: save active and transform state for each tracked node before an
@@ -3731,45 +3731,44 @@ namespace zEffect_Anim
             return -1;
         }
 
-        for (int i = 0; i < self->trackedNodeCount; ++i) {
-            zEffectAnimTrackedNode* const tracked = &self->trackedNodeList[i];
+        zEffectAnimTrackedNode* tracked = self->trackedNodeList;
+        for (int i = 0; i < self->trackedNodeCount; ++i, ++tracked) {
             CZNodePartial* const node = tracked->trackedNode;
             if (node == 0) {
                 continue;
             }
 
-            zEffectAnimCapturedNodeState* const state = &tracked->capturedState;
-            state->activeFlag = (node->flags >> 2) & 1;
+            tracked->capturedState.activeFlag = ((unsigned int)(node->flags) >> 2) & 1;
             if (node->classId != 5) {
                 continue;
             }
 
             CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(node->classData);
-            state->usesCachedMatrix = (objectData->flags >> 4) & 1;
-            if (state->usesCachedMatrix != 0) {
+            tracked->capturedState.usesCachedMatrix = ((unsigned int)(objectData->flags) >> 4) & 1;
+            if (tracked->capturedState.usesCachedMatrix != 0) {
                 memcpy(
-                    state->transformSnapshot,
+                    tracked->capturedState.transformSnapshot,
                     CZObject3D::gwObject3DGetMatrixPtr(node),
-                    sizeof(state->transformSnapshot)
+                    sizeof(tracked->capturedState.transformSnapshot)
                 );
             } else {
                 CZObject3D::gwObject3DGetPosition(
                     node,
-                    &state->transformSnapshot[0],
-                    &state->transformSnapshot[1],
-                    &state->transformSnapshot[2]
+                    &tracked->capturedState.transformSnapshot[0],
+                    &tracked->capturedState.transformSnapshot[1],
+                    &tracked->capturedState.transformSnapshot[2]
                 );
                 CZObject3D::gwObject3DGetRotation(
                     node,
-                    &state->transformSnapshot[3],
-                    &state->transformSnapshot[4],
-                    &state->transformSnapshot[5]
+                    &tracked->capturedState.transformSnapshot[3],
+                    &tracked->capturedState.transformSnapshot[4],
+                    &tracked->capturedState.transformSnapshot[5]
                 );
                 CZObject3D::gwObject3DGetScale(
                     node,
-                    &state->transformSnapshot[6],
-                    &state->transformSnapshot[7],
-                    &state->transformSnapshot[8]
+                    &tracked->capturedState.transformSnapshot[6],
+                    &tracked->capturedState.transformSnapshot[7],
+                    &tracked->capturedState.transformSnapshot[8]
                 );
             }
         }
@@ -3842,7 +3841,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.finalizestop
      * @recoil-artifact defines .text recoil:function:0x45d3d0: zEffectAnim::FinalizeStop.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: detach active runtime state, clear cleanup references, and settle the
@@ -3850,7 +3849,11 @@ namespace zEffectAnim
      */
     int __fastcall FinalizeStop(zEffectAnimEntry * self)
     {
-        if (self == 0 || self->activationState == 5) {
+        if (self == 0) {
+            return -1;
+        }
+
+        if (self->activationState == 5) {
             return -1;
         }
 
@@ -3880,7 +3883,11 @@ namespace zEffectAnim
 
         const unsigned char activationState = self->activationState;
         if (activationState != 5 && activationState != 4) {
-            self->activationState = activationState == 6 ? 4 : 1;
+            if (activationState == 6) {
+                self->activationState = 4;
+            } else {
+                self->activationState = 1;
+            }
         }
 
         memcpy(&self->activationCountdown, &self->triggerContext, sizeof(self->activationCountdown));
@@ -3890,7 +3897,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopsequencecallback
      * @recoil-artifact defines .text recoil:function:0x45d4c0: zEffectAnim::RunStopSequenceCallback.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the stop sequence until no runnable events remain, then
@@ -3911,24 +3918,23 @@ namespace zEffectAnim
         entry->triggerCurrentValue += g_FrameDeltaTimeSec;
         if (entry->surfacePrimary.eventStream != 0) {
             g_zEffectAnim_State.frameDeltaRemainingSec = g_FrameDeltaTimeSec;
-            const unsigned char runState = entry->surfacePrimary.runState;
-            if (runState == 0 || runState == 1) {
-                if (zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary) != 0) {
+            zEffectAnimSurfaceRuntime* const surface = &entry->surfacePrimary;
+            if (surface->runState == 0 || surface->runState == 1) {
+                if (zEffect_Anim::RunSequenceEvents(entry, surface) != 0) {
                     entry->activationState = 5;
                     zError::ReportOld(
                         0x400,
-                        kZeffAnimRunSourceFile,
+                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c",
                         0x196d,
                         "Corrupt animation:\n  Animation: %s; Sequence: %s\n",
                         entry,
-                        &entry->surfacePrimary
+                        surface
                     );
                 }
-            }
 
-            const unsigned char runStateAfterDispatch = entry->surfacePrimary.runState;
-            if (runStateAfterDispatch == 0 || runStateAfterDispatch == 1) {
-                stopSequenceFinished = 0;
+                if (surface->runState == 0 || surface->runState == 1) {
+                    stopSequenceFinished = 0;
+                }
             }
         }
 

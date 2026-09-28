@@ -114,7 +114,7 @@ AddPolygonToDi(zDiPartial* di, int pointCount, zVec3* points, zModel_MaterialPar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-buildpolygonuvlist
  * @recoil-artifact defines .text recoil:function:0x46a7f0: zGeometry_Model::BuildPolygonUvList
- *
+ * @recoil-match byte
  *
  * Purpose: Allocate and fill clipped polygon UVs from the source polygon UV basis.
  */
@@ -152,10 +152,10 @@ BuildPolygonUvList(int pointCount, zVec3* points, zModel_DrawBatchBasePartial* m
 
     zClipUV* const result = (zClipUV*)(malloc((size_t)(pointCount) * sizeof(zClipUV)));
     for (int i = 0; i < pointCount; ++i) {
-        const float deltaX = points[i].x - point1->x;
-        const float deltaZ = points[i].z - point1->z;
-        result[i].u = deltaX * uCoefficients.x + deltaZ * uCoefficients.y + uvBasis->uv1.u;
-        result[i].v = deltaX * vCoefficients.x + deltaZ * vCoefficients.y + uvBasis->uv1.v;
+        result[i].u = (points[i].x - point1->x) * uCoefficients.x + (points[i].z - point1->z) * uCoefficients.y
+            + uvBasis->uv1.u;
+        result[i].v = (points[i].x - point1->x) * vCoefficients.x + (points[i].z - point1->z) * vCoefficients.y
+            + uvBasis->uv1.v;
     }
 
     return result;
@@ -1112,7 +1112,7 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-addpointlistpolygontodi
  * @recoil-artifact defines .text recoil:function:0x46ba90: zGeometry_Model::AddPointListPolygonToDi
- *
+ * @recoil-match byte
  *
  * Purpose: add a clipped child polygon to a DI, rebuilding UVs from the source
  * model polygon when UV basis data is present.
@@ -1136,12 +1136,13 @@ int __fastcall AddPointListPolygonToDi(
         return -1;
     }
 
-    zClipUV* uvPairs = 0;
-    zModel_MaterialPartial* material = 0;
+    zClipUV* uvPairs;
+    zModel_MaterialPartial* material;
     if (polygon->uvBasis != 0) {
         uvPairs = BuildPolygonUvList(pointCount, points, model, polygon);
         material = polygon->material;
     } else {
+        uvPairs = 0;
         material = FindOrCreateRandomDebugMaterial();
     }
 

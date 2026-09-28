@@ -2413,10 +2413,10 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
     }
 
     while (contourCount != 0) {
-        zGeometry_WeilerContourSegmentPartial* const firstSegment = contour->firstSegment;
-        if (firstSegment != 0) {
-            contour->contourType = firstSegment->contourType;
+        if (contour->firstSegment != 0) {
+            zGeometry_WeilerContourSegmentPartial* const firstSegment = contour->firstSegment;
             int primarySide = firstSegment->contourType & 3;
+            contour->contourType = firstSegment->contourType;
 
             if (firstSegment->contourType == 6) {
                 zGeometry_WeilerContourSegmentPartial* const oldPrev = firstSegment->prev;
@@ -2429,20 +2429,20 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
                 = zGeometry_Weiler::GetNextContourSegmentForTraversal(firstSegment);
 
             while (segment != firstSegment) {
-                zGeometry_WeilerContourSegmentPartial* nextBase;
                 if (primarySide == 0 && (segment->contourType & 3) != 0) {
                     primarySide = 1;
                     contour->contourType |= segment->contourType;
                     contour->pointCount = 1;
 
-                    zGeometry_WeilerContourSegmentPartial* const oldPrev = firstSegment->prev;
-                    firstSegment->prev = firstSegment->next;
-                    firstSegment->next = oldPrev;
+                    zGeometry_WeilerContourSegmentPartial* const oldNext = firstSegment->next;
+                    firstSegment->next = firstSegment->prev;
+                    firstSegment->prev = oldNext;
 
                     zVec3* const oldStart = firstSegment->startPoint;
                     firstSegment->startPoint = firstSegment->endPoint;
                     firstSegment->endPoint = oldStart;
-                    nextBase = firstSegment;
+
+                    segment = zGeometry_Weiler::GetNextContourSegmentForTraversal(firstSegment);
                 } else {
                     ++contour->pointCount;
                     contour->contourType |= segment->contourType;
@@ -2452,10 +2452,8 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
                         oldOutput->firstSegment = 0;
                     }
                     segment->contourOutput = 0;
-                    nextBase = segment;
+                    segment = zGeometry_Weiler::GetNextContourSegmentForTraversal(segment);
                 }
-
-                segment = zGeometry_Weiler::GetNextContourSegmentForTraversal(nextBase);
             }
 
             if ((contour->contourType & 3) == 3) {
@@ -2471,7 +2469,7 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputcontoursforclipmode
  * @recoil-artifact defines .text recoil:function:0x4681a0: zGeometry_Weiler::OutputContoursForClipMode
- *
+ * @recoil-match byte
  *
  * Purpose: Route contour outputs to polygon sets A, B, and C according to clip mode bits and contour type.
  */
@@ -2541,8 +2539,8 @@ int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial* self)
             }
         }
 
-        ++contour;
         --contourCount;
+        ++contour;
     }
 
     return 1;
@@ -2607,27 +2605,33 @@ int __fastcall OutputContourToPolygonSet(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-togglepointaxesforcontoursource
  * @recoil-artifact defines .text recoil:function:0x4683a0: zGeometry_Weiler::TogglePointAxesForContourSource
- *
+ * @recoil-match byte
  *
  * Purpose: Swap point axes in the active input contour buffer for the contour source.
  */
 void __fastcall TogglePointAxesForContourSource(zGeometry_WeilerStatePartial* self)
 {
-    zGeometry_WeilerBufferPartial* buffer = &self->inputContourABuffer;
     if (self->inputContourBBuffer.base != 0) {
-        buffer = &self->inputContourBBuffer;
-    }
-
-    zVec3* point = (zVec3*)(buffer->base);
-    for (int i = 0; i < buffer->count; ++i) {
-        if (self->contourSource == 2) {
-            const float y = point[i].y;
-            point[i].y = point[i].z;
-            point[i].z = y;
-        } else {
-            const float x = point[i].x;
-            point[i].x = point[i].z;
-            point[i].z = x;
+        float* axis = (self->contourSource == 2) ? &((zVec3*)(self->inputContourBBuffer.base))->y
+                                                 : &((zVec3*)(self->inputContourBBuffer.base))->x;
+        float* z = &((zVec3*)(self->inputContourBBuffer.base))->z;
+        for (int i = self->inputContourBBuffer.count; i != 0; --i) {
+            const float value = *axis;
+            *axis = *z;
+            *z = value;
+            axis += 3;
+            z += 3;
+        }
+    } else {
+        float* axis = (self->contourSource == 2) ? &((zVec3*)(self->inputContourABuffer.base))->y
+                                                 : &((zVec3*)(self->inputContourABuffer.base))->x;
+        float* z = &((zVec3*)(self->inputContourABuffer.base))->z;
+        for (int i = self->inputContourABuffer.count; i != 0; --i) {
+            const float value = *axis;
+            *axis = *z;
+            *z = value;
+            axis += 3;
+            z += 3;
         }
     }
 }
@@ -2785,15 +2789,12 @@ int __fastcall CreateForwardSegmentPairAtPoint(
 )
 {
     zGeometry_WeilerContourSegmentPartial* segment = firstSegment;
-    int contourTypeMask = firstContourTypeMask;
+    int segmentCount = 2;
+    zGeometry_WeilerBufferPartial* const buffer = &self->segmentBuffer;
 
-    for (int i = 0; i < 2; ++i) {
+    while (segmentCount-- != 0) {
         zGeometry_WeilerContourSegmentPartial* const newSegment
-            = (zGeometry_WeilerContourSegmentPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(
-                &self->segmentBuffer,
-                1,
-                0
-            ));
+            = (zGeometry_WeilerContourSegmentPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(buffer, 1, 0));
         if (newSegment == 0) {
             zError::ReportOld(0x200, g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x1181, g_zGeometry_BufferEntryFailedMsg);
             return 0;
@@ -2801,7 +2802,7 @@ int __fastcall CreateForwardSegmentPairAtPoint(
 
         newSegment->prev = segment;
         newSegment->next = segment->next;
-        newSegment->contourType = segment->contourType | contourTypeMask;
+        newSegment->contourType = segment->contourType | firstContourTypeMask;
         newSegment->startPoint = point;
         newSegment->endPoint = segment->endPoint;
         newSegment->startXing = 0;
@@ -2813,7 +2814,7 @@ int __fastcall CreateForwardSegmentPairAtPoint(
         segment->next = newSegment;
 
         segment = secondSegment;
-        contourTypeMask = secondContourTypeMask;
+        firstContourTypeMask = secondContourTypeMask;
     }
 
     return 1;
@@ -3670,25 +3671,25 @@ namespace zGeometry_Vec3 {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-isbetweenendpointsxy
  * @recoil-artifact defines .text recoil:function:0x469ca0: zGeometry_Vec3::IsBetweenEndpointsXY
- *
+ * @recoil-match byte
  *
  * Purpose: Test whether a point lies within the inclusive XY endpoint span of a segment.
  */
 int __fastcall IsBetweenEndpointsXY(zVec3* testPoint, zVec3* startPoint, zVec3* endPoint)
 {
     if (fabs((double)(startPoint->x) - (double)(endPoint->x)) < 0.0000099999997473787516) {
-        if (startPoint->y < endPoint->y) {
-            return testPoint->y >= startPoint->y && testPoint->y <= endPoint->y;
+        if (startPoint->y >= endPoint->y) {
+            return testPoint->y >= endPoint->y && testPoint->y <= startPoint->y;
         }
 
-        return testPoint->y >= endPoint->y && testPoint->y <= startPoint->y;
+        return testPoint->y >= startPoint->y && testPoint->y <= endPoint->y;
     }
 
-    if (startPoint->x < endPoint->x) {
-        return testPoint->x >= startPoint->x && testPoint->x <= endPoint->x;
+    if (startPoint->x >= endPoint->x) {
+        return testPoint->x >= endPoint->x && testPoint->x <= startPoint->x;
     }
 
-    return testPoint->x >= endPoint->x && testPoint->x <= startPoint->x;
+    return testPoint->x >= startPoint->x && testPoint->x <= endPoint->x;
 }
 
 } // namespace zGeometry_Vec3
@@ -3859,7 +3860,7 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-snappointsxyifnear
  * @recoil-artifact defines .text recoil:function:0x46a130: zGeometry_Polygon::SnapPointsXYIfNear
- *
+ * @recoil-match byte
  *
  * Purpose: Snap target polygon points to nearby source vertices or XY edges.
  */
@@ -3875,31 +3876,18 @@ int __fastcall SnapPointsXYIfNear(
     int result = 0;
 
     for (int i = 0; i < polyCount; ++i) {
-        if (targetCount <= 0) {
-            continue;
-        }
-
-        zVec3* target = targetVerts;
-        zVec3* const polygonVertex = &polygon[i];
         for (int j = 0; j < targetCount; ++j) {
-            if (zGeometry_Vec3::IsNearEqualXY(polygonVertex, target, vertexTolerance)) {
+            if (zGeometry_Vec3::IsNearEqualXY(&polygon[i], &targetVerts[j], vertexTolerance)) {
                 result = 1;
-                target->x = polygonVertex->x;
-                target->y = polygonVertex->y;
-                target->z = polygonVertex->z;
-            } else {
-                const int nextIndex = (i + 1) % polyCount;
-                if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(
-                        polygonVertex,
-                        &polygon[nextIndex],
-                        target,
-                        edgeTolerance
-                    )) {
-                    result = 1;
-                }
+                targetVerts[j] = polygon[i];
+            } else if (zGeometry_Vec3::SnapPointToSegmentXYIfNear(
+                           &polygon[i],
+                           &polygon[(i + 1) % polyCount],
+                           &targetVerts[j],
+                           edgeTolerance
+                       )) {
+                result = 1;
             }
-
-            ++target;
         }
     }
 

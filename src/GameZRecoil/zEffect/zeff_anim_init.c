@@ -1205,7 +1205,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdownentry
      * @recoil-artifact defines .text recoil:function:0x45fd10: zEffectAnim::ShutdownEntry.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: release runtime nodes, event streams, dynamic entry lists, and
@@ -1233,8 +1233,9 @@ namespace zEffectAnim
         self->surfacePrimary.eventStreamSize = 0;
 
         for (int i = 0; i < self->runtimeSequenceCount; ++i) {
-            if (self->runtimeList[i].eventStream != 0) {
-                free(self->runtimeList[i].eventStream);
+            zEffectAnimSurfaceRuntime* const runtime = &self->runtimeList[i];
+            if (runtime->eventStream != 0) {
+                free(runtime->eventStream);
             }
         }
 

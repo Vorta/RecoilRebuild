@@ -3439,10 +3439,10 @@ namespace zVideo_FxSurface
             clipRect.right = clipRectOrNull->right;
             clipRect.bottom = clipRectOrNull->bottom;
         } else {
-            clipRect.left = 0;
             clipRect.top = 0;
-            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+            clipRect.left = 0;
             clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
         if (clipRect.top < 0) {

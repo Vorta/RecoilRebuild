@@ -1352,10 +1352,11 @@ namespace OptCatalog
         int result = 0;
 
         if (pointOrVec3 == 0) {
-            OptCatalogRuntimeInstanceStorage* runtimeInstance = self->activeRuntimeListHead;
+            OptCatalogRuntimeInstanceStorage* next = self->activeRuntimeListHead;
             OptCatalogRuntimeInstanceStorage** link = &self->activeRuntimeListHead;
-            while (runtimeInstance != 0) {
-                OptCatalogRuntimeInstanceStorage* const next = runtimeInstance->next;
+            while (next != 0) {
+                OptCatalogRuntimeInstanceStorage* const runtimeInstance = next;
+                next = runtimeInstance->next;
                 if ((self->flags & (1u << 20)) != 0
                     || (runtimeInstance->lifetime == 0.0f
                         && (ownerNode == 0 || runtimeInstance->ownerNode == ownerNode))) {
@@ -1365,8 +1366,6 @@ namespace OptCatalog
                 } else {
                     link = &runtimeInstance->next;
                 }
-
-                runtimeInstance = next;
             }
         } else {
             OptCatalogRuntimeInstanceStorage runtimeInstance = { 0 };
@@ -4097,22 +4096,22 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocfromfreelistandattach
      * @recoil-artifact defines .text recoil:function:0x4b2520: CZLight::AllocFromFreeListAndAttach
-     *
+     * @recoil-match byte
      *
      * Purpose: pop a thermal glow light from the free list, reset its range and
      * specular color, and attach it to the active runtime world.
      */
     CZNodePartial* __fastcall AllocFromFreeListAndAttach(zColorRgb * specularColor)
     {
-        CZNodePartial* const light = g_OptCatalogThermalGlowFreeList;
-        if (light == 0) {
-            return 0;
+        CZNodePartial* light = 0;
+        if (g_OptCatalogThermalGlowFreeList != 0) {
+            light = g_OptCatalogThermalGlowFreeList;
+            g_OptCatalogThermalGlowFreeList = light->callbackContext;
+            CZLight::gwLightSetRange(light, 0.1f, 0.2f);
+            CZLight::gwLightSetSpecularColor(light, specularColor->red, specularColor->green, specularColor->blue);
+            CZWorld::AddLight(g_OptCatalogRuntimeWorld, light);
         }
 
-        g_OptCatalogThermalGlowFreeList = light->callbackContext;
-        CZLight::gwLightSetRange(light, 0.1f, 0.2f);
-        CZLight::gwLightSetSpecularColor(light, specularColor->red, specularColor->green, specularColor->blue);
-        CZWorld::AddLight(g_OptCatalogRuntimeWorld, light);
         return light;
     }
 } // namespace CZLight

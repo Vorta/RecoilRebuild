@@ -629,24 +629,24 @@ namespace zVideo_dd
         DDBLTFX bltFx;
         HRESULT hresult;
         bltFx.dwSize = sizeof(bltFx);
-        if (g_zVideo_pZBufferSurface == 0) {
-            return 0;
-        }
+        if (g_zVideo_pZBufferSurface != 0) {
+            bltFx.dwFillDepth = 0;
+            hresult = DD_OK;
+            while (hresult == DD_OK) {
+                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                if (hresult == DD_OK) {
+                    return 0;
+                }
 
-        bltFx.dwFillDepth = 0;
-        hresult = DD_OK;
-        while (hresult == DD_OK) {
-            hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
-            if (hresult == DD_OK) {
-                return 0;
+                if (hresult == DDERR_SURFACELOST) {
+                    hresult = g_zVideo_pZBufferSurface->Restore();
+                }
             }
 
-            if (hresult == DDERR_SURFACELOST) {
-                hresult = g_zVideo_pZBufferSurface->Restore();
-            }
+            return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x242);
         }
 
-        return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x242);
+        return 0;
     }
 
 } // namespace zVideo_dd
@@ -686,25 +686,25 @@ namespace zVideo_dd
             }
         }
 
-        if (g_zVideo_pZBufferSurface == 0) {
-            return 0;
-        }
+        if (g_zVideo_pZBufferSurface != 0) {
+            bltFx.dwFillDepth = 0;
+            HRESULT hresult;
+            hresult = DD_OK;
+            while (hresult == DD_OK) {
+                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                if (hresult == DD_OK) {
+                    return 0;
+                }
 
-        bltFx.dwFillDepth = 0;
-        HRESULT hresult;
-        hresult = DD_OK;
-        while (hresult == DD_OK) {
-            hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
-            if (hresult == DD_OK) {
-                return 0;
+                if (hresult == DDERR_SURFACELOST) {
+                    hresult = g_zVideo_pZBufferSurface->Restore();
+                }
             }
 
-            if (hresult == DDERR_SURFACELOST) {
-                hresult = g_zVideo_pZBufferSurface->Restore();
-            }
+            return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x27f);
         }
 
-        return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x27f);
+        return 0;
     }
 
 } // namespace zVideo_dd
@@ -745,25 +745,25 @@ namespace zVideo_dd
             }
         }
 
-        if (g_zVideo_pZBufferSurface == 0) {
-            return 0;
-        }
+        if (g_zVideo_pZBufferSurface != 0) {
+            bltFx.dwFillDepth = 0;
+            HRESULT hresult;
+            hresult = DD_OK;
+            while (hresult == DD_OK) {
+                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(zRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                if (hresult == DD_OK) {
+                    return 0;
+                }
 
-        bltFx.dwFillDepth = 0;
-        HRESULT hresult;
-        hresult = DD_OK;
-        while (hresult == DD_OK) {
-            hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(zRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
-            if (hresult == DD_OK) {
-                return 0;
+                if (hresult == DDERR_SURFACELOST) {
+                    hresult = g_zVideo_pZBufferSurface->Restore();
+                }
             }
 
-            if (hresult == DDERR_SURFACELOST) {
-                hresult = g_zVideo_pZBufferSurface->Restore();
-            }
+            return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x2bd);
         }
 
-        return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x2bd);
+        return 0;
     }
 
 } // namespace zVideo_dd
@@ -784,13 +784,14 @@ namespace zVideo_dd
      */
     IDirectDrawSurface3* __fastcall ImageLazyCreateBackingSurface(zVidImagePartial * image, unsigned int ddsCapsFlags)
     {
+        IDirectDrawSurface* baseSurface = 0;
+        IDirectDrawSurface3* surface3 = 0;
+        DDSURFACEDESC desc;
         if (image->alphaMap != 0 || image->pixels == 0 || image->height == 0 || image->width == 0) {
             return 0;
         }
 
-        IDirectDrawSurface* baseSurface = 0;
-        IDirectDrawSurface3* surface3 = 0;
-        DDSURFACEDESC desc = { 0 };
+        memset(&desc, 0, sizeof(desc));
         desc.dwSize = sizeof(desc);
         desc.dwFlags = 0x10007;
         desc.dwHeight = (DWORD)(image->height);
@@ -976,12 +977,12 @@ namespace zVideo_dd
         }
 
         const HRESULT hresult = image->surface->GetDC(outHdc);
-        if (hresult == DD_OK) {
-            return 1;
+        if (hresult != DD_OK) {
+            ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x36d);
+            return 0;
         }
 
-        ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x36d);
-        return 0;
+        return 1;
     }
 
 } // namespace zVideo_dd
@@ -1149,9 +1150,8 @@ namespace zVideo
     void __fastcall CommitHwApiDeviceSelection(int hwApiIndex)
     {
         BindRendererDispatch(1, 1);
-        zVidHwApiDeviceRecordPartial& selected = g_zVideo_HwApiDeviceTable[hwApiIndex];
-        g_zVideo_pSelectedHwApiDeviceRecord = &selected;
-        g_zVideo_pSelectedD3DDeviceInfo = selected.m_d3dDrivers;
+        g_zVideo_pSelectedHwApiDeviceRecord = &g_zVideo_HwApiDeviceTable[hwApiIndex];
+        g_zVideo_pSelectedD3DDeviceInfo = g_zVideo_HwApiDeviceTable[hwApiIndex].m_d3dDrivers;
     }
 
 } // namespace zVideo
@@ -2018,17 +2018,15 @@ namespace zVideo_dd
      */
     int __fastcall PaletteSetEntries(unsigned short firstEntry, unsigned short entryCount, PALETTEENTRY* entries)
     {
-        if (g_zVideo_DisplayModeBpp != 8) {
-            return 0;
+        if (g_zVideo_DisplayModeBpp == 8) {
+            const HRESULT hresult = g_zVideo_pDDPalette->SetEntries(0, firstEntry, entryCount, entries);
+            if (hresult != DD_OK) {
+                ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x823);
+                return 0x5a56ffff;
+            }
         }
 
-        const HRESULT hresult = g_zVideo_pDDPalette->SetEntries(0, firstEntry, entryCount, entries);
-        if (hresult == DD_OK) {
-            return 0;
-        }
-
-        ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x823);
-        return 0x5a56ffff;
+        return 0;
     }
 
 } // namespace zVideo_dd

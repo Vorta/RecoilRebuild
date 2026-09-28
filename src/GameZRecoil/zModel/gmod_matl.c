@@ -609,17 +609,13 @@ namespace zModel_MatlBuffer
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-releaseallactive
      * @recoil-artifact defines .text recoil:function:0x480d80: zModel_MatlBuffer::ReleaseAllActive
-     *
+     * @recoil-match byte
      *
      * Purpose: release every active material slot and clear the material reuse cache.
      */
     int __cdecl ReleaseAllActive()
     {
         while (g_zModel_MatlActiveHeadIndex >= 0) {
-            if (g_zModel_MatlPool == 0 || g_zModel_MatlActiveHeadIndex >= g_zModel_MatlPoolCapacity) {
-                g_zModel_MatlActiveHeadIndex = -1;
-                break;
-            }
             zModel_MatlSlot::Release(&g_zModel_MatlPool[g_zModel_MatlActiveHeadIndex]);
         }
 
@@ -749,24 +745,23 @@ namespace zModel_Material
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-invalidateimagesifeligible
      * @recoil-artifact defines .text recoil:function:0x480f80: zModel_Material::InvalidateImagesIfEligible
-     *
+     * @recoil-match byte
      *
      * Purpose: invalidate texture variants for materials with loaded texture surfaces.
      */
     void __fastcall InvalidateImagesIfEligible(zModel_MaterialPartial * material)
     {
-        if (material == 0 || (material->flags & 0x0300) != 0x0300) {
+        if (material == 0 || (material->flags & 0x0100) == 0 || (material->flags & 0x0200) == 0) {
             return;
         }
 
         zImage::InvalidateLoadedVariantChain(material->currentTextureDirectoryEntry);
-        zModel_MaterialCyclePartial* cycle = material->cycle;
-        if (cycle == 0) {
+        if (material->cycle == 0) {
             return;
         }
 
-        for (int i = 0; i < cycle->frameCount; ++i) {
-            zImage::InvalidateLoadedVariantChain(cycle->frameTable[i]);
+        for (int i = 0; i < material->cycle->frameCount; ++i) {
+            zImage::InvalidateLoadedVariantChain(material->cycle->frameTable[i]);
         }
     }
 } // namespace zModel_Material

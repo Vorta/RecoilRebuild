@@ -1005,7 +1005,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.processactivationrecord
      * @recoil-artifact defines .text recoil:function:0x461870: zEffect_Anim::ProcessActivationRecord.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: dispatch a queued activation record to the matching animation
@@ -1013,6 +1013,7 @@ namespace zEffect_Anim
      */
     zEffectAnimEntry* __fastcall ProcessActivationRecord(zEffectAnimActivationRecord * record)
     {
+        zEffectAnimEntry* result = 0;
         zEffectAnimEntry* const entry = zEffectAnim::FindEntryByName(record->animName);
         if (entry == 0) {
             return 0;
@@ -1021,7 +1022,7 @@ namespace zEffect_Anim
         switch (record->commandType) {
         case 1: {
             CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
-            return zEffectAnim::SetTransformRotAndVelocityThunk(
+            result = zEffectAnim::SetTransformRotAndVelocityThunk(
                 entry,
                 rootNode,
                 record->params[0].f32,
@@ -1034,36 +1035,39 @@ namespace zEffect_Anim
                 record->params[7].f32,
                 record->params[8].f32
             );
+            break;
         }
 
         case 2: {
             CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
-            return zEffectAnim::SetVelocityThunk(
+            result = zEffectAnim::SetVelocityThunk(
                 entry,
                 rootNode,
                 record->params[0].f32,
                 record->params[1].f32,
                 record->params[2].f32
             );
+            break;
         }
 
         case 3: {
             CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
             CZNodePartial* const refNode = CZZbd::NodeIndexToPtr(record->params[0].i32);
-            return zEffectAnim::SetPositionRefAndVelocityThunk(
+            result = zEffectAnim::SetPositionRefAndVelocityThunk(
                 entry,
                 rootNode,
                 refNode,
                 (const zVec3*)(&record->params[1]),
                 (const zVec3*)(&record->params[4])
             );
+            break;
         }
 
         case 4: {
             CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(record->nodeToken);
             CZNodePartial* const refNodeA = CZZbd::NodeIndexToPtr(record->params[0].i32);
             CZNodePartial* const refNodeB = CZZbd::NodeIndexToPtr(record->params[4].i32);
-            return zEffectAnim::SetTransformRefsThunk(
+            result = zEffectAnim::SetTransformRefsThunk(
                 entry,
                 rootNode,
                 refNodeA,
@@ -1071,11 +1075,14 @@ namespace zEffect_Anim
                 refNodeB,
                 (const zVec3*)(&record->params[5])
             );
+            break;
         }
 
         default:
-            return 0;
+            break;
         }
+
+        return result;
     }
 
 } // namespace zEffect_Anim
