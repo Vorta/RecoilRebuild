@@ -1461,7 +1461,7 @@ const AFX_MSGMAP* WestwoodOnlineUpgradeDialog::GetMessageMap() const
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-oninitdialog
  * @recoil-artifact defines .text recoil:function:0x43dcd0: WestwoodOnlineUpgradeDialog::OnInitDialog
- *
+ * @recoil-match byte
  *
  * Purpose: initialize dialog controls, defaults, provider state, and refresh
  * timer.
@@ -3505,7 +3505,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::CallbackNoOp1(int, int)
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendtimestatus302a
  * @recoil-artifact defines .text recoil:function:0x441260: WestwoodOnlineUpgradeApiEventSink::AppendTimeStatus302A.
- *
+ * @recoil-match byte
  *
  * Purpose: Converts a session timestamp to localized 0x302a status text.
  */
@@ -4194,7 +4194,7 @@ ULONG WestwoodOnlineUpgradeDownload::UnadviseAndRelease()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-dlgproc
  * @recoil-artifact defines .text recoil:function:0x442320: WestwoodOnlineUpgradeProgressDialog::DlgProc (D:\Proj\Battlesport\WestwoodOnlineUpgradeProgressDialog.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: starts and pumps the WOL download progress dialog, handles cancel, and cleans up on destroy.
  */

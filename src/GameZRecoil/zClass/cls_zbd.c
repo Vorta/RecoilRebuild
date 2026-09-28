@@ -668,7 +668,7 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writezbdfile
      * @recoil-artifact defines .text recoil:function:0x454a50: CZZbd::WriteZBDFile.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and cls_zbd.c callees serialize
      * the header, texture directory, material pool, DI pool, and node table.

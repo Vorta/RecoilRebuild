@@ -3492,7 +3492,7 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-recenterpointsetsifoutofrange
  * @recoil-artifact defines .text recoil:function:0x469960: zGeometry_Weiler::RecenterPointSetsIfOutOfRange
- *
+ * @recoil-match byte
  *
  * Purpose: Translate input points when their coordinates are outside the local range.
  */

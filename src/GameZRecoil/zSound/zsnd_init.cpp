@@ -806,7 +806,7 @@ extern "C" int __cdecl zSndBackendInitA3D()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-initdirectsound
  * @recoil-artifact defines .text recoil:function:0x4a1e50: zSndBackendInitDirectSound.
- *
+ * @recoil-match byte
  *
  * Purpose: create the DirectSound device, set cooperative level, cache device
  * caps, and create the primary listener buffer.

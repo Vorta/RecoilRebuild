@@ -132,7 +132,7 @@ zFMV_Stream* zFMV_Stream::Init(const char* mediaPath, int modeFlags)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-destructor
  * @recoil-artifact defines .text recoil:function:0x463dd0: zFMV_Stream::Destructor.
- *
+ * @recoil-match byte
  *
  * Purpose: release audio/video streams, decompressor state, image buffers, and critical section.
  */
@@ -201,7 +201,7 @@ void zFMV_Stream::Destructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-constructor
  * @recoil-artifact defines .text recoil:function:0x463ef0: zFMV_Stream::Constructor.
- *
+ * @recoil-match byte
  *
  * Purpose: open the AVI video stream, configure decompression, and initialize the image surface state.
  */
@@ -312,7 +312,7 @@ void zFMV_Stream::Constructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-openaudio
  * @recoil-artifact defines .text recoil:function:0x4641a0: zFMV_Stream::OpenAudio.
- *
+ * @recoil-match byte
  *
  * Purpose: open AVI audio, load or queue sample data, and create the FMV sound sample.
  */
@@ -382,7 +382,7 @@ void zFMV_Stream::OpenAudio()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-readanddecodeframe
  * @recoil-artifact defines .text recoil:function:0x4643a0: zFMV_Stream::ReadAndDecodeFrame
- *
+ * @recoil-match byte
  *
  * Purpose: read and decompress one video frame and refill streaming audio when needed.
  */

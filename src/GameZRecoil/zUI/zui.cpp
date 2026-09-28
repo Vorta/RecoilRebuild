@@ -2961,7 +2961,7 @@ void HudUiBackgroundVideoWidget::SetColorKey565(unsigned short colorKey)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-update
  * @recoil-artifact defines .text recoil:function:0x4bfe40: HudUiBackgroundVideoWidget::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: Advances decoded video frames while preserving the base element update behavior.
  */

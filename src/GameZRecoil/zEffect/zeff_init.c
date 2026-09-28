@@ -36,7 +36,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.init
      * @recoil-artifact defines .text recoil:function:0x460020: zEffect::Init.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: reset the runtime effect manager and initialize zEffect animation

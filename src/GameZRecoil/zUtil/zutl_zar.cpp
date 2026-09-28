@@ -337,7 +337,7 @@ extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, c
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-initwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a5f90: zUtil_ZRDR::InitWildcardPath.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize wildcard path state from a path template.
  */

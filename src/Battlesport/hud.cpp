@@ -10111,7 +10111,7 @@ void __fastcall HideTrackedProgressMeterIfOwnerMatches(void* ownerPayload)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-setvalueifownermatches
  * @recoil-artifact defines .text recoil:function:0x412650: HudUiMessage::SetValueIfOwnerMatches.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Updates a message panel value only when the requested owner side matches the active side.

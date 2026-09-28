@@ -1465,7 +1465,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.activateruntimeentryatposition
      * @recoil-artifact defines .text recoil:function:0x461f50: zEffect::ActivateRuntimeEntryAtPosition.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: initialize runtime scale, lifetime, fade, position, variant, and
@@ -1533,7 +1533,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.acquireruntimeentrybyindex
      * @recoil-artifact defines .text recoil:function:0x4620d0: zEffect::AcquireRuntimeEntryByIndex.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: reuse a free runtime effect entry for an index or clone a fresh
@@ -1563,7 +1563,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.cloneruntimeentryfromtemplate
      * @recoil-artifact defines .text recoil:function:0x462130: zEffect::CloneRuntimeEntryFromTemplate.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: allocate a runtime effect entry and copy its template node tree and
@@ -1645,7 +1645,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.findtemplateindexbyname
      * @recoil-artifact defines .text recoil:function:0x462280: zEffect::FindTemplateIndexByName.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\Effect.c.
      * Purpose: return the runtime template index whose effect name matches.

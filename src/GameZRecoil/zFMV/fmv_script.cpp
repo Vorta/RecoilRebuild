@@ -852,7 +852,7 @@ CZFMVActionPlayAvi::~CZFMVActionPlayAvi()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplayavi-update
  * @recoil-artifact defines .text recoil:function:0x4636d0: CZFMVActionPlayAvi::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: advance AVI frame playback, blit the decoded frame, and update surfaces.
  */

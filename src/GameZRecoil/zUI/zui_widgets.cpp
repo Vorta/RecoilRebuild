@@ -1759,7 +1759,7 @@ void HudUiElement::SetClipRect(const HudUiRect* rect)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-update
  * @recoil-artifact defines .text recoil:function:0x4b41e0: HudUiElement::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: dispatch visible or hidden dirty drawing and hide the element when its timer expires.
  */
@@ -3510,7 +3510,7 @@ void HudUiFillBitmapSlider::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-setnormalizedvalueandrebuild
  * @recoil-artifact defines .text recoil:function:0x4b86b0: HudUiFillBitmap::SetNormalizedValueAndRebuild.
- *
+ * @recoil-match byte
  *
  * Purpose: apply the recovered HUD state change handled by HudUiFillBitmap::SetNormalizedValueAndRebuild.
  */

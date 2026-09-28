@@ -398,7 +398,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetscale
      * @recoil-artifact defines .text recoil:function:0x44df00: CZObject3D::gwObject3DSetScale
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data, store local scale, update identity state,
      * and queue transform/bounds propagation.

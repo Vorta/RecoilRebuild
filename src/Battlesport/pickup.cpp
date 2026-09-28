@@ -653,7 +653,7 @@ void __cdecl PickupRespawnQueue::Init()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypetable-freeoptmeta
  * @recoil-artifact defines .text recoil:function:0x41cca0: PickupTypeTable::FreeOptMeta (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: release optional pickup metadata images and clear their table slots.
  */
@@ -688,7 +688,7 @@ void __cdecl Pickup::Shutdown()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-init
  * @recoil-artifact defines .text recoil:function:0x41ccf0: Pickup::Init (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: initialize pickup templates, metadata images, sounds, and archive handlers.
  */
@@ -904,7 +904,7 @@ void __fastcall Pickup::RemoveObject(zEffectAnimEntry* animEntry, CZNodePartial*
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-oncollected
  * @recoil-artifact defines .text recoil:function:0x41d0c0: Pickup::OnCollected (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: apply a collected pickup and transition the pickup object to its pickup animation or removal.
  */
@@ -1502,7 +1502,7 @@ void __fastcall Pickup::RegisterExistingObject(int, CZNodePartial* pickupObj, in
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptype-findbylogicalname
  * @recoil-artifact defines .text recoil:function:0x41dd60: PickupType::FindByLogicalName (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: map a pickup logical name to its stored pickup type id.
  */
@@ -1731,7 +1731,7 @@ PickupType* __fastcall PickupType::GetByIndex(int pickupTypeIndex)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypekeytable-findindex
  * @recoil-artifact defines .text recoil:function:0x41e1e0: PickupTypeKeyTable::FindIndex (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: scan the pickup type table for a matching logical name index.
  */
@@ -1981,7 +1981,7 @@ int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(int dropGroupIndex, in
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-update
  * @recoil-artifact defines .text recoil:function:0x41e5d0: PickupRespawnQueue::Update (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: respawn due pickups and remove their queue entries.
  */
@@ -2091,7 +2091,7 @@ int __fastcall Pickup::ArchiveWriteAll(zZbdSectionCallbackCtx* callbackCtx, void
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-archivereadrecord
  * @recoil-artifact defines .text recoil:function:0x41e840: Pickup::ArchiveReadRecord (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: restore one pickup spawn record from the pickup archive section.
  */
@@ -2132,7 +2132,7 @@ void __fastcall Pickup::ArchiveReadRecord(
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-reconcileprimaryandnetworkcopyspawnlists
  * @recoil-artifact defines .text recoil:function:0x41e890: Pickup::ReconcilePrimaryAndNetworkCopySpawnLists (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: reconcile primary and network-copy pickup spawn lists by sending
  * create or delete pkt11 deltas for missing spawn ids.
@@ -2253,7 +2253,7 @@ int __cdecl Pickup::GetNextPickupId()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-finddroppabletypeforplayercurrentweapon
  * @recoil-artifact defines .text recoil:function:0x41e980: Pickup::FindDroppableTypeForPlayerCurrentWeapon (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: map the active player weapon option to the matching droppable pickup type.
  */
@@ -2275,7 +2275,7 @@ PickupType* __fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(zUtil_Sav
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-findoptmetaimagebyoptentry
  * @recoil-artifact defines .text recoil:function:0x41ea00: Pickup::FindOptMetaImageByOptEntry (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: find the optional metadata image for a weapon pickup option entry.
  */

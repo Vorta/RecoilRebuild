@@ -4136,7 +4136,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrotandvelocity
      * @recoil-artifact defines .text recoil:function:0x45d7b0: zEffectAnim::SetTransformRotAndVelocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an animation entry, apply transform and velocity state,
@@ -4431,7 +4431,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setvelocity
      * @recoil-artifact defines .text recoil:function:0x45dcb0: zEffectAnim::SetVelocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an animation entry, reset bound transform state, store
@@ -4502,7 +4502,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.setpositionrefandvelocity
      * @recoil-artifact defines .text recoil:function:0x45de00: zEffectAnim::SetPositionRefAndVelocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an entry with a position reference and optional velocity

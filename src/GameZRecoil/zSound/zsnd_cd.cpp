@@ -58,7 +58,6 @@ extern "C" int g_zSnd_UseArchiveBanksFlag = 1;
 namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
-const char kZSndCdSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp";
 std::list<zSndCdTrackEntry*> g_zSndCdTrackList;
 } // namespace
 
@@ -88,7 +87,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     openParms.lpstrDeviceType = "cdaudio";
     DWORD mciError = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x43);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x43);
     }
 
     g_zSndCdDeviceId = (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
@@ -102,7 +101,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x4d);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x4d);
     }
 
     if (statusParms.dwReturn == 0) {
@@ -119,7 +118,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&setParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x5d);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x5d);
     }
 
     memset(&statusParms, 0, sizeof(statusParms));
@@ -131,7 +130,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x66);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x66);
     }
 
     g_zSndCdTrackCountCached = (int)(statusParms.dwReturn);
@@ -144,7 +143,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x70);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x70);
     }
 
     const UINT auxCount = auxGetNumDevs();
@@ -270,7 +269,7 @@ int __fastcall PlayTrackWithMode(int trackIndex, int playbackMode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.applyplaybackmode
  * @recoil-artifact defines .text recoil:function:0x4a2600: zSndCd::ApplyPlaybackMode.
- *
+ * @recoil-match byte
  *
  * Purpose: Apply the requested CD playback mode and issue the MCI play command.
  */
@@ -304,7 +303,7 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
     const DWORD mciError
         = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x806, playFlags, (DWORD_PTR)(&playParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0xf1);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0xf1);
     }
 
     g_zSndCdLastPlayMode = playbackMode;
@@ -331,7 +330,7 @@ void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.stop
  * @recoil-artifact defines .text recoil:function:0x4a26f0: zSndCd::Stop.
- *
+ * @recoil-match byte
  *
  * Purpose: stop the current MCI CD playback and reset the cached track state.
  */
@@ -345,7 +344,7 @@ RECOIL_NO_GS int __cdecl Stop()
     const DWORD mciError
         = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x808, 0x02, (DWORD_PTR)(&stopParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x10e);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x10e);
     }
 
     g_zSndCdLastPlayMode = 0;
@@ -356,7 +355,7 @@ RECOIL_NO_GS int __cdecl Stop()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.playtrack
  * @recoil-artifact defines .text recoil:function:0x4a2750: zSndCd::PlayTrack.
- *
+ * @recoil-match byte
  *
  * Purpose: Seek to a CD track and reset cached playback state for that track.
  */
@@ -372,7 +371,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
     const DWORD mciError
         = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x807, 0x0a, (DWORD_PTR)(&seekParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x16e);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x16e);
     }
 
     ResetTrackState();
@@ -419,7 +418,7 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
     DWORD volume;
     const DWORD mciError = auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume);
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x194);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x194);
     }
 
     g_zSndCdAuxVolumePrimary = (unsigned short)(volume & 0xffff);
@@ -458,7 +457,7 @@ int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryV
 
     const DWORD mciError = auxSetVolume((UINT)(g_zSndCdAuxDeviceId), volume);
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, kZSndCdSourceFile, 0x1b2);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x1b2);
     }
 
     g_zSndCdAuxVolumePrimary = primaryVolume;
