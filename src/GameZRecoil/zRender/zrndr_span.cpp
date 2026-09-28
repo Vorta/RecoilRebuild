@@ -1565,22 +1565,22 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    unsigned short* dst = g_spanCurrentSpanBaseAddr;
+    const int uStep = g_spanActiveTexUStepFixed20;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourceTexel = texels16[sourceIndex];
+            const int srcColor = texels16[sourceIndex];
             if (alpha >= 0xf8) {
-                *dst = sourceTexel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
                 const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
                 const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
                 int blended = dstColor + (redDelta & 0xfffff800);
@@ -1590,44 +1590,37 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCo
             }
         }
 
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
         ++dst;
     }
 
-    {
-        for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-            const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-            const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-            const int sourceIndex = vIndex + uIndex;
-            const int alpha = alphaMap[sourceIndex];
-            if (alpha >= 8) {
-                const unsigned short sourceTexel = texels16[sourceIndex];
-                unsigned int packedPixels = 0;
-                if (alpha >= 0xf8) {
-                    packedPixels = (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
-                } else {
-                    memcpy(&packedPixels, dst, sizeof(packedPixels));
-                    const unsigned int sourcePair = (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
-                    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-                    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-                    const unsigned int lowTerms
-                        = ((((packedPixels & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5))
-                              >> 5)
-                        & 0x07e0f81fu;
-                    const unsigned int highTerms = ((((packedPixels >> 5) & 0x07c0f83fu) * inverseAlpha5)
-                                                       + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
+    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int alpha = alphaMap[sourceIndex];
+        if (alpha >= 8) {
+            const unsigned int texel = texels16[sourceIndex];
+            const unsigned int sourcePair = (texel << 16) + texel;
+            if (alpha >= 0xf8) {
+                memcpy(dst, &sourcePair, sizeof(sourcePair));
+            } else {
+                unsigned int destPair;
+                memcpy(&destPair, dst, sizeof(destPair));
+                const int alpha5 = alpha >> 3;
+                const int inverseAlpha5 = 0x1f - alpha5;
+                const unsigned int blendedPair
+                    = ((((destPair & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5)
+                        & 0x07e0f81fu
+                    | ((((destPair >> 5) & 0x07c0f83fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
                         & 0xf81f07e0u;
-                    packedPixels = lowTerms | highTerms;
-                }
-
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                memcpy(dst, &blendedPair, sizeof(blendedPair));
             }
-
-            texU += g_spanActiveTexUStepFixed20 * 2;
-            texV += g_spanActiveTexVStepFixed20 * 2;
-            dst += 2;
         }
+
+        texU += uStep * 2;
+        texV += vStep * 2;
+        dst += 2;
     }
 }
 } // namespace zRndr
@@ -1644,69 +1637,62 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend555FromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    unsigned short* dst = g_spanCurrentSpanBaseAddr;
+    const int uStep = g_spanActiveTexUStepFixed20;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourceTexel = texels16[sourceIndex];
+            const int srcColor = texels16[sourceIndex];
             if (alpha >= 0xf8) {
-                *dst = sourceTexel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
+                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 int blended = dstColor + (redDelta & 0xfffffc00);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
                 blended += (greenDelta & 0xffffffe0) + blueDelta;
                 *dst = (unsigned short)(blended);
             }
         }
 
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
         ++dst;
     }
 
-    {
-        for (int pairCount = pixelCount >> 1; pairCount != 0; --pairCount) {
-            const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-            const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-            const int sourceIndex = vIndex + uIndex;
-            const int alpha = alphaMap[sourceIndex];
-            if (alpha >= 8) {
-                const unsigned short sourceTexel = texels16[sourceIndex];
-                unsigned int packedPixels = 0;
-                if (alpha >= 0xf8) {
-                    packedPixels = (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
-                } else {
-                    memcpy(&packedPixels, dst, sizeof(packedPixels));
-                    const unsigned int sourcePair = (unsigned int)(sourceTexel) | ((unsigned int)(sourceTexel) << 16);
-                    const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-                    const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-                    const unsigned int lowTerms
-                        = ((((packedPixels & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5))
-                              >> 5)
-                        & 0x03e07c1fu;
-                    const unsigned int highTerms = ((((packedPixels >> 5) & 0x03e0f81fu) * inverseAlpha5)
-                                                       + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
+    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int alpha = alphaMap[sourceIndex];
+        if (alpha >= 8) {
+            const unsigned int texel = texels16[sourceIndex];
+            const unsigned int sourcePair = (texel << 16) + texel;
+            if (alpha >= 0xf8) {
+                memcpy(dst, &sourcePair, sizeof(sourcePair));
+            } else {
+                unsigned int destPair;
+                memcpy(&destPair, dst, sizeof(destPair));
+                const int alpha5 = alpha >> 3;
+                const int inverseAlpha5 = 0x1f - alpha5;
+                const unsigned int blendedPair
+                    = ((((destPair & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5)
+                        & 0x03e07c1fu
+                    | ((((destPair >> 5) & 0x03e0f81fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
                         & 0x7c1f03e0u;
-                    packedPixels = highTerms | lowTerms;
-                }
-
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                memcpy(dst, &blendedPair, sizeof(blendedPair));
             }
-
-            texU += g_spanActiveTexUStepFixed20 * 2;
-            texV += g_spanActiveTexVStepFixed20 * 2;
-            dst += 2;
         }
+
+        texU += uStep * 2;
+        texV += vStep * 2;
+        dst += 2;
     }
 }
 } // namespace zRndr
@@ -2301,23 +2287,23 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    unsigned short* dst = g_spanCurrentSpanBaseAddr;
-    const unsigned char* texels8 = g_spanActiveTexPixels;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    const unsigned char* texels8 = g_spanActiveTexPixels;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned short* palette = g_spanActiveTexPalette;
+    unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourcePixel = palette[texels8[sourceIndex]];
+            const int srcColor = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
-                *dst = sourcePixel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
                 const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
                 const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
                 int blended = dstColor + (redDelta & 0xfffff800);
@@ -2327,40 +2313,36 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
             }
         }
 
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
         ++dst;
     }
 
-    for (int i = pixelCount >> 1; i != 0; --i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourcePixel = palette[texels8[sourceIndex]];
+            const unsigned int texel = palette[texels8[sourceIndex]];
+            const unsigned int sourcePair = (texel << 16) + texel;
             if (alpha >= 0xf8) {
-                dst[0] = sourcePixel;
-                dst[1] = sourcePixel;
+                memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
-                unsigned int packedPixels = 0;
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                const unsigned int sourcePair = (unsigned int)(sourcePixel) | ((unsigned int)(sourcePixel) << 16);
-                const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-                const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-                const unsigned int lowTerms
-                    = ((((packedPixels & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5)
-                    & 0x07e0f81fu;
-                const unsigned int highTerms = ((((packedPixels >> 5) & 0x07c0f83fu) * inverseAlpha5)
-                                                   + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
-                    & 0xf81f07e0u;
-                packedPixels = lowTerms | highTerms;
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                unsigned int destPair;
+                memcpy(&destPair, dst, sizeof(destPair));
+                const int alpha5 = alpha >> 3;
+                const int inverseAlpha5 = 0x1f - alpha5;
+                const unsigned int blendedPair
+                    = ((((destPair & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5)
+                        & 0x07e0f81fu
+                    | ((((destPair >> 5) & 0x07c0f83fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
+                        & 0xf81f07e0u;
+                memcpy(dst, &blendedPair, sizeof(blendedPair));
             }
         }
 
-        texU += 2 * g_spanActiveTexUStepFixed20;
-        texV += 2 * g_spanActiveTexVStepFixed20;
+        texU += uStep * 2;
+        texV += vStep * 2;
         dst += 2;
     }
 }
@@ -2378,66 +2360,62 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    unsigned short* dst = g_spanCurrentSpanBaseAddr;
-    const unsigned char* texels8 = g_spanActiveTexPixels;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    const unsigned char* texels8 = g_spanActiveTexPixels;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned short* palette = g_spanActiveTexPalette;
+    unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourcePixel = palette[texels8[sourceIndex]];
+            const int srcColor = palette[texels8[sourceIndex]];
             if (alpha >= 0xf8) {
-                *dst = sourcePixel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
+                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 int blended = dstColor + (redDelta & 0xfffffc00);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
                 blended += (greenDelta & 0xffffffe0) + blueDelta;
                 *dst = (unsigned short)(blended);
             }
         }
 
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
         ++dst;
     }
 
-    for (int i = pixelCount >> 1; i != 0; --i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
+    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned short sourcePixel = palette[texels8[sourceIndex]];
+            const unsigned int texel = palette[texels8[sourceIndex]];
+            const unsigned int sourcePair = (texel << 16) + texel;
             if (alpha >= 0xf8) {
-                dst[0] = sourcePixel;
-                dst[1] = sourcePixel;
+                memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
-                unsigned int packedPixels = 0;
-                memcpy(&packedPixels, dst, sizeof(packedPixels));
-                const unsigned int sourcePair = (unsigned int)(sourcePixel) | ((unsigned int)(sourcePixel) << 16);
-                const unsigned int alpha5 = (unsigned int)(alpha >> 3);
-                const unsigned int inverseAlpha5 = 0x1fu - alpha5;
-                const unsigned int lowTerms
-                    = ((((packedPixels & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5)
-                    & 0x03e07c1fu;
-                const unsigned int highTerms = ((((packedPixels >> 5) & 0x03e0f81fu) * inverseAlpha5)
-                                                   + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
-                    & 0x7c1f03e0u;
-                packedPixels = highTerms | lowTerms;
-                memcpy(dst, &packedPixels, sizeof(packedPixels));
+                unsigned int destPair;
+                memcpy(&destPair, dst, sizeof(destPair));
+                const int alpha5 = alpha >> 3;
+                const int inverseAlpha5 = 0x1f - alpha5;
+                const unsigned int blendedPair
+                    = ((((destPair & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5)
+                        & 0x03e07c1fu
+                    | ((((destPair >> 5) & 0x03e0f81fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
+                        & 0x7c1f03e0u;
+                memcpy(dst, &blendedPair, sizeof(blendedPair));
             }
         }
 
-        texU += 2 * g_spanActiveTexUStepFixed20;
-        texV += 2 * g_spanActiveTexVStepFixed20;
+        texU += uStep * 2;
+        texV += vStep * 2;
         dst += 2;
     }
 }

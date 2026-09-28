@@ -716,11 +716,11 @@ int __fastcall OutputPreclassifiedContourPairResult(
 )
 {
     if (resultCode == 2 && contourAPointCount == contourBPointCount) {
-        bool allPointsMatched = true;
+        bool pointMatched = true;
         zVec3* contourBPoint = contourBPoints;
 
         for (int i = contourBPointCount; i != 0; --i) {
-            bool pointMatched = false;
+            pointMatched = false;
             zVec3* contourAPoint = contourAPoints;
 
             for (int j = contourAPointCount; j != 0; --j) {
@@ -733,21 +733,20 @@ int __fastcall OutputPreclassifiedContourPairResult(
                 ++contourAPoint;
             }
 
+            ++contourBPoint;
             if (!pointMatched) {
-                allPointsMatched = false;
                 break;
             }
-
-            ++contourBPoint;
         }
 
-        if (allPointsMatched) {
+        if (pointMatched) {
             return 4;
         }
     }
 
     zVec3* contourAPoint = contourAPoints;
-    for (int i = contourAPointCount; i != 0; --i) {
+    int remaining = contourAPointCount;
+    while (remaining-- != 0) {
         if (zGeometry_Weiler::ClassifyPointInContourPointListXY(contourAPoint, contourBPointCount, contourBPoints)
             < 0) {
             return 0;
@@ -2677,42 +2676,46 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-buildpointsidetablesforcontourpair
  * @recoil-artifact defines .text recoil:function:0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
- *
+ * @recoil-match byte
  *
  * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
  */
 void __fastcall BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial* self)
 {
-    zVec3* edgePoints = (zVec3*)(self->inputContourBBuffer.base);
-    zVec3* testPoints = (zVec3*)(self->inputContourABuffer.base);
     float* table = self->contourAPointSideByContourBEdge;
-    for (int edgeIndex = 0; edgeIndex < self->inputContourBBuffer.count; ++edgeIndex) {
-        zVec3* const edgeStart = &edgePoints[edgeIndex];
-        zVec3* const edgeEnd = &edgePoints[(edgeIndex + 1) % self->inputContourBBuffer.count];
-        float* const rowStart2 = table;
-        for (int pointIndex = 0; pointIndex < self->inputContourABuffer.count; ++pointIndex) {
-            zVec3* const point = &testPoints[pointIndex];
-            const float edgeDx = edgeEnd->x - edgeStart->x;
-            const float edgeDy = edgeEnd->y - edgeStart->y;
-            *table++ = edgeDy * (point->x - edgeStart->x) - (point->y - edgeStart->y) * edgeDx;
+    zVec3* testPoints = (zVec3*)(self->inputContourABuffer.base);
+    unsigned int testCount = self->inputContourABuffer.count;
+    zVec3* edgePoints = (zVec3*)(self->inputContourBBuffer.base);
+    unsigned int edgeCount = self->inputContourBBuffer.count;
+    for (int pass = 2; pass != 0; --pass) {
+        zVec3* edgeStart = edgePoints;
+        for (unsigned int edgeIndex = edgeCount - 1; edgeIndex > 0; --edgeIndex) {
+            float* const rowStart = table;
+            const zVec3* const edgeEnd = edgeStart + 1;
+            zVec3* point = testPoints;
+            for (unsigned int pointIndex = testCount; pointIndex > 0; --pointIndex) {
+                *table++ = (edgeEnd->y - edgeStart->y) * (point->x - edgeStart->x)
+                    - (point->y - edgeStart->y) * (edgeEnd->x - edgeStart->x);
+                ++point;
+            }
+            *table++ = *rowStart;
+            ++edgeStart;
         }
-        *table++ = *rowStart2;
-    }
 
-    edgePoints = (zVec3*)(self->inputContourABuffer.base);
-    testPoints = (zVec3*)(self->inputContourBBuffer.base);
-    table = self->contourBPointSideByContourAEdge;
-    for (int edgeIndex2 = 0; edgeIndex2 < self->inputContourABuffer.count; ++edgeIndex2) {
-        zVec3* const edgeStart2 = &edgePoints[edgeIndex2];
-        zVec3* const edgeEnd2 = &edgePoints[(edgeIndex2 + 1) % self->inputContourABuffer.count];
         float* const rowStart = table;
-        for (int pointIndex2 = 0; pointIndex2 < self->inputContourBBuffer.count; ++pointIndex2) {
-            zVec3* const point2 = &testPoints[pointIndex2];
-            const float edgeDx2 = edgeEnd2->x - edgeStart2->x;
-            const float edgeDy2 = edgeEnd2->y - edgeStart2->y;
-            *table++ = edgeDy2 * (point2->x - edgeStart2->x) - (point2->y - edgeStart2->y) * edgeDx2;
+        zVec3* point = testPoints;
+        for (unsigned int pointIndex = testCount; pointIndex > 0; --pointIndex) {
+            *table++ = (edgePoints->y - edgeStart->y) * (point->x - edgeStart->x)
+                - (point->y - edgeStart->y) * (edgePoints->x - edgeStart->x);
+            ++point;
         }
-        *table++ = *rowStart;
+        *table = *rowStart;
+
+        edgePoints = testPoints;
+        edgeCount = testCount;
+        testPoints = (zVec3*)(self->inputContourBBuffer.base);
+        testCount = self->inputContourBBuffer.count;
+        table = self->contourBPointSideByContourAEdge;
     }
 }
 
@@ -3358,28 +3361,29 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
     zGeometry_WeilerContourSegmentPartial* contourSegment
 )
 {
-    if (firstSegment->endPoint != secondSegment->startPoint) {
-        return 0;
+    int result = 0;
+    if (firstSegment->endPoint == secondSegment->startPoint) {
+        const float contourDeltaY = contourSegment->endPoint->y - contourSegment->startPoint->y;
+        const float contourDeltaX = contourSegment->endPoint->x - contourSegment->startPoint->x;
+        const float firstSide = (firstSegment->startPoint->x - contourSegment->startPoint->x) * contourDeltaY
+            - (firstSegment->startPoint->y - contourSegment->startPoint->y) * contourDeltaX;
+        const float secondSide = (secondSegment->endPoint->x - contourSegment->startPoint->x) * contourDeltaY
+            - (secondSegment->endPoint->y - contourSegment->startPoint->y) * contourDeltaX;
+
+        if (!((firstSide < 0.0 && secondSide > 0.0) || (firstSide > 0.0 && secondSide < 0.0))) {
+            const float firstDeltaX = firstSegment->endPoint->x - firstSegment->startPoint->x;
+            const float firstDeltaY = firstSegment->endPoint->y - firstSegment->startPoint->y;
+            return ((secondSegment->endPoint->x - firstSegment->startPoint->x) * firstDeltaY
+                       - (secondSegment->endPoint->y - firstSegment->startPoint->y) * firstDeltaX)
+                    > 0.0f
+                ? 1
+                : 2;
+        }
+
+        result = 7;
     }
 
-    const float contourDeltaX = contourSegment->endPoint->x - contourSegment->startPoint->x;
-    const float contourDeltaY = contourSegment->endPoint->y - contourSegment->startPoint->y;
-    const float firstSide = (firstSegment->startPoint->x - contourSegment->startPoint->x) * contourDeltaY
-        - (firstSegment->startPoint->y - contourSegment->startPoint->y) * contourDeltaX;
-    const float secondSide = (secondSegment->endPoint->x - contourSegment->startPoint->x) * contourDeltaY
-        - (secondSegment->endPoint->y - contourSegment->startPoint->y) * contourDeltaX;
-
-    if ((firstSide < 0.0f && secondSide > 0.0f) || (firstSide > 0.0f && secondSide < 0.0f)) {
-        return 7;
-    }
-
-    const float firstDeltaX = firstSegment->endPoint->x - firstSegment->startPoint->x;
-    const float firstDeltaY = firstSegment->endPoint->y - firstSegment->startPoint->y;
-    return ((secondSegment->endPoint->x - firstSegment->startPoint->x) * firstDeltaY
-               - (secondSegment->endPoint->y - firstSegment->startPoint->y) * firstDeltaX)
-            > 0.0f
-        ? 1
-        : 2;
+    return result;
 }
 
 /**
@@ -3495,34 +3499,30 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
 void __fastcall RecenterPointSetsIfOutOfRange(zGeometry_WeilerStatePartial* self)
 {
     if (self->inputContourBBuffer.base != 0) {
-        if (self->inputContourBBuffer.count != 0) {
-            zVec3* point = (zVec3*)(self->inputContourBBuffer.base);
-            for (int i = 0; i < self->inputContourBBuffer.count; ++i) {
-                point[i].x -= self->pointTranslationX;
-                point[i].y -= self->pointTranslationY;
-            }
+        zVec3* point = (zVec3*)(self->inputContourBBuffer.base);
+        for (int i = self->inputContourBBuffer.count; i != 0; --i) {
+            point->x -= self->pointTranslationX;
+            point->y -= self->pointTranslationY;
+            ++point;
         }
 
         return;
     }
 
-    zVec3* const firstPoint = (zVec3*)(self->inputContourABuffer.base);
-    if (firstPoint->x < 65536.0f && firstPoint->x > -65536.0f && firstPoint->y < 65536.0f
-        && firstPoint->y > -65536.0f) {
+    zVec3* point = (zVec3*)(self->inputContourABuffer.base);
+    if (point->x < 65536.0f && point->x > -65536.0f && point->y < 65536.0f && point->y > -65536.0f) {
         self->pointsRecentered = false;
         return;
     }
 
-    self->pointTranslationX = firstPoint->x;
-    self->pointTranslationY = firstPoint->y;
+    self->pointTranslationX = point->x;
+    self->pointTranslationY = point->y;
     self->pointsRecentered = true;
 
-    if (self->inputContourABuffer.count != 0) {
-        zVec3* point = (zVec3*)(self->inputContourABuffer.base);
-        for (int i = 0; i < self->inputContourABuffer.count; ++i) {
-            point[i].x -= self->pointTranslationX;
-            point[i].y -= self->pointTranslationY;
-        }
+    for (int i = self->inputContourABuffer.count; i != 0; --i) {
+        point->x -= self->pointTranslationX;
+        point->y -= self->pointTranslationY;
+        ++point;
     }
 }
 
@@ -3705,17 +3705,11 @@ namespace zGeometry_Weiler {
 void __fastcall
 SelectForwardStartPointInContourA(zVec3* point, zVec3** selectedPoint, zGeometry_WeilerStatePartial* self)
 {
-    const int pointCount = self->inputContourABuffer.count;
-    zVec3* const points = (zVec3*)(self->inputContourABuffer.base);
-    if (pointCount == 0) {
-        return;
-    }
+    int remainingPointCount = self->inputContourABuffer.count;
+    zVec3* currentPoint = (zVec3*)(self->inputContourABuffer.base);
+    zVec3* previousPoint = &currentPoint[remainingPointCount - 1];
 
-    zVec3* currentPoint = points;
-    zVec3* previousPoint = &points[pointCount - 1];
-    int remainingPointCount = pointCount - 1;
-
-    while (true) {
+    while (remainingPointCount-- != 0) {
         zVec3* const candidatePoint = *selectedPoint;
         const float edgeDeltaX = currentPoint->x - previousPoint->x;
         const float edgeDeltaY = currentPoint->y - previousPoint->y;
@@ -3724,21 +3718,15 @@ SelectForwardStartPointInContourA(zVec3* point, zVec3** selectedPoint, zGeometry
         const float candidateCross
             = (candidatePoint->x - previousPoint->x) * edgeDeltaY - (candidatePoint->y - previousPoint->y) * edgeDeltaX;
 
-        if ((pointCross > 0.0f && candidateCross < 0.0f) || (pointCross < 0.0f && candidateCross > 0.0f)) {
+        if ((pointCross > 0.0 && candidateCross < 0.0) || (pointCross < 0.0 && candidateCross > 0.0)) {
             if (currentPoint->x >= point->x) {
                 previousPoint = currentPoint;
             }
 
             *selectedPoint = previousPoint;
-            remainingPointCount = pointCount;
-            currentPoint = points;
-            previousPoint = &points[pointCount - 1];
-        }
-
-        const int i = remainingPointCount;
-        --remainingPointCount;
-        if (i == 0) {
-            break;
+            remainingPointCount = self->inputContourABuffer.count;
+            currentPoint = (zVec3*)(self->inputContourABuffer.base);
+            previousPoint = &currentPoint[remainingPointCount - 1];
         }
     }
 }

@@ -248,7 +248,7 @@ namespace zModel_MatlBuffer
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-writegamez
      * @recoil-artifact defines .text recoil:function:0x480600: zModel_MatlBuffer::WriteGameZ
-     *
+     * @recoil-match byte
      *
      * Purpose: serialize the material-pool header, active material slots, and
      * cycle-frame data while converting live texture pointers to TexDir indices.
@@ -298,18 +298,17 @@ namespace zModel_MatlBuffer
             for (int activeIndex = g_zModel_MatlActiveHeadIndex; activeIndex >= 0;) {
                 zModel_MaterialSlot* const slot = &poolCopy[activeIndex];
                 if ((slot->material.flags & 0x0400) != 0) {
-                    zModel_MaterialCyclePartial* const cycle = slot->material.cycle;
-                    if (fwrite(cycle, 0x1c, 1, file) != 1) {
+                    if (fwrite(slot->material.cycle, 0x1c, 1, file) != 1) {
                         zError::ReportOld(0x200, g_zModel_GModMatl_FILE, 0x249, g_zModel_Matl_ErrWriteBuffer);
                         result = 0;
                         break;
                     }
 
                     const unsigned int frameBytes
-                        = (unsigned int)(cycle->frameCount) * sizeof(zImage_TexDirEntryPartial*);
+                        = (unsigned int)(slot->material.cycle->frameCount) * sizeof(zImage_TexDirEntryPartial*);
                     frameBuffer = (zImage_TexDirEntryPartial**)(realloc(frameBuffer, frameBytes));
-                    memcpy(frameBuffer, cycle->frameTable, frameBytes);
-                    for (int i = 0; i < cycle->frameCount; ++i) {
+                    memcpy(frameBuffer, slot->material.cycle->frameTable, frameBytes);
+                    for (int i = 0; i < slot->material.cycle->frameCount; ++i) {
                         frameBuffer[i]
                             = (zImage_TexDirEntryPartial*)((int)(zImage::TexDirEntryToIndex(frameBuffer[i])));
                     }
@@ -334,7 +333,7 @@ namespace zModel_MatlBuffer
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-readgamez
      * @recoil-artifact defines .text recoil:function:0x4808c0: zModel_MatlBuffer::ReadGameZ
-     *
+     * @recoil-match byte
      *
      * Purpose: read a serialized material pool, resize backing storage, restore
      * texture pointers from TexDir indices, and rebuild cycle frame tables.
@@ -421,7 +420,7 @@ namespace zModel_MatlBuffer
                     }
                 }
 
-                activeIndex = slot->nextPoolIndex;
+                activeIndex = g_zModel_MatlPool[activeIndex].nextPoolIndex;
             }
         }
 
@@ -444,16 +443,20 @@ namespace zModel_Matl
             g_zModel_MatlPoolCapacity = 2500;
         }
 
-        const size_t poolBytes = (size_t)(g_zModel_MatlPoolCapacity) * sizeof(zModel_MaterialSlot);
-        g_zModel_MatlPool = (zModel_MaterialSlot*)(malloc(poolBytes));
-        memset(g_zModel_MatlPool, 0, poolBytes);
+        g_zModel_MatlPool = (zModel_MaterialSlot*)(malloc(g_zModel_MatlPoolCapacity * sizeof(zModel_MaterialSlot)));
+        memset(g_zModel_MatlPool, 0, g_zModel_MatlPoolCapacity * sizeof(zModel_MaterialSlot));
 
         g_zModel_MatlFreeHeadIndex = 0;
         if (g_zModel_MatlPoolCapacity > 0) {
-            for (int i = 0; i < g_zModel_MatlPoolCapacity; ++i) {
-                g_zModel_MatlPool[i].prevPoolIndex = (short)(i == 0 ? -1 : i - 1);
-                g_zModel_MatlPool[i].nextPoolIndex = (short)(i == g_zModel_MatlPoolCapacity - 1 ? -1 : i + 1);
+            g_zModel_MatlPool[0].prevPoolIndex = -1;
+            g_zModel_MatlPool[0].nextPoolIndex = 1;
+            for (int i = 1; i < g_zModel_MatlPoolCapacity - 1; ++i) {
+                g_zModel_MatlPool[i].prevPoolIndex = (short)(i - 1);
+                g_zModel_MatlPool[i].nextPoolIndex = (short)(i + 1);
             }
+
+            g_zModel_MatlPool[g_zModel_MatlPoolCapacity - 1].prevPoolIndex = (short)(g_zModel_MatlPoolCapacity - 2);
+            g_zModel_MatlPool[g_zModel_MatlPoolCapacity - 1].nextPoolIndex = -1;
         }
 
         g_zModel_MatlActiveHeadIndex = -1;
@@ -833,27 +836,25 @@ namespace zModel_Material
             return 0;
         }
 
-        zModel_MaterialCyclePartial* cycle = material->cycle;
         material->flags = (unsigned short)(material->flags | 0x0500);
-        if (cycle != 0 && cycle->frameCount >= textureCount) {
+        if (material->cycle != 0 && material->cycle->frameCount >= textureCount) {
             return 0;
         }
 
-        cycle = (zModel_MaterialCyclePartial*)(realloc(cycle, sizeof(zModel_MaterialCyclePartial)));
-        material->cycle = cycle;
-        cycle->loopEnabled = 0;
-        cycle->currentFrame = 0.0f;
-        cycle->framesPerSecond = 15.0f;
-        cycle->frameCount = textureCount;
-        cycle->frameWriteCount = 0;
-        cycle->frameTable = 0;
-        cycle->frameTable = (zImage_TexDirEntryPartial**)(realloc(
-            cycle->frameTable,
-            (size_t)(textureCount) * sizeof(cycle->frameTable[0])
+        material->cycle = (zModel_MaterialCyclePartial*)(realloc(material->cycle, sizeof(zModel_MaterialCyclePartial)));
+        material->cycle->loopEnabled = 0;
+        material->cycle->currentFrame = 0.0f;
+        material->cycle->framesPerSecond = 15.0f;
+        material->cycle->frameCount = textureCount;
+        material->cycle->frameWriteCount = 0;
+        material->cycle->frameTable = 0;
+        material->cycle->frameTable = (zImage_TexDirEntryPartial**)(realloc(
+            material->cycle->frameTable,
+            (size_t)(textureCount) * sizeof(material->cycle->frameTable[0])
         ));
 
         for (int i = 0; i < textureCount; ++i) {
-            cycle->frameTable[i] = zImage::GetDefaultImageRefPtr();
+            material->cycle->frameTable[i] = zImage::GetDefaultImageRefPtr();
         }
 
         return 1;

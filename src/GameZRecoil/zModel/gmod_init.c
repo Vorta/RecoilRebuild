@@ -2324,7 +2324,7 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-init
      * @recoil-artifact defines .text recoil:function:0x475e70: zModel::Init
-     *
+     * @recoil-match byte
      *
      * Purpose: initialize zModel material and display-instance pools and choose the render path.
      */
@@ -2341,22 +2341,21 @@ namespace zModel
 
         gModel_ClipMaskStackTop = gModel_ClipMaskStack;
 
-        int capacity = g_zModel_DiPoolCapacity;
-        if (capacity == 0) {
-            capacity = 1750;
-            g_zModel_DiPoolCapacity = capacity;
+        if (g_zModel_DiPoolCapacity == 0) {
+            g_zModel_DiPoolCapacity = 1750;
         }
 
-        const size_t poolBytes = (size_t)(capacity) * sizeof(zDiPartial);
-        g_zModel_DiPoolBase = (zDiPartial*)(malloc(poolBytes));
-        memset(g_zModel_DiPoolBase, 0, poolBytes);
+        g_zModel_DiPoolBase = (zDiPartial*)(malloc(g_zModel_DiPoolCapacity * sizeof(zDiPartial)));
+        memset(g_zModel_DiPoolBase, 0, g_zModel_DiPoolCapacity * sizeof(zDiPartial));
         g_zModel_DiPoolFreeHeadIndex = 0;
-        for (int i = 0; i < capacity - 1; ++i) {
-            g_zModel_DiPoolBase[i].nextFreeIndex = i + 1;
+        if (g_zModel_DiPoolCapacity > 0) {
+            for (int i = 0; i < g_zModel_DiPoolCapacity - 1; ++i) {
+                g_zModel_DiPoolBase[i].nextFreeIndex = i + 1;
+            }
+
+            g_zModel_DiPoolBase[g_zModel_DiPoolCapacity - 1].nextFreeIndex = -1;
         }
-        if (capacity > 0) {
-            g_zModel_DiPoolBase[capacity - 1].nextFreeIndex = -1;
-        }
+
         g_zModel_DiPoolInUseCount = 0;
         return 0;
     }
@@ -4718,18 +4717,18 @@ namespace zClipAlt
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-updateprojectionstatefromcameradata
  * @recoil-artifact defines .text recoil:function:0x47a0c0: zVideoUpdateProjectionStateFromCameraData.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: provide the recovered zVideoUpdateProjectionStateFromCameraData behavior.
  */
 void __fastcall zVideoUpdateProjectionStateFromCameraData(CZCameraDataPartial* cameraData)
 {
-    zMat4x3 slotBuffer = { 0 };
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
 
-    zMat4x3 yawSlotBuffer = { 0 };
+    zMat4x3 yawSlotBuffer;
     zMath::MatStackPushAndCloneParent((float*)(&yawSlotBuffer));
     cameraData->localFrustumLeftNormal.x = 1.0f;
     cameraData->localFrustumLeftNormal.y = 0.0f;

@@ -999,7 +999,7 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHan
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-playwithdelta-a3d
  * @recoil-artifact defines .text recoil:function:0x4a0380: zSndPlayHandle::PlayWithDeltaA3D.
- *
+ * @recoil-match byte
  *
  * Purpose: replay an A3D-backed handle with the requested restart and gain delta.
  */

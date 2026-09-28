@@ -1539,9 +1539,12 @@ namespace CZDisplayInstance
     {
         zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
-            zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
-            if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
+            if (zDi::BuildPickCandidateForQueryPoint(
+                    di,
+                    &g_DiPickCandidateBuffer->entries[g_DiPickCandidateBuffer->candidateCount],
+                    &g_DiPickQueryPoint
+                )
+                != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
@@ -1549,11 +1552,13 @@ namespace CZDisplayInstance
         }
 
         CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
-        int pushedMatrix = 0;
+        int pushedMatrix;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
             zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
+        } else {
+            pushedMatrix = 0;
         }
 
         if (cullCount > 1) {
@@ -1566,8 +1571,10 @@ namespace CZDisplayInstance
             }
         }
 
-        for (int i = 0; i < node->listCountB; ++i) {
-            BuildPickCandidateList(node->listB[i], node->listCountB);
+        if (node->listCountB > 0) {
+            for (int i = 0; i < node->listCountB; ++i) {
+                BuildPickCandidateList(node->listB[i], node->listCountB);
+            }
         }
 
         if (pushedMatrix != 0) {
@@ -1604,17 +1611,22 @@ namespace CZDisplayInstance
 
         zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (di != 0) {
-            PlayerProbeSampleCandidateBuffer* buffer = g_DiPickCandidateBuffer;
-            zClassDiPickCandidateEntry* outCandidate = &buffer->entries[buffer->candidateCount];
-            if (zDi::BuildPickCandidateForQueryPoint(di, outCandidate, &g_DiPickQueryPoint) != 0) {
+            if (zDi::BuildPickCandidateForQueryPoint(
+                    di,
+                    &g_DiPickCandidateBuffer->entries[g_DiPickCandidateBuffer->candidateCount],
+                    &g_DiPickQueryPoint
+                )
+                != 0) {
                 g_DiPickCandidateCursor->node = node;
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
             }
         }
 
-        for (unsigned int i = 0; i < node->listCountB; ++i) {
-            BuildPickCandidateList(node->listB[i], node->listCountB);
+        if (node->listCountB > 0) {
+            for (int i = 0; i < node->listCountB; ++i) {
+                BuildPickCandidateList(node->listB[i], node->listCountB);
+            }
         }
 
         zMath::MatStackPopPtr();
@@ -2534,11 +2546,13 @@ namespace CZDisplayInstance
         }
 
         CZAnimateDataPartial* animateData = (CZAnimateDataPartial*)(node->classData);
-        int pushedMatrix = 0;
+        int pushedMatrix;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(animateData->savedParentMatrix);
             zMath::MatMultiply((const zMat4x3*)(animateData->animatedTransform), 1);
+        } else {
+            pushedMatrix = 0;
         }
 
         zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
@@ -2549,7 +2563,8 @@ namespace CZDisplayInstance
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+            && node->listCountB > 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                 BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
                 if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -2579,11 +2594,13 @@ namespace CZDisplayInstance
         zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
         CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
 
-        int pushedMatrix = 0;
+        int pushedMatrix;
         if ((node->flags & kNodeFlagEnabledForPick) != 0) {
             pushedMatrix = 1;
             zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
             zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
+        } else {
+            pushedMatrix = 0;
         }
 
         zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
@@ -2594,7 +2611,8 @@ namespace CZDisplayInstance
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+            && node->listCountB > 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                 BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
                 if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -2651,7 +2669,8 @@ namespace CZDisplayInstance
             ++g_DiPickCandidateCursor;
             ++g_DiPickCandidateBuffer->candidateCount;
         }
-        if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+        if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+            && node->listCountB > 0) {
             for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                 BuildPickCandidatesForSegmentChildFallback(node->listB[childIndex], node->listCountB);
                 if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -3555,7 +3574,7 @@ namespace CZDisplayInstance
             return 1;
         }
 
-        zBBoxCorners corners = { 0 };
+        zBBoxCorners corners;
         CZClass::gwNodeGetViewBBoxCorners(node, &corners);
 
         float minX;

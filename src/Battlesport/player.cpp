@@ -8861,7 +8861,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypetrack
  * @recoil-artifact defines .text recoil:function:0x42ac90: Player::TransitionToMasterTypeTrack
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter track mode after cooldown and source-mode transition rules
@@ -8972,7 +8972,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypeamphib
  * @recoil-artifact defines .text recoil:function:0x42aeb0: Player::TransitionToMasterTypeAmphib
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter amphib mode when unlocked, off cooldown, and accepted by the
@@ -9080,7 +9080,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypehover
  * @recoil-artifact defines .text recoil:function:0x42b0f0: Player::TransitionToMasterTypeHover
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter hover mode when unlocked, off cooldown, and accepted by the
@@ -9637,7 +9637,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-asynccommandcallback
  * @recoil-artifact defines .text recoil:function:0x42bb30: Player::AsyncCommandCallback
- *
+ * @recoil-match byte
  *
  * Purpose: Dispatches script async command events that toggle HUD/gameplay
  * state, apply debug damage, and spawn debug pickup carrier nodes.

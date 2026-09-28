@@ -1091,54 +1091,69 @@ namespace zEffect
     int __fastcall HandleRotationEvent(zEffectAnimEntry * self, zEffectTransformEvent * event)
     {
         CZNodePartial* const targetNode = self->nodeRefList[event->targetNodeRefIndex].node;
-        if (targetNode->classId == 5) {
-            switch (event->flags & 0x07) {
-            default: {
-                CZNodePartial* basisNode = 0;
-                zVec3 basisAngles = { 0 };
+        switch (targetNode->classId) {
+        case 5: {
+            zVec3 basisAngles;
+            if ((event->flags & 0x02) != 0) {
+                basisAngles.x = basisAngles.y = basisAngles.z = 0.0f;
 
+                CZNodePartial* basisNode;
                 if (event->basisNodeRefIndex > 0) {
                     basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
                 } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
                     basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                } else {
+                    basisNode = 0;
                 }
 
                 if (basisNode != 0) {
-                    if ((event->flags & 0x02) != 0) {
-                        CZObject3D::gwObject3DGetRotation(basisNode, &basisAngles.x, &basisAngles.y, &basisAngles.z);
-                    } else {
-                        zMat4x3 matrix;
-                        zMath::MatStackPushPtr((float*)(&matrix));
-                        zMath::MatLoadIdentity();
-                        CZNode::gwNodeBuildNodeToAncestorMatrix(basisNode, 1);
-                        zMathMatExtractEulerAngles(&matrix, &basisAngles);
-                        zMath::MatStackPopPtr();
-                    }
+                    CZObject3D::gwObject3DGetRotation(basisNode, &basisAngles.x, &basisAngles.y, &basisAngles.z);
+                }
+            } else if ((event->flags & 0x04) != 0) {
+                basisAngles.x = basisAngles.y = basisAngles.z = 0.0f;
+
+                CZNodePartial* basisNode;
+                if (event->basisNodeRefIndex > 0) {
+                    basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
+                } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
+                    basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                } else {
+                    basisNode = 0;
                 }
 
-                CZObject3D::gwObject3DSetRotation(
-                    targetNode,
-                    event->vecX + basisAngles.x,
-                    event->vecY + basisAngles.y,
-                    event->vecZ + basisAngles.z
-                );
+                if (basisNode != 0) {
+                    zMat4x3 matrix;
+                    zMath::MatStackPushPtr((float*)(&matrix));
+                    zMath::MatLoadIdentity();
+                    CZNode::gwNodeBuildNodeToAncestorMatrix(basisNode, 1);
+                    zMathMatExtractEulerAngles(&matrix, &basisAngles);
+                    zMath::MatStackPopPtr();
+                }
+            } else if ((event->flags & 0x01) != 0) {
+                CZObject3D::gwObject3DTranslateRotation(targetNode, event->vecX, event->vecY, event->vecZ);
+                return 2;
+            } else {
+                CZObject3D::gwObject3DSetRotation(targetNode, event->vecX, event->vecY, event->vecZ);
                 return 2;
             }
-            case 1:
-                CZObject3D::gwObject3DTranslateRotation(targetNode, event->vecX, event->vecY, event->vecZ);
-                break;
-            case 0:
-                CZObject3D::gwObject3DSetRotation(targetNode, event->vecX, event->vecY, event->vecZ);
-                break;
-            }
+
+            CZObject3D::gwObject3DSetRotation(
+                self->nodeRefList[event->targetNodeRefIndex].node,
+                event->vecX + basisAngles.x,
+                event->vecY + basisAngles.y,
+                event->vecZ + basisAngles.z
+            );
+            return 2;
         }
 
-        if (targetNode->classId == 1) {
+        case 1:
             if ((event->flags & 0x01) != 0) {
                 CZCamera::gwCameraTranslate(targetNode, event->vecX, event->vecY, event->vecZ);
-            } else {
-                CZCamera::gwCameraSetPosition(targetNode, event->vecX, event->vecY, event->vecZ);
+                return 2;
             }
+
+            CZCamera::gwCameraSetPosition(targetNode, event->vecX, event->vecY, event->vecZ);
+            break;
         }
 
         return 2;
@@ -1562,7 +1577,7 @@ namespace zEffect
      */
     int __fastcall FindNearestPickCandidateBelowPoint(const zVec3* point, zClassDiPickCandidateEntry* outCandidate)
     {
-        PlayerProbeSampleCandidateBuffer outResults = { 0 };
+        PlayerProbeSampleCandidateBuffer outResults;
         CZDisplayInstance::BuildPickCandidateListBelowPoint(
             g_zEffectAnim_State.worldNode,
             point->x,
@@ -1572,7 +1587,7 @@ namespace zEffect
         );
 
         int bestIndex = -1;
-        float closestDistance = 0.0f;
+        float closestDistance;
         for (int i = 0; i < outResults.candidateCount; ++i) {
             zClassDiPickCandidateEntry* candidate = &outResults.entries[i];
             const float distance = fabs(point->y - candidate->hitPos.y);
@@ -2727,7 +2742,11 @@ namespace zEffectAnim
             FinalizeStop(self);
             const unsigned char stateAfterFinalize = self->activationState;
             if (stateAfterFinalize != 5 && stateAfterFinalize != 4) {
-                self->activationState = stateAfterFinalize == 6 ? 4 : 3;
+                if (stateAfterFinalize == 6) {
+                    self->activationState = 4;
+                } else {
+                    self->activationState = 3;
+                }
             }
         }
 
@@ -2869,23 +2888,21 @@ namespace zEffect
         ++runtime->loopIterationCount;
         runtime->loopElapsedSec = loopElapsed;
 
-        const unsigned char stopModeFlags = (unsigned char)(loopEvent->stopModeFlags);
-        if ((stopModeFlags & 0x01) != 0) {
-            const unsigned short loopCountLimit = loopEvent->stopValue.u16;
-            if (loopCountLimit != 0xffffu && runtime->loopIterationCount == loopCountLimit) {
+        if ((loopEvent->stopModeFlags & 0x01) != 0) {
+            const short loopCountLimit = (short)(loopEvent->stopValue.u16);
+            if (loopCountLimit != -1 && (short)(runtime->loopIterationCount) == loopCountLimit) {
                 runtime->runState = 2;
                 return 2;
             }
-        } else if ((stopModeFlags & 0x02) != 0) {
-            const float elapsedLimit = loopEvent->stopValue.f32;
-            if (elapsedLimit >= 0.0f && loopElapsed >= elapsedLimit) {
+        } else if ((loopEvent->stopModeFlags & 0x02) != 0) {
+            if (loopEvent->stopValue.f32 >= 0.0f && loopElapsed >= loopEvent->stopValue.f32) {
                 runtime->runState = 2;
                 return 2;
             }
         }
 
-        if (self->triggerCurrentValue > kEmitterLoopTriggerClampValue) {
-            self->triggerCurrentValue = kEmitterLoopTriggerClampValue;
+        if (self->triggerCurrentValue > 86400.0f) {
+            self->triggerCurrentValue = 86400.0f;
         }
 
         HandleEmitterResetEvent(runtime);
@@ -3048,15 +3065,16 @@ namespace zEffect
      */
     float __fastcall GetConditionalRefPosDistanceSq(CZNodePartial * node)
     {
-        zVec3 worldPosition = { 0 };
-        if (CZNode::GetWorldPosition(node, &worldPosition) != 0) {
-            return 0.0f;
+        zVec3 worldPosition;
+        zVec3 delta;
+        if (CZNode::GetWorldPosition(node, &worldPosition) == 0) {
+            delta.x = worldPosition.x - g_zEffectAnim_State.conditionalRefPosX;
+            delta.y = worldPosition.y - g_zEffectAnim_State.conditionalRefPosY;
+            delta.z = worldPosition.z - g_zEffectAnim_State.conditionalRefPosZ;
+            return delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
         }
 
-        const float dx = worldPosition.x - g_zEffectAnim_State.conditionalRefPosX;
-        const float dy = worldPosition.y - g_zEffectAnim_State.conditionalRefPosY;
-        const float dz = worldPosition.z - g_zEffectAnim_State.conditionalRefPosZ;
-        return dx * dx + dy * dy + dz * dz;
+        return 0.0f;
     }
 
     /**
@@ -3961,61 +3979,55 @@ namespace zEffectAnim
         }
 
         zEffectAnimEntry* entry = self;
-        const int cleanupRequested = targetNode == 0 || self->boundNode == targetNode;
+        if (targetNode != 0) {
+            if (entry->boundNode != targetNode) {
+                while (entry->runtimeSibling != 0 && entry->activationState == 2) {
+                    entry = entry->runtimeSibling;
+                }
 
-        if (cleanupRequested != 0 && targetNode != 0) {
-            if (self->activationState == 2 || self->activationState == 6) {
-                Stop(self);
+                if (entry->activationState == 2) {
+                    zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
+                    entry->runtimeSibling = clonedEntry;
+                    if (clonedEntry == 0) {
+                        return -1;
+                    }
+                    entry = clonedEntry;
+                }
+
+                if (RebindEntryToNode(entry, targetNode) == 0) {
+                    return -1;
+                }
+            } else if (entry->activationState == 2 || entry->activationState == 6) {
+                Stop(entry);
             }
+
             entry->activationState = 0;
         }
 
-        if (cleanupRequested != 0) {
-            if (immediateCleanup != 0) {
-                entry->flags |= 0x40u;
-            } else {
-                entry->flags &= ~0x40u;
+        if (immediateCleanup != 0) {
+            entry->flags |= 0x40u;
+        } else {
+            entry->flags &= ~0x40u;
+        }
+
+        if (entry->activationState != 1) {
+            if ((entry->flags & 0x40u) != 0) {
+                zEffect_Anim::RestoreNodeStates(entry);
             }
-        }
 
-        if (cleanupRequested != 0 && entry->activationState != 1 && (entry->flags & 0x40u) != 0) {
-            zEffect_Anim::RestoreNodeStates(entry);
-        }
-
-        if (cleanupRequested != 0 && entry->activationState != 1 && entry->surfacePrimary.eventStream != 0) {
-            zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
-            zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
-            const unsigned char runState = entry->surfacePrimary.runState;
-            if (runState == 0 || runState == 1) {
-                CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
-                return 0;
+            if (entry->surfacePrimary.eventStream != 0) {
+                zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
+                zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
+                const unsigned char runState = entry->surfacePrimary.runState;
+                if (runState == 0 || runState == 1) {
+                    CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
+                    return 0;
+                }
             }
-        }
 
-        if (cleanupRequested != 0 && entry->activationState != 1) {
             FinalizeStop(entry);
         }
-        if (cleanupRequested != 0) {
-            return 0;
-        }
 
-        while (entry->runtimeSibling != 0 && entry->activationState == 2) {
-            entry = entry->runtimeSibling;
-        }
-
-        if (entry->activationState == 2) {
-            zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
-            entry->runtimeSibling = clonedEntry;
-            if (clonedEntry == 0) {
-                return -1;
-            }
-            entry = clonedEntry;
-        }
-
-        if (RebindEntryToNode(entry, targetNode) == 0) {
-            return -1;
-        }
-        entry->activationState = 0;
         return 0;
     }
 
@@ -4150,31 +4162,35 @@ namespace zEffectAnim
         }
 
         if ((activatedEntry->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-            CZNodePartial* const activatedBoundNode = activatedEntry->boundNode;
-            if (activatedBoundNode->classId == 5) {
-                CZObject3D::gwObject3DSetPosition(activatedBoundNode, posX, posY, posZ);
+            switch (activatedEntry->boundNode->classId) {
+            case 5:
+                CZObject3D::gwObject3DSetPosition(activatedEntry->boundNode, posX, posY, posZ);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
                     CZObject3D::gwObject3DSetRotation(activatedEntry->boundNode, rotX, rotY, rotZ);
                 }
-            } else if (activatedBoundNode->classId == 1) {
-                CZCamera::gwCameraSetTarget(activatedBoundNode, posX, posY, posZ);
+                break;
+            case 1:
+                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, posX, posY, posZ);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
                     CZCamera::gwCameraSetPosition(activatedEntry->boundNode, rotX, rotY, rotZ);
                 }
+                break;
             }
         }
 
-        if (fabs(velocityX) > kEffectAnimVelocityEpsilon || fabs(velocityY) > kEffectAnimVelocityEpsilon
-            || fabs(velocityZ) > kEffectAnimVelocityEpsilon) {
-            activatedEntry->flags |= 0x80u;
-        } else {
+        if (fabs(velocityX) <= 0.01f && fabs(velocityY) <= 0.01f && fabs(velocityZ) <= 0.01f) {
             activatedEntry->flags &= ~0x80u;
+        } else {
+            activatedEntry->flags |= 0x80u;
         }
 
         activatedEntry->velocityX = velocityX;
-        activatedEntry->velocityZ = velocityZ;
         activatedEntry->velocityY = velocityY;
-        memset(activatedEntry->resetScratch, 0, sizeof(activatedEntry->resetScratch));
+        activatedEntry->velocityZ = velocityZ;
+        activatedEntry->resetScratch[0] = 0;
+        activatedEntry->resetScratch[1] = activatedEntry->resetScratch[2] = activatedEntry->resetScratch[3] = 0;
+        activatedEntry->resetScratch[4] = 0;
+        activatedEntry->resetScratch[5] = activatedEntry->resetScratch[6] = activatedEntry->resetScratch[7] = 0;
 
         QueueCmdType1TransformRotVelocity(
             self,
@@ -4209,13 +4225,13 @@ namespace zEffectAnim
         }
 
         const unsigned char activationState = self->activationState;
+        zEffectAnimEntry* entryToActivate = self;
         if (activationState == 6 || activationState == 4 || activationState == 5) {
             return 0;
         }
 
-        zEffectAnimEntry* entryToActivate = self;
         if (activationState == 3 || activationState == 2) {
-            if (fabs(self->triggerBaseValue - kEffectAnimActivationSentinel) < kEffectAnimActivationSentinelTolerance) {
+            if (fabs(self->triggerBaseValue - kEffectAnimActivationSentinel) < 0.1f) {
                 return 0;
             }
 
@@ -4235,24 +4251,24 @@ namespace zEffectAnim
                         immediateCleanup = 1;
                     }
                 } else {
+                    zEffectAnimEntry* siblingTail = self;
+                    zEffectAnimEntry* matchedEntry = 0;
+                    int targetNodeMatched = 0;
                     if (targetNode == 0) {
                         return 0;
                     }
 
-                    zEffectAnimEntry* siblingTail = self;
-                    zEffectAnimEntry* matchedEntry = 0;
-                    int targetNodeMatched = 0;
-                    for (zEffectAnimEntry* cursor = self; cursor != 0; cursor = cursor->runtimeSibling) {
-                        if (cursor->activationState == 2) {
-                            if (cursor->boundNode == targetNode) {
+                    for (; entryToActivate != 0; entryToActivate = entryToActivate->runtimeSibling) {
+                        if (entryToActivate->activationState == 2) {
+                            if (entryToActivate->boundNode == targetNode) {
                                 targetNodeMatched = 1;
                                 break;
                             }
                         } else {
-                            matchedEntry = cursor;
+                            matchedEntry = entryToActivate;
                         }
 
-                        siblingTail = cursor;
+                        siblingTail = entryToActivate;
                     }
 
                     if (targetNodeMatched != 0) {
@@ -4268,6 +4284,11 @@ namespace zEffectAnim
                     }
 
                     entryToActivate = matchedEntry;
+                }
+
+                // Retail re-checks the selected entry after both activation paths.
+                if (entryToActivate == 0) {
+                    return 0;
                 }
             }
         }
@@ -4425,30 +4446,34 @@ namespace zEffectAnim
         }
 
         if ((activatedEntry->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-            CZNodePartial* const activatedBoundNode = activatedEntry->boundNode;
-            if (activatedBoundNode->classId == 5) {
-                CZObject3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+            switch (activatedEntry->boundNode->classId) {
+            case 5:
+                CZObject3D::gwObject3DSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZObject3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZObject3D::gwObject3DSetRotation(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
-            } else if (activatedBoundNode->classId == 1) {
-                CZCamera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                break;
+            case 1:
+                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
+                break;
             }
         }
-        if (fabs(velocityX) > kEffectAnimVelocityEpsilon || fabs(velocityY) > kEffectAnimVelocityEpsilon
-            || fabs(velocityZ) > kEffectAnimVelocityEpsilon) {
-            activatedEntry->flags |= 0x80u;
-        } else {
+        if (fabs(velocityX) <= 0.01f && fabs(velocityY) <= 0.01f && fabs(velocityZ) <= 0.01f) {
             activatedEntry->flags &= ~0x80u;
+        } else {
+            activatedEntry->flags |= 0x80u;
         }
 
         activatedEntry->velocityX = velocityX;
-        activatedEntry->velocityZ = velocityZ;
         activatedEntry->velocityY = velocityY;
-        memset(activatedEntry->resetScratch, 0, sizeof(activatedEntry->resetScratch));
+        activatedEntry->velocityZ = velocityZ;
+        activatedEntry->resetScratch[0] = 0;
+        activatedEntry->resetScratch[1] = activatedEntry->resetScratch[2] = activatedEntry->resetScratch[3] = 0;
+        activatedEntry->resetScratch[4] = 0;
+        activatedEntry->resetScratch[5] = activatedEntry->resetScratch[6] = activatedEntry->resetScratch[7] = 0;
 
         QueueCmdType2Velocity(self, boundNode, velocityX, velocityY, velocityZ);
         return activatedEntry;
@@ -4497,24 +4522,24 @@ namespace zEffectAnim
         }
 
         if ((activatedEntry->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-            CZNodePartial* const activatedBoundNode = activatedEntry->boundNode;
-            if (activatedBoundNode->classId == 5) {
-                CZObject3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+            switch (activatedEntry->boundNode->classId) {
+            case 5:
+                CZObject3D::gwObject3DSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZObject3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZObject3D::gwObject3DSetRotation(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
-            } else if (activatedBoundNode->classId == 1) {
-                CZCamera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                break;
+            case 1:
+                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
+                break;
             }
         }
         activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNode));
         if (refVec != 0) {
-            memcpy(&activatedEntry->resetScratch[1], &refVec->x, sizeof(refVec->x));
-            memcpy(&activatedEntry->resetScratch[2], &refVec->y, sizeof(refVec->y));
-            memcpy(&activatedEntry->resetScratch[3], &refVec->z, sizeof(refVec->z));
+            *(zVec3*)(&activatedEntry->resetScratch[1]) = *refVec;
         } else {
             activatedEntry->resetScratch[1] = 0;
             activatedEntry->resetScratch[2] = 0;
@@ -4526,8 +4551,7 @@ namespace zEffectAnim
         activatedEntry->resetScratch[7] = 0;
 
         if (velocityVec != 0
-            && (fabs(velocityVec->x) > kEffectAnimVelocityEpsilon || fabs(velocityVec->y) > kEffectAnimVelocityEpsilon
-                || fabs(velocityVec->z) > kEffectAnimVelocityEpsilon)) {
+            && (fabs(velocityVec->x) > 0.01f || fabs(velocityVec->y) > 0.01f || fabs(velocityVec->z) > 0.01f)) {
             activatedEntry->flags |= 0x80u;
             activatedEntry->velocityX = velocityVec->x;
             activatedEntry->velocityY = velocityVec->y;
@@ -4566,7 +4590,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.settransformrefs
      * @recoil-artifact defines .text recoil:function:0x45df90: zEffectAnim::SetTransformRefs.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: activate an entry with two stored transform references.
@@ -4586,24 +4610,24 @@ namespace zEffectAnim
         }
 
         if ((activatedEntry->flags & kEffectAnimWorldChildAttachedFlag) != 0) {
-            CZNodePartial* const activatedBoundNode = activatedEntry->boundNode;
-            if (activatedBoundNode->classId == 5) {
-                CZObject3D::gwObject3DSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+            switch (activatedEntry->boundNode->classId) {
+            case 5:
+                CZObject3D::gwObject3DSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZObject3D::gwObject3DSetRotation(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZObject3D::gwObject3DSetRotation(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
-            } else if (activatedBoundNode->classId == 1) {
-                CZCamera::gwCameraSetTarget(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                break;
+            case 1:
+                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedBoundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
+                break;
             }
         }
         activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNodeA));
         if (refVecA != 0) {
-            memcpy(&activatedEntry->resetScratch[1], &refVecA->x, sizeof(refVecA->x));
-            memcpy(&activatedEntry->resetScratch[2], &refVecA->y, sizeof(refVecA->y));
-            memcpy(&activatedEntry->resetScratch[3], &refVecA->z, sizeof(refVecA->z));
+            *(zVec3*)(&activatedEntry->resetScratch[1]) = *refVecA;
         } else {
             activatedEntry->resetScratch[1] = 0;
             activatedEntry->resetScratch[2] = 0;
@@ -4611,9 +4635,7 @@ namespace zEffectAnim
         }
         activatedEntry->resetScratch[4] = (unsigned int)((unsigned int)(refNodeB));
         if (refVecB != 0) {
-            memcpy(&activatedEntry->resetScratch[5], &refVecB->x, sizeof(refVecB->x));
-            memcpy(&activatedEntry->resetScratch[6], &refVecB->y, sizeof(refVecB->y));
-            memcpy(&activatedEntry->resetScratch[7], &refVecB->z, sizeof(refVecB->z));
+            *(zVec3*)(&activatedEntry->resetScratch[5]) = *refVecB;
         } else {
             activatedEntry->resetScratch[5] = 0;
             activatedEntry->resetScratch[6] = 0;

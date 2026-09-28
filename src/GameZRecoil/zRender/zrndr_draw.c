@@ -2641,21 +2641,26 @@ namespace zVid
         }
 
         const int threshold = (int)(intensity * 256.0);
-        int xMin = 0;
-        int yMin = 0;
-        int xMax = g_zVideo_FxSurfaceWidth - 1;
-        int yMax = g_zVideo_FxSurfaceHeight - 1;
+        int xMin;
+        int yMin;
+        int xMax;
+        int yMax;
         if (rectOrNull != 0) {
             xMin = rectOrNull->left;
             yMin = rectOrNull->top;
             xMax = rectOrNull->right;
             yMax = rectOrNull->bottom;
+        } else {
+            xMin = 0;
+            yMin = 0;
+            xMax = g_zVideo_FxSurfaceWidth - 1;
+            yMax = g_zVideo_FxSurfaceHeight - 1;
         }
 
         const int rowWidth = xMax - xMin;
-        int rBits = 0;
-        int gBits = 0;
-        int bBits = 0;
+        int rBits;
+        int gBits;
+        int bBits;
         zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
         int gShift = bBits;
@@ -2670,11 +2675,14 @@ namespace zVid
             unsigned short* dstPixels = g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + xMin;
 
             for (int x = 0; x < rowWidth; ++x) {
-                const unsigned char noiseValue = noiseBytes[x];
+                const int noiseValue = *noiseBytes;
                 if (noiseValue < threshold) {
-                    const unsigned short level = (unsigned short)(noiseValue & 0x1f);
-                    dstPixels[x] = (unsigned short)((level << rShift) | (level << gShift) | level);
+                    const int level = noiseValue & 0x1f;
+                    *dstPixels = (unsigned short)((level << rShift) | (level << gShift) | level);
                 }
+
+                ++dstPixels;
+                ++noiseBytes;
             }
         }
     }
@@ -3126,6 +3134,7 @@ namespace zVideo
             bottom = g_zVideo_FxSurfaceHeight - 1;
         }
 
+        const int surfaceWidth = g_zVideo_FxSurfaceWidth;
         int columnCount = right - left + 1;
         unsigned int redMask;
         unsigned int greenMask;
@@ -3146,10 +3155,10 @@ namespace zVideo
                 if (columnCount > 0) {
                     int count = columnCount;
                     do {
-                        const unsigned int rb = (src[-g_zVideo_FxSurfaceWidth] & rbMask) + ((*src & rbMask) << 1)
-                            + (src[g_zVideo_FxSurfaceWidth] & rbMask);
-                        const unsigned int green = (src[-g_zVideo_FxSurfaceWidth] & greenMask)
-                            + ((*src & greenMask) << 1) + (src[g_zVideo_FxSurfaceWidth] & greenMask);
+                        const unsigned int rb
+                            = (src[-surfaceWidth] & rbMask) + ((*src & rbMask) << 1) + (src[surfaceWidth] & rbMask);
+                        const unsigned int green = (src[-surfaceWidth] & greenMask) + ((*src & greenMask) << 1)
+                            + (src[surfaceWidth] & greenMask);
                         *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
                         ++src;
                         ++scratch;
@@ -3237,7 +3246,7 @@ namespace zVideo
         rbMask = redMask | blueMask;
 
         unsigned short* src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short* scratchRow = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+        unsigned short* scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
         const int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
         if (top >= bottom) {
             return;
@@ -3246,7 +3255,7 @@ namespace zVideo
         int y = bottom - top;
         do {
             unsigned short* srcStart = src;
-            unsigned short* scratch = scratchRow;
+            unsigned short* scratchStart = scratch;
             if (columnCount > 0) {
                 int count = columnCount;
                 do {
@@ -3260,18 +3269,16 @@ namespace zVideo
                 } while (count != 0);
             }
 
-            src = srcStart;
-            scratch = scratchRow;
             if (columnCount > 0) {
                 int count = columnCount;
                 do {
-                    *src++ = *scratch++;
+                    *srcStart++ = *scratchStart++;
                     --count;
                 } while (count != 0);
             }
 
-            src = src + rowDelta;
-            scratchRow = scratch + rowDelta;
+            src += rowDelta;
+            scratch += rowDelta;
             --y;
         } while (y != 0);
     }
@@ -3381,10 +3388,10 @@ namespace zVideo_FxSurface
             clipRect.right = rectOrNull->right;
             clipRect.bottom = rectOrNull->bottom;
         } else {
-            clipRect.left = 0;
             clipRect.top = 0;
-            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+            clipRect.left = 0;
             clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
         unsigned int redMask;
@@ -3397,26 +3404,22 @@ namespace zVideo_FxSurface
             return;
         }
 
-        const unsigned int pairedGreenMask = greenMask | (greenMask << 16);
+        redMask |= redMask << 16;
+        greenMask |= greenMask << 16;
+        blueMask |= blueMask << 16;
+        const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
         unsigned short* row
             = g_zVideo_FxSurfacePixels16 + clipRect.top * g_zVideo_FxSurfacePitchPixels16 + clipRect.left;
-        const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
-        int y = clipRect.top;
-        if (y >= clipRect.bottom) {
-            return;
-        }
-
-        do {
+        for (int y = clipRect.top; y < clipRect.bottom; ++y) {
             unsigned int* pixelPair = (unsigned int*)(row);
             int remainingPairs = rowPairCount;
             do {
-                *pixelPair &= pairedGreenMask;
+                *pixelPair &= greenMask;
                 ++pixelPair;
             } while (remainingPairs-- != 0);
 
             row += g_zVideo_FxSurfacePitchPixels16;
-            ++y;
-        } while (y < clipRect.bottom);
+        }
     }
 } // namespace zVideo_FxSurface
 
@@ -4567,18 +4570,17 @@ namespace zRndr
         vertices[3].y = vertices[0].y;
 
         if (halveIfReplicate != 0) {
-            {
-                for (int index = 0; index < 4; ++index) {
-                    vertices[index].x *= 0.5f;
-                    vertices[index].y *= 0.5f;
-                }
-            }
+            vertices[0].x *= 0.5f;
+            vertices[0].y *= 0.5f;
+            vertices[1].x *= 0.5f;
+            vertices[1].y *= 0.5f;
+            vertices[2].x *= 0.5f;
+            vertices[2].y *= 0.5f;
+            vertices[3].x *= 0.5f;
+            vertices[3].y *= 0.5f;
         }
 
-        vertices[0].z = z;
-        vertices[1].z = z;
-        vertices[2].z = z;
-        vertices[3].z = z;
+        vertices[0].z = vertices[1].z = vertices[2].z = vertices[3].z = z;
         SpanOcclusionAddPolygon(vertices, 4);
     }
 } // namespace zRndr
@@ -4600,25 +4602,16 @@ namespace zRndr
      */
     void __fastcall SpanOcclusionAddPolygon(const zVec3* vertices, int vertCount)
     {
-        const int slotIndex = g_spanOccluderPolyCount;
-        if (slotIndex >= 7) {
+        if (g_spanOccluderPolyCount >= 7) {
             return;
         }
 
-        int i = 0;
-        int remaining = vertCount;
-        const zVec3* vertex = vertices;
-        while (remaining > 0) {
-            SpanOccluderPolyPartial* slot = &g_spanOccluderPolys[slotIndex];
-            slot->vertices[i][0] = vertex->x;
-            slot->vertices[i][1] = vertex->y;
-            slot->vertices[i][2] = vertex->z;
-            ++i;
-            ++vertex;
-            --remaining;
+        for (int i = 0; i < vertCount; ++i) {
+            SpanOccluderPolyPartial* const slot = &g_spanOccluderPolys[g_spanOccluderPolyCount];
+            *(zVec3*)(slot->vertices[i]) = vertices[i];
         }
 
-        g_spanOccluderPolys[slotIndex].vertCount = vertCount > 8 ? 8 : vertCount;
+        g_spanOccluderPolys[g_spanOccluderPolyCount].vertCount = vertCount > 8 ? 8 : vertCount;
         ++g_spanOccluderPolyCount;
     }
 } // namespace zRndr
@@ -9861,14 +9854,15 @@ zRndrLensFlareQueueProjectedSample(zProjectedPoint* projectedPoint, int packedCo
         return;
     }
 
-    projectedPoint->reciprocalZ = zRndr::g_inverseDepthBias + zRndr::g_inverseDepthScale * projectedPoint->reciprocalZ;
+    projectedPoint->reciprocalZ = zRndr::g_inverseDepthScale * projectedPoint->reciprocalZ;
+    projectedPoint->reciprocalZ = zRndr::g_inverseDepthBias + projectedPoint->reciprocalZ;
 
     zRndr::LensFlareSamplePartial* sample = &zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount];
     sample->x = projectedPoint->x;
     sample->y = projectedPoint->y;
     sample->reciprocalZ = projectedPoint->reciprocalZ;
-    sample->packedColor16 = packedColor16;
-    sample->lensFlareSource = lensFlareSource;
+    zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount].packedColor16 = packedColor16;
+    zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount].lensFlareSource = lensFlareSource;
     ++zRndr::g_lensFlareSampleQueueCount;
 }
 

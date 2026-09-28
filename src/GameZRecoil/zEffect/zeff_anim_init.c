@@ -222,7 +222,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findorcreatesoundref
      * @recoil-artifact defines .text recoil:function:0x45e380: zEffectAnim::FindOrCreateSoundRef.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: find an existing runtime sound reference or create a named sound
@@ -236,50 +236,49 @@ namespace zEffectAnim
         }
 
         CZNodePartial* const node = CZSound::gwSoundNew();
-        if (node == 0) {
-            return -1;
+        if (node != 0) {
+            CZClass::gwNodeSetName(node, name);
+            CZSound::SetSampleSetByName(node, name);
+
+            if (self->soundRefList == 0) {
+                const int initialCount = (int)(self->soundRefCount) + 1;
+                self->soundRefList
+                    = (zEffectAnimRuntimeNodeRef*)(realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
+                memset(self->soundRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
+                ++self->soundRefCount;
+            }
+
+            if (self->soundRefCount == 0xff) {
+                zError::ReportOld(
+                    0x400,
+                    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                    0x1b7,
+                    "Sound list overflow.\n  Animation: %s\n",
+                    self
+                );
+                return -1;
+            }
+
+            const int resizedCount = (int)(self->soundRefCount) + 1;
+            self->soundRefList = (zEffectAnimRuntimeNodeRef*)(realloc(
+                self->soundRefList,
+                resizedCount * sizeof(zEffectAnimRuntimeNodeRef)
+            ));
+
+            zEffectAnimRuntimeNodeRef* const newRef = &self->soundRefList[self->soundRefCount];
+            memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
+            newRef->runtimeNode = node;
+            newRef->isAttached = 0;
+            return ++self->soundRefCount - 1;
         }
 
-        CZClass::gwNodeSetName(node, name);
-        CZSound::SetSampleSetByName(node, name);
-
-        if (self->soundRefList == 0) {
-            const int initialCount = (int)(self->soundRefCount) + 1;
-            self->soundRefList
-                = (zEffectAnimRuntimeNodeRef*)(realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
-            memset(self->soundRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
-            ++self->soundRefCount;
-        }
-
-        if (self->soundRefCount == 0xff) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                0x1b7,
-                "Sound list overflow.\n  Animation: %s\n",
-                self
-            );
-            return -1;
-        }
-
-        const int resizedCount = (int)(self->soundRefCount) + 1;
-        self->soundRefList = (zEffectAnimRuntimeNodeRef*)(realloc(
-            self->soundRefList,
-            resizedCount * sizeof(zEffectAnimRuntimeNodeRef)
-        ));
-
-        zEffectAnimRuntimeNodeRef* const newRef = &self->soundRefList[self->soundRefCount];
-        memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
-        newRef->runtimeNode = node;
-        newRef->isAttached = 0;
-        ++self->soundRefCount;
-        return (int)(self->soundRefCount) - 1;
+        return -1;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.findorcreatelightref
      * @recoil-artifact defines .text recoil:function:0x45e4a0: zEffectAnim::FindOrCreateLightRef.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: find an existing runtime light reference or create a named light
@@ -293,43 +292,42 @@ namespace zEffectAnim
         }
 
         CZNodePartial* const node = CZLight::gwLightNew();
-        if (node == 0) {
-            return -1;
+        if (node != 0) {
+            CZClass::gwNodeSetName(node, name);
+
+            if (self->lightRefList == 0) {
+                const int initialCount = (int)(self->lightRefCount) + 1;
+                self->lightRefList
+                    = (zEffectAnimRuntimeNodeRef*)(realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
+                memset(self->lightRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
+                ++self->lightRefCount;
+            }
+
+            if (self->lightRefCount == 0xff) {
+                zError::ReportOld(
+                    0x400,
+                    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                    0x200,
+                    "Light list overflow.\n  Animation: %s\n",
+                    self
+                );
+                return -1;
+            }
+
+            const int resizedCount = (int)(self->lightRefCount) + 1;
+            self->lightRefList = (zEffectAnimRuntimeNodeRef*)(realloc(
+                self->lightRefList,
+                resizedCount * sizeof(zEffectAnimRuntimeNodeRef)
+            ));
+
+            zEffectAnimRuntimeNodeRef* const newRef = &self->lightRefList[self->lightRefCount];
+            memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
+            newRef->runtimeNode = node;
+            newRef->isAttached = 0;
+            return ++self->lightRefCount - 1;
         }
 
-        CZClass::gwNodeSetName(node, name);
-
-        if (self->lightRefList == 0) {
-            const int initialCount = (int)(self->lightRefCount) + 1;
-            self->lightRefList
-                = (zEffectAnimRuntimeNodeRef*)(realloc(0, initialCount * sizeof(zEffectAnimRuntimeNodeRef)));
-            memset(self->lightRefList, 0, sizeof(zEffectAnimRuntimeNodeRef));
-            ++self->lightRefCount;
-        }
-
-        if (self->lightRefCount == 0xff) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                0x200,
-                "Light list overflow.\n  Animation: %s\n",
-                self
-            );
-            return -1;
-        }
-
-        const int resizedCount = (int)(self->lightRefCount) + 1;
-        self->lightRefList = (zEffectAnimRuntimeNodeRef*)(realloc(
-            self->lightRefList,
-            resizedCount * sizeof(zEffectAnimRuntimeNodeRef)
-        ));
-
-        zEffectAnimRuntimeNodeRef* const newRef = &self->lightRefList[self->lightRefCount];
-        memcpy(newRef->name.text, node->name, sizeof(newRef->name.text));
-        newRef->runtimeNode = node;
-        newRef->isAttached = 0;
-        ++self->lightRefCount;
-        return (int)(self->lightRefCount) - 1;
+        return -1;
     }
 
     /**

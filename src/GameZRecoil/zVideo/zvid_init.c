@@ -328,21 +328,32 @@ namespace zVideo_buff
         zVidImagePartial* imageOrNull
     )
     {
-        zVideo_SurfaceStatePartial* surfaceState = 0;
-        if (sourceSelector == 0) {
-            surfaceState = &g_zVideo_SwSurfaceState;
-        } else if (sourceSelector == 1) {
-            surfaceState = &g_zVideo_PrimarySurfaceState;
-        } else if (sourceSelector == 2) {
-            surfaceState = &g_zVideo_DisplayModeSurfaceState;
-        } else {
+        int surfaceWidth;
+        int surfaceHeight;
+        unsigned int pitchWords;
+        unsigned char* surfacePixels;
+        switch (sourceSelector) {
+        case 0:
+            surfaceWidth = g_zVideo_SwSurfaceState.width;
+            surfaceHeight = g_zVideo_SwSurfaceState.height;
+            pitchWords = (unsigned int)(g_zVideo_SwSurfaceState.pitch) >> 1;
+            surfacePixels = (unsigned char*)(g_zVideo_SwSurfaceState.pixels);
+            break;
+        case 1:
+            surfaceWidth = g_zVideo_PrimarySurfaceState.width;
+            surfaceHeight = g_zVideo_PrimarySurfaceState.height;
+            pitchWords = (unsigned int)(g_zVideo_PrimarySurfaceState.pitch) >> 1;
+            surfacePixels = (unsigned char*)(g_zVideo_PrimarySurfaceState.pixels);
+            break;
+        case 2:
+            surfaceWidth = g_zVideo_DisplayModeSurfaceState.width;
+            surfaceHeight = g_zVideo_DisplayModeSurfaceState.height;
+            pitchWords = (unsigned int)(g_zVideo_DisplayModeSurfaceState.pitch) >> 1;
+            surfacePixels = (unsigned char*)(g_zVideo_DisplayModeSurfaceState.pixels);
+            break;
+        default:
             return 0;
         }
-
-        const int surfaceWidth = surfaceState->width;
-        const int surfaceHeight = surfaceState->height;
-        const int pitchWords = surfaceState->pitch >> 1;
-        unsigned char* const surfacePixels = (unsigned char*)(surfaceState->pixels);
 
         int dstOffsetX = 0;
         int dstOffsetY = 0;

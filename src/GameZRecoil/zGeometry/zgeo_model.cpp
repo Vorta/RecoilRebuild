@@ -557,6 +557,7 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
 {
     zVec3* linearPoints = 0;
     int result = 0;
+    unsigned int vertexCount;
 
     if (clipPolygon == 0 || node == 0) {
         return 0;
@@ -578,19 +579,18 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
             return 0;
         }
 
-        if (clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY) {
+        if (-modelBounds->boundsNegMaxY < clipPolygon->bounds.maxY - 1.0f) {
             return 0;
         }
 
-        if (clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
+        if (-modelBounds->boundsNegMinY > clipPolygon->bounds.minY + 1.0f) {
             return 0;
         }
     }
 
     zModel_PolygonPartial* face = polygonSet->faceList;
     for (int i = 0; i < polygonSet->faceCount; ++i) {
-        const unsigned int vertexCount = face->vertexCountAndFlags & 0xff;
-        if (vertexCount < 3) {
+        if ((face->vertexCountAndFlags & 0xff) < 3) {
             zError::ReportOld(
                 0x400,
                 g_zGeometry_SourceFile_ZgeoModelCpp,
@@ -599,6 +599,7 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
                 vertexCount
             );
         } else {
+            vertexCount = face->vertexCountAndFlags & 0xff;
             linearPoints = zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
             if (linearPoints == 0) {
                 zError::ReportOld(
@@ -1203,7 +1204,7 @@ int __fastcall AddIndexedPolygonToDi(zDiPartial* di, zModel_DrawBatchBasePartial
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-isfullyinsideclippolygonxy
  * @recoil-artifact defines .text recoil:function:0x46bb90: zGeometry_Model::IsFullyInsideClipPolygonXY
- *
+ * @recoil-match byte
  *
  * Purpose: Test whether every model polygon lies fully inside the clip polygon.
  */
@@ -1249,7 +1250,7 @@ int __fastcall IsFullyInsideClipPolygonXY(zGeometry_ClipPolygonPartial* clipPoly
             zGeometry_BoundsXY bounds;
             zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
 
-            int clipResult = 1;
+            int clipResult;
             if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
                 clipResult = zGeometry_Weiler::ClipPointList(
                     clipPolygon->weilerState,
@@ -1258,6 +1259,8 @@ int __fastcall IsFullyInsideClipPolygonXY(zGeometry_ClipPolygonPartial* clipPoly
                     pointCount,
                     &clipOutput
                 );
+            } else {
+                clipResult = 1;
             }
 
             switch (clipResult) {

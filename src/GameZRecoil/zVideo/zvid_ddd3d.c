@@ -837,8 +837,8 @@ namespace zVideo_dd3d
                     unsigned short* dstCursor = (unsigned short*)(dstRowBytes);
                     {
                         for (int column = 0; column < image->width; ++column) {
-                            const unsigned short src = *srcPixels++;
-                            const unsigned short alphaBit = src != 0 ? 0x8000 : 0;
+                            const unsigned int src = *srcPixels++;
+                            const unsigned int alphaBit = src != 0 ? 0x8000 : 0;
                             *dstCursor++ = (unsigned short)((src & g_zVideo_PixelPack.bMask)
                                 | ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
                         }
@@ -967,7 +967,7 @@ namespace zVideo_dd3d
             UploadImageToSurface(uploadSurface, image, image->formatFlagsPacked & 2);
         }
 
-        IDirect3DTexture2* uploadTexture = 0;
+        IDirect3DTexture2* uploadTexture;
         HRESULT hresult = uploadSurface->QueryInterface(IID_IDirect3DTexture2, (void**)(&uploadTexture));
         if (hresult != DD_OK) {
             return;
@@ -1102,10 +1102,10 @@ namespace zVideo_dd3d
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_FOGCOLOR,
             ((
-                 ((DWORD)((int)(g_zVideo_FogColorPendingR255 + 0.5f)) << 8)
-                 | (DWORD)((int)(g_zVideo_FogColorPendingG255 + 0.5f))
+                 ((DWORD)((int)(g_zVideo_FogColorPendingR255 + 0.5)) << 8)
+                 | (DWORD)((int)(g_zVideo_FogColorPendingG255 + 0.5))
              ) << 8)
-                | (DWORD)((int)(g_zVideo_FogColorPendingB255 + 0.5f))
+                | (DWORD)((int)(g_zVideo_FogColorPendingB255 + 0.5))
         );
 
         g_zVideo_pD3DDevice->SetLightState(D3DLIGHTSTATE_FOGMODE, D3DFOG_LINEAR);
@@ -1128,10 +1128,10 @@ namespace zVideo_dd3d
         g_zVideo_pD3DDevice->SetRenderState(
             D3DRENDERSTATE_FOGCOLOR,
             ((
-                 ((DWORD)((int)(g_zVideo_FogColorAppliedR255 + 0.5f)) << 8)
-                 | (DWORD)((int)(g_zVideo_FogColorAppliedG255 + 0.5f))
+                 ((DWORD)((int)(g_zVideo_FogColorAppliedR255 + 0.5)) << 8)
+                 | (DWORD)((int)(g_zVideo_FogColorAppliedG255 + 0.5))
              ) << 8)
-                | (DWORD)((int)(g_zVideo_FogColorAppliedB255 + 0.5f))
+                | (DWORD)((int)(g_zVideo_FogColorAppliedB255 + 0.5))
         );
     }
 

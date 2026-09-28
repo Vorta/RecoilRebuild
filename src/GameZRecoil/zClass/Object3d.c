@@ -231,10 +231,12 @@ namespace CZObject3D
      */
     gwObject3DSetColorAlpha(CZNodePartial * node, zColorRgb * color, float alpha)
     {
-        CZObject3DDataPartial* data;
-
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1d9, "Null node pointer.");
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1da, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeObject3D) {
@@ -243,19 +245,35 @@ namespace CZObject3D
                 "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x1db,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 3;
         }
 
-        data = (CZObject3DDataPartial*)(node->classData);
-
-        data->colorAlpha = alpha > 1.0f ? 1.0f : (alpha < 0.0f ? 0.0f : alpha);
+        if (alpha > 1.0f) {
+            alpha = 1.0f;
+        } else if (alpha < 0.0f) {
+            alpha = 0.0f;
+        }
+        ((CZObject3DDataPartial*)(node->classData))->colorAlpha = alpha;
         if (color != 0) {
-            data->color.red = color->red > 1.0f ? 1.0f : (color->red < 0.0f ? 0.0f : color->red);
-            data->color.green = color->green > 1.0f ? 1.0f : (color->green < 0.0f ? 0.0f : color->green);
-            data->color.blue = color->blue > 1.0f ? 1.0f : (color->blue < 0.0f ? 0.0f : color->blue);
+            ((CZObject3DDataPartial*)(node->classData))->color = *color;
+            if (((CZObject3DDataPartial*)(node->classData))->color.red > 1.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.red = 1.0f;
+            } else if (((CZObject3DDataPartial*)(node->classData))->color.red < 0.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.red = 0.0f;
+            }
+            if (((CZObject3DDataPartial*)(node->classData))->color.green > 1.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.green = 1.0f;
+            } else if (((CZObject3DDataPartial*)(node->classData))->color.green < 0.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.green = 0.0f;
+            }
+            if (((CZObject3DDataPartial*)(node->classData))->color.blue > 1.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.blue = 1.0f;
+            } else if (((CZObject3DDataPartial*)(node->classData))->color.blue < 0.0f) {
+                ((CZObject3DDataPartial*)(node->classData))->color.blue = 0.0f;
+            }
         }
 
         return 0;
@@ -393,6 +411,10 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x294, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x295, "Null class data pointer");
+            return 5;
+        }
         data = (CZObject3DDataPartial*)(node->classData);
 
         if ((data->flags & 0x10) != 0) {
@@ -401,7 +423,7 @@ namespace CZObject3D
         data->scale.x = x;
         data->scale.y = y;
         data->scale.z = z;
-        if ((data->flags & 0x08) != 0 && (x != 1.0 || y != 1.0 || z != 1.0)) {
+        if (x != 1.0 || y != 1.0 || z != 1.0) {
             data->flags &= ~0x08;
         }
 

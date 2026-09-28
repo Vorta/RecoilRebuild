@@ -590,97 +590,6 @@ const float kStatusPickupFullThreshold = 0.99000001f;
  * Purpose: preserve the alt-weapon ammo sentinel that disables VTOL airdrop pickup spawning.
  */
 const float kPickupAltAmmoDisabledSentinel = 123456792.0f;
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuparchivesectionname
- * @recoil-artifact defines .data recoil:data:0x4dc16c: kPickupArchiveSectionName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the pickup archive section registered with the ZAR handler table.
- */
-const char kPickupArchiveSectionName[] = "Pickup";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupconfigimagekey
- * @recoil-artifact defines .data recoil:data:0x4dc174: kPickupConfigImageKey (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the pickup config IMAGE key used to load optional metadata images.
- */
-const char kPickupConfigImageKey[] = "IMAGE";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupconfigdatanodename
- * @recoil-artifact defines .data recoil:data:0x4dc184: kPickupConfigDataNodeName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the PICKUP_DATA node in the pickup config tree.
- */
-const char kPickupConfigDataNodeName[] = "PICKUP_DATA";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupsourcefilepath
- * @recoil-artifact defines .data recoil:data:0x4dc190: kPickupSourceFilePath (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: preserve the source path emitted in pickup zError reports.
- */
-const char kPickupSourceFilePath[] = "D:\\Proj\\Battlesport\\pickup.cpp";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuptemplatenameformat
- * @recoil-artifact defines .data recoil:data:0x4dc1b0: kPickupTemplateNameFormat (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: format pickup template and pickup-removal lookup node names.
- */
-const char kPickupTemplateNameFormat[] = "pu%03d";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupdefaultsoundname
- * @recoil-artifact defines .data recoil:data:0x4dc1b8: kPickupDefaultSoundName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the default pickup sound sample.
- */
-const char kPickupDefaultSoundName[] = "snd_pickup";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupunhandledtypeformat
- * @recoil-artifact defines .data recoil:data:0x4dc1c4: kPickupUnhandledTypeFormat (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: format pickup-type error reports when effect dispatch has no handler.
- */
-const char kPickupUnhandledTypeFormat[] = "Unhandled Pickup Type: %d";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupinstancenameformat
- * @recoil-artifact defines .data recoil:data:0x4dc1e0: kPickupInstanceNameFormat (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: format cloned pickup object names from type and instance suffix.
- */
-const char kPickupInstanceNameFormat[] = "pu%03d%02d";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupmissingbvolformat
- * @recoil-artifact defines .data recoil:data:0x4dc1ec: kPickupMissingBvolFormat (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: format the error for pickup nodes missing the required bvol child.
- */
-const char kPickupMissingBvolFormat[] = "Pickup: (%s) has no bvol child node";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupbvolnodename
- * @recoil-artifact defines .data recoil:data:0x4dc210: kPickupBvolNodeName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the pickup collision bvol child node.
- */
-const char kPickupBvolNodeName[] = "bvol";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupairdropattachnodename
- * @recoil-artifact defines .data recoil:data:0x4dc218: kPickupAirdropAttachNodeName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the chute node that receives an airdropped pickup child.
- */
-const char kPickupAirdropAttachNodeName[] = "airdroppup";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickupchuteeffectname
- * @recoil-artifact defines .data recoil:data:0x4dc224: kPickupChuteEffectName (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the airdrop chute effect used while spawning pickups.
- */
-const char kPickupChuteEffectName[] = "chutes";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppieseasyzrd
- * @recoil-artifact defines .data recoil:data:0x4dc22c: kPickupPuppiesEasyZrd (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the easy-difficulty puppy spawn ZRD; this starts the
- * 0x4dc22c..0x4dc25f consecutive puppy ZRD filename data owner.
- */
-const char kPickupPuppiesEasyZrd[] = "puppies_easy.zrd";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppieshardzrd
- * @recoil-artifact defines .data recoil:data:0x4dc240: kPickupPuppiesHardZrd (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the hard-difficulty puppy spawn ZRD.
- */
-const char kPickupPuppiesHardZrd[] = "puppies_hard.zrd";
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.kpickuppuppiesdefaultzrd
- * @recoil-artifact defines .data recoil:data:0x4dc254: kPickupPuppiesDefaultZrd (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: name the default puppy spawn ZRD fallback.
- */
-const char kPickupPuppiesDefaultZrd[] = "puppies.zrd";
 
 } // namespace
 
@@ -787,11 +696,11 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
 {
     g_Pickup_SceneNode = sceneNode;
 
-    zSndSample* const defaultPickupSound = zSnd::FindSampleByName(kPickupDefaultSoundName);
+    zSndSample* const defaultPickupSound = zSnd::FindSampleByName("snd_pickup");
     PickupType* pickupType = g_PickupTypes;
     for (int index = 0; index < 40; ++index, ++pickupType) {
         char templateName[0x18];
-        sprintf(templateName, kPickupTemplateNameFormat, pickupType->typeIndex);
+        sprintf(templateName, "pu%03d", pickupType->typeIndex);
         pickupType->templateNode = CZClass::FindByTypeAndName(6, templateName);
         pickupType->pickupSound = defaultPickupSound;
         pickupType->nameSuffixMax = 0;
@@ -807,11 +716,17 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
 
     zReader::Node* const rootNode = zReader::Load(pickupsCfgPath, 0, 0);
     if (rootNode == 0) {
-        zError::ReportOld(0x200, kPickupSourceFilePath, 0xc1, g_HudSensorTracker_ReadFileFailedFmt, pickupsCfgPath);
+        zError::ReportOld(
+            0x200,
+            "D:\\Proj\\Battlesport\\pickup.cpp",
+            0xc1,
+            g_HudSensorTracker_ReadFileFailedFmt,
+            pickupsCfgPath
+        );
         return 0;
     }
 
-    zReader::Node* const pickupDataNode = zRdrGetNode(rootNode, kPickupConfigDataNodeName);
+    zReader::Node* const pickupDataNode = zRdrGetNode(rootNode, "PICKUP_DATA");
     if (pickupDataNode != 0) {
         for (int fieldIndex = 1; fieldIndex < pickupDataNode->value.nodes[0].value.i32; fieldIndex += 2) {
             int pickupTypeIndex;
@@ -824,7 +739,7 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
                 = zRdrGetNode(pickupDataNode, pickupDataNode->value.nodes[fieldIndex].value.str);
             PickupType& pickupType = g_PickupTypes[pickupTypeIndex];
             zReader::Node* const soundNode = zRdrGetNode(entryNode, g_HudZrd_Key_Sound);
-            zReader::Node* const imageNode = zRdrGetNode(entryNode, kPickupConfigImageKey);
+            zReader::Node* const imageNode = zRdrGetNode(entryNode, "IMAGE");
             if (soundNode != 0) {
                 pickupType.pickupSound = zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
                 if (pickupType.pickupSound == 0) {
@@ -840,7 +755,7 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
 
     zReader::Free(rootNode);
     zUtil_ZAR::RegisterSectionHandler(
-        kPickupArchiveSectionName,
+        "Pickup",
         (zZbdSectionCallback)(&ArchiveWriteAll),
         (zZbdSectionCallback)(&ArchiveReadRecord),
         300,
@@ -1019,7 +934,7 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
     }
 
     char pickupAnimName[8];
-    sprintf(pickupAnimName, kPickupTemplateNameFormat, pickupTypeId);
+    sprintf(pickupAnimName, "pu%03d", pickupTypeId);
     zEffectAnimEntry* const animEntry = zEffectAnim::FindEntryByName(pickupAnimName);
     if (animEntry != 0) {
         zVec3 worldPosition;
@@ -1127,7 +1042,13 @@ int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_S
                 break;
 
             default:
-                zError::ReportOld(0x200, kPickupSourceFilePath, 0x370, kPickupUnhandledTypeFormat, pickupTypeId);
+                zError::ReportOld(
+                    0x200,
+                    "D:\\Proj\\Battlesport\\pickup.cpp",
+                    0x370,
+                    "Unhandled Pickup Type: %d",
+                    pickupTypeId
+                );
                 return 0;
             }
         }
@@ -1163,7 +1084,7 @@ int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_S
             activeController->ammoOrCharge
         );
     } else if (pickupTypeId != 0x386 && pickupTypeId != 0x387) {
-        zError::ReportOld(0x200, kPickupSourceFilePath, 0x370, kPickupUnhandledTypeFormat, pickupTypeId);
+        zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\pickup.cpp", 0x370, "Unhandled Pickup Type: %d", pickupTypeId);
         return 0;
     } else if (pickupTypeId == 0x387) {
         zLoc::FormatMessage(message, sizeof(message), 0x247);
@@ -1410,7 +1331,7 @@ PickupSpawnDef* __fastcall Pickup::SpawnAt(int typeIndex, int amount, zVec3* pos
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-createobjectinstance
  * @recoil-artifact defines .text recoil:function:0x41dab0: Pickup::CreateObjectInstance (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: clone a pickup template node, assign its runtime fields, and name it for spawning.
  */
@@ -1427,7 +1348,7 @@ CZNodePartial* __fastcall Pickup::CreateObjectInstance(int typeIndex, int overri
     }
 
     char pickupName[0x40];
-    sprintf(pickupName, kPickupInstanceNameFormat, pickupType->typeIndex, pickupType->nameSuffixMax);
+    sprintf(pickupName, "pu%03d%02d", pickupType->typeIndex, pickupType->nameSuffixMax);
     CZClass::gwNodeSetName(pickupObj, pickupName);
 
     ((PickupNodeRuntimeFields*)(pickupObj->name))->amount
@@ -1460,15 +1381,21 @@ PickupType* __fastcall PickupType::GetByIndexPure(int pickupTypeIndex)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-assignbvolgroupandid
  * @recoil-artifact defines .text recoil:function:0x41db60: Pickup::AssignBvolGroupAndId (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: parse a pickup node name, assign runtime pickup fields, and disable its bvol child.
  */
 int __fastcall Pickup::AssignBvolGroupAndId(CZNodePartial* pickupObj)
 {
-    CZNodePartial* const bvolNode = CZClass::FindSubNodeByName(pickupObj, kPickupBvolNodeName);
+    CZNodePartial* const bvolNode = CZClass::FindSubNodeByName(pickupObj, "bvol");
     if (bvolNode == 0) {
-        zError::ReportOld(0x400, kPickupSourceFilePath, 0x152, kPickupMissingBvolFormat, pickupObj);
+        zError::ReportOld(
+            0x400,
+            "D:\\Proj\\Battlesport\\pickup.cpp",
+            0x152,
+            "Pickup: (%s) has no bvol child node",
+            pickupObj
+        );
         return 0;
     }
 
@@ -1515,7 +1442,7 @@ PickupSpawnDef* __fastcall Pickup::SpawnFromParsedZrdEntry(PickupParsedZrdEntry*
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnwithairdropchute
  * @recoil-artifact defines .text recoil:function:0x41dc60: Pickup::SpawnWithAirdropChute (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: create a pickup object at an airdrop position and attach its chute
  * animation state.
@@ -1529,7 +1456,7 @@ int __fastcall Pickup::SpawnWithAirdropChute(int typeIndex, zVec3* position)
 
     SetVariantFromTerrain(pickupObj, position);
 
-    zEffectAnimEntry* const chuteTemplate = zEffectAnim::FindEntryByName(kPickupChuteEffectName);
+    zEffectAnimEntry* const chuteTemplate = zEffectAnim::FindEntryByName("chutes");
     zEffectAnimEntry* const chuteEntry = zEffectAnim::SetTransformRotAndVelocityThunk(
         chuteTemplate,
         0,
@@ -1544,7 +1471,7 @@ int __fastcall Pickup::SpawnWithAirdropChute(int typeIndex, zVec3* position)
         0.0f
     );
     CZNodePartial* const chuteRoot = zEffectAnim::GetRootNodeOrNull(chuteEntry);
-    CZNodePartial* const attachNode = CZClass::FindSubNodeByName(chuteRoot, kPickupAirdropAttachNodeName);
+    CZNodePartial* const attachNode = CZClass::FindSubNodeByName(chuteRoot, "airdroppup");
     CZClass::AddChild(attachNode, pickupObj);
     CZClass::gwNodeSetActive(pickupObj, 0);
     zEffectAnimEntry::SetOnStateDoneCallback(chuteEntry, (void*)&RegisterExistingObject, pickupObj);
@@ -1595,7 +1522,7 @@ int __fastcall PickupType::FindByLogicalName(const char* logicalName, int* outTy
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-selectpuppieszrdbydifficulty
  * @recoil-artifact defines .text recoil:function:0x41ddf0: Pickup::SelectPuppiesZrdByDifficulty (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: choose the puppy spawn ZRD path for the current difficulty with fallback.
  */
@@ -1604,18 +1531,18 @@ const char* __fastcall Pickup::SelectPuppiesZrdByDifficulty(const char* extraSea
     const char* filename;
     switch (zOpt::GetGameDifficultyMode()) {
     case 0:
-        filename = kPickupPuppiesEasyZrd;
+        filename = "puppies_easy.zrd";
         break;
     case 2:
-        filename = kPickupPuppiesHardZrd;
+        filename = "puppies_hard.zrd";
         break;
     default:
-        filename = kPickupPuppiesDefaultZrd;
+        filename = "puppies.zrd";
         break;
     }
 
     if (zReader::FindFile(filename, extraSearchPath) == 0) {
-        filename = kPickupPuppiesDefaultZrd;
+        filename = "puppies.zrd";
     }
 
     return filename;
@@ -2441,7 +2368,7 @@ int PickupAirdropSpawnRef::SpawnPickupTypeAndRelay(int pickupTypeIndex)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-canspawnwithclearance
  * @recoil-artifact defines .text recoil:function:0x438a20: PickupAirdropSpawnRef::CanSpawnWithClearance (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: gate VTOL pickup spawning on attach-node state, ammo state, and XZ clearance.
  */

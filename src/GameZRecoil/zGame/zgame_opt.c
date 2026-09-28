@@ -399,22 +399,21 @@ namespace zSnd
      */
     LPDIRECTSOUND __fastcall AcquireCachedDirectSound(const GUID* deviceGuid)
     {
-        LPDIRECTSOUND cached = g_zSnd_CachedDirectSound;
-        if (cached != 0) {
-            if (deviceGuid == g_zSnd_CachedDirectSoundGuid) {
-                return cached;
-            }
+        if (g_zSnd_CachedDirectSound != 0 && deviceGuid == g_zSnd_CachedDirectSoundGuid) {
+            return g_zSnd_CachedDirectSound;
+        }
 
-            cached->Release();
+        if (g_zSnd_CachedDirectSound != 0) {
+            g_zSnd_CachedDirectSound->Release();
             g_zSnd_CachedDirectSound = 0;
         }
 
-        if (DirectSoundCreate((LPGUID)(deviceGuid), &g_zSnd_CachedDirectSound, 0) != DS_OK) {
-            return 0;
+        if (DirectSoundCreate((LPGUID)(deviceGuid), &g_zSnd_CachedDirectSound, 0) == DS_OK) {
+            g_zSnd_CachedDirectSoundGuid = deviceGuid;
+            return g_zSnd_CachedDirectSound;
         }
 
-        g_zSnd_CachedDirectSoundGuid = deviceGuid;
-        return g_zSnd_CachedDirectSound;
+        return 0;
     }
 
     /**

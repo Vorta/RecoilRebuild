@@ -2105,33 +2105,33 @@ namespace zVid
      */
     int __fastcall QueryDeviceVideoMemoryBytes(int deviceIndexOrMinus1, int* totalBytes, int* freeBytes)
     {
-        if (g_zVideo_RendererType == 0) {
-            *freeBytes = 0;
-            *totalBytes = 0;
-            return 0;
-        }
-
-        if (deviceIndexOrMinus1 == -1) {
-            DDSCAPS caps = { 0 };
-            caps.dwCaps = DDSCAPS_VIDEOMEMORY;
-            if (g_zVideo_pDirectDraw2->GetAvailableVidMem(&caps, (DWORD*)totalBytes, (DWORD*)freeBytes) == DD_OK) {
-                *freeBytes -= g_zVideo_pSelectedHwApiDeviceRecord->m_textureMemTotalBytes;
+        if (g_zVideo_RendererType != 0) {
+            if (deviceIndexOrMinus1 == -1) {
+                DDSCAPS caps;
+                caps.dwCaps = DDSCAPS_VIDEOMEMORY;
+                if (g_zVideo_pDirectDraw2->GetAvailableVidMem(&caps, (DWORD*)totalBytes, (DWORD*)freeBytes) != DD_OK) {
+                    *freeBytes = 0;
+                    *totalBytes = 0;
+                } else {
+                    *freeBytes -= g_zVideo_pSelectedHwApiDeviceRecord->m_textureMemTotalBytes;
+                }
             } else {
-                *freeBytes = 0;
-                *totalBytes = 0;
+                *totalBytes = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_videoMemTotalBytes;
+                if (g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_videoMemTotalBytes
+                    == g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_textureMemTotalBytes) {
+                    *freeBytes = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_videoMemFreeBytes - 0x1f4000;
+                } else {
+                    *freeBytes = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_videoMemFreeBytes
+                        - g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_textureMemTotalBytes;
+                }
             }
+
             return 1;
         }
 
-        const zVidHwApiDeviceRecordPartial& device = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1];
-        *totalBytes = device.m_videoMemTotalBytes;
-        if (device.m_videoMemTotalBytes == device.m_textureMemTotalBytes) {
-            *freeBytes = device.m_videoMemFreeBytes - 0x1f4000;
-        } else {
-            *freeBytes = device.m_videoMemFreeBytes - device.m_textureMemTotalBytes;
-        }
-
-        return 1;
+        *freeBytes = 0;
+        *totalBytes = 0;
+        return 0;
     }
 
 } // namespace zVid
@@ -2152,18 +2152,17 @@ namespace zVid
         }
 
         if (deviceIndexOrMinus1 == -1) {
-            DDSCAPS caps = { 0 };
+            DDSCAPS caps;
             caps.dwCaps = DDSCAPS_TEXTURE;
             if (g_zVideo_pDirectDraw2->GetAvailableVidMem(&caps, (DWORD*)totalBytes, (DWORD*)freeBytes) != DD_OK) {
                 *freeBytes = 0;
                 *totalBytes = 0;
             }
-            return 1;
+        } else {
+            *totalBytes = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_textureMemTotalBytes;
+            *freeBytes = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1].m_textureMemFreeBytes;
         }
 
-        const zVidHwApiDeviceRecordPartial& device = g_zVideo_HwApiDeviceTable[deviceIndexOrMinus1];
-        *totalBytes = device.m_textureMemTotalBytes;
-        *freeBytes = device.m_textureMemFreeBytes;
         return 1;
     }
 

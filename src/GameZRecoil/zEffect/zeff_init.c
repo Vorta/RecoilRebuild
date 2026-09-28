@@ -185,30 +185,30 @@ namespace zEffect
     int __cdecl Reset()
     {
         if (g_zEffect_RuntimeManager.loadedTemplateTree != 0) {
-            zReader::Free((zReader::Node*)(g_zEffect_RuntimeManager.loadedTemplateTree));
-            g_zEffect_RuntimeManager.loadedTemplateTree = 0;
+            // Retail stores zReader::Free's (zero) result back into the tree slot.
+            g_zEffect_RuntimeManager.loadedTemplateTree
+                = (CZNodePartial*)(zReader::Free((zReader::Node*)(g_zEffect_RuntimeManager.loadedTemplateTree)));
         }
 
-        free(g_zEffect_RuntimeManager.templates);
-        g_zEffect_RuntimeManager.templates = 0;
+        if (g_zEffect_RuntimeManager.templates != 0) {
+            free(g_zEffect_RuntimeManager.templates);
+            g_zEffect_RuntimeManager.templates = 0;
+        }
 
-        zArchiveList* freeList = g_zEffect_RuntimeManager.freeList;
-        if (freeList != 0) {
-            zEffect_RuntimeEntry* entry = (zEffect_RuntimeEntry*)(zArchiveListRemoveHead(freeList));
+        if (g_zEffect_RuntimeManager.freeList != 0) {
+            zEffect_RuntimeEntry* entry
+                = (zEffect_RuntimeEntry*)(zArchiveListRemoveHead(g_zEffect_RuntimeManager.freeList));
             while (entry != 0) {
-                if (entry->effectNode != 0) {
-                    CZUtil::DestroyNodeRecursive(entry->effectNode);
-                }
-
+                CZUtil::DestroyNodeRecursive(entry->effectNode);
                 free(entry);
-                entry = (zEffect_RuntimeEntry*)(zArchiveListRemoveHead(freeList));
+                entry = (zEffect_RuntimeEntry*)(zArchiveListRemoveHead(g_zEffect_RuntimeManager.freeList));
             }
 
-            zArchiveListFree(freeList);
+            zArchiveListFree(g_zEffect_RuntimeManager.freeList);
             g_zEffect_RuntimeManager.freeList = 0;
+            g_zEffect_RuntimeManager.recycleCount = 0;
         }
 
-        g_zEffect_RuntimeManager.recycleCount = 0;
         Init();
         return 0;
     }

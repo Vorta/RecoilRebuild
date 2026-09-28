@@ -1538,12 +1538,15 @@ namespace zMath
             return;
         }
 
-        const zMat4x3* const matrix = (const zMat4x3*)(*g_currentMatrixPtrSlot);
         for (int i = 0; i < count; ++i) {
-            const zVec3 vec = vectors[i];
-            vectors[i].x = vec.x * matrix->xx + vec.y * matrix->yx + vec.z * matrix->zx;
-            vectors[i].y = vec.x * matrix->xy + vec.y * matrix->yy + vec.z * matrix->zy;
-            vectors[i].z = vec.x * matrix->xz + vec.y * matrix->yz + vec.z * matrix->zz;
+            const zMat4x3* const matrix = (const zMat4x3*)(*g_currentMatrixPtrSlot);
+            zVec3 result;
+            result.x = vectors[i].x * matrix->xx + vectors[i].y * matrix->xy + vectors[i].z * matrix->xz;
+            result.y = vectors[i].x * matrix->yx + vectors[i].y * matrix->yy + vectors[i].z * matrix->yz;
+            result.z = vectors[i].x * matrix->zx + vectors[i].y * matrix->zy + vectors[i].z * matrix->zz;
+            vectors[i].x = result.x;
+            vectors[i].y = result.y;
+            vectors[i].z = result.z;
         }
     }
 } // namespace zMath

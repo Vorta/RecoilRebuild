@@ -436,10 +436,12 @@ namespace CZWorld
                 zModelFogSetEnabled(0);
                 zModelFogSetLinearModeEnabled(0);
                 zModelFogSetDensity(0.0f);
+            } else if (data->fogState == 1) {
+                zModelFogSetEnabled(1);
+                zModelFogSetLinearModeEnabled(1);
             } else {
                 zModelFogSetEnabled(1);
-                zModelFogSetEnabled(data->fogState == 1 ? 1 : 0);
-                zModelFogSetLinearModeEnabled(data->fogState == 1 ? 1 : 0);
+                zModelFogSetLinearModeEnabled(0);
             }
         }
 
@@ -559,24 +561,22 @@ namespace CZWorld
         if (worldX < data->originX + 0.1) {
             clampedX = data->originX + 0.1f;
         } else {
-            clampedX = data->worldMaxX - 0.1f;
-            if (worldX < clampedX) {
-                clampedX = worldX;
-            }
+            const float limitX = data->worldMaxX - 0.1f;
+            clampedX = worldX < limitX ? worldX : limitX;
         }
 
         float clampedZ;
         if (worldZ > data->originZ - 0.1f) {
             clampedZ = data->originZ - 0.1f;
         } else {
-            clampedZ = data->worldMaxZ + 0.1f;
-            if (worldZ > clampedZ) {
-                clampedZ = worldZ;
-            }
+            const float limitZ = data->worldMaxZ + 0.1f;
+            clampedZ = worldZ > limitZ ? worldZ : limitZ;
         }
 
-        *outGridCol = (int)((clampedX - data->originX) * data->areaInvSizeX);
-        *outGridRow = (int)((clampedZ - data->originZ) * data->areaInvSizeZ);
+        const float offsetX = clampedX - data->originX;
+        const float offsetZ = clampedZ - data->originZ;
+        *outGridCol = (int)(offsetX * data->areaInvSizeX);
+        *outGridRow = (int)(offsetZ * data->areaInvSizeZ);
         return 0;
     }
 
@@ -600,8 +600,8 @@ namespace CZWorld
     )
     {
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
-        *outGridCol = -1;
         *outGridRow = -1;
+        *outGridCol = -1;
 
         if (data->originX - data->partitionInclusionTolX > minX
             || maxX >= data->worldMaxX + data->partitionInclusionTolX
@@ -610,8 +610,8 @@ namespace CZWorld
             return 0;
         }
 
-        const float centerX = (minX + maxX) * 0.5f - data->originX;
-        const float centerZ = (minZ + maxZ) * 0.5f - data->originZ;
+        const float centerX = (maxX + minX) * 0.5f - data->originX;
+        const float centerZ = (maxZ + minZ) * 0.5f - data->originZ;
         *outGridCol = (int)(centerX * data->areaInvSizeX);
         *outGridRow = (int)(centerZ * data->areaInvSizeZ);
 
@@ -628,21 +628,21 @@ namespace CZWorld
         }
 
         zWorldAreaPartial* gridCell = &data->areaGridRows[*outGridRow][*outGridCol];
-        const float cellMaxX = gridCell->cellMinX + data->areaCellSizeX;
-        const float cellMaxZ = gridCell->cellMinZ + data->areaCellSizeZ;
+        float tolerance = data->partitionInclusionTolX;
+        const float cellMaxX = data->areaCellSizeX + gridCell->cellMinX;
+        const float cellMaxZ = data->areaCellSizeZ + gridCell->cellMinZ;
 
-        if (minX < gridCell->cellMinX && gridCell->cellMinX - minX > data->partitionInclusionTolX) {
-            *outGridCol = -1;
+        if ((minX < gridCell->cellMinX && gridCell->cellMinX - minX > tolerance)
+            || (maxX > cellMaxX && maxX - cellMaxX > tolerance)) {
             *outGridRow = -1;
-        } else if (maxX > cellMaxX && maxX - cellMaxX > data->partitionInclusionTolX) {
             *outGridCol = -1;
-            *outGridRow = -1;
-        } else if (minZ < cellMaxZ && cellMaxZ - minZ > data->partitionInclusionTolZ) {
-            *outGridCol = -1;
-            *outGridRow = -1;
-        } else if (maxZ > gridCell->cellMinZ && maxZ - gridCell->cellMinZ > data->partitionInclusionTolZ) {
-            *outGridCol = -1;
-            *outGridRow = -1;
+        } else {
+            tolerance = data->partitionInclusionTolZ;
+            if ((minZ < cellMaxZ && cellMaxZ - minZ > tolerance)
+                || (maxZ > gridCell->cellMinZ && maxZ - gridCell->cellMinZ > tolerance)) {
+                *outGridRow = -1;
+                *outGridCol = -1;
+            }
         }
 
         return 0;

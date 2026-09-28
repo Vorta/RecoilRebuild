@@ -2116,39 +2116,40 @@ namespace zDi
             return 5;
         }
 
+        zDiEntryPartial* entries = self->entries;
         for (int i = 0; i < self->entryCount; ++i) {
-            zDiEntryPartial& entry = self->entries[i];
+            zDiEntryPartial& entry = entries[i];
             if (entry.vertexIndices != 0) {
                 free(entry.vertexIndices);
-                entry.vertexIndices = 0;
             }
+            entry.vertexIndices = 0;
             if (entry.normalIndices != 0) {
                 free(entry.normalIndices);
-                entry.normalIndices = 0;
             }
+            entry.normalIndices = 0;
             if (entry.uvPairs != 0) {
                 free(entry.uvPairs);
-                entry.uvPairs = 0;
             }
+            entry.uvPairs = 0;
         }
 
         self->entryCount = 0;
         if (self->entries != 0) {
             free(self->entries);
-            self->entries = 0;
         }
+        self->entries = 0;
         if (self->verts != 0) {
             free(self->verts);
-            self->verts = 0;
         }
+        self->verts = 0;
         if (self->normals != 0) {
             free(self->normals);
-            self->normals = 0;
         }
+        self->normals = 0;
         if (self->blendVerts != 0) {
             free(self->blendVerts);
-            self->blendVerts = 0;
         }
+        self->blendVerts = 0;
 
         if (self->pointEntries != 0) {
             for (int i = 0; i < self->pointCount; ++i) {
@@ -2940,12 +2941,13 @@ namespace zModel_Const
     {
         if (vertexCount > 0) {
             for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                zClipUV* const uv = &uvPairs[vertexIndex];
-                const int uFixed = (int)((uv->u - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
-                uv->u = (float)(uFixed)*g_zModel_UvQuantizeInvScale;
+                float* const u = &uvPairs[vertexIndex].u;
+                *u = (float)((int)((*u - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale))
+                    * g_zModel_UvQuantizeInvScale;
 
-                const int vFixed = (int)((uv->v - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale);
-                uv->v = (float)(vFixed)*g_zModel_UvQuantizeInvScale;
+                float* const v = &uvPairs[vertexIndex].v;
+                *v = (float)((int)((*v - g_zModel_UvQuantizeBias) * g_zModel_UvQuantizeScale))
+                    * g_zModel_UvQuantizeInvScale;
             }
         }
 
@@ -3375,26 +3377,24 @@ namespace zDi
     {
         BuildAabb(self, outBoundsMinMax);
 
-        float extentX = (float)fabs(outBoundsMinMax->min.x);
-        if (extentX < outBoundsMinMax->max.x) {
-            extentX = outBoundsMinMax->max.x;
+        zVec3 extent = outBoundsMinMax->max;
+        if (fabs(outBoundsMinMax->min.x) > extent.x) {
+            extent.x = (float)fabs(outBoundsMinMax->min.x);
         }
-        float extentY = (float)fabs(outBoundsMinMax->min.y);
-        if (extentY < outBoundsMinMax->max.y) {
-            extentY = outBoundsMinMax->max.y;
+        if (fabs(outBoundsMinMax->min.y) > extent.y) {
+            extent.y = (float)fabs(outBoundsMinMax->min.y);
         }
-        float extentZ = (float)fabs(outBoundsMinMax->min.z);
-        if (extentZ < outBoundsMinMax->max.z) {
-            extentZ = outBoundsMinMax->max.z;
+        if (fabs(outBoundsMinMax->min.z) > extent.z) {
+            extent.z = (float)fabs(outBoundsMinMax->min.z);
         }
 
+        float maxExtent = extent.x;
         if ((self->flags & 0x10) != 0) {
-            float maxExtent = extentX;
-            if (maxExtent < extentY) {
-                maxExtent = extentY;
+            if (extent.y > maxExtent) {
+                maxExtent = extent.y;
             }
-            if (maxExtent < extentZ) {
-                maxExtent = extentZ;
+            if (extent.z > maxExtent) {
+                maxExtent = extent.z;
             }
             outBoundsMinMax->min.x = -maxExtent;
             outBoundsMinMax->min.y = -maxExtent;
@@ -3405,18 +3405,16 @@ namespace zDi
             return;
         }
 
-        if (extentX < extentZ) {
-            extentX = extentZ;
+        if (extent.x > extent.z) {
+            extent.z = extent.x;
         } else {
-            extentZ = extentX;
+            extent.x = extent.z;
         }
 
-        outBoundsMinMax->min.x = -extentX;
-        outBoundsMinMax->min.y = -extentY;
-        outBoundsMinMax->min.z = -extentZ;
-        outBoundsMinMax->max.x = extentX;
-        outBoundsMinMax->max.y = extentY;
-        outBoundsMinMax->max.z = extentZ;
+        outBoundsMinMax->min.x = -extent.x;
+        outBoundsMinMax->min.y = -extent.y;
+        outBoundsMinMax->min.z = -extent.z;
+        outBoundsMinMax->max = extent;
     }
 } // namespace zDi
 

@@ -379,7 +379,7 @@ namespace
     const unsigned int kOptCatalogFlagFlyoutModelRotation = 0x100;
     const unsigned int kOptCatalogFlagUsePendingSpawnTarget = 1u << 22;
     const unsigned int kOptCatalogFlagTrailUsePendingSpawnTargets = 1u << 14;
-    const unsigned int kOptCatalogFlagTrailStartMutedAndLight = 1u << 19;
+    const unsigned int kOptCatalogFlagTrailStartMutedAndLight = 1u << 11;
     const unsigned int kOptCatalogFlagExpires = 1u << 6;
     const unsigned int kOptCatalogFlagFixedRotate = 1u << 7;
     const unsigned int kOptCatalogFlagInstant = 1u << 10;
@@ -1413,7 +1413,7 @@ namespace OptCatalog
             CZClass::gwNodeSetActive(projectileNode, 0);
         }
 
-        PlayerProbeSampleCandidateBuffer rayData = { 0 };
+        PlayerProbeSampleCandidateBuffer rayData;
         if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
                 g_OptCatalogRuntimeWorld,
                 &startPoint,
@@ -1432,7 +1432,7 @@ namespace OptCatalog
         }
 
         if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
-            OptCatalogRaycastHitList fallbackHits = { 0 };
+            OptCatalogRaycastHitList fallbackHits;
             if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
                 runtimeInstance->pos = startPoint;
                 HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
@@ -1476,19 +1476,23 @@ namespace OptCatalog
         if (ownerEntry->fireFxEffectTemplateIndex != 0) {
             zEffect::SpawnRuntimeInstanceAt(ownerEntry->fireFxEffectTemplateIndex, trailRuntimeState->spawnPos);
         } else if (ownerEntry->fireFxAnimationEntries[0] != 0) {
-            float randomRoll = 0.0f;
+            const zVec3* const spawnPos = trailRuntimeState->spawnPos;
+            const zVec3* const spawnDir = trailRuntimeState->spawnDir;
+            float randomRoll;
             if ((ownerEntry->fireFxFlags & 1u) != 0) {
-                randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * (float)(kOptCatalogPi);
+                randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
+            } else {
+                randomRoll = 0.0f;
             }
 
             ownerEntry->trailEffectAnim = zEffectAnim::SetTransformRotAndVelocityThunk(
                 ownerEntry->fireFxAnimationEntries[0],
                 0,
-                trailRuntimeState->spawnPos->x,
-                trailRuntimeState->spawnPos->y,
-                trailRuntimeState->spawnPos->z,
-                (float)asin((double)trailRuntimeState->spawnDir->y),
-                (float)(atan2(-trailRuntimeState->spawnDir->z, -trailRuntimeState->spawnDir->x)),
+                spawnPos->x,
+                spawnPos->y,
+                spawnPos->z,
+                (float)asin((double)spawnDir->y),
+                (float)(atan2(-spawnDir->x, -spawnDir->z)),
                 randomRoll,
                 0.0f,
                 0.0f,
@@ -1511,19 +1515,21 @@ namespace OptCatalog
         }
 
         if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
-            CZNodePartial* const light
+            trailRuntimeState->lightNode
                 = CZLight::AllocFromFreeListAndAttach(&ownerEntry->timedStatusLightSpecularColor);
-            trailRuntimeState->lightNode = light;
-            CZLight::gwLightSetRange(light, ownerEntry->timedStatusLightRangeMin, ownerEntry->timedStatusLightRangeMax);
-            CZClass::gwNodeSetActive(light, 0);
+            CZLight::gwLightSetRange(
+                trailRuntimeState->lightNode,
+                ownerEntry->timedStatusLightRangeMin,
+                ownerEntry->timedStatusLightRangeMax
+            );
+            CZClass::gwNodeSetActive(trailRuntimeState->lightNode, 0);
         }
 
-        OptCatalogTrailRuntimeState* const activeRuntime = ownerEntry->activeTrailRuntime;
-        if (activeRuntime != 0) {
-            activeRuntime->prev = trailRuntimeState;
+        if (ownerEntry->activeTrailRuntime != 0) {
+            ownerEntry->activeTrailRuntime->prev = trailRuntimeState;
         }
         trailRuntimeState->prev = 0;
-        trailRuntimeState->next = activeRuntime;
+        trailRuntimeState->next = ownerEntry->activeTrailRuntime;
         ownerEntry->activeTrailRuntime = trailRuntimeState;
     }
 } // namespace OptCatalog
@@ -2490,13 +2496,15 @@ namespace OptCatalog
 
         eventTemplate.center = hitEvent->hitPos;
         if (self->craterRadiusRandomRange != 0) {
-            const unsigned int radius
-                = (unsigned int)(self->craterRadiusBase + ((rand() * self->craterRadiusRandomRange) >> 15));
+            const unsigned int radius = (unsigned int)(self->craterRadiusBase
+                + ((unsigned int)(rand() * self->craterRadiusRandomRange) >> 15));
             eventTemplate.radius = (float)(radius);
         } else {
-            eventTemplate.radius = self->impactProximity * 0.5f;
-            if (g_OptCatalogMaxCraterRadius < eventTemplate.radius) {
+            const float radius = self->impactProximity * 0.5f;
+            if (g_OptCatalogMaxCraterRadius < radius) {
                 eventTemplate.radius = g_OptCatalogMaxCraterRadius;
+            } else {
+                eventTemplate.radius = radius;
             }
         }
 
@@ -2528,28 +2536,31 @@ namespace OptCatalog
     {
         (void)unusedOwnerNode;
 
-        if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) == 0) {
-            return 0;
-        }
+        int result = 0;
+        if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) != 0) {
+            zDEClient_CraterEventTemplate eventTemplate;
+            zDEClient_Crater::InitEventTemplateDefaults(&eventTemplate);
 
-        zDEClient_CraterEventTemplate eventTemplate;
-        zDEClient_Crater::InitEventTemplateDefaults(&eventTemplate);
-
-        eventTemplate.craterMaterialSlot = (zModel_MaterialSlot*)(hitEvent->surfaceRef);
-        eventTemplate.center = hitEvent->hitPos;
-        if (self->craterRadiusRandomRange != 0) {
-            const unsigned int radius
-                = (unsigned int)(self->craterRadiusBase + ((rand() * self->craterRadiusRandomRange) >> 15));
-            eventTemplate.radius = (float)(radius);
-        } else {
-            eventTemplate.radius = self->impactProximity * 0.5f;
-            if (g_OptCatalogMaxCraterRadius < eventTemplate.radius) {
-                eventTemplate.radius = g_OptCatalogMaxCraterRadius;
+            eventTemplate.craterMaterialSlot = (zModel_MaterialSlot*)(hitEvent->surfaceRef);
+            eventTemplate.center = hitEvent->hitPos;
+            if (self->craterRadiusRandomRange != 0) {
+                const unsigned int radius = (unsigned int)(self->craterRadiusBase
+                    + ((unsigned int)(rand() * self->craterRadiusRandomRange) >> 15));
+                eventTemplate.radius = (float)(radius);
+            } else {
+                const float radius = self->impactProximity * 0.5f;
+                if (g_OptCatalogMaxCraterRadius < radius) {
+                    eventTemplate.radius = g_OptCatalogMaxCraterRadius;
+                } else {
+                    eventTemplate.radius = radius;
+                }
             }
+
+            eventTemplate.damageOwnerNode = damageOwnerNode;
+            result = zDEClient_Crater::InstanceEventMaybeRelay(&eventTemplate) == 0 ? 1 : 0;
         }
 
-        eventTemplate.damageOwnerNode = damageOwnerNode;
-        return zDEClient_Crater::InstanceEventMaybeRelay(&eventTemplate) == 0 ? 1 : 0;
+        return result;
     }
 } // namespace OptCatalog
 namespace OptCatalog
@@ -2575,9 +2586,12 @@ namespace OptCatalog
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     )
     {
-        int impactSlot = 0;
+        int suppressFallbackFx = 0;
+        int impactSlot;
         if (hitEvent->surfaceRef != 0) {
             impactSlot = hitEvent->surfaceRef->impactSlot;
+        } else {
+            impactSlot = 0;
         }
 
         if (self->impactCallback != 0) {
@@ -2593,47 +2607,48 @@ namespace OptCatalog
             damageAmount
         );
 
-        int suppressFallbackFx = 0;
         if ((self->flags & kOptCatalogFlagCraterImpact) != 0) {
             if ((self->flags & kOptCatalogFlagAlwaysPlayImpactFx) == 0) {
                 suppressFallbackFx = 1;
             }
-            suppressFallbackFx &= EmitCraterImpactEvent(
-                self,
-                hitEvent,
-                hitEvent->surfaceRef != 0 ? hitEvent->surfaceRef->impactOwnerNode : 0,
-                runtimeInstance->ownerNode
-            );
+            suppressFallbackFx
+                &= EmitCraterImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
         } else if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0) {
-            CZNodePartial* contextOwnerNode = 0;
-            if (g_OptCatalog_DamageContextHitEvent != 0) {
-                OptCatalogHitEventPartial* const contextHitEvent
-                    = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
-                if (contextHitEvent->surfaceRef != 0) {
-                    contextOwnerNode = contextHitEvent->surfaceRef->impactOwnerNode;
-                }
-            } else if (hitEvent->surfaceRef != 0) {
-                contextOwnerNode = hitEvent->surfaceRef->impactOwnerNode;
-            }
-
-            EmitQSandImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
-        }
-
-        if (g_OptCatalog_DamageContextKind != 0 && (self->flags & kOptCatalogFlagCraterImpact) != 0) {
             OptCatalogHitEventPartial* const contextHitEvent
                 = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
-            CZNodePartial* const contextOwnerNode = contextHitEvent != 0 && contextHitEvent->surfaceRef != 0
-                ? contextHitEvent->surfaceRef->impactOwnerNode
-                : 0;
-            EmitCraterImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
+            if (contextHitEvent != 0) {
+                EmitQSandImpactEvent(
+                    self,
+                    contextHitEvent,
+                    contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
+                    runtimeInstance->ownerNode
+                );
+            } else {
+                EmitQSandImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
+            }
+        }
+
+        if (g_OptCatalog_DamageContextKind != 0 && (self->flags & kOptCatalogFlagCraterImpact) != 0
+            && g_OptCatalog_DamageContextHitEvent != 0) {
+            OptCatalogHitEventPartial* const contextHitEvent
+                = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
+            EmitCraterImpactEvent(
+                self,
+                contextHitEvent,
+                contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
+                runtimeInstance->ownerNode
+            );
         }
 
         if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0 && g_OptCatalog_DamageContextHitEvent != 0) {
             OptCatalogHitEventPartial* const contextHitEvent
                 = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
-            CZNodePartial* const contextOwnerNode
-                = contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0;
-            EmitQSandImpactEvent(self, hitEvent, contextOwnerNode, runtimeInstance->ownerNode);
+            EmitQSandImpactEvent(
+                self,
+                contextHitEvent,
+                contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
+                runtimeInstance->ownerNode
+            );
             return;
         }
 
@@ -2683,8 +2698,8 @@ namespace OptCatalog
         OptCatalogRuntimeInstanceStorage * runtimeInstance
     )
     {
-        OptCatalogHitEventPartial hitEvent = { 0 };
-        OptCatalogSurfaceMaterialRef surfaceRef = { 0 };
+        OptCatalogHitEventPartial hitEvent;
+        OptCatalogSurfaceMaterialRef surfaceRef;
 
         surfaceRef.flags &= 0xfeff;
         surfaceRef.impactSlot = 0;
@@ -2777,8 +2792,10 @@ namespace OptCatalog
                 continue;
             }
 
-            float damageAmount = self->damage;
-            if ((self->flags & kOptCatalogFlagFullProbeDamage) == 0) {
+            float damageAmount;
+            if ((self->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                damageAmount = self->damage;
+            } else {
                 damageAmount = (1.0f - hit->distance / self->damageFalloffRange) * self->damage;
             }
             damageAmount *= runtimeInstance->spawnScale;
@@ -2794,12 +2811,11 @@ namespace OptCatalog
                     damageAmount
                 );
             } else {
-                OptCatalogQueuedImpactRecord* record = &g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount];
-                record->entry = self;
-                record->ownerNode = runtimeInstance->ownerNode;
-                record->sourcePos = runtimeInstance->pos;
-                record->hit = *hit;
-                record->damageAmount = damageAmount;
+                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].entry = self;
+                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].ownerNode = runtimeInstance->ownerNode;
+                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].sourcePos = runtimeInstance->pos;
+                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].hit = *hit;
+                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].damageAmount = damageAmount;
                 ++g_OptCatalogQueuedImpactCount;
             }
 
@@ -2943,7 +2959,7 @@ namespace OptCatalog
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
 
-        PlayerProbeSampleCandidateBuffer rayData = { 0 };
+        PlayerProbeSampleCandidateBuffer rayData;
         const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
             g_OptCatalogRuntimeWorld,
             &segment->pos,
@@ -2959,26 +2975,25 @@ namespace OptCatalog
             CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(selectedHit->node);
 
             if (hitSlot->damageHandler != 0) {
-                const double phase = (trailRuntime->trailDistance * kOptCatalogPi) / self->range;
-                const float computedBlend = (float)((cos(phase) + 1.0) * 0.5);
-                trailRuntime->trailBlend = computedBlend;
-                if (computedBlend > kOptCatalogTrailDamageBlendLimit) {
-                    trailRuntime->trailBlend = kOptCatalogTrailDamageBlendLimit;
+                trailRuntime->trailBlend
+                    = ((float)cos((trailRuntime->trailDistance * kOptCatalogPi) / self->range) + 1.0f) * 0.5f;
+                if (0.25f < trailRuntime->trailBlend) {
+                    trailRuntime->trailBlend = 0.25f;
                 }
 
-                const float damageAmount
-                    = trailRuntime->spawnScale * self->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend;
                 InvokeDamageFeedbackAndHitCallback(
                     self,
                     trailRuntime->projectileNode,
                     &segment->pos,
                     hitEvent,
-                    damageAmount
+                    trailRuntime->spawnScale * self->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend
                 );
 
-                int impactSlot = 0;
+                int impactSlot;
                 if (hitEvent->surfaceRef != 0) {
                     impactSlot = hitEvent->surfaceRef->impactSlot;
+                } else {
+                    impactSlot = 0;
                 }
                 PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
             }
@@ -3673,8 +3688,9 @@ namespace OptCatalog
      */
     int __cdecl ShutdownCore()
     {
-        for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
-            OptCatalogEntryDef& entry = g_OptCatalog_EntryTable[i];
+        OptCatalogEntryDef* entryPtr = g_OptCatalog_EntryTable;
+        for (int i = 0; i < g_OptCatalog_EntryCount; ++i, ++entryPtr) {
+            OptCatalogEntryDef& entry = *entryPtr;
             if (entry.impactFxTable != 0) {
                 free(entry.impactFxTable);
                 entry.impactFxTable = 0;
@@ -3755,30 +3771,28 @@ namespace OptCatalog
             = (OptCatalogTrailRuntimeState*)(calloc(1, sizeof(OptCatalogTrailRuntimeState)));
         runtime->ownerEntry = entry;
         runtime->projectileNode = projectileNode;
-        runtime->variantTagPtr = variantTagPtr;
         runtime->spawnPos = spawnPos;
+        runtime->variantTagPtr = variantTagPtr;
         runtime->spawnDir = spawnDir;
 
-        int activeNodeSlotCount = segmentCount;
-        if (activeNodeSlotCount > 8) {
-            activeNodeSlotCount = 8;
+        if (segmentCount > 8) {
+            segmentCount = 8;
         } else if ((entry->flags & kOptCatalogFlagSingleTrailSegment) != 0) {
-            activeNodeSlotCount = 1;
+            segmentCount = 1;
         }
 
-        runtime->activeNodeSlotCount = activeNodeSlotCount;
-        for (int i = 0; i < activeNodeSlotCount; ++i) {
-            CZNodePartial* const node = CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode);
-            runtime->activeNodeSlots[i].node = node;
+        runtime->activeNodeSlotCount = segmentCount;
+        for (int i = 0; i < segmentCount; ++i) {
+            runtime->activeNodeSlots[i].node = CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode);
 
             char nodeName[40];
             sprintf(nodeName, g_zWeapon_BeamReflectNameFmt, i);
-            CZClass::gwNodeSetName(node, nodeName);
-            CZClass::gwNodeSetActive(node, 0);
+            CZClass::gwNodeSetName(runtime->activeNodeSlots[i].node, nodeName);
+            CZClass::gwNodeSetActive(runtime->activeNodeSlots[i].node, 0);
             if ((entry->flags & kOptCatalogFlagSkipTrailSegmentLighting) == 0) {
-                CZObject3D::gwObject3DSetLitFlag(node, 1);
+                CZObject3D::gwObject3DSetLitFlag(runtime->activeNodeSlots[i].node, 1);
             }
-            CZClass::AddChild(g_OptCatalogRuntimeWorld, node);
+            CZClass::AddChild(g_OptCatalogRuntimeWorld, runtime->activeNodeSlots[i].node);
         }
 
         return runtime;
@@ -4267,7 +4281,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-invokedamagefeedbackandhitcallback
      * @recoil-artifact defines .text recoil:function:0x4b26f0: OptCatalog::InvokeDamageFeedbackAndHitCallback
-     *
+     * @recoil-match byte
      *
      * Purpose: apply per-hit damage feedback and handler callback state.
      * Behavior: clears current damage context, optionally stamps the damage
@@ -4292,53 +4306,33 @@ namespace OptCatalog
 
         OptCatalogDamageHandlerPartial* const handler
             = (OptCatalogDamageHandlerPartial*)(((CZNodeFreeListSlot*)(hitEvent->hitNode))->damageHandler);
-        if (handler == 0) {
-            return 0;
-        }
-
-        if (handler == (OptCatalogDamageHandlerPartial*)(1)) {
-            OptCatalogDamageHealthOverlay* const healthOverlay
-                = (OptCatalogDamageHealthOverlay*)(hitEvent->hitNode->callbackContext);
-            healthOverlay->health -= damageAmount;
-        } else if (handler->hitContext != 0) {
-            if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
-                g_OptCatalog_CapturedDamageSourcePos = *sourcePos;
-                g_OptCatalog_CapturedDamageHitPos = hitEvent->hitPos;
-            }
-
-            g_OptCatalog_CurrentDamageOwnerOrCtx = damageOwnerNode;
-            g_OptCatalogDamageFeedbackIntensityScalar = 1.0f;
-
-            OptCatalogDamageFeedbackCallback feedbackCallback
-                = (OptCatalogDamageFeedbackCallback)(g_OptCatalogDamageFeedbackCallback);
-            if (feedbackCallback != 0) {
-                feedbackCallback(handler, hitEvent->hitNode, damageAmount);
-            }
-
-            OptCatalogHitCallback hitCallback = (OptCatalogHitCallback)(handler->hitContext);
-            result = hitCallback(handler->hitCallback, self, hitEvent, damageAmount);
-
-            if (g_OptCatalog_DamageContextKind != 0) {
-                if (self->damageContextEffect != 0) {
-                    zEffectAnim::SetTransformRotAndVelocityThunk(
-                        self->damageContextEffect,
-                        0,
-                        hitEvent->hitPos.x,
-                        hitEvent->hitPos.y,
-                        hitEvent->hitPos.z,
-                        0.0f,
-                        0.0f,
-                        0.0f,
-                        0.0f,
-                        0.0f,
-                        0.0f
-                    );
+        if (handler != 0) {
+            if (handler == (OptCatalogDamageHandlerPartial*)(1)) {
+                OptCatalogDamageHealthOverlay* const healthOverlay
+                    = (OptCatalogDamageHealthOverlay*)(hitEvent->hitNode->callbackContext);
+                healthOverlay->health -= damageAmount;
+            } else if (handler->hitContext != 0) {
+                if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
+                    g_OptCatalog_CapturedDamageSourcePos = *sourcePos;
+                    g_OptCatalog_CapturedDamageHitPos = hitEvent->hitPos;
                 }
-            } else if (self->damageFeedbackVariantCount != 0) {
-                for (int i = 0; i < self->damageFeedbackVariantCount; ++i) {
-                    if (g_OptCatalogDamageFeedbackIntensityScalar <= self->damageFeedbackVariants[i].minFeedbackScale) {
+
+                g_OptCatalog_CurrentDamageOwnerOrCtx = damageOwnerNode;
+                g_OptCatalogDamageFeedbackIntensityScalar = 1.0f;
+
+                OptCatalogDamageFeedbackCallback feedbackCallback
+                    = (OptCatalogDamageFeedbackCallback)(g_OptCatalogDamageFeedbackCallback);
+                if (feedbackCallback != 0) {
+                    feedbackCallback(handler, hitEvent->hitNode, damageAmount);
+                }
+
+                OptCatalogHitCallback hitCallback = (OptCatalogHitCallback)(handler->hitContext);
+                result = hitCallback(handler->hitCallback, self, hitEvent, damageAmount);
+
+                if (g_OptCatalog_DamageContextKind != 0) {
+                    if (self->damageContextEffect != 0) {
                         zEffectAnim::SetTransformRotAndVelocityThunk(
-                            self->damageFeedbackVariants[i].effect,
+                            self->damageContextEffect,
                             0,
                             hitEvent->hitPos.x,
                             hitEvent->hitPos.y,
@@ -4350,17 +4344,38 @@ namespace OptCatalog
                             0.0f,
                             0.0f
                         );
-                        break;
+                    }
+                } else if (self->damageFeedbackVariantCount != 0) {
+                    for (unsigned int i = 0; i < self->damageFeedbackVariantCount; ++i) {
+                        if (g_OptCatalogDamageFeedbackIntensityScalar
+                            <= self->damageFeedbackVariants[i].minFeedbackScale) {
+                            zEffectAnim::SetTransformRotAndVelocityThunk(
+                                self->damageFeedbackVariants[i].effect,
+                                0,
+                                hitEvent->hitPos.x,
+                                hitEvent->hitPos.y,
+                                hitEvent->hitPos.z,
+                                0.0f,
+                                0.0f,
+                                0.0f,
+                                0.0f,
+                                0.0f,
+                                0.0f
+                            );
+                            break;
+                        }
                     }
                 }
             }
+
+            if (g_OptCatalogDamageFeedbackTrackedNode == damageOwnerNode) {
+                ++g_OptCatalog_DamageFeedbackHitCount;
+            }
+
+            return result;
         }
 
-        if (g_OptCatalogDamageFeedbackTrackedNode == damageOwnerNode) {
-            ++g_OptCatalog_DamageFeedbackHitCount;
-        }
-
-        return result;
+        return 0;
     }
 } // namespace OptCatalog
 namespace OptCatalog

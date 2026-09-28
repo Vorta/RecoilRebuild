@@ -468,39 +468,32 @@ namespace zEffect_Anim
      */
     zEffectAnimActivationRecord* __cdecl AllocActivationRecord()
     {
-        zEffectAnimActivationRecord* recordTable = g_zEffectAnim_ActivationRecordTable;
-        int recordCount = 0;
-        int recordCapacity = 0;
-
-        if (recordTable == 0) {
-            recordTable = (zEffectAnimActivationRecord*)(malloc(
+        if (g_zEffectAnim_ActivationRecordTable == 0) {
+            g_zEffectAnim_ActivationRecordTable = (zEffectAnimActivationRecord*)(malloc(
                 sizeof(zEffectAnimActivationRecord) * kInitialActivationRecordCapacity
             ));
-            recordCapacity = kInitialActivationRecordCapacity;
-            recordCount = 0;
-            g_zEffectAnim_ActivationRecordTable = recordTable;
-            g_zEffectAnim_ActivationRecordCapacity = recordCapacity;
+            g_zEffectAnim_ActivationRecordCapacity = kInitialActivationRecordCapacity;
             g_zEffectAnim_ActivationRecordCount = 0;
-        } else {
-            recordCount = g_zEffectAnim_ActivationRecordCount;
-            recordCapacity = g_zEffectAnim_ActivationRecordCapacity;
         }
 
-        if (recordCount >= recordCapacity) {
-            zEffectAnimActivationRecord* const oldTable = recordTable;
-            recordTable
-                = (zEffectAnimActivationRecord*)(malloc(sizeof(zEffectAnimActivationRecord) * recordCapacity * 2));
-            g_zEffectAnim_ActivationRecordTable = recordTable;
-            memcpy(recordTable, oldTable, sizeof(zEffectAnimActivationRecord) * recordCapacity);
-            g_zEffectAnim_ActivationRecordCapacity = recordCapacity * 2;
+        if (g_zEffectAnim_ActivationRecordCount >= g_zEffectAnim_ActivationRecordCapacity) {
+            zEffectAnimActivationRecord* const oldTable = g_zEffectAnim_ActivationRecordTable;
+            g_zEffectAnim_ActivationRecordTable = (zEffectAnimActivationRecord*)(malloc(
+                sizeof(zEffectAnimActivationRecord) * g_zEffectAnim_ActivationRecordCapacity * 2
+            ));
+            memcpy(
+                g_zEffectAnim_ActivationRecordTable,
+                oldTable,
+                sizeof(zEffectAnimActivationRecord) * g_zEffectAnim_ActivationRecordCapacity
+            );
+            g_zEffectAnim_ActivationRecordCapacity *= 2;
             free(oldTable);
-            recordCount = g_zEffectAnim_ActivationRecordCount;
         }
 
-        zEffectAnimActivationRecord* const record = &recordTable[recordCount];
-        record->recordId = (g_zEffectAnim_ActivationDispatchTagHigh & (unsigned int)(recordCount)) & 0x00ffffffu;
-        g_zEffectAnim_ActivationRecordCount = recordCount + 1;
-        return record;
+        g_zEffectAnim_ActivationRecordTable[g_zEffectAnim_ActivationRecordCount].recordId
+            = (g_zEffectAnim_ActivationDispatchTagHigh & (unsigned int)(g_zEffectAnim_ActivationRecordCount))
+            & 0x00ffffffu;
+        return &g_zEffectAnim_ActivationRecordTable[g_zEffectAnim_ActivationRecordCount++];
     }
 
     /**
@@ -633,7 +626,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.loadrunninganimrecords
      * @recoil-artifact defines .text recoil:function:0x461040: zEffect_Anim::LoadRunningAnimRecords.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: restore one running animation entry, sequence event streams, reset
@@ -651,34 +644,20 @@ namespace zEffect_Anim
             return;
         }
 
-        zEffectAnimRunningSaveHeader header = { 0 };
+        zEffectAnimRunningSaveHeader header;
         fread(&header, sizeof(header), 1, tempStream);
 
         zEffectAnimEntry* entry = &g_zEffectAnim_State.entryList[header.entryTableIndex];
         CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(header.rootNodeIndex);
 
         if (header.matchSavedRootNode != 0) {
-            zEffectAnimEntry* sibling = entry->runtimeSibling;
-            if (sibling != 0) {
-                while (entry->boundNode != rootNode) {
-                    entry = sibling;
-                    sibling = entry->runtimeSibling;
-                    if (sibling == 0) {
-                        break;
-                    }
-                }
+            while (entry->runtimeSibling != 0 && entry->boundNode != rootNode) {
+                entry = entry->runtimeSibling;
             }
 
             if (entry->boundNode != rootNode) {
-                sibling = entry->runtimeSibling;
-                if (sibling != 0) {
-                    while (entry->activationState == 2) {
-                        entry = sibling;
-                        sibling = entry->runtimeSibling;
-                        if (sibling == 0) {
-                            break;
-                        }
-                    }
+                while (entry->runtimeSibling != 0 && entry->activationState == 2) {
+                    entry = entry->runtimeSibling;
                 }
 
                 if (entry->activationState == 2) {
@@ -689,28 +668,22 @@ namespace zEffect_Anim
 
         entry->flags |= 0x4000u;
         entry->resetScratch[0] = (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefAIndex)));
-        memcpy(&entry->resetScratch[1], &header.refVecA.x, sizeof(header.refVecA.x));
-        memcpy(&entry->resetScratch[2], &header.refVecA.y, sizeof(header.refVecA.y));
-        memcpy(&entry->resetScratch[3], &header.refVecA.z, sizeof(header.refVecA.z));
+        *(zVec3*)(&entry->resetScratch[1]) = header.refVecA;
         entry->resetScratch[4] = (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefBIndex)));
-        memcpy(&entry->resetScratch[5], &header.refVecB.x, sizeof(header.refVecB.x));
-        memcpy(&entry->resetScratch[6], &header.refVecB.y, sizeof(header.refVecB.y));
-        memcpy(&entry->resetScratch[7], &header.refVecB.z, sizeof(header.refVecB.z));
+        *(zVec3*)(&entry->resetScratch[5]) = header.refVecB;
         entry->activationState = header.activationState;
         entry->triggerCurrentValue = header.triggerCurrentValue;
         entry->activationCountdown = header.activationCountdown;
-        entry->velocityX = header.velocityX;
-        entry->velocityY = header.velocityY;
-        entry->velocityZ = header.velocityZ;
+        *(zVec3*)(&entry->velocityX) = *(const zVec3*)(&header.velocityX);
         entry->runtimeSequenceCount = header.runtimeSurfaceCount;
 
         for (int i = 0; i < entry->runtimeSequenceCount; ++i) {
-            zEffectAnimSurfaceRuntime* const runtime = &entry->runtimeList[i];
-            if (runtime->eventStream != 0) {
-                free(runtime->eventStream);
-                runtime->eventStream = 0;
+            if (entry->runtimeList[i].eventStream != 0) {
+                free(entry->runtimeList[i].eventStream);
+                entry->runtimeList[i].eventStream = 0;
             }
 
+            zEffectAnimSurfaceRuntime* const runtime = &entry->runtimeList[i];
             fread(runtime, sizeof(*runtime), 1, tempStream);
 
             if (runtime->eventStreamSize > 0) {
@@ -722,7 +695,7 @@ namespace zEffect_Anim
         }
 
         for (int i_2831 = 0; i_2831 < header.lightRefCount; ++i_2831) {
-            zEffectAnimRuntimeNodeSaveRecord record = { 0 };
+            zEffectAnimRuntimeNodeSaveRecord record;
             fread(&record, sizeof(record), 1, tempStream);
 
             if (record.isAttached == 0) {
@@ -742,7 +715,8 @@ namespace zEffect_Anim
 
             CZClass::gwNodeSetActive(lightNode, 1);
             if (record.parentNodeIndex >= 0 && lightNode->listCountA == 0) {
-                CZClass::AddChild(CZZbd::NodeIndexToPtr(record.parentNodeIndex), lightNode);
+                CZNodePartial* const parentNode = CZZbd::NodeIndexToPtr(record.parentNodeIndex);
+                CZClass::AddChild(parentNode, lightNode);
             }
             CZLight::gwLightSetPosition(lightNode, record.posX, record.posY, record.posZ);
             CZWorld::AddLight(g_zEffectAnim_State.worldNode, lightNode);
@@ -750,7 +724,7 @@ namespace zEffect_Anim
         }
 
         for (int i_2861 = 0; i_2861 < header.soundRefCount; ++i_2861) {
-            zEffectAnimSoundNodeSaveRecord record = { 0 };
+            zEffectAnimSoundNodeSaveRecord record;
             fread(&record, sizeof(record), 1, tempStream);
 
             if (record.isAttached == 0) {
@@ -770,7 +744,8 @@ namespace zEffect_Anim
 
             CZClass::gwNodeSetActive(soundNode, 1);
             if (record.parentNodeIndex >= 0 && soundNode->listCountA == 0) {
-                CZClass::AddChild(CZZbd::NodeIndexToPtr(record.parentNodeIndex), soundNode);
+                CZNodePartial* const parentNode = CZZbd::NodeIndexToPtr(record.parentNodeIndex);
+                CZClass::AddChild(parentNode, soundNode);
             }
             if (record.hasPosition != 0) {
                 CZSound::gwSoundSetPosition(soundNode, record.posX, record.posY, record.posZ);
@@ -1117,20 +1092,24 @@ namespace zEffectAnim
         const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
         const unsigned int flags = self->flags;
 
-        int recordQueueRequested = 0;
+        int recordQueueRequested;
         if ((flags & kActivationRecordQueueOverrideFlag) != 0) {
             recordQueueRequested = (flags & kActivationRecordQueueOverrideValue) != 0 ? 1 : 0;
         } else if (g_zEffectAnim_RecordQueueEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
             && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0)) {
             recordQueueRequested = 1;
+        } else {
+            recordQueueRequested = 0;
         }
 
-        int dispatchRequested = 0;
+        int dispatchRequested;
         if ((flags & kActivationRecordDispatchOverrideFlag) != 0) {
             dispatchRequested = (flags & kActivationRecordDispatchOverrideValue) != 0 ? 1 : 0;
         } else if (g_zEffectAnim_DispatchEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
             && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0)) {
             dispatchRequested = 1;
+        } else {
+            dispatchRequested = 0;
         }
 
         if (recordQueueRequested != 0 || dispatchRequested != 0) {
@@ -1207,20 +1186,24 @@ namespace zEffectAnim
         const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
         const unsigned int flags = self->flags;
 
-        int recordQueueRequested = 0;
+        int recordQueueRequested;
         if ((flags & kActivationRecordQueueOverrideFlag) != 0) {
             recordQueueRequested = (flags & kActivationRecordQueueOverrideValue) != 0 ? 1 : 0;
         } else if (g_zEffectAnim_RecordQueueEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
             && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0)) {
             recordQueueRequested = 1;
+        } else {
+            recordQueueRequested = 0;
         }
 
-        int dispatchRequested = 0;
+        int dispatchRequested;
         if ((flags & kActivationRecordDispatchOverrideFlag) != 0) {
             dispatchRequested = (flags & kActivationRecordDispatchOverrideValue) != 0 ? 1 : 0;
         } else if (g_zEffectAnim_DispatchEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
             && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0)) {
             dispatchRequested = 1;
+        } else {
+            dispatchRequested = 0;
         }
 
         if (recordQueueRequested != 0 || dispatchRequested != 0) {
@@ -1268,21 +1251,24 @@ namespace zEffectAnim
         const int boundNodeToken = CZClass::NodePtrToValidatedIndex(boundNode);
         const int refNodeToken = CZClass::NodePtrToValidatedIndex(refNode);
         const unsigned int flags = self->flags;
-        const bool refsValid = (flags & kActivationRecordNoQueueDispatchFlag) == 0 && self->name[0] != '\0'
-            && (boundNode == 0 || boundNodeToken > 0) && (refNode == 0 || refNodeToken > 0);
-
-        int recordQueueRequested = 0;
+        int recordQueueRequested;
         if ((flags & kActivationRecordQueueOverrideFlag) != 0) {
             recordQueueRequested = (flags & kActivationRecordQueueOverrideValue) != 0 ? 1 : 0;
-        } else if (refsValid) {
+        } else if ((flags & kActivationRecordNoQueueDispatchFlag) == 0 && self->name[0] != '\0'
+            && (boundNode == 0 || boundNodeToken > 0) && (refNode == 0 || refNodeToken > 0)) {
             recordQueueRequested = 1;
+        } else {
+            recordQueueRequested = 0;
         }
 
-        int dispatchRequested = 0;
+        int dispatchRequested;
         if ((flags & kActivationRecordDispatchOverrideFlag) != 0) {
             dispatchRequested = (flags & kActivationRecordDispatchOverrideValue) != 0 ? 1 : 0;
-        } else if (refsValid) {
+        } else if ((flags & kActivationRecordNoQueueDispatchFlag) == 0 && self->name[0] != '\0'
+            && (boundNode == 0 || boundNodeToken > 0) && (refNode == 0 || refNodeToken > 0)) {
             dispatchRequested = 1;
+        } else {
+            dispatchRequested = 0;
         }
 
         if (recordQueueRequested != 0 || dispatchRequested != 0) {
@@ -1292,23 +1278,15 @@ namespace zEffectAnim
             record->nodeToken = boundNodeToken;
             record->params[0].i32 = refNodeToken;
             if (refVec != 0) {
-                record->params[1].f32 = refVec->x;
-                record->params[2].f32 = refVec->y;
-                record->params[3].f32 = refVec->z;
+                *(zVec3*)(&record->params[1]) = *refVec;
             } else {
-                record->params[1].u32 = 0;
-                record->params[2].u32 = 0;
-                record->params[3].u32 = 0;
+                record->params[1].u32 = record->params[2].u32 = record->params[3].u32 = 0;
             }
 
             if (velocityVec != 0) {
-                record->params[4].f32 = velocityVec->x;
-                record->params[5].f32 = velocityVec->y;
-                record->params[6].f32 = velocityVec->z;
+                *(zVec3*)(&record->params[4]) = *velocityVec;
             } else {
-                record->params[4].u32 = 0;
-                record->params[5].u32 = 0;
-                record->params[6].u32 = 0;
+                record->params[4].u32 = record->params[5].u32 = record->params[6].u32 = 0;
             }
 
             if (dispatchRequested != 0) {
@@ -1349,22 +1327,26 @@ namespace zEffectAnim
         const int refNodeAToken = CZClass::NodePtrToValidatedIndex(refNodeA);
         const int refNodeBToken = CZClass::NodePtrToValidatedIndex(refNodeB);
         const unsigned int flags = self->flags;
-        const bool refsValid = (flags & kActivationRecordNoQueueDispatchFlag) == 0 && self->name[0] != '\0'
-            && (boundNode == 0 || boundNodeToken > 0) && (refNodeA == 0 || refNodeAToken > 0)
-            && (refNodeB == 0 || refNodeBToken > 0);
-
-        int recordQueueRequested = 0;
+        int recordQueueRequested;
         if ((flags & kActivationRecordQueueOverrideFlag) != 0) {
             recordQueueRequested = (flags & kActivationRecordQueueOverrideValue) != 0 ? 1 : 0;
-        } else if (g_zEffectAnim_RecordQueueEnabled != 0 && refsValid) {
+        } else if (g_zEffectAnim_RecordQueueEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
+            && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0) && (refNodeA == 0 || refNodeAToken > 0)
+            && (refNodeB == 0 || refNodeBToken > 0)) {
             recordQueueRequested = 1;
+        } else {
+            recordQueueRequested = 0;
         }
 
-        int dispatchRequested = 0;
+        int dispatchRequested;
         if ((flags & kActivationRecordDispatchOverrideFlag) != 0) {
             dispatchRequested = (flags & kActivationRecordDispatchOverrideValue) != 0 ? 1 : 0;
-        } else if (g_zEffectAnim_DispatchEnabled != 0 && refsValid) {
+        } else if (g_zEffectAnim_DispatchEnabled != 0 && (flags & kActivationRecordNoQueueDispatchFlag) == 0
+            && self->name[0] != '\0' && (boundNode == 0 || boundNodeToken > 0) && (refNodeA == 0 || refNodeAToken > 0)
+            && (refNodeB == 0 || refNodeBToken > 0)) {
             dispatchRequested = 1;
+        } else {
+            dispatchRequested = 0;
         }
 
         if (recordQueueRequested != 0 || dispatchRequested != 0) {
@@ -1374,24 +1356,16 @@ namespace zEffectAnim
             record->nodeToken = boundNodeToken;
             record->params[0].i32 = refNodeAToken;
             if (refVecA != 0) {
-                record->params[1].f32 = refVecA->x;
-                record->params[2].f32 = refVecA->y;
-                record->params[3].f32 = refVecA->z;
+                *(zVec3*)(&record->params[1]) = *refVecA;
             } else {
-                record->params[1].u32 = 0;
-                record->params[2].u32 = 0;
-                record->params[3].u32 = 0;
+                record->params[1].u32 = record->params[2].u32 = record->params[3].u32 = 0;
             }
 
             record->params[4].i32 = refNodeBToken;
             if (refVecB != 0) {
-                record->params[5].f32 = refVecB->x;
-                record->params[6].f32 = refVecB->y;
-                record->params[7].f32 = refVecB->z;
+                *(zVec3*)(&record->params[5]) = *refVecB;
             } else {
-                record->params[5].u32 = 0;
-                record->params[6].u32 = 0;
-                record->params[7].u32 = 0;
+                record->params[5].u32 = record->params[6].u32 = record->params[7].u32 = 0;
             }
 
             if (dispatchRequested != 0) {
@@ -1571,18 +1545,19 @@ namespace zEffect
             return 0;
         }
 
-        zEffect_RuntimeEntry* const payload = (zEffect_RuntimeEntry*)(zArchiveListFindKey(
+        zEffect_RuntimeEntry* payload = (zEffect_RuntimeEntry*)(zArchiveListFindKey(
             g_zEffect_RuntimeManager.freeList,
             (unsigned int)(effectIndex)
         ));
         if (payload != 0) {
             ++g_zEffect_RuntimeManager.recycleCount;
             zArchiveListRemove(g_zEffect_RuntimeManager.freeList, payload);
-            return payload;
+        } else {
+            ++g_zEffect_RuntimeManager.freshAllocCount;
+            payload = CloneRuntimeEntryFromTemplate(effectIndex);
         }
 
-        ++g_zEffect_RuntimeManager.freshAllocCount;
-        return CloneRuntimeEntryFromTemplate(effectIndex);
+        return payload;
     }
 
     /**
@@ -1600,13 +1575,12 @@ namespace zEffect
             return 0;
         }
 
-        zEffect_RuntimeEntry* const templateEntry = &g_zEffect_RuntimeManager.templates[effectIndex];
-        if (templateEntry->effectNode == 0) {
+        if (g_zEffect_RuntimeManager.templates[effectIndex].effectNode == 0) {
             return 0;
         }
 
         zEffect_RuntimeEntry* const clone = (zEffect_RuntimeEntry*)(malloc(sizeof(zEffect_RuntimeEntry)));
-        memcpy(clone, templateEntry, sizeof(zEffect_RuntimeEntry));
+        memcpy(clone, &g_zEffect_RuntimeManager.templates[effectIndex], sizeof(zEffect_RuntimeEntry));
 
         CZNodePartial* const node = CZUtil::CopyNodeWithCloneOptions(
             clone->effectNode,

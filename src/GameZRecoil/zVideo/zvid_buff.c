@@ -45,35 +45,20 @@ namespace zVideo_buff
     )
     {
         zVidRect32 srcRectLocal;
-        int srcX;
-        int srcY;
-        int srcRight;
-        int srcBottom;
         if (srcRect != 0) {
-            srcX = srcRect->left;
-            srcY = srcRect->top;
-            srcRight = srcRect->right;
-            srcBottom = srcRect->bottom;
-            srcRectLocal.left = srcX;
-            srcRectLocal.top = srcY;
-            srcRectLocal.right = srcRight;
+            srcRectLocal = *srcRect;
         } else {
-            srcRight = srcImage->width;
-            srcBottom = srcImage->height;
-            srcX = 0;
-            srcY = 0;
-            srcRectLocal.left = srcX;
-            srcRectLocal.top = srcY;
-            srcRectLocal.right = srcRight;
+            srcRectLocal.left = 0;
+            srcRectLocal.top = 0;
+            srcRectLocal.right = srcImage->width;
+            srcRectLocal.bottom = srcImage->height;
         }
-
-        srcRectLocal.bottom = srcBottom;
 
         zVidRect32 dstRectLocal;
         dstRectLocal.left = dstX;
         dstRectLocal.top = dstY;
-        dstRectLocal.right = srcRight - srcX + dstX;
-        dstRectLocal.bottom = srcBottom - srcY + dstY;
+        dstRectLocal.right = srcRectLocal.right - srcRectLocal.left + dstX;
+        dstRectLocal.bottom = srcRectLocal.bottom - srcRectLocal.top + dstY;
 
         int clipped = ClipCoordToRange(&dstRectLocal.left, 0, g_zVideo_PrimarySurfaceState.width - 1);
         if (clipped < 0) {
@@ -105,8 +90,8 @@ namespace zVideo_buff
             srcRectLocal.bottom -= clipped;
         }
 
-        IDirectDrawSurface3* const primarySurface = g_zVideo_PrimarySurfaceState.surf;
-        if (primarySurface == 0) {
+        const DWORD bltFlags = DDBLT_WAIT | DDBLT_ASYNC | ((srcImage->formatFlagsPacked & 0x02u) << 14);
+        if (g_zVideo_PrimarySurfaceState.surf == 0) {
             return;
         }
 
@@ -115,10 +100,8 @@ namespace zVideo_buff
             zVideo_dd::UnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
         }
 
-        const DWORD bltFlags
-            = DDBLT_WAIT | DDBLT_ASYNC | ((srcImage->formatFlagsPacked & 0x02u) != 0 ? DDBLT_KEYSRC : 0);
-        const HRESULT hresult
-            = primarySurface->Blt((RECT*)&dstRectLocal, srcImage->surface, (RECT*)&srcRectLocal, bltFlags, 0);
+        const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf
+                                    ->Blt((RECT*)&dstRectLocal, srcImage->surface, (RECT*)&srcRectLocal, bltFlags, 0);
 
         if (wasLocked != 0) {
             zVideo_dd::LockSurfaceState(&g_zVideo_PrimarySurfaceState);
