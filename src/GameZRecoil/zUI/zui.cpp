@@ -562,8 +562,8 @@ void HudUiTransitionTextPanel::Update(float deltaSeconds)
             textDirty = 1;
             flashDirectionSign = -flashDirectionSign;
 
-            const unsigned int oldTextColor0 = textColor0;
             const unsigned int oldTextColor1 = textColor1;
+            const unsigned int oldTextColor0 = textColor0;
             textColor0 = (unsigned int)(flashAltColor0);
             textColor1 = (unsigned int)(flashAltColor1);
             flashAltColor0 = (int)(oldTextColor0);
@@ -971,14 +971,10 @@ HudUiChatMessageStack::HudUiChatMessageStack()
     for (int y = 0x159; y > 0x111; y -= 0x12, ++panel) {
         HudUiElement* const element = (HudUiElement*)(panel);
         AddChild(element);
-        panel->textColor0 = 0x00996a00;
-        panel->textColor1 = 0x0095c7ff;
-        panel->textDirty = 1;
+        panel->SetTextColorsAndMarkDirty(0x00996a00, 0x0095c7ff);
         panel->SetFont(g_HudFontName_Arial, 0x0a, 0x1f4, 6, 0, 0, 2);
-        panel->shadowEnabled = 1;
-        panel->shadowOffsetX = -1;
-        panel->shadowOffsetY = -1;
-        panel->alignMode = 1;
+        panel->SetShadow(1, -1, -1);
+        panel->SetTextAlignment(1);
         element->SetPos(0x140, y);
         element->SetVisible(0);
     }
@@ -2433,7 +2429,7 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-destructor
  * @recoil-artifact defines .text recoil:function:0x4bf560: HudUiMessageBoxDialog::Destructor.
- *
+ * @recoil-match byte
  *
  * Source model: HudUiMessageBoxDialog class destructor; BN shows the dialog
  * table 0x4d4028 at offset zero for this owner.
@@ -2443,21 +2439,23 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
  */
 HudUiMessageBoxDialog::~HudUiMessageBoxDialog()
 {
-    if (backgroundImage != 0) {
-        if (backgroundImage->pixels != 0) {
-            free(backgroundImage->pixels);
-            backgroundImage->pixels = 0;
+    zVidImagePartial* const image = backgroundImage;
+    if (image != 0) {
+        if (image->pixels != 0) {
+            free(image->pixels);
         }
 
-        zVid_Image::Destroy(backgroundImage);
-        backgroundImage = 0;
+        image->pixels = 0;
+        zVid_Image::Destroy(image);
     }
+
+    backgroundImage = 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-runmodal
  * @recoil-artifact defines .text recoil:function:0x4bf630: HudUiMessageBoxDialog::RunModal.
- *
+ * @recoil-match byte
  *
  * Source model: direct HudUiMessageBoxDialog method called by
  * HudUi::ShowMessageBox, not a dialog-table slot.
@@ -2483,9 +2481,11 @@ int HudUiMessageBoxDialog::RunModal(
     const int previousHalfResMode = zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
-    zVidRect32 previousRegionRect = { 0, 0, 0, 0 };
-    int previousBitsPerPixel = 0;
-    int previousPitchBytes = 0;
+    zVidRect32 previousRegionRect;
+    int previousBitsPerPixel;
+    int previousPitchBytes;
+    previousRegionRect.left = 0;
+    previousRegionRect.top = 0;
     void* const previousPixels = zRndr::GetActiveRegionState(
         &previousRegionRect.right,
         &previousRegionRect.bottom,
@@ -2493,20 +2493,21 @@ int HudUiMessageBoxDialog::RunModal(
         &previousPitchBytes
     );
 
-    int dialogPitchBytes;
-    int dialogBitsPerPixel;
-    void* dialogPixels;
     if (g_zVideo_ActiveRendererPath != 0) {
-        dialogPitchBytes = zVideo::GetPrimarySurfacePitch();
-        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
-        dialogPixels = zVideo::GetPrimarySurfacePixels();
+        zRndr::SetFrameBufferRegion(
+            zVideo::GetPrimarySurfacePixels(),
+            (zOpt_ViewRectSection*)(&blitRect),
+            zVideo::GetDisplayModeBpp(),
+            zVideo::GetPrimarySurfacePitch()
+        );
     } else {
-        dialogPitchBytes = zVideo::GetSwSurfacePitch();
-        dialogBitsPerPixel = zVideo::GetDisplayModeBpp();
-        dialogPixels = zVideo::GetSwSurfacePixels();
+        zRndr::SetFrameBufferRegion(
+            zVideo::GetSwSurfacePixels(),
+            (zOpt_ViewRectSection*)(&blitRect),
+            zVideo::GetDisplayModeBpp(),
+            zVideo::GetSwSurfacePitch()
+        );
     }
-
-    zRndr::SetFrameBufferRegion(dialogPixels, (zOpt_ViewRectSection*)(&blitRect), dialogBitsPerPixel, dialogPitchBytes);
 
     modalResult = 0;
     modalFrameCountdown = 100000;
@@ -2966,12 +2967,12 @@ void HudUiBackgroundVideoWidget::SetColorKey565(unsigned short colorKey)
  */
 void HudUiBackgroundVideoWidget::Update(float deltaSeconds)
 {
-    if ((flags & 0x10u) != 0) {
+    if (((~flags) & 0x10u) == 0) {
         return;
     }
 
     if (stream != 0) {
-        const int frameTick = (int)((float)(stream->videoFramesPerSecond) * elapsedTimeSec);
+        const int frameTick = (int)((int)(stream->videoFramesPerSecond) * elapsedTimeSec);
         stream->ReadAndDecodeFrame((unsigned int)(frameTick % stream->videoFrameCount));
     }
 

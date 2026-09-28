@@ -781,7 +781,7 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-projectinnerringontocachedplane
  * @recoil-artifact defines .text recoil:function:0x46c570: zGeometry_TriangulateHole::ProjectInnerRingOntoCachedPlane
- *
+ * @recoil-match byte
  *
  * Purpose: Project inner-ring Z values onto the cached outer-ring plane.
  */

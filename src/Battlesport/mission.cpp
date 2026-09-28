@@ -202,8 +202,7 @@ inline void AppendPickupFeature(char* featureText, const char* feature)
 inline CZNodePartial*
 ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char* missingFormat, int sourceLine)
 {
-    zReader::Node* const pathFields = pathNode->value.nodes;
-    CZNodePartial* resolvedNode = CZClass::FindByTypeAndName(6, pathFields[1].value.str);
+    CZNodePartial* resolvedNode = CZClass::FindByTypeAndName(6, pathNode->value.nodes[1].value.str);
     if (resolvedNode == 0) {
         zError::ReportOld(
             0x400,
@@ -211,14 +210,12 @@ ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char
             sourceLine,
             missingFormat,
             objectiveIndex,
-            pathFields[1].value.str
+            pathNode->value.nodes[1].value.str
         );
-        return 0;
-    }
-
-    const int pathCount = pathFields[0].value.i32;
-    for (int i = 2; i < pathCount; ++i) {
-        resolvedNode = CZClass::FindNodeRecursiveByName(resolvedNode, pathFields[i].value.str);
+    } else {
+        for (int i = 2; i < pathNode->value.nodes[0].value.i32; ++i) {
+            resolvedNode = CZClass::FindNodeRecursiveByName(resolvedNode, pathNode->value.nodes[i].value.str);
+        }
     }
 
     return resolvedNode;
@@ -469,14 +466,13 @@ int HudSensorTracker::ResetMissionState()
     missionId = 0;
     missionDataPath.Empty();
     zbdPath.Empty();
-    HudUiElement* const fxElement = fxPass3Obj;
     worldNode = 0;
     missionFlags = 1;
     objectiveCount = 0;
 
-    if (fxElement != 0) {
-        fxElement->SetVisible(0);
-        ((HudUiContainer*)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxElement);
+    if (fxPass3Obj != 0) {
+        fxPass3Obj->SetVisible(0);
+        ((HudUiContainer*)(&g_zVideo_FxPass3ConfigLocal))->RemoveChild(fxPass3Obj);
 
         if (fxPass3Obj != 0) {
             delete fxPass3Obj;
@@ -853,6 +849,7 @@ void HudSensorObjectiveSlot::Reset()
  */
 int HudSensorTracker::LoadObjectivesFromPath(const char* path)
 {
+    int lastObjectiveIndex = 0;
     zReader::Node* rootNode = zReader::Load(path, 0, 0);
     if (rootNode == 0) {
         zError::ReportOld(
@@ -873,7 +870,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
 
     objectiveReviewDelaySecRaw = 4.0f;
     objectiveReadTimeSecRaw = 4.0f;
-    objectiveReadSoundDelaySecRaw = FloatToRawSeconds(2.0f);
+    objectiveReadSoundDelaySecRaw = 2.0f;
 
     zReader::Node* readTimeNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReadTime);
     if (readTimeNode != 0) {
@@ -896,9 +893,20 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         finalMissionFlag = 0;
     }
 
-    int objectiveNumber;
-    int lastObjectiveIndex = 0;
-    for (objectiveNumber = 1; objectiveNumber != 0xb; ++objectiveNumber) {
+    int objectiveNumber = 1;
+    do {
+        const int objectiveIndex = objectiveNumber - 1;
+        if (objectiveIndex == 10) {
+            zError::ReportOld(
+                0x400,
+                "D:\\Proj\\Battlesport\\mission.cpp",
+                0x2ee,
+                g_HudSensorTracker_ObjectivesArrayOverflowFmt,
+                objectiveIndex
+            );
+            break;
+        }
+
         char objectiveName[0x20];
         sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
 
@@ -909,10 +917,8 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
 
         lastObjectiveIndex = objectiveNumber - 1;
         HudSensorObjectiveSlot& slot = objectiveSlots[lastObjectiveIndex];
-        zReader::Node* objectiveFields = objectiveNode->value.nodes;
 
-        const char* imagePath = objectiveFields[1].value.str;
-        slot.objectiveImage = zImage::TexDirFindOrCreateByPath(imagePath);
+        slot.objectiveImage = zImage::TexDirFindOrCreateByPath(objectiveNode->value.nodes[1].value.str);
         if (slot.objectiveImage == 0) {
             zError::ReportOld(
                 0x800,
@@ -920,35 +926,31 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
                 0x2ff,
                 g_HudSensorTracker_ObjectiveImageMissingFmt,
                 objectiveNumber,
-                imagePath
+                objectiveNode->value.nodes[1].value.str
             );
             return 1;
         }
 
-        strncpy(slot.objectiveTitle, zLoc::ResolveMessageKeyOrFallback(objectiveFields[2].value.str), 0x100);
+        strncpy(slot.objectiveTitle, zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[2].value.str), 0x100);
         slot.objectiveTitle[0xff] = '\0';
 
-        strncpy(slot.objectiveDesc, zLoc::ResolveMessageKeyOrFallback(objectiveFields[3].value.str), 0x100);
+        strncpy(slot.objectiveDesc, zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[3].value.str), 0x100);
         slot.objectiveDesc[0xff] = '\0';
 
-        strncpy(slot.objectiveSummary, zLoc::ResolveMessageKeyOrFallback(objectiveFields[4].value.str), 0x100);
+        strncpy(
+            slot.objectiveSummary,
+            zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[4].value.str),
+            0x100
+        );
         slot.objectiveSummary[0xff] = '\0';
 
         slot.completedFlag = 0;
         if (zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Autoplay) != 0) {
             slot.autoplayFlag = 1;
         }
-    }
 
-    if (objectiveNumber == 0xb) {
-        zError::ReportOld(
-            0x400,
-            "D:\\Proj\\Battlesport\\mission.cpp",
-            0x2ee,
-            g_HudSensorTracker_ObjectivesArrayOverflowFmt,
-            objectiveNumber - 1
-        );
-    }
+        ++objectiveNumber;
+    } while (true);
 
     currentObjectiveIndex = -1;
     firstIncompleteObjectiveIndex = 0;
@@ -979,43 +981,43 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
 
     zReader::Node* objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
     while (objectiveNode != 0) {
-        HudSensorObjectiveSlot& slot = objectiveSlots[objectiveNumber - 1];
-
+        const int objectiveIndex = objectiveNumber - 1;
         zReader::Node* activeNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Active);
         if (activeNode != 0) {
-            slot.activationNode = ResolveObjectiveNodePath(
+            objectiveSlots[objectiveIndex].activationNode = ResolveObjectiveNodePath(
                 activeNode,
-                objectiveNumber - 1,
+                objectiveIndex,
                 g_HudSensorTracker_ObjectiveActivationNodeMissingFmt,
                 0x355
             );
-            slot.inactivationNode = 0;
+            objectiveSlots[objectiveIndex].inactivationNode = 0;
         } else {
             zReader::Node* inactiveNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Inactive);
             if (inactiveNode != 0) {
-                slot.activationNode = 0;
-                slot.inactivationNode = ResolveObjectiveNodePath(
+                CZNodePartial* const inactivationNode = ResolveObjectiveNodePath(
                     inactiveNode,
-                    objectiveNumber - 1,
+                    objectiveIndex,
                     g_HudSensorTracker_ObjectiveInactivationNodeMissingFmt,
                     0x36b
                 );
+                objectiveSlots[objectiveIndex].activationNode = 0;
+                objectiveSlots[objectiveIndex].inactivationNode = inactivationNode;
             } else {
-                slot.activationNode = 0;
-                slot.inactivationNode = 0;
+                objectiveSlots[objectiveIndex].inactivationNode = 0;
+                objectiveSlots[objectiveIndex].activationNode = 0;
             }
         }
 
-        slot.objectiveReadFlag = 0;
+        objectiveSlots[objectiveIndex].objectiveReadFlag = 0;
         zReader::Node* readSoundNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_ReadSound);
         if (readSoundNode != 0) {
-            zReader::Node* const readSoundFields = readSoundNode->value.nodes;
-            slot.readSoundSample = zSnd::FindSampleByName(readSoundFields[1].value.str);
-            if (slot.readSoundSample != 0) {
-                slot.readSoundSample->SetPlaybackEventHandler(OnObjectiveReadSoundEvent);
+            objectiveSlots[objectiveIndex].readSoundSample
+                = zSnd::FindSampleByName(readSoundNode->value.nodes[1].value.str);
+            if (objectiveSlots[objectiveIndex].readSoundSample != 0) {
+                objectiveSlots[objectiveIndex].readSoundSample->SetPlaybackEventHandler(OnObjectiveReadSoundEvent);
             }
-            if (readSoundFields[0].value.i32 > 2) {
-                objectiveReadSoundDelaySecRaw = readSoundFields[2].value.i32;
+            if (readSoundNode->value.nodes[0].value.i32 > 2) {
+                objectiveReadSoundDelaySecRaw = readSoundNode->value.nodes[2].value.f32;
             }
         }
 
@@ -1152,19 +1154,18 @@ void HudSensorTracker::SetObjectivePanelVisible(int visible)
     if (visible != 0) {
         objectiveUiMode = 2;
 
-        float damageRatio = 1.0f;
+        float damageRatio;
         if (primaryGunDispatchCount > 0) {
             damageRatio = (float)(g_OptCatalog_DamageFeedbackHitCount) / (float)(primaryGunDispatchCount);
+        } else {
+            damageRatio = 1.0f;
         }
         const int damagePercent = (int)(damageRatio * 100.0f);
 
         char objectiveLine[0x80];
         zLoc::FormatMessage(objectiveLine, 0x40, 0x116, completedObjectiveCount, objectiveCount, damagePercent);
 
-        int cappedStat0 = missionStat0;
-        if (cappedStat0 > missionStat1) {
-            cappedStat0 = missionStat1;
-        }
+        const int cappedStat0 = missionStat0 > missionStat1 ? missionStat1 : missionStat0;
 
         char statLine[0x80];
         zLoc::FormatMessage(statLine, 0x40, 0x117, cappedStat0, missionStat1, missionStat3, weaponsFoundMask);
@@ -1175,14 +1176,22 @@ void HudSensorTracker::SetObjectivePanelVisible(int visible)
 
         sprintf(objectiveSummaryText, g_HudSensorTracker_ObjectivePanelThreeLineFmt, objectiveLine, statLine, timeLine);
 
-        if (currentObjectiveIndex < 0) {
-            HudSensorObjectiveSlot& firstSlot = objectiveSlots[0];
-            HudUiMgrObjective::Show(firstSlot.objectiveImage, firstSlot.objectiveTitle, objectiveSummaryText, 0.0f);
+        if (currentObjectiveIndex >= 0) {
+            HudUiMgrObjective::Show(
+                objectiveSlots[currentObjectiveIndex].objectiveImage,
+                objectiveSlots[currentObjectiveIndex].objectiveSummary,
+                objectiveSummaryText,
+                0.0f
+            );
             return;
         }
 
-        HudSensorObjectiveSlot& slot = objectiveSlots[currentObjectiveIndex];
-        HudUiMgrObjective::Show(slot.objectiveImage, slot.objectiveSummary, objectiveSummaryText, 0.0f);
+        HudUiMgrObjective::Show(
+            objectiveSlots[0].objectiveImage,
+            objectiveSlots[0].objectiveTitle,
+            objectiveSummaryText,
+            0.0f
+        );
         return;
     }
 
@@ -1340,12 +1349,11 @@ void HudSensorTracker::ResetHudForMissionStart()
         HudUiTimerPanel::SetElapsedSeconds(0.0f);
     }
 
-    const float readSoundDelaySec = RawSecondsToFloat(objectiveReadSoundDelaySecRaw);
     objectiveFlowState = 0x64;
+    objectiveFlowDeadlineSecRaw = objectiveReadSoundDelaySecRaw + g_Time_UnscaledAccumulatedTimeSec;
     objectiveUiMode = 0;
     currentObjectiveReadSound = 0;
     pendingPlayerSave.skipTimerResetOnStart = 0;
-    objectiveFlowDeadlineSecRaw = readSoundDelaySec + g_Time_UnscaledAccumulatedTimeSec;
 }
 
 /**
@@ -1609,22 +1617,18 @@ void HudSensorTracker::RunStartAnimsFromZrd(const char* zrdPath, const char* nam
  */
 void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(int eventCode)
 {
-    if (eventCode == 2) {
+    switch (eventCode) {
+    case 0:
+        g_HudSensorTracker.SetObjectiveReviewVisible(1);
+        break;
+    case 1:
+        g_HudSensorTracker.SetObjectiveReviewVisible(0);
+        break;
+    case 2:
         zSnd::SetGlobalVolumeScale(g_HudSensorTracker.hudScale);
         zSnd::SetFlag10PlaybackEnabled(1);
-        return;
+        break;
     }
-
-    int visible;
-    if (eventCode == 0) {
-        visible = 1;
-    } else if (eventCode == 1) {
-        visible = 0;
-    } else {
-        return;
-    }
-
-    g_HudSensorTracker.SetObjectiveReviewVisible(visible);
 }
 
 /**
@@ -3130,14 +3134,13 @@ void NetSessionBrowserDialog::ConnectSelectedProvider()
 {
     ::KillTimer(m_hWnd, 2);
 
-    HWND providerComboHwnd = m_providerCombo.m_hWnd;
-    const LRESULT selectedProviderIndex = ::SendMessageA(providerComboHwnd, CB_GETCURSEL, 0, 0);
+    const LRESULT selectedProviderIndex = ::SendMessageA(m_providerCombo.m_hWnd, CB_GETCURSEL, 0, 0);
     if (selectedProviderIndex == CB_ERR) {
         return;
     }
 
     zNetworkDPlayServiceProviderInfo* providerInfo = (zNetworkDPlayServiceProviderInfo*)(::SendMessageA(
-        providerComboHwnd,
+        m_providerCombo.m_hWnd,
         CB_GETITEMDATA,
         selectedProviderIndex,
         0
@@ -3159,7 +3162,7 @@ void NetSessionBrowserDialog::ConnectSelectedProvider()
         strcpy(messageFormat, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId));
 
         if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
-            ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
+            ::SendMessageA(m_providerCombo.m_hWnd, CB_SETCURSEL, 0, 0);
             ((CWnd*)&m_okButton)->EnableWindow(FALSE);
             ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
             return;
@@ -3202,10 +3205,9 @@ void NetSessionBrowserDialog::OnOK()
         zOpt::SetNetworkModemEnabled(FALSE);
         ::KillTimer(m_hWnd, 2);
 
-        HWND sessionListHwnd = m_sessionList.m_hWnd;
-        const LRESULT selectedSessionRow = ::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0);
+        const LRESULT selectedSessionRow = ::SendMessageA(m_sessionList.m_hWnd, LB_GETCURSEL, 0, 0);
         if (selectedSessionRow != LB_ERR) {
-            m_selectedSessionIndex = (int)(::SendMessageA(sessionListHwnd, LB_GETITEMDATA, selectedSessionRow, 0));
+            m_selectedSessionIndex = (int)(::SendMessageA(m_sessionList.m_hWnd, LB_GETITEMDATA, selectedSessionRow, 0));
             canCloseDialog = TRUE;
         }
     } else {
@@ -3283,19 +3285,19 @@ int NetSessionBrowserDialog::ValidatePlayerName()
     m_playerName.TrimRight();
     ((CWnd*)this)->UpdateData(FALSE);
 
-    if (!m_playerName.IsEmpty()) {
-        return TRUE;
+    if (m_playerName.IsEmpty()) {
+        char caption[128];
+        strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserPlayerNameCaptionMessageId));
+
+        char messageText[128];
+        strcpy(messageText, zLoc::GetMessageString(kNetSessionBrowserPlayerNameRequiredMessageId));
+
+        ((CWnd*)this)->MessageBoxA(messageText, caption, MB_ICONHAND);
+        ((CWnd*)&m_playerNameEdit)->SetFocus();
+        return FALSE;
     }
 
-    char caption[128];
-    strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserPlayerNameCaptionMessageId));
-
-    char messageText[128];
-    strcpy(messageText, zLoc::GetMessageString(kNetSessionBrowserPlayerNameRequiredMessageId));
-
-    ((CWnd*)this)->MessageBoxA(messageText, caption, MB_ICONHAND);
-    ((CWnd*)&m_playerNameEdit)->SetFocus();
-    return FALSE;
+    return TRUE;
 }
 
 /**
@@ -3326,6 +3328,15 @@ void NetSessionBrowserDialog::OnHelpDocs()
                 );
             return;
 
+        case 31:
+            ((CWnd*)this)
+                ->MessageBoxA(
+                    zLoc::GetMessageString(kNetSessionBrowserHelpNoDdeAssociationMessageId),
+                    caption,
+                    MB_ICONEXCLAMATION
+                );
+            return;
+
         case 2:
         case 3:
             ((CWnd*)this)
@@ -3340,15 +3351,6 @@ void NetSessionBrowserDialog::OnHelpDocs()
             ((CWnd*)this)
                 ->MessageBoxA(
                     zLoc::GetMessageString(kNetSessionBrowserHelpAssociationIncompleteMessageId),
-                    caption,
-                    MB_ICONEXCLAMATION
-                );
-            return;
-
-        case 31:
-            ((CWnd*)this)
-                ->MessageBoxA(
-                    zLoc::GetMessageString(kNetSessionBrowserHelpNoDdeAssociationMessageId),
                     caption,
                     MB_ICONEXCLAMATION
                 );
@@ -3541,7 +3543,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
  */
 void __fastcall DestroyedStateResetFinalizeCallback(zUtil_SaveGameState* saveState)
 {
-    zUtil_SaveGameState* nearestSaveState = saveState;
+    zUtil_SaveGameState* nearestSaveState;
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
@@ -4160,11 +4162,21 @@ BOOL NetSessionConfigDialog::OnInitDialog()
     ::SendMessageA(m_timeLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, MAKELPARAM(360, 0));
     ::SendMessageA(m_valueLimitSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, MAKELPARAM(100, 0));
 
-    LPARAM maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMax, kNetSessionConfigMaxPlayersMin);
     if (zOpt::GetNetworkModemEnabled() != 0) {
-        maxPlayersRange = MAKELPARAM(kNetSessionConfigMaxPlayersMin, kNetSessionConfigMaxPlayersMin);
+        ::SendMessageA(
+            m_maxPlayersSpin.m_hWnd,
+            kNetSessionConfigSpinSetRangeMessage,
+            0,
+            MAKELPARAM(kNetSessionConfigMaxPlayersMin, kNetSessionConfigMaxPlayersMin)
+        );
+    } else {
+        ::SendMessageA(
+            m_maxPlayersSpin.m_hWnd,
+            kNetSessionConfigSpinSetRangeMessage,
+            0,
+            MAKELPARAM(kNetSessionConfigMaxPlayersMax, kNetSessionConfigMaxPlayersMin)
+        );
     }
-    ::SendMessageA(m_maxPlayersSpin.m_hWnd, kNetSessionConfigSpinSetRangeMessage, 0, maxPlayersRange);
 
     m_valueLimit = kNetSessionConfigDefaultValueLimit;
     m_timeLimitMinutes = kNetSessionConfigDefaultTimeLimitMinutes;

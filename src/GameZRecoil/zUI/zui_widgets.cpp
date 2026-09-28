@@ -1266,9 +1266,7 @@ namespace HudUiMgrSensor {
 HudUiMgrSensorTrackNode* __fastcall TrackListAdd(int trackKind, void* payload)
 {
     HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(malloc(sizeof(HudUiMgrSensorTrackNode)));
-    trackNode->trackKind = 0;
-    trackNode->payload = 0;
-    trackNode->next = 0;
+    memset(trackNode, 0, sizeof(HudUiMgrSensorTrackNode));
 
     if (trackNode != 0) {
         trackNode->next = 0;
@@ -1769,7 +1767,7 @@ void HudUiElement::Update(float deltaSeconds)
 {
     unsigned int currentFlags = flags;
 
-    if ((currentFlags & 0x10) == 0) {
+    if (((~currentFlags) & 0x10) != 0) {
         if ((currentFlags & 0x02) == 0) {
             Draw();
         } else if ((currentFlags & 0x04) != 0) {
@@ -1784,7 +1782,7 @@ void HudUiElement::Update(float deltaSeconds)
 
         if ((flags & 0x01) != 0) {
             timer -= deltaSeconds;
-            if (timer <= 0.0f) {
+            if (timer <= 0.0) {
                 SetVisible(0);
             }
         }
@@ -2058,20 +2056,20 @@ HudUiSliderBorder::HudUiSliderBorder()
 
 void HudUiSliderBorder::Update(float deltaSeconds)
 {
-    if ((flags & 0x10) != 0) {
+    if (((~flags) & 0x10) == 0) {
         return;
     }
 
     if (blinkEnabled != 0) {
-        const float nextTime = blinkTimeRemainingSec - deltaSeconds;
-        blinkTimeRemainingSec = nextTime;
-        if (nextTime < 0.0f) {
+        blinkTimeRemainingSec -= deltaSeconds;
+        if (blinkTimeRemainingSec < 0.0) {
             blinkDirSign = -blinkDirSign;
             blinkTimeRemainingSec = blinkPeriodSec;
         }
-    }
-
-    if (blinkEnabled == 0 || blinkDirSign == 1) {
+        if (blinkDirSign == 1) {
+            HudUiPolyline::Draw();
+        }
+    } else {
         HudUiPolyline::Draw();
     }
 }
@@ -3525,14 +3523,11 @@ void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(float value)
     normalizedValue = value;
     Invalidate();
 
-    const int fillWidth = fillImage->width;
-    const int fillHeight = fillImage->height;
-    const int filledWidth = (int)((float)(fillWidth)*value);
-
-    fillRect.left = 0;
     fillRect.top = 0;
+    fillRect.bottom = fillImage->height;
+    fillRect.left = 0;
+    const int filledWidth = (int)(fillImage->width * value);
     fillRect.right = filledWidth;
-    fillRect.bottom = fillHeight;
     fillOffsetX = 0;
     fillOffsetY = 0;
 
@@ -3540,10 +3535,10 @@ void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(float value)
         return;
     }
 
-    previewRect.left = filledWidth;
     previewRect.top = 0;
+    previewRect.bottom = fillImage->height;
+    previewRect.left = filledWidth;
     previewRect.right = previewImage->width;
-    previewRect.bottom = fillHeight;
     previewOffsetX = filledWidth;
     previewOffsetY = 0;
 }
@@ -5092,25 +5087,18 @@ void HudUiPanel::RebuildTextRect()
  */
 unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int color0, unsigned int color1, float blend)
 {
-    const double blendValue = (double)(blend);
-    if (!(blendValue >= 0.001)) {
+    if (blend < 0.001) {
         return color0;
     }
-    if (blendValue > 0.999) {
+    if (blend > 0.999) {
         return color1;
     }
 
-    const double inverseBlend = 1.0 - blendValue;
-    const unsigned int blue
-        = (unsigned int)((int)((double)(color0 & 0xffu) * inverseBlend + (double)(color1 & 0xffu) * blendValue))
-        & 0xffu;
-    const unsigned int green = (unsigned int)((int)((double)((color0 >> 8) & 0xffu) * inverseBlend
-                                   + (double)((color1 >> 8) & 0xffu) * blendValue))
-        & 0xffu;
-    const unsigned int red = (unsigned int)((int)((double)((color0 >> 16) & 0xffu) * inverseBlend
-                                 + (double)((color1 >> 16) & 0xffu) * blendValue))
-        & 0xffu;
-    return (red << 16) | (green << 8) | blue;
+    const double inverseBlend = 1.0 - blend;
+    const int blue = (int)((int)(color0 & 0xffu) * inverseBlend + (int)(color1 & 0xffu) * blend);
+    const int green = (int)((int)((color0 >> 8) & 0xffu) * inverseBlend + (int)((color1 >> 8) & 0xffu) * blend);
+    const int red = (int)((int)((color0 >> 16) & 0xffu) * inverseBlend + (int)((color1 >> 16) & 0xffu) * blend);
+    return RGB(blue, green, red);
 }
 
 /**

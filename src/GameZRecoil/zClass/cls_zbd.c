@@ -676,20 +676,19 @@ namespace CZZbd
      */
     RECOIL_NO_GS int __fastcall WriteZBDFile(const char* filename)
     {
-        const size_t filenameLength = strlen(filename);
-        if (filenameLength == 0) {
+        if (strlen(filename) == 0) {
             return -1;
         }
 
-        if (filenameLength < 0x2f) {
-            memcpy(g_CZClass_CurrentZbdPath, filename, filenameLength + 1);
+        if (strlen(filename) < 0x2f) {
+            strcpy(g_CZClass_CurrentZbdPath, filename);
         } else {
             zError::ReportOld(
                 0x200,
                 g_CZClass_SourceFile_ClsZbdC,
                 0x272,
                 g_CZClass_ZbdFilenameTooLongFmt,
-                (int)(filenameLength),
+                (int)(strlen(filename)),
                 0x30
             );
         }

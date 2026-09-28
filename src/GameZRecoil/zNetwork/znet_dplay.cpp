@@ -1791,7 +1791,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-allocfreeplayercolorindex
  * @recoil-artifact defines .text recoil:function:0x48b940: zNetwork::AllocFreePlayerColorIndex.
- *
+ * @recoil-match byte
  *
  * Purpose: reserve and return the first unused player color index.
  */

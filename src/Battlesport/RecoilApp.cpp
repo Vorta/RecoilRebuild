@@ -3032,7 +3032,7 @@ int __fastcall WaitForLocalPlayerColorIndex(int maxWaitSeconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-remote-players-and-spawn-lists
  * @recoil-artifact defines .text recoil:function:0x4320f0: GameNet::ResetRemotePlayersAndSpawnLists.
- *
+ * @recoil-match byte
  *
  * Purpose: Clear remote player HUD rows and network spawn-point lists.
  */
@@ -3760,7 +3760,7 @@ int __fastcall HandlePkt0EPlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerL
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-are-all-players-at-lap-target
  * @recoil-artifact defines .text recoil:function:0x433200: GameNet::AreAllPlayersAtLapTarget.
- *
+ * @recoil-match byte
  *
  * Purpose: Mark the multiplayer lap-target check as started and report
  * whether every player row has reached the race goal.
@@ -3931,7 +3931,7 @@ int __fastcall HandlePkt0CHudTimerStatusBits(int, NetPkt0C_HudTimerStatusBits* p
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
  * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09PlayerScoreboardSnapshot.
- *
+ * @recoil-match byte
  *
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */

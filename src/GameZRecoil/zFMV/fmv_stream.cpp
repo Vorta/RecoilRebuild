@@ -162,17 +162,33 @@ void zFMV_Stream::Destructor()
             ICClose(videoDecompressor);
         }
 
-        free(srcFormat);
-        free(dstFormat);
-        free(compressedFrameBuffer);
+        if (srcFormat != 0) {
+            free(srcFormat);
+        }
+
+        if (dstFormat != 0) {
+            free(dstFormat);
+        }
+
+        if (compressedFrameBuffer != 0) {
+            free(compressedFrameBuffer);
+        }
 
         if (surface != 0) {
             g_zVideo_pfnImageEnsureSurfaceForCurrentDevice((zVidImagePartial*)(this));
         }
 
-        free(pixels);
-        free(alphaMap);
-        free(palette);
+        if (pixels != 0) {
+            free(pixels);
+        }
+
+        if (alphaMap != 0) {
+            free(alphaMap);
+        }
+
+        if (palette != 0) {
+            free(palette);
+        }
 
         AVIStreamRelease(videoStream);
         AVIFileExit();
@@ -193,64 +209,62 @@ void zFMV_Stream::Constructor()
 {
     currentFrameIndex = 0;
 
-    const HRESULT openResult = AVIStreamOpenFromFileA(&videoStream, mediaPath, streamtypeVIDEO, 0, 0x10, 0);
-    if (openResult != 0) {
+    HRESULT result = AVIStreamOpenFromFileA(&videoStream, mediaPath, streamtypeVIDEO, 0, 0x10, 0);
+    if (result != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x60, g_zFMV_CannotOpenAviFileMsg);
         AVIFileExit();
         return;
     }
 
-    LONG formatBytes = 0;
-    if (AVIStreamReadFormat(videoStream, 0, 0, &formatBytes) != 0) {
+    LONG formatBytes;
+    result = AVIStreamReadFormat(videoStream, 0, 0, &formatBytes);
+    if (result != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x67, g_zFMV_CannotReadAviFormatSizeMsg);
         AVIFileExit();
         return;
     }
 
-    srcFormat = calloc(formatBytes, 1);
-    const LONG dstFormatBytes
-        = formatBytes > (LONG)(sizeof(BITMAPV4HEADER)) ? formatBytes : (LONG)(sizeof(BITMAPV4HEADER));
-    dstFormat = calloc(dstFormatBytes, 1);
+    srcFormat = calloc(1, formatBytes);
+    dstFormat = calloc(1, (unsigned int)(formatBytes) > sizeof(BITMAPV4HEADER) ? formatBytes : sizeof(BITMAPV4HEADER));
 
-    if (AVIStreamReadFormat(videoStream, 0, srcFormat, &formatBytes) != 0) {
+    result = AVIStreamReadFormat(videoStream, 0, srcFormat, &formatBytes);
+    if (result != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x71, g_zFMV_CannotReadAviFormatMsg);
         AVIFileExit();
         return;
     }
 
     videoFrameCount = AVIStreamLength(videoStream);
-    if (AVIStreamInfoA(videoStream, &videoStreamInfo, sizeof(videoStreamInfo)) != 0) {
+    result = AVIStreamInfoA(videoStream, &videoStreamInfo, sizeof(videoStreamInfo));
+    if (result != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x79, g_zFMV_CannotReadAviStreamInfoMsg);
         AVIFileExit();
         return;
     }
 
     memcpy(dstFormat, srcFormat, formatBytes);
-    BITMAPINFOHEADER* const srcHeader = (BITMAPINFOHEADER*)(srcFormat);
-    BITMAPV4HEADER* const dstHeader = (BITMAPV4HEADER*)(dstFormat);
-    dstHeader->bV4Size = (DWORD)(dstFormatBytes);
-    dstHeader->bV4BitCount = (WORD)(zVideo::GetDisplayModeBpp());
-    dstHeader->bV4V4Compression = BI_BITFIELDS;
-    if (dstHeader->bV4BitCount == 24) {
-        dstHeader->bV4V4Compression = BI_RGB;
+    ((BITMAPV4HEADER*)(dstFormat))->bV4Size
+        = (unsigned int)(formatBytes) > sizeof(BITMAPV4HEADER) ? formatBytes : sizeof(BITMAPV4HEADER);
+    ((BITMAPV4HEADER*)(dstFormat))->bV4BitCount = (WORD)(zVideo::GetDisplayModeBpp());
+    ((BITMAPV4HEADER*)(dstFormat))->bV4V4Compression = BI_BITFIELDS;
+    if (((BITMAPV4HEADER*)(dstFormat))->bV4BitCount == 24) {
+        ((BITMAPV4HEADER*)(dstFormat))->bV4V4Compression = BI_RGB;
     }
-    dstHeader->bV4ClrUsed = 0;
+    ((BITMAPV4HEADER*)(dstFormat))->bV4ClrUsed = 0;
     zVideo::PixelPackGetRgbMasks(
-        (unsigned int*)(&dstHeader->bV4RedMask),
-        (unsigned int*)(&dstHeader->bV4GreenMask),
-        (unsigned int*)(&dstHeader->bV4BlueMask)
+        (unsigned int*)(&((BITMAPV4HEADER*)(dstFormat))->bV4RedMask),
+        (unsigned int*)(&((BITMAPV4HEADER*)(dstFormat))->bV4GreenMask),
+        (unsigned int*)(&((BITMAPV4HEADER*)(dstFormat))->bV4BlueMask)
     );
-    dstHeader->bV4AlphaMask = 0;
+    ((BITMAPV4HEADER*)(dstFormat))->bV4AlphaMask = 0;
+    ((BITMAPV4HEADER*)(dstFormat))->bV4SizeImage = ((BITMAPV4HEADER*)(dstFormat))->bV4Height
+        * ((((BITMAPV4HEADER*)(dstFormat))->bV4Width + 3) & ~3) * (((BITMAPV4HEADER*)(dstFormat))->bV4BitCount >> 3);
 
-    const int alignedWidth = (dstHeader->bV4Width + 3) & ~3;
-    dstHeader->bV4SizeImage = dstHeader->bV4Height * alignedWidth * (dstHeader->bV4BitCount >> 3);
-
-    int compressedFrameBytes = (srcHeader->biBitCount >> 3) * srcHeader->biWidth * srcHeader->biHeight;
-    const int suggestedBufferSize = (int)(videoStreamInfo.dwSuggestedBufferSize);
-    if (suggestedBufferSize != 0) {
-        compressedFrameBytes = suggestedBufferSize;
+    compressedFrameBufferBytes = (((BITMAPINFOHEADER*)(srcFormat))->biBitCount >> 3)
+        * ((BITMAPINFOHEADER*)(srcFormat))->biWidth * ((BITMAPINFOHEADER*)(srcFormat))->biHeight;
+    if (videoStreamInfo.dwSuggestedBufferSize != 0) {
+        compressedFrameBufferBytes = videoStreamInfo.dwSuggestedBufferSize;
     }
-    compressedFrameBufferBytes = compressedFrameBytes;
 
     videoDecompressor = ICLocate(
         ICTYPE_VIDEO,
@@ -259,25 +273,24 @@ void zFMV_Stream::Constructor()
         (LPBITMAPINFOHEADER)(dstFormat),
         ICMODE_DECOMPRESS
     );
-    compressedFrameBuffer = calloc(compressedFrameBytes, 1);
+    compressedFrameBuffer = calloc(compressedFrameBufferBytes, 1);
 
-    decodedFrameStrideBytes = (dstHeader->bV4BitCount >> 3) * dstHeader->bV4Width;
+    decodedFrameStrideBytes
+        = (((BITMAPV4HEADER*)(dstFormat))->bV4BitCount >> 3) * ((BITMAPV4HEADER*)(dstFormat))->bV4Width;
     ICSendMessage(videoDecompressor, ICM_DECOMPRESS_BEGIN, (DWORD)(srcFormat), (DWORD)(dstFormat));
 
-    const unsigned int rate = videoStreamInfo.dwRate;
-    const unsigned int scale = videoStreamInfo.dwScale;
-    videoFramesPerSecond = rate / scale;
+    videoFramesPerSecond = videoStreamInfo.dwRate / videoStreamInfo.dwScale;
     reservedF4 = 0;
     reservedF8 = 0;
-    msPerFrame = ((rate >> 1) + (scale * 1000)) / rate;
+    msPerFrame = ((videoStreamInfo.dwRate >> 1) + (videoStreamInfo.dwScale * 1000)) / videoStreamInfo.dwRate;
 
-    frameWidth = dstHeader->bV4Width;
-    frameHeight = dstHeader->bV4Height;
+    frameWidth = ((BITMAPV4HEADER*)(dstFormat))->bV4Width;
+    frameHeight = ((BITMAPV4HEADER*)(dstFormat))->bV4Height;
 
-    pixels = calloc(dstHeader->bV4SizeImage, 1);
-    pixelCount = (int)(dstHeader->bV4SizeImage);
-    width = (short)(dstHeader->bV4Width);
-    height = (short)(dstHeader->bV4Height);
+    pixels = calloc(((BITMAPV4HEADER*)(dstFormat))->bV4SizeImage, 1);
+    pixelCount = (int)(((BITMAPV4HEADER*)(dstFormat))->bV4SizeImage);
+    width = (short)(((BITMAPV4HEADER*)(dstFormat))->bV4Width);
+    height = (short)(((BITMAPV4HEADER*)(dstFormat))->bV4Height);
     headerFlagsByte = 0;
     formatFlagsPacked = 0;
     uPow2Shift = 0;
@@ -290,9 +303,9 @@ void zFMV_Stream::Constructor()
     vMaskFixed20 = 0;
     surface = 0;
     palette = 0;
-    pitchWords = (short)(dstHeader->bV4Width);
+    pitchWords = width;
 
-    dstHeader->bV4Height = -dstHeader->bV4Height;
+    ((BITMAPV4HEADER*)(dstFormat))->bV4Height = -((BITMAPV4HEADER*)(dstFormat))->bV4Height;
     hasVideoStream = 1;
 }
 
@@ -305,12 +318,13 @@ void zFMV_Stream::Constructor()
  */
 void zFMV_Stream::OpenAudio()
 {
-    audioStream = 0;
-    if (AVIStreamOpenFromFileA(&audioStream, mediaPath, streamtypeAUDIO, 0, 0, 0) != 0) {
+    PAVISTREAM* const audioStreamSlot = &audioStream;
+    *audioStreamSlot = 0;
+    if (AVIStreamOpenFromFileA(audioStreamSlot, mediaPath, streamtypeAUDIO, 0, 0, 0) != 0) {
         return;
     }
 
-    LONG audioFormatBytes = 0;
+    LONG audioFormatBytes;
     if (AVIStreamReadFormat(audioStream, 0, 0, &audioFormatBytes) != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xcb, g_zFMV_CannotReadAviSoundFormatSizeMsg);
         return;
@@ -327,35 +341,41 @@ void zFMV_Stream::OpenAudio()
         return;
     }
 
-    const unsigned int sampleSize = audioStreamInfo.dwSampleSize;
     if (modeFlags != 0) {
-        const unsigned int segmentBytes = audioStreamInfo.dwSuggestedBufferSize;
-        audioSegmentBytes = segmentBytes;
-        audioBuffer = calloc(segmentBytes * 2, 1);
+        audioSegmentBytes = audioStreamInfo.dwSuggestedBufferSize;
+        audioBuffer = calloc(audioSegmentBytes * 2, 1);
 
-        if (AVIStreamRead(audioStream, 0, segmentBytes / sampleSize, audioBuffer, segmentBytes, 0, 0) != 0) {
+        if (AVIStreamRead(
+                audioStream,
+                0,
+                audioSegmentBytes / audioStreamInfo.dwSampleSize,
+                audioBuffer,
+                audioSegmentBytes,
+                0,
+                0
+            )
+            != 0) {
             zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xe2, g_zFMV_CannotReadAviSoundStreamMsg);
             return;
         }
 
         audioSample
-            = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, segmentBytes * 2);
+            = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, audioSegmentBytes * 2);
         audioRefillSecondHalfNext = 1;
         hasAudioStream = 1;
-        audioReadSampleIndex = segmentBytes / sampleSize;
+        audioReadSampleIndex = audioSegmentBytes / audioStreamInfo.dwSampleSize;
         return;
     }
 
-    const unsigned int audioBytes = AVIStreamLength(audioStream) * sampleSize;
-    audioSegmentBytes = audioBytes;
-    audioBuffer = calloc(audioBytes, 1);
+    audioSegmentBytes = AVIStreamLength(audioStream) * audioStreamInfo.dwSampleSize;
+    audioBuffer = calloc(audioSegmentBytes, 1);
 
-    if (AVIStreamRead(audioStream, 0, audioStreamInfo.dwLength, audioBuffer, audioBytes, 0, 0) != 0) {
+    if (AVIStreamRead(audioStream, 0, audioStreamInfo.dwLength, audioBuffer, audioSegmentBytes, 0, 0) != 0) {
         zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0xf0, g_zFMV_CannotReadAviSoundStreamMsg);
         return;
     }
 
-    audioSample = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, audioBytes);
+    audioSample = zSndSampleCreateQueuedStreamingSample((WAVEFORMATEX*)(audioFormat), audioBuffer, audioSegmentBytes);
     hasAudioStream = 1;
 }
 
@@ -372,8 +392,7 @@ int zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex)
         currentFrameIndex = frameIndex;
     }
 
-    const unsigned int frameCount = videoFrameCount;
-    if ((int)(currentFrameIndex) < (int)(frameCount)) {
+    if ((int)(currentFrameIndex) < (int)(videoFrameCount)) {
         if (AVIStreamRead(videoStream, currentFrameIndex, 1, compressedFrameBuffer, compressedFrameBufferBytes, 0, 0)
             != 0) {
             zError::ReportOld(0x400, g_zFMV_SourceFile_FmvStreamCpp, 0x105, g_zFMV_CannotReadAviVideoStreamMsg);
@@ -397,7 +416,7 @@ int zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex)
     }
 
     ++currentFrameIndex;
-    if ((int)(currentFrameIndex) >= (int)(frameCount)) {
+    if ((int)(currentFrameIndex) >= (int)(videoFrameCount)) {
         currentFrameIndex = 0;
     }
 

@@ -64,17 +64,14 @@ int __fastcall FontsLoadFromPath(const char* path)
         return -1;
     }
 
-    zReader::Node* fontArray = fontsNode->value.nodes;
-    const int count = fontArray[0].value.i32;
-    zImage_Font* font = (zImage_Font*)(malloc((size_t)(count - 1) * sizeof(zImage_Font)));
+    zImage_Font* font = (zImage_Font*)(malloc((size_t)(fontsNode->value.nodes[0].value.i32 - 1) * sizeof(zImage_Font)));
+    zImage_Font** slot = g_zImage_FontTable;
 
-    for (int i = 1; i < count; ++i) {
-        zImage_Font** slot = &g_zImage_FontTable[i - 1];
+    for (int i = 1; i < fontsNode->value.nodes[0].value.i32; ++i, ++slot) {
         *slot = font;
-        const char* fontImagePath = fontArray[i].value.str;
-        font->image = TexDirFindOrCreateByPath(fontImagePath);
-        if (font->image != 0) {
-            font->image->formatFlagsPacked |= 0x02;
+        (*slot)->image = TexDirFindOrCreateByPath(fontsNode->value.nodes[i].value.str);
+        if ((*slot)->image != 0) {
+            (*slot)->image->formatFlagsPacked |= 0x02;
             const int glyphCount = font->BuildGlyphRects();
             if (glyphCount != 0x5f) {
                 zError::ReportOld(

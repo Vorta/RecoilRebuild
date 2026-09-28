@@ -1685,7 +1685,7 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerCollisionContactContextPartial, saveState) =
  * and sound-scale data. BN shows direct float loads at those caller sites.
  * Purpose: return a float field from an indexed ZRD array element.
  */
-#define PlayerZrdArrayFloat(node, index) (PlayerZrdArrayBase(node)[index].value.f32)
+#define PlayerZrdArrayFloat(node, index) PlayerZrdArrayBase(node)[index].value.f32
 
 /**
  * Original-source helper evidence: no standalone retail function exists.
@@ -2771,76 +2771,79 @@ namespace Player {
  */
 void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
 {
-    if (saveData->size != sizeof(PlayerMissionSaveData) && saveData->size != kPlayerMissionSaveLegacySize) {
-        zError::ReportOld(0x200, g_Player_SourceFile_PlayerCpp, 0xd1, g_Player_SaveDataModifiedMsg);
-        return;
+    zUtil_PlayerStateStorage* const playerState = g_LocalPlayerSaveState->playerState;
+    int hasTimedHitStatus = 1;
+    if (saveData->size != sizeof(PlayerMissionSaveData)) {
+        hasTimedHitStatus = 0;
+        if (saveData->size != kPlayerMissionSaveLegacySize) {
+            zError::ReportOld(0x200, g_Player_SourceFile_PlayerCpp, 0xd1, g_Player_SaveDataModifiedMsg);
+            return;
+        }
     }
-
-    zUtil_SaveGameState* const saveState = g_LocalPlayerSaveState;
-    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    const int hasTimedHitStatus = saveData->size == sizeof(PlayerMissionSaveData);
 
     PlayerGunFireController* const oldAltController = playerState->activeAltGunController;
     PlayerGunFireController* const oldPrimaryController = playerState->activePrimaryGunController;
 
     for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
-        const PlayerMissionSaveWeaponBank* const savedBank = &saveData->weaponBank[bankIndex];
-        PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[bankIndex];
-
-        bank->selectedSide = savedBank->selectedSide;
-        bank->controllerA.flags &= ~kPlayerGunControllerAvailableFlag;
-        if ((savedBank->sides[0].enabled & 1) != 0) {
-            bank->controllerA.flags |= kPlayerGunControllerAvailableFlag;
+        playerState->altWeaponBanks[bankIndex].selectedSide = saveData->weaponBank[bankIndex].selectedSide;
+        for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
+            PlayerGunFireController* const controller = &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
+            controller->flags = (controller->flags & ~kPlayerGunControllerAvailableFlag)
+                | ((saveData->weaponBank[bankIndex].sides[sideIndex].enabled & 1) << 2);
+            controller->ammoOrCharge = saveData->weaponBank[bankIndex].sides[sideIndex].ammoOrCharge;
         }
-        bank->controllerA.ammoOrCharge = savedBank->sides[0].ammoOrCharge;
 
-        bank->controllerB.flags &= ~kPlayerGunControllerAvailableFlag;
-        if ((savedBank->sides[1].enabled & 1) != 0) {
-            bank->controllerB.flags |= kPlayerGunControllerAvailableFlag;
-        }
-        bank->controllerB.ammoOrCharge = savedBank->sides[1].ammoOrCharge;
-
-        PlayerGunFireController* const selectedController
-            = bank->selectedSide == 0 ? &bank->controllerA : &bank->controllerB;
-        HudUiMessage::SetValueIfOwnerMatches(bankIndex, bank->selectedSide, selectedController->ammoOrCharge);
-        if ((selectedController->flags & kPlayerGunControllerAvailableFlag) != 0) {
-            HudUiMessage::SelectVariantDisplay(bankIndex, bank->selectedSide);
+        HudUiMessage::SetValueIfOwnerMatches(
+            bankIndex,
+            playerState->altWeaponBanks[bankIndex].selectedSide,
+            (&playerState->altWeaponBanks[bankIndex].controllerA + playerState->altWeaponBanks[bankIndex].selectedSide)
+                ->ammoOrCharge
+        );
+        if ((unsigned char)((unsigned int)(&playerState->altWeaponBanks[bankIndex].controllerA
+                                + playerState->altWeaponBanks[bankIndex].selectedSide)
+                                ->flags
+                >> 2)
+            & 1) {
+            HudUiMessage::SelectVariantDisplay(bankIndex, playerState->altWeaponBanks[bankIndex].selectedSide);
         } else {
             HudUiMessage::ClearDisplay(bankIndex);
         }
     }
 
-    PlayerAltWeaponBank* const altBank = &playerState->altWeaponBanks[saveData->altWeaponBankIndex];
     PlayerGunFireController* const newAltController
-        = saveData->altWeaponSideIndex == 0 ? &altBank->controllerA : &altBank->controllerB;
+        = &playerState->altWeaponBanks[saveData->altWeaponBankIndex].controllerA + saveData->altWeaponSideIndex;
     playerState->activeAltGunController = newAltController;
-    if (oldAltController != newAltController) {
-        ApplyAltWeaponSwitch(saveState, oldAltController, newAltController);
-        if ((oldAltController->flags & kPlayerGunControllerAvailableFlag) != 0) {
+    if (newAltController != oldAltController) {
+        ApplyAltWeaponSwitch(g_LocalPlayerSaveState, oldAltController, newAltController);
+        if ((unsigned char)((unsigned int)(&playerState->altWeaponBanks[oldAltController->weaponBankIndex].controllerA
+                                + oldAltController->weaponSideIndex)
+                                ->flags
+                >> 2)
+            & 1) {
             HudUiMessage::SelectVariantDisplay(oldAltController->weaponBankIndex, oldAltController->weaponSideIndex);
         } else {
             HudUiMessage::ClearDisplay(oldAltController->weaponBankIndex);
         }
     } else {
-        ApplyAltWeaponSwitch(saveState, 0, newAltController);
+        ApplyAltWeaponSwitch(g_LocalPlayerSaveState, 0, newAltController);
     }
     HudUiMessage::UpdateSelectedWeaponDisplay(
-        newAltController->weaponBankIndex,
-        newAltController->weaponSideIndex,
-        newAltController->ammoOrCharge
+        playerState->activeAltGunController->weaponBankIndex,
+        playerState->activeAltGunController->weaponSideIndex,
+        playerState->activeAltGunController->ammoOrCharge
     );
 
-    PlayerAltWeaponBank* const primaryBank = &playerState->altWeaponBanks[saveData->primaryWeaponBankIndex];
     PlayerGunFireController* const newPrimaryController
-        = saveData->primaryWeaponSideIndex == 0 ? &primaryBank->controllerA : &primaryBank->controllerB;
+        = &playerState->altWeaponBanks[saveData->primaryWeaponBankIndex].controllerA + saveData->primaryWeaponSideIndex;
     playerState->activePrimaryGunController = newPrimaryController;
-    ApplyPrimaryWeaponSwitch(
-        saveState,
-        oldPrimaryController != newPrimaryController ? oldPrimaryController : 0,
-        newPrimaryController
-    );
-    if (oldPrimaryController != newPrimaryController) {
-        if ((oldPrimaryController->flags & kPlayerGunControllerAvailableFlag) != 0) {
+    if (newPrimaryController != oldPrimaryController) {
+        ApplyPrimaryWeaponSwitch(g_LocalPlayerSaveState, oldPrimaryController, newPrimaryController);
+        if ((unsigned char)((unsigned int)(&playerState->altWeaponBanks[oldPrimaryController->weaponBankIndex]
+                                               .controllerA
+                                + oldPrimaryController->weaponSideIndex)
+                                ->flags
+                >> 2)
+            & 1) {
             HudUiMessage::SelectVariantDisplay(
                 oldPrimaryController->weaponBankIndex,
                 oldPrimaryController->weaponSideIndex
@@ -2850,12 +2853,14 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
         }
     }
     HudUiMessage::UpdateSelectedWeaponDisplay(
-        newPrimaryController->weaponBankIndex,
-        newPrimaryController->weaponSideIndex,
-        newPrimaryController->ammoOrCharge
+        playerState->activePrimaryGunController->weaponBankIndex,
+        playerState->activePrimaryGunController->weaponSideIndex,
+        playerState->activePrimaryGunController->ammoOrCharge
     );
 
-    HudUiMgrSensor::SetShieldMessageRatio(playerState->statusMeterValue / playerState->masterCommonData->maxHealth);
+    HudUiMgrSensor::SetShieldMessageRatio(
+        playerState->statusMeterValue / g_LocalPlayerSaveState->playerState->masterCommonData->maxHealth
+    );
     HudUiMgr::SetNanitePanelCount(playerState->nanitePanelLevel);
 
     g_PlayerStatusMeterRatio = saveData->playerStatusMeterRatio;
@@ -2870,7 +2875,7 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
     playerState->bankInput = saveData->bankInput;
 
     HudUiMgrObjective::RefreshCounterText(g_Player_HudCounterValue);
-    ApplyMasterTypeTransition(saveState, saveData->playerMasterType, 1);
+    ApplyMasterTypeTransition(g_LocalPlayerSaveState, saveData->playerMasterType, 1);
     playerState->primaryGunGateUntilTime = 0.0f;
 
     CZCamera::gwCameraSetTarget(
@@ -2886,19 +2891,19 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
         saveData->cameraPosition.z
     );
 
-    zUtil_PlayerStateStorage* const activePlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
-    activePlayerState->timedHitStatus.ClearLightAndReset();
+    ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->timedHitStatus.ClearLightAndReset();
     playerState->damageProtectionActive = 0;
     if (hasTimedHitStatus != 0) {
         memcpy(&playerState->timedHitStatus, &saveData->timedHitStatus, sizeof(saveData->timedHitStatus));
         playerState->timedHitStatus.lightParentNode = playerState->rootNode;
 
         if ((playerState->timedHitStatus.runtimeFlags & kPlayerTimedHitStatusActiveFlag) != 0) {
-            OptCatalogEntryDef* const hitSource
-                = OptCatalog::FindEntryById(saveData->timedHitStatus.savedHitSourceEntryId);
+            // The copied save record holds the hit-source entry id in the runtime hitSource slot.
+            OptCatalogEntryDef* const hitSource = OptCatalog::FindEntryById((int)playerState->timedHitStatus.hitSource);
             playerState->timedHitStatus.hitSource = hitSource;
             HitSource::UpdateTimedStatus(hitSource, &playerState->timedHitStatus, 0.0f);
-            playerState->timedHitStatus.nextUpdateTime += g_Time_AccumulatedTimeSec;
+            playerState->timedHitStatus.nextUpdateTime
+                = g_Time_AccumulatedTimeSec + playerState->timedHitStatus.nextUpdateTime;
         }
     }
 }
@@ -3044,7 +3049,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-readvehiclelistsection
  * @recoil-artifact defines .text recoil:function:0x41f850: Player::zZarReadVehicleListSection
- *
+ * @recoil-match byte
  *
  * BN evidence: __fastcall ZAR data-ready callback; validates the 0x80-byte
  * VehicleList record, finds the save state by root-node token, restores pose,
@@ -3065,33 +3070,25 @@ void __fastcall zZarReadVehicleListSection(
     }
 
     zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
-    while (saveState != 0) {
-        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* playerState;
+    for (;;) {
+        if (saveState == 0) {
+            return;
+        }
+
+        playerState = saveState->playerState;
         if (strcmp(playerState->rootNode->name, sectionToken) == 0) {
             break;
         }
-        saveState = saveState->next;
+        saveState = saveState != 0 ? saveState->next : 0;
     }
 
-    if (saveState == 0) {
-        return;
-    }
+    const bool restoreHealthyNode
+        = playerState->lifecycleState == kPlayerLifecycleInactive && saveData->masterType != kPlayerLifecycleInactive;
 
-    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    const int restoreHealthyNode
-        = playerState->lifecycleState == kPlayerLifecycleInactive && saveData->masterType != kPlayerLifecycleInactive
-        ? 1
-        : 0;
-
-    playerState->projectileSpawnVel.x = 0.0f;
-    playerState->projectileSpawnVel.y = 0.0f;
-    playerState->projectileSpawnVel.z = 0.0f;
-    playerState->localVel.x = 0.0f;
-    playerState->localVel.y = 0.0f;
-    playerState->localVel.z = 0.0f;
-    playerState->yawRotatedLocalVel.x = 0.0f;
-    playerState->yawRotatedLocalVel.y = 0.0f;
-    playerState->yawRotatedLocalVel.z = 0.0f;
+    playerState->projectileSpawnVel.x = playerState->projectileSpawnVel.y = playerState->projectileSpawnVel.z = 0.0f;
+    playerState->localVel.x = playerState->localVel.y = playerState->localVel.z = 0.0f;
+    playerState->yawRotatedLocalVel.x = playerState->yawRotatedLocalVel.y = playerState->yawRotatedLocalVel.z = 0.0f;
     playerState->worldPos = saveData->worldPos;
     playerState->vehicleRotationAngles = saveData->vehicleRotationAngles;
     playerState->aiNetId = saveData->aiNetId;
@@ -3099,19 +3096,18 @@ void __fastcall zZarReadVehicleListSection(
     playerState->aiSavedTopLevelState = saveData->aiSavedTopLevelState;
     playerState->aiReturnTopLevelState = saveData->aiReturnTopLevelState;
 
-    const float now = g_Time_AccumulatedTimeSec;
-    playerState->aiStateUntilTime = now;
-    playerState->aiHideTime0 = now;
-    playerState->aiHideTime1 = now;
-    playerState->unknown_0fa4 = now;
-    playerState->aiStateStartTime = now;
-    playerState->aiStateEndTime = playerState->aiMode2AttackDwell + now;
+    playerState->aiStateUntilTime = g_Time_AccumulatedTimeSec;
+    playerState->aiHideTime0 = g_Time_AccumulatedTimeSec;
+    playerState->aiHideTime1 = g_Time_AccumulatedTimeSec;
+    playerState->unknown_0fa4 = g_Time_AccumulatedTimeSec;
+    playerState->aiStateStartTime = g_Time_AccumulatedTimeSec;
+    playerState->aiStateEndTime = playerState->aiMode2AttackDwell + g_Time_AccumulatedTimeSec;
 
     playerState->aiAttackRadiusSq = saveData->aiAttackRadiusSq;
     playerState->aiRestoreDistanceSq = saveData->aiRestoreDistanceSq;
     playerState->aiRestoreTarget = saveData->aiRestoreTarget;
     playerState->aiDynamicOffsetDir = saveData->aiDynamicOffsetDir;
-    playerState->unknown_0fd0 = now;
+    playerState->unknown_0fd0 = g_Time_AccumulatedTimeSec;
     playerState->aiActivationRadiusSq = saveData->aiActivationRadiusSq;
     playerState->aiTickSuppressed = saveData->aiTickSuppressed;
     playerState->recentHitFlag = saveData->aiAlertFlag;
@@ -3150,7 +3146,11 @@ void __fastcall zZarReadVehicleListSection(
         }
     }
 
-    CZClass::gwNodeSetActive(playerState->rootNode, playerState->lifecycleState == kPlayerLifecycleInactive ? 0 : 1);
+    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+        CZClass::gwNodeSetActive(playerState->rootNode, 0);
+    } else {
+        CZClass::gwNodeSetActive(playerState->rootNode, 1);
+    }
     CZNode::LoadFlagBit8MaterialImagesAndTexturePack(playerState->rootNode);
     zTag4::Clear(&playerState->variantTag);
     CZClass::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
@@ -3972,7 +3972,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-bindmodalstatefrommastermodaldata
  * @recoil-artifact defines .text recoil:function:0x421470: Player::BindModalStateFromMasterModalData
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a modal state to matching master modal data, cache its model
@@ -3991,50 +3991,51 @@ void __fastcall BindModalStateFromMasterModalData(
     GetSaveStateListHead();
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    PlayerMasterModalData* masterModalData = g_PlayerMasterModalDataList.head;
-    while (masterModalData != 0) {
-        if (strcmp(masterModalData->modalName, playerState->masterCommonData->vehicleName) == 0
+    PlayerMasterCommonData* const commonData = playerState->masterCommonData;
+    PlayerMasterModalData* masterModalData;
+    for (masterModalData = g_PlayerMasterModalDataList.head; masterModalData != 0;
+        masterModalData = masterModalData != 0 ? masterModalData->next : 0) {
+        if (strcmp(masterModalData->modalName, commonData->vehicleName) == 0
             && strcmp(modalName, masterModalData->modeName) == 0) {
             modalState->masterModalData = masterModalData;
             break;
         }
-        masterModalData = masterModalData->next;
     }
 
     if (modalState->masterModalData == 0) {
         char errorText[0x100];
         sprintf(errorText, g_Player_MasterModalDataMissingFmt, objectName);
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5c3, errorText);
+        zError::ReportOld(0x800, g_Player_SourceFile_PlayerCpp, 0x5c3, errorText);
     }
 
-    CZNodePartial* const rootNode = playerState->rootNode;
-    modalState->nodeRightMorphs = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_RightMorphs);
-    modalState->nodeLeftMorphs = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_LeftMorphs);
-    modalState->modalNode = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_Chassis);
-    modalState->nodeRTracks = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_RightTracks);
-    modalState->nodeLTracks = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_LeftTracks);
-    modalState->nodeProps = CZClass::FindSubNodeByName(rootNode, g_Player_NodeName_Props);
-    modalState->nodeCaustic1 = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_Caustic1);
-    modalState->nodeWake = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_Wake);
-    modalState->nodeSplashL = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_SplashLeft);
-    modalState->nodeSplashR = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_SplashRight);
-    modalState->nodeDustL = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_DustLeft);
-    modalState->nodeDustR = CZClass::FindSubNodeByName(rootNode, g_Player_EffectNodeName_DustRight);
+    modalState->nodeRightMorphs = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_RightMorphs);
+    modalState->nodeLeftMorphs = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_LeftMorphs);
+    modalState->modalNode = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_Chassis);
+    modalState->nodeRTracks = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_RightTracks);
+    modalState->nodeLTracks = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_LeftTracks);
+    modalState->nodeProps = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_NodeName_Props);
+    modalState->nodeCaustic1 = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_Caustic1);
+    modalState->nodeWake = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_Wake);
+    modalState->nodeSplashL = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_SplashLeft);
+    modalState->nodeSplashR = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_SplashRight);
+    modalState->nodeDustL = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_DustLeft);
+    modalState->nodeDustR = CZClass::FindSubNodeByName(playerState->rootNode, g_Player_EffectNodeName_DustRight);
 
     modalState->chassisRollFilterState = 0.0f;
     modalState->chassisPitchFilterState = 0.0f;
     modalState->modalStateCode = 4;
 
-    if (BuildSupportPointsFromModel(saveState, rootNode) == 0 && masterModalData->platformPointCount == 0) {
+    if (BuildSupportPointsFromModel(saveState, playerState->rootNode) == 0
+        && masterModalData->platformPointCount == 0) {
         char errorText[0x100];
         sprintf(errorText, g_Player_SupportPointsMissingFmt, objectName);
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5df, errorText);
+        zError::ReportOld(0x800, g_Player_SourceFile_PlayerCpp, 0x5df, errorText);
     }
 
-    if (masterModalData->probePointCount == 0 && BuildCollisionPointsFromModel(saveState, rootNode) == 0) {
+    if (masterModalData->probePointCount == 0 && BuildCollisionPointsFromModel(saveState, playerState->rootNode) == 0) {
         char errorText[0x100];
         sprintf(errorText, g_Player_CollisionPointsMissingFmt, objectName);
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x5e6, errorText);
+        zError::ReportOld(0x800, g_Player_SourceFile_PlayerCpp, 0x5e6, errorText);
     }
 }
 } // namespace Player
@@ -4529,18 +4530,22 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         const float activationRange = PlayerZrdArrayFloat(node, 1);
         commonData->activationRangeSq = activationRange * activationRange;
     } else {
-        commonData->activationRangeSq = kPlayerDefaultActivationRange * kPlayerDefaultActivationRange;
+        commonData->activationRangeSq = 100.0f * 100.0f;
     }
 
     node = zRdrGetNode(commonModeNode, "not_pursuit_dwell");
-    commonData->notPursuitDwellTime = node != 0 ? PlayerZrdArrayFloat(node, 1) : kPlayerDefaultNotPursuitDwellTime;
+    if (node != 0) {
+        commonData->notPursuitDwellTime = PlayerZrdArrayFloat(node, 1);
+    } else {
+        commonData->notPursuitDwellTime = 3.0f;
+    }
 
     node = zRdrGetNode(commonModeNode, "return_range");
     if (node != 0) {
         const float returnRange = PlayerZrdArrayFloat(node, 1);
         commonData->returnRangeSq = returnRange * returnRange;
     } else {
-        commonData->returnRangeSq = kPlayerDefaultReturnRange * kPlayerDefaultReturnRange;
+        commonData->returnRangeSq = 250.0f * 250.0f;
     }
 
     node = zRdrGetNode(commonModeNode, g_Player_NodeName_StartAnims);
@@ -4550,18 +4555,15 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
 
     node = zRdrGetNode(commonModeNode, g_Player_NodeName_CamBack);
     if (node != 0) {
-        zReader::Node* const first = PlayerZrdArrayBase(node)[1].value.nodes;
-        zReader::Node* const second = PlayerZrdArrayBase(node)[2].value.nodes;
-        zReader::Node* const third = PlayerZrdArrayBase(node)[3].value.nodes;
-        commonData->cameraBackOffset.x = first[1].value.f32;
-        commonData->cameraBackOffset.y = first[2].value.f32;
-        commonData->cameraBackOffset.z = first[3].value.f32;
-        commonData->cambackSide1 = second[1].value.f32;
-        commonData->cambackBase1 = second[2].value.f32;
-        commonData->cambackDist1 = second[3].value.f32;
-        commonData->cambackSide2 = third[1].value.f32;
-        commonData->cambackBase2 = third[2].value.f32;
-        commonData->cambackDist2 = third[3].value.f32;
+        commonData->cameraBackOffset.x = PlayerZrdArrayBase(node)[1].value.nodes[1].value.f32;
+        commonData->cameraBackOffset.y = PlayerZrdArrayBase(node)[1].value.nodes[2].value.f32;
+        commonData->cameraBackOffset.z = PlayerZrdArrayBase(node)[1].value.nodes[3].value.f32;
+        commonData->cambackSide1 = PlayerZrdArrayBase(node)[2].value.nodes[1].value.f32;
+        commonData->cambackBase1 = PlayerZrdArrayBase(node)[2].value.nodes[2].value.f32;
+        commonData->cambackDist1 = PlayerZrdArrayBase(node)[2].value.nodes[3].value.f32;
+        commonData->cambackSide2 = PlayerZrdArrayBase(node)[3].value.nodes[1].value.f32;
+        commonData->cambackBase2 = PlayerZrdArrayBase(node)[3].value.nodes[2].value.f32;
+        commonData->cambackDist2 = PlayerZrdArrayBase(node)[3].value.nodes[3].value.f32;
     } else {
         commonData->cameraBackOffset.x = 0.0f;
         commonData->cameraBackOffset.y = 4.0f;
@@ -4607,57 +4609,58 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->trackSwitchDist2 = 10000.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Health);
-    if (node != 0) {
-        commonData->maxHealth
-            = zOpt::GetNetworkEnabled() != 0 ? PlayerZrdArrayFloat(node, 2) : PlayerZrdArrayFloat(node, 1);
+    zReader::Node* const healthNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Health);
+    if (healthNode != 0) {
+        if (zOpt::GetNetworkEnabled() != 0) {
+            commonData->maxHealth = PlayerZrdArrayFloat(healthNode, 2);
+        } else {
+            commonData->maxHealth = PlayerZrdArrayFloat(healthNode, 1);
+        }
     } else {
-        commonData->maxHealth = kPlayerDefaultMaxHealth;
+        commonData->maxHealth = 100.0f;
     }
     commonData->invMaxHealth = 1.0f / commonData->maxHealth;
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Pickups);
-    if (node != 0) {
-        PickupType::FindByLogicalName(PlayerZrdArrayString(node, 1), &commonData->pickupType);
-        commonData->pickupCapacity = PlayerZrdArrayInt(node, 2);
+    zReader::Node* const pickupsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Pickups);
+    if (pickupsNode != 0) {
+        PickupType::FindByLogicalName(PlayerZrdArrayString(pickupsNode, 1), &commonData->pickupType);
+        commonData->pickupCapacity = PlayerZrdArrayInt(pickupsNode, 2);
     } else {
         commonData->pickupType = 0;
         commonData->pickupCapacity = 0;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Weapons);
-    if (node == 0) {
+    zReader::Node* const weaponsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Weapons);
+    if (weaponsNode == 0) {
         return;
     }
 
-    commonData->weaponNodeCount = PlayerZrdArrayCount(node) - 1;
-    if (commonData->weaponNodeCount <= 0) {
-        return;
-    }
-
+    commonData->weaponNodeCount = PlayerZrdArrayCount(weaponsNode) - 1;
     for (int index = 0; index < commonData->weaponNodeCount; ++index) {
         PlayerMasterWeaponSpec* const weaponSpec
             = (PlayerMasterWeaponSpec*)(::operator new(sizeof(PlayerMasterWeaponSpec)));
         memset(weaponSpec, 0, sizeof(PlayerMasterWeaponSpec));
-        if (commonData->weaponSpecCount == 0) {
-            commonData->weaponSpecHead = weaponSpec;
-        } else {
-            commonData->weaponSpecTail->next = weaponSpec;
+        if (weaponSpec != 0) {
+            weaponSpec->next = 0;
+            if (commonData->weaponSpecCount == 0) {
+                commonData->weaponSpecHead = weaponSpec;
+            } else {
+                commonData->weaponSpecTail->next = weaponSpec;
+            }
+            commonData->weaponSpecTail = weaponSpec;
+            weaponSpec->next = 0;
+            ++commonData->weaponSpecCount;
         }
-        commonData->weaponSpecTail = weaponSpec;
-        weaponSpec->next = 0;
-        ++commonData->weaponSpecCount;
 
-        zReader::Node* const weaponFields = PlayerZrdArrayBase(node)[index + 1].value.nodes;
-        strcpy(weaponSpec->optCatalogName, weaponFields[1].value.str);
-        weaponSpec->missionRequirementOrGateId = weaponFields[2].value.i32;
-        weaponSpec->mountLayoutFlags = weaponFields[3].value.i32;
-        weaponSpec->startAmmoOrCharge = (float)(weaponFields[4].value.i32);
-        weaponSpec->dispatchRepeatDelay = weaponFields[5].value.f32;
-        weaponSpec->aiAttackRangeMin = weaponFields[6].value.f32;
-        weaponSpec->aiAttackRangeMax = weaponFields[7].value.f32;
-        weaponSpec->fireSlotRecoilFlags = weaponFields[8].value.i32;
-        weaponSpec->initialHardpointSelectState = weaponFields[9].value.i32;
+        strcpy(weaponSpec->optCatalogName, PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[1].value.str);
+        weaponSpec->missionRequirementOrGateId = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[2].value.i32;
+        weaponSpec->mountLayoutFlags = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[3].value.i32;
+        weaponSpec->startAmmoOrCharge = (float)(PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[4].value.i32);
+        weaponSpec->dispatchRepeatDelay = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[5].value.f32;
+        weaponSpec->aiAttackRangeMin = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[6].value.f32;
+        weaponSpec->aiAttackRangeMax = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[7].value.f32;
+        weaponSpec->fireSlotRecoilFlags = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[8].value.i32;
+        weaponSpec->initialHardpointSelectState = PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[9].value.i32;
     }
 }
 } // namespace Player
@@ -6360,23 +6363,23 @@ void __fastcall HandleHotkeyCommand(int commandId)
         GameNet::BeginChatCompose();
         return;
     case 43:
-        if (zOpt::GetThrottleMode() == 0) {
-            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24c), 5.0f);
-            zOpt::SetThrottleMode(1);
-        } else {
+        if (zOpt::GetThrottleMode() != 0) {
             HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24d), 5.0f);
             zOpt::SetThrottleMode(0);
+        } else {
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x24c), 5.0f);
+            zOpt::SetThrottleMode(1);
         }
         return;
     case 36:
-        if (g_HudUi_AuxOverlayEnabled == 0) {
-            g_HudUi_AuxOverlayEnabled = 1;
-            HudUiMgr::SetFloatTimerVisible(1);
-            HudUiMgr::SetAuxOverlayVisible(1);
-        } else {
+        if (g_HudUi_AuxOverlayEnabled != 0) {
             g_HudUi_AuxOverlayEnabled = 0;
             HudUiMgr::SetFloatTimerVisible(0);
             HudUiMgr::SetAuxOverlayVisible(0);
+        } else {
+            g_HudUi_AuxOverlayEnabled = 1;
+            HudUiMgr::SetFloatTimerVisible(1);
+            HudUiMgr::SetAuxOverlayVisible(1);
         }
         return;
     case 44:

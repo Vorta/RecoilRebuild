@@ -347,21 +347,20 @@ extern "C" char* __fastcall zRdrInitWildcardPath(char* pattern)
         return 0;
     }
 
+    g_zUtil_ZRDR_WildcardPath = pattern;
     for (int i = 0; i < 5; ++i) {
         g_zUtil_ZRDR_WildcardStarPtrs[i] = 0;
         g_zUtil_ZRDR_WildcardDigits[i] = 0;
     }
 
-    g_zUtil_ZRDR_WildcardPath = pattern;
     g_zUtil_ZRDR_WildcardStarCount = 0;
 
-    const int patternLength = (int)(strlen(pattern));
-    for (int patternIndex = patternLength - 1; patternIndex >= 0; --patternIndex) {
+    for (int patternIndex = strlen(pattern) - 1; patternIndex >= 0; --patternIndex) {
         if (pattern[patternIndex] == '*') {
             g_zUtil_ZRDR_WildcardStarPtrs[g_zUtil_ZRDR_WildcardStarCount] = &pattern[patternIndex];
             ++g_zUtil_ZRDR_WildcardStarCount;
             if (g_zUtil_ZRDR_WildcardStarCount == 5) {
-                break;
+                patternIndex = -1;
             }
         }
     }

@@ -2714,7 +2714,7 @@ WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAdded(int status, WestwoodOnlin
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onbrowserecordandsessionresolved
  * @recoil-artifact defines .text recoil:function:0x43ff80: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordAndSessionResolved.
- *
+ * @recoil-match byte
  *
  * Purpose: Resolves browse-record/session details and updates session row status text.
  */
@@ -2864,7 +2864,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionQueryFinished(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onsessionlistenumerated
  * @recoil-artifact defines .text recoil:function:0x4402c0: WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated.
- *
+ * @recoil-match byte
  *
  * Purpose: Enumerates session records and appends visible rows for the upgrade dialog.
  */
@@ -3344,7 +3344,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onbrowserecordlistreceived
  * @recoil-artifact defines .text recoil:function:0x441040: WestwoodOnlineUpgradeApiEventSink::OnBrowseRecordListReceived.
- *
+ * @recoil-match byte
  *
  * Purpose: Rebuilds the browse-record list display from a received record list.
  */
@@ -3609,7 +3609,7 @@ WestwoodOnlineUpgradeApiEventSink::UpdateSessionResultItemFlags(int, const char*
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onsessionlaunchresult
  * @recoil-artifact defines .text recoil:function:0x441480: WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult.
- *
+ * @recoil-match byte
  *
  * Purpose: Handles launch success/failure state for a selected Westwood session.
  */
@@ -3943,7 +3943,7 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-getselectedprofilevalues
  * @recoil-artifact defines .text recoil:function:0x441c60: WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp.
  * Purpose: exposes the selected profile name, connect string, and mode to the
@@ -3992,7 +3992,7 @@ int WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-onok
  * @recoil-artifact defines .text recoil:function:0x441f40: WestwoodOnlineUpgradeConfigDialog::OnOK
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp.
  * Purpose: saves the selected WOL profile strings and password flag before
@@ -4151,7 +4151,7 @@ void WestwoodOnlineUpgradeDialog::SetSelectedProfileConnectString(CString connec
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedownload-createinstanceandadvise
  * @recoil-artifact defines .text recoil:function:0x4422a0: WestwoodOnlineUpgradeDownload::CreateInstanceAndAdvise.
- *
+ * @recoil-match byte
  *
  * Purpose: Creates the Westwood download COM object and advises the local event sink.
  */

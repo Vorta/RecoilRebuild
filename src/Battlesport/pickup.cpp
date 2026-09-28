@@ -788,21 +788,20 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
     g_Pickup_SceneNode = sceneNode;
 
     zSndSample* const defaultPickupSound = zSnd::FindSampleByName(kPickupDefaultSoundName);
-    for (int index = 0; index < 40; ++index) {
-        PickupType& pickupType = g_PickupTypes[index];
+    PickupType* pickupType = g_PickupTypes;
+    for (int index = 0; index < 40; ++index, ++pickupType) {
+        char templateName[0x18];
+        sprintf(templateName, kPickupTemplateNameFormat, pickupType->typeIndex);
+        pickupType->templateNode = CZClass::FindByTypeAndName(6, templateName);
+        pickupType->pickupSound = defaultPickupSound;
+        pickupType->nameSuffixMax = 0;
 
-        char templateName[0x28];
-        sprintf(templateName, kPickupTemplateNameFormat, pickupType.typeIndex);
-        pickupType.templateNode = CZClass::FindByTypeAndName(6, templateName);
-        pickupType.pickupSound = defaultPickupSound;
-        pickupType.nameSuffixMax = 0;
-
-        CZNodePartial* const templateNode = pickupType.templateNode;
+        CZNodePartial* const templateNode = pickupType->templateNode;
         if (templateNode != 0) {
             PickupNodeRuntimeFields* const fields = (PickupNodeRuntimeFields*)(templateNode->name);
             fields->pickupId = 0;
-            fields->pickupTypeIndex = pickupType.typeIndex;
-            fields->amount = pickupType.defaultAmount;
+            fields->pickupTypeIndex = pickupType->typeIndex;
+            fields->amount = pickupType->defaultAmount;
         }
     }
 
@@ -814,24 +813,21 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
 
     zReader::Node* const pickupDataNode = zRdrGetNode(rootNode, kPickupConfigDataNodeName);
     if (pickupDataNode != 0) {
-        zReader::Node* const pickupData = pickupDataNode->value.nodes;
-        const int pickupDataCount = pickupData[0].value.i32;
-        for (int fieldIndex = 1; fieldIndex < pickupDataCount; fieldIndex += 2) {
-            int pickupTypeIndex = 0;
-            const char* const logicalName = pickupData[fieldIndex].value.str;
-            if (PickupType::FindByLogicalName(logicalName, &pickupTypeIndex) == 0) {
+        for (int fieldIndex = 1; fieldIndex < pickupDataNode->value.nodes[0].value.i32; fieldIndex += 2) {
+            int pickupTypeIndex;
+            if (PickupType::FindByLogicalName(pickupDataNode->value.nodes[fieldIndex].value.str, &pickupTypeIndex)
+                == 0) {
                 continue;
             }
 
+            zReader::Node* const entryNode
+                = zRdrGetNode(pickupDataNode, pickupDataNode->value.nodes[fieldIndex].value.str);
             PickupType& pickupType = g_PickupTypes[pickupTypeIndex];
-            zReader::Node* const entryNode = zRdrGetNode(pickupDataNode, logicalName);
             zReader::Node* const soundNode = zRdrGetNode(entryNode, g_HudZrd_Key_Sound);
             zReader::Node* const imageNode = zRdrGetNode(entryNode, kPickupConfigImageKey);
             if (soundNode != 0) {
-                zSndSample* const pickupSound = zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
-                if (pickupSound != 0) {
-                    pickupType.pickupSound = pickupSound;
-                } else {
+                pickupType.pickupSound = zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
+                if (pickupType.pickupSound == 0) {
                     pickupType.pickupSound = defaultPickupSound;
                 }
             }
@@ -1015,11 +1011,10 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
     CZClass::gwNodeSetRaycastable(pickupObj, 0);
     CZClass::gwNodeSetPickable(pickupObj, 0);
 
-    PickupType* const pickupType = &g_PickupTypes[pickupTypeId];
-    if (pickupType->weaponKeyName != 0) {
-        g_HudSensorTracker.ShowObjectivePickupInfo(1, 1, pickupType->optEntry);
+    if (g_PickupTypes[pickupTypeId].weaponKeyName != 0) {
+        g_HudSensorTracker.ShowObjectivePickupInfo(1, 1, g_PickupTypes[pickupTypeId].optEntry);
         if (zOpt::GetNetworkEnabled() == 0) {
-            RemoveOtherSpawnsWithSameOptEntry(pickupType->optEntry, pickupObj);
+            RemoveOtherSpawnsWithSameOptEntry(g_PickupTypes[pickupTypeId].optEntry, pickupObj);
         }
     }
 
@@ -1029,7 +1024,7 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
     if (animEntry != 0) {
         zVec3 worldPosition;
         CZNode::GetWorldPosition(pickupObj, &worldPosition);
-        pickupType->pickupSound->PlayA3DSimple(1.0f);
+        g_PickupTypes[pickupTypeId].pickupSound->PlayA3DSimple(1.0f);
         CZClass::gwNodeSetName(pickupObj, pickupAnimName);
         zEffectAnimEntry* const runtimeEntry = zEffectAnim::SetTransformRefsThunk(
             animEntry,
@@ -1587,9 +1582,8 @@ void __fastcall Pickup::RegisterExistingObject(int, CZNodePartial* pickupObj, in
 int __fastcall PickupType::FindByLogicalName(const char* logicalName, int* outTypeIndex)
 {
     for (int index = 0; index < 40; ++index) {
-        const PickupType& pickupType = g_PickupTypes[index];
-        if (pickupType.logicalName != 0 && strcmp(logicalName, pickupType.logicalName) == 0) {
-            *outTypeIndex = pickupType.typeIndex;
+        if (g_PickupTypes[index].logicalName != 0 && strcmp(g_PickupTypes[index].logicalName, logicalName) == 0) {
+            *outTypeIndex = g_PickupTypes[index].typeIndex;
             return 1;
         }
     }
@@ -2002,18 +1996,16 @@ int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex()
         if (cursor != 18 && cursor != 19) {
             const int dropVariantIndex = cursor & 1;
             const int dropGroupIndex = cursor >> 1;
-            int available = 0;
-
             if (zOpt::GetNetworkEnabled() != 0) {
-                available = g_PickupTypes[14 + cursor].weaponPresenceCount != 0;
-            } else {
-                PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[dropGroupIndex];
-                PlayerGunFireController* const controller
-                    = dropVariantIndex != 0 ? &bank->controllerB : &bank->controllerA;
-                available = (controller->flags & 4) != 0;
-            }
-
-            if (available != 0) {
+                if (g_PickupTypes[14 + cursor].weaponPresenceCount != 0) {
+                    g_Pickup_LastVTOLDropIndex = cursor;
+                    return MapVTOLDropGroupVariantToTypeIndex(dropGroupIndex, dropVariantIndex);
+                }
+            } else if ((unsigned char)((unsigned int)(&playerState->altWeaponBanks[dropGroupIndex].controllerA
+                                           + dropVariantIndex)
+                                           ->flags
+                           >> 2)
+                & 1) {
                 g_Pickup_LastVTOLDropIndex = cursor;
                 return MapVTOLDropGroupVariantToTypeIndex(dropGroupIndex, dropVariantIndex);
             }
@@ -2073,18 +2065,13 @@ void __cdecl PickupRespawnQueue::Update()
     }
 
     PickupRespawnEntry* entry = g_PickupRespawnQueue.head;
-    if (entry == 0) {
-        return;
-    }
-
     while (entry != 0) {
         if (entry->when < g_Time_UnscaledAccumulatedTimeSec) {
             Pickup::RespawnSpawnDef(entry->spawn);
 
-            PickupRespawnEntry* const nextEntry = entry->next;
-            if (g_PickupRespawnQueue.count != 0) {
-                PickupRespawnEntry* prev = g_PickupRespawnQueue.head;
-                if (entry == prev) {
+            PickupRespawnEntry* const nextEntry = entry != 0 ? entry->next : 0;
+            if (entry != 0 && g_PickupRespawnQueue.count != 0) {
+                if (entry == g_PickupRespawnQueue.head) {
                     --g_PickupRespawnQueue.count;
                     g_PickupRespawnQueue.head = entry->next;
                     if (g_PickupRespawnQueue.head == 0) {
@@ -2092,10 +2079,9 @@ void __cdecl PickupRespawnQueue::Update()
                         g_PickupRespawnQueue.tail = 0;
                     }
                     ::operator delete(entry);
-                } else if (prev != 0) {
-                    while (prev != 0) {
-                        PickupRespawnEntry* const prevNext = prev->next;
-                        if (prevNext == entry) {
+                } else {
+                    for (PickupRespawnEntry* prev = g_PickupRespawnQueue.head; prev != 0; prev = prev->next) {
+                        if (prev->next == entry) {
                             --g_PickupRespawnQueue.count;
                             prev->next = entry->next;
                             if (g_PickupRespawnQueue.tail == entry) {
@@ -2104,13 +2090,12 @@ void __cdecl PickupRespawnQueue::Update()
                             ::operator delete(entry);
                             break;
                         }
-                        prev = prevNext;
                     }
                 }
             }
             entry = nextEntry;
         } else {
-            entry = entry->next;
+            entry = entry != 0 ? entry->next : 0;
         }
     }
 }
@@ -2199,8 +2184,9 @@ void __fastcall Pickup::ArchiveReadRecord(
     const PickupArchiveRecord* const record = (const PickupArchiveRecord*)(buffer);
     if (record->firstRecord != 0) {
         g_PickupSpawnList_Primary.Clear();
-        for (int index = 0; index < 40; ++index) {
-            g_PickupTypes[index].nameSuffixMax = 0;
+        PickupType* type = g_PickupTypes;
+        for (int index = 0; index < 40; ++index, ++type) {
+            type->nameSuffixMax = 0;
         }
     }
 
@@ -2227,21 +2213,22 @@ void __fastcall Pickup::ArchiveReadRecord(
 void __cdecl Pickup::ReconcilePrimaryAndNetworkCopySpawnLists()
 {
     PickupSpawnDef* primarySpawn = g_PickupSpawnList_Primary.head;
+    PickupSpawnDef* networkCopySpawn = g_PickupSpawnList_NetworkCopy.head;
+
     while (primarySpawn != 0) {
         if (SpawnListContainsPickupId(primarySpawn, &g_PickupSpawnList_NetworkCopy) == 0) {
             SendPkt11CreateDelta(primarySpawn);
         }
 
-        primarySpawn = primarySpawn->next;
+        primarySpawn = primarySpawn != 0 ? primarySpawn->next : 0;
     }
 
-    PickupSpawnDef* networkCopySpawn = g_PickupSpawnList_NetworkCopy.head;
     while (networkCopySpawn != 0) {
         if (SpawnListContainsPickupId(networkCopySpawn, &g_PickupSpawnList_Primary) == 0) {
             SendPkt11Flag2Delta(networkCopySpawn);
         }
 
-        networkCopySpawn = networkCopySpawn->next;
+        networkCopySpawn = networkCopySpawn != 0 ? networkCopySpawn->next : 0;
     }
 }
 
@@ -2345,11 +2332,12 @@ int __cdecl Pickup::GetNextPickupId()
  */
 PickupType* __fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(zUtil_SaveGameState* saveState)
 {
-    const char* const keyName = saveState->playerState->activeAltGunController->optCatalogEntry->keyName;
+    OptCatalogEntryDef* const optEntry = saveState->playerState->activeAltGunController->optCatalogEntry;
     {
         for (int index = 0x11; index <= 0x21; ++index) {
-            if (strcmp(keyName, g_PickupTypes[index].weaponKeyName) == 0) {
-                return &g_PickupTypes[index];
+            if (strcmp(optEntry->keyName, g_PickupTypes[index].weaponKeyName) == 0) {
+                // Retail returns the droppable entry paired with weapon entry index (0x11 below it).
+                return &g_PickupTypes[index - 0x11];
             }
         }
     }
@@ -2366,15 +2354,15 @@ PickupType* __fastcall Pickup::FindDroppableTypeForPlayerCurrentWeapon(zUtil_Sav
  */
 zVidImagePartial* __fastcall Pickup::FindOptMetaImageByOptEntry(OptCatalogEntryDef* optEntry)
 {
-    {
-        for (int index = 0x11; index <= 0x21; ++index) {
-            if (g_PickupTypes[index].optEntry == optEntry) {
-                return g_PickupTypes[index].optMetaImage;
-            }
+    zVidImagePartial* optMetaImage = 0;
+    for (int index = 0x11; index <= 0x21; ++index) {
+        if (optEntry == g_PickupTypes[index].optEntry) {
+            optMetaImage = g_PickupTypes[index].optMetaImage;
+            break;
         }
     }
 
-    return 0;
+    return optMetaImage;
 }
 
 /**

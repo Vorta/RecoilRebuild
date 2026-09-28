@@ -864,26 +864,24 @@ int CZFMVActionPlayAvi::Update(double timeSec)
         startTimeSec = timeSec;
     }
 
-    zFMV_Stream* const playbackStream = stream;
-    const int frameIndex = (int)((timeSec - startTimeSec) * (double)(playbackStream->videoFramesPerSecond));
+    const int frameIndex = (int)((timeSec - startTimeSec) * (int)(stream->videoFramesPerSecond));
     if (frameIndex != previousFrameIndex) {
-        int blitPrimaryToSwFirst = 0;
-        if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackend3dfx) {
-            result = playbackStream->ReadAndDecodeFrame(frameIndex);
+        if (g_zVideo_ActiveRendererPath == k_zFMV_RendererBackend3dfx) {
+            if (stream->ReadAndDecodeFrame(frameIndex) == 0) {
+                result = 0;
+            }
             g_zVideo_pfnBltSwToPrimaryRect((zVidImagePartial*)(stream), 0, 0, (zVidRect32*)(&destRect));
+            zVideo::AdjustSurfacesIfEnabled(0, 0, 1, 0);
+        } else {
             zVideo::RunPostprocessOnPrimaryBuffer();
-            blitPrimaryToSwFirst = 1;
-        } else {
-            result = playbackStream->ReadAndDecodeFrame(frameIndex);
-        }
-
-        if (blitPrimaryToSwFirst != 0) {
+            if (stream->ReadAndDecodeFrame(frameIndex) == 0) {
+                result = 0;
+            }
             zVideo::DispatchUnlockPrimarySurfaceState();
-        } else {
             g_zVideo_pfnBltSwToPrimaryRect((zVidImagePartial*)(stream), 0, 0, (zVidRect32*)(&destRect));
+            zVideo::AdjustSurfacesIfEnabled(0, 0, 1, 1);
         }
 
-        zVideo::AdjustSurfacesIfEnabled(0, 0, 1, blitPrimaryToSwFirst);
         lastDecodedFrameIndex = frameIndex;
     }
 

@@ -10040,8 +10040,8 @@ void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack)
     }
 
     HudUiMgrSensorTrackNode* const selectedTrackNode = (HudUiMgrSensorTrackNode*)(trackedProgressSlot->trackNode);
-    float selectedHealthCurrent = 0.0f;
-    float selectedHealthMax = 1.0f;
+    float selectedHealthCurrent;
+    float selectedHealthMax;
     if (selectedTrackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
         zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(selectedTrackNode->payload);
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
@@ -10074,7 +10074,7 @@ void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack)
         healthRatio = 0.0f;
     }
 
-    const int fillPixels = (int)(ceil((double)(g_HudUiMgrSensorMeter.height) * (double)(healthRatio)));
+    const int fillPixels = (int)(ceil(healthRatio * g_HudUiMgrSensorMeter.height));
     const int top = (int)(g_HudUiMgrSensorMeter.points[1].y) - fillPixels;
     g_HudUiMgrSensorMeter.points[0].y = (float)(top);
     g_HudUiMgrSensorMeter.points[3].y = (float)(top);
@@ -11550,7 +11550,7 @@ void HudUiWidget::Shutdown() { }
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-loadweaponlayoutfromnode
  * @recoil-artifact defines .text recoil:function:0x413ec0: HudUiMessage::LoadWeaponLayoutFromNode.
- *
+ * @recoil-match byte
  *
  * Purpose: Load weapon-message images/layout and register the message owner and side widget with the HUD manager.
  */
@@ -11568,16 +11568,16 @@ int HudUiMessage::LoadWeaponLayoutFromNode(zReader::Node* layoutNode, const HudU
     variantImages[4] = zImage::TexDirFindOrCreateByPath(payload[5].value.str);
     sideImageSwaps[0] = zImage::TexDirFindOrCreateByPath(payload[6].value.str);
     sideImageSwaps[1] = zImage::TexDirFindOrCreateByPath(payload[7].value.str);
-    HudUiPanel* const messagePanel = &panel;
     layoutX = payload[8].value.i32;
     layoutY = payload[9].value.i32;
 
     RebuildWeaponLayout();
 
-    imageStateWord = (imageStateWord & 0xffff0000u) | 1u;
+    *((unsigned short*)(&imageStateWord)) = 1;
     Invalidate();
 
-    messagePanel->centerText = 1;
+    panel.alignMode = 1;
+    HudUiPanel* const messagePanel = &panel;
     messagePanel->textColor0 = 0x0020bf40;
     messagePanel->textColor1 = 0x0020bf40;
     messagePanel->textDirty = 1;
@@ -11585,7 +11585,7 @@ int HudUiMessage::LoadWeaponLayoutFromNode(zReader::Node* layoutNode, const HudU
     messagePanel->shadowOffsetY = -1;
     messagePanel->shadowEnabled = 1;
 
-    messagePanel->SetFont(fontParams->faceName, fontParams->height, fontParams->weight, fontParams->width, 0, 0, 2);
+    messagePanel->SetFont(fontParams->faceName, fontParams->weight, fontParams->width, fontParams->height, 0, 0, 2);
     messagePanel->SetTextFmt(g_HudUiBlankSpaces3);
 
     g_HudUiMgr.AddChild(this);
@@ -11674,15 +11674,15 @@ void __fastcall AdvanceAndLog(const char* messageOrNull)
 {
     const unsigned int currentIndex = g_HudUiLoadingCheckpointCurrentIndex;
     const unsigned int maxIndex = g_HudUiLoadingCheckpointMaxIndex;
-    if (currentIndex > maxIndex) {
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\hud.cpp", 0x1184, g_Hud_CheckpointOverflowMsg);
-    } else {
+    if (currentIndex <= maxIndex) {
         g_HudUiLoadingCheckpointCurrentProgress = g_HudUiLoadingCheckpointProgress[currentIndex];
         const unsigned int nextIndex = currentIndex + 1;
         g_HudUiLoadingCheckpointCurrentIndex = nextIndex;
         if (nextIndex > maxIndex) {
             g_HudUiLoadingCheckpointCurrentIndex = maxIndex;
         }
+    } else {
+        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\hud.cpp", 0x1184, g_Hud_CheckpointOverflowMsg);
     }
 
     if (messageOrNull != 0) {
@@ -11704,36 +11704,31 @@ void __fastcall AdvanceAndLog(const char* messageOrNull)
  */
 void InitTable()
 {
-    static const float kRawProgress[] = {
-        0.00100000005f,
-        0.136999995f,
-        0.237000003f,
-        0.340000004f,
-        0.899999976f,
-        9.30000019f,
-        12.3999996f,
-        13.3999996f,
-        20.0f,
-        26.0f,
-        26.2999992f,
-        28.7000008f,
-        31.5f,
-        34.0f,
-        36.2000008f,
-        36.4000015f,
-        53.2999992f,
-        53.5999985f,
-        53.7000008f,
-    };
-
     g_HudUiLoadingCheckpointMaxIndex = 18;
     g_HudUiLoadingCheckpointCurrentIndex = 0;
-    {
-        for (unsigned int index = 0; index <= g_HudUiLoadingCheckpointMaxIndex; ++index) {
-            g_HudUiLoadingCheckpointRawProgress[index] = kRawProgress[index];
-            g_HudUiLoadingCheckpointProgress[index]
-                = g_HudUiLoadingCheckpointRawProgress[index] * g_HudUiLoadingCheckpointProgressScale;
-        }
+    g_HudUiLoadingCheckpointRawProgress[0] = 0.00100000005f;
+    g_HudUiLoadingCheckpointRawProgress[1] = 0.136999995f;
+    g_HudUiLoadingCheckpointRawProgress[2] = 0.237000003f;
+    g_HudUiLoadingCheckpointRawProgress[3] = 0.340000004f;
+    g_HudUiLoadingCheckpointRawProgress[4] = 0.899999976f;
+    g_HudUiLoadingCheckpointRawProgress[5] = 9.30000019f;
+    g_HudUiLoadingCheckpointRawProgress[6] = 12.3999996f;
+    g_HudUiLoadingCheckpointRawProgress[7] = 13.3999996f;
+    g_HudUiLoadingCheckpointRawProgress[8] = 20.0f;
+    g_HudUiLoadingCheckpointRawProgress[9] = 26.0f;
+    g_HudUiLoadingCheckpointRawProgress[10] = 26.2999992f;
+    g_HudUiLoadingCheckpointRawProgress[11] = 28.7000008f;
+    g_HudUiLoadingCheckpointRawProgress[12] = 31.5f;
+    g_HudUiLoadingCheckpointRawProgress[13] = 34.0f;
+    g_HudUiLoadingCheckpointRawProgress[14] = 36.2000008f;
+    g_HudUiLoadingCheckpointRawProgress[15] = 36.4000015f;
+    g_HudUiLoadingCheckpointRawProgress[16] = 53.2999992f;
+    g_HudUiLoadingCheckpointRawProgress[17] = 53.5999985f;
+    g_HudUiLoadingCheckpointRawProgress[18] = 53.7000008f;
+
+    for (unsigned int index = 0; index <= g_HudUiLoadingCheckpointMaxIndex; ++index) {
+        g_HudUiLoadingCheckpointProgress[index]
+            = g_HudUiLoadingCheckpointRawProgress[index] * g_HudUiLoadingCheckpointProgressScale;
     }
 }
 } // namespace HudUiLoadingCheckpoint
@@ -13210,12 +13205,9 @@ extern "C" unsigned long __stdcall GetTickCount();
  */
 void zFMV_Action::RunBlockingTimed()
 {
-    const double startSec = (double)(GetTickCount()) * 0.00100000005;
+    const double startSec = GetTickCount() * 0.001f;
     Begin(0.0);
-    double currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-    while (Update(currentSec) != 0) {
-        currentSec = ((double)(GetTickCount()) * 0.00100000005) - startSec;
-    }
+    while (Update((GetTickCount() * 0.001f) - startSec) != 0) { }
     End();
 }
 
@@ -13230,3 +13222,4 @@ void zFMV_Action::RunBlockingTimed()
  */
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
+extern int g_HudSortRangeIdCounterAlignment2;

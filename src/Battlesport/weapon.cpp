@@ -633,103 +633,105 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
 
     FreeAltWeaponTrailRuntimeStates(saveState);
 
-    const float resetAmmoOrCharge
-        = playerState->lifecycleState == kPlayerLifecycleRemote ? kPlayerAltAmmoDisabledSentinel : 0.0f;
     for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
-        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-        bank.selectedSide = 0;
-        for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
-            PlayerGunFireController* const controller = sideIndex == 0 ? &bank.controllerA : &bank.controllerB;
-            controller->weaponBankIndex = bankIndex;
-            controller->weaponSideIndex = sideIndex;
-            controller->flags &= ~kPlayerGunControllerAvailableFlag;
-            controller->ammoOrCharge = resetAmmoOrCharge;
-            controller->attachNodePrimary = 0;
-            controller->trailRuntimeState = 0;
-        }
+        playerState->altWeaponBanks[bankIndex].selectedSide = 0;
+
+        playerState->altWeaponBanks[bankIndex].controllerA.weaponBankIndex = bankIndex;
+        playerState->altWeaponBanks[bankIndex].controllerA.weaponSideIndex = 0;
+        playerState->altWeaponBanks[bankIndex].controllerA.flags &= ~kPlayerGunControllerAvailableFlag;
+        playerState->altWeaponBanks[bankIndex].controllerA.ammoOrCharge
+            = saveState->playerState->lifecycleState == kPlayerLifecycleRemote ? kPlayerAltAmmoDisabledSentinel : 0.0f;
+        playerState->altWeaponBanks[bankIndex].controllerA.attachNodePrimary = 0;
+        playerState->altWeaponBanks[bankIndex].controllerA.trailRuntimeState = 0;
+
+        playerState->altWeaponBanks[bankIndex].controllerB.weaponBankIndex = bankIndex;
+        playerState->altWeaponBanks[bankIndex].controllerB.weaponSideIndex = 1;
+        playerState->altWeaponBanks[bankIndex].controllerB.flags &= ~kPlayerGunControllerAvailableFlag;
+        playerState->altWeaponBanks[bankIndex].controllerB.ammoOrCharge
+            = saveState->playerState->lifecycleState == kPlayerLifecycleRemote ? kPlayerAltAmmoDisabledSentinel : 0.0f;
+        playerState->altWeaponBanks[bankIndex].controllerB.attachNodePrimary = 0;
+        playerState->altWeaponBanks[bankIndex].controllerB.trailRuntimeState = 0;
     }
 
-    int trailSegmentCount = 1;
+    int trailSegmentCount;
     if (playerState->playerOrdinal == 1 || strstr(playerState->rootNode->name, "net") != 0) {
         trailSegmentCount = 8;
+    } else {
+        trailSegmentCount = 1;
     }
 
-    if (masterCommonData->weaponNodeCount > 0 && masterCommonData->weaponSpecHead != 0) {
-        int altDefaultSelected = 0;
-        int primaryDefaultSelected = 0;
-        PlayerMasterWeaponSpec* weaponSpec = masterCommonData->weaponSpecHead;
-        while (weaponSpec != 0) {
-            char optCatalogName[0x50];
+    int altDefaultSelected = 0;
+    int primaryDefaultSelected = 0;
+    if (masterCommonData->weaponNodeCount > 0) {
+        for (PlayerMasterWeaponSpec* weaponSpec = masterCommonData->weaponSpecHead; weaponSpec != 0;
+            weaponSpec = weaponSpec != 0 ? weaponSpec->next : 0) {
+            char optCatalogName[0x14];
             strcpy(optCatalogName, weaponSpec->optCatalogName);
 
             const int bankIndex = optCatalogName[4] - '0';
             const int sideIndex = optCatalogName[6] - '0';
-            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-            PlayerGunFireController* const controller = sideIndex == 0 ? &bank.controllerA : &bank.controllerB;
+            PlayerGunFireController* const controller = &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
 
             controller->optCatalogEntry = OptCatalog::FindEntryByName(optCatalogName);
 
-            int available = 0;
-            const int packedWeaponSlotId = (bankIndex << 4) | sideIndex;
+            int available;
             CheckMissionWeaponAvailability(
                 saveState,
                 weaponSpec->missionRequirementOrGateId,
-                packedWeaponSlotId,
+                (bankIndex << 4) + sideIndex,
                 &available
             );
 
             controller->flags
                 = (controller->flags & ~kPlayerGunControllerDualMountFlag) | ((weaponSpec->mountLayoutFlags & 1) << 1);
             if (available != 0) {
-                if (controller->optCatalogEntry != 0) {
-                    controller->flags |= kPlayerGunControllerAvailableFlag;
-                } else {
-                    controller->flags &= ~kPlayerGunControllerAvailableFlag;
-                }
+                controller->flags = (controller->flags & ~kPlayerGunControllerAvailableFlag)
+                    | (((controller->optCatalogEntry != 0) & 1) << 2);
             }
-            controller->ammoOrCharge
-                = (controller->flags & kPlayerGunControllerAvailableFlag) != 0 ? weaponSpec->startAmmoOrCharge : 0.0f;
+            if ((unsigned char)((unsigned int)controller->flags >> 2) & 1) {
+                controller->ammoOrCharge = weaponSpec->startAmmoOrCharge;
+            } else {
+                controller->ammoOrCharge = 0.0f;
+            }
             controller->nextDispatchTime = 0.0f;
             controller->dispatchRepeatDelay = weaponSpec->dispatchRepeatDelay;
             controller->aiAttackRangeMin = weaponSpec->aiAttackRangeMin;
             controller->aiAttackRangeMax = weaponSpec->aiAttackRangeMax;
-            controller->flags = (controller->flags & ~kPlayerGunControllerRecoilFlag)
-                | (weaponSpec->fireSlotRecoilFlags & kPlayerGunControllerRecoilFlag);
+            controller->flags = ((weaponSpec->fireSlotRecoilFlags ^ controller->flags) & 1) ^ controller->flags;
             controller->initialHardpointSelectState = weaponSpec->initialHardpointSelectState;
 
             if (playerState->gunNode != 0) {
-                if ((controller->flags & kPlayerGunControllerDualMountFlag) != 0) {
+                if ((unsigned char)((unsigned int)controller->flags >> 1) & 1) {
                     char mountName[0x50];
                     char scrollName[0x50];
                     sprintf(mountName, "%s_L", controller->optCatalogEntry->displayName);
                     controller->attachNodePrimary = CZClass::FindNodeRecursiveByName(playerState->gunNode, mountName);
                     if (controller->attachNodePrimary != 0) {
                         CZClass::gwNodeSetActive(controller->attachNodePrimary, 0);
-                    }
-                    sprintf(scrollName, "%sSCROLL", mountName);
-                    CZNodePartial* scrollNode
-                        = CZClass::FindNodeRecursiveByName(controller->attachNodePrimary, scrollName);
-                    controller->scrollTextureModelA = 0;
-                    if (scrollNode != 0) {
-                        unsigned int userData = 0;
-                        CZClass::gwNodeGetUserData(scrollNode, &userData);
-                        controller->scrollTextureModelA = (zDiPartial*)userData;
-                        zModel::SetDiTextureWorldPerMeter(controller->scrollTextureModelA, 1, 0.0f, 2);
+                        sprintf(scrollName, "%sSCROLL", mountName);
+                        CZNodePartial* const scrollNode
+                            = CZClass::FindNodeRecursiveByName(controller->attachNodePrimary, scrollName);
+                        if (scrollNode != 0) {
+                            CZClass::gwNodeGetUserData(scrollNode, (unsigned int*)&controller->scrollTextureModelA);
+                            zModel::SetDiTextureWorldPerMeter(controller->scrollTextureModelA, 1, 0.0f, 2.0f);
+                        } else {
+                            controller->scrollTextureModelA = 0;
+                        }
                     }
 
                     sprintf(mountName, "%s_R", controller->optCatalogEntry->displayName);
                     controller->attachNodeSecondary = CZClass::FindNodeRecursiveByName(playerState->gunNode, mountName);
                     if (controller->attachNodeSecondary != 0) {
                         CZClass::gwNodeSetActive(controller->attachNodeSecondary, 0);
-                    }
-                    sprintf(scrollName, "%sSCROLL", mountName);
-                    scrollNode = CZClass::FindNodeRecursiveByName(controller->attachNodeSecondary, scrollName);
-                    controller->scrollTextureModelB = 0;
-                    if (scrollNode != 0) {
-                        unsigned int userData = 0;
-                        CZClass::gwNodeGetUserData(scrollNode, &userData);
-                        controller->scrollTextureModelB = (zDiPartial*)userData;
-                        zModel::SetDiTextureWorldPerMeter(controller->scrollTextureModelB, 1, 0.0f, 2);
+                        sprintf(scrollName, "%sSCROLL", mountName);
+                        CZNodePartial* const scrollNode
+                            = CZClass::FindNodeRecursiveByName(controller->attachNodeSecondary, scrollName);
+                        if (scrollNode != 0) {
+                            CZClass::gwNodeGetUserData(scrollNode, (unsigned int*)&controller->scrollTextureModelB);
+                            zModel::SetDiTextureWorldPerMeter(controller->scrollTextureModelB, 1, 0.0f, 2.0f);
+                        } else {
+                            controller->scrollTextureModelB = 0;
+                        }
                     }
                 } else {
                     controller->attachNodePrimary = CZClass::FindNodeRecursiveByName(
@@ -748,7 +750,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
                 }
             }
 
-            if ((controller->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
+            if ((unsigned char)((unsigned int)controller->optCatalogEntry->flags >> 1) & 1) {
                 controller->trailRuntimeState = OptCatalog::CreateTrailRuntimeState(
                     controller->optCatalogEntry,
                     playerState->rootNode,
@@ -760,57 +762,57 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
                 );
             }
 
-            if (zOpt::GetNetworkEnabled() == 0 && available != 0) {
-                if (altDefaultSelected == 0) {
+            if (zOpt::GetNetworkEnabled() == 0) {
+                if (available != 0 && altDefaultSelected == 0) {
                     ApplyAltWeaponSwitch(saveState, 0, controller);
                     altDefaultSelected = 1;
-                } else if (primaryDefaultSelected == 0) {
+                } else if (available != 0 && primaryDefaultSelected == 0) {
                     ApplyPrimaryWeaponSwitch(saveState, 0, controller);
                     primaryDefaultSelected = 1;
                 }
             }
-
-            weaponSpec = weaponSpec->next;
         }
     }
 
     if (zOpt::GetNetworkEnabled() != 0) {
-        int selected = 0;
-        for (int bankIndex = 2; selected == 0 && bankIndex < 10; ++bankIndex) {
-            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-            if ((bank.controllerA.flags & kPlayerGunControllerAvailableFlag) != 0) {
-                ApplyAltWeaponSwitch(saveState, 0, &bank.controllerA);
-                selected = 1;
-            } else if ((bank.controllerB.flags & kPlayerGunControllerAvailableFlag) != 0) {
-                ApplyAltWeaponSwitch(saveState, 0, &bank.controllerB);
-                selected = 1;
+        for (int bankIndex = 2; bankIndex < 10; ++bankIndex) {
+            PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[bankIndex];
+            if ((unsigned char)((unsigned int)bank->controllerA.flags >> 2) & 1) {
+                ApplyAltWeaponSwitch(saveState, 0, &bank->controllerA);
+                break;
             }
+            if ((unsigned char)((unsigned int)bank->controllerB.flags >> 2) & 1) {
+                ApplyAltWeaponSwitch(saveState, 0, &bank->controllerB);
+                break;
+            }
+        }
+
+        if (playerState->activeAltGunController == 0) {
+            ApplyAltWeaponSwitch(saveState, 0, &playerState->altWeaponBanks[1].controllerA);
+        }
+
+        if ((unsigned char)((unsigned int)playerState->altWeaponBanks[1].controllerB.flags >> 2) & 1) {
+            ApplyPrimaryWeaponSwitch(saveState, 0, &playerState->altWeaponBanks[1].controllerB);
+        } else {
+            ApplyPrimaryWeaponSwitch(saveState, 0, &playerState->altWeaponBanks[1].controllerA);
         }
     }
 
-    if (playerState->activeAltGunController == 0) {
-        ApplyAltWeaponSwitch(saveState, 0, &playerState->altWeaponBanks[1].controllerA);
+    if (playerState->activeAltGunController->attachNodePrimary != 0) {
+        CZClass::gwNodeSetActive(playerState->activeAltGunController->attachNodePrimary, 1);
     }
 
-    PlayerGunFireController* primaryController = &playerState->altWeaponBanks[1].controllerA;
-    if ((playerState->altWeaponBanks[1].controllerB.flags & kPlayerGunControllerAvailableFlag) != 0) {
-        primaryController = &playerState->altWeaponBanks[1].controllerB;
+    if (playerState->activeAltGunController->initialHardpointSelectState == 2) {
+        playerState->altHardpointSelectState = 2;
+    } else {
+        playerState->altHardpointSelectState = 0;
     }
-    ApplyPrimaryWeaponSwitch(saveState, 0, primaryController);
+    playerState->cachedAltSelectionCode = playerState->activeAltGunController->weaponBankIndex * 100
+        + playerState->activeAltGunController->weaponSideIndex;
 
-    PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
-    if (activeAltGunController->attachNodePrimary != 0) {
-        CZClass::gwNodeSetActive(activeAltGunController->attachNodePrimary, 1);
-    }
-
-    playerState->altHardpointSelectState = activeAltGunController->initialHardpointSelectState == 2 ? 2 : 0;
-    playerState->cachedAltSelectionCode
-        = activeAltGunController->weaponBankIndex * 100 + activeAltGunController->weaponSideIndex;
-
-    PlayerGunFireController* const activePrimaryGunController = playerState->activePrimaryGunController;
-    if (activePrimaryGunController != 0) {
-        playerState->cachedPrimarySelectionCode
-            = activePrimaryGunController->weaponBankIndex * 100 + activePrimaryGunController->weaponSideIndex;
+    if (playerState->activePrimaryGunController != 0) {
+        playerState->cachedPrimarySelectionCode = playerState->activePrimaryGunController->weaponBankIndex * 100
+            + playerState->activePrimaryGunController->weaponSideIndex;
     }
 
     playerState->pendingAltCameraToggle = 0;
@@ -1291,18 +1293,23 @@ void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState)
     }
 
     if ((playerState->timedHitStatus.runtimeFlags & kPlayerTimedHitStatusActiveFlag) != 0) {
-        const int timedResult = playerState->timedHitStatus.TickAndUpdateLight(playerState->rootNode->cachedBounds[0]);
+        const int timedResult
+            = playerState->timedHitStatus.TickAndUpdateLight(playerState->rootNode->cachedSphereCenter[3]);
         playerState->damageProtectionActive = timedResult == 2;
     }
 
     if (playerState->recentHitValid != 0) {
         if (g_Time_AccumulatedTimeSec < playerState->recentHitFxExpireTime) {
             if (playerState->lifecycleState != kPlayerLifecycleRemote) {
-                const float damage = playerState->recentHitDamage * g_FrameDeltaTimeSec;
                 if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-                    EnterDestroyedState(saveState, 0, 0, damage);
+                    EnterDestroyedState(saveState, 0, 0, playerState->recentHitDamage * g_FrameDeltaTimeSec);
                 } else {
-                    HitCallbackRecordContextAndTimedStatus(saveState, 0, 0, damage);
+                    HitCallbackRecordContextAndTimedStatus(
+                        saveState,
+                        0,
+                        0,
+                        playerState->recentHitDamage * g_FrameDeltaTimeSec
+                    );
                 }
             }
         } else {
@@ -1790,14 +1797,14 @@ void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState* saveState)
         return;
     }
 
-    PlayerGunFireSlot* activeFireSlot = 0;
+    PlayerGunFireSlot* activeFireSlot;
     SelectPrimaryGunFirePointAndSlot(saveState, &activeFireSlot);
     playerState->primaryGunDispatchRequested = 0;
 
     if (activePrimaryGunController->ammoOrCharge > 0.0f) {
-        if (activePrimaryGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
+        if (activePrimaryGunController->ammoOrCharge != 123456792.0f) {
             activePrimaryGunController->ammoOrCharge -= 1.0f;
-            if (activePrimaryGunController->ammoOrCharge < 0.0f) {
+            if (0.0f > activePrimaryGunController->ammoOrCharge) {
                 activePrimaryGunController->ammoOrCharge = 0.0f;
             }
         }
@@ -2408,9 +2415,10 @@ void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, int mode,
 int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float delta)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
     if (mode == 0) {
-        ApplyStatusMeterChange(saveState, mode, playerState->masterCommonData->maxHealth);
+        ApplyStatusMeterChange(saveState, mode, masterCommonData->maxHealth);
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x902), 5.0f);
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x246), 5.0f);
         zEffectAnim::SetVelocityThunk(playerState->regenSkinFxEntry, 0, 0.0f, 0.0f, 0.0f);
@@ -3001,7 +3009,7 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
-    PlayerGunFireSlot* activeFireSlot = 0;
+    PlayerGunFireSlot* activeFireSlot;
     SelectAltGunFirePointAndSlot(saveState, &activeFireSlot);
 
     if (playerState->altGunFireHeldFlag != 0) {
@@ -3016,9 +3024,10 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState)
         int didFire = 0;
         if (playerState->activeAltBankIndex == 1) {
             didFire = EnsureGunAuxEffectActive(saveState, activeAltGunController, &playerState->altFireOrigin);
-        } else if ((activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagCreateTrail) != 0) {
+        } else if ((unsigned char)(activeAltGunController->optCatalogEntry->flags >> 1) & 1) {
             UpdateContinuousAltGunFireController(saveState);
-            didFire = activeFireSlot != 0;
+            // Retail keeps the fire-slot pointer itself as the did-fire value.
+            didFire = (int)activeFireSlot;
         } else {
             if (activeAltGunController->attachState != 0) {
                 didFire = AltGunLaunchProjectile(saveState);
@@ -3043,9 +3052,9 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState)
             activeFireSlot->offset = 1.5f;
         }
 
-        if (activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
+        if (activeAltGunController->ammoOrCharge != 123456792.0f) {
             activeAltGunController->ammoOrCharge -= 1.0f;
-            if (activeAltGunController->ammoOrCharge < 0.0f) {
+            if (0.0f > activeAltGunController->ammoOrCharge) {
                 activeAltGunController->ammoOrCharge = 0.0f;
             }
         }
@@ -3194,14 +3203,13 @@ int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState* saveState)
         if (activeAltGunController->ammoOrCharge > 1.0f) {
             playerState->altGunTransitionState = 2;
         }
-        playerState->altGunTransitionController = activeAltGunController;
-        return 1;
+    } else {
+        if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+            playerState->pendingAltCameraToggle = 1;
+        }
+        playerState->altGunTransitionState = 0x100;
     }
 
-    if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-        playerState->pendingAltCameraToggle = 1;
-    }
-    playerState->altGunTransitionState = 0x100;
     playerState->altGunTransitionController = activeAltGunController;
     return 1;
 }
@@ -3285,14 +3293,18 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(zUtil_SaveGameState* saveState)
         return;
     }
 
-    PlayerAltWeaponBank* bank = &playerState->altWeaponBanks[activeBankIndex];
     const int oppositeSideIndex = activeController->weaponSideIndex == 0;
-    PlayerGunFireController* candidate = &bank->controllerA + oppositeSideIndex;
-    if ((candidate->flags & 4) != 0 && IsAltWeaponAllowedInCurrentMasterMode(saveState, candidate->optCatalogEntry) != 0
-        && candidate->ammoOrCharge > 0.0f) {
+    if (((&playerState->altWeaponBanks[activeBankIndex].controllerA + oppositeSideIndex)->flags & 4) != 0
+        && IsAltWeaponAllowedInCurrentMasterMode(
+               saveState,
+               (&playerState->altWeaponBanks[activeBankIndex].controllerA + oppositeSideIndex)->optCatalogEntry
+           ) != 0
+        && (&playerState->altWeaponBanks[activeBankIndex].controllerA + oppositeSideIndex)->ammoOrCharge > 0.0f) {
         HandleAltWeaponBankSelectInput(activeBankIndex + 14);
         return;
     }
+
+    PlayerAltWeaponBank* bank;
 
     for (--activeBankIndex; activeBankIndex > 1; --activeBankIndex) {
         bank = &playerState->altWeaponBanks[activeBankIndex];

@@ -153,7 +153,7 @@ struct HudSensorTracker {
     int firstIncompleteObjectiveIndex;
     zSndSample* objectiveCompleteSfx;
     int objectiveCount;
-    int objectiveReadSoundDelaySecRaw;
+    float objectiveReadSoundDelaySecRaw;
     float objectiveFlowDeadlineSecRaw;
     int completedObjectiveCount;
     char objectiveSummaryText[0x400];

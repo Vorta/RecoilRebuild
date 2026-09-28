@@ -1554,34 +1554,32 @@ namespace zVid_Image {
 void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
 {
     const float inverseSideLength = 1.0f / (float)(sideLength);
-    unsigned short* oldPixels = (unsigned short*)(image->pixels);
-    char* oldAlphaMap = image->alphaMap;
-    const int sourceWidth = image->width;
-    const int sourceHeight = image->height;
-    const float xScale = (float)(sourceWidth)*inverseSideLength;
-    const float yScale = (float)(sourceHeight)*inverseSideLength;
+    unsigned short* const oldPixels = (unsigned short*)(image->pixels);
+    char* const oldAlphaMap = image->alphaMap;
+    const float xScale = (float)(image->width) * inverseSideLength;
+    const float yScale = (float)(image->height) * inverseSideLength;
 
-    const unsigned int pixelCount = (unsigned int)(sideLength * sideLength);
-    unsigned short* newPixels = (unsigned short*)(malloc(pixelCount * sizeof(unsigned short)));
+    unsigned short* const newPixels = (unsigned short*)(malloc(sideLength * sideLength * sizeof(unsigned short)));
     char* newAlphaMap = 0;
-    if (oldAlphaMap != 0) {
-        newAlphaMap = (char*)(malloc(pixelCount));
+    if (image->alphaMap != 0) {
+        newAlphaMap = (char*)(malloc(sideLength * sideLength));
     }
 
     {
         for (int dstY = 0; dstY < sideLength; ++dstY) {
             const int srcY = (int)((float)(dstY)*yScale);
             unsigned short* newPixelCursor = &newPixels[dstY * sideLength];
-            char* newAlphaCursor = newAlphaMap != 0 ? &newAlphaMap[dstY * sideLength] : 0;
+            char* newAlphaCursor = &newAlphaMap[dstY * sideLength];
 
             {
                 for (int dstX = 0; dstX < sideLength; ++dstX) {
-                    const int srcX = (int)((float)(dstX)*xScale);
-                    const int sourceIndex = srcY * sourceWidth + srcX;
-                    *newPixelCursor++ = oldPixels[sourceIndex];
+                    const int sourceIndex = srcY * image->width + (int)((float)(dstX)*xScale);
+                    *newPixelCursor = oldPixels[sourceIndex];
                     if (oldAlphaMap != 0) {
-                        *newAlphaCursor++ = oldAlphaMap[sourceIndex];
+                        *newAlphaCursor = oldAlphaMap[sourceIndex];
                     }
+                    ++newPixelCursor;
+                    ++newAlphaCursor;
                 }
             }
         }
@@ -1591,8 +1589,8 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
     image->height = (short)(sideLength);
     image->width = (short)(sideLength);
     image->pixels = newPixels;
-    if (oldAlphaMap != 0) {
-        free(oldAlphaMap);
+    if (image->alphaMap != 0) {
+        free(image->alphaMap);
         image->alphaMap = newAlphaMap;
     }
 }

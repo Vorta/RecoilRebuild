@@ -3049,7 +3049,7 @@ namespace CZCamera
 int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local)
 {
     const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
-    zMat4x3 slotBuffer = { 0 };
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)&slotBuffer);
 
     g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
@@ -3058,10 +3058,10 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
     CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
 
     if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
-        if (g_FrameDeltaTimeSec <= g_CZClass_CameraAutoClipDistanceThreshold) {
-            g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
-        } else {
+        if (g_FrameDeltaTimeSec > g_CZClass_CameraAutoClipDistanceThreshold) {
             g_CZClass_CameraAutoClipDistanceScale -= g_CZClass_CameraAutoClipDistanceStep;
+        } else {
+            g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
         }
 
         if (g_CZClass_CameraAutoClipDistanceScale > 1.0f) {
