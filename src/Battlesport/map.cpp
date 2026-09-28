@@ -960,11 +960,11 @@ int HudRectI::ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-calcoutcode
  * @recoil-artifact defines .text recoil:function:0x416240: HudRectI::CalcOutcode
- *
+ * @recoil-match byte
  *
  * Purpose: Build the rectangle outside-code bits for a point.
  */
-int HudRectI::CalcOutcode(const zVec3* point)
+int __fastcall HudRectI::CalcOutcode(const zVec3* point)
 {
     int outcode = 0;
     if (point->x < (float)(left)) {
@@ -1426,28 +1426,28 @@ int HudSensorTracker::MapOverlayBeginShow()
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayendshow
  * @recoil-artifact defines .text recoil:function:0x416ad0: HudSensorTracker::MapOverlayEndShow
- *
+ * @recoil-match byte
  *
  * Purpose: Stop the active map overlay lerp and queue the deterministic map-off sound path.
  */
-void HudSensorTracker::MapOverlayEndShow()
+int HudSensorTracker::MapOverlayEndShow()
 {
     if (mapScaleLerpActive == 0) {
-        return;
+        return 0;
     }
 
     mapScaleLerpT = 0.0f;
-    mapScaleStart.x = mapScaleCurrent.x;
+    mapScaleStart = mapScaleCurrent;
     mapScaleGoal.x = 0.0f;
     mapScaleGoal.z = 0.0f;
-    mapScaleStart.y = mapScaleCurrent.y;
     mapScaleLerpActive = 0;
-    mapScaleStart.z = mapScaleCurrent.z;
 
     if (mapLoadedFlag != 0) {
         mapScaleLerpRunning = 1;
         mapSndOff->PlayA3DSimple(1.0f);
     }
+
+    return 1;
 }
 
 /**

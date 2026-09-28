@@ -39,7 +39,7 @@ struct HudRectI {
     int right;
     int bottom;
 
-    int CalcOutcode(const zVec3* point);
+    int __fastcall CalcOutcode(const zVec3* point);
     int SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd);
     int ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd);
     static int __fastcall IsCornerOutcode(int outcode);
@@ -180,7 +180,7 @@ struct HudSensorTracker {
     void SetBounds(const HudUiRect* outerRect, const HudUiRect* innerRectOrNull);
     int SetTrackedSaveState(zUtil_SaveGameState* saveState);
     int SetSaveStateMarkerMaxDistance(float maxDist);
-    void MapOverlayEndShow();
+    int MapOverlayEndShow();
     int MapOverlayBeginShow();
     int MapOverlayRefToggle(int enable);
     void MapZoomIn();
@@ -216,7 +216,7 @@ struct HudSensorTracker {
     int LoadRaceCheckpointMeta();
     void RunStartAnimsFromZrd(const char* zrdPath, const char* namedNodeName);
     int QueueMissionFmvStateForMissionId(int missionId);
-    void SaveAndQueueMissionState();
+    int SaveAndQueueMissionState();
     int GetObjectiveBriefingStringsAndImageRef(
         int objectiveIndex,
         char** outSummary,

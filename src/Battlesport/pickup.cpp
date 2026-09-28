@@ -2494,11 +2494,11 @@ void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(const char*
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-shutdownglobal
  * @recoil-artifact defines .text recoil:function:0x438b10: PickupAirdropSpawnRef::ShutdownGlobal (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: release the global airdrop spawn reference and clear its pointer.
  */
-void PickupAirdropSpawnRef::ShutdownGlobal()
+int PickupAirdropSpawnRef::ShutdownGlobal()
 {
     PickupAirdropSpawnRef* const spawnRef = g_Pickup_GlobalAirdropSpawnRef;
     if (spawnRef != 0) {
@@ -2506,6 +2506,7 @@ void PickupAirdropSpawnRef::ShutdownGlobal()
     }
 
     g_Pickup_GlobalAirdropSpawnRef = 0;
+    return 0;
 }
 
 /**

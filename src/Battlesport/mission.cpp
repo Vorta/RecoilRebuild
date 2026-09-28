@@ -1458,18 +1458,20 @@ int HudSensorTracker::UpdateObjectiveFlow()
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: preserve the recovered HUD behavior for HudSensorTracker::SaveAndQueueMissionState.
  */
-void HudSensorTracker::SaveAndQueueMissionState()
+int HudSensorTracker::SaveAndQueueMissionState()
 {
-    if (finalMissionFlag != 0) {
+    int result = 0;
+    if (finalMissionFlag == 0) {
+        zUtil_PlayerStateStorage* const playerState = g_LocalPlayerSaveState->playerState;
+        Player::BuildMissionSaveData(&pendingPlayerSave.playerSaveData);
+        pendingPlayerSave.savedNanitePanelLevel = playerState->nanitePanelLevel;
+        hasPendingPlayerSave = 1;
+        result = QueueMissionFmvStateForMissionId(missionId + 1);
+    } else {
         g_RecoilApp_QuitAfterCredits = 1;
-        return;
     }
 
-    zUtil_PlayerStateStorage* const playerState = g_LocalPlayerSaveState->playerState;
-    Player::BuildMissionSaveData(&pendingPlayerSave.playerSaveData);
-    pendingPlayerSave.savedNanitePanelLevel = playerState->nanitePanelLevel;
-    hasPendingPlayerSave = 1;
-    QueueMissionFmvStateForMissionId(missionId + 1);
+    return result;
 }
 
 /**

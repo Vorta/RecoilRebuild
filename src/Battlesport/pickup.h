@@ -27,7 +27,7 @@ struct PickupAirdropSpawnRef {
     int CanSpawnWithClearance(float clearanceRadius);
     int SpawnPickupTypeAndRelay(int pickupTypeIndex);
     static void __fastcall InitGlobalFromCarrierNodeName(const char* carrierNodeName);
-    static void __cdecl ShutdownGlobal();
+    static int __cdecl ShutdownGlobal();
     static int __cdecl TrySpawnRandomPickupFromGlobal();
 };
 RECOIL_STATIC_ASSERT(offsetof(PickupAirdropSpawnRef, worldPos) == 0x08);
