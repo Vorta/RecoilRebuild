@@ -173,28 +173,26 @@ namespace
      * Purpose: validate a camera node, recover its camera data pointer, and
      * preserve the caller-specific legacy source-line diagnostics.
      */
-#define ValidateCameraNode(node, outData, nullLine, dataLine, classLine)                                               \
-    ((node) == 0                                                                                                       \
-            ? (zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", (nullLine), "Null node pointer."),  \
-                  5)                                                                                                   \
-            : ((node)->classData == 0 ? (zError::ReportOld(                                                            \
-                                             0x400,                                                                    \
-                                             "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",                                \
-                                             (dataLine),                                                               \
-                                             "Null class data pointer"                                                 \
-                                         ),                                                                            \
-                                            5)                                                                         \
-                                      : ((node)->classId != kZClassNodeCamera                                          \
-                                                ? (zError::ReportOld(                                                  \
-                                                       0x400,                                                          \
-                                                       "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",                      \
-                                                       (classLine),                                                    \
-                                                       "Bad Class Found.\n Wanted (%d)\n Found (%d)",                  \
-                                                       (node)->classId,                                                \
-                                                       kZClassNodeCamera                                               \
-                                                   ),                                                                  \
-                                                      3)                                                               \
-                                                : (*(outData) = (CZCameraDataPartial*)((node)->classData), 0))))
+#define ValidateCameraNode(node, nullLine, dataLine, classLine)                                                        \
+    if ((node) == 0) {                                                                                                 \
+        zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", (nullLine), "Null node pointer.");         \
+        return 5;                                                                                                      \
+    }                                                                                                                  \
+    if ((node)->classData == 0) {                                                                                      \
+        zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Camera.c", (dataLine), "Null class data pointer");    \
+        return 5;                                                                                                      \
+    }                                                                                                                  \
+    if ((node)->classId != kZClassNodeCamera) {                                                                        \
+        zError::ReportOld(                                                                                             \
+            0x400,                                                                                                     \
+            "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",                                                                 \
+            (classLine),                                                                                               \
+            "Bad Class Found.\n Wanted (%d)\n Found (%d)",                                                             \
+            (node)->classId,                                                                                           \
+            kZClassNodeCamera                                                                                          \
+        );                                                                                                             \
+        return 3;                                                                                                      \
+    }
 
     /**
      * Original inline construct observed in camera target callers
@@ -218,12 +216,12 @@ namespace CZCamera
      */
     void __fastcall SetViewDistance(int enableAutoClip, float distance)
     {
-        g_CZClass_CameraAutoClipDistanceAdjustEnabled = enableAutoClip;
         if (distance == 0.0f) {
             g_CZClass_CameraAutoClipDistanceThreshold = 0.04f;
         } else {
             g_CZClass_CameraAutoClipDistanceThreshold = 1.0f / distance;
         }
+        g_CZClass_CameraAutoClipDistanceAdjustEnabled = enableAutoClip;
     }
 
     /**
@@ -321,7 +319,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetflagbit0
      * @recoil-artifact defines .text recoil:function:0x449d20: CZCamera::gwCameraSetFlagBit0.
-     *
+     * @recoil-match byte
      *
      * Camera data flag bit 0 gates the zSound listener-state update in
      * BuildWorldTransform.
@@ -329,11 +327,8 @@ namespace CZCamera
      */
     int __fastcall gwCameraSetFlagBit0(CZNodePartial * node, int enabled)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(node, &data, 0x274, 0x275, 0x276);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(node, 0x274, 0x275, 0x276);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(node->classData);
 
         if (enabled != 0) {
             data->cameraFlags |= 0x01;
@@ -468,17 +463,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetposition
      * @recoil-artifact defines .text recoil:function:0x449ea0: CZCamera::gwCameraSetPosition.
-     *
+     * @recoil-match byte
      *
      * Purpose: set the camera position offset and dirty dependent transforms.
      */
     gwCameraSetPosition(CZNodePartial * camera, float x, float y, float z)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x3a7, 0x3a8, 0x3a9);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x3a7, 0x3a8, 0x3a9);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->transformDirty = 1;
         data->posOffset.x = x;
@@ -521,17 +513,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslate
      * @recoil-artifact defines .text recoil:function:0x449fb0: CZCamera::gwCameraTranslate.
-     *
+     * @recoil-match byte
      *
      * Purpose: translate the camera position offset and dirty dependent transforms.
      */
     gwCameraTranslate(CZNodePartial * camera, float dx, float dy, float dz)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x3df, 0x3e0, 0x3e1);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x3df, 0x3e0, 0x3e1);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->posOffset.x += dx;
         data->posOffset.y += dy;
@@ -548,17 +537,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetposition
      * @recoil-artifact defines .text recoil:function:0x44a060: CZCamera::gwCameraGetPosition.
-     *
+     * @recoil-match byte
      *
      * Purpose: return the camera position offset components.
      */
     gwCameraGetPosition(CZNodePartial * camera, float* outX, float* outY, float* outZ)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x414, 0x415, 0x416);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x414, 0x415, 0x416);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         *outX = data->posOffset.x;
         *outY = data->posOffset.y;
@@ -570,17 +556,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasettarget
      * @recoil-artifact defines .text recoil:function:0x44a0f0: CZCamera::gwCameraSetTarget.
-     *
+     * @recoil-match byte
      *
      * Purpose: set the selected camera target vector and update children.
      */
     gwCameraSetTarget(CZNodePartial * camera, float x, float y, float z)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x43c, 0x43d, 0x43e);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x43c, 0x43d, 0x43e);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         zVec3* target = GetSelectedTargetVector(data);
         target->x = x;
@@ -597,17 +580,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslatetarget
      * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslateTarget.
-     *
+     * @recoil-match byte
      *
      * Purpose: translate the selected camera target vector and update children.
      */
     gwCameraTranslateTarget(CZNodePartial * camera, float dx, float dy, float dz)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x46f, 0x470, 0x471);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x46f, 0x470, 0x471);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         zVec3* target = GetSelectedTargetVector(data);
         target->x += dx;
@@ -624,17 +604,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragettarget
      * @recoil-artifact defines .text recoil:function:0x44a250: CZCamera::gwCameraGetTarget.
-     *
+     * @recoil-match byte
      *
      * Purpose: return the selected camera target vector components.
      */
     gwCameraGetTarget(CZNodePartial * camera, float* outX, float* outY, float* outZ)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x4a1, 0x4a2, 0x4a3);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x4a1, 0x4a2, 0x4a3);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         zVec3* target = GetSelectedTargetVector(data);
         *outX = target->x;
@@ -647,17 +624,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetnearfarclip
      * @recoil-artifact defines .text recoil:function:0x44a2f0: CZCamera::gwCameraSetNearFarClip.
-     *
+     * @recoil-match byte
      *
      * Purpose: store near/far clip distances and dirty frustum vectors.
      */
     gwCameraSetNearFarClip(CZNodePartial * camera, float nearClip, float farClip)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x509, 0x50a, 0x50b);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x509, 0x50a, 0x50b);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->nearClip = nearClip;
         data->farClip = farClip;
@@ -669,17 +643,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetnearfarclip
      * @recoil-artifact defines .text recoil:function:0x44a380: CZCamera::gwCameraGetNearFarClip.
-     *
+     * @recoil-match byte
      *
      * Purpose: return the camera near/far clip distances.
      */
     gwCameraGetNearFarClip(CZNodePartial * camera, float* outNear, float* outFar)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x52f, 0x530, 0x531);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x52f, 0x530, 0x531);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         *outNear = data->nearClip;
         *outFar = data->farClip;
@@ -696,11 +667,8 @@ namespace CZCamera
      */
     gwCameraSetViewport(CZNodePartial * camera, float viewportWidth, float viewportHeight)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x553, 0x554, 0x555);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x553, 0x554, 0x555);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         const float maxFov = 1.39600003f;
         data->viewportWidth = viewportWidth;
@@ -732,17 +700,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetviewport
      * @recoil-artifact defines .text recoil:function:0x44a580: CZCamera::gwCameraGetViewport.
-     *
+     * @recoil-match byte
      *
      * Purpose: return the camera viewport dimensions.
      */
     gwCameraGetViewport(CZNodePartial * camera, float* outWidth, float* outHeight)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x58e, 0x58f, 0x590);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x58e, 0x58f, 0x590);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         *outWidth = data->viewportWidth;
         *outHeight = data->viewportHeight;
@@ -759,11 +724,8 @@ namespace CZCamera
      */
     gwCameraSetFOV(CZNodePartial * camera, float fovX, float fovY)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x5b2, 0x5b3, 0x5b4);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x5b2, 0x5b3, 0x5b4);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         const float normalizedFovX = fovX / data->viewportWidth;
         const float normalizedFovY = fovY / data->viewportHeight;
@@ -788,7 +750,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetfov
      * @recoil-artifact defines .text recoil:function:0x44a760: CZCamera::gwCameraGetFOV.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\Camera.c.
      * Touched diagnostic string data: 0x4dd9d4, 0x4dd9bc, 0x4ddd44,
@@ -798,11 +760,8 @@ namespace CZCamera
      */
     int __fastcall gwCameraGetFOV(CZNodePartial * camera, float* outFovX, float* outFovY)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x5e7, 0x5e8, 0x5e9);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x5e7, 0x5e8, 0x5e9);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         *outFovX = data->frustumWidth;
         *outFovY = data->frustumHeight;
@@ -813,17 +772,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetclipdistance
      * @recoil-artifact defines .text recoil:function:0x44a7f0: CZCamera::gwCameraGetClipDistance.
-     *
+     * @recoil-match byte
      *
      * Purpose: return the camera clip distance.
      */
     gwCameraGetClipDistance(CZNodePartial * camera, float* outClipDistance)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x609, 0x60a, 0x60b);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x609, 0x60a, 0x60b);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         *outClipDistance = data->clipDistance;
         return 0;
@@ -839,11 +795,8 @@ namespace CZCamera
      */
     gwCameraSetClipDistance(CZNodePartial * camera, float clipDistance)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x62a, 0x62b, 0x62c);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x62a, 0x62b, 0x62c);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->clipDistance = clipDistance;
         data->invClipDistanceSq = 1.0f / (clipDistance * clipDistance);
@@ -854,17 +807,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasethorizon
      * @recoil-artifact defines .text recoil:function:0x44a910: CZCamera::gwCameraSetHorizon.
-     *
+     * @recoil-match byte
      *
      * Purpose: assign the horizon node that follows the camera position.
      */
     gwCameraSetHorizon(CZNodePartial * camera, CZNodePartial * horizonNode)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x64d, 0x64e, 0x64f);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x64d, 0x64e, 0x64f);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->horizonNode = horizonNode;
         return 0;
@@ -874,17 +824,14 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasethorizonxz
      * @recoil-artifact defines .text recoil:function:0x44a980: CZCamera::gwCameraSetHorizonXZ.
-     *
+     * @recoil-match byte
      *
      * Purpose: assign the horizon node that follows camera X/Z position.
      */
     gwCameraSetHorizonXZ(CZNodePartial * camera, CZNodePartial * horizonXZNode)
     {
-        CZCameraDataPartial* data = 0;
-        const int result = ValidateCameraNode(camera, &data, 0x66e, 0x66f, 0x670);
-        if (result != 0) {
-            return result;
-        }
+        ValidateCameraNode(camera, 0x66e, 0x66f, 0x670);
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->horizonXZNode = horizonXZNode;
         return 0;
@@ -1040,31 +987,34 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44ada0
      * @recoil-artifact defines .text recoil:function:0x44ada0: CZCamera::RenderTraverse.
-     *
+     * @recoil-match byte
      *
      * Purpose: frustum-test and render a camera node traversal branch.
      */
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
-        const int flags = node->flags;
+        const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
         int boundsContextPushed = 0;
+        const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
         node->flags = flags & ~0x02000000;
-        CZCameraDataPartial* data = (CZCameraDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
+        CZCameraDataPartial* const data = (CZCameraDataPartial*)(node->classData);
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
                 || (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1073,7 +1023,11 @@ namespace CZCamera
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1083,7 +1037,6 @@ namespace CZCamera
         }
 
         if (result == 0) {
-            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->worldTransform);
             zMath::MatApplyLocalTRS(&data->posOffset, &data->targetOrEuler, &unitScale);
@@ -1091,11 +1044,10 @@ namespace CZCamera
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
-            if (di != 0) {
+            if (node->userDataOrDiRef != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_CZClass_RenderRangeFadeScale;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->flags |= 0x08;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->blendScale = g_CZClass_RenderRangeFadeScale;
                 }
                 gModel_RenderFn(node, clipMask);
             }
@@ -1124,32 +1076,36 @@ namespace CZSound
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44af60
      * @recoil-artifact defines .text recoil:function:0x44af60: CZSound::RenderTraverse
-     *
+     * @recoil-match byte
      *
      * Purpose: cull a sound node, push its local transform, render the node and
      * children, and restore traversal state.
      */
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
-        const int flags = node->flags;
+        const zVec3 angles = { 0.0f, 0.0f, 0.0f };
+        const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
         int boundsContextPushed = 0;
+        const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
         node->flags = flags & ~0x02000000;
-        CZSoundDataPartial* data = (CZSoundDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
+        CZSoundDataPartial* const data = (CZSoundDataPartial*)(node->classData);
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
                 || (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1158,7 +1114,11 @@ namespace CZSound
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1168,8 +1128,6 @@ namespace CZSound
         }
 
         if (result == 0) {
-            const zVec3 angles = { 0.0f, 0.0f, 0.0f };
-            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(&angles, &data->localPosition, &unitScale);
@@ -1177,11 +1135,10 @@ namespace CZSound
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
-            if (di != 0) {
+            if (node->userDataOrDiRef != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_CZClass_RenderRangeFadeScale;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->flags |= 0x08;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->blendScale = g_CZClass_RenderRangeFadeScale;
                 }
                 gModel_RenderFn(node, clipMask);
             }
@@ -1209,32 +1166,35 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b140
      * @recoil-artifact defines .text recoil:function:0x44b140: CZLight::RenderTraverse
-     *
+     * @recoil-match byte
      *
      * Purpose: cull an enabled light node, push render-bounds context when
      * needed, apply local transform, render the node subtree, and restore state.
      */
     int __fastcall RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
-        const int flags = node->flags;
+        const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
         int boundsContextPushed = 0;
+        const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
         node->flags = flags & ~0x02000000;
-        CZLightDataPartial* data = (CZLightDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
+        CZLightDataPartial* const data = (CZLightDataPartial*)(node->classData);
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
                 || (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1243,7 +1203,11 @@ namespace CZLight
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1253,7 +1217,6 @@ namespace CZLight
         }
 
         if (result == 0) {
-            const zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
             zMath::MatApplyLocalTRS(&data->localRotation, &data->localPosition, &unitScale);
@@ -1261,11 +1224,10 @@ namespace CZLight
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
             }
-            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
-            if (di != 0) {
+            if (node->userDataOrDiRef != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_CZClass_RenderRangeFadeScale;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->flags |= 0x08;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->blendScale = g_CZClass_RenderRangeFadeScale;
                 }
                 gModel_RenderFn(node, clipMask);
             }
@@ -1718,25 +1680,27 @@ namespace CZAnimate
      */
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
-        const int flags = node->flags;
         int boundsContextPushed = 0;
+        const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
         node->flags = flags & ~0x02000000;
-        CZAnimateDataPartial* data = (CZAnimateDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
+        CZAnimateDataPartial* const data = (CZAnimateDataPartial*)(node->classData);
 
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if ((clipMask != 0 && siblingCountHint > 1) || (node->flags & 0x00080000) == 0) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
                 || (node->flags & 0x00080000) == 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 if ((node->flags & 0x00080000) != 0) {
                     node->boundsFlags &= ~0x04;
                 }
@@ -1745,7 +1709,11 @@ namespace CZAnimate
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1766,11 +1734,10 @@ namespace CZAnimate
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
             }
-            zDiPartial* di = (zDiPartial*)(unsigned int)node->userDataOrDiRef;
-            if (di != 0) {
+            if (node->userDataOrDiRef != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
-                    di->flags |= 0x08;
-                    di->blendScale = g_CZClass_RenderRangeFadeScale;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->flags |= 0x08;
+                    ((zDiPartial*)(unsigned int)node->userDataOrDiRef)->blendScale = g_CZClass_RenderRangeFadeScale;
                 }
                 gModel_RenderFn(node, clipMask);
             }
@@ -2006,7 +1973,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44bea0
      * @recoil-artifact defines .text recoil:function:0x44bea0: CZSequence::RenderTraverse
-     *
+     * @recoil-match byte
      *
      * Purpose: cull an active sequence node, push traversal state, and render
      * only the currently selected child entry.
@@ -2014,16 +1981,12 @@ namespace CZSequence
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
         int boundsContextPushed = 0;
-        CZSequenceDataPartial* data;
         const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
-        data = (CZSequenceDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
-
+        CZSequenceDataPartial* const data = (CZSequenceDataPartial*)(node->classData);
         node->flags = flags & ~0x02000000;
         if (data->isActive == 0) {
             return 0;
@@ -2033,20 +1996,31 @@ namespace CZSequence
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 node->boundsFlags &= ~0x04;
+                if (g_CZClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_CZClass_RenderBoundsContextActive = 1;
+                }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
-        }
-        if (g_CZClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_CZClass_RenderBoundsContextActive = 1;
         }
 
         if (result == 0) {
@@ -2134,39 +2108,39 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwnoderenderdispatch
      * @recoil-artifact defines .text recoil:function:0x44c0e0: CZClass::gwNodeRenderDispatch.
-     *
+     * @recoil-match byte
      *
      * Purpose: route visible scene nodes to the class-specific render
      * traversal after variant-tag filtering.
      */
     int __fastcall gwNodeRenderDispatch(CZNodePartial * node, int siblingCountHint)
     {
-        const int variantId = node->nodeType;
-        const int variantAllowed = VariantTag::CurrentAllowsId(variantId);
-        if (variantAllowed == 0) {
-            return variantAllowed;
+        int result = VariantTag::CurrentAllowsId(node->nodeType);
+        if (result != 0) {
+            switch (node->classId - 1) {
+            case 4:
+                return CZObject3D::RenderTraverse(node, siblingCountHint);
+            case 5:
+                return CZLod::RenderTraverse(node, siblingCountHint);
+            case 8:
+                return CZLight::RenderTraverse(node, siblingCountHint);
+            case 9:
+                return CZSound::RenderTraverse(node, siblingCountHint);
+            case 0:
+                return CZCamera::RenderTraverse(node, siblingCountHint);
+            case 7:
+                return CZAnimate::RenderTraverse(node, siblingCountHint);
+            case 6:
+                return CZSequence::RenderTraverse(node, siblingCountHint);
+            case 10:
+                return CZSwitch::RenderTraverse(node, siblingCountHint);
+            default:
+                result = fprintf(stderr, "Unrecognized node rendering type: %s\n", node->name);
+                break;
+            }
         }
 
-        switch (node->classId - 1) {
-        case 4:
-            return CZObject3D::RenderTraverse(node, siblingCountHint);
-        case 5:
-            return CZLod::RenderTraverse(node, siblingCountHint);
-        case 8:
-            return CZLight::RenderTraverse(node, siblingCountHint);
-        case 9:
-            return CZSound::RenderTraverse(node, siblingCountHint);
-        case 0:
-            return CZCamera::RenderTraverse(node, siblingCountHint);
-        case 7:
-            return CZAnimate::RenderTraverse(node, siblingCountHint);
-        case 6:
-            return CZSequence::RenderTraverse(node, siblingCountHint);
-        case 10:
-            return CZSwitch::RenderTraverse(node, siblingCountHint);
-        default:
-            return fprintf(stderr, "Unrecognized node rendering type: %s\n", node->name);
-        }
+        return result;
     }
 }
 
@@ -2894,28 +2868,26 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetvarianttagoverride
      * @recoil-artifact defines .text recoil:function:0x44d260: CZCamera::gwCameraSetVariantTagOverride.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate and store the camera variant tag override.
      */
     gwCameraSetVariantTagOverride(CZNodePartial * camera, zTag4Partial * variantTag)
     {
-        CZCameraDataPartial* data = 0;
-        const int validateResult = ValidateCameraNode(camera, &data, 0x1527, 0x1528, 0x1529);
-        if (validateResult != 0) {
-            return validateResult;
-        }
-
         int validVariantTag = 1;
-        for (int i = 0; i < variantTag->count; ++i) {
-            if (variantTag->tags[i] == 0xff) {
-                validVariantTag = 0;
-            }
-        }
+        ValidateCameraNode(camera, 0x1527, 0x1528, 0x1529);
 
-        if (variantTag->count > 0 && validVariantTag != 0) {
-            data->variantOverrideEnabled = 1;
-            data->variantTag = *variantTag;
+        if (variantTag->count > 0) {
+            for (int i = 0; i < variantTag->count; ++i) {
+                if (variantTag->tags[i] == 0xff) {
+                    validVariantTag = 0;
+                }
+            }
+
+            if (validVariantTag != 0) {
+                ((CZCameraDataPartial*)(camera->classData))->variantOverrideEnabled = 1;
+                ((CZCameraDataPartial*)(camera->classData))->variantTag = *variantTag;
+            }
         }
         return 0;
     }
@@ -2977,7 +2949,7 @@ namespace CZCamera
     RenderScene(CZNodePartial * camera, int updateFxPass3Local)
     {
         const int queuedLensFlareSampleCount = zRndrLensFlareGetQueuedSampleCount();
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)&slotBuffer);
 
         g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
@@ -2986,10 +2958,10 @@ namespace CZCamera
         CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
 
         if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
-            if (g_FrameDeltaTimeSec <= g_CZClass_CameraAutoClipDistanceThreshold) {
-                g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
-            } else {
+            if (g_FrameDeltaTimeSec > g_CZClass_CameraAutoClipDistanceThreshold) {
                 g_CZClass_CameraAutoClipDistanceScale -= g_CZClass_CameraAutoClipDistanceStep;
+            } else {
+                g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
             }
 
             if (g_CZClass_CameraAutoClipDistanceScale > 1.0f) {

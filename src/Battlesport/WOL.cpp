@@ -2640,7 +2640,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnApiStatus(int statusC
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onstatustextreceived
  * @recoil-artifact defines .text recoil:function:0x43fde0: WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived.
- *
+ * @recoil-match byte
  *
  * Purpose: Writes received status text into the Westwood Online status display.
  */
@@ -2653,7 +2653,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnStatusTextReceived(in
     }
 
     // Retail duplicates statusText for strtok and never frees the duplicate.
-    statusLine = strtok(_strdup(statusText), kApiStatusLineDelimiter);
+    char* const statusTextCopy = _strdup(statusText);
+    statusLine = strtok(statusTextCopy, kApiStatusLineDelimiter);
     while (statusLine != 0) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusLine);
         statusLine = strtok(0, kApiStatusLineDelimiter);
@@ -3229,34 +3230,29 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendSessionRequestSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendconnectstatus301e-3021
  * @recoil-artifact defines .text recoil:function:0x440d90: WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301ETo3021.
- *
+ * @recoil-match byte
  *
  * Purpose: Maps connection status codes to localized connect-status text.
  */
 int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendConnectStatus301ETo3021(int connectionStatusCode)
 {
-    unsigned int messageId;
-
     if (connectionStatusCode == 0) {
-        messageId = kConnectStatusDefaultMessageId;
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(kConnectStatusDefaultMessageId));
     } else if (connectionStatusCode == kConnectStatusCode40134) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(kConnectStatusCode40134MessageId));
-        return 0;
     } else if (connectionStatusCode == kConnectStatusCode40133) {
         g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(kConnectStatusCode40133MessageId));
-        return 0;
     } else {
-        messageId = kConnectStatusFallbackMessageId;
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(kConnectStatusFallbackMessageId));
     }
 
-    g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(messageId));
     return 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-appendbrowserecordstatus3022-3025
  * @recoil-artifact defines .text recoil:function:0x440e10: WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatus3022To3025.
- *
+ * @recoil-match byte
  *
  * Purpose: Maps browse-record status codes to localized browse-status text.
  */
@@ -3265,9 +3261,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatu
     WestwoodOnlineUpgradeBrowseRecord* browseRecord
 )
 {
-    unsigned int messageId;
     char statusMessageText[kSessionRequestStatusBufferSize];
-    WestwoodOnlineUpgradeDialog* dialog;
 
     if (browseRecord != 0) {
         zLoc::FormatMessage(
@@ -3276,26 +3270,23 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendBrowseRecordStatu
             kBrowseRecordStatusNamedMessageId,
             browseRecord->m_sessionName
         );
-        dialog = g_pWestwoodOnlineUpgradeDialog;
-        dialog->AppendStatusTextFmt(statusMessageText);
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(statusMessageText);
+    } else if (status == kBrowseRecordStatusCode40131) {
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+            zLoc::GetMessageString(kBrowseRecordStatusCode40131MessageId)
+        );
+    } else if (status == kBrowseRecordStatusCode40130) {
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+            zLoc::GetMessageString(kBrowseRecordStatusCode40130MessageId)
+        );
+    } else if (status == kBrowseRecordStatusCode40132) {
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+            zLoc::GetMessageString(kBrowseRecordStatusCode40132MessageId)
+        );
     } else {
-        if (status == kBrowseRecordStatusCode40131) {
-            messageId = kBrowseRecordStatusCode40131MessageId;
-        } else if (status == kBrowseRecordStatusCode40130) {
-            g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-                zLoc::GetMessageString(kBrowseRecordStatusCode40130MessageId)
-            );
-            return 0;
-        } else if (status == kBrowseRecordStatusCode40132) {
-            g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
-                zLoc::GetMessageString(kBrowseRecordStatusCode40132MessageId)
-            );
-            return 0;
-        } else {
-            messageId = kBrowseRecordStatusFallbackMessageId;
-        }
-
-        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(zLoc::GetMessageString(messageId));
+        g_pWestwoodOnlineUpgradeDialog->AppendStatusTextFmt(
+            zLoc::GetMessageString(kBrowseRecordStatusFallbackMessageId)
+        );
     }
     return 0;
 }

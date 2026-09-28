@@ -1312,35 +1312,35 @@ void zInput_BindMapContext::DispatchJoystickButtonCallbacks()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-setcommandcallback
  * @recoil-artifact defines .text recoil:function:0x470df0: zInput_BindMapContext::SetCommandCallback.
- *
+ * @recoil-match byte
  *
  * Purpose: store a command callback and register keyboard bridge callbacks for its keys.
  */
 int zInput_BindMapContext::SetCommandCallback(int commandId, zInputCommandCallbackFn callback)
 {
+    int result = 0;
     const int primary = GetPrimaryKeyboardKey(commandId);
     const int secondary = GetSecondaryKeyboardKey(commandId);
-    if (primary == 0 && secondary == 0) {
-        return 0;
+    if (primary != 0 || secondary != 0) {
+        m_commandCallbacks[commandId] = callback;
+        if (primary != 0) {
+            zInput::KeyboardRegisterKeyCallback(
+                primary,
+                (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
+                m_commandLabels[commandId]
+            );
+        }
+        if (secondary != 0) {
+            zInput::KeyboardRegisterKeyCallback(
+                secondary,
+                (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
+                m_commandLabels[commandId]
+            );
+        }
+        result = 1;
     }
 
-    m_commandCallbacks[commandId] = callback;
-    if (primary != 0) {
-        zInput::KeyboardRegisterKeyCallback(
-            primary,
-            (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
-            m_commandLabels[commandId]
-        );
-    }
-    if (secondary != 0) {
-        zInput::KeyboardRegisterKeyCallback(
-            secondary,
-            (void*)(&zInputBindMapContextDispatchFromKeyboardEvent),
-            m_commandLabels[commandId]
-        );
-    }
-
-    return 1;
+    return result;
 }
 
 /**
@@ -1362,7 +1362,7 @@ extern "C" void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(int dik
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-readcommandinputstate
  * @recoil-artifact defines .text recoil:function:0x470eb0: zInput_BindMapContext::ReadCommandInputState.
- *
+ * @recoil-match byte
  *
  * Purpose: Combine keyboard, joystick, and mouse transition states for one command.
  */
@@ -1384,15 +1384,18 @@ int zInput_BindMapContext::ReadCommandInputState(int commandIndex)
     }
 
     const zInput::MouseStateSnapshot* state = zInput::MouseGetStateSnapshotPtr();
-    const int mouseButton = GetMouseButtonSlot(commandIndex);
-    if (mouseButton == 1) {
-        return result | state->button1Transition;
-    }
-    if (mouseButton == 2) {
-        return result | state->button2Transition;
-    }
-    if (mouseButton == 3) {
-        return result | state->button3Transition;
+    switch (GetMouseButtonSlot(commandIndex)) {
+    case 1:
+        result |= state->button1Transition;
+        break;
+
+    case 2:
+        result |= state->button2Transition;
+        break;
+
+    case 3:
+        result |= state->button3Transition;
+        break;
     }
 
     return result;

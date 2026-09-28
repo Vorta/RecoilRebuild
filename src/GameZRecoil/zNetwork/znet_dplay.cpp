@@ -829,14 +829,14 @@ namespace zNetwork_DPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createsessionfromstatusfields
  * @recoil-artifact defines .text recoil:function:0x48a410: zNetwork_DPlay::CreateSessionFromStatusFields.
- *
+ * @recoil-match byte
  *
  * Purpose: create a DirectPlay host session from the recovered status-field
  * record and cache the opened session descriptor.
  */
 int __fastcall CreateSessionFromStatusFields(zNetworkSessionDescStatusFields* statusFields)
 {
-    memcpy(g_zNetwork_SessionNameCache, statusFields->sessionNameBuf, strlen(statusFields->sessionNameBuf) + 1);
+    strcpy(g_zNetwork_SessionNameCache, statusFields->sessionNameBuf);
 
     zNetworkDPlaySessionDescCache* const cache
         = (zNetworkDPlaySessionDescCache*)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
@@ -851,8 +851,7 @@ int __fastcall CreateSessionFromStatusFields(zNetworkSessionDescStatusFields* st
     cache->desc.dwUser4 = statusFields->auxParam;
     cache->desc.lpszSessionNameA = _strdup(g_zNetwork_SessionNameCache);
 
-    zNetwork_DPlay4* const directPlay = g_zNetwork_pDirectPlay4;
-    const int hresult = directPlay->Open((LPDPSESSIONDESC2)&cache->desc, 2);
+    const int hresult = g_zNetwork_pDirectPlay4->Open((LPDPSESSIONDESC2)&cache->desc, 2);
     if (hresult == (int)(0x88770118)) {
         return 0;
     }
@@ -862,7 +861,7 @@ int __fastcall CreateSessionFromStatusFields(zNetworkSessionDescStatusFields* st
     }
 
     if (zNetworkDPlay::QueryCapsAndConfigureSendMode() == 0) {
-        directPlay->Close();
+        g_zNetwork_pDirectPlay4->Close();
         return 0;
     }
 
@@ -1333,14 +1332,14 @@ zNetworkDPlaySendExUnreliableTracked(zNetworkPacketHeader* packet, unsigned int 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexreliable
  * @recoil-artifact defines .text recoil:function:0x48ae10: zNetworkDPlaySendExReliable.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: send an asynchronous reliable packet through DirectPlay.
  */
 extern "C" int __fastcall zNetworkDPlaySendExReliable(zNetworkPacketHeader* packet, unsigned int packetSizeBytes)
 {
-    unsigned int asyncHandle = 0;
+    unsigned int asyncHandle;
     const int hresult = g_zNetwork_pDirectPlay4->SendEx(
         g_zNetwork_LocalPlayerRecord->playerKey,
         0,
@@ -1609,7 +1608,7 @@ int __stdcall EnumConnectionsCallbackAddServiceProviderInfo(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumsessioncallback-addsessiondesccache
  * @recoil-artifact defines .text recoil:function:0x48b5e0: zNetworkDPlay::EnumSessionCallbackAddSessionDescCache.
- *
+ * @recoil-match byte
  *
  * Purpose: cache a DirectPlay session descriptor during session enumeration.
  */
@@ -1622,6 +1621,7 @@ int __stdcall EnumSessionCallbackAddSessionDescCache(const zNetworkDPlaySessionD
     zNetworkDPlaySessionDescCache* const cache
         = (zNetworkDPlaySessionDescCache*)(malloc(sizeof(zNetworkDPlaySessionDescCache)));
     memcpy(&cache->desc, sessionDesc, sizeof(zNetworkDPlaySessionDesc));
+    cache->desc.guidInstance = sessionDesc->guidInstance;
     cache->desc.lpszSessionNameA = _strdup(sessionDesc->lpszSessionNameA);
     zArchiveListAddTail(g_zNetwork_EnumeratedSessionList, cache);
     return 1;
@@ -1959,29 +1959,27 @@ extern "C" int __fastcall zNetworkExtractStatusFieldsFromSessionDesc(zNetworkSes
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-applystatusfieldstosessiondesc
  * @recoil-artifact defines .text recoil:function:0x48bb20: zNetworkApplyStatusFieldsToSessionDesc.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: apply status fields to the current DirectPlay session descriptor.
  */
 extern "C" int __fastcall zNetworkApplyStatusFieldsToSessionDesc(zNetworkSessionDescStatusFields* statusFields)
 {
-    zNetworkDPlaySessionDesc* const sessionDesc = &g_zNetwork_CurrentSessionDescCache->desc;
+    g_zNetwork_CurrentSessionDescCache->desc.dwUser1 = statusFields->eventCode;
+    g_zNetwork_CurrentSessionDescCache->desc.dwUser2 = statusFields->statusFlags;
+    g_zNetwork_CurrentSessionDescCache->desc.dwUser3 = statusFields->valueOrTime;
+    g_zNetwork_CurrentSessionDescCache->desc.dwUser4 = statusFields->auxParam;
+    g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers = statusFields->maxPlayers;
+    strcpy(g_zNetwork_CurrentSessionDescCache->desc.lpszSessionNameA, statusFields->sessionNameBuf);
 
-    sessionDesc->dwUser1 = statusFields->eventCode;
-    sessionDesc->dwUser2 = statusFields->statusFlags;
-    sessionDesc->dwUser3 = statusFields->valueOrTime;
-    sessionDesc->dwUser4 = statusFields->auxParam;
-    sessionDesc->dwMaxPlayers = statusFields->maxPlayers;
-
-    memcpy(sessionDesc->lpszSessionNameA, statusFields->sessionNameBuf, strlen(statusFields->sessionNameBuf) + 1);
-
-    const int hresult = g_zNetwork_pDirectPlay4->SetSessionDesc((LPDPSESSIONDESC2)sessionDesc, 0);
+    const int hresult
+        = g_zNetwork_pDirectPlay4->SetSessionDesc((LPDPSESSIONDESC2)&g_zNetwork_CurrentSessionDescCache->desc, 0);
     if (hresult < 0) {
         return 0;
     }
 
-    memcpy(g_zNetwork_SessionNameCache, sessionDesc->lpszSessionNameA, strlen(sessionDesc->lpszSessionNameA) + 1);
+    strcpy(g_zNetwork_SessionNameCache, g_zNetwork_CurrentSessionDescCache->desc.lpszSessionNameA);
     return 1;
 }
 

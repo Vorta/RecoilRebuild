@@ -193,6 +193,8 @@ char g_zImage_ReadGameZTextureDirectoryDataErrorMsg[] = "Error reading GameZ Tex
 char g_zImage_TextureArraySizeExceededMsg[] = "Too many textures for texture array size.";
 }
 
+extern const char g_zUtil_ZbdSearchPathLeaf[0x04];
+
 namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentrytoindex
@@ -343,7 +345,7 @@ zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-findtexdirentrybyname
  * @recoil-artifact defines .text recoil:function:0x46d4d0: zImage::FindTexDirEntryByName.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zimage.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -356,9 +358,8 @@ zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr()
 zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName)
 {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zImage_TexDirEntryPartial* const entry = &g_zImage_TexDirEntries[i];
-        if (entry->loadState != 0 && strcmp(entry->baseName, baseName) == 0) {
-            return entry;
+        if (g_zImage_TexDirEntries[i].loadState != 0 && strcmp(g_zImage_TexDirEntries[i].baseName, baseName) == 0) {
+            return &g_zImage_TexDirEntries[i];
         }
     }
 
@@ -473,7 +474,11 @@ int __cdecl Shutdown()
 {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial& entry = g_zImage_TexDirEntries[i];
-        if (entry.loadState == 1) {
+        switch (entry.loadState) {
+        case 0:
+            break;
+
+        case 1:
             if (entry.image != 0) {
                 zVid_Image::ReleaseIfNotDefault(entry.image);
                 entry.image = 0;
@@ -483,10 +488,11 @@ int __cdecl Shutdown()
                 g_zVideo_pfnTextureRecordDestroy(entry.texture);
                 entry.texture = 0;
             }
-        }
+            // Loaded entries fall through to the pending-entry reset.
 
-        if (entry.loadState == 1 || entry.loadState == 2) {
+        case 2:
             entry.loadState = 0;
+            break;
         }
     }
 
@@ -921,7 +927,7 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-loadpendingentries
  * @recoil-artifact defines .text recoil:function:0x46de50: zImage::TexDirLoadPendingEntries.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -948,12 +954,13 @@ int __cdecl TexDirLoadPendingEntries()
         zVidImagePartial* image = TexDirFindOrCreateByPath(entry->baseName);
         entry->nextVariant = 0;
         entry->image = image;
-        if (image == 0 && g_zImage_pfnCreateFallbackImage != 0) {
-            image = g_zImage_pfnCreateFallbackImage(entry->baseName);
-            entry->image = image;
-        }
-        if (entry->image == 0) {
-            entry->image = &zVid_Image::g_zImage_DefaultImage;
+        if (image == 0) {
+            if (g_zImage_pfnCreateFallbackImage != 0) {
+                entry->image = g_zImage_pfnCreateFallbackImage(entry->baseName);
+            }
+            if (entry->image == 0) {
+                entry->image = &zVid_Image::g_zImage_DefaultImage;
+            }
         }
 
         entry->BuildMipChain();
@@ -964,7 +971,7 @@ int __cdecl TexDirLoadPendingEntries()
             g_zVideo_pfnTextureRecordFinalizeUpload(entry->texture, 0, entry->image);
         } else if (entry->texture == 0) {
             image = entry->image;
-            const unsigned short textureAddressFlags = (unsigned short)(image->textureAddressFlagsPacked);
+            const unsigned int textureAddressFlags = (unsigned short)(image->textureAddressFlagsPacked);
             entry->texture = g_zVideo_pfnCreateTextureRecord(
                 entry->baseName,
                 image,
@@ -988,7 +995,7 @@ int __cdecl TexDirLoadPendingEntries()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texturepack-ensurebuiltintexturepacksloaded
  * @recoil-artifact defines .text recoil:function:0x46df50: zVidTexturePackEnsureBuiltinTexturePacksLoaded.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: provide the recovered zVidTexturePackEnsureBuiltinTexturePacksLoaded behavior.
@@ -1007,13 +1014,14 @@ extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoa
 
     char filePath[0x20];
     int probeWasRendererMemory = 0;
-    int candidateSize = 8;
-    int totalBytes = 0;
-    int freeBytes = 0;
-    char* const archiveExtension = &g_zVid_TextureArchiveMaxName[11];
+    int candidateSize;
+    int totalBytes;
+    int freeBytes;
+    const char* const archiveExtension = g_zUtil_ZbdSearchPathLeaf;
 
     if (g_zVideo_pfnQueryTextureMemoryBytes(-1, &totalBytes, &freeBytes) != 0 && g_zVideo_ActiveRendererPath != 0) {
-        candidateSize = (unsigned int)(totalBytes) >> 20;
+        totalBytes = (unsigned int)(totalBytes) >> 20;
+        candidateSize = totalBytes;
         sprintf(
             filePath,
             g_zVid_TextureArchiveRendererSizedNameFmt,
@@ -1041,8 +1049,8 @@ extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoa
             candidateSize = 2;
             break;
         default:
-            sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
             candidateSize = 8;
+            sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
             break;
         }
     }
@@ -1055,37 +1063,36 @@ extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoa
     memset(entry, 0, sizeof(*entry));
     strcpy(entry->filePath, filePath);
 
-    if (zVidTexturePackEntryLoadFromFile(entry) == 0) {
-        {
-            for (int size = candidateSize; size >= -1; --size) {
-                if (size > 0) {
-                    if (probeWasRendererMemory != 0) {
-                        sprintf(
-                            filePath,
-                            g_zVid_TextureArchiveRendererSizedNameFmt,
-                            g_zVid_TextureArchiveStem,
-                            size,
-                            archiveExtension
-                        );
-                    } else {
-                        sprintf(
-                            filePath,
-                            g_zVid_TextureArchiveSizedNameFmt,
-                            g_zVid_TextureArchiveStem,
-                            size,
-                            archiveExtension
-                        );
-                    }
-                } else if (size == 0) {
-                    sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
+    zVidTexturePackEntryLoadFromFile(entry);
+    if (entry->fileHandle == 0) {
+        for (int size = candidateSize; size >= -1; --size) {
+            if (size > 0) {
+                if (probeWasRendererMemory != 0) {
+                    sprintf(
+                        filePath,
+                        g_zVid_TextureArchiveRendererSizedNameFmt,
+                        g_zVid_TextureArchiveStem,
+                        size,
+                        archiveExtension
+                    );
                 } else {
-                    sprintf(filePath, g_zVid_TextureArchiveNameFmt, g_zVid_TextureArchiveStem, archiveExtension);
+                    sprintf(
+                        filePath,
+                        g_zVid_TextureArchiveSizedNameFmt,
+                        g_zVid_TextureArchiveStem,
+                        size,
+                        archiveExtension
+                    );
                 }
+            } else if (size == 0) {
+                sprintf(filePath, "%s", g_zVid_TextureArchiveMaxName);
+            } else {
+                sprintf(filePath, g_zVid_TextureArchiveNameFmt, g_zVid_TextureArchiveStem, archiveExtension);
+            }
 
-                strcpy(entry->filePath, filePath);
-                if (zVidTexturePackEntryLoadFromFile(entry) != 0) {
-                    break;
-                }
+            strcpy(entry->filePath, filePath);
+            if (zVidTexturePackEntryLoadFromFile(entry) != 0) {
+                break;
             }
         }
     }
@@ -1155,7 +1162,7 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-setpathextension
  * @recoil-artifact defines .text recoil:function:0x46e2c0: zImage::SetPathExtension.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -1178,12 +1185,11 @@ void __fastcall SetPathExtension(char* path, const char* extension)
 
     char* const dot = strchr(basePathStart, '.');
     if (dot != 0) {
-        if (extension == 0) {
+        if (extension != 0) {
+            strcpy(dot + 1, extension);
+        } else {
             *dot = '\0';
-            return;
         }
-
-        strcpy(dot + 1, extension);
         return;
     }
 
@@ -1227,7 +1233,7 @@ void __fastcall TexDirSetBaseNameFromPath(const char* sourcePath, char* destBase
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentry-buildmipchain
  * @recoil-artifact defines .text recoil:function:0x46e3e0: zImage_TexDirEntry::BuildMipChain.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -1249,27 +1255,26 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain()
     strcpy(variantPath, baseName);
 
     zImage_TexDirEntryPartial* const baseEntry = this;
-    char* const suffix = strstr(variantPath, g_zImage_FontVariantSuffix);
+    char* suffix = strstr(variantPath, g_zImage_FontVariantSuffix);
     if (suffix == 0 || suffix[2] != '\0') {
         return;
     }
 
     zImage_TexDirEntryPartial* currentEntry = this;
-    char* const digit = suffix + 1;
-    for (;;) {
-        ++*digit;
+    ++suffix;
+    zVidImagePartial* variantImage;
+    do {
+        ++*suffix;
 
         zImage_TexDirEntryPartial* variantEntry = zImage::FindTexDirEntryByName(variantPath);
-        zVidImagePartial* variantImage = variantEntry != 0 ? variantEntry->image : 0;
         if (variantEntry == 0 || variantEntry->loadState == 2) {
             variantImage = zImage::TexDirFindOrCreateByPath(variantPath);
             if (variantImage == 0) {
-                break;
+                return;
             }
 
             if (variantEntry == 0) {
-                const int entryIndex = g_zImage_TexDirEntryCount++;
-                variantEntry = &g_zImage_TexDirEntries[entryIndex];
+                variantEntry = &g_zImage_TexDirEntries[g_zImage_TexDirEntryCount++];
                 zImage::TexDirSetBaseNameFromPath(variantPath, variantEntry->baseName);
             }
 
@@ -1282,7 +1287,7 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain()
         currentEntry = variantEntry;
         variantImage->widthScale = (float)(baseEntry->image->width / variantImage->width);
         variantEntry->nextVariant = 0;
-    }
+    } while (currentEntry != 0);
 }
 
 namespace zVid_PaletteRemap {

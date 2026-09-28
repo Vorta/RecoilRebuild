@@ -661,19 +661,18 @@ int HudSensorMapNode::InitDefaults()
 int HudSensorMapNode::SetColorRgb(const unsigned char* rgbOrNull)
 {
     if (rgbOrNull != 0) {
-        colorRgb[0] = (char)(rgbOrNull[0]);
-        colorRgb[1] = (char)(rgbOrNull[1]);
-        colorRgb[2] = (char)(rgbOrNull[2]);
+        memcpy(colorRgb, rgbOrNull, 3);
     }
 
-    const unsigned char red = (unsigned char)(colorRgb[0]);
-    const unsigned char green = (unsigned char)(colorRgb[2]);
-    const unsigned char blue = (unsigned char)(colorRgb[1]);
-    const unsigned short fullColor = (unsigned short)(zVidPackColorRGB(red, green, blue));
+    const unsigned short fullColor = (unsigned short)(zVidPackColorRGB(
+        (unsigned char)(colorRgb[0]),
+        (unsigned char)(colorRgb[2]),
+        (unsigned char)(colorRgb[1])
+    ));
     const unsigned short halfColor = (unsigned short)(zVidPackColorRGB(
-        (unsigned char)(red >> 1),
-        (unsigned char)(green >> 1),
-        (unsigned char)(blue >> 1)
+        (unsigned char)((unsigned char)(colorRgb[0]) >> 1),
+        (unsigned char)((unsigned char)(colorRgb[1]) >> 1),
+        (unsigned char)((unsigned char)(colorRgb[2]) >> 1)
     ));
     packedColor565Pair = ((int)(halfColor) << 16) | fullColor;
     return 1;
@@ -1257,7 +1256,7 @@ int HudSensorTracker::MapShutdownAndReset()
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapremovenode
  * @recoil-artifact defines .text recoil:function:0x4167e0: HudSensorTracker::MapRemoveNode
- *
+ * @recoil-match byte
  *
  * Purpose: Unlink the requested map node from the tracker list and release head-node storage.
  */
@@ -1274,18 +1273,11 @@ int HudSensorTracker::MapRemoveNode(HudSensorMapNode* mapNode)
         return 1;
     }
 
-    if (head == 0) {
-        return 0;
-    }
-
-    while (head->next != mapNode) {
+    while (head != 0 && head->next != mapNode) {
         head = head->next;
-        if (head == 0) {
-            return 0;
-        }
     }
 
-    if (head->next != mapNode) {
+    if (head == 0 || head->next != mapNode) {
         return 0;
     }
 
@@ -1595,7 +1587,7 @@ int HudSensorTracker::DrawTrackedSaveStateMarker()
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawmarkercross
  * @recoil-artifact defines .text recoil:function:0x416dd0: HudSensorTracker::DrawMarkerCross
- *
+ * @recoil-match byte
  *
  * Purpose: Draw a centered cross marker as two clipped immediate line strips.
  */
@@ -1609,19 +1601,18 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
 )
 {
     zRndr_LinePoint2I points[2];
-    const int color16 = markerColor & 0xffff;
 
     points[0].x = centerX - armHalfWidth;
     points[0].y = centerY;
     points[1].x = centerX + armHalfWidth;
     points[1].y = centerY;
-    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, color16);
+    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, markerColor & 0xffff);
 
     points[0].x = centerX;
     points[0].y = centerY + armHalfHeight;
     points[1].x = centerX;
     points[1].y = centerY - armHalfHeight;
-    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, color16);
+    zRndrDrawClippedImmediateLineStrip(points, 1, tracker, markerColor & 0xffff);
 }
 
 /**

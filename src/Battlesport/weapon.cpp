@@ -593,7 +593,7 @@ static int IsUsableAltWeaponController(zUtil_SaveGameState* saveState, PlayerGun
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-freealtweapontrailruntimestates
  * @recoil-artifact defines .text recoil:function:0x438b60: Player::FreeAltWeaponTrailRuntimeStates
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: release existing trail runtime state storage before rebuilding
@@ -601,14 +601,16 @@ static int IsUsableAltWeaponController(zUtil_SaveGameState* saveState, PlayerGun
  */
 void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 {
-    PlayerAltWeaponBank* bank = &saveState->playerState->altWeaponBanks[1];
-    for (int i = 0; i < 9; ++i, ++bank) {
-        OptCatalogTrailRuntimeState* const controllerATrail = bank->controllerA.trailRuntimeState;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    for (int i = 1; i < 10; ++i) {
+        OptCatalogTrailRuntimeState* const controllerATrail
+            = playerState->altWeaponBanks[i].controllerA.trailRuntimeState;
         if (controllerATrail != 0) {
             OptCatalog::FreeTrailRuntimeStateStorage(controllerATrail);
         }
 
-        OptCatalogTrailRuntimeState* const controllerBTrail = bank->controllerB.trailRuntimeState;
+        OptCatalogTrailRuntimeState* const controllerBTrail
+            = playerState->altWeaponBanks[i].controllerB.trailRuntimeState;
         if (controllerBTrail != 0) {
             OptCatalog::FreeTrailRuntimeStateStorage(controllerBTrail);
         }
@@ -2205,13 +2207,13 @@ void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
-    zMat4x3 gunMatrix = { 0 };
+    zMat4x3 gunMatrix;
     memcpy(&gunMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode), sizeof(gunMatrix));
 
-    zMat4x3 turretMatrix = { 0 };
+    zMat4x3 turretMatrix;
     memcpy(&turretMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode), sizeof(turretMatrix));
 
-    zMat4x3 gunFireTransform = { 0 };
+    zMat4x3 gunFireTransform;
     memcpy(&gunFireTransform, &playerState->gunFireTransform, sizeof(gunFireTransform));
 
     outMatrix34->xx = turretMatrix.xx * gunFireTransform.xx + turretMatrix.xz * gunFireTransform.zx;
@@ -2506,7 +2508,7 @@ void __fastcall ClearDestroyedRespawnEffectHandleCallback(zEffectAnimEntry*, zUt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-hitcallback-recordnetcontextandtimedstatus
  * @recoil-artifact defines .text recoil:function:0x43b810: Player::HitCallbackRecordNetContextAndTimedStatus
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: network hit callback that records recent-hit context and timed-hit
@@ -2530,10 +2532,10 @@ int __fastcall HitCallbackRecordNetContextAndTimedStatus(
     }
 
     if (hitSource != 0) {
-        if ((hitSource->flags & kOptCatalogFlagRecordsRecentHit) != 0) {
+        if ((unsigned char)(hitSource->flags >> 12) & 1) {
             RecordRecentHitFeedback(saveState, hitSource, damage);
         }
-        if ((hitSource->flags & kOptCatalogFlagAppliesTimedHitStatus) != 0) {
+        if ((unsigned char)(hitSource->flags >> 21) & 1) {
             UpdateTimedHitStatusFromHitSource(saveState, hitSource, damage);
         }
     }
@@ -2928,7 +2930,7 @@ int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-startdestroyedstatevehicleeffect
  * @recoil-artifact defines .text recoil:function:0x43c0c0: Player::StartDestroyedStateVehicleEffect
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: choose and start the destroyed-state vehicle effect, clear recent
@@ -2943,28 +2945,35 @@ int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState)
 void __fastcall StartDestroyedStateVehicleEffect(zUtil_SaveGameState* saveState, void* respawnCallback)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    zEffectAnimEntry* vehicleEffect;
-    CZNodePartial* rootNode;
+    zEffectAnimEntry* asyncHandle;
 
     playerState->destroyedRespawnAsyncHandle = 0;
     if (playerState->queuedFixedDamageFlag != 0) {
-        vehicleEffect = playerState->shockVehicleFxEntry;
-        rootNode = 0;
+        asyncHandle = zEffectAnim::SetVelocityThunk(playerState->shockVehicleFxEntry, 0, 0.0f, 0.0f, 0.0f);
     } else if (playerState->damageProtectionActive != 0) {
-        vehicleEffect = playerState->shatterVehicleFxEntry;
-        rootNode = playerState->rootNode;
+        asyncHandle = zEffectAnim::SetVelocityThunk(
+            playerState->shatterVehicleFxEntry,
+            playerState->rootNode,
+            0.0f,
+            0.0f,
+            0.0f
+        );
     } else if (playerState->recentHitValid != 0) {
-        vehicleEffect = playerState->napalmVehicleFxEntry;
-        rootNode = playerState->rootNode;
+        asyncHandle
+            = zEffectAnim::SetVelocityThunk(playerState->napalmVehicleFxEntry, playerState->rootNode, 0.0f, 0.0f, 0.0f);
     } else if (playerState->aiMode != 0) {
-        vehicleEffect = playerState->subTransitionFxEntry;
-        rootNode = playerState->rootNode;
+        asyncHandle
+            = zEffectAnim::SetVelocityThunk(playerState->subTransitionFxEntry, playerState->rootNode, 0.0f, 0.0f, 0.0f);
     } else {
-        vehicleEffect = playerState->destroyedRespawnFxEntry;
-        rootNode = playerState->rootNode;
+        asyncHandle = zEffectAnim::SetVelocityThunk(
+            playerState->destroyedRespawnFxEntry,
+            playerState->rootNode,
+            0.0f,
+            0.0f,
+            0.0f
+        );
     }
 
-    zEffectAnimEntry* const asyncHandle = zEffectAnim::SetVelocityThunk(vehicleEffect, rootNode, 0.0f, 0.0f, 0.0f);
     playerState->destroyedRespawnAsyncHandle = asyncHandle;
 
     if (playerState->recentHitValid != 0) {
@@ -3435,7 +3444,7 @@ void __fastcall RemoveAllDeployedMines(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-findaltgunfirecontrollerforweaponid
  * @recoil-artifact defines .text recoil:function:0x43c9c0: Player::FindAltGunFireControllerForWeaponId
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: select the alternate-gun fire controller matching the requested
@@ -3447,13 +3456,12 @@ PlayerGunFireController* __fastcall FindAltGunFireControllerForWeaponId(zUtil_Sa
     OptCatalogEntryDef* const entry = OptCatalog::FindEntryById(weaponId);
 
     for (int i = 2; i < 10; ++i) {
-        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[i];
-        if (bank.controllerA.optCatalogEntry == entry) {
-            return &bank.controllerA;
+        if (playerState->altWeaponBanks[i].controllerA.optCatalogEntry == entry) {
+            return &playerState->altWeaponBanks[i].controllerA;
         }
 
-        if (bank.controllerB.optCatalogEntry == entry) {
-            return &bank.controllerB;
+        if (playerState->altWeaponBanks[i].controllerB.optCatalogEntry == entry) {
+            return &playerState->altWeaponBanks[i].controllerB;
         }
     }
 
@@ -3552,20 +3560,18 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
 {
     (void)userData;
 
-    PlayerMineSaveEntry data = { 0 };
+    PlayerMineSaveEntry data;
     data.resetMarker = 1;
     strncpy(data.ownerNodeName, "Dummy", 0x24);
 
     int writeOk = zUtil_ZAR::WriteSectionBlob(writer, "DummyMineData", &data, 0x60);
     int mineCount = 0;
     for (int bankIndex = 4; writeOk != 0 && bankIndex < 6; ++bankIndex) {
-        zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
-        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-        PlayerGunFireController* controllers[2] = { &bank.controllerA, &bank.controllerB };
-
         for (int sideIndex = 0; writeOk != 0 && sideIndex < 2; ++sideIndex) {
-            OptCatalogEntryDef* const entry = controllers[sideIndex]->optCatalogEntry;
+            OptCatalogEntryDef* const entry
+                = (&((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->altWeaponBanks[bankIndex].controllerA
+                    + sideIndex)
+                      ->optCatalogEntry;
             if (entry == 0) {
                 continue;
             }
@@ -3602,13 +3608,14 @@ void __fastcall
 MinesZARReadEntryOrReset(zZbdSectionCallbackCtx*, const char*, PlayerMineSaveEntry* mineData, unsigned int, void*)
 {
     if (mineData->resetMarker != 0) {
-        zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
-        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         for (int bankIndex = 4; bankIndex < 6; ++bankIndex) {
-            PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-            PlayerGunFireController* controllers[2] = { &bank.controllerA, &bank.controllerB };
             for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
-                OptCatalogEntryDef* const entry = controllers[sideIndex]->optCatalogEntry;
+                OptCatalogEntryDef* const entry
+                    = (&((zUtil_SaveGameState*)g_GameStateOrMapTable)
+                            ->playerState->altWeaponBanks[bankIndex]
+                            .controllerA
+                        + sideIndex)
+                          ->optCatalogEntry;
                 if (entry != 0) {
                     OptCatalog::ClearRuntimeInstances(entry);
                 }

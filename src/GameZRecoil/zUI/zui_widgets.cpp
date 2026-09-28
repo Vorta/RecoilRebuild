@@ -1631,7 +1631,7 @@ void HudUiWidget::Draw()
 
 int HudUiWidget::HitTest(int px, int py)
 {
-    if ((flags & 0x10) != 0) {
+    if ((~flags & 0x10) == 0) {
         return 0;
     }
 
@@ -2396,63 +2396,59 @@ void HudUiZrdWidget::Invalidate()
 
 HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
 {
+    HudUiRect* result = 0;
+    zVidImagePartial* const widgetImage = image;
     if (modeOrEnabled == 0) {
-        return 0;
+        return result;
     }
 
-    if (image != 0) {
-        boundsRect.left = x;
+    if (widgetImage != 0) {
         boundsRect.top = y;
-        boundsRect.right = x + image->width;
-        boundsRect.bottom = y + image->height;
+        boundsRect.left = x;
+        boundsRect.bottom = y + widgetImage->height;
+        boundsRect.right = x + widgetImage->width;
         return &boundsRect;
     }
 
-    HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
-    if (panelIt == labelPanels.end()) {
-        return 0;
+    if (labelPanels.begin() == 0) {
+        return result;
     }
 
     boundsRect.top = labelPanels[0]->GetCenterY();
-    boundsRect.bottom = boundsRect.top + labelPanels[0]->QueryTextHeight();
+    boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
 
-    while (panelIt != labelPanels.end()) {
+    for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
         boundsRect.bottom += (*panelIt)->QueryTextHeight();
 
-        const int alignMode = (*panelIt)->alignMode;
-        switch (alignMode) {
+        switch ((*panelIt)->alignMode) {
         case 0:
             boundsRect.left = labelPanels[0]->GetCenterX();
-            if ((*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() > boundsRect.right) {
-                boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth();
-            }
+            boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() > boundsRect.right
+                ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth()
+                : boundsRect.right;
             break;
 
         case 1:
-            if ((*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2) < boundsRect.left) {
-                boundsRect.left = (*panelIt)->GetCenterX() - ((*panelIt)->QueryTextWidth() / 2);
-            }
-
-            if ((*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2) > boundsRect.right) {
-                boundsRect.right = (*panelIt)->GetCenterX() + ((*panelIt)->QueryTextWidth() / 2);
-            }
+            boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2 < boundsRect.left
+                ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2
+                : boundsRect.left;
+            boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2 > boundsRect.right
+                ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2
+                : boundsRect.right;
             break;
 
         case 2:
             boundsRect.right = labelPanels[0]->GetCenterX();
-            if ((*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() > boundsRect.left) {
-                boundsRect.left = boundsRect.left;
-            } else {
-                boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth();
-            }
+            boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() > boundsRect.left
+                ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth()
+                : boundsRect.left;
             break;
         }
-
-        ++panelIt;
     }
 
     boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
-    return &boundsRect;
+    result = &boundsRect;
+    return result;
 }
 
 void HudUiZrdWidget::ShowPreview()
@@ -2469,7 +2465,7 @@ void HudUiZrdWidget::ShowPreview()
         rolloverPlayHandle = rolloverSound->PlayA3DSimple(rolloverSoundScale);
     }
 
-    if (rolloverLabelPanels.begin() != rolloverLabelPanels.end()) {
+    if (rolloverLabelPanels.begin() != 0) {
         HudUiSetPanelVectorVisible(labelPanels, 0);
         HudUiSetPanelVectorVisible(activateLabelPanels, 0);
         HudUiSetPanelVectorVisible(rolloverLabelPanels, 1);
@@ -2718,7 +2714,7 @@ HudUiRect* HudUiCheckToggleWidget::GetBoundsRectOrNull()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-refreshstate
  * @recoil-artifact defines .text recoil:function:0x4b70c0: HudUiCheckToggleWidget::RefreshState.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiCheckToggleWidget::RefreshState.
  */
@@ -2727,20 +2723,15 @@ void HudUiCheckToggleWidget::RefreshState()
     HudUiSetPanelVectorVisible(rolloverLabelPanels, 0);
     HudUiSetPanelVectorVisible(activateLabelPanels, 0);
 
-    zVidImagePartial* image = 0;
     if (modeOrEnabled != 0) {
         HudUiSetPanelVectorVisible(labelPanels, 1);
         HudUiSetPanelVectorVisible(disabledLabelPanels, 0);
 
         if (checked != 0) {
-            image = checkedImage;
-            if (image == 0) {
-                image = uncheckedImage;
-                if (image != 0) {
-                    SetImageBorrowedAndInvalidate(image);
-                    Invalidate();
-                    return;
-                }
+            if (checkedImage != 0) {
+                SetImageBorrowedAndInvalidate(checkedImage);
+            } else if (uncheckedImage != 0) {
+                SetImageBorrowedAndInvalidate(uncheckedImage);
             }
         }
     } else {
@@ -2748,16 +2739,14 @@ void HudUiCheckToggleWidget::RefreshState()
         HudUiSetPanelVectorVisible(disabledLabelPanels, 1);
 
         if (checked != 0) {
-            image = disabledCheckedImage;
-            if (image == 0) {
-                image = disabledCheckedFallbackImage;
+            if (disabledCheckedImage != 0) {
+                SetImageBorrowedAndInvalidate(disabledCheckedImage);
+            } else if (disabledCheckedFallbackImage != 0) {
+                SetImageBorrowedAndInvalidate(disabledCheckedFallbackImage);
             }
         }
     }
 
-    if (image != 0) {
-        SetImageBorrowedAndInvalidate(image);
-    }
     Invalidate();
 }
 
@@ -3336,19 +3325,17 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
     }
 
     zReader::Node* const textOffsetNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_TextOffset);
-    zReader::Node* const textOffsetBase = ZrdArrayBase(textOffsetNode);
-    if (textOffsetBase != 0) {
-        textOffsetX = ZrdArrayInt(textOffsetBase, 1, textOffsetX);
-        textOffsetY = ZrdArrayInt(textOffsetBase, 2, textOffsetY);
+    if (textOffsetNode != 0) {
+        textOffsetX = textOffsetNode->value.nodes[1].value.i32;
+        textOffsetY = textOffsetNode->value.nodes[2].value.i32;
     }
 
     zReader::Node* const cycleNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Cycle);
-    zReader::Node* const cycleBase = ZrdArrayBase(cycleNode);
-    if (cycleBase == 0) {
+    if (cycleNode == 0) {
         return 1;
     }
 
-    int count = ZrdArrayCount(cycleBase) - 1;
+    int count = cycleNode->value.nodes[0].value.i32 - 1;
     if (count >= 20) {
         count = 20;
     }
@@ -3358,36 +3345,31 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
         visibleCount = count;
     }
 
-    {
-        for (int index = 0; index < itemCount; ++index) {
-            zReader::Node* const entryNode = ZrdArrayItem(cycleBase, index + 1);
+    for (int index = 0; index < itemCount; ++index) {
+        zReader::Node* const entryNode = &cycleNode->value.nodes[index + 1];
 
-            zReader::Node* const textNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
-            zReader::Node* const textBase = ZrdArrayBase(textNode);
-            if (textBase != 0) {
-                const char* const key = ZrdArrayString(textBase, 1);
-                const char* const text = key != 0 ? zLoc::ResolveMessageKeyOrFallback(key) : "";
-                AddTextEntry(
-                    index,
-                    text != 0 ? text : "",
-                    originX + ZrdArrayInt(textBase, 2, 0),
-                    originY + ZrdArrayInt(textBase, 3, 0)
-                );
-                ApplyFontStyleForEntry(index, ZrdArrayInt(textBase, 4, 0));
+        zReader::Node* const textNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+        if (textNode != 0) {
+            AddTextEntry(
+                index,
+                zLoc::ResolveMessageKeyOrFallback(textNode->value.nodes[1].value.str),
+                originX + textNode->value.nodes[2].value.i32,
+                originY + textNode->value.nodes[3].value.i32
+            );
+            ApplyFontStyleForEntry(index, textNode->value.nodes[4].value.i32);
+        }
+
+        zReader::Node* const bitmapNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        if (bitmapNode != 0) {
+            zReader::Node* const bitmapItems = bitmapNode->value.nodes;
+            int bitmapX = originX;
+            int bitmapY = originY;
+            if (bitmapItems[0].value.i32 >= 4) {
+                bitmapX += bitmapItems[2].value.i32;
+                bitmapY += bitmapItems[3].value.i32;
             }
 
-            zReader::Node* const bitmapNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
-            zReader::Node* const bitmapBase = ZrdArrayBase(bitmapNode);
-            if (bitmapBase != 0) {
-                int bitmapX = originX;
-                int bitmapY = originY;
-                if (ZrdArrayCount(bitmapBase) >= 4) {
-                    bitmapX += ZrdArrayInt(bitmapBase, 2, 0);
-                    bitmapY += ZrdArrayInt(bitmapBase, 3, 0);
-                }
-
-                AddBitmapEntry(index, ZrdArrayString(bitmapBase, 1), bitmapX, bitmapY);
-            }
+            AddBitmapEntry(index, bitmapItems[1].value.str, bitmapX, bitmapY);
         }
     }
 
@@ -3480,7 +3462,7 @@ void HudUiFillBitmap::Draw()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b85c0: HudUiFillBitmap::LoadFromZrd.
- *
+ * @recoil-match byte
  *
  * Purpose: load the recovered HUD data handled by HudUiFillBitmap::LoadFromZrd.
  */
@@ -3489,16 +3471,15 @@ int HudUiFillBitmap::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* own
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
     zReader::Node* const fillBitmapNode = zRdrGetNode(zrdSection, g_HudUiFillBitmap_ZrdKey_FillBitmap);
-    zReader::Node* const fillBitmapBase = ZrdArrayBase(fillBitmapNode);
-    if (fillBitmapBase != 0) {
-        fillImage = zImage::TexDirFindOrCreateByPath(ZrdArrayString(fillBitmapBase, 1));
-        Invalidate();
-
+    if (fillBitmapNode != 0) {
         int posX = originX;
         int posY = originY;
-        if (ZrdArrayCount(fillBitmapBase) >= 4) {
-            posX += ZrdArrayInt(fillBitmapBase, 2, 0);
-            posY += ZrdArrayInt(fillBitmapBase, 3, 0);
+        fillImage = zImage::TexDirFindOrCreateByPath(fillBitmapNode->value.nodes[1].value.str);
+        Invalidate();
+
+        if (fillBitmapNode->value.nodes[0].value.i32 >= 4) {
+            posX += fillBitmapNode->value.nodes[2].value.i32;
+            posY += fillBitmapNode->value.nodes[3].value.i32;
         }
 
         SetPos(posX, posY);
@@ -3513,14 +3494,14 @@ int HudUiFillBitmap::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* own
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-updatenormalizedfromcursor
  * @recoil-artifact defines .text recoil:function:0x4b8650: HudUiFillBitmap::UpdateNormalizedFromCursor.
- *
+ * @recoil-match byte
  *
  * Purpose: update the normalized fill value from the owner cursor and activate the widget.
  */
 void HudUiFillBitmapSlider::OnActivate()
 {
-    const int cursorX = owner->mouseState.cursorClientX;
-    const int relativeX = cursorX - GetCenterX();
+    const zInput::MouseStateSnapshot* const mouse = &owner->mouseState;
+    const int relativeX = mouse->cursorClientX - GetCenterX();
     const int imageWidth = image != 0 ? image->width : 0;
     SetNormalizedValueAndRebuild((float)(relativeX) / (float)(imageWidth));
     // Retail emits a direct base call here. Virtual redispatch would re-enter
@@ -3677,59 +3658,38 @@ int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
 
     boundsRect.top = GetCenterY();
     boundsRect.left = GetCenterX();
-
-    if (image != 0) {
-        boundsRect.bottom = boundsRect.top + image->width;
-        boundsRect.right = boundsRect.left + image->height;
-    } else {
-        boundsRect.bottom = boundsRect.top;
-        boundsRect.right = boundsRect.left;
-    }
+    boundsRect.bottom = boundsRect.top + (image != 0 ? image->width : 0);
+    boundsRect.right = (image != 0 ? image->height : 0) + boundsRect.left;
 
     if (unselectedImage != 0) {
         boundsRect.top = y;
         boundsRect.left = x;
-        boundsRect.bottom = y + unselectedImage->height;
-        boundsRect.right = x + unselectedImage->width;
-    } else if (labelPanels.begin() != labelPanels.end()) {
-        HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
-        HudUiPanel* const firstPanel = *panelIt;
-        boundsRect.top = firstPanel->GetCenterY();
-        boundsRect.left = firstPanel->GetCenterX();
-        boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
+        boundsRect.bottom = unselectedImage->height + y;
+        boundsRect.right = unselectedImage->width + x;
+    } else if (labelPanels.begin() != 0) {
+        boundsRect.top = labelPanels[0]->GetCenterY();
+        boundsRect.left = labelPanels[0]->GetCenterX();
+        boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
 
-        while (panelIt != labelPanels.end()) {
-            HudUiPanel* const panel = *panelIt;
-            boundsRect.bottom += panel->QueryTextHeight();
-
-            if (panel->textDirty != 0) {
-                panel->RebuildTextRect();
+        for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
+            boundsRect.bottom += (*panelIt)->QueryTextHeight();
+            if ((*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right) {
+                boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left;
             }
-
-            const int right = panel->textWidthPx + boundsRect.left;
-            if (right > boundsRect.right) {
-                if (panel->textDirty != 0) {
-                    panel->RebuildTextRect();
-                }
-                boundsRect.right = panel->textWidthPx + boundsRect.left;
-            }
-
-            ++panelIt;
         }
 
-        boundsRect.bottom -= firstPanel->QueryTextHeight();
+        boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
     }
 
-    mouseRect = boundsRect;
     mouseRectValid = 1;
+    mouseRect = boundsRect;
 
     zReader::Node* const mouseRectNode = zRdrGetNode(zrdSection, g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect);
-    zReader::Node* const mouseRectBase = ZrdArrayBase(mouseRectNode);
-    if (mouseRectBase != 0) {
-        mouseRect.top += ZrdArrayInt(mouseRectBase, 1, 0);
-        mouseRect.left += ZrdArrayInt(mouseRectBase, 2, 0);
-        mouseRect.bottom = mouseRect.top + ZrdArrayInt(mouseRectBase, 3, 0);
-        mouseRect.right = mouseRect.left + ZrdArrayInt(mouseRectBase, 4, 0);
+    if (mouseRectNode != 0) {
+        mouseRect.top += mouseRectNode->value.nodes[1].value.i32;
+        mouseRect.left += mouseRectNode->value.nodes[2].value.i32;
+        mouseRect.bottom = mouseRectNode->value.nodes[3].value.i32 + mouseRect.top;
+        mouseRect.right = mouseRectNode->value.nodes[4].value.i32 + mouseRect.left;
     }
 
     return 1;
@@ -3839,7 +3799,7 @@ void CHudRadioGroupWidget::DestructorCore()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b8be0: CHudRadioGroupWidget::LoadFromZrd.
- *
+ * @recoil-match byte
  *
  * Purpose: load the recovered HUD data handled by CHudRadioGroupWidget::LoadFromZrd.
  */
@@ -3848,22 +3808,20 @@ int CHudRadioGroupWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
     owner = ownerDialog;
 
     zReader::Node* const radioNode = zRdrGetNode(zrdSection, g_HudUiZrdToken_Radio);
-    zReader::Node* const radioBase = ZrdArrayBase(radioNode);
-    if (radioBase != 0) {
-        optionCount = ZrdArrayCount(radioBase) - 1;
-        if (optionCount >= 10) {
-            optionCount = 10;
+    if (radioNode != 0) {
+        int count = radioNode->value.nodes[0].value.i32 - 1;
+        if (count >= 10) {
+            count = 10;
         }
 
-        {
-            for (int index = 0; index < optionCount; ++index) {
-                CHudRadioButtonWidget* const option = new CHudRadioButtonWidget;
-                options[index] = option;
-
-                option->LoadFromZrd(&radioBase[index + 1], ownerDialog);
-                option->ownerSelector = this;
-                option->itemIndex = index;
-            }
+        optionCount = count;
+        for (int index = 0; index < optionCount; ++index) {
+            zReader::Node* const entryNode = &radioNode->value.nodes[index + 1];
+            options[index] = new CHudRadioButtonWidget;
+            options[index]->LoadFromZrd(entryNode, ownerDialog);
+            CHudRadioButtonWidget* const option = options[index];
+            option->ownerSelector = this;
+            option->itemIndex = index;
         }
     }
 
@@ -4303,48 +4261,63 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
             zReader::Node* const fontListNode = zRdrGetNode(cfgRoot, g_HudCfgKey_Fonts);
             if (fontListNode != 0) {
                 int fontCount = fontListNode->value.nodes[0].value.i32;
-                if (fontCount > 20) {
+                if (fontCount >= 20) {
                     fontCount = 20;
                 }
 
                 for (int index = 1; index < fontCount; ++index) {
-                    zReader::Node* const fontSpec = fontListNode->value.nodes[index].value.nodes;
+                    zReader::Node* const fontEntry = &fontListNode->value.nodes[index];
 
-                    const int styleIndex = fontSpec[1].value.i32;
+                    const int styleIndex = fontEntry->value.nodes[1].value.i32;
 
                     fontStyles[styleIndex].validMarker = 1;
                     fontStyles[styleIndex].bkColor = 0;
                     fontStyles[styleIndex].bkMode = 1;
-                    fontStyles[styleIndex].fontName = fontSpec[2].value.str;
-                    fontStyles[styleIndex].fontSize = fontSpec[3].value.i32;
+                    fontStyles[styleIndex].fontName = fontEntry->value.nodes[2].value.str;
+                    fontStyles[styleIndex].fontSize = fontEntry->value.nodes[3].value.i32;
 
-                    if (fontSpec[4].value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {
+                    if (fontEntry->value.nodes[4].value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {
                         fontStyles[styleIndex].textColor
-                            = (unsigned char)(fontSpec[4].value.nodes[1].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[2].value.i32) << 8)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[1].value.nodes[3].value.i32)
+                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[1].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
+                                       .value.nodes[1]
+                                       .value.nodes[2]
+                                       .value.i32)
+                                << 8)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
+                                       .value.nodes[1]
+                                       .value.nodes[3]
+                                       .value.i32)
                                 << 16);
 
                         fontStyles[styleIndex].bkColor
-                            = (unsigned char)(fontSpec[4].value.nodes[2].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[2].value.i32) << 8)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.nodes[3].value.i32)
+                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[2].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
+                                       .value.nodes[2]
+                                       .value.nodes[2]
+                                       .value.i32)
+                                << 8)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
+                                       .value.nodes[2]
+                                       .value.nodes[3]
+                                       .value.i32)
                                 << 16);
                         fontStyles[styleIndex].bkMode = 2;
                     } else {
-                        fontStyles[styleIndex].textColor = (unsigned char)(fontSpec[4].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[2].value.i32) << 8)
-                            | ((unsigned int)(unsigned char)(fontSpec[4].value.nodes[3].value.i32) << 16);
+                        fontStyles[styleIndex].textColor
+                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[1].value.i32)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4].value.nodes[2].value.i32) << 8)
+                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4].value.nodes[3].value.i32) << 16);
                     }
 
-                    if (fontSpec[0].value.i32 >= 6) {
-                        fontStyles[styleIndex].shadowEnabled = fontSpec[5].value.i32;
+                    if (fontEntry->value.nodes[0].value.i32 >= 6) {
+                        fontStyles[styleIndex].shadowEnabled = fontEntry->value.nodes[5].value.i32;
                     }
-                    if (fontSpec[0].value.i32 >= 7) {
-                        fontStyles[styleIndex].fontWeight = fontSpec[6].value.i32;
+                    if (fontEntry->value.nodes[0].value.i32 >= 7) {
+                        fontStyles[styleIndex].fontWeight = fontEntry->value.nodes[6].value.i32;
                     }
-                    if (fontSpec[0].value.i32 >= 8) {
-                        const char* const align = fontSpec[7].value.str;
+                    if (fontEntry->value.nodes[0].value.i32 >= 8) {
+                        const char* const align = fontEntry->value.nodes[7].value.str;
                         if (align == 0 || strcmp(align, "LEFT") == 0) {
                             fontStyles[styleIndex].alignMode = 0;
                         } else if (strcmp(align, "RIGHT") == 0) {
@@ -4836,7 +4809,7 @@ HudUiPanel::HudUiPanel(const char* text, int initX, int initY)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-huduipanel-0x4ba850
  * @recoil-artifact defines .text recoil:function:0x4ba850: HudUiPanel::HudUiPanel(const HudUiPanel &).
- *
+ * @recoil-match byte
  *
  * Purpose: Copy-construct panel-owned text and font state from another panel.
  */
@@ -4847,7 +4820,7 @@ HudUiPanel::HudUiPanel(const HudUiPanel& source)
     textColor0 = source.textColor0;
     textColor1 = source.textColor1;
 
-    LOGFONTA logFont = { 0 };
+    LOGFONTA logFont;
     if (GetObjectA(source.hFont, sizeof(logFont), &logFont) != 0) {
         hFont = CreateFontIndirectA(&logFont);
     }
@@ -4971,7 +4944,8 @@ void HudUiPanel::SetFont(
  */
 void HudUiPanel::RebuildTextRect()
 {
-    if (strlen(textBuffer) == 0) {
+    const int textLength = (int)(strlen(textBuffer));
+    if (textLength == 0) {
         textRect.left = textRect.top = textRect.right = textRect.bottom = 0;
         textHeightPx = 0;
         textWidthPx = 0;
@@ -4987,25 +4961,24 @@ void HudUiPanel::RebuildTextRect()
 
     SelectObject(measureDc, hFont);
 
-    RECT& textRectRef = *(RECT*)(&textRect);
     UINT drawFormat = DT_LEFT;
     BOOL measured = FALSE;
     if (wordWrapEnabled != 0) {
-        textRectRef = *(RECT*)(&wrapRect);
+        textRect = wrapRect;
         drawFormat = DT_WORDBREAK;
         measured = TRUE;
     } else {
-        measured = DrawTextA(measureDc, textBuffer, -1, &textRectRef, DT_CALCRECT);
+        measured = DrawTextA(measureDc, textBuffer, -1, (RECT*)(&textRect), DT_CALCRECT);
     }
 
     if (measured != 0) {
         if (shadowEnabled != 0) {
-            textRectRef.bottom += abs(shadowOffsetY);
-            textRectRef.right += abs(shadowOffsetX);
+            textRect.bottom += abs(shadowOffsetY);
+            textRect.right += abs(shadowOffsetX);
         }
 
-        textWidthPx = textRectRef.right - textRectRef.left;
-        textHeightPx = textRectRef.bottom - textRectRef.top;
+        textWidthPx = textRect.right - textRect.left;
+        textHeightPx = textRect.bottom - textRect.top;
 
         if (textPick != 0) {
             if (textWidthPx > textPick->width || textHeightPx > textPick->height) {
@@ -5032,8 +5005,8 @@ void HudUiPanel::RebuildTextRect()
 
             HDC drawDc;
             if (g_zVideo_pfnImageUploadPixelsToSurface(textPick, &drawDc) != 0) {
-                RECT shadowRect = textRectRef;
-                RECT mainRect = textRectRef;
+                RECT shadowRect = *(RECT*)(&textRect);
+                RECT mainRect = *(RECT*)(&textRect);
                 SelectObject(drawDc, hFont);
 
                 if (shadowEnabled != 0) {
@@ -5151,31 +5124,29 @@ int HudUiPanel::MeasureTextPrefixRect(int maxChars, RECT* outRect)
 {
     int result = 0;
     HDC hdc = CreateCompatibleDC(0);
-    if (hdc == 0) {
-        return 0;
-    }
-
-    SelectObject(hdc, hFont);
-    if (maxChars > 0) {
-        char* const textCopy = _strdup(textBuffer);
-        if (maxChars <= (int)(strlen(textCopy))) {
-            textCopy[maxChars] = '\0';
-            if (DrawTextA(hdc, textCopy, -1, outRect, DT_CALCRECT) != 0) {
-                result = 1;
+    if (hdc != 0) {
+        SelectObject(hdc, hFont);
+        if (maxChars > 0) {
+            char* const textCopy = _strdup(textBuffer);
+            if (maxChars <= (int)(strlen(textCopy))) {
+                textCopy[maxChars] = '\0';
+                if (DrawTextA(hdc, textCopy, -1, outRect, DT_CALCRECT) != 0) {
+                    result = 1;
+                }
             }
+
+            free(textCopy);
+            DeleteDC(hdc);
+        } else {
+            if (DrawTextA(hdc, "W", -1, outRect, DT_CALCRECT) != 0) {
+                result = 1;
+                outRect->right = outRect->left;
+            }
+
+            DeleteDC(hdc);
         }
-
-        free(textCopy);
-        DeleteDC(hdc);
-        return result;
     }
 
-    if (DrawTextA(hdc, "W", -1, outRect, DT_CALCRECT) != 0) {
-        result = 1;
-        outRect->right = outRect->left;
-    }
-
-    DeleteDC(hdc);
     return result;
 }
 
@@ -5235,25 +5206,19 @@ void HudUiPanel::UpdateTextBoundsFromContent()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-hittest
  * @recoil-artifact defines .text recoil:function:0x4bb3d0: HudUiPanel::HitTest.
- *
+ * @recoil-match byte
  *
  * Purpose: test a point against the current visible text bounds, rebuilding dirty text metrics first.
  */
 int HudUiPanel::HitTest(int px, int py)
 {
-    if ((flags & 0x10u) != 0 || x > px || y > py) {
-        return 0;
+    if ((~flags & 0x10u) != 0 && x <= px && y <= py) {
+        if (px < x + QueryTextWidth() && py < y + QueryTextHeight()) {
+            return 1;
+        }
     }
 
-    if (textDirty != 0) {
-        RebuildTextRect();
-    }
-
-    if (px >= x + textWidthPx) {
-        return 0;
-    }
-
-    return py < y + QueryTextHeight() ? 1 : 0;
+    return 0;
 }
 
 /**
@@ -5357,7 +5322,7 @@ void __cdecl HudUiPanel::SetTextFmt(const char* format, ...)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-settextfmtv
  * @recoil-artifact defines .text recoil:function:0x4bb5e0: HudUiPanel::SetTextFmtV.
- *
+ * @recoil-match byte
  *
  * Purpose: format a va_list into the panel text buffer and refresh cached
  * panel text state when the content changes.
@@ -5371,7 +5336,6 @@ void __cdecl HudUiPanel::SetTextFmtV(const char* format, va_list args)
     }
 
     _vsnprintf(textBuffer, 0x100, format, args);
-    textBuffer[0xff] = '\0';
 
     if (strncmp(cachedText, textBuffer, 0x100) == 0) {
         return;

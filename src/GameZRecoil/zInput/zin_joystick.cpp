@@ -540,7 +540,7 @@ void __cdecl DIResetTransitionState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-createforcefeedbackeffect
  * @recoil-artifact defines .text recoil:function:0x472450: zInputDICreateForceFeedbackEffect.
- *
+ * @recoil-match byte
  *
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * The retail order shelf places this body between joystick transition reset
@@ -554,7 +554,7 @@ zInput_DiEffect* __fastcall zInputDICreateForceFeedbackEffect(const GUID* rguidE
         return 0;
     }
 
-    zInput_DiEffect* outEffect = 0;
+    zInput_DiEffect* outEffect;
     const int result = g_zInput_JoystickDevice->CreateEffect(*rguidEffect, effect, &outEffect, 0);
     return result < 0 ? 0 : outEffect;
 }

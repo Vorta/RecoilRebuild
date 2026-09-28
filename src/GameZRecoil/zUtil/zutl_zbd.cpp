@@ -408,7 +408,7 @@ void zZbdManager::RequestStop()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-writesectionrecord
  * @recoil-artifact defines .text recoil:function:0x4c0630: zZbdManager::WriteSectionRecord
- *
+ * @recoil-match byte
  *
  * Purpose: format a section/token record path and append the payload.
  */
@@ -419,7 +419,7 @@ int zZbdManager::WriteSectionRecord(
     unsigned int dataSize
 )
 {
-    char recordPath[0x50] = { 0 };
+    char recordPath[0x50] = "";
     sprintf(recordPath, g_zUtil_ZbdSectionRecordFmt, callbackCtx->sectionHandler->sectionName, sectionToken);
     return indexArchive.AddFileRecord(recordPath, data, dataSize, 0, 0);
 }

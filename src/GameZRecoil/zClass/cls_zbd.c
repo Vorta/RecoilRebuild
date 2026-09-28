@@ -408,7 +408,7 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodereflistindices
      * @recoil-artifact defines .text recoil:function:0x4543f0: CZZbd::WriteNodeRefListIndices.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and write-node callers convert node
      * pointer lists through the shared scratch buffer before fwrite.
@@ -427,9 +427,8 @@ namespace CZZbd
         }
 
         memcpy(g_GameZ_Zbd_NodeIndexScratch, nodeRefList, byteCount);
-        int* indices = (int*)(g_GameZ_Zbd_NodeIndexScratch);
         for (int i = 0; i < entryCount; ++i) {
-            indices[i] = NodePtrToIndex(g_GameZ_Zbd_NodeIndexScratch[i]);
+            ((int*)(g_GameZ_Zbd_NodeIndexScratch))[i] = NodePtrToIndex(g_GameZ_Zbd_NodeIndexScratch[i]);
         }
 
         if (fwrite(g_GameZ_Zbd_NodeIndexScratch, byteCount, 1, (FILE*)(stream)) != 1) {
@@ -988,7 +987,7 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readnodetable
      * @recoil-artifact defines .text recoil:function:0x455350: CZZbd::ReadNodeTable.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and cls_zbd.c reload path read the
      * node slots, rebuild class payloads, and reconnect world light/sound data.
@@ -1005,12 +1004,11 @@ namespace CZZbd
             g_CZClass_NodeArray = (CZNodeFreeListSlot*)(malloc(byteCount));
             g_CZClass_NodeArraySize = nodeCount;
         } else if (nodeCount > g_CZClass_NodeArraySize) {
-            const int oldNodeCount = g_CZClass_NodeArraySize;
             g_CZClass_NodeArray = (CZNodeFreeListSlot*)(realloc(g_CZClass_NodeArray, byteCount));
             memset(
-                &g_CZClass_NodeArray[oldNodeCount],
+                &g_CZClass_NodeArray[g_CZClass_NodeArraySize],
                 0,
-                (size_t)(nodeCount - oldNodeCount) * sizeof(CZNodeFreeListSlot)
+                (size_t)(nodeCount - g_CZClass_NodeArraySize) * sizeof(CZNodeFreeListSlot)
             );
             g_CZClass_NodeArraySize = nodeCount;
         }
@@ -1021,33 +1019,35 @@ namespace CZZbd
         }
 
         g_CZClass_ActiveNodeCount = 0;
-        for (int i = 0; i < g_CZClass_NodeArraySize; ++i) {
-            CZNodePartial* node = &g_CZClass_NodeArray[i].node;
-            node->userDataOrDiRef = (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(node->userDataOrDiRef))));
-            node->actionCallback = 0;
+        CZNodeFreeListSlot* slot = g_CZClass_NodeArray;
+        for (int i = 0; i < g_CZClass_NodeArraySize; ++i, ++slot) {
+            slot->node.userDataOrDiRef
+                = (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(slot->node.userDataOrDiRef))));
+            slot->node.actionCallback = 0;
 
-            if (ReadSingleNodeClassData(node, stream) > 0) {
+            if (ReadSingleNodeClassData(&slot->node, stream) > 0) {
                 ++g_CZClass_ActiveNodeCount;
-                g_CZClass_NodeArray[i].freeTag |= 0x01000000u;
+                slot->freeTag |= 0x01000000u;
             } else {
-                g_CZClass_NodeArray[i].freeTag &= 0xfeffffffu;
+                slot->freeTag &= 0xfeffffffu;
             }
         }
 
-        for (CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[0x0d]; link != 0; link = link->next) {
+        // World nodes (type 13) live in bucket storage slot 11 (see g_CZTypeList_HeadSlotPtrs).
+        for (CZTypeListLink* link = g_CZTypeList_Buckets[11].head; link != 0; link = link->next) {
             CZNodePartial* node = link->node;
             if (node == 0) {
                 continue;
             }
 
-            CZWorldDataPartial* data = (CZWorldDataPartial*)(node->classData);
-            for (int i = 0; i < data->lightCount; ++i) {
+            for (int i = 0; i < ((CZWorldDataPartial*)(node->classData))->lightCount; ++i) {
+                CZWorldDataPartial* const data = (CZWorldDataPartial*)(node->classData);
                 data->lightDataList[i] = (CZLightDataPartial*)(data->lightNodes[i]->classData);
             }
 
-            data = (CZWorldDataPartial*)(node->classData);
-            for (int i_775 = 0; i_775 < data->soundCount; ++i_775) {
-                data->soundDataList[i_775] = (CZSoundDataPartial*)(data->soundNodes[i_775]->classData);
+            for (int j = 0; j < ((CZWorldDataPartial*)(node->classData))->soundCount; ++j) {
+                CZWorldDataPartial* const data = (CZWorldDataPartial*)(node->classData);
+                data->soundDataList[j] = (CZSoundDataPartial*)(data->soundNodes[j]->classData);
             }
         }
 
@@ -1060,7 +1060,7 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readzbdfile
      * @recoil-artifact defines .text recoil:function:0x455520: CZZbd::ReadZBDFile.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and cls_zbd.c callee order reload
      * texture, material, model, and node-table sections from header offsets.
@@ -1068,20 +1068,19 @@ namespace CZZbd
      */
     RECOIL_NO_GS int __fastcall ReadZBDFile(const char* filename)
     {
-        const size_t filenameLength = strlen(filename);
-        if (filenameLength == 0) {
+        if (strlen(filename) == 0) {
             return -1;
         }
 
-        if (filenameLength < 0x2f) {
-            memcpy(g_CZClass_CurrentZbdPath, filename, filenameLength + 1);
+        if (strlen(filename) < 0x2f) {
+            strcpy(g_CZClass_CurrentZbdPath, filename);
         } else {
             zError::ReportOld(
                 0x200,
                 g_CZClass_SourceFile_ClsZbdC,
                 0x551,
                 g_CZClass_ZbdFilenameTooLongFmt,
-                (int)(filenameLength),
+                (int)(strlen(filename)),
                 0x30
             );
         }
@@ -1092,55 +1091,43 @@ namespace CZZbd
             return -1;
         }
 
-        int sourceLine = 0;
-        const char* message = 0;
-
         fseek(file, header.texDirOffset, SEEK_SET);
         if (zImage::ReadTextureDirectory(header.texDirArg, file) < 0) {
-            sourceLine = 0x562;
-            message = g_CZClass_ReadGameZTextureDataErrorMsg;
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x562, g_CZClass_ReadGameZTextureDataErrorMsg);
+            fclose(file);
+            return -1;
         }
 
-        if (message == 0) {
-            fseek(file, header.matlOffset, SEEK_SET);
-            if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
-                sourceLine = 0x56e;
-                message = g_CZClass_ReadGameZMaterialDataErrorMsg;
-            }
+        fseek(file, header.matlOffset, SEEK_SET);
+        if (zModel_MatlBuffer::ReadGameZ(file) < 0) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x56e, g_CZClass_ReadGameZMaterialDataErrorMsg);
+            fclose(file);
+            return -1;
         }
 
-        if (message == 0) {
-            fseek(file, header.model3dOffset, SEEK_SET);
-            if (zModel_DiPool::ReadFromStream(file) < 0) {
-                sourceLine = 0x57a;
-                message = g_CZClass_ReadGameZModel3DDataErrorMsg;
-            }
+        fseek(file, header.model3dOffset, SEEK_SET);
+        if (zModel_DiPool::ReadFromStream(file) < 0) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x57a, g_CZClass_ReadGameZModel3DDataErrorMsg);
+            fclose(file);
+            return -1;
         }
 
-        if (message == 0) {
-            fseek(file, header.nodeTableOffset, SEEK_SET);
-            if (CZZbd::ReadNodeTable(header.nodeCount, file) < 0) {
-                sourceLine = 0x586;
-                message = g_CZClass_ReadGameZNodeDataErrorMsg;
-            }
+        fseek(file, header.nodeTableOffset, SEEK_SET);
+        if (CZZbd::ReadNodeTable(header.nodeCount, file) < 0) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x586, g_CZClass_ReadGameZNodeDataErrorMsg);
+            fclose(file);
+            return -1;
         }
 
-        int result;
-        if (message != 0) {
-            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, sourceLine, message);
-            result = -1;
-        } else {
-            g_CZClass_NodeFreeHeadIndex = header.nodeFreeHead;
-            result = 0;
-        }
+        g_CZClass_NodeFreeHeadIndex = header.nodeFreeHead;
         fclose(file);
-        return result;
+        return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.openandreadzbdheader
      * @recoil-artifact defines .text recoil:function:0x4556a0: CZZbd::OpenAndReadZBDHeader.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and callers 0x455520/0x455730 use
      * this shared header validation before reading ZBD sections.
@@ -1153,24 +1140,30 @@ namespace CZZbd
             return 0;
         }
 
-        int sourceLine = 0;
-        const char* message = 0;
         if (fread(outHeader, sizeof(CZZbdHeader), 1, file) != 1) {
-            message = g_CZClass_ReadGameZHeaderDataErrorMsg;
-            sourceLine = 0x515;
-        } else if (outHeader->magic != 0x02971222) {
-            message = g_CZClass_ReadGameZHeaderIncompatibleTypeMsg;
-            sourceLine = 0x51e;
-        } else if (outHeader->version != 0x0f) {
-            message = g_CZClass_ReadGameZHeaderIncompatibleVersionMsg;
-            sourceLine = 0x527;
-        } else {
-            return file;
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x515, g_CZClass_ReadGameZHeaderDataErrorMsg);
+            fclose(file);
+            return 0;
         }
 
-        zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, sourceLine, message);
-        fclose(file);
-        return 0;
+        if (outHeader->magic != 0x02971222) {
+            zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x51e, g_CZClass_ReadGameZHeaderIncompatibleTypeMsg);
+            fclose(file);
+            return 0;
+        }
+
+        if (outHeader->version != 0x0f) {
+            zError::ReportOld(
+                0x200,
+                g_CZClass_SourceFile_ClsZbdC,
+                0x527,
+                g_CZClass_ReadGameZHeaderIncompatibleVersionMsg
+            );
+            fclose(file);
+            return 0;
+        }
+
+        return file;
     }
 }
 
@@ -1205,7 +1198,7 @@ namespace CZZbd
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.reloaddisplayinstancesrecursive-local
      * @recoil-artifact defines .text recoil:function:0x4557a0: CZZbd::ReloadDisplayInstancesRecursive_Local.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and recursive caller path seek to
      * the serialized node slot, load the DI entry, and optionally visit children.
@@ -1244,14 +1237,13 @@ namespace CZZbd
         CZClass::gwNodeSetDisplayInstance(node, 0);
 
         zDiPartial* const displayInstance = zModel_DiPool::ReadEntryByIndexFromStream(file, displayInstanceIndex);
-        zDiPartial* const oldDisplayInstance = (zDiPartial*)((unsigned int)(oldDisplayInstanceValue));
         if (displayInstance != 0) {
             CZClass::gwNodeSetDisplayInstance(node, displayInstance);
-            if (oldDisplayInstance != 0) {
-                zModel_DiPool::FreeIfUnreferenced(oldDisplayInstance);
+            if (oldDisplayInstanceValue != 0) {
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial*)(oldDisplayInstanceValue));
             }
         } else {
-            CZClass::gwNodeSetDisplayInstance(node, oldDisplayInstance);
+            CZClass::gwNodeSetDisplayInstance(node, (zDiPartial*)(oldDisplayInstanceValue));
         }
 
         if (recurseChildren != 0) {

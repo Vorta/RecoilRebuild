@@ -159,11 +159,11 @@ namespace zUtil {
  */
 void __fastcall zRdrAddSearchPaths(zArchiveList* list, const char* pathText)
 {
+    zArchiveList* activeList = list;
     if (pathText == 0) {
         return;
     }
 
-    zArchiveList* activeList = list;
     while (true) {
         if (activeList != 0) {
             char* copy = _strdup(pathText);
@@ -180,17 +180,15 @@ void __fastcall zRdrAddSearchPaths(zArchiveList* list, const char* pathText)
             free(copy);
         }
 
-        zArchiveList* scratchList = g_zRdr_ScratchSearchPathList;
-        if (activeList == scratchList && activeList != 0) {
+        if (activeList == g_zRdr_ScratchSearchPathList && activeList != 0) {
             return;
         }
 
-        if (scratchList == 0) {
-            scratchList = zArchiveListNew();
-            g_zRdr_ScratchSearchPathList = scratchList;
+        if (g_zRdr_ScratchSearchPathList == 0) {
+            g_zRdr_ScratchSearchPathList = zArchiveListNew();
         }
 
-        activeList = scratchList;
+        activeList = g_zRdr_ScratchSearchPathList;
     }
 }
 } // namespace zUtil
@@ -330,7 +328,7 @@ extern "C" FILE* __fastcall zRdrOpenFileResolved(zArchiveList* searchPathList, c
 #define ZUTIL_ZRDR_WRITE_WILDCARD_DIGITS()                                                                             \
     do {                                                                                                               \
         for (int i = g_zUtil_ZRDR_WildcardStarCount - 1; i >= 0; --i) {                                                \
-            char digitText[16];                                                                                        \
+            char digitText[2];                                                                                         \
             sprintf(digitText, "%d", g_zUtil_ZRDR_WildcardDigits[i]);                                                  \
             *g_zUtil_ZRDR_WildcardStarPtrs[i] = digitText[0];                                                          \
         }                                                                                                              \
@@ -379,7 +377,7 @@ extern "C" char* __fastcall zRdrInitWildcardPath(char* pattern)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-nextwildcardpath
  * @recoil-artifact defines .text recoil:function:0x4a6070: zUtil_ZRDR::NextWildcardPath.
- *
+ * @recoil-match byte
  *
  * Purpose: advance wildcard digits and return the next generated path.
  */
@@ -663,7 +661,7 @@ int zIndexArchive::LoadIndexFromTail()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-addfilerecord
  * @recoil-artifact defines .text recoil:function:0x4a64d0: zIndexArchive::AddFileRecord.
- *
+ * @recoil-match byte
  *
  * Purpose: append a named payload to the archive file and record its index data.
  */
@@ -687,15 +685,13 @@ int zIndexArchive::AddFileRecord(
     if (sourceTempPathOrNull != 0) {
         record.recordFlags |= 2;
         strncpy(record.sourceTempPath, sourceTempPathOrNull, sizeof(record.sourceTempPath));
-        if (sourceFileTimeOrNull != 0) {
-            record.sourceFileTimeLow = sourceFileTimeOrNull->lowDateTime;
-            record.sourceFileTimeHigh = sourceFileTimeOrNull->highDateTime;
-        }
+        record.sourceFileTimeLow = sourceFileTimeOrNull->lowDateTime;
+        record.sourceFileTimeHigh = sourceFileTimeOrNull->highDateTime;
     }
 
     strncpy(record.name, name, sizeof(record.name));
 
-    DWORD numberOfBytesWritten = 0;
+    DWORD numberOfBytesWritten;
     WriteFile((HANDLE)(hFile), data, dataSize, &numberOfBytesWritten, 0);
 
     records[oldRecordCount] = record;

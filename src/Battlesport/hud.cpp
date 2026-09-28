@@ -9183,7 +9183,7 @@ void UpdateFrame()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.projectpointtonormalizedclamped
  * @recoil-artifact defines .text recoil:function:0x411170: HudUiMgr::ProjectPointToNormalizedClamped.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::ProjectPointToNormalizedClamped.
@@ -9762,7 +9762,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.setshieldmessageratio
  * @recoil-artifact defines .text recoil:function:0x411f10: HudUiMgrSensor::SetShieldMessageRatio.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: clamp the shield ratio, update the HudUiMgr shield meter, and
@@ -9818,7 +9818,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
@@ -9859,8 +9859,9 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
         int top = slot->GetCenterY();
         const int halfHeight = slot->slotWidget.image->height / 2;
         top -= halfHeight;
-        if (top <= g_HudUiMgrHudRect.top + halfHeight) {
-            top = g_HudUiMgrHudRect.top;
+        const int hudTop = g_HudUiMgrHudRect.top;
+        if (top <= hudTop + halfHeight) {
+            top = hudTop;
         } else if (top > g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight) {
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight * 2;
         }
@@ -9876,8 +9877,9 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
         const zVidImagePartial* const image = slot->slotWidget.image;
         const int height = image->height;
         top -= height;
-        if (top <= g_HudUiMgrHudRect.top + height) {
-            top = g_HudUiMgrHudRect.top;
+        const int hudTop = g_HudUiMgrHudRect.top;
+        if (top <= hudTop + height) {
+            top = hudTop;
         } else if (top > g_HudUiMgrHudRect.bottom - height) {
             top = g_HudUiMgrHudRect.bottom - height * 2;
         }

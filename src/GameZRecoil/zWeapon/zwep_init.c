@@ -743,7 +743,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handlepkt0a-removeruntimerelay
      * @recoil-artifact defines .text recoil:function:0x4342d0: OptCatalog::HandlePkt0ARemoveRuntimeRelay
-     *
+     * @recoil-match byte
      *
      * Purpose: handle pkt0A removal relay packets by resolving the
      * OptCatalog entry and player row while suppressing echo relay sends.

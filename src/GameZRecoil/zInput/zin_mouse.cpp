@@ -134,7 +134,7 @@ int __cdecl MouseIsInitialized()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setclientsizeandcenter
  * @recoil-artifact defines .text recoil:function:0x4701a0: zInput::MouseSetClientSizeAndCenter.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Store explicit mouse client dimensions, signed center coordinates,
@@ -144,8 +144,8 @@ void __fastcall MouseSetClientSizeAndCenter(int width, int height)
 {
     g_zInput_MouseClientWidth = width;
     g_zInput_MouseClientHeight = height;
-    g_zInput_MouseClientCenterX = (width - (width >> 31)) >> 1;
-    g_zInput_MouseClientCenterY = (height - (height >> 31)) >> 1;
+    g_zInput_MouseClientCenterX = width / 2;
+    g_zInput_MouseClientCenterY = height / 2;
     g_zInput_MouseInvClientCenterX = 1.0f / (float)(g_zInput_MouseClientCenterX);
     g_zInput_MouseInvClientCenterY = 1.0f / (float)(g_zInput_MouseClientCenterY);
 }

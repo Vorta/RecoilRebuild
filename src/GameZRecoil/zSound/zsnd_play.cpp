@@ -506,7 +506,7 @@ extern "C" float __stdcall zSndSamplePlaySimple(float value)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playonactivebackend
  * @recoil-artifact defines .text recoil:function:0x49fa10: zSndSample::PlayOnActiveBackend.
- *
+ * @recoil-match byte
  *
  * Purpose: dispatch sample playback to the active sound backend.
  */
@@ -519,10 +519,14 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
 {
     zSndPlayHandle* result = 0;
 
-    if (g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
         result = PlayOnA3D(worldPos, gainScale, velocity, backendArg);
-    } else if (g_zSnd_ActiveBackend == 0) {
+        break;
+
+    case 0:
         result = PlayOnDirectSound(zSnd::GainScaleToDirectSoundAttenuation(gainScale), worldPos, velocity, backendArg);
+        break;
     }
 
     return result;
@@ -531,7 +535,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playona3d
  * @recoil-artifact defines .text recoil:function:0x49fa60: zSndSample::PlayOnA3D.
- *
+ * @recoil-match byte
  *
  * Purpose: start sample playback on the A3D backend.
  */
@@ -554,24 +558,21 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
     result->ownerSample = this;
     memcpy(&result->gainScaled, &gainScale, sizeof(gainScale));
 
-    zA3dProviderSource* const source = (zA3dProviderSource*)(result->backendBuffer);
     if (worldPos != 0) {
-        source->SetRenderMode(0);
+        ((zA3dProviderSource*)(result->backendBuffer))->SetRenderMode(0);
         if (result->Update3DDispatch(worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
             return 0;
         }
     } else {
-        source->SetRenderMode(1);
+        ((zA3dProviderSource*)(result->backendBuffer))->SetRenderMode(1);
         if (zSnd::IsMuted() != 0) {
-            source->SetGain(0.0f);
+            ((zA3dProviderSource*)(result->backendBuffer))->SetGain(0.0f);
         } else {
-            float storedGain;
-            memcpy(&storedGain, &result->gainScaled, sizeof(storedGain));
-            source->SetGain(zSndSamplePlaySimple(storedGain));
+            ((zA3dProviderSource*)(result->backendBuffer))->SetGain(zSndSamplePlaySimple(*(float*)&result->gainScaled));
         }
     }
 
-    source->SetWavePosition(backendArg);
+    ((zA3dProviderSource*)(result->backendBuffer))->SetWavePosition(backendArg);
     if (markerCount != 0 && playbackEventHandler != 0) {
         for (int index = 0; index < markerCount; ++index) {
             markerValues[index] = markerTimes[index] + g_Time_UnscaledAccumulatedTimeSec - markerBaseTime;
@@ -580,7 +581,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
         g_zSndLastVoiceHandle = result;
     }
 
-    const int playError = source->Play(replayFields.flags & 0x01);
+    const int playError
+        = ((zA3dProviderSource*)(result->backendBuffer))->Play((unsigned char)(replayFields.flags) & 0x01);
 
     zA3dProviderDevice* const device = (zA3dProviderDevice*)(g_zSnd_BackendDevice);
     device->Flush();
@@ -595,7 +597,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playondirectsound
  * @recoil-artifact defines .text recoil:function:0x49fbb0: zSndSample::PlayOnDirectSound.
- *
+ * @recoil-match byte
  *
  * Purpose: start sample playback on the DirectSound backend.
  */
@@ -655,7 +657,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
         g_zSndLastVoiceHandle = result;
     }
 
-    const int playError = buffer->Play(0, 0, replayFields.flags & 0x01);
+    buffer = (LPDIRECTSOUNDBUFFER)(result->backendBuffer);
+    const int playError = buffer->Play(0, 0, (unsigned char)(replayFields.flags) & 0x01);
     if (playError != 0) {
         zSnd::ReportDirectSoundError(playError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x29f);
     }
@@ -666,7 +669,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3d
  * @recoil-artifact defines .text recoil:function:0x49fcf0: zSndSample::PlayA3D.
- *
+ * @recoil-match byte
  *
  * Purpose: play a 3D-capable sample through a queued group or active backend.
  */
@@ -685,8 +688,12 @@ zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale,
     }
 
     markerBaseTime = 0.0f;
-    const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0 ? *(float*)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
-    return PlayOnActiveBackend(worldPos, replayFields.gain * globalGain * gainScale, velocity, 0);
+    return PlayOnActiveBackend(
+        worldPos,
+        gainScale * (replayFields.gain * *(float*)(g_zSnd_GlobalVolumeScalePtr)),
+        velocity,
+        0
+    );
 }
 
 /**
@@ -1006,8 +1013,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
         gainDelta += *(float*)&playHandle->gainScaled;
         *(float*)&playHandle->gainScaled = gainDelta;
 
-        zA3dProviderSource* const gainSource = (zA3dProviderSource*)playHandle->backendBuffer;
-        gainSource->SetGain(zSndSamplePlaySimple(gainDelta));
+        ((zA3dProviderSource*)playHandle->backendBuffer)->SetGain(zSndSamplePlaySimple(gainDelta));
     }
 
     if (restartBeforePlay != 0) {
@@ -1064,7 +1070,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaDirectSound(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-playwithdelta-backenddispatch
  * @recoil-artifact defines .text recoil:function:0x4a0490: zSndPlayHandle::PlayWithDeltaBackendDispatch.
- *
+ * @recoil-match byte
  *
  * Purpose: route play-handle replay through the active sound backend.
  */
@@ -1619,7 +1625,7 @@ int zSndSampleSet::Init()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-destroy
  * @recoil-artifact defines .text recoil:function:0x4a0e40: zSndSampleSet::Destroy.
- *
+ * @recoil-match byte
  *
  * Purpose: release loaded sample resources and clear the sample-set loaded flag.
  */
@@ -1629,8 +1635,9 @@ int zSndSampleSet::Destroy()
         return 0;
     }
 
-    for (int i = 0; i < sampleCount; ++i) {
-        samples[i].DestroyOwnedData();
+    zSndSample* sample = samples;
+    for (int i = 0; i < sampleCount; ++i, ++sample) {
+        sample->DestroyOwnedData();
     }
     resourcesLoaded = 0;
     return 1;

@@ -263,6 +263,7 @@ namespace zInput {
  */
 int __fastcall DISetJoystickEnabled(int enable)
 {
+    int result = 0;
     if (enable != 0 && DIIsJoystickDeviceReady() != 0) {
         if (DIGetJoystickRefCount() == 0) {
             DIAddJoystickRef();
@@ -281,12 +282,11 @@ int __fastcall DISetJoystickEnabled(int enable)
         cfg.axes[2].deadzone = 1500;
         cfg.axes[3].deadzone = 2000;
         DIApplyAxisConfig(&cfg);
-        return 1;
-    }
-    if (DIGetJoystickRefCount() != 0) {
+        result = 1;
+    } else if (DIGetJoystickRefCount() != 0) {
         DIReleaseJoystickRef();
     }
-    return 0;
+    return result;
 }
 } // namespace zInput
 
@@ -557,14 +557,14 @@ int RecoilApp::ExitInstance()
  */
 int RecoilApp::ActivateExistingInstance()
 {
-    CWnd* const existingWindow = CWnd::FromHandle(FindWindowA(g_RecoilApp_WndClassNamePtr, 0));
+    CWnd* const existingWindow = CWnd::FindWindow(g_RecoilApp_WndClassNamePtr, 0);
     if (existingWindow != 0) {
-        CWnd* const popup = CWnd::FromHandle(GetLastActivePopup(existingWindow->m_hWnd));
-        if (IsIconic(existingWindow->m_hWnd) != 0) {
+        CWnd* const popup = existingWindow->GetLastActivePopup();
+        if (existingWindow->IsIconic()) {
             existingWindow->ShowWindow(SW_RESTORE);
         }
 
-        SetForegroundWindow(popup->m_hWnd);
+        popup->SetForegroundWindow();
         return 0;
     }
 
@@ -1877,21 +1877,17 @@ CZRecoilFrame::~CZRecoilFrame() { }
 void CZRecoilFrame::SetMenuBarVisibility(int visible)
 {
     LONG style = GetWindowLongA(m_hWnd, GWL_STYLE);
-    CMenu* menu = 0;
+    CMenu* menu;
     if (visible != 0) {
-        style |= (LONG)(0x82ca0000);
         menu = &m_mainMenu;
+        style |= (LONG)(0x82ca0000);
     } else {
+        menu = 0;
         style &= (LONG)(0xfff7ffff);
     }
 
     SetWindowLongA(m_hWnd, GWL_STYLE, style);
-    if (menu != 0) {
-        ::SetMenu(m_hWnd, menu->m_hMenu);
-        return;
-    }
-
-    ::SetMenu(m_hWnd, 0);
+    ::SetMenu(m_hWnd, menu->GetSafeHmenu());
 }
 
 /**
@@ -2052,31 +2048,30 @@ void CZRecoilFrame::ConfigureModeFeatureFlags()
 {
     const int mode = zVid::GetVideoModeIndexFromOptions();
 
-    if (zVid::GetAccelerationOption() == 0) {
+    if (zVid::GetAccelerationOption() != 0) {
+        m_videoModeCmdUiState[0] = kCmdUiDisabled;
+        m_videoModeCmdUiState[1] = kCmdUiDisabled;
+        m_videoModeCmdUiState[2] = CommandCheckedIfMode(mode, 4);
+        m_videoModeCmdUiState[3] = CommandCheckedIfMode(mode, 5);
+
+        if (m_vidMemFreeBytes > kVidMem800x600Threshold) {
+            m_videoModeCmdUiState[4] = CommandCheckedIfMode(mode, 6);
+        } else {
+            m_videoModeCmdUiState[4] = kCmdUiDisabled;
+        }
+
+        if (m_vidMemFreeBytes > kVidMem1024x768Threshold) {
+            m_videoModeCmdUiState[5] = CommandCheckedIfMode(mode, 7);
+        } else {
+            m_videoModeCmdUiState[5] = kCmdUiDisabled;
+        }
+    } else {
         m_videoModeCmdUiState[0] = CommandCheckedIfMode(mode, 2);
         m_videoModeCmdUiState[1] = CommandCheckedIfMode(mode, 3);
         m_videoModeCmdUiState[2] = CommandCheckedIfMode(mode, 4);
         m_videoModeCmdUiState[3] = CommandCheckedIfMode(mode, 5);
         m_videoModeCmdUiState[4] = CommandCheckedIfMode(mode, 6);
         m_videoModeCmdUiState[5] = CommandCheckedIfMode(mode, 7);
-        return;
-    }
-
-    m_videoModeCmdUiState[0] = kCmdUiDisabled;
-    m_videoModeCmdUiState[1] = kCmdUiDisabled;
-    m_videoModeCmdUiState[2] = CommandCheckedIfMode(mode, 4);
-    m_videoModeCmdUiState[3] = CommandCheckedIfMode(mode, 5);
-
-    if (m_vidMemFreeBytes > kVidMem800x600Threshold) {
-        m_videoModeCmdUiState[4] = CommandCheckedIfMode(mode, 6);
-    } else {
-        m_videoModeCmdUiState[4] = kCmdUiDisabled;
-    }
-
-    if (m_vidMemFreeBytes > kVidMem1024x768Threshold) {
-        m_videoModeCmdUiState[5] = CommandCheckedIfMode(mode, 7);
-    } else {
-        m_videoModeCmdUiState[5] = kCmdUiDisabled;
     }
 }
 
@@ -2576,6 +2571,7 @@ void CZRecoilFrame::OnMenuSelectHwApi3()
 RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(CCmdUI* cmdUi, int apiIndex)
 {
     if (m_acceptedD3DDeviceCount >= apiIndex) {
+        const int hwApiIndex = apiIndex - 1;
         if (m_hwApiCmdUiState[apiIndex] == kCmdUiChecked) {
             cmdUi->SetCheck(1);
         } else {
@@ -2586,8 +2582,8 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(CCmdUI* cmdUi, int apiIndex
         sprintf(
             menuLabelText,
             g_CZRecoilFrame_AcceleratorMenuLabelFmt,
-            zVid::GetHwApiDescription(apiIndex - 1),
-            zVid::GetHwApiDriverName(apiIndex - 1)
+            zVid::GetHwApiDescription(hwApiIndex),
+            zVid::GetHwApiDriverName(hwApiIndex)
         );
         cmdUi->SetText(menuLabelText);
         return;
@@ -3823,16 +3819,11 @@ int __fastcall HandlePkt0DHudTimerPanelState(int, NetPkt0D_HudTimerPanelState* p
     }
 
     if ((statusBits & 0x20) != 0) {
-        zEffectAnim::SetVelocityThunk(
-            /* Retail literal 0x4dcfd4 names the replicated start-countdown
-               effect animation; data ownership remains blocked outside this
-               source slice. */
-            zEffectAnim::FindEntryByName("startcountdown"),
-            0,
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        /* Retail literal 0x4dcfd4 names the replicated start-countdown
+           effect animation; data ownership remains blocked outside this
+           source slice. */
+        zEffectAnimEntry* const startCountdown = zEffectAnim::FindEntryByName("startcountdown");
+        zEffectAnim::SetVelocityThunk(startCountdown, 0, 0.0f, 0.0f, 0.0f);
         g_HudTimerPanelNetState.startCountdownTriggered = 1;
     }
 
@@ -4009,22 +4000,25 @@ int __fastcall HandlePkt09PlayerScoreboardSnapshot(int, NetPkt09_PlayerScoreboar
                 continue;
             }
 
-            const unsigned short packed = entry->packedScoreAndLapCount;
-            row->score = packed & 0x1ff;
-            row->lapCount = ((short)(packed) >> 9) & 0x7f;
+            row->score = entry->packedScoreAndLapCount & 0x1ff;
+            row->lapCount = ((short)(entry->packedScoreAndLapCount) >> 9) & 0x7f;
             HudUi::RefreshScoreboardEntryRow(row);
 
-            if (g_GameNetOneLapLeftMessageShown == 0 && oneLapLeftRow == 0
-                && row->lapCount == g_HudSensorTracker.runtimeGoalValue - 1) {
-                oneLapLeftRow = row;
+            if (g_GameNetOneLapLeftMessageShown == 0 && oneLapLeftRow == 0) {
+                const int lapsGoal = g_HudSensorTracker.runtimeGoalValue;
+                if (row->lapCount == lapsGoal - 1) {
+                    oneLapLeftRow = row;
+                }
             }
 
-            if (zNetwork::IsHost() != 0 && g_HudSensorTracker.raceCheckpointMode == 0
-                && row->score >= g_HudSensorTracker.runtimeGoalValue) {
-                HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
-                if (timerState.timeWarningShown == 0) {
-                    timerState.timeWarningShown = 1;
-                    SendPkt0CHudTimerStatusBits(&timerState);
+            if (zNetwork::IsHost() != 0 && g_HudSensorTracker.raceCheckpointMode == 0) {
+                const int scoreGoal = g_HudSensorTracker.runtimeGoalValue;
+                if (row->score >= scoreGoal) {
+                    HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+                    if (timerState.timeWarningShown == 0) {
+                        timerState.timeWarningShown = 1;
+                        SendPkt0CHudTimerStatusBits(&timerState);
+                    }
                 }
             }
         }
@@ -4092,17 +4086,16 @@ int __cdecl GetStatusBitNameTags()
  */
 void __fastcall SendPkt0BChatMessage(const char* message)
 {
-    const int messageLength = (int)(strlen(message));
-    const int packetSize = messageLength + 12;
+    const int packetSize = (int)(strlen(message)) + 12;
     NetPkt0B_ChatMessage* const packet = (NetPkt0B_ChatMessage*)(malloc((size_t)(packetSize)));
     memset(packet, 0, (size_t)(packetSize));
 
     packet->header.packetType = 0x0b;
     packet->header.packetSizeBytes = (short)(packetSize);
     packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
-    packet->messageLength = (short)(messageLength);
-    if (messageLength > 0) {
-        memcpy(packet->message, message, (size_t)(messageLength));
+    packet->messageLength = (short)(strlen(message));
+    for (int i = 0; i < packet->messageLength; ++i) {
+        packet->message[i] = message[i];
     }
 
     zNetworkSendPacketReliable(&packet->header);
@@ -4314,8 +4307,8 @@ int __fastcall HostSendPkt0FCraterFeature(zDEClient_CraterEventTemplate* eventTe
     g_NetPkt0F_CraterEventSendBuf.craterTypeId
         = zModel_MatlSlot::IndexFromPtrOrMinus1(eventTemplate->craterMaterialSlot);
     g_NetPkt0F_CraterEventSendBuf.center = eventTemplate->center;
-    g_NetPkt0F_CraterEventSendBuf.eventFlags |= 0x80u;
     g_NetPkt0F_CraterEventSendBuf.radius = eventTemplate->radius;
+    g_NetPkt0F_CraterEventSendBuf.eventFlags |= 0x80u;
     zNetworkSendPacketReliable(&g_NetPkt0F_CraterEventSendBuf.header);
     return 1;
 }
@@ -4390,8 +4383,8 @@ int __fastcall HostSendPkt10QSandFeature(zDEClient_QSandEventTemplate* eventTemp
 
     g_NetPkt10_QSandEventSendBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt10_QSandEventSendBuf.center = eventTemplate->center;
-    g_NetPkt10_QSandEventSendBuf.eventFlags |= 0x80u;
     g_NetPkt10_QSandEventSendBuf.radius = eventTemplate->radius;
+    g_NetPkt10_QSandEventSendBuf.eventFlags |= 0x80u;
     zNetworkSendPacketReliable(&g_NetPkt10_QSandEventSendBuf.header);
     return 1;
 }
@@ -4433,9 +4426,9 @@ void __fastcall SendPkt11CreateDelta(PickupSpawnDef* spawn)
     packet->flags = 1;
     packet->pickupId = spawn->pickupId;
     packet->typeKeyIndex = (unsigned short)(PickupTypeKeyTable::FindIndex(spawn->pickupType->logicalName));
-    packet->amount = spawn->amount;
     packet->position = spawn->position;
     packet->rotation = spawn->rotation;
+    packet->amount = spawn->amount;
     packet->respawnDelay = spawn->respawnDelay;
     zNetworkSendPacketReliable(&packet->header);
     free(packet);
@@ -4447,7 +4440,7 @@ void __fastcall SendPkt11CreateDelta(PickupSpawnDef* spawn)
 int __fastcall HandlePkt11SpawnDelta(int, PickupPkt11CreateDelta* packet)
 {
     PickupSpawnDef* const spawn = FindSpawnByPickupId(packet->pickupId, &g_PickupSpawnList_Primary);
-    const unsigned int flags = packet->flags;
+    const unsigned short flags = packet->flags;
     if ((flags & 1u) != 0 && spawn == 0) {
         PickupParsedZrdEntry entry;
         memset(&entry, 0, sizeof(entry));
@@ -4509,26 +4502,25 @@ namespace OptCatalog {
  */
 int __fastcall AltGunDispatchAllocRuntimeGateCallback(OptCatalogEntryDef* self, void** saveStateSlot)
 {
-    const int ordinalIndex = self->ordinalIndex;
-    if (ordinalIndex == 0 || ordinalIndex == 1) {
+    if (self->ordinalIndex == 0 || self->ordinalIndex == 1) {
         return 1;
     }
     zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(*saveStateSlot);
-    if (saveState == 0) {
-        return 0;
+    if (saveState != 0) {
+        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+        if (saveState == (zUtil_SaveGameState*)(g_GameStateOrMapTable)) {
+            *saveStateSlot = (void*)(zVideo::ReturnSuccessStub());
+            GameNet::SendPkt07_AltGunDispatch(self->ordinalIndex, (unsigned int)(*saveStateSlot));
+            *saveStateSlot = (void*)((unsigned int)(*saveStateSlot) | 0x01000000u);
+            return 1;
+        }
+        const unsigned int dispatchFlags = (unsigned int)(playerState->altGunDispatchFlags);
+        if ((dispatchFlags & 0x02000000u) != 0) {
+            *saveStateSlot = (void*)(dispatchFlags);
+            return 1;
+        }
     }
-    if (saveState == (zUtil_SaveGameState*)(g_GameStateOrMapTable)) {
-        *saveStateSlot = (void*)(zVideo::ReturnSuccessStub());
-        GameNet::SendPkt07_AltGunDispatch((short)(ordinalIndex), (unsigned int)(*saveStateSlot));
-        *saveStateSlot = (void*)((unsigned int)(*saveStateSlot) | 0x01000000u);
-        return 1;
-    }
-    const unsigned int dispatchFlags = (unsigned int)(saveState->playerState->altGunDispatchFlags);
-    if ((dispatchFlags & 0x02000000u) == 0) {
-        return 0;
-    }
-    *saveStateSlot = (void*)(dispatchFlags);
-    return 1;
+    return 0;
 }
 } // namespace OptCatalog
 
@@ -4604,12 +4596,11 @@ void __fastcall SendPkt0ARemoveRuntimeRelay(OptCatalogEntryDef* self, zVec3* poi
     zUtil_SaveGameState* const ownerSaveState = (zUtil_SaveGameState*)(ownerTrackContext->payload);
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.optCatalogEntryId = (short)(self->ordinalIndex);
-    if (pointOrVec3 != 0) {
-        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
+    static const zVec3 kRelayZeroPoint = { 0.0f, 0.0f, 0.0f };
+    if (pointOrVec3 == 0) {
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = kRelayZeroPoint;
     } else {
-        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.x = 0.0f;
-        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.y = 0.0f;
-        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3.z = 0.0f;
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
     }
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.ownerPlayerKey = ownerSaveState->netPlayerRow->playerKey;
     zNetworkSendPacketReliable(&g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header);
@@ -4622,9 +4613,11 @@ int __fastcall HandlePkt0ARemoveRuntimeRelay(int, NetPkt0A_RemoveRuntimeRelay* p
 {
     OptCatalogEntryDef* const entry = OptCatalog::FindEntryById((int)(packet->optCatalogEntryId));
     zVec3 relayPointScratch;
-    zVec3* pointOrVec3 = &relayPointScratch;
+    zVec3* pointOrVec3;
     if (packet->pointOrVec3.x == 0.0f && packet->pointOrVec3.y == 0.0f && packet->pointOrVec3.z == 0.0f) {
         pointOrVec3 = 0;
+    } else {
+        pointOrVec3 = &relayPointScratch;
     }
     GameNetPlayerRow* const row = GameNet::FindPlayerRowByKey(packet->ownerPlayerKey);
     if (row == 0) {
@@ -5636,15 +5629,13 @@ CZRecoilFrame* RecoilApp::GetMainWnd() const
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-startengineandqueuestartupstate
  * @recoil-artifact defines .text recoil:function:0x442c10: RecoilApp::StartEngineAndQueueStartupState.
- *
+ * @recoil-match byte
  *
  * Purpose: starts gameplay systems and queues the pending startup app state.
  */
 int RecoilApp::StartEngineAndQueueStartupState()
 {
-    CZRecoilFrame* const mainWnd = GetMainWnd();
-
-    if (StartEngine(mainWnd->m_hWnd) == 0) {
+    if (StartEngine(GetMainWnd()->m_hWnd) == 0) {
         ShutdownEngine();
         return ExitInstance();
     }
@@ -6304,8 +6295,9 @@ void HudUiSaveLoadNextButton::OnActivate()
     HudUiSaveLoadDialog* const dialog = (HudUiSaveLoadDialog*)(owner);
     HudUiZrdWidget::OnActivate();
 
+    const int entryCount = SaveLoadEntryCount(dialog);
     const int nextEntryIndex = dialog->selectedEntryIndex + 1;
-    if (nextEntryIndex >= 0 && nextEntryIndex < SaveLoadEntryCount(dialog)) {
+    if (nextEntryIndex >= 0 && nextEntryIndex < entryCount) {
         dialog->SetSelectedEntryIndex(nextEntryIndex);
     }
 }
@@ -6318,8 +6310,9 @@ void HudUiSaveLoadPrevButton::OnActivate()
     HudUiSaveLoadDialog* const dialog = (HudUiSaveLoadDialog*)(owner);
     HudUiZrdWidget::OnActivate();
 
+    const int entryCount = SaveLoadEntryCount(dialog);
     const int prevEntryIndex = dialog->selectedEntryIndex - 1;
-    if (prevEntryIndex >= 0 && prevEntryIndex < SaveLoadEntryCount(dialog)) {
+    if (prevEntryIndex >= 0 && prevEntryIndex < entryCount) {
         dialog->SetSelectedEntryIndex(prevEntryIndex);
     }
 }
@@ -6364,10 +6357,10 @@ void HudUiSaveGameDialog::ProcessDialogResult()
     _mkdir("SavedGames");
 
     char saveGamePath[MAX_PATH];
+    char titleText[128];
+    char messageText[128];
     sprintf(saveGamePath, "SavedGames\\%s", gameName);
     if (zReader::FileExists(saveGamePath) != 0) {
-        char titleText[128];
-        char messageText[128];
         strcpy(titleText, zLoc::GetMessageString(136));
         strcpy(messageText, zLoc::GetMessageString(137));
         if (HudUi::ShowMessageBox(messageText, titleText, (void*)1) == 2) {
@@ -6378,8 +6371,6 @@ void HudUiSaveGameDialog::ProcessDialogResult()
     while (zUtil::ZBDLoadEntriesGlobal(saveGamePath) == 0) {
         DeleteSaveFile(0);
 
-        char titleText[128];
-        char messageText[128];
         strcpy(titleText, zLoc::GetMessageString(136));
         strcpy(messageText, zLoc::GetMessageString(140));
         if (HudUi::ShowMessageBox(messageText, titleText, (void*)1) == 2) {

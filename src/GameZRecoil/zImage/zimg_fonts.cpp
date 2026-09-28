@@ -113,11 +113,15 @@ int zImage_Font::BuildGlyphRects()
 {
     zVidImagePartial* image = this->image;
     int x = 0;
-    int result = 1;
+    RECT* glyph = this->glyphRects;
+    int result;
     this->spaceWidth = image->width / 95 - 1;
 
-    while (x < image->width) {
-        RECT* glyph = &this->glyphRects[result - 1];
+    for (result = 1; result < 95; ++result) {
+        if (x >= image->width) {
+            break;
+        }
+
         glyph->top = 0;
         glyph->bottom = image->height - 1;
 
@@ -139,14 +143,10 @@ int zImage_Font::BuildGlyphRects()
             } while (IsImageColumnTransparent(image, x) != 0);
         }
 
-        x -= (x - right) / 2;
+        x = x - (x - right) / 2;
         glyph->left = left;
         glyph->right = right + 1;
-
-        ++result;
-        if (result >= 95) {
-            break;
-        }
+        ++glyph;
     }
 
     return result;

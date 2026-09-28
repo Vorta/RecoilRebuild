@@ -1090,11 +1090,19 @@ int HudSensorTracker::SetObjectiveReviewVisible(int visible)
     if (visible != 0) {
         objectiveUiMode = 1;
         if (firstIncompleteObjectiveIndex < objectiveCount) {
-            HudSensorObjectiveSlot& slot = objectiveSlots[firstIncompleteObjectiveIndex];
-            HudUiMgrObjective::Show(slot.objectiveImage, slot.objectiveTitle, slot.objectiveDesc, 0.0f);
+            HudUiMgrObjective::Show(
+                objectiveSlots[firstIncompleteObjectiveIndex].objectiveImage,
+                objectiveSlots[firstIncompleteObjectiveIndex].objectiveTitle,
+                objectiveSlots[firstIncompleteObjectiveIndex].objectiveDesc,
+                0.0f
+            );
         } else {
-            HudSensorObjectiveSlot& slot = objectiveSlots[currentObjectiveIndex];
-            HudUiMgrObjective::Show(slot.objectiveImage, zLoc::GetMessageString(0xf0f), 0, 0.0f);
+            HudUiMgrObjective::Show(
+                objectiveSlots[currentObjectiveIndex].objectiveImage,
+                zLoc::GetMessageString(0xf0f),
+                0,
+                0.0f
+            );
         }
 
         return 1;
@@ -1117,10 +1125,9 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
     zVidImagePartial** outImageRef
 )
 {
-    HudSensorObjectiveSlot& slot = objectiveSlots[objectiveIndex];
-    *outSummary = slot.objectiveTitle;
-    *outDesc = slot.objectiveDesc;
-    *outImageRef = slot.objectiveImage;
+    *outSummary = objectiveSlots[objectiveIndex].objectiveTitle;
+    *outDesc = objectiveSlots[objectiveIndex].objectiveDesc;
+    *outImageRef = objectiveSlots[objectiveIndex].objectiveImage;
     return 1;
 }
 
@@ -1578,12 +1585,12 @@ void HudSensorTracker::RunStartAnimsFromZrd(const char* zrdPath, const char* nam
 
     zReader::Node* startAnimList = zRdrGetNode(rootNode, namedNodeName);
     if (startAnimList != 0) {
-        zReader::Node* startAnimFields = startAnimList->value.nodes;
-        const int startAnimCount = startAnimFields[0].value.i32 - 1;
+        const int startAnimCount = startAnimList->value.nodes[0].value.i32 - 1;
         {
             for (int startAnimIndex = 0; startAnimIndex < startAnimCount; ++startAnimIndex) {
-                zReader::Node* startAnimEntry = startAnimFields[startAnimIndex + 1].value.nodes;
-                zEffectAnimEntry* effectAnim = zEffectAnim::FindEntryByName(startAnimEntry[1].value.str);
+                zEffectAnimEntry* effectAnim = zEffectAnim::FindEntryByName(
+                    startAnimList->value.nodes[startAnimIndex + 1].value.nodes[1].value.str
+                );
                 if (effectAnim != 0) {
                     zEffectAnim::ResetActivationPrereqCount(effectAnim);
                     zEffectAnim::SetVelocityThunk(effectAnim, 0, 0.0f, 0.0f, 0.0f);
@@ -1770,7 +1777,11 @@ void HudUiMpExitDialog::Update(float deltaSeconds)
     if (m_mpNewGameButtonMode >= 0) {
         const float fadeElapsedSeconds = m_fadeElapsedSeconds + deltaSeconds;
         m_fadeElapsedSeconds = fadeElapsedSeconds;
-        HudScoreboard::SetScaleAndRebuild(fadeElapsedSeconds < 1.0f ? fadeElapsedSeconds : 1.0f);
+        if (fadeElapsedSeconds >= 1.0) {
+            HudScoreboard::SetScaleAndRebuild(1.0f);
+        } else {
+            HudScoreboard::SetScaleAndRebuild(fadeElapsedSeconds);
+        }
     }
 
     zVideo::RunPostprocessOnPrimaryBuffer();
@@ -1784,9 +1795,7 @@ void HudUiMpExitDialog::Update(float deltaSeconds)
     }
 
     zVideo::DispatchUnlockPrimarySurfaceState();
-    zOpt_ViewRectSection* const dstRect = zOpt::GetWindowSection();
-    zOpt_ViewRectSection* const srcRect = zOpt::GetWindowSection();
-    zVideo::AdjustSurfacesIfEnabled((zVidRect32*)srcRect, (zVidRect32*)dstRect, 0, 1);
+    zVideo::AdjustSurfacesIfEnabled((zVidRect32*)zOpt::GetWindowSection(), (zVidRect32*)zOpt::GetWindowSection(), 0, 1);
 }
 
 /**
@@ -2272,7 +2281,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.huduinetgamesetuptextinput-onactivatefocusandcursor
  * @recoil-artifact defines .text recoil:function:0x41a7b0: Network input focus transfer.
- *
+ * @recoil-match byte
  *
  * Purpose: Commit previous focus, transfer keyboard capture, and refresh the cursor.
  * The network-input table installed by 0x41a190 points directly to this
@@ -2286,12 +2295,11 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
 void HudUiNetGameSetupTextInput::OnActivate()
 {
     HudUiNetGameSetupPanel* const ownerPanel = (HudUiNetGameSetupPanel*)HudUiZrdWidget::owner;
-    HudUiNetGameSetupTextInput** const focusTextInputSlot = &ownerPanel->currentFocusWidget;
-    if (*focusTextInputSlot != 0) {
-        (*focusTextInputSlot)->CommitAndGetValue();
-        (*focusTextInputSlot)->SetRawKeyboardCapture(0);
+    if (ownerPanel->currentFocusWidget != 0) {
+        ownerPanel->currentFocusWidget->CommitAndGetValue();
+        ownerPanel->currentFocusWidget->SetRawKeyboardCapture(0);
     }
-    *focusTextInputSlot = this;
+    ownerPanel->currentFocusWidget = this;
     SetRawKeyboardCapture(1);
     Update(GetBuffer());
     textInput.SetCursorPosition((int)(strlen(GetBuffer())));
@@ -2435,18 +2443,16 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent()
     zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
-    const int pitchBytes = zVideo::GetPrimarySurfacePitch();
-    const int bitsPerPixel = zOpt::GetDisplaySectionBitsPerPixel();
-    zOpt_ViewRectSection* const activeRegionRect = zOpt::GetWindowSection();
-    zRndr::SetFrameBufferRegion(zVideo::GetPrimarySurfacePixels(), activeRegionRect, bitsPerPixel, pitchBytes);
+    zRndr::SetFrameBufferRegion(
+        zVideo::GetPrimarySurfacePixels(),
+        zOpt::GetWindowSection(),
+        zOpt::GetDisplaySectionBitsPerPixel(),
+        zVideo::GetPrimarySurfacePitch()
+    );
 
     zSndSampleSetInitByName("DIALOG");
 
-    HudUiNetGameSetupPanel* panel = (HudUiNetGameSetupPanel*)::operator new(sizeof(HudUiNetGameSetupPanel));
-    if (panel != 0) {
-        panel = new (panel) HudUiNetGameSetupPanel(m_reconfigureExistingSession);
-    }
-
+    HudUiNetGameSetupPanel* const panel = new HudUiNetGameSetupPanel(m_reconfigureExistingSession);
     m_dialog = panel;
     panel->SetEnabled(1);
 
@@ -3419,23 +3425,24 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(zUtil_SaveGameState*
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
-    if (playerState->netInputBit16Latch == 0) {
+    if (playerState->netInputBit16Latch != 0) {
+        if ((unsigned char)(playerState->activeAltGunController->optCatalogEntry->flags >> 1) & 1) {
+            playerState->altGunDispatchRequested = 1;
+        }
+    } else {
         playerState->altGunDispatchRequested = 0;
-    } else if ((playerState->activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagAltDispatchLatch) != 0) {
-        playerState->altGunDispatchRequested = 1;
     }
 
-    if (playerState->netInputBit17Latch == 0) {
+    if (playerState->netInputBit17Latch != 0) {
+        PlayerGunFireController* const activePrimaryGunController = playerState->activePrimaryGunController;
+        if (g_Player_TotalTimeSecScaled >= activePrimaryGunController->nextDispatchTime
+            && (playerState->altGunTransitionState & 0x180) == 0) {
+            playerState->primaryGunDispatchRequested = 1;
+            activePrimaryGunController->nextDispatchTime
+                = activePrimaryGunController->dispatchRepeatDelay + g_Player_TotalTimeSecScaled;
+        }
+    } else {
         playerState->primaryGunDispatchRequested = 0;
-        return;
-    }
-
-    PlayerGunFireController* const activePrimaryGunController = playerState->activePrimaryGunController;
-    if (g_Player_TotalTimeSecScaled >= activePrimaryGunController->nextDispatchTime
-        && (playerState->altGunTransitionState & 0x180) == 0) {
-        playerState->primaryGunDispatchRequested = 1;
-        activePrimaryGunController->nextDispatchTime
-            = activePrimaryGunController->dispatchRepeatDelay + g_Player_TotalTimeSecScaled;
     }
 }
 
@@ -3476,8 +3483,8 @@ void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry*, zUtil_SaveGameS
     }
 
     ResetDamageStateAndTimedHitStatus(saveState);
+    playerState->statusMeterValue = saveState->playerState->masterCommonData->maxHealth;
     playerState->cachedAltSelectionCode = 0;
-    playerState->statusMeterValue = playerState->masterCommonData->maxHealth;
     playerState->cachedPrimarySelectionCode = 0;
 }
 
@@ -3498,7 +3505,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
     zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry, playerState->rootNode);
     ResetDamageStateAndTimedHitStatus(saveState);
 
-    playerState->statusMeterValue = playerState->masterCommonData->maxHealth;
+    playerState->statusMeterValue = saveState->playerState->masterCommonData->maxHealth;
     CZObject3D::gwObject3DSetLitFlag(playerState->rootNode, 1);
     CZObject3D::gwObject3DSetAlphaScale(playerState->rootNode, 0.0f);
     CZObject3DModelRefLerpQueue::Add(

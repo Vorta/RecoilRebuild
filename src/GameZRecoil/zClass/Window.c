@@ -46,7 +46,7 @@ namespace CZWindow
         data->resolutionHeight = 1;
         data->bufferIndex = -1;
 
-        int pitchBytes = 0;
+        int pitchBytes;
         void* buffer = zRndr::GetActiveRegionState(&data->fbWidth, &data->fbHeight, &data->fbBpp, &pitchBytes);
         data->buffer = buffer;
         printf(
@@ -93,7 +93,7 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetresolution
      * @recoil-artifact defines .text recoil:function:0x44f8b0: CZWindow::gwWindowSetResolution.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate a window node and store the requested render
      * resolution in its window data record.
@@ -101,35 +101,34 @@ namespace CZWindow
     int __fastcall gwWindowSetResolution(CZNodePartial * node, int width, int height)
     {
         if (node == 0) {
-            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0xcd, "node != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0xcd, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0xce, "node->classData != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0xce, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeWindow) {
             zError::ReportOld(
                 0x400,
-                "GameZRecoil/zClass/Window.c",
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0xcf,
-                "Unexpected class id",
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,
                 kZClassNodeWindow
             );
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        data->resolutionWidth = width;
-        data->resolutionHeight = height;
+        ((CZWindowDataPartial*)(node->classData))->resolutionWidth = width;
+        ((CZWindowDataPartial*)(node->classData))->resolutionHeight = height;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetresolution
      * @recoil-artifact defines .text recoil:function:0x44f930: CZWindow::gwWindowGetResolution.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate a window node and return the stored render resolution.
      */
@@ -155,16 +154,15 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        *outWidth = data->resolutionWidth;
-        *outHeight = data->resolutionHeight;
+        *outWidth = ((CZWindowDataPartial*)(node->classData))->resolutionWidth;
+        *outHeight = ((CZWindowDataPartial*)(node->classData))->resolutionHeight;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowsetsize
      * @recoil-artifact defines .text recoil:function:0x44f9c0: CZWindow::gwWindowSetSize.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate a window node and store the requested viewport size in
      * its window data record.
@@ -172,35 +170,34 @@ namespace CZWindow
     int __fastcall gwWindowSetSize(CZNodePartial * node, int width, int height)
     {
         if (node == 0) {
-            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0x102, "node != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0x102, "Null node pointer.");
             return 5;
         }
         if (node->classData == 0) {
-            zError::ReportOld(0x400, "GameZRecoil/zClass/Window.c", 0x103, "node->classData != NULL");
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0x103, "Null class data pointer");
             return 5;
         }
         if (node->classId != kZClassNodeWindow) {
             zError::ReportOld(
                 0x400,
-                "GameZRecoil/zClass/Window.c",
+                "D:\\Proj\\GameZRecoil\\zClass\\Window.c",
                 0x104,
-                "Unexpected class id",
+                "Bad Class Found.\n Wanted (%d)\n Found (%d)",
                 node->classId,
                 kZClassNodeWindow
             );
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        data->viewportWidth = width;
-        data->viewportHeight = height;
+        ((CZWindowDataPartial*)(node->classData))->viewportWidth = width;
+        ((CZWindowDataPartial*)(node->classData))->viewportHeight = height;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowgetsize
      * @recoil-artifact defines .text recoil:function:0x44fa40: CZWindow::gwWindowGetSize.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate a window node and return the stored viewport size.
      */
@@ -226,9 +223,8 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        *outWidth = data->viewportWidth;
-        *outHeight = data->viewportHeight;
+        *outWidth = ((CZWindowDataPartial*)(node->classData))->viewportWidth;
+        *outHeight = ((CZWindowDataPartial*)(node->classData))->viewportHeight;
         return 0;
     }
 
@@ -310,7 +306,7 @@ namespace CZWindow
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowaddclearpolygonvertex
      * @recoil-artifact defines .text recoil:function:0x44fbd0: CZWindow::gwWindowAddClearPolygonVertex.
-     *
+     * @recoil-match byte
      *
      * Purpose: validate a window node and append one vertex to the active
      * clear polygon, preserving the vertex-count flag bits.
@@ -349,8 +345,7 @@ namespace CZWindow
             return 1;
         }
 
-        CZWindowClearPoly* poly = &data->clearPolys[polyIndex];
-        const int vertIndex = poly->vertCount & 0x7fffffff;
+        const int vertIndex = data->clearPolys[polyIndex].vertCount & 0x7fffffff;
         if (vertIndex == 4) {
             zError::ReportOld(
                 0x400,
@@ -361,14 +356,12 @@ namespace CZWindow
             return 1;
         }
 
-        poly->vertCount |= (int)(0x80000000u);
-        poly->vertices[vertIndex].x = point->x;
-        poly->vertices[vertIndex].y = point->y;
-        poly->vertices[vertIndex].z = point->z;
-        poly->vertices[vertIndex].z = 100.0f;
+        data->clearPolys[polyIndex].vertCount |= (int)(0x80000000u);
+        data->clearPolys[polyIndex].vertices[vertIndex] = *point;
+        data->clearPolys[polyIndex].vertices[vertIndex].z = 100.0f;
 
-        const int countFlags = poly->vertCount;
-        poly->vertCount = (((countFlags + 1) ^ countFlags) & 0x7fffffff) ^ countFlags;
+        const int countFlags = data->clearPolys[polyIndex].vertCount;
+        data->clearPolys[polyIndex].vertCount = (((countFlags + 1) ^ countFlags) & 0x7fffffff) ^ countFlags;
         return 0;
     }
 
@@ -414,8 +407,10 @@ namespace CZWindow
             return 1;
         }
 
-        CZWindowClearPoly* poly = &data->clearPolys[polyIndex];
-        zRndr::SpanOcclusionAddPolygon(poly->vertices, poly->vertCount & 0x7fffffff);
+        zRndr::SpanOcclusionAddPolygon(
+            data->clearPolys[polyIndex].vertices,
+            data->clearPolys[polyIndex].vertCount & 0x7fffffff
+        );
         data->clearPolyIndexFlags = (data->clearPolyIndexFlags + 1) | (int)(0x80000000u);
         return polyIndex;
     }

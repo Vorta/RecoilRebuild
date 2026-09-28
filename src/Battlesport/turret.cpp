@@ -923,7 +923,7 @@ int zTurret_Runtime::ApplyDamageAndHandleDestruction(
     healthCurrent -= damageAmount;
     if (healthCurrent <= 0.0f) {
         zEffectAnimEntry* destroyAnim = g_zTurret_NapalmVehicleDestroyAnim;
-        if ((entry->flags & kOptCatalogFlagUseNapalmVehicleDestroyAnim) == 0) {
+        if (((unsigned char)(entry->flags >> 12) & 1) == 0) {
             destroyAnim = destroyAnimEntry;
         }
 

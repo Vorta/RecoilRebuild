@@ -370,33 +370,33 @@ int HudUiContainer::FindChildWithPrev(HudUiElement* child, HudUiElement** previo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicontainer-removechild
  * @recoil-artifact defines .text recoil:function:0x4bc860: HudUiContainer::RemoveChild.
- *
+ * @recoil-match byte
  *
  * Purpose: unlink a child from this container and clear the child's owner
  * links.
  */
 int HudUiContainer::RemoveChild(HudUiElement* child)
 {
-    HudUiElement* previous = child;
-    if (FindChildWithPrev(child, &previous) == 0) {
-        return 0;
+    HudUiElement* previous;
+    if (FindChildWithPrev(child, &previous) != 0) {
+        if (previous != 0) {
+            previous->next = child->next;
+            if (child == childTail) {
+                childTail = previous;
+            }
+        } else {
+            childHead = child->next;
+            if (child == childTail) {
+                childTail = childHead;
+            }
+        }
+
+        child->next = 0;
+        child->parent = 0;
+        return 1;
     }
 
-    if (previous != 0) {
-        previous->next = child->next;
-        if (child == childTail) {
-            childTail = previous;
-        }
-    } else {
-        childHead = child->next;
-        if (child == childTail) {
-            childTail = child->next;
-        }
-    }
-
-    child->next = 0;
-    child->parent = 0;
-    return 1;
+    return 0;
 }
 
 /**
@@ -882,14 +882,13 @@ HudUiTopMessageStack::HudUiTopMessageStack()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-setfontall
  * @recoil-artifact defines .text recoil:function:0x4bd110: HudUiTextStack4::SetFontAll.
- *
+ * @recoil-match byte
  *
  * Purpose: apply one font definition to every row in the four-line stack.
  */
 void HudUiTextStack4::SetFontAll(const char* faceName, int height, int weight, int width)
 {
-    for (int index = 3; index >= 0; --index) {
-        HudUiPanel* const panel = &lines[index];
+    for (HudUiPanel* panel = &lines[3]; panel >= lines; --panel) {
         panel->SetFont(faceName, height, weight, width, 0, 0, 2);
     }
 }
@@ -897,7 +896,7 @@ void HudUiTextStack4::SetFontAll(const char* faceName, int height, int weight, i
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextstack4-pushline
  * @recoil-artifact defines .text recoil:function:0x4bd160: HudUiTextStack4::PushLine.
- *
+ * @recoil-match byte
  *
  * Purpose: push a visible timed message into the four-row text stack.
  */
@@ -912,11 +911,10 @@ HudUiPanel* HudUiTextStack4::PushLine(const char* message, float duration)
 
             if (((~sourceElement->flags) & 0x10u) != 0) {
                 source->SetVisible(0);
-                ((HudUiElement*)(dest))->SetTimer(((HudUiElement*)(source))->timer);
+                const float remaining = source->timer;
+                dest->SetTimer(remaining);
                 dest->SetTextFmt(source->GetLastTextPtr());
-                dest->textColor0 = source->textColor0;
-                dest->textColor1 = source->textColor1;
-                dest->textDirty = 1;
+                dest->SetTextColorsAndMarkDirty(source->textColor0, source->textColor1);
                 ((HudUiElement*)(dest))->SetVisible(1);
             }
         }
@@ -1581,15 +1579,14 @@ float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-hudweatherfx-0x4bdc70
  * @recoil-artifact defines .text recoil:function:0x4bdc70: HudWeatherFx::HudWeatherFx(int).
- *
+ * @recoil-match byte
  *
  * Purpose: Initialize the base weather particle emitter, allocate particle buffers, reset
  * particles, and create the hardware SnowFX texture resources when needed.
  */
 HudWeatherFx::HudWeatherFx(int newParticleCount)
+    : zVideoFxPass3Element(0, 0)
 {
-    HudUiElement::Constructor(0, 0);
-    clipRectOrNull = 0;
     maxParticles = newParticleCount;
     particleCount = newParticleCount;
     particleQuads = (HudWeatherFxParticleQuad*)(::operator new(sizeof(HudWeatherFxParticleQuad) * newParticleCount));
@@ -1623,17 +1620,16 @@ HudWeatherFx::HudWeatherFx(int newParticleCount)
     gravity = 1.0f;
     windDirection = 0.0f;
     windVelocity = 1.0f;
-    textureName = 0;
-    softwareImage = 0;
-    textureRecord = 0;
 
     if (g_zVideo_ActiveRendererPath != 0) {
         textureName = "SnowFX";
         softwareImage = zVid_Image::Create();
         zVid_Image::SetFormatCode(softwareImage, 0x0b);
-        char* const alphaMap = (char*)(malloc(kHudWeatherFxSnowTextureTexels));
-        void* const surfacePixels = malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short));
-        zVidImageSetPixels(softwareImage, surfacePixels, alphaMap);
+        zVidImageSetPixels(
+            softwareImage,
+            malloc(kHudWeatherFxSnowTextureTexels * sizeof(unsigned short)),
+            (char*)(malloc(kHudWeatherFxSnowTextureTexels))
+        );
         softwareImage->formatFlagsPacked |= 0x20;
         zVid_Image::SetSize(softwareImage, kHudWeatherFxSnowTextureWidth, kHudWeatherFxSnowTextureHeight);
         textureRecord = g_zVideo_pfnCreateTextureRecord(
@@ -1649,7 +1645,7 @@ HudWeatherFx::HudWeatherFx(int newParticleCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-hudweatherfx-0x4bde40
  * @recoil-artifact defines .text recoil:function:0x4bde40: HudWeatherFx::~HudWeatherFx.
- *
+ * @recoil-match byte
  *
  * Purpose: Release particle buffers and renderer-backed weather texture resources.
  */
@@ -1670,8 +1666,7 @@ HudWeatherFx::~HudWeatherFx()
             g_zVideo_pfnTextureRecordDestroy(textureRecord);
         }
         if (softwareImage != 0) {
-            zVid_Image::ReleaseIfNotDefault(softwareImage);
-            softwareImage = 0;
+            softwareImage = zVid_Image::ReleaseIfNotDefault(softwareImage);
         }
     }
 }
@@ -2815,7 +2810,7 @@ void HudUiBackgroundCursorWidget::SetPos(int newX, int newY)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-rebuildcapturedimage
  * @recoil-artifact defines .text recoil:function:0x4bfba0: HudUiBackgroundCursorWidget::RebuildCapturedImage.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiBackgroundCursorWidget::RebuildCapturedImage.
  */
@@ -2825,17 +2820,19 @@ void HudUiBackgroundCursorWidget::RebuildCapturedImage(int originX, int originY)
         return;
     }
 
+    zVidImagePartial* const cursorImage = image;
     zVidRect32 sourceRect;
-    sourceRect.left = originX;
     sourceRect.top = originY;
-    sourceRect.right = originX + image->width;
-    sourceRect.bottom = originY + image->height;
+    sourceRect.bottom = originY + cursorImage->height;
+    sourceRect.left = originX;
+    sourceRect.right = originX + cursorImage->width;
 
     if (zVideo_buff::CopySurfaceRectToImage(captureSourceSelector, &sourceRect, capturedImage) != 0) {
-        const HudUiRect clipRect = { sourceRect.left - originX,
-            sourceRect.top - originY,
-            sourceRect.right - originX,
-            sourceRect.bottom - originY };
+        HudUiRect clipRect;
+        clipRect.top = sourceRect.top - originY;
+        clipRect.bottom = sourceRect.bottom - originY;
+        clipRect.left = sourceRect.left - originX;
+        clipRect.right = sourceRect.right - originX;
         SetBltSourceAndClipRect(capturedImage, &clipRect);
         return;
     }
@@ -3001,17 +2998,16 @@ void HudUiBackgroundVideoWidget::Draw()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-drawbase
  * @recoil-artifact defines .text recoil:function:0x4bfec0: HudUiBackgroundVideoWidget::DrawBase.
- *
+ * @recoil-match byte
  *
  * Purpose: Blits the configured background source into the current clipped video area.
  */
 void HudUiBackgroundVideoWidget::DrawBase()
 {
-    zVidImagePartial* const bltSource = (zVidImagePartial*)(this->bltSource);
+    const int dstX = x > 0 ? x : 0;
+    const int dstY = y > 0 ? y : 0;
     if (bltSource != 0) {
-        const int dstX = x > 0 ? x : 0;
-        const int dstY = y > 0 ? y : 0;
-        zVid_Image::BlitToActiveTarget(bltSource, dstX, dstY, 0, (zVidRect32*)(&clipRect));
+        zVid_Image::BlitToActiveTarget((zVidImagePartial*)(bltSource), dstX, dstY, 0, (zVidRect32*)(&clipRect));
     }
 }
 

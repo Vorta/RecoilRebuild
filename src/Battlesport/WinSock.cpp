@@ -11,7 +11,7 @@ namespace NetUi {
 /**
  * @recoil-anchor recoil:anchor:battlesport-winsock-netui-verifywinsock2orpromptcontinue
  * @recoil-artifact defines .text recoil:function:0x43ce80: NetUi::VerifyWinsock2OrPromptContinue
- *
+ * @recoil-match byte
  *
  * Purpose: verify Winsock 2.0 availability and ask the user whether network
  * flows should continue when startup or version checks fail.
@@ -22,7 +22,7 @@ int __fastcall VerifyWinsock2OrPromptContinue(const char* caption, const char* m
     WSADATA wsaData;
     if (WSAStartup(2, &wsaData) != 0) {
         result = FALSE;
-    } else if (LOBYTE(wsaData.wHighVersion) != 2 || HIBYTE(wsaData.wHighVersion) != 0) {
+    } else if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 0) {
         WSACleanup();
         result = FALSE;
     }
@@ -32,11 +32,11 @@ int __fastcall VerifyWinsock2OrPromptContinue(const char* caption, const char* m
         sprintf(
             promptText,
             messageFormat,
-            (unsigned int)LOBYTE(wsaData.wHighVersion),
-            (unsigned int)HIBYTE(wsaData.wHighVersion)
+            (unsigned int)LOBYTE(wsaData.wVersion),
+            (unsigned int)HIBYTE(wsaData.wVersion)
         );
         MessageBeep(MB_ICONEXCLAMATION);
-        if (MessageBoxA(GetFocus(), promptText, caption, MB_ICONQUESTION | MB_YESNO) == IDYES) {
+        if (MessageBoxA(GetFocus(), promptText, caption, MB_ICONEXCLAMATION | MB_YESNO) == IDYES) {
             result = TRUE;
         }
     }

@@ -92,15 +92,19 @@ extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerSta
  */
 int __fastcall zSndPlayHandle::Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
 {
-    if (g_zSnd_ActiveBackend == 1) {
-        return Update3DA3D(worldPos, velocity, velocityScaleMode);
+    int result = 0;
+
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
+        result = Update3DA3D(worldPos, velocity, velocityScaleMode);
+        break;
+
+    case 0:
+        result = Update3D(worldPos, velocity, velocityScaleMode);
+        break;
     }
 
-    if (g_zSnd_ActiveBackend == 0) {
-        return Update3D(worldPos, velocity, velocityScaleMode);
-    }
-
-    return 0;
+    return result;
 }
 
 /**

@@ -554,11 +554,8 @@ namespace zDEClient {
 void __fastcall SubmitFeatureGeometry(zGeometry_ClipPatchOutputPartial* clipPatchOutput)
 {
     for (int partitionIndex = 0; partitionIndex < clipPatchOutput->partitionCount; ++partitionIndex) {
-        zGeometry_ClipPatchPartitionOutput* const partition = &clipPatchOutput->partitions[partitionIndex];
-        {
-            for (int pairIndex = 0; pairIndex < partition->nodeDiPairCount; ++pairIndex) {
-                g_zDEClient_FeatureMapTree.insert(partition->nodeDiPairs[pairIndex].node);
-            }
+        for (int pairIndex = 0; pairIndex < clipPatchOutput->partitions[partitionIndex].nodeDiPairCount; ++pairIndex) {
+            g_zDEClient_FeatureMapTree.insert(clipPatchOutput->partitions[partitionIndex].nodeDiPairs[pairIndex].node);
         }
     }
 }
@@ -751,14 +748,18 @@ void __fastcall DispatchFeatureEventTemplates(
         ++entry) {
         zDEClient_FeatureEntry featureEntry = *entry;
 
-        if (featureEntry.featureType == 3) {
+        switch (featureEntry.featureType) {
+        case 3:
             if (qSandHandler != 0) {
                 qSandHandler(&featureEntry.eventData.quickSand);
             }
-        } else if (featureEntry.featureType == 1) {
+            break;
+
+        case 1:
             if (craterHandler != 0) {
                 craterHandler(&featureEntry.eventData.crater);
             }
+            break;
         }
     }
 }

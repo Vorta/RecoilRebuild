@@ -2307,25 +2307,26 @@ void SetState7FxPass3Visible(int visible)
     do {                                                                                                               \
         PlayerPendingContactQueue* const playerRemoveQueue = (queue);                                                  \
         PlayerPendingContact* const playerRemoveContact = (contact);                                                   \
-        if (playerRemoveQueue->count != 0 && playerRemoveContact != 0) {                                               \
-            if (playerRemoveQueue->head == playerRemoveContact) {                                                      \
-                playerRemoveQueue->head = playerRemoveContact->next;                                                   \
+        if (playerRemoveContact != 0 && playerRemoveQueue->count != 0) {                                               \
+            if (playerRemoveContact == playerRemoveQueue->head) {                                                      \
                 --playerRemoveQueue->count;                                                                            \
+                playerRemoveQueue->head = playerRemoveContact->next;                                                   \
                 if (playerRemoveQueue->head == 0) {                                                                    \
                     playerRemoveQueue->listAux = 0;                                                                    \
                     playerRemoveQueue->tail = 0;                                                                       \
                 }                                                                                                      \
             } else {                                                                                                   \
                 PlayerPendingContact* playerPreviousContact = playerRemoveQueue->head;                                 \
-                while (playerPreviousContact != 0 && playerPreviousContact->next != playerRemoveContact) {             \
-                    playerPreviousContact = playerPreviousContact->next;                                               \
-                }                                                                                                      \
-                if (playerPreviousContact != 0) {                                                                      \
-                    playerPreviousContact->next = playerRemoveContact->next;                                           \
-                    --playerRemoveQueue->count;                                                                        \
-                    if (playerRemoveQueue->tail == playerRemoveContact) {                                              \
-                        playerRemoveQueue->tail = playerPreviousContact;                                               \
+                while (playerPreviousContact != 0) {                                                                   \
+                    if (playerPreviousContact->next == playerRemoveContact) {                                          \
+                        --playerRemoveQueue->count;                                                                    \
+                        playerPreviousContact->next = playerRemoveContact->next;                                       \
+                        if (playerRemoveQueue->tail == playerRemoveContact) {                                          \
+                            playerRemoveQueue->tail = playerPreviousContact;                                           \
+                        }                                                                                              \
+                        break;                                                                                         \
                     }                                                                                                  \
+                    playerPreviousContact = playerPreviousContact->next;                                               \
                 }                                                                                                      \
             }                                                                                                          \
         }                                                                                                              \
@@ -2342,13 +2343,13 @@ void SetState7FxPass3Visible(int visible)
         PlayerPendingContact* playerTransferContact = (playerState)->transferQueue.head;                               \
         while (playerTransferContact != 0) {                                                                           \
             PlayerPendingContact* const playerNextTransferContact = playerTransferContact->next;                       \
-            (playerState)->transferQueue.head = playerNextTransferContact;                                             \
-            --(playerState)->transferQueue.count;                                                                      \
-            if (playerNextTransferContact == 0) {                                                                      \
-                (playerState)->transferQueue.listAux = 0;                                                              \
-                (playerState)->transferQueue.tail = 0;                                                                 \
+            PLAYER_REMOVE_EXISTING_PENDING_CONTACT(&(playerState)->transferQueue, playerTransferContact);              \
+            if (playerTransferContact != 0) {                                                                          \
+                PLAYER_APPEND_EXISTING_PENDING_CONTACT(                                                                \
+                    &(playerState)->preferredCollisionQueue,                                                           \
+                    playerTransferContact                                                                              \
+                );                                                                                                     \
             }                                                                                                          \
-            PLAYER_APPEND_EXISTING_PENDING_CONTACT(&(playerState)->preferredCollisionQueue, playerTransferContact);    \
             playerTransferContact = playerNextTransferContact;                                                         \
         }                                                                                                              \
     } while (0)
@@ -3718,8 +3719,8 @@ void __cdecl InstantiateNamedObjects()
     CString searchName;
     const int checkpointCount = g_HudSensorTracker.checkpointCount;
 
-    for (int checkpointNumber = 1; checkpointNumber <= checkpointCount; ++checkpointNumber) {
-        searchName.Format(g_Checkpoint_NodeNameFmt, checkpointNumber);
+    for (int checkpointIndex = 0; checkpointIndex < checkpointCount; ++checkpointIndex) {
+        searchName.Format(g_Checkpoint_NodeNameFmt, checkpointIndex + 1);
         CZNodePartial* const checkpointNode = CZClass::FindByTypeAndName(6, (const char*)searchName);
         if (checkpointNode != 0) {
             CZNode::PropagateExtraFlagsRecursive(checkpointNode, kCheckpointNodeAuxFlagTracked);
@@ -4093,7 +4094,7 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
     CZClass::gwNodeSetNodeType(playerState->rootNode, playerState->variantTag.tags[0]);
     CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
 
-    PlayerProbeSampleCandidateBuffer candidateBuffer = { 0 };
+    PlayerProbeSampleCandidateBuffer candidateBuffer;
     CZDisplayInstance::BuildPickCandidateListBelowPoint(
         g_Player_RuntimeDiScene,
         playerState->worldPos.x,
@@ -4102,9 +4103,9 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
         &candidateBuffer
     );
 
-    int bestCandidateIndex = 0;
-    int selectedImpactSlot = 0;
-    float taggedHeight = -300.0f;
+    int bestCandidateIndex;
+    int selectedImpactSlot;
+    float taggedHeight;
     SelectProbeSampleHeightFromCandidates(
         &candidateBuffer,
         &bestCandidateIndex,
@@ -4118,19 +4119,20 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
     CZClass::gwNodeSetCellPickable(playerState->rootNode, 1);
 
     if (candidateBuffer.candidateCount > 0) {
-        zClassDiPickCandidateEntry* const selectedCandidate = &candidateBuffer.entries[bestCandidateIndex];
-        playerState->variantTag = selectedCandidate->variantTag;
+        playerState->variantTag = candidateBuffer.entries[bestCandidateIndex].variantTag;
 
-        CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(selectedCandidate->node);
-        const int nodeType = worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
+        CZNodePartial* const worldChild
+            = CZClass::gwNodeGetWorldChild(candidateBuffer.entries[bestCandidateIndex].node);
+        const int nodeType
+            = worldChild != 0 ? worldChild->nodeType : candidateBuffer.entries[bestCandidateIndex].variantTag.tags[0];
         CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
 
         if (updateRotation == 0) {
             return;
         }
 
-        playerState->steerBasisRef = selectedCandidate->surfaceNormal;
-        zVec3 yawRelativeNormal = selectedCandidate->surfaceNormal;
+        playerState->steerBasisRef = candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
+        zVec3 yawRelativeNormal = candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
         RebuildSteerBasisRawFromRef(saveState);
         zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
 
@@ -5433,38 +5435,26 @@ int __fastcall PassesCollectionTest(zUtil_SaveGameState* saveState, PlayerPendin
     (void)saveState;
     zUtil_PlayerStateStorage* const playerState
         = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
-    CZNodePartial* const pickupNode = contact->hit.node;
 
     g_Variant_CurrentTag = playerState->variantTag;
-    CZClass::gwNodeSetRaycastable(pickupNode, 0);
+    CZClass::gwNodeSetRaycastable(contact->hit.node, 0);
     CZDisplayInstance::SetBreakOnFirstCandidate(1);
     CZDisplayInstance::SetStopAfterFirstHit(0x40000);
 
-    const zVec3 startPoint = {
-        contact->hit.hitPos.x,
-        contact->hit.hitPos.y - 1.0f,
-        contact->hit.hitPos.z,
-    };
-    const zVec3 endPoint = {
-        pickupNode->cachedSphereCenter[0],
-        pickupNode->cachedSphereCenter[1] - 1.0f,
-        pickupNode->cachedSphereCenter[2],
-    };
-
-    PlayerProbeSampleCandidateBuffer rayData = { 0 };
+    PlayerProbeSampleCandidateBuffer rayData;
     const int raycastResult = CZDisplayInstance::RaycastFindClosest(
         g_Player_RuntimeDiScene,
         &rayData,
-        startPoint.x,
-        startPoint.y,
-        startPoint.z,
-        endPoint.x,
-        endPoint.y,
-        endPoint.z
+        contact->hit.hitPos.x,
+        contact->hit.hitPos.y - 1.0f,
+        contact->hit.hitPos.z,
+        contact->hit.node->cachedSphereCenter[0],
+        contact->hit.node->cachedSphereCenter[1] - 1.0f,
+        contact->hit.node->cachedSphereCenter[2]
     );
 
     CZDisplayInstance::SetBreakOnFirstCandidate(0);
-    CZClass::gwNodeSetRaycastable(pickupNode, 1);
+    CZClass::gwNodeSetRaycastable(contact->hit.node, 1);
 
     return raycastResult == 0 && rayData.candidateCount != 0 ? 0 : 1;
 }
@@ -5866,7 +5856,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-tryresolvependingcollisionprobesweep
  * @recoil-artifact defines .text recoil:function:0x424ed0: Player::TryResolvePendingCollisionProbeSweep.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::TryResolvePendingCollisionProbeSweep from the recovered
@@ -7366,11 +7356,14 @@ void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState)
         IntegrateYawAndWrapFromYawVelocity(saveState);
     }
 
-    float* const pitchRad = &playerState->vehiclePitchRad;
-    zMat4x3* const motionBasis = &playerState->motionBasis;
-    zMath::MatBuildEulerRotation3x3(motionBasis, *pitchRad, playerState->restartYawRad, playerState->vehicleRollRad);
-    playerState->motionBasis.posX = playerState->worldPos.x;
+    zMath::MatBuildEulerRotation3x3(
+        &playerState->motionBasis,
+        playerState->vehicleRotationAngles.x,
+        playerState->vehicleRotationAngles.y,
+        playerState->vehicleRotationAngles.z
+    );
     playerState->motionBasis.posY = playerState->worldPos.y;
+    playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     RebuildSteerBasisFromMotionBasis(saveState);
 
@@ -7395,9 +7388,9 @@ void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState)
 
     CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
-        playerState->vehiclePitchRad,
-        playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRotationAngles.x,
+        playerState->vehicleRotationAngles.y,
+        playerState->vehicleRotationAngles.z
     );
     CZObject3D::gwObject3DSetPosition(
         playerState->rootNode,
@@ -7418,9 +7411,7 @@ void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState)
     );
 
     playerState->bankBasis = playerState->steerBasisNorm;
-    playerState->cachedPitchRad = playerState->vehiclePitchRad;
-    playerState->cachedYawRad = playerState->restartYawRad;
-    playerState->cachedRollRad = playerState->vehicleRollRad;
+    playerState->cachedVehicleRotationAngles = playerState->vehicleRotationAngles;
 }
 } // namespace Player
 namespace Player {
@@ -7440,31 +7431,32 @@ void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(zUtil_SaveGameState* 
     PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
 
     // This caller consumes the heights; the helper also requires these outputs.
-    CZNodePartial* unusedAttachmentNode;
-    float unusedBestHeight;
     float sampleHeights[PLAYER_MAX_MODAL_PROBE_POINTS];
-    int unusedAttachmentCandidateCount;
-    PlayerProbeTypeHistogram unusedHistogram;
-    ProbeModalSampleHeights(
-        saveState,
-        sampleHeights,
-        &unusedBestHeight,
-        0,
-        &unusedHistogram,
-        &unusedAttachmentCandidateCount,
-        &unusedAttachmentNode
-    );
+    {
+        CZNodePartial* unusedAttachmentNode;
+        float unusedBestHeight;
+        int unusedAttachmentCandidateCount;
+        PlayerProbeTypeHistogram unusedHistogram;
+        ProbeModalSampleHeights(
+            saveState,
+            sampleHeights,
+            &unusedBestHeight,
+            0,
+            &unusedHistogram,
+            &unusedAttachmentCandidateCount,
+            &unusedAttachmentNode
+        );
+    }
 
     playerState->yawVelocityLimit = masterModalData->yawRateMax;
 
-    float maxSampleHeight = 0.0f;
+    float maxSampleHeight;
     const int probePointCount = primaryModalState->modalStateCode;
-    if (probePointCount > 0) {
-        maxSampleHeight = sampleHeights[0];
-        for (int i = 1; i < probePointCount; ++i) {
-            if (maxSampleHeight < sampleHeights[i]) {
-                maxSampleHeight = sampleHeights[i];
-            }
+    for (int i = 0; i < probePointCount; ++i) {
+        if (i == 0) {
+            maxSampleHeight = sampleHeights[0];
+        } else if (sampleHeights[i] > maxSampleHeight) {
+            maxSampleHeight = sampleHeights[i];
         }
     }
 
@@ -9518,11 +9510,11 @@ void __cdecl SyncLocalPoseFromRootNode()
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
+    playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posZ = playerState->worldPos.z;
-    playerState->lifecycleState = 1;
     playerState->previousTransform = playerState->motionBasis;
+    playerState->lifecycleState = 1;
 }
 } // namespace Player
 namespace Player {
@@ -10882,7 +10874,7 @@ namespace Player {
 void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    if (playerState->steerBasisRef.y == 0.0f) {
+    if (playerState->steerBasisRef.y == 0.0) {
         playerState->steerBasisRef.y = 0.00100000005f;
     }
 
@@ -10893,7 +10885,7 @@ void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState)
     zMath::Vec3Normalize(&rawBasis);
     playerState->steerBasisRaw = rawBasis;
 
-    zVec3 yawRelativeNormal = { 0 };
+    zVec3 yawRelativeNormal;
     zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
     playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
     playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));

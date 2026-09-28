@@ -512,20 +512,18 @@ int __cdecl DIAddJoystickRef()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-di-releasejoystickref
  * @recoil-artifact defines .text recoil:function:0x471d80: zInput::DIReleaseJoystickRef.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: Decrement the joystick polling reference count without underflow.
  */
 int __cdecl DIReleaseJoystickRef()
 {
-    short refCount = g_zInputJoystickPollRefCount;
-    if ((unsigned short)(refCount) > 0) {
-        --refCount;
+    if ((unsigned short)(g_zInputJoystickPollRefCount) > 0) {
+        --g_zInputJoystickPollRefCount;
     }
 
-    g_zInputJoystickPollRefCount = refCount;
-    return refCount;
+    return (unsigned short)(g_zInputJoystickPollRefCount);
 }
 
 /**

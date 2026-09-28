@@ -1435,18 +1435,15 @@ CZNodePartial* __fastcall Pickup::CreateObjectInstance(int typeIndex, int overri
     sprintf(pickupName, kPickupInstanceNameFormat, pickupType->typeIndex, pickupType->nameSuffixMax);
     CZClass::gwNodeSetName(pickupObj, pickupName);
 
-    int amount = overrideAmount;
-    if (amount == 0) {
-        amount = pickupType->defaultAmount;
-    }
-    ((PickupNodeRuntimeFields*)(pickupObj->name))->amount = amount;
+    ((PickupNodeRuntimeFields*)(pickupObj->name))->amount
+        = overrideAmount != 0 ? overrideAmount : pickupType->defaultAmount;
 
-    if (AssignBvolGroupAndId(pickupObj) != 0) {
-        return pickupObj;
+    if (AssignBvolGroupAndId(pickupObj) == 0) {
+        CZUtil::DestroyNodeRecursive(pickupObj);
+        return 0;
     }
 
-    CZUtil::DestroyNodeRecursive(pickupObj);
-    return 0;
+    return pickupObj;
 }
 
 /**
@@ -1480,9 +1477,9 @@ int __fastcall Pickup::AssignBvolGroupAndId(CZNodePartial* pickupObj)
         return 0;
     }
 
-    const int parsedSuffix = atol(pickupObj->name + 2);
-    const int pickupTypeIndex = parsedSuffix / 100;
-    const int pickupNameSuffix = parsedSuffix % 100;
+    int pickupNameSuffix = atol(pickupObj->name + 2);
+    const int pickupTypeIndex = pickupNameSuffix / 100;
+    pickupNameSuffix -= pickupTypeIndex * 100;
     if (pickupTypeIndex > 40) {
         return 0;
     }
@@ -1853,7 +1850,7 @@ void PickupSpawnList::Clear()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-clearandfree
  * @recoil-artifact defines .text recoil:function:0x41e270: PickupRespawnQueue::ClearAndFree (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: unlink and release every pending pickup respawn queue entry.
  */
@@ -1862,36 +1859,30 @@ void PickupRespawnQueue::ClearAndFree()
     PickupRespawnEntry* node = head;
     while (node != 0) {
         PickupRespawnEntry* const nextNode = node->next;
-        bool removed = false;
-        if (count != 0) {
+        if (node != 0 && count != 0) {
             PickupRespawnEntry* current = head;
             if (node == current) {
                 --count;
                 head = node->next;
-                removed = true;
                 if (head == 0) {
                     unused = 0;
                     tail = 0;
                 }
+                ::operator delete(node);
             } else {
                 while (current != 0) {
-                    PickupRespawnEntry* const next = current->next;
-                    if (next == node) {
+                    if (current->next == node) {
                         --count;
                         current->next = node->next;
                         if (tail == node) {
                             tail = current;
                         }
-                        removed = true;
+                        ::operator delete(node);
                         break;
                     }
-                    current = next;
+                    current = current->next;
                 }
             }
-        }
-
-        if (removed) {
-            ::operator delete(node);
         }
         node = nextNode;
     }
@@ -1972,7 +1963,7 @@ void __fastcall Pickup::SetVariantFromTerrain(CZNodePartial* pickupObj, zVec3* p
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-spawnlisthasentrynearxz
  * @recoil-artifact defines .text recoil:function:0x41e430: Pickup::SpawnListHasEntryNearXZ (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: test whether a primary spawn lies inside a requested XZ clearance window.
  */
@@ -1980,8 +1971,8 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(zVec3* position, float clearanceR
 {
     PickupSpawnDef* spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0) {
-        if (fabs(spawn->position.x - position->x) < clearanceRadius
-            && fabs(spawn->position.z - position->z) < clearanceRadius) {
+        if ((float)fabs(spawn->position.x - position->x) < clearanceRadius
+            && (float)fabs(spawn->position.z - position->z) < clearanceRadius) {
             return 1;
         }
         spawn = spawn->next;
@@ -2038,17 +2029,34 @@ int __cdecl Pickup::SelectNextVTOLSpawnTypeIndex()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-mapvtoldropgroupvarianttotypeindex
  * @recoil-artifact defines .text recoil:function:0x41e540: Pickup::MapVTOLDropGroupVariantToTypeIndex (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: convert a VTOL drop weapon group and variant into a pickup type index.
  */
 int __fastcall Pickup::MapVTOLDropGroupVariantToTypeIndex(int dropGroupIndex, int dropVariantIndex)
 {
-    if (dropGroupIndex < 2 || dropGroupIndex > 9) {
+    switch (dropGroupIndex) {
+    case 1:
+        return 0;
+    case 2:
+        return (dropVariantIndex != 0) + 1;
+    case 3:
+        return (dropVariantIndex != 0) + 3;
+    case 4:
+        return (dropVariantIndex != 0) + 5;
+    case 5:
+        return (dropVariantIndex != 0) + 7;
+    case 6:
+        return (dropVariantIndex != 0) + 9;
+    case 7:
+        return (dropVariantIndex != 0) + 11;
+    case 8:
+        return (dropVariantIndex != 0) + 13;
+    case 9:
+        return (dropVariantIndex != 0) + 15;
+    default:
         return 0;
     }
-
-    return (dropGroupIndex - 2) * 2 + 1 + (dropVariantIndex != 0);
 }
 
 /**
@@ -2137,7 +2145,7 @@ void __fastcall Pickup::RespawnSpawnDef(PickupSpawnDef* spawn)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-archivewriteall
  * @recoil-artifact defines .text recoil:function:0x41e780: Pickup::ArchiveWriteAll (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: serialize active pickup spawns to the pickup archive section.
  */
@@ -2146,13 +2154,11 @@ int __fastcall Pickup::ArchiveWriteAll(zZbdSectionCallbackCtx* callbackCtx, void
     (void)userData;
 
     int result = 1;
-    int firstRecord = 1;
+    PickupArchiveRecord record;
+    record.firstRecord = 1;
     PickupSpawnDef* spawn = g_PickupSpawnList_Primary.head;
     while (spawn != 0 && result != 0) {
-        CZNodePartial* const pickupObj = spawn->pickupObj;
-        if ((pickupObj->flags & 0x40000) != 0) {
-            PickupArchiveRecord record;
-            record.firstRecord = firstRecord;
+        if ((spawn->pickupObj->flags & 0x40000) != 0) {
             record.typeIndex = spawn->pickupType->typeIndex;
             record.pickupId = spawn->pickupId;
             record.amount = spawn->amount;
@@ -2160,11 +2166,11 @@ int __fastcall Pickup::ArchiveWriteAll(zZbdSectionCallbackCtx* callbackCtx, void
             record.rotation = spawn->rotation;
             record.spawnParam = spawn->spawnParam;
             record.respawnDelay = spawn->respawnDelay;
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, pickupObj->name, &record, sizeof(record));
+            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, spawn->pickupObj->name, &record, sizeof(record));
         }
 
-        spawn = spawn->next;
-        firstRecord = 0;
+        spawn = spawn != 0 ? spawn->next : 0;
+        record.firstRecord = 0;
     }
 
     return result;
@@ -2577,7 +2583,7 @@ int __fastcall SendPkt11Flag8Delta(PickupSpawnDef* spawn)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.sendpkt11-createdelta
  * @recoil-artifact defines .text recoil:function:0x433ea0: Pickup::SendPkt11CreateDelta (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: allocate, populate, send, and release a reliable pkt11 create
  * delta for a primary pickup spawn.
