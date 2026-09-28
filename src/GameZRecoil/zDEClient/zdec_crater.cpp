@@ -707,7 +707,7 @@ int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx* callbackCtx)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-applyfeatureentry
  * @recoil-artifact defines .text recoil:function:0x457c10: zDEClient::ApplyFeatureEntry.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: reload a serialized zDEClient feature entry or clear feature
@@ -721,10 +721,14 @@ void __stdcall ApplyFeatureEntry(zDEClient_FeatureEntry* container, void*, void*
         return;
     }
 
-    if (container->featureType == 3) {
+    switch (container->featureType) {
+    case 3:
         zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
-    } else if (container->featureType == 1) {
+        break;
+
+    case 1:
         zDEClient_Crater::InstanceEvent(&container->eventData.crater, 0);
+        break;
     }
 }
 

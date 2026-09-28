@@ -83,7 +83,7 @@ HudUiTransitionTextPanel::HudUiTransitionTextPanel(const HudUiTransitionTextPane
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduicircle-huduicircle
  * @recoil-artifact defines .text recoil:function:0x4bc480: HudUiCircle::HudUiCircle.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize a circle element's position, radius, and color.
  *
@@ -614,7 +614,7 @@ HudUiTextLabel* HudUiTextLabel::ConstructorWithPosAndFlags(const char* text, int
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-huduitextlabel-0x4bcbe0
  * @recoil-artifact defines .text recoil:function:0x4bcbe0: HudUiTextLabel::HudUiTextLabel(const HudUiTextLabel &).
- *
+ * @recoil-match byte
  *
  * Purpose: Copy-construct a text label from an existing label, including its text buffer.
  */
@@ -775,26 +775,22 @@ void HudUiTextLabel::Draw()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextlabel-hittest
  * @recoil-artifact defines .text recoil:function:0x4bcea0: HudUiTextLabel::HitTest.
- *
+ * @recoil-match byte
  *
  * Purpose: test coordinates against the visible text bounds unless input is
  * disabled.
  */
 int HudUiTextLabel::HitTest(int px, int py)
 {
-    if ((flags & 0x10u) != 0 || x > px || y > py) {
-        return 0;
+    int hit = (~flags & 0x10u) != 0 && x <= px && y <= py;
+    if (hit) {
+        int textWidth;
+        int lineAdvance;
+        zImage_Font::MeasureString(textBuffer, fontHandle, &textWidth, &lineAdvance);
+        hit = px <= x + textWidth && py <= y + lineAdvance;
     }
 
-    int textWidth = 0;
-    int lineAdvance = 0;
-    zImage_Font::MeasureString(textBuffer, fontHandle, &textWidth, &lineAdvance);
-
-    if (px > x + textWidth) {
-        return 0;
-    }
-
-    return py <= y + lineAdvance ? 1 : 0;
+    return hit;
 }
 
 /**
@@ -1453,7 +1449,7 @@ void zVideoFxPass3RootElement::ApplyPass3()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3slot-zvideofxpass3slot
  * @recoil-artifact defines .text recoil:function:0x4bdbe0: zVideoFxPass3Slot::Constructor.
- *
+ * @recoil-match byte
  *
  * Constructs the pass-3 slot element and clears the input clip consumed by
  * Purpose: provide the recovered zVideoFxPass3Slot constructor behavior.
@@ -1730,13 +1726,9 @@ void HudWeatherFx::ApplyPass3()
         unsigned short* surfacePixels = (unsigned short*)(softwareImage->pixels);
         if (*surfacePixels != packedColor16) {
             char* surfaceAlphaMap = softwareImage->alphaMap;
-            int alphaValue = 0;
-            while (alphaValue < 4080) {
-                *surfacePixels = packedColor16;
-                ++surfacePixels;
-                *surfaceAlphaMap = (char)(alphaValue >> 4);
-                ++surfaceAlphaMap;
-                alphaValue += 255;
+            for (int alphaValue = 0; alphaValue < 4080; alphaValue += 255) {
+                *surfacePixels++ = packedColor16;
+                *surfaceAlphaMap++ = (char)(alphaValue / 16);
             }
         }
 
@@ -1744,40 +1736,40 @@ void HudWeatherFx::ApplyPass3()
         zVideoD3D::SceneEnter();
 
         for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-            HudWeatherFxParticleQuad* particleQuad = &particleQuads[particleIndex];
-            float xSlant = 0.0f;
-            float ySlant = 0.0f;
-            if (particleQuad->width > particleQuad->height) {
-                xSlant = (float)(particleQuad->slantOffset);
+            float xSlant;
+            float ySlant;
+            if (particleQuads[particleIndex].width > particleQuads[particleIndex].height) {
+                xSlant = (float)(particleQuads[particleIndex].slantOffset);
+                ySlant = 0.0f;
             } else {
-                ySlant = (float)(particleQuad->slantOffset);
+                xSlant = 0.0f;
+                ySlant = (float)(particleQuads[particleIndex].slantOffset);
             }
 
-            const float depth = particlePositions[sourceBufferIndex][particleIndex].z;
             zVideo_XyzVertex clipVerts[4];
             zVideo_TexCoord texCoords[4];
-            clipVerts[0].x = (float)(particleQuad->x);
-            clipVerts[0].y = (float)(particleQuad->y);
-            clipVerts[0].z = depth;
-            texCoords[0].u = particleQuad->texCoordUStart;
+            clipVerts[0].x = (float)(particleQuads[particleIndex].x);
+            clipVerts[0].y = (float)(particleQuads[particleIndex].y);
+            clipVerts[0].z = particlePositions[sourceBufferIndex][particleIndex].z;
+            texCoords[0].u = particleQuads[particleIndex].texCoordUStart;
             texCoords[0].v = 0.0f;
 
-            clipVerts[1].x = (float)(particleQuad->x) + xSlant;
-            clipVerts[1].y = (float)(particleQuad->y) + ySlant;
-            clipVerts[1].z = depth;
-            texCoords[1].u = particleQuad->texCoordUStart;
+            clipVerts[1].x = (float)(particleQuads[particleIndex].x) + xSlant;
+            clipVerts[1].y = (float)(particleQuads[particleIndex].y) + ySlant;
+            clipVerts[1].z = particlePositions[sourceBufferIndex][particleIndex].z;
+            texCoords[1].u = particleQuads[particleIndex].texCoordUStart;
             texCoords[1].v = 0.0f;
 
-            clipVerts[2].x = (float)(particleQuad->x + particleQuad->width) + xSlant;
-            clipVerts[2].y = (float)(particleQuad->y + particleQuad->height) + ySlant;
-            clipVerts[2].z = depth;
-            texCoords[2].u = particleQuad->texCoordUEnd;
+            clipVerts[2].x = (float)(particleQuads[particleIndex].x + particleQuads[particleIndex].width) + xSlant;
+            clipVerts[2].y = (float)(particleQuads[particleIndex].y + particleQuads[particleIndex].height) + ySlant;
+            clipVerts[2].z = particlePositions[sourceBufferIndex][particleIndex].z;
+            texCoords[2].u = particleQuads[particleIndex].texCoordUEnd;
             texCoords[2].v = 0.0f;
 
-            clipVerts[3].x = (float)(particleQuad->x + particleQuad->width);
-            clipVerts[3].y = (float)(particleQuad->y + particleQuad->height);
-            clipVerts[3].z = depth;
-            texCoords[3].u = particleQuad->texCoordUEnd;
+            clipVerts[3].x = (float)(particleQuads[particleIndex].x + particleQuads[particleIndex].width);
+            clipVerts[3].y = (float)(particleQuads[particleIndex].y + particleQuads[particleIndex].height);
+            clipVerts[3].z = particlePositions[sourceBufferIndex][particleIndex].z;
+            texCoords[3].u = particleQuads[particleIndex].texCoordUEnd;
             texCoords[3].v = 0.0f;
 
             if (((HudWeatherFxPointBatch*)(clipVerts))->ArePointBatchInsideRect(4, clipRectOrNull) != 0) {
@@ -2670,27 +2662,19 @@ void HudUiPolyline::Draw()
 {
     DrawBase();
 
-    const int currentPointCount = pointCount;
-    if (currentPointCount == 0) {
+    if (pointCount == 0) {
         return;
     }
 
     if (clipRect != 0) {
-        zRndrDrawClippedImmediateLineStrip(
-            (const zRndr_LinePoint2I*)(points),
-            currentPointCount - 1,
-            clipRect,
-            color565
-        );
+        zRndrDrawClippedImmediateLineStrip((const zRndr_LinePoint2I*)(points), pointCount - 1, clipRect, color565);
         return;
     }
 
-    {
-        for (int index = 0; index < currentPointCount - 1; ++index) {
-            const HudUiPolylinePoint& point = points[index];
-            const HudUiPolylinePoint& nextPoint = points[index + 1];
-            zRndrDrawImmediateLine(point.x, point.y, nextPoint.x, nextPoint.y, color565);
-        }
+    HudUiPolylinePoint* point = points;
+    HudUiPolylinePoint* nextPoint = points + 1;
+    for (int index = 0; index < pointCount - 1; ++index, ++point, ++nextPoint) {
+        zRndrDrawImmediateLine(point->x, point->y, nextPoint->x, nextPoint->y, color565);
     }
 }
 
@@ -2783,13 +2767,18 @@ void HudUiBackgroundCursorWidget::SetImageOwnedAndRefresh(int newCaptureEnabled)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-setimageborrowedandrefresh
  * @recoil-artifact defines .text recoil:function:0x4bfae0: HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
- *
+ * @recoil-match byte
  *
  * Purpose: apply the recovered HUD state change handled by HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh.
  */
 void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh()
 {
-    if (captureEnabled == 0 || image == 0) {
+    if (captureEnabled == 0) {
+        return;
+    }
+
+    zVidImagePartial* const sourceImage = image;
+    if (sourceImage == 0) {
         return;
     }
 
@@ -2802,14 +2791,12 @@ void HudUiBackgroundCursorWidget::SetImageBorrowedAndRefresh()
         return;
     }
 
-    zVid_Image::SetSize(capturedImage, image->width, image->height);
+    zVid_Image::SetSize(capturedImage, sourceImage->width, sourceImage->height);
     void* const pixels = malloc((size_t)(capturedImage->pixelCount) * sizeof(unsigned short));
     zVidImageSetPixels(capturedImage, pixels, 0);
     capturedImage->formatFlagsPacked = (unsigned char)(capturedImage->formatFlagsPacked | 0x20u);
 
-    const int y = GetCenterY();
-    const int x = GetCenterX();
-    RebuildCapturedImage(x, y);
+    RebuildCapturedImage(GetCenterX(), GetCenterY());
 }
 
 /**
@@ -3031,7 +3018,7 @@ void HudUiBackgroundVideoWidget::DrawBase()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-rebuildbltrect
  * @recoil-artifact defines .text recoil:function:0x4bff00: HudUiBackgroundVideoWidget::RebuildBltRect.
- *
+ * @recoil-match byte
  *
  * Purpose: Recomputes the stream clip rectangle against the background blit source.
  */
@@ -3045,16 +3032,13 @@ void HudUiBackgroundVideoWidget::RebuildBltRect()
         return;
     }
 
-    const int streamRight = rect.left + stream->width;
-    const int streamBottom = rect.top + stream->height;
-
     zVidImagePartial* const bltSource = (zVidImagePartial*)(this->bltSource);
     if (bltSource != 0) {
-        rect.right = streamRight < bltSource->width ? streamRight : bltSource->width;
-        rect.bottom = streamBottom < bltSource->height ? streamBottom : bltSource->height;
+        rect.right = rect.left + stream->width < bltSource->width ? rect.left + stream->width : bltSource->width;
+        rect.bottom = rect.top + stream->height < bltSource->height ? rect.top + stream->height : bltSource->height;
     } else {
-        rect.right = streamRight;
-        rect.bottom = streamBottom;
+        rect.right = rect.left + stream->width;
+        rect.bottom = rect.top + stream->height;
     }
 
     SetClipRect(&rect);

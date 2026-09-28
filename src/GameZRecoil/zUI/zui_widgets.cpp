@@ -1499,12 +1499,12 @@ void HudUiWidget::SetPos(int newX, int newY)
     if (alignFlags != 0 && image != 0) {
         x = newX - (image->width / 2);
         y = newY - (image->height / 2);
+        Invalidate();
     } else {
         x = newX;
         y = newY;
+        Invalidate();
     }
-
-    Invalidate();
 }
 
 zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
@@ -1812,7 +1812,7 @@ void HudUiElement::OnUpdateIdle(float) { }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduielement-settimer
  * @recoil-artifact defines .text recoil:function:0x4b4280: HudUiElement::SetTimer.
- *
+ * @recoil-match byte
  *
  * Purpose: set the element timer and update the timed-visible flag state.
  */
@@ -2119,7 +2119,7 @@ HudUiNumericTextInput::HudUiNumericTextInput()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduinumerictextinput-huduinumerictextinput
  * @recoil-artifact defines .text recoil:function:0x4b4ac0: HudUiNumericTextInput::~HudUiNumericTextInput.
- *
+ * @recoil-match byte
  *
  * Binary Ninja shows VC5 destructor codegen: derived vtable restore, raw
  * keyboard capture release, embedded HudUiOwnedTextInput teardown, then
@@ -2206,7 +2206,7 @@ void HudUiNumericTextInput::OnActivate()
 
 RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
 {
-    if ((flags & 0x10) != 0) {
+    if ((~flags & 0x10) == 0) {
         labelPanels[0]->SetVisible(0);
         labelPanels[0]->Invalidate();
         sliderBorder.SetVisible(0);
@@ -2218,14 +2218,11 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
         labelPanels[0]->SetVisible(1);
         char* const buffer = textInput.GetBuffer();
 
-        if (labelPanels.begin() != labelPanels.end()) {
-            const ptrdiff_t panelCount = labelPanels.end() - labelPanels.begin();
-            if (panelCount != 0) {
-                labelPanels[0]->SetText(buffer);
-            }
+        if (labelPanels.size() != 0) {
+            labelPanels[0]->SetText(buffer);
         }
 
-        RECT textRect = { 0 };
+        RECT textRect;
         textRect.left = labelPanels[0]->GetCenterX();
         textRect.top = labelPanels[0]->GetCenterY();
         textRect.right = labelPanels[0]->GetCenterX();
@@ -2233,13 +2230,8 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
 
         if (labelPanels[0]->MeasureTextPrefixRect((int)(textInput.cursor), &textRect) != 0) {
             const unsigned int textColor = labelPanels[0]->textColor0;
-            const unsigned int packedColor = zVidPackColorRGB(
-                                                 (unsigned char)(textColor),
-                                                 (unsigned char)(textColor >> 8),
-                                                 (unsigned char)(textColor >> 16)
-                                             )
-                & 0xffffu;
-            sliderBorder.color565 = (int)(packedColor);
+            sliderBorder.color565
+                = (int)(zVidPackColorRGB(GetRValue(textColor), GetGValue(textColor), textColor >> 16) & 0xffffu);
             sliderBorder
                 .SetBounds(textRect.right, textRect.top, sliderBorder.caretHalfWidth, textRect.bottom - textRect.top);
             sliderBorder.SetVisible(1);
@@ -2512,20 +2504,18 @@ void HudUiZrdWidget::RefreshState()
             (*disabledIt)->SetVisible(0);
         }
         SetImageBorrowedAndInvalidate(defaultImage);
-        Invalidate();
-        return;
+    } else {
+        for (HudUiPanelPtrVector::iterator labelIt2 = labelPanels.begin(); labelIt2 != labelPanels.end(); ++labelIt2) {
+            (*labelIt2)->SetVisible(0);
+        }
+        for (HudUiPanelPtrVector::iterator disabledIt2 = disabledLabelPanels.begin();
+            disabledIt2 != disabledLabelPanels.end();
+            ++disabledIt2) {
+            (*disabledIt2)->SetVisible(1);
+        }
+        SetImageBorrowedAndInvalidate(disabledImage);
     }
 
-    for (HudUiPanelPtrVector::iterator labelIt2 = labelPanels.begin(); labelIt2 != labelPanels.end(); ++labelIt2) {
-        (*labelIt2)->SetVisible(0);
-    }
-    for (HudUiPanelPtrVector::iterator disabledIt2 = disabledLabelPanels.begin();
-        disabledIt2 != disabledLabelPanels.end();
-        ++disabledIt2) {
-        (*disabledIt2)->SetVisible(1);
-    }
-
-    SetImageBorrowedAndInvalidate(disabledImage);
     Invalidate();
 }
 
@@ -2573,8 +2563,12 @@ void HudUiZrdWidget::OnActivate()
 
     HudUiSetPanelVectorVisible(rolloverLabelPanels, 0);
 
-    if (activateLabelPanels.begin() != activateLabelPanels.end()) {
-        HudUiSetPanelVectorVisible(activateLabelPanels, 1);
+    if (activateLabelPanels.begin() != 0) {
+        for (HudUiPanelPtrVector::iterator activateIt = activateLabelPanels.begin();
+            activateIt != activateLabelPanels.end();
+            ++activateIt) {
+            (*activateIt)->SetVisible(1);
+        }
         HudUiSetPanelVectorVisible(labelPanels, 0);
         return;
     }
@@ -2678,7 +2672,7 @@ HudUiCheckToggleWidget::HudUiCheckToggleWidget()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-huduichecktogglewidget
  * @recoil-artifact defines .text recoil:function:0x4b7020: HudUiCheckToggleWidget::~HudUiCheckToggleWidget.
- *
+ * @recoil-match byte
  *
  * Purpose: Restore the unchecked image, delete owned checked state, and tear down the ZRD widget base.
  */
@@ -2836,7 +2830,7 @@ void HudUiCheckToggleWidget::OnActivateThunk()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-setchecked
  * @recoil-artifact defines .text recoil:function:0x4b72c0: HudUiCheckToggleWidget::SetChecked.
- *
+ * @recoil-match byte
  *
  * Purpose: apply the recovered HUD state change handled by
  */
@@ -2852,8 +2846,6 @@ int HudUiCheckToggleWidget::SetChecked(int newChecked)
 
         if (checkedLabelPanel != 0) {
             checkedLabelPanel->SetVisible(1);
-            Invalidate();
-            return previousChecked;
         }
     } else {
         if (uncheckedImage != 0) {
@@ -3049,7 +3041,7 @@ HudUiCycleSelectorWidget* HudUiCycleSelectorWidget::Constructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-huduicycleselectorwidget
  * @recoil-artifact defines .text recoil:function:0x4b7de0: HudUiCycleSelectorWidget::~HudUiCycleSelectorWidget.
- *
+ * @recoil-match byte
  *
  * Purpose: Delete paired selector entry widgets and tear down the ZRD widget base.
  */
@@ -3115,22 +3107,15 @@ void HudUiCycleSelectorWidget::Update(float deltaSeconds)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-advanceselectionandactivate
  * @recoil-artifact defines .text recoil:function:0x4b7ee0: HudUiCycleSelectorWidget::AdvanceSelectionAndActivate.
- *
+ * @recoil-match byte
  *
  * Purpose: Advance the selected cycle entry, wrap at the visible/item limit,
  * and run the base ZRD activation path.
  */
 void HudUiCycleSelectorWidget::AdvanceSelectionAndActivate()
 {
-    const int nextIndex = selectedIndex + 1;
-    selectedIndex = nextIndex;
-
-    int endIndex = visibleCount;
-    if (endIndex >= itemCount) {
-        endIndex = itemCount;
-    }
-
-    if (nextIndex >= endIndex) {
+    ++selectedIndex;
+    if (selectedIndex >= (visibleCount < itemCount ? visibleCount : itemCount)) {
         selectedIndex = firstIndex;
     }
 
@@ -3202,7 +3187,7 @@ void HudUiCycleSelectorWidget::SetVisibleRange(int first, int last)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-addtextentry
  * @recoil-artifact defines .text recoil:function:0x4b7fd0: HudUiCycleSelectorWidget::AddTextEntry.
- *
+ * @recoil-match byte
  *
  * Purpose: create a hidden transition text-panel entry, position it with the
  * selector text offset, and attach it to the owning HUD background container.
@@ -3303,7 +3288,7 @@ void HudUiCycleSelectorWidget::ApplyFontStyleForEntry(int index, int styleIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-addbitmapentry
  * @recoil-artifact defines .text recoil:function:0x4b8200: HudUiCycleSelectorWidget::AddBitmapEntry.
- *
+ * @recoil-match byte
  *
  * Purpose: construct a bitmap entry, load its image, then position and attach
  * the entry reloaded from the selector array after each callback.
@@ -3412,7 +3397,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-huduifillbitmap-0x4b8450
  * @recoil-artifact defines .text recoil:function:0x4b8450: HudUiFillBitmap::HudUiFillBitmap.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::HudUiFillBitmap.
  */
@@ -3435,7 +3420,7 @@ HudUiFillBitmap::HudUiFillBitmap()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-huduifillbitmap-0x4b84d0
  * @recoil-artifact defines .text recoil:function:0x4b84d0: HudUiFillBitmap::~HudUiFillBitmap.
- *
+ * @recoil-match byte
  *
  * Purpose: Release distinct preview/fill images and tear down the ZRD widget base.
  */
@@ -3585,7 +3570,7 @@ void HudUiFillBitmapSlider::SetNormalizedValueAndRebuild(float value)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduizrdwidgetex17c-item-huduizrdwidgetex17c-item
  * @recoil-artifact defines .text recoil:function:0x4b8760: CHudRadioButtonWidget::CHudRadioButtonWidget.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::CHudRadioButtonWidget.
  */
@@ -3918,7 +3903,7 @@ int CHudRadioGroupWidget::SetSelectedIndex(int index)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudcmdbindbuttonbase-hudcmdbindbuttonbase
  * @recoil-artifact defines .text recoil:function:0x4b8d30: HudCmdBindButtonBase::HudCmdBindButtonBase.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudCmdBindButtonBase::HudCmdBindButtonBase.
  */
@@ -4151,7 +4136,7 @@ void HudCmdBindButtonBase::SetSelectedEntry(int selectedIndex)
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zui-zui_widgets-function-huduilistselectoritem-onactivate
  * @recoil-artifact defines .text recoil:function:0x4b9520: HudUiListSelectorItem::OnActivate.
- *
+ * @recoil-match byte
  *
  * Source model note: the constructor relationship is unresolved; the source
  * model lives in the inline class-body constructor in zhud_ui.h, and no source
@@ -4160,12 +4145,8 @@ void HudCmdBindButtonBase::SetSelectedEntry(int selectedIndex)
  */
 void HudUiListSelectorItem::OnActivate()
 {
-    typedef void (*OnSelectedIndexChangedFn)(void* self, int selectedIndex);
-
-    void* const selectionOwner = owner;
-    if (selectionOwner != 0) {
-        const unsigned int* const ownerSlots = *(const unsigned int* const*)selectionOwner;
-        ((OnSelectedIndexChangedFn)(ownerSlots[33]))(selectionOwner, entryIndex);
+    if (owner != 0) {
+        ((HudCmdBindButtonBase*)(owner))->OnSelectionChangedRefresh(entryIndex);
     }
 }
 /**
@@ -4747,7 +4728,7 @@ void HudUiFillBitmap::SetNormalizedValueAndRebuild(float value)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiownedtextinput-onaccept
  * @recoil-artifact defines .text recoil:function:0x4ba3e0: HudUiOwnedTextInput::OnAccept.
- *
+ * @recoil-match byte
  *
  * Purpose: handle the recovered HUD event path for HudUiOwnedTextInput::OnAccept.
  */
@@ -4772,7 +4753,7 @@ HudUiRect* HudUiPanel::GetBoundsRectOrNull()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduilistselectoritem-draw
  * @recoil-artifact defines .text recoil:function:0x4ba410: HudUiListSelectorItem::Draw.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiListSelectorItem::Draw.
  */
@@ -4781,14 +4762,9 @@ void HudUiListSelectorItem::Draw()
     HudUiPanel::Draw();
 
     clipRect.left = GetCenterX();
-    if (textDirty != 0) {
-        RebuildTextRect();
-    }
-
-    clipRect.right = GetCenterX() + textWidthPx;
+    clipRect.right = GetCenterX() + QueryTextWidth();
     clipRect.top = GetCenterY();
-    const int textHeight = QueryTextHeight();
-    clipRect.bottom = textHeight + GetCenterY();
+    clipRect.bottom = GetCenterY() + QueryTextHeight();
 }
 
 /**
@@ -4905,7 +4881,7 @@ HudUiPanel& HudUiPanel::operator=(const HudUiPanel& source)
     textColor0 = source.textColor0;
     textColor1 = source.textColor1;
 
-    LOGFONTA logFont = { 0 };
+    LOGFONTA logFont;
     if (GetObjectA(source.hFont, sizeof(logFont), &logFont) != 0) {
         hFont = CreateFontIndirectA(&logFont);
     }
@@ -5206,7 +5182,7 @@ int HudUiPanel::MeasureTextPrefixRect(int maxChars, RECT* outRect)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-updatetextboundsfromcontent
  * @recoil-artifact defines .text recoil:function:0x4bb2a0: HudUiPanel::UpdateTextBoundsFromContent.
- *
+ * @recoil-match byte
  *
  * Purpose: update the panel clip rectangle from current text contents, alignment, wrapping, and shadow state.
  */
@@ -5229,21 +5205,18 @@ void HudUiPanel::UpdateTextBoundsFromContent()
     }
 
     SelectObject(hdc, hFont);
-    SIZE textSize = { 0 };
+    SIZE textSize;
     if (GetTextExtentPoint32A(hdc, panelText, textLength, &textSize) != 0) {
         int left;
-        if (alignMode != 0) {
-            if (textDirty != 0) {
-                RebuildTextRect();
-            }
-
-            if (alignMode == 1) {
-                left = clipRect.left + ((clipRect.right - clipRect.left) / 2) - (textWidthPx / 2);
-            } else {
-                left = clipRect.right - textWidthPx;
-            }
-        } else {
+        if (alignMode == 0) {
             left = clipRect.left;
+        } else {
+            const int textWidth = QueryTextWidth();
+            if (alignMode == 1) {
+                left = clipRect.left + ((clipRect.right - clipRect.left) / 2) - (textWidth >> 1);
+            } else {
+                left = clipRect.right - textWidth;
+            }
         }
 
         clipRect.left = left;
@@ -5302,7 +5275,7 @@ char* HudUiPanel::GetLastTextPtr()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-draw
  * @recoil-artifact defines .text recoil:function:0x4bb460: HudUiPanel::Draw.
- *
+ * @recoil-match byte
  *
  * Purpose: rebuild dirty panel text, draw the panel base, and blit the rendered text image with recovered alignment
  * behavior.
@@ -5333,9 +5306,8 @@ void HudUiPanel::Draw()
             x -= frameWidth;
             DrawBase();
 
-            const int dstX = x + frameWidth - textWidth;
-            x = dstX;
-            zVid_Image::BlitToActiveTarget(textPick, dstX, y, 0, (zVidRect32*)(&textRect));
+            x += frameWidth - textWidth;
+            zVid_Image::BlitToActiveTarget(textPick, x, y, 0, (zVidRect32*)(&textRect));
             x += textWidth;
             return;
         }
@@ -5502,7 +5474,7 @@ inline void HudUiCompositePanel::InitializeLayout(int entryCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-huduicompositepanel
  * @recoil-artifact defines .text recoil:function:0x4bb790: HudUiCompositePanel::HudUiCompositePanel.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize a composite panel and allocate its entry history vector.
  *
@@ -5654,7 +5626,7 @@ void HudUiCompositePanel::SetFont(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicompositepanel-resizeentryvectorandrelayout
  * @recoil-artifact defines .text recoil:function:0x4bbca0: HudUiCompositePanel::ResizeEntryVectorAndRelayout.
- *
+ * @recoil-match byte
  *
  * Purpose: resize the composite-entry vector, update active entries, and
  * relayout the panel.

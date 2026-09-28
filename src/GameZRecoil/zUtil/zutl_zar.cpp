@@ -63,6 +63,9 @@ extern "C" char* g_zUtil_ZRDR_WildcardStarPtrs[5] = { 0 };
  * Purpose: delimit semicolon-separated ZRDR search paths for CRT tokenization.
  */
 extern "C" char g_zRdr_PathDelimStr[2] = ";";
+
+extern "C" char g_zUtil_SourceFile_ZutlZarCpp[0x27];
+extern "C" char g_zUtil_GetLastErrorFmt[0x19];
 /**
  * Purpose: format a matched ZRDR search directory with the split filename and extension.
  */
@@ -482,7 +485,7 @@ zIndexArchive::~zIndexArchive()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zindexarchive-init
  * @recoil-artifact defines .text recoil:function:0x4a61d0: zIndexArchive::Init.
- *
+ * @recoil-match byte
  *
  * Purpose: open an archive file for reading and load its trailing index.
  */
@@ -514,14 +517,7 @@ int zIndexArchive::Init(const char* filepath)
             0,
             0
         );
-        zError::ReportOld(
-            0x400,
-            "D:\\Proj\\GameZRecoil\\zUtil\\zutl_zar.cpp",
-            0x4c,
-            "GetLastError(0x%08x): %s",
-            lastError,
-            message
-        );
+        zError::ReportOld(0x400, g_zUtil_SourceFile_ZutlZarCpp, 0x4c, g_zUtil_GetLastErrorFmt, lastError, message);
         LocalFree(message);
     }
     return initialized;

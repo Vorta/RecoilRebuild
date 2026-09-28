@@ -1473,7 +1473,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcoplanartolerance
      * @recoil-artifact defines .text recoil:function:0x481550: zModel_Const::SetCoplanarTolerance
-     *
+     * @recoil-match byte
      *
      * Purpose: set the global coplanar polygon tolerance.
      */
@@ -1488,7 +1488,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcolineartolerance
      * @recoil-artifact defines .text recoil:function:0x481560: zModel_Const::SetColinearTolerance
-     *
+     * @recoil-match byte
      *
      * Purpose: set the global colinear polygon tolerance.
      */
@@ -2050,7 +2050,7 @@ namespace zModel_DiPool
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.allocfromfreelist
      * @recoil-artifact defines .text recoil:function:0x482080: zModel_DiPool::AllocFromFreeList
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate and initialize a display-instance pool entry from the free list.
      */
@@ -2058,12 +2058,7 @@ namespace zModel_DiPool
     {
         const int slotIndex = g_zModel_DiPoolFreeHeadIndex;
         if (slotIndex < 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-                0x4a1,
-                "ERROR: Creating Model3D; model buffer full."
-            );
+            zError::ReportOld(0x400, g_zModel_SourceFile_GmodConstC, 0x4a1, g_zModel_CreateModel3dBufferFullErrorMsg);
             return 0;
         }
 
@@ -3426,7 +3421,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildblendvertsfromconnectivity
      * @recoil-artifact defines .text recoil:function:0x483f80: zDi::BuildBlendVertsFromConnectivity
-     *
+     * @recoil-match byte
      *
      * Retail 0x4c4228..0x4c4241 passes self in ECX, exclusions in EDX,
      * and blendY on the stack. VC5 skips floating-point fastcall arguments when
@@ -3442,13 +3437,12 @@ namespace zDi
         int minSharedVertexCount
     )
     {
-        const int vertCount = self->vertCount;
-        self->blendVerts = (zVec3*)(realloc(self->blendVerts, (size_t)(vertCount) * sizeof(zVec3)));
+        self->blendVerts = (zVec3*)(realloc(self->blendVerts, (size_t)(self->vertCount) * sizeof(zVec3)));
 
-        int* const blendDisabledMask = (int*)(malloc((size_t)(vertCount) * sizeof(int)));
-        int* const vertexReferenceCounts = (int*)(malloc((size_t)(vertCount) * sizeof(int)));
+        int* const blendDisabledMask = (int*)(malloc((size_t)(self->vertCount) * sizeof(int)));
+        int* const vertexReferenceCounts = (int*)(malloc((size_t)(self->vertCount) * sizeof(int)));
 
-        for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+        for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
             blendDisabledMask[vertexIndex] = 0;
             vertexReferenceCounts[vertexIndex] = 0;
         }
@@ -3457,26 +3451,25 @@ namespace zDi
             blendDisabledMask[excludedVertexIndices[excludeIndex]] = 1;
         }
 
-        for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
-            zDiEntryPartial* const entry = &self->entries[entryIndex];
-            const unsigned int entryVertexCount = entry->flagsAndIndexCount & 0xff;
-            int* const vertexIndices = (int*)(entry->vertexIndices);
-            for (unsigned int entryVertexIndex = 0; entryVertexIndex < entryVertexCount; ++entryVertexIndex) {
-                ++vertexReferenceCounts[vertexIndices[entryVertexIndex]];
+        zDiEntryPartial* entry = self->entries;
+        for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex, ++entry) {
+            for (unsigned int entryVertexIndex = 0; entryVertexIndex < (entry->flagsAndIndexCount & 0xff);
+                ++entryVertexIndex) {
+                ++vertexReferenceCounts[((int*)(entry->vertexIndices))[entryVertexIndex]];
             }
         }
 
         if (minSharedVertexCount > 0) {
-            for (int vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+            for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
                 if (vertexReferenceCounts[vertexIndex] < minSharedVertexCount) {
                     blendDisabledMask[vertexIndex] = 1;
                 }
             }
         }
 
-        for (int blendVertexIndex = 0; blendVertexIndex < vertCount; ++blendVertexIndex) {
+        for (int blendVertexIndex = 0; blendVertexIndex < self->vertCount; ++blendVertexIndex) {
             int enableBlendY = 1;
-            for (int excludeIndex = 0; enableBlendY != 0 && excludeIndex < excludedVertexCount; ++excludeIndex) {
+            for (int excludeIndex = 0; excludeIndex < excludedVertexCount && enableBlendY != 0; ++excludeIndex) {
                 if (excludedVertexIndices[excludeIndex] == blendVertexIndex) {
                     enableBlendY = 0;
                 }
@@ -3486,7 +3479,11 @@ namespace zDi
             }
 
             self->blendVerts[blendVertexIndex].x = 0.0f;
-            self->blendVerts[blendVertexIndex].y = enableBlendY != 0 ? blendY : 0.0f;
+            if (enableBlendY != 0) {
+                self->blendVerts[blendVertexIndex].y = blendY;
+            } else {
+                self->blendVerts[blendVertexIndex].y = 0.0f;
+            }
             self->blendVerts[blendVertexIndex].z = 0.0f;
         }
 
@@ -3625,14 +3622,14 @@ namespace zDi
         }
 
         zModel_MaterialPartial* const material = self->entries->material;
-        if (material != 0) {
-            zModel_Material::SetCycleTextureCount(material, textureCount);
+        if (material == 0) {
+            // Original code dereferences the null material pointer here while
+            // clearing the cycle-texture flag.
+            material->flags = (unsigned short)(material->flags & 0xfbff);
             return 0;
         }
 
-        // Original code reaches this only for a null material pointer and then
-        // dereferences it while clearing the cycle-texture flag.
-        material->flags = (unsigned short)(material->flags & 0xfbff);
+        zModel_Material::SetCycleTextureCount(material, textureCount);
         return 0;
     }
 } // namespace zDi

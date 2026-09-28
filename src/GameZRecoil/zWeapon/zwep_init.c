@@ -1028,30 +1028,28 @@ namespace OptCatalog
             return;
         }
 
-        CZNodePartial* const projectileNode = runtimeInstance->projectileNode;
-        while (projectileNode->listCountA != 0) {
-            CZClass::RemoveChild(projectileNode->listA[0], projectileNode);
+        while (runtimeInstance->projectileNode->listCountA != 0) {
+            CZClass::RemoveChild(runtimeInstance->projectileNode->listA[0], runtimeInstance->projectileNode);
         }
 
-        CZNodePartial* const attachCloneTemplateNode = self->attachCloneTemplateNode;
-        if (attachCloneTemplateNode != 0) {
-            CZClass::RemoveChild(projectileNode, attachCloneTemplateNode);
+        if (self->attachCloneTemplateNode != 0) {
+            if (runtimeInstance->attachCloneChild == 0) {
+                CZClass::RemoveChild(runtimeInstance->projectileNode, self->attachCloneTemplateNode);
+            } else {
+                RecycleAttachNodeClone(self, runtimeInstance);
+            }
         }
 
-        if (runtimeInstance->attachCloneChild != 0) {
-            RecycleAttachNodeClone(self, runtimeInstance);
-        }
-
-        while (projectileNode->listCountB != 0) {
-            CZClass::RemoveChild(projectileNode, projectileNode->listB[0]);
+        while (runtimeInstance->projectileNode->listCountB != 0) {
+            CZClass::RemoveChild(runtimeInstance->projectileNode, runtimeInstance->projectileNode->listB[0]);
         }
 
         runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
         g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
-        CZObject3D::gwObject3DSetScale(projectileNode, 1.0f, 1.0f, 1.0f);
-        CZObject3D::gwObject3DSetRotation(projectileNode, 0.0f, 0.0f, 0.0f);
-        CZObject3D::gwObject3DSetPosition(projectileNode, 0.0f, 0.0f, 0.0f);
-        ((CZNodeFreeListSlot*)(projectileNode))->damageHandler = 0;
+        CZObject3D::gwObject3DSetScale(runtimeInstance->projectileNode, 1.0f, 1.0f, 1.0f);
+        CZObject3D::gwObject3DSetRotation(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
+        CZObject3D::gwObject3DSetPosition(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
+        ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = 0;
     }
 } // namespace OptCatalog
 namespace OptCatalog
@@ -1323,7 +1321,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstances
      * @recoil-artifact defines .text recoil:function:0x4aebc0: OptCatalog::ClearRuntimeInstances
-     *
+     * @recoil-match byte
      *
      * Purpose: unlink and recycle every active runtime instance owned by the
      * catalog entry.
@@ -1333,9 +1331,9 @@ namespace OptCatalog
         OptCatalogRuntimeInstanceStorage* runtimeInstance = self->activeRuntimeListHead;
         self->activeRuntimeListHead = 0;
         while (runtimeInstance != 0) {
-            OptCatalogRuntimeInstanceStorage* const next = runtimeInstance->next;
-            RecycleRuntimeInstance(self, runtimeInstance);
-            runtimeInstance = next;
+            OptCatalogRuntimeInstanceStorage* const current = runtimeInstance;
+            runtimeInstance = runtimeInstance->next;
+            RecycleRuntimeInstance(self, current);
         }
     }
 } // namespace OptCatalog
@@ -2721,11 +2719,10 @@ namespace OptCatalog
         OptCatalogRaycastHitList* outHitList
     )
     {
-        CZNodePartial* projectileNode = runtimeInstance->projectileNode;
         int restoreRaycastable = 0;
-        if (projectileNode != 0 && (projectileNode->flags & 0x10) != 0) {
+        if (runtimeInstance->projectileNode != 0 && (runtimeInstance->projectileNode->flags & 0x10) != 0) {
             restoreRaycastable = 1;
-            CZClass::gwNodeSetRaycastable(projectileNode, 0);
+            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
         }
 
         int result = CZDisplayInstance::FilterRegionsAgainstSphere(
@@ -2739,7 +2736,7 @@ namespace OptCatalog
         );
 
         if (restoreRaycastable != 0) {
-            CZClass::gwNodeSetRaycastable(projectileNode, 1);
+            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
         }
 
         if (allowOwnerOnlyHit == 0 && outHitList->hitCount == 1
@@ -3000,7 +2997,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetrailsegmentvisual
      * @recoil-artifact defines .text recoil:function:0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
-     *
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: activate and transform a trail segment node from its recovered
@@ -3809,7 +3806,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadfxspecfromreadernode
      * @recoil-artifact defines .text recoil:function:0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
-     *
+     * @recoil-match byte
      *
      * Purpose: load one named impact effect spec from a zReader node.
      */
@@ -3854,25 +3851,17 @@ namespace OptCatalog
 
         fieldNode = zRdrGetNode(specNode, g_HudZrd_Key_Sound);
         if (fieldNode != 0) {
-            const int count = fieldNode->value.nodes[0].value.i32;
-            spec->soundCount = count - 1;
-            if (count > 1) {
-                zSndSample** sample = spec->soundSamples;
-                for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
-                }
+            spec->soundCount = fieldNode->value.nodes[0].value.i32 - 1;
+            for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
+                spec->soundSamples[i - 1] = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
             }
         }
 
         fieldNode = zRdrGetNode(specNode, g_zEffectAnim_TokenBounceSound);
         if (fieldNode != 0) {
-            const int count = fieldNode->value.nodes[0].value.i32;
-            spec->bounceSoundCount = count - 1;
-            if (count > 1) {
-                zSndSample** sample = spec->bounceSoundSamples;
-                for (int i = 1; i < count; ++i, ++sample) {
-                    *sample = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
-                }
+            spec->bounceSoundCount = fieldNode->value.nodes[0].value.i32 - 1;
+            for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
+                spec->bounceSoundSamples[i - 1] = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
             }
         }
     }
@@ -4380,7 +4369,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-capturehitsnapshotandinvokedamagetimercallback
      * @recoil-artifact defines .text recoil:function:0x4b2880: OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback
-     *
+     * @recoil-match byte
      *
      * Purpose: capture hit positions and forward damage to the timer callback.
      * Behavior: looks up the hit node damage handler, optionally copies source

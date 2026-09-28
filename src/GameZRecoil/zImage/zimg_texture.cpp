@@ -279,7 +279,7 @@ int __fastcall WriteTextureDirectory(void* stream)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-readtexturedirectory
  * @recoil-artifact defines .text recoil:function:0x46d420: zImage::ReadTextureDirectory.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -614,7 +614,7 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdir-findorappendbypath
  * @recoil-artifact defines .text recoil:function:0x46d810: zImage::TexDirFindOrAppendByPath.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -641,9 +641,7 @@ zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path)
         return entry;
     }
 
-    const int entryIndex = g_zImage_TexDirEntryCount;
-    ++g_zImage_TexDirEntryCount;
-    entry = &g_zImage_TexDirEntries[entryIndex];
+    entry = &g_zImage_TexDirEntries[g_zImage_TexDirEntryCount++];
     TexDirSetBaseNameFromPath(path, entry->baseName);
     entry->loadState = 2;
     return entry;
@@ -1595,6 +1593,10 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
 }
 } // namespace zVid_Image
 
+/* Writable option-name strings owned by the HUD option table (0x4da7dc/0x4da7f0). */
+extern "C" char g_zOpt_OptionName_TextureMemoryHw[];
+extern "C" char g_zOpt_OptionName_TextureMemorySw[];
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-init
  * @recoil-artifact defines .text recoil:function:0x46eb20: zImageInit.
@@ -1620,9 +1622,12 @@ extern "C" int __fastcall zImageInit(const char* fontsPath)
     }
 
     g_zImage_TextureMemoryDefault = 0;
-    const char* optionName = g_zVideo_ActiveRendererPath != 0 ? "TextureMemory_HW" : "TextureMemory_SW";
-    zOptionEntryPartial* option = zGame::OptionsFindOption(optionName);
-    g_zImage_TextureMemoryOption = option != 0 ? &option->payloadOrBuffer : &g_zImage_TextureMemoryDefault;
+    g_zImage_TextureMemoryOption = (int*)(zGame::OptionsFindOption(
+        g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_TextureMemoryHw : g_zOpt_OptionName_TextureMemorySw
+    ));
+    if (g_zImage_TextureMemoryOption == 0) {
+        g_zImage_TextureMemoryOption = &g_zImage_TextureMemoryDefault;
+    }
     return 0;
 }
 
@@ -2016,7 +2021,7 @@ zVidImagePartial* __fastcall ReadFromFile(FILE* file)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-font-blitstringtoactivetarget
  * @recoil-artifact defines .text recoil:function:0x4c7f00: zImage_Font::BlitStringToActiveTarget.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: draw a string to the active target using the selected font image
@@ -2043,8 +2048,8 @@ void __fastcall zImage_Font::BlitStringToActiveTarget(const char* text, int dstX
         return;
     }
 
-    for (const char* cursor = text; *cursor != '\0'; ++cursor) {
-        const signed char ch = *cursor;
+    char ch;
+    while ((ch = *text++) != '\0') {
         if (ch == ' ') {
             currentX += font->spaceWidth;
         } else if (ch == '\r') {
@@ -2052,7 +2057,7 @@ void __fastcall zImage_Font::BlitStringToActiveTarget(const char* text, int dstX
             currentX = dstX;
             currentY += fontImage->height;
         } else {
-            int glyphIndex = (int)(ch)-0x21;
+            int glyphIndex = ch - 0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {
                 glyphIndex = 0;
             }

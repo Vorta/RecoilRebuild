@@ -192,7 +192,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.saveactivationrecords
      * @recoil-artifact defines .text recoil:function:0x460490: zEffect_Anim::SaveActivationRecords.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: serialize queued activation records with tracked-node state into
@@ -201,16 +201,10 @@ namespace zEffect_Anim
     int __fastcall SaveActivationRecords(zZbdSectionCallbackCtx * callbackCtx)
     {
         int result = 1;
-        for (int i = 0; result != 0 && i < g_zEffectAnim_ActivationRecordCount; ++i) {
+        for (int i = 0; i < g_zEffectAnim_ActivationRecordCount && result != 0; ++i) {
+            zEffectAnimEntry* const entry
+                = zEffectAnim::FindEntryByName(g_zEffectAnim_ActivationRecordTable[i].animName);
             zEffectAnimActivationRecord* const sourceRecord = &g_zEffectAnim_ActivationRecordTable[i];
-            zEffectAnimEntry* const entry = zEffectAnim::FindEntryByName(sourceRecord->animName);
-            unsigned char trackedNodeCount = 0;
-            if (entry != 0 && entry->trackedNodeList != 0) {
-                trackedNodeCount = entry->trackedNodeCount;
-            }
-
-            const unsigned int recordSize = offsetof(zEffectAnimActivationSaveRecord, trackedNodes)
-                + sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
             unsigned char saveRecordStorage[kMaxActivationSaveRecordSize];
             zEffectAnimActivationSaveRecord* const saveRecord = (zEffectAnimActivationSaveRecord*)(saveRecordStorage);
 
@@ -219,56 +213,57 @@ namespace zEffect_Anim
                 CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(sourceRecord->nodeToken);
                 saveRecord->savedActivationState = entry->activationState;
                 zEffectAnim::RebindEntryToNode(entry, rootNode);
-                saveRecord->trackedNodeCount = trackedNodeCount;
+                if (entry->trackedNodeList != 0) {
+                    saveRecord->trackedNodeCount = entry->trackedNodeCount;
+                    for (int j = 0; j < entry->trackedNodeCount; ++j) {
+                        CZNodePartial* const node = entry->trackedNodeList[j].trackedNode;
+                        zEffectAnimTrackedNodeSaveRecord* const savedTracked = &saveRecord->trackedNodes[j];
+                        if (node == 0 || node->classId != 5) {
+                            savedTracked->nodeIndex = -1;
+                            continue;
+                        }
 
-                for (int j = 0; j < trackedNodeCount; ++j) {
-                    zEffectAnimTrackedNode* const tracked = &entry->trackedNodeList[j];
-                    zEffectAnimTrackedNodeSaveRecord* const savedTracked = &saveRecord->trackedNodes[j];
-                    CZNodePartial* const node = tracked->trackedNode;
-                    if (node == 0 || node->classId != 5) {
-                        savedTracked->nodeIndex = -1;
-                        continue;
+                        CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(node->classData);
+                        savedTracked->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
+                        savedTracked->activeFlag = ((unsigned int)(node->flags) >> 2) & 1;
+                        savedTracked->usesCachedMatrix = ((unsigned int)(objectData->flags) >> 4) & 1;
+                        if (savedTracked->usesCachedMatrix != 0) {
+                            memcpy(
+                                savedTracked->transform,
+                                CZObject3D::gwObject3DGetMatrixPtr(node),
+                                sizeof(savedTracked->transform)
+                            );
+                        } else {
+                            CZObject3D::gwObject3DGetPosition(
+                                node,
+                                &savedTracked->transform[0],
+                                &savedTracked->transform[1],
+                                &savedTracked->transform[2]
+                            );
+                            CZObject3D::gwObject3DGetRotation(
+                                node,
+                                &savedTracked->transform[3],
+                                &savedTracked->transform[4],
+                                &savedTracked->transform[5]
+                            );
+                            CZObject3D::gwObject3DGetScale(
+                                node,
+                                &savedTracked->transform[6],
+                                &savedTracked->transform[7],
+                                &savedTracked->transform[8]
+                            );
+                        }
+
+                        if (node->userDataOrDiRef != 0) {
+                            savedTracked->diFlagBits = (savedTracked->diFlagBits & ~1)
+                                | ((((unsigned int*)(node->userDataOrDiRef))[1] >> 3) & 1);
+                            savedTracked->diUserValue = (int)(((unsigned int*)(node->userDataOrDiRef))[8]);
+                        } else {
+                            savedTracked->diFlagBits &= ~1;
+                        }
                     }
-
-                    savedTracked->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
-                    savedTracked->activeFlag = (node->flags >> 2) & 1;
-
-                    CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(node->classData);
-                    savedTracked->usesCachedMatrix = (objectData->flags >> 4) & 1;
-                    if (savedTracked->usesCachedMatrix != 0) {
-                        memcpy(
-                            savedTracked->transform,
-                            CZObject3D::gwObject3DGetMatrixPtr(node),
-                            sizeof(savedTracked->transform)
-                        );
-                    } else {
-                        CZObject3D::gwObject3DGetPosition(
-                            node,
-                            &savedTracked->transform[0],
-                            &savedTracked->transform[1],
-                            &savedTracked->transform[2]
-                        );
-                        CZObject3D::gwObject3DGetRotation(
-                            node,
-                            &savedTracked->transform[3],
-                            &savedTracked->transform[4],
-                            &savedTracked->transform[5]
-                        );
-                        CZObject3D::gwObject3DGetScale(
-                            node,
-                            &savedTracked->transform[6],
-                            &savedTracked->transform[7],
-                            &savedTracked->transform[8]
-                        );
-                    }
-
-                    if (node->userDataOrDiRef != 0) {
-                        unsigned int* const di = (unsigned int*)(node->userDataOrDiRef);
-                        savedTracked->diFlagBits = (savedTracked->diFlagBits & ~1) | ((di[1] >> 3) & 1);
-                        savedTracked->diUserValue = (int)(di[8]);
-                    } else {
-                        savedTracked->diFlagBits &= ~1;
-                    }
+                } else {
+                    saveRecord->trackedNodeCount = 0;
                 }
             } else {
                 saveRecord->savedActivationState = 0;
@@ -277,7 +272,13 @@ namespace zEffect_Anim
 
             char sectionName[0x14];
             sprintf(sectionName, g_zEffectAnim_ActivationSectionNameFmt, i);
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, saveRecord, recordSize);
+            result = zUtil_ZAR::WriteSectionBlob(
+                callbackCtx,
+                sectionName,
+                saveRecord,
+                offsetof(zEffectAnimActivationSaveRecord, trackedNodes)
+                    + sizeof(zEffectAnimTrackedNodeSaveRecord) * saveRecord->trackedNodeCount
+            );
         }
 
         return result;
@@ -600,7 +601,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.saverunninganimrecords
      * @recoil-artifact defines .text recoil:function:0x460f80: zEffect_Anim::SaveRunningAnimRecords.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: enumerate active animation entries and cloned siblings that need
@@ -609,14 +610,14 @@ namespace zEffect_Anim
     int __fastcall SaveRunningAnimRecords(zZbdSectionCallbackCtx * callbackCtx)
     {
         int result = 1;
-        for (int i = 1; result != 0 && i < g_zEffectAnim_State.entryCount; ++i) {
+        for (int i = 1; i < g_zEffectAnim_State.entryCount && result != 0; ++i) {
             zEffectAnimEntry* const entry = &g_zEffectAnim_State.entryList[i];
             if (entry != 0 && (entry->activationState == 2 || entry->activationState == 6)) {
-                const unsigned short flags = (unsigned short)(entry->flags);
-                if (((flags & 0x1000) == 0 || (flags & 0x2000) != 0) && g_zEffectAnim_RecordQueueEnabled != 0) {
+                if (((entry->flags & 0x1000) == 0 || (entry->flags & 0x2000) != 0)
+                    && g_zEffectAnim_RecordQueueEnabled != 0) {
                     result = SaveRunningAnimRecord(callbackCtx, entry, i, 1);
                     zEffectAnimEntry* sibling = entry->runtimeSibling;
-                    while (result != 0 && sibling != 0) {
+                    while (sibling != 0 && result != 0) {
                         if (sibling->activationState == 2) {
                             result = SaveRunningAnimRecord(callbackCtx, sibling, i, 0);
                         }
@@ -786,7 +787,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.saveanimrecords
      * @recoil-artifact defines .text recoil:function:0x461430: zEffect_Anim::SaveAnimRecords.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: serialize non-running animation activation state and tracked-node
@@ -795,80 +796,83 @@ namespace zEffect_Anim
     int __fastcall SaveAnimRecords(zZbdSectionCallbackCtx * callbackCtx)
     {
         int result = 1;
-        for (int i = 1; result != 0 && i < g_zEffectAnim_State.entryCount; ++i) {
+        for (int i = 1; i < g_zEffectAnim_State.entryCount && result != 0; ++i) {
             zEffectAnimEntry* const entry = &g_zEffectAnim_State.entryList[i];
 
-            zEffectAnimSaveRecord saveRecord = { 0 };
+            zEffectAnimSaveRecord saveRecord;
             zEffectAnimSaveHeader* const header = &saveRecord.header;
-            unsigned char trackedNodeCount = 0;
+            header->base.commandType = 0;
             if (entry != 0) {
                 if (entry->activationState == 5) {
                     continue;
                 }
 
-                const unsigned short flags = (unsigned short)(entry->flags);
-                if (((flags & 0x1000) != 0 && (flags & 0x2000) == 0) || g_zEffectAnim_RecordQueueEnabled == 0) {
+                if (((entry->flags & 0x1000) != 0 && (entry->flags & 0x2000) == 0)
+                    || g_zEffectAnim_RecordQueueEnabled == 0) {
                     continue;
                 }
 
-                if (entry->trackedNodeList != 0) {
-                    trackedNodeCount = entry->trackedNodeCount;
-                }
-
-                strncpy(header->base.animName, entry->name, sizeof(header->base.animName));
                 header->entryTableIndex = i;
-                header->savedActivationState = entry->activationState;
-                header->trackedNodeCount = trackedNodeCount;
-            }
+                strncpy(header->base.animName, entry->name, sizeof(header->base.animName));
+                if (entry->trackedNodeList != 0) {
+                    header->savedActivationState = entry->activationState;
+                    header->trackedNodeCount = entry->trackedNodeCount;
+                    for (int childIndex = 0; childIndex < entry->trackedNodeCount; ++childIndex) {
+                        CZNodePartial* const node = entry->trackedNodeList[childIndex].trackedNode;
+                        zEffectAnimTrackedNodeSaveRecord* const record = &saveRecord.trackedNodes[childIndex];
+                        if (node == 0 || node->classId != 5) {
+                            record->nodeIndex = -1;
+                            continue;
+                        }
 
-            zEffectAnimTrackedNodeSaveRecord* const records = saveRecord.trackedNodes;
-            {
-                for (int childIndex = 0; childIndex < trackedNodeCount; ++childIndex) {
-                    zEffectAnimTrackedNodeSaveRecord* const record = &records[childIndex];
-                    CZNodePartial* const node = entry->trackedNodeList[childIndex].trackedNode;
-                    if (node == 0 || node->classId != 5) {
-                        record->nodeIndex = -1;
-                        continue;
+                        CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(node->classData);
+                        record->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
+                        record->activeFlag = ((unsigned int)(node->flags) >> 2) & 1;
+                        record->usesCachedMatrix = ((unsigned int)(objectData->flags) >> 4) & 1;
+                        if (record->usesCachedMatrix != 0) {
+                            memcpy(
+                                record->transform,
+                                CZObject3D::gwObject3DGetMatrixPtr(node),
+                                sizeof(record->transform)
+                            );
+                        } else {
+                            CZObject3D::gwObject3DGetPosition(
+                                node,
+                                &record->transform[0],
+                                &record->transform[1],
+                                &record->transform[2]
+                            );
+                            CZObject3D::gwObject3DGetRotation(
+                                node,
+                                &record->transform[3],
+                                &record->transform[4],
+                                &record->transform[5]
+                            );
+                            CZObject3D::gwObject3DGetScale(
+                                node,
+                                &record->transform[6],
+                                &record->transform[7],
+                                &record->transform[8]
+                            );
+                        }
                     }
-
-                    CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(node->classData);
-                    record->nodeIndex = CZClass::NodePtrToValidatedIndex(node);
-                    record->activeFlag = (node->flags >> 2) & 1;
-                    record->usesCachedMatrix = (objectData->flags >> 4) & 1;
-                    if (record->usesCachedMatrix != 0) {
-                        memcpy(record->transform, CZObject3D::gwObject3DGetMatrixPtr(node), sizeof(record->transform));
-                    } else {
-                        CZObject3D::gwObject3DGetPosition(
-                            node,
-                            &record->transform[0],
-                            &record->transform[1],
-                            &record->transform[2]
-                        );
-                        CZObject3D::gwObject3DGetRotation(
-                            node,
-                            &record->transform[3],
-                            &record->transform[4],
-                            &record->transform[5]
-                        );
-                        CZObject3D::gwObject3DGetScale(
-                            node,
-                            &record->transform[6],
-                            &record->transform[7],
-                            &record->transform[8]
-                        );
-                    }
+                } else {
+                    header->trackedNodeCount = 0;
                 }
-            }
-
-            if (entry == 0) {
+            } else {
                 strncpy(header->base.animName, g_zEffect_StringNone, sizeof(header->base.animName));
+                header->savedActivationState = 0;
+                header->trackedNodeCount = 0;
             }
 
-            const unsigned int payloadSize
-                = sizeof(zEffectAnimSaveHeader) + sizeof(zEffectAnimTrackedNodeSaveRecord) * trackedNodeCount;
             char sectionName[0x14];
             sprintf(sectionName, g_zEffectAnim_AnimSectionNameFmt, i + g_zEffectAnim_ActivationRecordCount);
-            result = zUtil_ZAR::WriteSectionBlob(callbackCtx, sectionName, &saveRecord, payloadSize);
+            result = zUtil_ZAR::WriteSectionBlob(
+                callbackCtx,
+                sectionName,
+                &saveRecord,
+                sizeof(zEffectAnimSaveHeader) + sizeof(zEffectAnimTrackedNodeSaveRecord) * header->trackedNodeCount
+            );
         }
 
         return result;
@@ -962,7 +966,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.getactivationrecordpackedsize
      * @recoil-artifact defines .text recoil:function:0x461800: zEffect_Anim::GetActivationRecordPackedSize.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: return the serialized byte count for an activation record command type.
@@ -970,15 +974,17 @@ namespace zEffect_Anim
     int __fastcall GetActivationRecordPackedSize(zEffectAnimActivationRecord * record)
     {
         switch (record->commandType) {
-        case 1:
-            return 0x38;
         case 2:
-            return 0x48;
+            return 0x38;
         case 3:
+            return 0x48;
+        case 4:
             return 0x4c;
-        default:
+        case 1:
             return 0x50;
         }
+
+        return 0x50;
     }
 
     /**
@@ -1426,7 +1432,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.findnodeuserdatarecursive
      * @recoil-artifact defines .text recoil:function:0x461ec0: zEffect::FindNodeUserDataRecursive.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: find the first non-null user-data value in a root-first node tree
@@ -1434,16 +1440,16 @@ namespace zEffect
      */
     void* __fastcall FindNodeUserDataRecursive(CZNodePartial * node)
     {
-        unsigned int userDataValue = 0;
+        unsigned int userDataValue;
         CZClass::gwNodeGetUserData(node, &userDataValue);
         if (userDataValue != 0) {
-            return (void*)((unsigned int)(userDataValue));
+            return (void*)(userDataValue);
         }
 
         for (int i = 0; i < node->listCountB; ++i) {
-            void* const result = FindNodeUserDataRecursive(node->listB[i]);
-            if (result != 0) {
-                return result;
+            userDataValue = (unsigned int)(FindNodeUserDataRecursive(node->listB[i]));
+            if (userDataValue != 0) {
+                return (void*)(userDataValue);
             }
         }
 

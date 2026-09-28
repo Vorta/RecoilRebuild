@@ -524,19 +524,27 @@ namespace zModel_Material
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-hasauxdata
      * @recoil-artifact defines .text recoil:function:0x480c80: zModel_Material::HasAuxData
-     *
+     * @recoil-match byte
      *
      * Purpose: test whether a material has auxiliary data or cycle state.
      */
     int __fastcall HasAuxData(zModel_MaterialPartial * material)
     {
-        return (material->flags & 0x0200) != 0 || (material->flags & 0x0400) != 0 || material->cycle != 0 ? 1 : 0;
+        if ((material->flags & 0x0200) != 0) {
+            return 1;
+        }
+
+        if ((material->flags & 0x0400) != 0 || material->cycle != 0) {
+            return 1;
+        }
+
+        return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-findorclone
      * @recoil-artifact defines .text recoil:function:0x480ca0: zModel_Material::FindOrClone
-     *
+     * @recoil-match byte
      *
      * Purpose: reuse a matching active material or clone the supplied material into the pool.
      */
@@ -549,12 +557,11 @@ namespace zModel_Material
 
         int slotIndex = g_zModel_MatlActiveHeadIndex;
         while (slotIndex >= 0) {
-            zModel_MaterialSlot* const slot = &g_zModel_MatlPool[slotIndex];
-            zModel_MaterialPartial* const candidate = &slot->material;
+            zModel_MaterialPartial* const candidate = &g_zModel_MatlPool[slotIndex].material;
             if (CompareForReuse(candidate, material) == 0) {
                 return candidate;
             }
-            slotIndex = slot->nextPoolIndex;
+            slotIndex = g_zModel_MatlPool[slotIndex].nextPoolIndex;
         }
 
         g_zModel_MatlReuseCache = Clone(material);
@@ -627,7 +634,7 @@ namespace zModel_MatlSlot
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-release
      * @recoil-artifact defines .text recoil:function:0x480dc0: zModel_MatlSlot::Release
-     *
+     * @recoil-match byte
      *
      * Purpose: release a material slot, free cycle data, and return the slot to the material free list.
      */
@@ -649,8 +656,8 @@ namespace zModel_MatlSlot
         memset(&slot->material, 0, sizeof(slot->material));
 
         const int slotIndex = zModel_MatlSlot::IndexFromPtrOrMinus1(slot);
-        const short prevIndex = slot->prevPoolIndex;
-        const short nextIndex = slot->nextPoolIndex;
+        const int prevIndex = g_zModel_MatlPool[slotIndex].prevPoolIndex;
+        const int nextIndex = g_zModel_MatlPool[slotIndex].nextPoolIndex;
 
         if (prevIndex >= 0) {
             g_zModel_MatlPool[prevIndex].nextPoolIndex = nextIndex;
@@ -662,8 +669,8 @@ namespace zModel_MatlSlot
             g_zModel_MatlActiveHeadIndex = nextIndex;
         }
 
-        slot->prevPoolIndex = -1;
-        slot->nextPoolIndex = (short)(g_zModel_MatlFreeHeadIndex);
+        g_zModel_MatlPool[slotIndex].prevPoolIndex = -1;
+        g_zModel_MatlPool[slotIndex].nextPoolIndex = (short)(g_zModel_MatlFreeHeadIndex);
         if (g_zModel_MatlFreeHeadIndex >= 0) {
             g_zModel_MatlPool[g_zModel_MatlFreeHeadIndex].prevPoolIndex = (short)(slotIndex);
         }
@@ -769,7 +776,7 @@ namespace zModel_MatlBuffer
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-releasetexturesurfaces
      * @recoil-artifact defines .text recoil:function:0x480fd0: zModel_MatlBuffer::ReleaseTextureSurfaces
-     *
+     * @recoil-match byte
      *
      * Purpose: release upload-surface references for active, unpinned texture materials.
      */
@@ -777,25 +784,23 @@ namespace zModel_MatlBuffer
     {
         int slotIndex = g_zModel_MatlActiveHeadIndex;
         while (slotIndex >= 0) {
-            zModel_MaterialSlot* const slot = &g_zModel_MatlPool[slotIndex];
-            zModel_MaterialPartial* const material = &slot->material;
+            zModel_MaterialPartial* const material = &g_zModel_MatlPool[slotIndex].material;
 
             if ((material->flags & kMaterialHasTextureUploadSurface) != 0
                 && (material->flags & kMaterialTextureSurfacePinned) == 0) {
-                zImage_TexDirEntryPartial* const texDirEntry = material->currentTextureDirectoryEntry;
-
-                if (texDirEntry != 0 && texDirEntry->texture != 0) {
+                if (material->currentTextureDirectoryEntry != 0
+                    && material->currentTextureDirectoryEntry->texture != 0) {
                     if (g_zVideo_ActiveRendererPath == kRendererBackend3dfx) {
-                        zVid_Image::ReleaseOwnedBuffers(texDirEntry->image);
+                        zVid_Image::ReleaseOwnedBuffers(material->currentTextureDirectoryEntry->image);
                     }
 
                     ((zVideo_TextureRecordReleaseUploadSurfaceRefProc)g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef)(
-                        texDirEntry->texture
+                        material->currentTextureDirectoryEntry->texture
                     );
                 }
             }
 
-            slotIndex = slot->nextPoolIndex;
+            slotIndex = g_zModel_MatlPool[slotIndex].nextPoolIndex;
         }
     }
 
@@ -887,7 +892,7 @@ namespace zModel_Material
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-updatecycleifneeded
      * @recoil-artifact defines .text recoil:function:0x481140: zModel_Material::UpdateCycleIfNeeded
-     *
+     * @recoil-match byte
      *
      * Purpose: advance a cycled material texture once per video frame tick.
      */
@@ -1106,8 +1111,7 @@ namespace zRndr_GlobalStringTable
 
         const int stringCount = stringList[0].value.i32;
         for (int index = 1; index < stringCount; ++index) {
-            char* const entry = stringList[index].value.str;
-            if (zReader::FindGlobalStringPrefixIndex(entry) != -1) {
+            if (zReader::FindGlobalStringPrefixIndex(stringList[index].value.str) != -1) {
                 continue;
             }
 
@@ -1115,12 +1119,12 @@ namespace zRndr_GlobalStringTable
                 break;
             }
 
-            const size_t byteCount = strlen(entry) + 1;
+            const size_t byteCount = strlen(stringList[index].value.str) + 1;
             char* const copy = (char*)(malloc(byteCount));
             g_zRndr_GlobalStringTable[g_zRndr_GlobalStringCount] = copy;
             if (copy != 0) {
                 ++g_zRndr_GlobalStringCount;
-                memcpy(copy, entry, byteCount);
+                memcpy(copy, stringList[index].value.str, byteCount);
             }
         }
 

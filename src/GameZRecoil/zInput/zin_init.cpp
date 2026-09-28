@@ -172,7 +172,7 @@ void __cdecl OnAppDeactivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-onappactivate
  * @recoil-artifact defines .text recoil:function:0x471b20: zInput::OnAppActivate.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: resume suspended input devices when a window is active, then mark
@@ -236,7 +236,7 @@ int __fastcall Init(HWND hWnd, HINSTANCE hInstance)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-shutdown
  * @recoil-artifact defines .text recoil:function:0x471c10: zInput::Shutdown.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: shut down joystick, keyboard, mouse, and DirectInput state, then

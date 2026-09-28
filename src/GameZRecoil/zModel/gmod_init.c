@@ -6943,7 +6943,7 @@ namespace zClipRect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-trivialrejectpolyxy
      * @recoil-artifact defines .text recoil:function:0x4803b0: zClipRect::TrivialRejectPolyXY
-     *
+     * @recoil-match byte
      *
      * Evidence: Current BN/status show this as a leaf zClipRect namespace helper over g_Clip_PolyVerts.
      * Purpose: Reject polygons whose active vertices all fall outside one enabled XY clip plane.
@@ -7012,16 +7012,15 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-updatesmallpolyrejectthresholds
      * @recoil-artifact defines .text recoil:function:0x4804c0: zModel::UpdateSmallPolyRejectThresholds
-     *
+     * @recoil-match byte
      *
      * Purpose: cache the doubled and twenty-times small-polygon reject-area
      * thresholds used by projected model clipping.
      */
     void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea)
     {
-        const float doubledArea = baseRejectArea + baseRejectArea;
-        gModel_SmallPolyRejectArea2x = doubledArea;
-        gModel_SmallPolyRejectArea20x = doubledArea * 10.0f;
+        gModel_SmallPolyRejectArea2x = baseRejectArea + baseRejectArea;
+        gModel_SmallPolyRejectArea20x = gModel_SmallPolyRejectArea2x * 10.0f;
     }
 } // namespace zModel
 
@@ -7030,7 +7029,7 @@ namespace zReader
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zreader-findglobalstringprefixindex
      * @recoil-artifact defines .text recoil:function:0x4804e0: zReader::FindGlobalStringPrefixIndex
-     *
+     * @recoil-match byte
      *
      * Purpose: find the global string-table prefix that matches the start of a
      * reader token and is followed by the token end or whitespace.
@@ -7042,13 +7041,12 @@ namespace zReader
         }
 
         for (int index = 0; index < g_zRndr_GlobalStringCount; ++index) {
-            const char* const prefix = g_zRndr_GlobalStringTable[index];
-            const size_t prefixLength = strlen(prefix);
+            const size_t prefixLength = strlen(g_zRndr_GlobalStringTable[index]);
             if (strlen(text) < prefixLength) {
                 continue;
             }
 
-            const int nextChar = text[prefixLength];
+            const char nextChar = text[prefixLength];
             /* Original zrdr_global.c used the VC5 C ctype macro shape; the C++
                header would call imported isspace instead of touching these CRT
                globals. */
@@ -7056,7 +7054,7 @@ namespace zReader
                 continue;
             }
 
-            if (_strnicmp(text, prefix, prefixLength) == 0) {
+            if (_strnicmp(text, g_zRndr_GlobalStringTable[index], prefixLength) == 0) {
                 return index;
             }
         }

@@ -485,7 +485,7 @@ RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(zModel_MaterialPar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-shutdownglobals
  * @recoil-artifact defines .text recoil:function:0x455e40: zDEClient::ShutdownGlobals.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: clear feature runtime state, free loaded quicksand and crater

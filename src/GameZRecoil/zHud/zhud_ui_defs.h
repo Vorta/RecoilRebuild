@@ -5,7 +5,7 @@
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduitransitiontextpanel-huduitransitiontextpanel
  * @recoil-artifact defines .text recoil:function:0x4ba020: HudUiTransitionTextPanel::HudUiTransitionTextPanel.
- *
+ * @recoil-match byte
  *
  * Purpose: construct the transition text panel and initialize its flash state.
  *

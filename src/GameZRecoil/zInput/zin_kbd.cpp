@@ -178,7 +178,7 @@ int __cdecl KeyboardInitDevice()
     }
 
     g_zInput_KbdEventBuffer
-        = (DIDeviceObjectData*)(calloc(kZInputKeyboardEventBufferCount, sizeof(DIDeviceObjectData)));
+        = (DIDeviceObjectData*)(calloc(1, kZInputKeyboardEventBufferCount * sizeof(DIDeviceObjectData)));
     g_zInput_KbdSystemReady = 1;
     KeyboardResetTransitionState();
     KeyboardClearKeyCallbackTable();
@@ -215,7 +215,7 @@ int __cdecl KeyboardShutdownDevice()
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_resettransitionstate
  * @recoil-artifact defines .text recoil:function:0x46f450: zInput::KeyboardResetTransitionState.
- *
+ * @recoil-match byte
  *
  * Purpose: drain pending keyboard events, update transient modifier state, then
  * clear every key-dispatch transition state for the next input frame.
@@ -596,7 +596,7 @@ int __fastcall KeyboardTranslateDikToAscii(int comboIdx)
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdiktoasciitable
  * @recoil-artifact defines .text recoil:function:0x46fd20: zInput::KeyboardInitDikToAsciiTable.
- *
+ * @recoil-match byte
  *
  * Purpose: Initialize the DIK scan-code to ASCII/control-code lookup table.
  */

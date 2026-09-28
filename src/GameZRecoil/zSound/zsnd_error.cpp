@@ -28,7 +28,7 @@ namespace zSnd {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-error-reportmcierror
  * @recoil-artifact defines .text recoil:function:0x4a3ea0: zSnd::ReportMciError.
- *
+ * @recoil-match byte
  *
  * Purpose: print a formatted MCI error message for a source-file line.
  */

@@ -561,7 +561,7 @@ zInput_DiEffect* __fastcall zInputDICreateForceFeedbackEffect(const GUID* rguidE
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.zinput-di-hasforcefeedback
  * @recoil-artifact defines .text recoil:function:0x472480: zInputDIHasForceFeedback.
- *
+ * @recoil-match byte
  *
  * Physical source contribution: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * No separate zin_ff.cpp contribution is proven by the retail order shelf.

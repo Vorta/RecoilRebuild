@@ -1195,7 +1195,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setbreakonfirstcandidate
      * @recoil-artifact defines .text recoil:function:0x443c50: CZDisplayInstance::SetBreakOnFirstCandidate.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1209,7 +1209,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.setstopafterfirsthit
      * @recoil-artifact defines .text recoil:function:0x443c60: CZDisplayInstance::SetStopAfterFirstHit.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2003,7 +2003,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointsforlight
      * @recoil-artifact defines .text recoil:function:0x444d10: CZDisplayInstance::BuildPickCandidatesForPointsForLight.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2300,7 +2300,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegment
      * @recoil-artifact defines .text recoil:function:0x4455f0: CZDisplayInstance::BuildPickCandidatesForSegment.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.

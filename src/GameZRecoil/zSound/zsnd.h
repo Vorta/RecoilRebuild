@@ -264,7 +264,7 @@ struct zSndGroup {
     char unknown_28[0x90];
 
     zSndGroupConfigBlock* SelectWeightedEntry();
-    zSndPlayHandle* __fastcall QueueStreamRequest(int hasWorldPos, float gain, zVec3* worldPos, zVec3* velocity);
+    zSndPlayHandle* __fastcall QueueStreamRequest(float gain, int hasWorldPos, zVec3* worldPos, zVec3* velocity);
     zSndPlayHandle* QueueStreamRequestSimple(float gain);
     zSndPlayHandle* __fastcall QueueStreamRequestWithWorldPos(zVec3* worldPos, float gain, zVec3* velocity);
 };

@@ -393,12 +393,12 @@ int __fastcall TryAppendBridgeEdge(
     zGeometry_TriangulateHole_EdgeState* edgeStates
 )
 {
+    zVec3* const bridgeStart = &g_zGeometry_TriangulateHole_CombinedPoints[edgeState->vertexIndex0];
+    zVec3* const bridgeEnd = &g_zGeometry_TriangulateHole_CombinedPoints[edgeState->vertexIndex1];
+
     if (FindActiveEdgeState(edgeState->vertexIndex0, edgeState->vertexIndex1, edgeCount, edgeStates) != 0) {
         return edgeCount;
     }
-
-    zVec3* const bridgeStart = &g_zGeometry_TriangulateHole_CombinedPoints[edgeState->vertexIndex0];
-    zVec3* const bridgeEnd = &g_zGeometry_TriangulateHole_CombinedPoints[edgeState->vertexIndex1];
 
     for (int i = 0; i < edgeCount; ++i) {
         zGeometry_TriangulateHole_EdgeState* const edge = &edgeStates[i];
@@ -713,7 +713,7 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-cachecombinedplane
  * @recoil-artifact defines .text recoil:function:0x46c390: zGeometry_TriangulateHole::CacheCombinedPlane
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Purpose: Cache the plane equation used to project the inner ring.
  */

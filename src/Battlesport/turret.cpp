@@ -674,7 +674,7 @@ void zTurret_Runtime::Tick(const zVec3* playerFxOffsetWorld)
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updatefirepositionfromparts
  * @recoil-artifact defines .text recoil:function:0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Recomputes the turret fire origin from the active base, barrel, and fire-point parts.
@@ -1117,7 +1117,7 @@ int __cdecl EnableTickCallback()
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-ondamage
  * @recoil-artifact defines .text recoil:function:0x437d60: zTurret_Runtime::OnDamage.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Handles incoming OptCatalog damage and updates destruction or damage feedback.
@@ -1131,7 +1131,8 @@ int __fastcall zTurret_Runtime::OnDamage(
 {
     if (self->ApplyDamageAndHandleDestruction(damageAmount, entry, hitEvent) != 0) {
         OptCatalog::SetDamageContext(1, 0);
-        Player::AddScaledHudCounterValue(self->healthMax);
+        const float healthMax = self->healthMax;
+        Player::AddScaledHudCounterValue(healthMax);
     } else {
         DamageFeedback::SetIntensityScalar(self->healthCurrent / self->healthMax);
     }

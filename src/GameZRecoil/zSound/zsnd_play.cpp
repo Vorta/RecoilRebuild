@@ -285,7 +285,7 @@ extern "C" void __fastcall zSndTick(int skipA3dCommit)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquireplayhandledispatch
  * @recoil-artifact defines .text recoil:function:0x49f6d0: zSndSample::AcquirePlayHandleDispatch.
- *
+ * @recoil-match byte
  *
  * Purpose: select the active backend-specific play-handle acquisition path.
  */
@@ -293,10 +293,14 @@ zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
 {
     zSndPlayHandle* voice = 0;
 
-    if (g_zSnd_ActiveBackend == 1) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
         voice = AcquireA3dVoice();
-    } else if (g_zSnd_ActiveBackend == 0) {
+        break;
+
+    case 0:
         voice = AcquireVoice();
+        break;
     }
 
     return voice;
@@ -379,7 +383,7 @@ zSndPlayHandle* zSndSample::AcquireA3dVoice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-acquirevoice
  * @recoil-artifact defines .text recoil:function:0x49f830: zSndSample::AcquireVoice.
- *
+ * @recoil-match byte
  *
  * Purpose: select or duplicate a DirectSound play handle for playback.
  */
@@ -417,8 +421,8 @@ zSndPlayHandle* zSndSample::AcquireVoice()
             if (((unsigned char)status & playingMask) == 0) {
                 break;
             }
+            voice = 0;
         }
-        voice = 0;
     }
 
     if (voice == 0 && index < 5) {
@@ -694,19 +698,23 @@ zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale,
  */
 zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex)
 {
+    int backendArg = 0;
     if (createGuard != 0) {
         return 0;
     }
 
-    int backendArg = 0;
     if (markerTimes != 0 && (unsigned int)(variantIndex) < (unsigned int)(markerCount)) {
         markerBaseTime = markerTimes[variantIndex];
         g_zSndLastVoiceStopMarkerIndex = stopMarkerIndex;
         backendArg = markerAux[variantIndex * 2];
     }
 
-    const float globalGain = g_zSnd_GlobalVolumeScalePtr != 0 ? *(float*)(g_zSnd_GlobalVolumeScalePtr) : 0.0f;
-    return PlayOnActiveBackend(0, replayFields.gain * gainScale * globalGain, 0, backendArg);
+    return PlayOnActiveBackend(
+        0,
+        replayFields.gain * gainScale * *(float*)(g_zSnd_GlobalVolumeScalePtr),
+        0,
+        backendArg
+    );
 }
 
 /**
@@ -786,17 +794,22 @@ int zSndPlayHandle::StopIfActive()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-stopactivevoicesifplaying
  * @recoil-artifact defines .text recoil:function:0x49fec0: zSndSample::StopActiveVoicesIfPlaying.
- *
+ * @recoil-match byte
  *
  * Purpose: stop the sample's primary and duplicate backend voices if present.
  */
 int zSndSample::StopActiveVoicesIfPlaying()
 {
-    if (this == 0 || createGuard != 0) {
+    if (this == 0) {
         return 0;
     }
 
-    if (g_zSnd_ActiveBackend == 1) {
+    if (createGuard != 0) {
+        return 0;
+    }
+
+    switch (g_zSnd_ActiveBackend) {
+    case 1: {
         zA3dProviderSource* const primarySource = (zA3dProviderSource*)(primaryVoice.backendBuffer);
         if (primarySource == 0) {
             return 0;
@@ -827,7 +840,7 @@ int zSndSample::StopActiveVoicesIfPlaying()
         return 1;
     }
 
-    if (g_zSnd_ActiveBackend == 0) {
+    case 0: {
         LPDIRECTSOUNDBUFFER const primaryBuffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
         if (primaryBuffer == 0) {
             return 0;
@@ -856,6 +869,7 @@ int zSndSample::StopActiveVoicesIfPlaying()
         }
 
         return 1;
+    }
     }
 
     return 1;
@@ -1387,7 +1401,7 @@ extern "C" void __cdecl zSndSampleSetRegistryDestroyAll()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-getbyindex
  * @recoil-artifact defines .text recoil:function:0x4a08d0: zSndSampleSetRegistryGetByIndex.
- *
+ * @recoil-match byte
  *
  * Purpose: Returns the registry entry at a non-negative in-range index.
  */
@@ -1407,7 +1421,7 @@ extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryGetByIndex(int index)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-getcount
  * @recoil-artifact defines .text recoil:function:0x4a0900: zSndSampleSetRegistryGetCount.
- *
+ * @recoil-match byte
  *
  * Purpose: Returns the number of active sample-set registry entries.
  */
@@ -1439,7 +1453,7 @@ extern "C" zSndSampleSet* __fastcall zSndSampleSetRegistryFindByName(const char*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-findsamplebyname
  * @recoil-artifact defines .text recoil:function:0x4a0990: zSnd::FindSampleByName.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zSound/zsnd.cpp.
  * Purpose: find a loaded sample by name across registered sample sets and pending stream groups.

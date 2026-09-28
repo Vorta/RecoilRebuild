@@ -1537,7 +1537,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.writesettingssection
      * @recoil-artifact defines .text recoil:function:0x4517a0: CZWorld::WriteSettingsSection.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: write each world node's pending fog settings as a ZBD settings

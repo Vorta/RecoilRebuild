@@ -173,7 +173,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_zApp_LogFileOpenMode) == 0x02);
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-initstdlogfiles
  * @recoil-artifact defines .text recoil:function:0x4a5780: RecoilApp::InitStdLogFiles.
- *
+ * @recoil-match byte
  *
  * Purpose: redirects stdout and stderr to per-run log files and writes their
  * startup banners.
@@ -748,18 +748,19 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(int missionId)
     char pathText[256];
 
     zRdrFreePathList(0);
-    zRdrAddSearchPaths(0, "zbd");
+    zRdrAddSearchPaths(0, g_zUtil_ZbdSearchPathLeaf);
     zImageInitMissionResources(g_zImage_CommonTextureSearchPaths);
 
     sprintf(pathText, g_zUtil_MissionZrdrSearchPathsFmt, missionId, missionId);
     zRdrSetPath(pathText);
 
-    if (g_HudSensorTracker.missionFlags == 0) {
-        return 0;
+    int result = g_HudSensorTracker.missionFlags;
+    if (result != 0) {
+        sprintf(pathText, g_zUtil_MissionZrdrArchivePathFmt, missionId);
+        result = zArchive::Mount(pathText, 0);
     }
 
-    sprintf(pathText, g_zUtil_MissionZrdrArchivePathFmt, missionId);
-    return zArchive::Mount(pathText, 0);
+    return result;
 }
 } // namespace zUtil
 
@@ -1247,8 +1248,7 @@ void CRecoilAppPlayState::OnResume(int)
 {
     if (zSnd::GetCDAudioOption() != 0) {
         const int missionId = g_HudSensorTracker.GetMissionId();
-        const int trackCount = zSndCd::GetTrackCount();
-        zSndCd::PlayTrackWithMode((missionId % (trackCount - 2)) + 2, 5);
+        zSndCd::PlayTrackWithMode((missionId % (zSndCd::GetTrackCount() - 2)) + 2, 5);
     }
 }
 
@@ -1748,7 +1748,7 @@ inline int CommandCheckedIfMode(int currentMode, int targetMode)
  * no standalone retail function is emitted.
  * Purpose: translate cached command state into CCmdUI enable/check calls.
  */
-inline void UpdateCmdUiFromState(CCmdUI* cmdUi, int state)
+inline void UpdateCmdUiFromState(CCmdUI* cmdUi, const int& state)
 {
     if (state == kCmdUiDisabled) {
         cmdUi->Enable(0);
@@ -2165,11 +2165,11 @@ void CZRecoilFrame::OnUpdateHudCmdUI(CCmdUI* cmdUi)
  */
 void CZRecoilFrame::OnMenuToggleFullscreen()
 {
-    if (zOpt::GetFullscreenOption() == 0) {
-        zOpt::SetFullscreenOption(1);
+    if (zOpt::GetFullscreenOption() != 0) {
+        zOpt::SetFullscreenOption(0);
         return;
     }
-    zOpt::SetFullscreenOption(0);
+    zOpt::SetFullscreenOption(1);
 }
 
 /**
@@ -2722,7 +2722,8 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade()
 
     int selectedMissionIndex;
     if (WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(&selectedMissionIndex) != 0) {
-        g_RecoilApp.LoadZbdAndSetupSensorTracker(selectedMissionIndex + 6, 0, 1, g_HudSensorTracker.missionFlags);
+        const int missionFlags = g_HudSensorTracker.missionFlags;
+        g_RecoilApp.LoadZbdAndSetupSensorTracker(selectedMissionIndex + 6, 0, 1, missionFlags);
     }
 }
 
@@ -3451,23 +3452,19 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
     zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)rowSaveState;
     zUtil_PlayerStateStorage* const playerState = rowSaveState->playerState;
     PlayerMasterModalData* const masterModalData = rowSaveState->primaryModalState->masterModalData;
-    const unsigned int packedFlags = packet->packedMasterTypeColorFlags;
 
     playerState->netUpdateReceived = 1;
 
-    const int colorIndex = (int)((packedFlags >> 8) & 0xffu);
-    if (row->playerColorIndex != colorIndex) {
-        row->playerColorIndex = colorIndex;
-        const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
+    if (row->playerColorIndex != (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu)) {
+        row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
+        const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[row->playerColorIndex];
         row->playerColorPackedRgb = packedColor;
-        row->hudWidget.textColor0 = packedColor;
-        row->hudWidget.textColor1 = packedColor;
-        row->hudWidget.textDirty = 1;
+        row->hudWidget.SetTextColorsAndMarkDirty(packedColor, packedColor);
         HudUi::RefreshScoreboardEntryRow(row);
         row->ApplyPlayerColorTint();
     }
 
-    const int masterType = (int)(packedFlags & 0xffu);
+    const int masterType = (int)(packet->packedMasterTypeColorFlags & 0xffu);
     if (masterType != masterModalData->masterType) {
         Player::ApplyMasterTypeTransition(saveState, masterType, 0);
     }
@@ -3475,14 +3472,16 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
     playerState->netReceivedPos = packet->worldPos;
     playerState->netReceivedAngles = packet->vehicleRotationAngles;
 
-    const int inputBit16 = (packedFlags & ::kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
-    const int inputBit17 = (packedFlags & ::kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
     if (playerState->netLastUpdateFrameTick == g_zVideo_FrameTick) {
-        playerState->netInputBit16Latch |= inputBit16;
-        playerState->netInputBit17Latch |= inputBit17;
+        playerState->netInputBit16Latch
+            |= (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
+        playerState->netInputBit17Latch
+            |= (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
     } else {
-        playerState->netInputBit16Latch = inputBit16;
-        playerState->netInputBit17Latch = inputBit17;
+        playerState->netInputBit16Latch
+            = (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
+        playerState->netInputBit17Latch
+            = (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
         playerState->netLastUpdateFrameTick = g_zVideo_FrameTick;
     }
 
@@ -3511,7 +3510,7 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
         playerState->progressTargetRuntimeSlots[index].targetPos = 0;
     }
 
-    if ((packedFlags & ::kGameNetPkt06ProgressTargetsFlag) == 0) {
+    if ((packet->packedMasterTypeColorFlags & ::kGameNetPkt06ProgressTargetsFlag) == 0) {
         playerState->progressTargetCount = 0;
         return 1;
     }
@@ -3696,21 +3695,19 @@ int __fastcall HandlePkt08PlayerKillEvent(int localPlayerKey, NetPkt08_PlayerKil
         return 0;
     }
 
-    OptCatalogEntryDef* killEntry = 0;
     const short killEntryId = packet->killMethodOrOptCatalogEntryId;
     if (killEntryId != 0) {
-        killEntry = OptCatalog::FindEntryById(killEntryId);
+        OptCatalogEntryDef* const killEntry = OptCatalog::FindEntryById(killEntryId);
+        ShowPlayerKillMessage(victimRow, killEntry, killerRow);
+    } else {
+        ShowPlayerKillMessage(victimRow, 0, killerRow);
     }
 
-    ShowPlayerKillMessage(victimRow, killEntry, killerRow);
-
     if (zNetwork::IsHost() != 0) {
-        const int score = victimRow->score;
         if (victimRow != killerRow) {
-            victimRow->score = score + 1;
+            ++victimRow->score;
         } else {
-            victimRow->score = score - 1;
-            if (victimRow->score < 0) {
+            if (--victimRow->score < 0) {
                 victimRow->score = 0;
             }
         }
@@ -3733,12 +3730,12 @@ void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState* saveState)
     packet.header.packetSizeBytes = sizeof(NetPkt0E_PlayerLapProgress);
     packet.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet.lapCountPacked = (short)(playerState->lapCount);
-    packet.reserved_0a = 0;
     packet.lapTimeSec = playerState->lapTimeSec;
 
     if (zNetwork::IsHost() != 0) {
-        saveState->netPlayerRow->lapCount = playerState->lapCount;
-        saveState->netPlayerRow->lapTimeSec = playerState->lapTimeSec;
+        GameNetPlayerRow* const row = saveState->netPlayerRow;
+        row->lapCount = playerState->lapCount;
+        row->lapTimeSec = playerState->lapTimeSec;
         HandlePkt0EPlayerLapProgress(packet.header.payloadDword0, &packet);
     } else {
         zNetworkSendPacketReliable(&packet.header);
@@ -3765,13 +3762,14 @@ int __fastcall HandlePkt0EPlayerLapProgress(int senderPlayerId, NetPkt0E_PlayerL
     row->lapTimeSec = packet->lapTimeSec;
     SendPkt09PlayerScoreboardSnapshot();
 
-    if (row->lapCount >= g_HudSensorTracker.runtimeGoalValue) {
+    const int lapGoal = g_HudSensorTracker.runtimeGoalValue;
+    if (row->lapCount >= lapGoal) {
         HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
         if (AreAllPlayersAtLapTarget() != 0) {
             timerState.timeWarningShown = 1;
-            timerState.raceFinishCountdownTriggered = 1;
         }
 
+        timerState.raceFinishCountdownTriggered = 1;
         SendPkt0DHudTimerPanelState(&timerState);
     }
 
@@ -4116,11 +4114,9 @@ void __fastcall SendPkt0BChatMessage(const char* message)
  */
 int __fastcall HandlePkt0BChatMessage(int, NetPkt0B_ChatMessage* packet)
 {
-    char message[0x51] = { 0 };
-    int messageLength = packet->messageLength;
-    if (messageLength >= 0x50) {
-        messageLength = 0x50;
-    }
+    char message[0x51];
+    memset(message, 0, sizeof(message));
+    int messageLength = packet->messageLength < 0x50 ? packet->messageLength : 0x50;
 
     if (messageLength > 0) {
         memcpy(message, packet->message, (size_t)(messageLength));
@@ -4241,9 +4237,9 @@ void GameNetPlayerRow::ApplyPlayerColorTint()
     PlayerModalState* primaryModalState = saveState->primaryModalState;
     const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[playerColorIndex];
     zColorRgb color = {
-        (float)(packedColor & 0xff),
-        (float)((packedColor >> 8) & 0xff),
-        (float)((packedColor >> 16) & 0xff),
+        (float)GetRValue(packedColor),
+        (float)GetGValue(packedColor),
+        (float)GetBValue(packedColor),
     };
     CZObject3D::gwObject3DSetColorAlpha(primaryModalState->modalNode, &color, 0.2f);
     CZObject3D::gwObject3DSetVisibleFlag(primaryModalState->modalNode, 1);
@@ -4755,20 +4751,20 @@ int __fastcall HandlePkt14HudTimerAndFlagsSync(int senderPlayerId, NetPkt14_HudT
  */
 int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, int valueOrTime, int statusFlags)
 {
-    if (zNetwork::IsHost() == 0) {
-        return 0;
+    int result = zNetwork::IsHost();
+    if (result != 0) {
+        zNetworkSessionDescStatusFields statusFields;
+        result = zNetworkExtractStatusFieldsFromSessionDesc(&statusFields);
+        if (result != 0) {
+            statusFields.eventCode = eventCode;
+            statusFields.statusFlags = statusFlags;
+            statusFields.valueOrTime = valueOrTime;
+            statusFields.auxParam = auxParam;
+            result = zNetworkApplyStatusFieldsToSessionDesc(&statusFields);
+        }
     }
 
-    zNetworkSessionDescStatusFields statusFields;
-    if (zNetworkExtractStatusFieldsFromSessionDesc(&statusFields) == 0) {
-        return 0;
-    }
-
-    statusFields.valueOrTime = valueOrTime;
-    statusFields.eventCode = eventCode;
-    statusFields.statusFlags = statusFlags;
-    statusFields.auxParam = auxParam;
-    return zNetworkApplyStatusFieldsToSessionDesc(&statusFields);
+    return result;
 }
 } // namespace GameNet
 
@@ -5470,7 +5466,7 @@ int g_RecoilApp_AttractFmvReloadMode = 1;
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-destructor-recoilapp-mfcolemodule
  * @recoil-artifact defines .text recoil:function:0x4428b0: RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule.
- *
+ * @recoil-match byte
  *
  * Purpose: destroys the app state's chunked queue storage before chaining to the MFC base destructor.
  */
@@ -5559,7 +5555,7 @@ inline void PrintEngineInitNonzeroStatus(const char* format, int result)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-engineinit
  * @recoil-artifact defines .text recoil:function:0x442a50: RecoilApp::EngineInit.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize core engine subsystems and print their startup status
  * lines before frame timing and input state are reset.
@@ -5990,7 +5986,7 @@ RecoilApp_IState* RecoilApp::QueueExitCurrentState(int stateParam)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-onidleordispatch
  * @recoil-artifact defines .text recoil:function:0x443650: RecoilApp::OnIdleOrDispatch.
- *
+ * @recoil-match byte
  *
  * Purpose: handles idle/dispatch notifications for CD sound and the current state.
  */
@@ -5998,11 +5994,11 @@ int RecoilApp::OnIdleOrDispatch(unsigned int wParam, unsigned int lParam)
 {
     RecoilApp_IState* const currentState = GetCurrentState();
     zSndCd::OnMciNotify(wParam, lParam);
-    if (currentState == 0) {
-        return 0;
+    if (currentState != 0) {
+        return currentState->OnIdleOrDispatch(wParam, lParam);
     }
 
-    return currentState->OnIdleOrDispatch(wParam, lParam);
+    return 0;
 }
 
 /**
@@ -6518,19 +6514,19 @@ void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-static-init
  * @recoil-artifact defines .text recoil:function:0x435a40: RecoilStateSaveLoadTransition::StaticInit.
- *
+ * @recoil-match byte
  *
  * Purpose: Constructs the global save/load transition object.
  */
 void __cdecl RecoilStateSaveLoadTransition::StaticInit()
 {
-    new (&g_RecoilStateSaveLoadTransition) RecoilStateSaveLoadTransition;
+    g_RecoilStateSaveLoadTransition.RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition();
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-state-save-load-transition-register-at-exit
  * @recoil-artifact defines .text recoil:function:0x435a50: RecoilStateSaveLoadTransition::RegisterAtExit.
- *
+ * @recoil-match byte
  *
  * Purpose: Registers the save/load transition singleton destructor with atexit.
  */
@@ -6622,7 +6618,7 @@ void HudUiLoadGameDialog::ProcessDialogResult()
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-constructor
  * @recoil-artifact defines .text recoil:function:0x435c80: Save/load state construction.
  * @recoil-artifact emits .rdata recoil:data:0x4d1728: Compiler-generated state dispatch table.
- *
+ * @recoil-match byte
  *
  * Purpose: Construct the complete polymorphic save/load state, including its
  * dispatch table, before the application can queue its entry callback.
@@ -6636,7 +6632,7 @@ RecoilStateSaveLoadTransition::RecoilStateSaveLoadTransition()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.saveload-transition-destructor
  * @recoil-artifact defines .text recoil:function:0x435cc0: Save/load state destruction.
- *
+ * @recoil-match byte
  *
  * Purpose: Delete the active save or load dialog before inherited state cleanup.
  */

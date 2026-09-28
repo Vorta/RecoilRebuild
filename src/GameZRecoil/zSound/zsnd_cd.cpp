@@ -199,7 +199,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.resettrackstate
  * @recoil-artifact defines .text recoil:function:0x4a2490: zSndCd::ResetTrackState.
- *
+ * @recoil-match byte
  *
  * Purpose: Reset cached CD play-from/current/play-to positions to track one.
  */
@@ -317,7 +317,7 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.onmcinotify
  * @recoil-artifact defines .text recoil:function:0x4a26b0: zSndCd::OnMciNotify.
- *
+ * @recoil-match byte
  *
  * Purpose: Restart looping CD playback when the MCI notify callback completes.
  */
@@ -388,7 +388,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.isstereoauxenabled
  * @recoil-artifact defines .text recoil:function:0x4a27d0: zSndCd::IsStereoAuxEnabled.
- *
+ * @recoil-match byte
  *
  * Purpose: report whether CD audio has an initialized stereo AUX mixer.
  */
@@ -476,7 +476,7 @@ int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryV
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.gettrackcount
  * @recoil-artifact defines .text recoil:function:0x4a2930: zSndCd::GetTrackCount.
- *
+ * @recoil-match byte
  *
  * Purpose: Return the cached number of CD tracks when the CD device is ready.
  */

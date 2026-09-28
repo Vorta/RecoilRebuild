@@ -9068,7 +9068,7 @@ int EnableHud()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.disablehud
  * @recoil-artifact defines .text recoil:function:0x410ed0: HudUiMgr::DisableHud.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::DisableHud.
  */
@@ -9077,14 +9077,10 @@ int DisableHud()
     const int previouslyEnabled = g_HudUiMgr.enabled;
     DestroySensorWindow();
 
-    {
-        int slotIndex;
-        for (slotIndex = 0; slotIndex < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
-            ++slotIndex) {
-            HudUiSlot& slot = g_HudUiMgrWeaponSlots[slotIndex];
-            slot.trackMarkerWidget.SetVisible(0);
-            slot.slotWidget.SetVisible(0);
-        }
+    HudUiSlot* slot = g_HudUiMgrWeaponSlots;
+    for (int slotIndex = 0; slotIndex < 32; ++slotIndex, ++slot) {
+        slot->trackMarkerWidget.SetVisible(0);
+        slot->slotWidget.SetVisible(0);
     }
 
     g_HudUiMgrSensorTargetMarkerCount = 0;
@@ -9194,33 +9190,36 @@ void UpdateFrame()
  */
 int __fastcall ProjectPointToNormalizedClamped(const zVec3* srcPoint, zVec3* projectedPoint)
 {
-    if (zMath::ProjectPointAndClampToScreenClip(srcPoint, projectedPoint) == 0x10) {
-        return 1;
+    if (zMath::ProjectPointAndClampToScreenClip(srcPoint, projectedPoint) != 0x10) {
+        const float halfHudWidth = g_HudUiMgrHudRectW * 0.5f;
+        const float halfHudHeight = g_HudUiMgrHudRectH * 0.5f;
+        if (zOpt::GetReplicateMode() != 0) {
+            projectedPoint->x += projectedPoint->x;
+            projectedPoint->y += projectedPoint->y;
+        }
+
+        const float normalizedX = (projectedPoint->x - halfHudWidth) / halfHudWidth;
+        projectedPoint->y -= (float)(g_HudUiMgrHudRect.top);
+        projectedPoint->x = normalizedX;
+        const float normalizedY = (projectedPoint->y - halfHudHeight) / halfHudHeight;
+        projectedPoint->y = normalizedY;
+
+        if (normalizedX > 1.0f) {
+            projectedPoint->x = 1.0f;
+        } else if (normalizedX < -1.0f) {
+            projectedPoint->x = -1.0f;
+        }
+
+        if (normalizedY > 1.0f) {
+            projectedPoint->y = 1.0f;
+        } else if (normalizedY < -1.0f) {
+            projectedPoint->y = -1.0f;
+        }
+
+        return 0;
     }
 
-    const float halfHudWidth = g_HudUiMgrHudRectW * 0.5f;
-    const float halfHudHeight = g_HudUiMgrHudRectH * 0.5f;
-    if (zOpt::GetReplicateMode() != 0) {
-        projectedPoint->x += projectedPoint->x;
-        projectedPoint->y += projectedPoint->y;
-    }
-
-    projectedPoint->x = (projectedPoint->x - halfHudWidth) / halfHudWidth;
-    projectedPoint->y = (projectedPoint->y - (float)(g_HudUiMgrHudRect.top) - halfHudHeight) / halfHudHeight;
-
-    if (projectedPoint->x > 1.0f) {
-        projectedPoint->x = 1.0f;
-    } else if (projectedPoint->x < -1.0f) {
-        projectedPoint->x = -1.0f;
-    }
-
-    if (projectedPoint->y > 1.0f) {
-        projectedPoint->y = 1.0f;
-    } else if (projectedPoint->y < -1.0f) {
-        projectedPoint->y = -1.0f;
-    }
-
-    return 0;
+    return 1;
 }
 
 /**
@@ -9549,7 +9548,7 @@ void UpdateMeterXPoints()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.show
  * @recoil-artifact defines .text recoil:function:0x411900: HudUiMgrObjective::Show.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Start or update the objective HUD panel with summary text, description text, and image state.
@@ -9557,7 +9556,7 @@ void UpdateMeterXPoints()
 int __fastcall
 Show(zVidImagePartial* objectiveImage, const char* summaryFormat, const char* descText, float autoHideDelay)
 {
-    if (summaryFormat == 0 || descText == 0 || g_HudUiMgrObjectiveChatComposeActive != 0) {
+    if ((summaryFormat == 0 | descText == 0) || g_HudUiMgrObjectiveChatComposeActive != 0) {
         return 0;
     }
 
@@ -9640,20 +9639,21 @@ void StartHide()
 {
     g_HudUiMgrObjectivePhaseTimerSec += g_Time_UnscaledDeltaTimeSec;
 
-    float noise;
+    float fade;
 
     do {
         switch (g_HudUiMgrObjectivePhase) {
         case 1: {
             if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
-                const float fade = g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
-                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgr.objective.slideRangeX;
+                const float slideX = (fade = g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec)
+                        * g_HudUiMgr.objective.slideRangeX
+                    + g_HudUiMgrObjectiveBar.points[1].x;
                 HudUiMgrObjectiveSetSlidePosition(slideX);
                 HudUiMgrObjectiveUpdateWidgetRightX();
                 if (g_HudUiMgrObjectiveSensorRect.image != 0) {
-                    noise = fade + fade;
-                    if (noise < 1.0f) {
-                        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)noise);
+                    fade = fade + fade;
+                    if (fade < 1.0f) {
+                        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)fade);
                         continue;
                     } else {
                         g_HudUiMgrObjectiveSensorRect.SetVisible(1);
@@ -9683,15 +9683,17 @@ void StartHide()
 
         case 3: {
             if (g_HudUiMgrObjectivePhaseTimerSec < g_HudUiMgrObjectivePhaseDurationSec) {
-                const float fade = 1.0f - g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec;
-                const float slideX = g_HudUiMgrObjectiveBar.points[1].x + fade * g_HudUiMgr.objective.slideRangeX;
+                const float slideX
+                    = (fade = 1.0f - g_HudUiMgrObjectivePhaseTimerSec / g_HudUiMgrObjectivePhaseDurationSec)
+                        * g_HudUiMgr.objective.slideRangeX
+                    + g_HudUiMgrObjectiveBar.points[1].x;
                 HudUiMgrObjectiveSetSlidePosition(slideX);
                 HudUiMgrObjectiveUpdateHwDirtyRectIfNeeded();
                 HudUiMgrObjectiveUpdateWidgetRightX();
                 if (g_HudUiMgrObjectiveSensorRect.image != 0) {
-                    noise = fade + fade;
-                    if (noise < 1.0f) {
-                        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)noise);
+                    fade = fade + fade;
+                    if (fade < 1.0f) {
+                        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)fade);
                         continue;
                     } else {
                         g_HudUiMgrObjectiveSensorRect.SetVisible(0);
@@ -9718,11 +9720,11 @@ void StartHide()
             continue;
         }
 
-        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)(2.0f - noise));
+        zVid::DrawNoiseRect((zVidRect32*)(&g_HudUiMgrSensorBlock.sensorRectRaw), (double)(2.0f - fade));
     } while (0);
 
     if (g_HudUiMgrObjectiveAutoHideDelaySec != 0.0f) {
-        if (g_HudUiMgrObjectivePhaseTimerSec >= g_HudUiMgrObjectiveAutoHideDelaySec) {
+        if (g_HudUiMgrObjectivePhaseTimerSec > g_HudUiMgrObjectiveAutoHideDelaySec) {
             HudUiMgrObjective::Begin();
         }
 
@@ -9733,7 +9735,7 @@ void StartHide()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.update
  * @recoil-artifact defines .text recoil:function:0x411eb0: HudUiMgrObjective::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: advance the recovered HUD update path for HudUiMgrObjective::Update.
  */
@@ -9749,14 +9751,8 @@ void Update()
         return;
     }
 
-    if (g_HudUiMgrObjectiveDescTextPanel != 0) {
-        ((HudUiElement*)(g_HudUiMgrObjectiveDescTextPanel))->SetVisible(1);
-    }
-
-    if (g_HudUiMgrObjectiveLabelTextPanel != 0) {
-        ((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->SetVisible(1);
-    }
-
+    g_HudUiMgrObjectiveSummaryTextPanel->SetVisible(1);
+    g_HudUiMgrObjectiveDescTextPanel->SetVisible(1);
     g_HudUiMgrObjectiveSensorRect.SetVisible(1);
 }
 
@@ -9786,18 +9782,15 @@ void __fastcall SetShieldMessageRatio(float ratio)
         g_HudUiMgrShieldMessageWidget->meter.drawParam = zVidPackColorRGB(255, 255, 0) & 0xffffu;
     }
 
-    HudUiShieldMessageWidget* const shieldMessageWidget = g_HudUiMgrShieldMessageWidget;
-    HudUiMeterDimensionsCandidate* const meter = &shieldMessageWidget->meter;
-    const int fillPixels = (int)(ceil((double)(meter->height) * (double)(ratio)));
+    HudUiMeterDimensionsCandidate* const meter = &g_HudUiMgrShieldMessageWidget->meter;
+    const int fillPixels = (int)(ceil(meter->height * ratio));
     const int top = (int)(meter->points[1].y) - fillPixels;
     meter->points[0].y = (float)(top);
     meter->points[3].y = (float)(top);
-    meter->Invalidate();
+    g_HudUiMgrShieldMessageWidget->meter.Invalidate();
 
-    HudUiPanel* const percentTextPanel = (HudUiPanel*)(&shieldMessageWidget->percentTextPanel);
-    const int percent = (int)(ceil((double)(ratio) * 100.0));
-    percentTextPanel->SetTextFmt("%d", percent);
-    percentTextPanel->Invalidate();
+    g_HudUiMgrShieldMessageWidget->percentTextPanel.SetTextFmt("%d", (int)(ceil(ratio * 100.0f)));
+    g_HudUiMgrShieldMessageWidget->percentTextPanel.Invalidate();
 }
 
 } // namespace HudUiMgrSensor
@@ -9806,7 +9799,7 @@ namespace HudUiMgrObjective {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.refreshcountertext
  * @recoil-artifact defines .text recoil:function:0x412050: HudUiMgrObjective::RefreshCounterText.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: format the objective counter panel from the supplied integer value
@@ -9814,8 +9807,8 @@ namespace HudUiMgrObjective {
  */
 void __fastcall RefreshCounterText(int counterValue)
 {
-    HudUiPanel* const panel = (HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel);
-    panel->SetTextFmt("%d", counterValue);
+    HudUiCounterTextPanel* const panel = g_HudUiMgrObjectiveCounterTextPanel;
+    g_HudUiMgrObjectiveCounterTextPanel->SetTextFmt("%d", counterValue);
     panel->UpdateTextBoundsFromContent();
 }
 
@@ -9837,7 +9830,7 @@ namespace HudUiMgrSensor {
  */
 int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const zVec3* worldPoint)
 {
-    const int targetMarkerCount = g_HudUiMgrSensorTargetMarkerCount;
+    const unsigned int targetMarkerCount = g_HudUiMgrSensorTargetMarkerCount;
     int inBounds = 0;
     if (targetMarkerCount >= 32) {
         return 0;
@@ -9848,16 +9841,11 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
 
     const int screenEdgeCode = zMath::ProjectPointAndClampToScreenClip(worldPoint, (zVec3*)(&slot->screenX));
 
-    int slotX;
-    float slotY;
     if (zOpt::GetReplicateMode() != 0) {
-        slotX = (int)(slot->screenX + slot->screenX);
-        slotY = slot->screenY + slot->screenY;
+        slot->SetPos((int)(slot->screenX + slot->screenX), (int)(slot->screenY + slot->screenY));
     } else {
-        slotX = (int)(slot->screenX);
-        slotY = slot->screenY;
+        slot->SetPos((int)(slot->screenX), (int)(slot->screenY));
     }
-    slot->SetPos(slotX, (int)(slotY));
 
     switch (screenEdgeCode) {
     case 0:
@@ -9865,28 +9853,27 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
         break;
 
     case 1: {
-        HudUiWidget* const counterWidget = &slot->slotWidget;
-        counterWidget->SetVisible(1);
-        counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[1]);
+        slot->slotWidget.SetVisible(1);
+        slot->slotWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[1]);
 
-        const int halfHeight = counterWidget->image->height / 2;
-        int top = slot->GetCenterY() - halfHeight;
+        int top = slot->GetCenterY();
+        const int halfHeight = slot->slotWidget.image->height / 2;
+        top -= halfHeight;
         if (top <= g_HudUiMgrHudRect.top + halfHeight) {
             top = g_HudUiMgrHudRect.top;
         } else if (top > g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight) {
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top - halfHeight * 2;
         }
-        counterWidget->SetPos(0, top);
+        slot->slotWidget.SetPos(0, top);
         break;
     }
 
     case 2: {
-        HudUiWidget* const counterWidget = &slot->slotWidget;
-        counterWidget->SetVisible(1);
-        counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[2]);
+        slot->slotWidget.SetVisible(1);
+        slot->slotWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[2]);
 
         int top = slot->GetCenterY();
-        const zVidImagePartial* const image = counterWidget->image;
+        const zVidImagePartial* const image = slot->slotWidget.image;
         const int height = image->height;
         top -= height;
         if (top <= g_HudUiMgrHudRect.top + height) {
@@ -9895,24 +9882,22 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
             top = g_HudUiMgrHudRect.bottom - height * 2;
         }
 
-        counterWidget->SetPos(slot->GetCenterX() + 1 - image->width, top);
+        slot->slotWidget.SetPos(slot->GetCenterX() + 1 - image->width, top);
         break;
     }
 
     case 4: {
-        HudUiWidget* const counterWidget = &slot->slotWidget;
-        counterWidget->SetVisible(1);
-        counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[3]);
+        slot->slotWidget.SetVisible(1);
+        slot->slotWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[3]);
 
-        const zVidImagePartial* const image = counterWidget->image;
-        counterWidget->SetPos(slot->GetCenterX() - image->width / 2, slot->GetCenterY() + 1);
+        const zVidImagePartial* const image = slot->slotWidget.image;
+        slot->slotWidget.SetPos(slot->GetCenterX() - image->width / 2, slot->GetCenterY() + 1);
         break;
     }
 
     case 8: {
-        HudUiWidget* const counterWidget = &slot->slotWidget;
-        counterWidget->SetVisible(1);
-        counterWidget->SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[4]);
+        slot->slotWidget.SetVisible(1);
+        slot->slotWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[4]);
 
         int left = slot->GetCenterX();
         int top = slot->GetCenterY();
@@ -9920,10 +9905,10 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
             top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
         }
 
-        const zVidImagePartial* const image = counterWidget->image;
+        const zVidImagePartial* const image = slot->slotWidget.image;
         top -= image->height;
         left -= image->width / 2;
-        counterWidget->SetPos(left, top);
+        slot->slotWidget.SetPos(left, top);
         break;
     }
     }
@@ -10141,7 +10126,8 @@ void __fastcall HudUiMessage::SetValueIfOwnerMatches(int messageIndex, int owner
         return;
     }
 
-    message.panel.SetTextFmt("%d", (int)(ceil(valueOrClearToken)));
+    const int value = (int)(ceil(valueOrClearToken));
+    message.panel.SetTextFmt("%d", value);
     message.Invalidate();
 }
 
@@ -10181,17 +10167,22 @@ void __fastcall HudUiMessage::SelectVariantDisplay(int messageIndex, int variant
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimessage-applysideimageswap
  * @recoil-artifact defines .text recoil:function:0x412790: HudUiMessage::ApplySideImageSwap.
- *
+ * @recoil-match byte
  *
  * Purpose: Applies a side-image replacement for the selected message slot and preserves the visible flag.
  */
 void __fastcall HudUiMessage::ApplySideImageSwap(int messageIndex, int sideIndex)
 {
     HudUiMessage& message = g_HudUiMgrMessages[messageIndex];
+    HudUiWidget& widget = message.widget;
     zVidImagePartial* const image = message.sideImageSwaps[sideIndex];
     message.activeSideImages[sideIndex] = image;
-    message.widget.SetImageBorrowedAndInvalidate(image);
-    message.widget.flags &= 0x10u;
+    widget.SetImageBorrowedAndInvalidate(image);
+    if ((~widget.flags & 0x10u) != 0) {
+        widget.flags = 0;
+    } else {
+        widget.flags = 0x10u;
+    }
 }
 
 /**
@@ -10435,7 +10426,7 @@ int HudLayoutBase::LoadTypeIFromZarRoot(zReader::Node* parentNode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutsw-setactive
  * @recoil-artifact defines .text recoil:function:0x412c60: HudLayoutSW::SetActive.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the software HUD viewport and active sensor occlusion state.
@@ -10451,11 +10442,11 @@ int HudLayoutSW::SetActive(int active)
     HudLayout::ApplyViewportRect(&activeRect);
 
     if (active != 0) {
-        HudUiRect outerRect;
-        outerRect.top = activeRect.top + 1;
-        outerRect.left = activeRect.left + 1;
-        outerRect.right = activeRect.right - 1;
-        outerRect.bottom = activeRect.bottom - 1;
+        HudUiRect outerRect = activeRect;
+        outerRect.left++;
+        outerRect.right--;
+        outerRect.top++;
+        outerRect.bottom--;
 
         g_HudSensorTracker.SetBounds(&outerRect, &g_HudUiMgrSensorBlock.sensorViewportRect);
         g_HudUiMgr.SetChildFlags(0);
@@ -10464,41 +10455,32 @@ int HudLayoutSW::SetActive(int active)
 
         if (g_HudUiMgr.enabled != 0 && zVid::GetAccelerationOption() == ZVID_HW_MODE_SOFTWARE) {
             const int replicateMode = zOpt::GetReplicateMode();
-            float nearClip = 0.0f;
-            float farClip = 0.0f;
+            float nearClip;
+            float farClip;
             CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
 
-            const float invNearClip = 1.0f / nearClip;
-            zRndr::SpanOcclusionSubmitOccluderRect(
-                &g_HudUiMgrSensorBlock.sensorViewportRect,
-                replicateMode,
-                invNearClip
-            );
-            zRndr::SpanOcclusionSubmitOccluderRect(
-                &g_HudUiMgrShieldMessageWidget->screenRect,
-                replicateMode,
-                invNearClip
-            );
-
+            nearClip = 1.0f / nearClip;
+            zRndr::SpanOcclusionSubmitOccluderRect(&g_HudUiMgrSensorBlock.sensorViewportRect, replicateMode, nearClip);
+            zRndr::SpanOcclusionSubmitOccluderRect(&g_HudUiMgrShieldMessageWidget->screenRect, replicateMode, nearClip);
             zRndr::SpanOcclusionSubmitOccluderRect(
                 &g_HudUiMgrModeCounters[0].clipViewportRect,
                 replicateMode,
-                invNearClip
+                nearClip
             );
             zRndr::SpanOcclusionSubmitOccluderRect(
                 &g_HudUiMgrModeCounters[1].clipViewportRect,
                 replicateMode,
-                invNearClip
+                nearClip
             );
             zRndr::SpanOcclusionSubmitOccluderRect(
                 &g_HudUiMgrModeCounters[2].clipViewportRect,
                 replicateMode,
-                invNearClip
+                nearClip
             );
             zRndr::SpanOcclusionSubmitOccluderRect(
                 &g_HudUiMgrModeCounters[3].clipViewportRect,
                 replicateMode,
-                invNearClip
+                nearClip
             );
         }
     }
@@ -10510,7 +10492,7 @@ namespace HudLayout {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.applyviewportrect
  * @recoil-artifact defines .text recoil:function:0x412db0: HudLayout::ApplyViewportRect.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: update display and render viewport sections from the active HUD rectangle.
@@ -10522,15 +10504,11 @@ int __fastcall ApplyViewportRect(HudUiRect* activeRect)
     const int top = activeRect->top;
 
     zOpt::DisplaySectionSetPosition(left, top);
-
-    int renderX = left;
-    int renderY = top;
     if (replicateMode != 0) {
-        renderX = (left - (left >> 31)) >> 1;
-        renderY = (top - (top >> 31)) >> 1;
+        zOpt::RenderSectionSetPosition(left / 2, top / 2);
+    } else {
+        zOpt::RenderSectionSetPosition(left, top);
     }
-
-    zOpt::RenderSectionSetPosition(renderX, renderY);
 
     int width = activeRect->right - left;
     int height = activeRect->bottom - top;
@@ -10540,16 +10518,16 @@ int __fastcall ApplyViewportRect(HudUiRect* activeRect)
     const float viewportHeight = (float)(height);
 
     if (replicateMode != 0) {
-        width = (width - (width >> 31)) >> 1;
-        height = (height - (height >> 31)) >> 1;
+        width /= 2;
+        height /= 2;
     }
 
     zOpt::RenderSectionSetSize(width, height);
 
     CZNodePartial* const camera = g_HudSensorTracker.cameraNode;
+    float fovX;
+    float fovY;
     if (camera != 0) {
-        float fovX = 0.0f;
-        float fovY = 0.0f;
         CZCamera::gwCameraGetFOV(camera, &fovX, &fovY);
         fovY = viewportHeight / viewportWidth * fovX;
         CZCamera::gwCameraSetFOV(camera, fovX, fovY);
@@ -10638,7 +10616,7 @@ void HudLayoutHW::ReleaseImages()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-setactive
  * @recoil-artifact defines .text recoil:function:0x4130d0: HudLayoutHW::SetActive.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the hardware HUD viewport and connect or clear widget blit sources.
@@ -10657,33 +10635,27 @@ int HudLayoutHW::SetActive(int active)
     if (active != 0) {
         layout->OnActivated();
 
-        zVidImagePartial* const widget1Image = widget1.image;
-        zVidImagePartial* const widget2Image = widget2.image;
-        ((HudUiElement*)(g_HudUiMgrObjectiveCounterTextPanel))->SetBltSourceAndClipRect(widget1Image, 0);
-        ((HudUiElement*)(g_HudUiMgrTimerPanel))->SetBltSourceAndClipRect(widget1Image, 0);
+        ((HudUiElement*)(g_HudUiMgrObjectiveCounterTextPanel))->SetBltSourceAndClipRect(widget1.image, 0);
+        ((HudUiElement*)(g_HudUiMgrTimerPanel))->SetBltSourceAndClipRect(widget1.image, 0);
 
         {
             for (int index = 1; index < 10; ++index) {
-                HudUiMessage& message = g_HudUiMgrMessages[index];
-                message.SetBltSourceAndClipRect(widget2Image, 0);
-                message.panel.SetBltSourceAndClipRect(widget2Image, 0);
+                g_HudUiMgrMessages[index].SetBltSourceAndClipRect(widget2.image, 0);
+                g_HudUiMgrMessages[index].panel.SetBltSourceAndClipRect(widget2.image, 0);
             }
         }
 
-        g_HudUiMgrNanitePanel.HudUiElement::SetBltSourceAndClipRect(widget2Image, 0);
+        g_HudUiMgrNanitePanel.HudUiElement::SetBltSourceAndClipRect(widget2.image, 0);
         zClipAlt::SetSourceRect(&g_HudUiMgrSensorBlock.sensorPiVSrcRect);
 
         if (g_HudUiMgr.enabled != 0 && zVid::GetAccelerationOption() == 0) {
-            HudUiRect occluderRect;
-            occluderRect.left = g_HudUiMgrSensorBlock.sensorViewportRect.left;
-            occluderRect.top = g_HudUiMgrSensorBlock.sensorViewportRect.top;
-            occluderRect.right = g_HudUiMgrSensorBlock.sensorViewportRect.right;
-            occluderRect.bottom = g_HudUiMgrHudRect.bottom;
-
-            float nearClip = 0.0f;
-            float farClip = 0.0f;
+            HudUiRect occluderRect = g_HudUiMgrSensorBlock.sensorViewportRect;
+            float nearClip;
+            float farClip;
             CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
-            zRndr::SpanOcclusionSubmitOccluderRect(&occluderRect, zOpt::GetReplicateMode(), 1.0f / nearClip);
+            nearClip = 1.0f / nearClip;
+            occluderRect.bottom = g_HudUiMgrHudRect.bottom;
+            zRndr::SpanOcclusionSubmitOccluderRect(&occluderRect, zOpt::GetReplicateMode(), nearClip);
         }
     } else {
         ((HudUiElement*)(g_HudUiMgrObjectiveCounterTextPanel))->SetBltSourceAndClipRect(0, 0);
@@ -10692,9 +10664,8 @@ int HudLayoutHW::SetActive(int active)
 
         {
             for (int index = 0; index < 10; ++index) {
-                HudUiMessage& message = g_HudUiMgrMessages[index];
-                message.SetBltSourceAndClipRect(0, 0);
-                message.panel.SetBltSourceAndClipRect(0, 0);
+                g_HudUiMgrMessages[index].SetBltSourceAndClipRect(0, 0);
+                g_HudUiMgrMessages[index].panel.SetBltSourceAndClipRect(0, 0);
             }
         }
 
@@ -10709,25 +10680,20 @@ int HudLayoutHW::SetActive(int active)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-updateobjectivedirtyrect
  * @recoil-artifact defines .text recoil:function:0x4132b0: HudLayoutHW::UpdateObjectiveDirtyRect.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Rebuilds the objective dirty rectangle and refreshes the nanite panel after HUD layout changes.
  */
 void HudLayoutHW::UpdateObjectiveDirtyRect()
 {
-    zVidImagePartial* const image = g_HudUiMgrObjectiveWidget.image;
-    const int width = image != 0 ? image->width : 0;
-
-    const int centerX = g_HudUiMgrObjectiveWidget.GetCenterX();
-    const int centerY = g_HudUiMgrObjectiveWidget.GetCenterY();
-
-    const int height = image != 0 ? image->height : 0;
+    const int width = g_HudUiMgrObjectiveWidget.image != 0 ? g_HudUiMgrObjectiveWidget.image->width : 0;
     HudUiRect dirtyRect;
-    dirtyRect.left = centerX + width;
-    dirtyRect.top = centerY;
+    dirtyRect.left = g_HudUiMgrObjectiveWidget.GetCenterX() + width;
     dirtyRect.right = g_HudUiMgrObjectiveWidgetRightX;
-    dirtyRect.bottom = centerY + height;
+    const int centerY = g_HudUiMgrObjectiveWidget.GetCenterY();
+    dirtyRect.top = centerY;
+    dirtyRect.bottom = centerY + (g_HudUiMgrObjectiveWidget.image != 0 ? g_HudUiMgrObjectiveWidget.image->height : 0);
 
     widget2.InvalidateRect(&dirtyRect);
     g_HudUiMgrNanitePanel.HudUiElement::Invalidate();
@@ -10744,18 +10710,42 @@ void HudLayoutHW::UpdateObjectiveDirtyRect()
  */
 void HudLayoutHW::OnActivated()
 {
-    HudUi::SetInvalidateMode(zOpt::GetReplicateMode() == 0 ? 1 : 0);
+    if (zOpt::GetReplicateMode() != 0) {
+        HudUi::SetInvalidateMode(0);
+    } else {
+        HudUi::SetInvalidateMode(1);
+    }
 
     g_HudUiMgr.SetChildFlags(0x0e);
     SetChildFlags(0x0e);
 
-    widget3.flags = (unsigned int)((unsigned char)(widget3.flags) & 0x10u);
+    if ((~((unsigned int)(unsigned char)widget3.flags) & 0x10u) != 0) {
+        widget3.flags = 0;
+    } else {
+        widget3.flags = 0x10u;
+    }
 
-    g_HudUiMgrObjectiveWidget.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
-    g_HudUiMgrObjectiveMeter.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveMeter.flags) & 0x10u);
-    ((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->flags
-        = (unsigned int)((unsigned char)(((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->flags) & 0x10u);
-    g_HudUiMgrSensorOverlay.flags = (unsigned int)((unsigned char)(g_HudUiMgrSensorOverlay.flags) & 0x10u);
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrObjectiveWidget.flags) & 0x10u) != 0) {
+        g_HudUiMgrObjectiveWidget.flags = 0;
+    } else {
+        g_HudUiMgrObjectiveWidget.flags = 0x10u;
+    }
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrObjectiveMeter.flags) & 0x10u) != 0) {
+        g_HudUiMgrObjectiveMeter.flags = 0;
+    } else {
+        g_HudUiMgrObjectiveMeter.flags = 0x10u;
+    }
+    HudUiElement* const labelPanel = (HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel);
+    if ((~((unsigned int)(unsigned char)labelPanel->flags) & 0x10u) != 0) {
+        labelPanel->flags = 0;
+    } else {
+        labelPanel->flags = 0x10u;
+    }
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrSensorOverlay.flags) & 0x10u) != 0) {
+        g_HudUiMgrSensorOverlay.flags = 0;
+    } else {
+        g_HudUiMgrSensorOverlay.flags = 0x10u;
+    }
 
     g_HudUiMgrStatsList->triplet->RebuildDisplay();
 
@@ -10763,40 +10753,44 @@ void HudLayoutHW::OnActivated()
         for (int index = 1; index < 10; ++index) {
             HudUiMessage& message = g_HudUiMgrMessages[index];
             if (message.widget.image != 0) {
-                message.widget.flags = (unsigned int)((unsigned char)(message.widget.flags) & 0x10u);
+                if ((~((unsigned int)(unsigned char)message.widget.flags) & 0x10u) != 0) {
+                    message.widget.flags = 0;
+                } else {
+                    message.widget.flags = 0x10u;
+                }
             }
         }
     }
 
     HudLayoutBase* const layout = (HudLayoutBase*)(this);
-    HudUiRect outerRect;
-    outerRect.left = layout->activeRect.left + 1;
-    outerRect.top = layout->activeRect.top + 1;
-    outerRect.right = layout->activeRect.right - 1;
-    outerRect.bottom = layout->activeRect.bottom - 1;
+    HudUiRect outerRect = layout->activeRect;
+    outerRect.left++;
+    outerRect.right--;
+    outerRect.top++;
+    outerRect.bottom--;
 
-    HudUiRect* innerRect = 0;
-    if (zOpt::GetReplicateMode() == 0) {
-        innerRect = &g_HudUiMgrSensorBlock.sensorViewportRect;
-    }
-    g_HudSensorTracker.SetBounds(&outerRect, innerRect);
-
-    zVidImagePartial* widget1Image = widget1ImageDefault;
-    zVidImagePartial* widget2Image = widget2ImageDefault;
-    if (layout->activeRect.right == 0x320) {
-        widget1Image = widget1Image320;
-        widget2Image = widget2Image320;
-    } else if (layout->activeRect.right == 0x400) {
-        widget1Image = widget1Image400;
-        widget2Image = widget2Image400;
+    if (zOpt::GetReplicateMode() != 0) {
+        g_HudSensorTracker.SetBounds(&outerRect, 0);
+    } else {
+        g_HudSensorTracker.SetBounds(&outerRect, &g_HudUiMgrSensorBlock.sensorViewportRect);
     }
 
-    widget2.SetImageBorrowedAndInvalidate(widget2Image);
-    widget1.SetImageBorrowedAndInvalidate(widget1Image);
+    switch (layout->activeRect.right) {
+    case 0x320:
+        widget2.SetImageBorrowedAndInvalidate(widget2Image320);
+        widget1.SetImageBorrowedAndInvalidate(widget1Image320);
+        break;
+    case 0x400:
+        widget2.SetImageBorrowedAndInvalidate(widget2Image400);
+        widget1.SetImageBorrowedAndInvalidate(widget1Image400);
+        break;
+    default:
+        widget2.SetImageBorrowedAndInvalidate(widget2ImageDefault);
+        widget1.SetImageBorrowedAndInvalidate(widget1ImageDefault);
+        break;
+    }
 
     if (g_HudUiMgrHudLayoutsInitialized != 0) {
-        widget2.SetImageBorrowedAndInvalidate(widget2Image);
-        widget1.SetImageBorrowedAndInvalidate(widget1Image);
         widget2.InvalidateRect(&g_HudUiMgrViewRect);
     }
 }
@@ -10848,19 +10842,43 @@ void HudLayoutHW::Enable()
     g_HudUiMgr.SetChildFlags(0x0e);
     SetChildFlags(0x0e);
 
-    widget3.flags = (unsigned int)((unsigned char)(widget3.flags) & 0x10u);
+    if ((~((unsigned int)(unsigned char)widget3.flags) & 0x10u) != 0) {
+        widget3.flags = 0;
+    } else {
+        widget3.flags = 0x10u;
+    }
 
-    g_HudUiMgrObjectiveWidget.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveWidget.flags) & 0x10u);
-    g_HudUiMgrObjectiveMeter.flags = (unsigned int)((unsigned char)(g_HudUiMgrObjectiveMeter.flags) & 0x10u);
-    ((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->flags
-        = (unsigned int)((unsigned char)(((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->flags) & 0x10u);
-    g_HudUiMgrSensorOverlay.flags = (unsigned int)((unsigned char)(g_HudUiMgrSensorOverlay.flags) & 0x10u);
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrObjectiveWidget.flags) & 0x10u) != 0) {
+        g_HudUiMgrObjectiveWidget.flags = 0;
+    } else {
+        g_HudUiMgrObjectiveWidget.flags = 0x10u;
+    }
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrObjectiveMeter.flags) & 0x10u) != 0) {
+        g_HudUiMgrObjectiveMeter.flags = 0;
+    } else {
+        g_HudUiMgrObjectiveMeter.flags = 0x10u;
+    }
+    HudUiElement* const labelPanel = (HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel);
+    if ((~((unsigned int)(unsigned char)labelPanel->flags) & 0x10u) != 0) {
+        labelPanel->flags = 0;
+    } else {
+        labelPanel->flags = 0x10u;
+    }
+    if ((~((unsigned int)(unsigned char)g_HudUiMgrSensorOverlay.flags) & 0x10u) != 0) {
+        g_HudUiMgrSensorOverlay.flags = 0;
+    } else {
+        g_HudUiMgrSensorOverlay.flags = 0x10u;
+    }
 
     {
         for (int index = 1; index < 10; ++index) {
             HudUiMessage& message = g_HudUiMgrMessages[index];
             if (message.widget.image != 0) {
-                message.widget.flags = (unsigned int)((unsigned char)(message.widget.flags) & 0x10u);
+                if ((~((unsigned int)(unsigned char)message.widget.flags) & 0x10u) != 0) {
+                    message.widget.flags = 0;
+                } else {
+                    message.widget.flags = 0x10u;
+                }
             }
         }
     }
@@ -10940,7 +10958,7 @@ int ToggleHud()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.switchactivedialog
  * @recoil-artifact defines .text recoil:function:0x413660: HudUiMgr::SwitchActiveDialog.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::SwitchActiveDialog.
@@ -10948,7 +10966,7 @@ int ToggleHud()
 void __fastcall SwitchActiveDialog(HudLayoutBase* newDialog)
 {
     const int enabled = g_HudUiMgr.enabled;
-    if (enabled != 0) {
+    if (g_HudUiMgr.enabled != 0) {
         DisableHud();
     } else {
         g_HudUiMgrLayoutDelayFrames = 2;
@@ -10969,7 +10987,7 @@ void __fastcall SwitchActiveDialog(HudLayoutBase* newDialog)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.applyhudmodeswitch
  * @recoil-artifact defines .text recoil:function:0x4136b0: HudUiMgr::ApplyHudModeSwitch.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudUiMgr::ApplyHudModeSwitch.
@@ -10978,10 +10996,13 @@ int __fastcall ApplyHudModeSwitch(int hudType)
 {
     const int currentType = zOpt::GetHudTypeForCurrentHwMode();
     if (g_HudUiMgrHudLayoutsInitialized != 0) {
-        if (hudType == 1) {
+        switch (hudType) {
+        case 1:
             SwitchActiveDialog((HudLayoutBase*)(&g_HudLayoutSW));
-        } else if (hudType == 2) {
+            break;
+        case 2:
             SwitchActiveDialog((HudLayoutBase*)(&g_HudLayoutHW));
+            break;
         }
     }
 
@@ -11131,31 +11152,29 @@ void ClearTextLines()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.updatetextline
  * @recoil-artifact defines .text recoil:function:0x4137f0: HudUiAuxOverlay::ApplyTextLineOp.
- *
+ * @recoil-match byte
  *
  * Purpose: apply one sensor overlay text-line operation to a string-menu item.
  */
 void __fastcall UpdateTextLine(int op, int index, const char* format)
 {
-    HudUiPanel* const panel = (HudUiPanel*)(&g_HudUiMgrStringMenu->items[index]);
-
     if (op == 1) {
-        panel->SetTextFmt(format);
-        panel->SetVisible(1);
+        g_HudUiMgrStringMenu->items[index].SetTextFmt(format);
+        g_HudUiMgrStringMenu->items[index].SetVisible(1);
         return;
     }
 
     if (op == 0) {
-        panel->SetVisible(0);
+        g_HudUiMgrStringMenu->items[index].SetVisible(0);
         return;
     }
 
     if (op == 2) {
         if (*format != '\0') {
-            panel->SetTextFmt(format);
-            panel->SetVisible(1);
+            g_HudUiMgrStringMenu->items[index].SetTextFmt(format);
+            g_HudUiMgrStringMenu->items[index].SetVisible(1);
         } else {
-            panel->SetVisible(0);
+            g_HudUiMgrStringMenu->items[index].SetVisible(0);
         }
     }
 }
@@ -11352,7 +11371,7 @@ int __fastcall ReadInt3(zReader::Node* node, int* out0, int* out1, int* out2)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.applycornertextquad
  * @recoil-artifact defines .text recoil:function:0x413b10: HudUiLayoutNode::ApplyCornerTextQuad.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: apply the recovered HUD layout or option state handled by HudUiLayoutNode::ApplyCornerTextQuad.
@@ -11364,32 +11383,26 @@ int __fastcall ApplyCornerTextQuad(zReader::Node* node, HudUiBar* target, const 
     }
 
     zReader::Node* const arrayBase = node->value.nodes;
-    int left = arrayBase[1].value.i32;
-    int top = arrayBase[2].value.i32;
-    int right = arrayBase[3].value.i32;
-    int bottom = arrayBase[4].value.i32;
+    HudUiRect rect;
+    rect.left = arrayBase[1].value.i32;
+    rect.top = arrayBase[2].value.i32;
+    rect.right = arrayBase[3].value.i32;
+    rect.bottom = arrayBase[4].value.i32;
 
     if (offsetXY != 0) {
-        left += offsetXY[0];
-        top += offsetXY[1];
-        right += offsetXY[0];
-        bottom += offsetXY[1];
+        rect.left += offsetXY[0];
+        rect.top += offsetXY[1];
+        rect.right += offsetXY[0];
+        rect.bottom += offsetXY[1];
     }
 
-    const float leftF = (float)(left);
-    const float topF = (float)(top);
-    const float rightF = (float)(right);
-    const float bottomF = (float)(bottom);
-    target->SetPointXY(0, leftF, topF);
-    target->SetPointXY(1, leftF, bottomF);
-    target->SetPointXY(2, rightF, bottomF);
-    target->SetPointXY(3, rightF, topF);
+    target->SetPointXY(0, (float)(rect.left), (float)(rect.top));
+    target->SetPointXY(1, (float)(rect.left), (float)(rect.bottom));
+    target->SetPointXY(2, (float)(rect.right), (float)(rect.bottom));
+    target->SetPointXY(3, (float)(rect.right), (float)(rect.top));
 
     if (outRect != 0) {
-        outRect->left = left;
-        outRect->top = top;
-        outRect->right = right;
-        outRect->bottom = bottom;
+        *outRect = rect;
     }
 
     return 1;
@@ -11980,15 +11993,14 @@ void __fastcall ChatComposeKeyCallback(int dikCodeWithMods)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.endchatcomposeandsend
  * @recoil-artifact defines .text recoil:function:0x414590: GameNet::EndChatComposeAndSend
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Close chat compose, show the local chat line, and send packet 0x0b.
  */
 void __cdecl EndChatComposeAndSend()
 {
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
-    GameNetPlayerRow* const playerRow = saveState->netPlayerRow;
+    const char* const playerName = ((zUtil_SaveGameState*)(g_GameStateOrMapTable))->netPlayerRow->displayName;
     char chatLine[0x51];
     chatLine[0x50] = '\0';
 
@@ -12000,7 +12012,7 @@ void __cdecl EndChatComposeAndSend()
         return;
     }
 
-    strncpy(chatLine, playerRow->displayName, 0x50);
+    strncpy(chatLine, playerName, 0x50);
     strncat(chatLine, g_HudUiMessage_SeparatorColon, 0x50 - strlen(chatLine));
     strncat(chatLine, g_HudUiMgrObjectiveChatComposeTextInput.GetBuffer(), 0x50 - strlen(chatLine));
     HudUi::ShowChatLine(chatLine, 5.0f);
@@ -12157,21 +12169,22 @@ CRecoilInterp::CRecoilInterp()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-dispatchhook
  * @recoil-artifact defines .text recoil:function:0x414ad0: CRecoilInterp::DispatchHook.
- *
+ * @recoil-match byte
  *
  * Purpose: handle global WeaponSetMaxTetherAltitude commands before the
  * generic context dispatch path reports them as unhandled.
  */
 int CRecoilInterp::DispatchHook(char* commandToken)
 {
-    CZInterp* const context = this;
-    if (commandToken[0] != 'W' || context->tokenCount == 0
-        || strcmp(context->tokenList[0], kHudTailCommandNameWeaponSetMaxTetherAltitude) != 0) {
-        return 1;
+    int result = 1;
+    if (commandToken[0] == 'W') {
+        if (strcmp(tokenCount > 0 ? tokenList[0] : 0, kHudTailCommandNameWeaponSetMaxTetherAltitude) == 0) {
+            const float altitude = ParseFloatToken();
+            zWeapon::SetMaxTetherAltitude(altitude);
+            result = 0;
+        }
     }
-
-    zWeapon::SetMaxTetherAltitude(context->ParseFloatToken());
-    return 0;
+    return result;
 }
 
 /**
@@ -12329,7 +12342,7 @@ int HudUiMainMenuDialog::CanSaveGame()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimainmenudialog-huduimainmenudialog
  * @recoil-artifact defines .text recoil:function:0x414bc0: HudUiMainMenuDialog::HudUiMainMenuDialog.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
  * Purpose: Load the route-specific main-menu layout and bind its child buttons.
@@ -12621,7 +12634,7 @@ MainMenuTransitionCrtInitializerFn s_MainMenuTransitionCrtInit
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimainmenudialog-loadbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x415140: CHudUiMainMenuDialogLoadButton::OnActivate.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMainMenuDialog.cpp.
  * Purpose: Open the load dialog using the frontend or in-game transition mode.
@@ -12656,7 +12669,7 @@ RecoilStateMainMenuTransition::RecoilStateMainMenuTransition()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-destructor-recoilstatemainmenutransition
  * @recoil-artifact defines .text recoil:function:0x4151b0: RecoilStateMainMenuTransition::~RecoilStateMainMenuTransition.
- *
+ * @recoil-match byte
  *
  * Purpose: disable and destroy the owned main-menu dialog during transition
  * state teardown.
@@ -12699,7 +12712,7 @@ int __fastcall PlayTrackWithMode(int track, int mode);
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-ontrybecomecurrent
  * @recoil-artifact defines .text recoil:function:0x415220: RecoilStateMainMenuTransition::OnTryBecomeCurrent.
- *
+ * @recoil-match byte
  *
  * Purpose: enter the main-menu transition by preparing video/HUD state,
  * pausing active sounds, loading dialog audio, constructing the menu dialog,
@@ -12946,7 +12959,7 @@ void RecoilStateMainMenuTransition::OnDeactivate()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-clearpausedaudiosnapshot
  * @recoil-artifact defines .text recoil:function:0x415630: RecoilStateMainMenuTransition::ClearPausedAudioSnapshot.
- *
+ * @recoil-match byte
  *
  * Purpose: destroy and clear the global main-menu transition paused-audio
  * snapshot when callers need to discard the saved audio state.
@@ -13012,7 +13025,7 @@ HudUiBackgroundConfirmQuit::HudUiBackgroundConfirmQuit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduiconfirmquitokbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x415740: HudUiConfirmQuitOkButton::OnActivate.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: Queue the confirm-quit transition path and run inherited activation behavior.
@@ -13088,7 +13101,7 @@ RecoilStateConfirmQuit::RecoilStateConfirmQuit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-destructor-recoilstateconfirmquit
  * @recoil-artifact defines .text recoil:function:0x415880: RecoilStateConfirmQuit::~RecoilStateConfirmQuit.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\RecoilStateConfirmQuit.cpp.
  * Purpose: run the recovered RecoilStateConfirmQuit::~RecoilStateConfirmQuit teardown path.
@@ -13111,7 +13124,7 @@ RecoilStateConfirmQuit::~RecoilStateConfirmQuit()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-ontrybecomecurrent
  * @recoil-artifact defines .text recoil:function:0x4158f0: RecoilStateConfirmQuit::OnTryBecomeCurrent.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
  * Purpose: handle the recovered HUD event path for RecoilStateConfirmQuit::OnTryBecomeCurrent.

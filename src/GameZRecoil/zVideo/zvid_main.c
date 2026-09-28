@@ -1558,7 +1558,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepixels
      * @recoil-artifact defines .text recoil:function:0x4a6710: zVideo::GetSwSurfacePixels.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the current locked software surface pixel pointer.
@@ -1587,7 +1587,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfaceheight
      * @recoil-artifact defines .text recoil:function:0x4a6730: zVideo::GetSwSurfaceHeight.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached software surface height.
@@ -1602,7 +1602,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepitch
      * @recoil-artifact defines .text recoil:function:0x4a6740: zVideo::GetSwSurfacePitch.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached software surface pitch.
@@ -1692,7 +1692,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacelockedflag
      * @recoil-artifact defines .text recoil:function:0x4a67e0: zVideo::GetSwSurfaceLockedFlag.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns whether the software surface state currently holds a lock.
@@ -1707,7 +1707,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepixels
      * @recoil-artifact defines .text recoil:function:0x4a67f0: zVideo::GetPrimarySurfacePixels.
-     *
+     * @recoil-match byte
      *
      * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
      */
@@ -1732,7 +1732,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfaceheight
      * @recoil-artifact defines .text recoil:function:0x4a6810: zVideo::GetPrimarySurfaceHeight.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached primary surface height.
@@ -1748,7 +1748,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepitch
      * @recoil-artifact defines .text recoil:function:0x4a6820: zVideo::GetPrimarySurfacePitch.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: returns the cached primary surface pitch.
@@ -1777,7 +1777,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonprimarybuffer
      * @recoil-artifact defines .text recoil:function:0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
-     *
+     * @recoil-match byte
      *
      * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
      */

@@ -554,7 +554,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleeffecttemplateoffsetevent
      * @recoil-artifact defines .text recoil:function:0x458eb0: zEffect::HandleEffectTemplateOffsetEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: spawn a referenced effect template at a node or reset-scratch
@@ -562,8 +562,8 @@ namespace zEffect
      */
     int __fastcall HandleEffectTemplateOffsetEvent(zEffectAnimEntry * self, zEffectAnimRefOffsetEvent * event)
     {
-        zVec3 worldPosition = { 0 };
-        CZNodePartial* node = 0;
+        zVec3 worldPosition = { 0.0f, 0.0f, 0.0f };
+        CZNodePartial* node;
 
         if (event->nodeRefIndex > 0) {
             node = self->nodeRefList[event->nodeRefIndex].node;
@@ -572,6 +572,8 @@ namespace zEffect
             memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
             memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
             memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
+        } else {
+            node = 0;
         }
 
         if (node != 0) {
@@ -588,7 +590,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesoundevent
      * @recoil-artifact defines .text recoil:function:0x458f70: zEffect::HandleSoundEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: activate, attach, detach, and position a runtime sound reference.
@@ -620,7 +622,7 @@ namespace zEffect
         }
 
         if ((event->fieldMask & 0x02) != 0 && event->parentNodeRefIndex > 0) {
-            zVec3 worldPosition = { 0 };
+            zVec3 worldPosition;
             CZNode::GetWorldPosition(self->nodeRefList[event->parentNodeRefIndex].node, &worldPosition);
             worldPosition.x += event->offsetX;
             worldPosition.y += event->offsetY;
@@ -650,32 +652,36 @@ namespace zEffect
         }
 
         zEffectAnimRuntimeNodeRef* const lightRef = &self->lightRefList[event->lightRefIndex];
-        CZNodePartial* const lightNode = lightRef->runtimeNode;
-        CZClass::gwNodeSetActive(lightNode, event->activeState);
+        CZClass::gwNodeSetActive(lightRef->runtimeNode, event->activeState);
 
         if (event->activeState == 1) {
             if (lightRef->isAttached == 0) {
-                CZWorld::AddLight(g_zEffectAnim_State.worldNode, lightNode);
+                CZWorld::AddLight(g_zEffectAnim_State.worldNode, lightRef->runtimeNode);
                 lightRef->isAttached = 1;
             }
         } else if (lightRef->isAttached != 0) {
-            CZWorld::RemoveLight(g_zEffectAnim_State.worldNode, lightNode);
+            CZWorld::RemoveLight(g_zEffectAnim_State.worldNode, lightRef->runtimeNode);
             lightRef->isAttached = 0;
         }
 
         if (event->mode != 0) {
-            CZLight::gwLightSetPointSource(lightNode);
+            CZLight::gwLightSetPointSource(lightRef->runtimeNode);
         } else {
-            CZLight::gwLightSetDirectedSource(lightNode);
+            CZLight::gwLightSetDirectedSource(lightRef->runtimeNode);
         }
 
         if ((event->fieldMask & 0x01) != 0) {
-            CZLight::gwLightSetPosition(lightNode, event->basisOrColorX, event->basisOrColorY, event->basisOrColorZ);
+            CZLight::gwLightSetPosition(
+                lightRef->runtimeNode,
+                event->basisOrColorX,
+                event->basisOrColorY,
+                event->basisOrColorZ
+            );
         }
 
         if ((event->fieldMask & 0x02) != 0) {
-            zVec3 worldPosition = { 0 };
-            CZNodePartial* basisNode = 0;
+            zVec3 worldPosition = { 0.0f, 0.0f, 0.0f };
+            CZNodePartial* basisNode;
 
             if (event->basisNodeRefIndex > 0) {
                 basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
@@ -684,6 +690,8 @@ namespace zEffect
                 memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
                 memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
                 memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
+            } else {
+                basisNode = 0;
             }
 
             if (basisNode != 0) {
@@ -693,35 +701,40 @@ namespace zEffect
             worldPosition.x += event->basisOrColorX;
             worldPosition.y += event->basisOrColorY;
             worldPosition.z += event->basisOrColorZ;
-            CZLight::gwLightSetPosition(lightNode, worldPosition.x, worldPosition.y, worldPosition.z);
+            CZLight::gwLightSetPosition(lightRef->runtimeNode, worldPosition.x, worldPosition.y, worldPosition.z);
         }
 
         if ((event->fieldMask & 0x04) != 0) {
-            CZLight::gwLightSetRotation(lightNode, event->positionX, event->positionY, event->positionZ);
+            CZLight::gwLightSetRotation(lightRef->runtimeNode, event->positionX, event->positionY, event->positionZ);
         }
 
         if ((event->fieldMask & 0x08) != 0) {
-            CZLight::gwLightSetRange(lightNode, event->rangeInner, event->rangeOuter);
+            CZLight::gwLightSetRange(lightRef->runtimeNode, event->rangeInner, event->rangeOuter);
         }
 
         if ((event->fieldMask & 0x10) != 0) {
-            CZLight::gwLightSetSpecularColor(lightNode, event->specularR, event->specularG, event->specularB);
+            CZLight::gwLightSetSpecularColor(
+                lightRef->runtimeNode,
+                event->specularR,
+                event->specularG,
+                event->specularB
+            );
         }
 
         if ((event->fieldMask & 0x20) != 0) {
-            CZLight::gwLightSetIntensity(lightNode, event->intensity);
+            CZLight::gwLightSetIntensity(lightRef->runtimeNode, event->intensity);
         }
 
         if ((event->fieldMask & 0x40) != 0) {
-            CZLight::gwLightSetFalloff(lightNode, event->falloff);
+            CZLight::gwLightSetFalloff(lightRef->runtimeNode, event->falloff);
         }
 
         if ((event->fieldMask & 0x80) != 0) {
-            CZLight::gwLightSetDirectional(lightNode, event->directional);
+            CZLight::gwLightSetDirectional(lightRef->runtimeNode, event->directional);
         }
 
         if ((event->fieldMask & 0x100) != 0) {
-            CZLight::gwLightSetParam(lightNode, event->param);
+            CZLight::gwLightSetParam(lightRef->runtimeNode, event->param);
         }
 
         return 2;
@@ -859,7 +872,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlecameraparamsevent
      * @recoil-artifact defines .text recoil:function:0x459580: zEffect::HandleCameraParamsEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply immediate near/far clip, clip distance, FOV, and viewport
@@ -876,8 +889,8 @@ namespace zEffect
         }
 
         CZNodePartial* const node = self->nodeRefList[event->targetNodeRefIndex].node;
-        float primaryValue = 0.0f;
-        float secondaryValue = 0.0f;
+        float primaryValue;
+        float secondaryValue;
 
         if ((event->flags & 0x01) != 0) {
             CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
@@ -1153,7 +1166,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlepositionevent
      * @recoil-artifact defines .text recoil:function:0x459ce0: zEffect::HandlePositionEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: set or translate a target node position or camera target using an
@@ -1161,8 +1174,8 @@ namespace zEffect
      */
     int __fastcall HandlePositionEvent(zEffectAnimEntry * self, zEffectTransformEvent * event)
     {
-        zVec3 point = { 0 };
-        CZNodePartial* basisNode = 0;
+        zVec3 point = { 0.0f, 0.0f, 0.0f };
+        CZNodePartial* basisNode;
 
         if (event->basisNodeRefIndex > 0) {
             basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
@@ -1171,6 +1184,8 @@ namespace zEffect
             memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
             memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
             memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
+        } else {
+            basisNode = 0;
         }
 
         if (basisNode != 0) {
@@ -1183,18 +1198,21 @@ namespace zEffect
 
         CZNodePartial* const targetNode = self->nodeRefList[event->targetNodeRefIndex].node;
         if (targetNode != 0) {
-            if (targetNode->classId == 5) {
+            switch (targetNode->classId) {
+            case 5:
                 if ((event->flags & 0x01) != 0) {
                     CZObject3D::gwObject3DTranslatePosition(targetNode, point.x, point.y, point.z);
                 } else {
                     CZObject3D::gwObject3DSetPosition(targetNode, point.x, point.y, point.z);
                 }
-            } else if (targetNode->classId == 1) {
+                break;
+            case 1:
                 if ((event->flags & 0x01) != 0) {
                     CZCamera::gwCameraTranslateTarget(targetNode, point.x, point.y, point.z);
                 } else {
                     CZCamera::gwCameraSetTarget(targetNode, point.x, point.y, point.z);
                 }
+                break;
             }
         }
 
@@ -2000,7 +2018,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.evaluatekeyframe
      * @recoil-artifact defines .text recoil:function:0x45b210: zEffect_Anim::EvaluateKeyframe.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply immediate lit and alpha-scale values to an animation target
@@ -2008,15 +2026,21 @@ namespace zEffect_Anim
      */
     int __fastcall EvaluateKeyframe(zEffectAnimEntry * self, zEffectEvaluateKeyframeEvent * keyframeEvent)
     {
-        CZNodePartial* targetNode = 0;
+        CZNodePartial* targetNode;
         if (keyframeEvent->targetNodeRefIndex >= 0) {
             targetNode = self->nodeRefList[keyframeEvent->targetNodeRefIndex].node;
         } else if (keyframeEvent->targetNodeRefIndex == -100) {
             targetNode = self->boundNode;
+        } else {
+            targetNode = 0;
         }
 
         if (targetNode != 0) {
-            CZObject3D::gwObject3DSetLitFlag(targetNode, keyframeEvent->litFlag == 1 ? 1 : 0);
+            if (keyframeEvent->litFlag == 1) {
+                CZObject3D::gwObject3DSetLitFlag(targetNode, 1);
+            } else {
+                CZObject3D::gwObject3DSetLitFlag(targetNode, 0);
+            }
 
             if (keyframeEvent->hasAlphaScale == 1) {
                 CZObject3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->alphaScale);
@@ -2029,7 +2053,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runkeyframes
      * @recoil-artifact defines .text recoil:function:0x45b280: zEffect_Anim::RunKeyframes.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate a target node's lit state and alpha scale across a timed
@@ -2041,6 +2065,7 @@ namespace zEffect_Anim
         zEffectRunKeyframeEvent * keyframeEvent
     )
     {
+        int result = 1;
         if (self == 0 || sequenceRuntime == 0 || keyframeEvent == 0 || keyframeEvent->targetNodeRefIndex < 0) {
             return 2;
         }
@@ -2056,31 +2081,35 @@ namespace zEffect_Anim
             CZObject3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->startAlphaScale);
         }
 
-        const float frameDeltaUsedSec = sequenceRuntime->eventElapsedSec <= keyframeEvent->endTimeSec
-            ? g_zEffectAnim_State.frameDeltaRemainingSec
-            : g_zEffectAnim_State.frameDeltaRemainingSec
+        float frameDeltaUsedSec;
+        if (sequenceRuntime->eventElapsedSec > keyframeEvent->endTimeSec) {
+            frameDeltaUsedSec = g_zEffectAnim_State.frameDeltaRemainingSec
                 - (sequenceRuntime->eventElapsedSec - keyframeEvent->endTimeSec);
+        } else {
+            frameDeltaUsedSec = g_zEffectAnim_State.frameDeltaRemainingSec;
+        }
 
-        float alphaScale = 0.0f;
+        float alphaScale;
         if (CZObject3D::gwObject3DGetAlphaScale(targetNode, &alphaScale) != 0) {
             return 2;
         }
 
-        CZObject3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->alphaScaleRate * frameDeltaUsedSec + alphaScale);
+        alphaScale = keyframeEvent->alphaScaleRate * frameDeltaUsedSec + alphaScale;
+        CZObject3D::gwObject3DSetAlphaScale(targetNode, alphaScale);
         g_zEffectAnim_State.frameDeltaRemainingSec -= frameDeltaUsedSec;
 
-        if (sequenceRuntime->eventElapsedSec <= keyframeEvent->endTimeSec) {
-            return 1;
+        if (sequenceRuntime->eventElapsedSec > keyframeEvent->endTimeSec) {
+            if (keyframeEvent->endLitFlag == 1) {
+                CZObject3D::gwObject3DSetLitFlag(targetNode, 1);
+            } else if (keyframeEvent->endLitFlag == 0) {
+                CZObject3D::gwObject3DSetLitFlag(targetNode, 0);
+            }
+
+            CZObject3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->endAlphaScale);
+            result = 2;
         }
 
-        if (keyframeEvent->endLitFlag == 1) {
-            CZObject3D::gwObject3DSetLitFlag(targetNode, 1);
-        } else if (keyframeEvent->endLitFlag == 0) {
-            CZObject3D::gwObject3DSetLitFlag(targetNode, 0);
-        }
-
-        CZObject3D::gwObject3DSetAlphaScale(targetNode, keyframeEvent->endAlphaScale);
-        return 2;
+        return result;
     }
 
 } // namespace zEffect_Anim
@@ -2133,7 +2162,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleattachevent
      * @recoil-artifact defines .text recoil:function:0x45b440: zEffect::HandleAttachEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: attach the serialized variant state to a referenced target node.
@@ -2151,10 +2180,9 @@ namespace zEffect
                     zDiPartial* const targetDi = (zDiPartial*)(targetNode->userDataOrDiRef);
                     if (targetDi != 0) {
                         zDi::ResetCurrentVariant(targetDi);
+                        zDi::SetCurrentVariant((zDiPartial*)(targetNode->userDataOrDiRef), event->variantIndex);
                     }
                 }
-
-                zDi::SetCurrentVariant((zDiPartial*)(targetNode->userDataOrDiRef), event->variantIndex);
             }
         }
 
@@ -2365,48 +2393,54 @@ namespace zEffect
             }
         }
         if (event->animEntryIndex > 0) {
-            const unsigned int flags = (unsigned int)(event->flags);
-
-            zVec3 refPointA = { 0 };
-            if ((flags & 0x10u) != 0) {
+            zVec3 refPointA;
+            if ((event->flags & 0x10u) != 0) {
                 refPointA = event->refPointA;
-            } else if ((flags & 0x20u) != 0) {
-                memcpy(&refPointA.x, &self->resetScratch[1], sizeof(refPointA.x));
-                memcpy(&refPointA.y, &self->resetScratch[2], sizeof(refPointA.y));
-                memcpy(&refPointA.z, &self->resetScratch[3], sizeof(refPointA.z));
+            } else if ((event->flags & 0x20u) != 0) {
+                memcpy(&refPointA, &self->resetScratch[1], sizeof(refPointA));
+            } else {
+                refPointA.x = 0.0f;
+                refPointA.y = 0.0f;
+                refPointA.z = 0.0f;
             }
 
-            zVec3 refPointB = { 0 };
-            if ((flags & 0x0400u) != 0) {
+            zVec3 refPointB;
+            if ((event->flags & 0x0400u) != 0) {
                 refPointB = event->refPointB;
-            } else if ((flags & 0x0800u) != 0) {
-                memcpy(&refPointB.x, &self->resetScratch[5], sizeof(refPointB.x));
-                memcpy(&refPointB.y, &self->resetScratch[6], sizeof(refPointB.y));
-                memcpy(&refPointB.z, &self->resetScratch[7], sizeof(refPointB.z));
+            } else if ((event->flags & 0x0800u) != 0) {
+                memcpy(&refPointB, &self->resetScratch[5], sizeof(refPointB));
+            } else {
+                refPointB.x = 0.0f;
+                refPointB.y = 0.0f;
+                refPointB.z = 0.0f;
             }
 
-            CZNodePartial* refNodeA = 0;
-            if ((flags & 0x01u) != 0) {
+            CZNodePartial* refNodeA;
+            if ((event->flags & 0x01u) != 0) {
                 refNodeA = self->nodeRefList[event->refNodeAIndex].node;
-            } else if ((flags & 0x02u) != 0) {
+            } else if ((event->flags & 0x02u) != 0) {
                 CZNode::TransformPoint(self->nodeRefList[event->refNodeAIndex].node, &refPointA);
-            } else if ((flags & 0x04u) != 0) {
+                refNodeA = 0;
+            } else if ((event->flags & 0x04u) != 0) {
                 refNodeA = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
-            } else if ((flags & 0x08u) != 0) {
+            } else if ((event->flags & 0x08u) != 0) {
                 CZNode::TransformPoint((CZNodePartial*)((unsigned int)(self->resetScratch[0])), &refPointA);
+                refNodeA = 0;
             } else {
                 refNodeA = (CZNodePartial*)(self);
             }
 
-            CZNodePartial* refNodeB = 0;
-            if ((flags & 0x40u) != 0) {
+            CZNodePartial* refNodeB;
+            if ((event->flags & 0x40u) != 0) {
                 refNodeB = self->nodeRefList[event->refNodeBIndex].node;
-            } else if ((flags & 0x80u) != 0) {
+            } else if ((event->flags & 0x80u) != 0) {
                 CZNode::TransformPoint(self->nodeRefList[event->refNodeBIndex].node, &refPointB);
-            } else if ((flags & 0x0100u) != 0) {
+                refNodeB = 0;
+            } else if ((event->flags & 0x0100u) != 0) {
                 refNodeB = (CZNodePartial*)((unsigned int)(self->resetScratch[4]));
-            } else if ((flags & 0x0200u) != 0) {
+            } else if ((event->flags & 0x0200u) != 0) {
                 CZNode::TransformPoint((CZNodePartial*)((unsigned int)(self->resetScratch[4])), &refPointB);
+                refNodeB = 0;
             } else {
                 refNodeB = (CZNodePartial*)(self);
             }
@@ -2431,7 +2465,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacestopevent
      * @recoil-artifact defines .text recoil:function:0x45bb00: zEffect::HandleSurfaceStopEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: stop a named runtime surface sequence when it is currently playing.
@@ -2447,9 +2481,8 @@ namespace zEffect
                 }
             }
         }
-        const int surfaceIndex = event->surfaceSlotIndex;
-        if (surfaceIndex >= 0) {
-            zEffectAnimSurfaceRuntime* runtime = &self->runtimeList[surfaceIndex];
+        if (event->surfaceSlotIndex >= 0) {
+            zEffectAnimSurfaceRuntime* runtime = &self->runtimeList[event->surfaceSlotIndex];
             if (runtime->runState == 3) {
                 runtime->runState = 0;
             }
@@ -2461,7 +2494,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfaceplayevent
      * @recoil-artifact defines .text recoil:function:0x45bbb0: zEffect::HandleSurfacePlayEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: set a named runtime surface sequence into play state.
@@ -2477,9 +2510,8 @@ namespace zEffect
                 }
             }
         }
-        const int surfaceIndex = event->surfaceSlotIndex;
-        if (surfaceIndex >= 0) {
-            self->runtimeList[surfaceIndex].runState = 2;
+        if (event->surfaceSlotIndex >= 0) {
+            self->runtimeList[event->surfaceSlotIndex].runState = 2;
         }
 
         return 2;
@@ -2598,7 +2630,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanuplightrefs
      * @recoil-artifact defines .text recoil:function:0x45bf60: zEffect::CleanupLightRefs.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: deactivate and detach runtime light references owned by an animation
@@ -2607,22 +2639,17 @@ namespace zEffect
     int __fastcall CleanupLightRefs(zEffectAnimEntry * self)
     {
         for (int i = 0; i < self->lightRefCount; ++i) {
-            zEffectAnimRuntimeNodeRef* const lightRef = self->lightRefList != 0 ? &self->lightRefList[i] : 0;
-            if (lightRef == 0) {
+            zEffectAnimRuntimeNodeRef* const lightRef = &self->lightRefList[i];
+            if (lightRef == 0 || lightRef->runtimeNode == 0) {
                 continue;
             }
 
-            CZNodePartial* const runtimeNode = lightRef->runtimeNode;
-            if (runtimeNode == 0) {
-                continue;
-            }
-
-            if ((runtimeNode->flags & 0x04) != 0) {
-                CZClass::gwNodeSetActive(runtimeNode, 0);
+            if ((lightRef->runtimeNode->flags & 0x04) != 0) {
+                CZClass::gwNodeSetActive(lightRef->runtimeNode, 0);
             }
 
             if (lightRef->isAttached != 0) {
-                CZWorld::RemoveLight(g_zEffectAnim_State.worldNode, runtimeNode);
+                CZWorld::RemoveLight(g_zEffectAnim_State.worldNode, lightRef->runtimeNode);
                 lightRef->isAttached = 0;
             }
         }
@@ -2633,7 +2660,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.cleanupsoundrefs
      * @recoil-artifact defines .text recoil:function:0x45bfd0: zEffect::CleanupSoundRefs.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: deactivate and detach runtime sound references owned by an animation
@@ -2642,22 +2669,17 @@ namespace zEffect
     int __fastcall CleanupSoundRefs(zEffectAnimEntry * self)
     {
         for (int i = 0; i < self->soundRefCount; ++i) {
-            zEffectAnimRuntimeNodeRef* const soundRef = self->soundRefList != 0 ? &self->soundRefList[i] : 0;
-            if (soundRef == 0) {
+            zEffectAnimRuntimeNodeRef* const soundRef = &self->soundRefList[i];
+            if (soundRef == 0 || soundRef->runtimeNode == 0) {
                 continue;
             }
 
-            CZNodePartial* const runtimeNode = soundRef->runtimeNode;
-            if (runtimeNode == 0) {
-                continue;
-            }
-
-            if ((runtimeNode->flags & 0x04) != 0) {
-                CZClass::gwNodeSetActive(runtimeNode, 0);
+            if ((soundRef->runtimeNode->flags & 0x04) != 0) {
+                CZClass::gwNodeSetActive(soundRef->runtimeNode, 0);
             }
 
             if (soundRef->isAttached != 0) {
-                CZWorld::RemoveSound(g_zEffectAnim_State.worldNode, runtimeNode);
+                CZWorld::RemoveSound(g_zEffectAnim_State.worldNode, soundRef->runtimeNode);
                 soundRef->isAttached = 0;
             }
         }
@@ -3758,7 +3780,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.restorenodestates
      * @recoil-artifact defines .text recoil:function:0x45d310: zEffect_Anim::RestoreNodeStates.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: restore captured node active, transform, and zDi blend state for an
@@ -3770,44 +3792,42 @@ namespace zEffect_Anim
             return -1;
         }
 
-        for (int i = 0; i < self->trackedNodeCount; ++i) {
-            zEffectAnimTrackedNode* const tracked = &self->trackedNodeList[i];
+        zEffectAnimTrackedNode* tracked = self->trackedNodeList;
+        for (int i = 0; i < self->trackedNodeCount; ++i, ++tracked) {
             CZNodePartial* const node = tracked->trackedNode;
             if (node == 0) {
                 continue;
             }
 
-            zEffectAnimCapturedNodeState* const state = &tracked->capturedState;
-            CZClass::gwNodeSetActive(node, state->activeFlag);
+            CZClass::gwNodeSetActive(node, tracked->capturedState.activeFlag);
             if (node->classId == 5) {
-                if (state->usesCachedMatrix != 0) {
-                    CZObject3D::gwObject3DSetMatrix(node, state->transformSnapshot);
+                if (tracked->capturedState.usesCachedMatrix != 0) {
+                    CZObject3D::gwObject3DSetMatrix(node, tracked->capturedState.transformSnapshot);
                 } else {
                     CZObject3D::gwObject3DSetPosition(
                         node,
-                        state->transformSnapshot[0],
-                        state->transformSnapshot[1],
-                        state->transformSnapshot[2]
+                        tracked->capturedState.transformSnapshot[0],
+                        tracked->capturedState.transformSnapshot[1],
+                        tracked->capturedState.transformSnapshot[2]
                     );
                     CZObject3D::gwObject3DSetRotation(
                         node,
-                        state->transformSnapshot[3],
-                        state->transformSnapshot[4],
-                        state->transformSnapshot[5]
+                        tracked->capturedState.transformSnapshot[3],
+                        tracked->capturedState.transformSnapshot[4],
+                        tracked->capturedState.transformSnapshot[5]
                     );
                     CZObject3D::gwObject3DSetScale(
                         node,
-                        state->transformSnapshot[6],
-                        state->transformSnapshot[7],
-                        state->transformSnapshot[8]
+                        tracked->capturedState.transformSnapshot[6],
+                        tracked->capturedState.transformSnapshot[7],
+                        tracked->capturedState.transformSnapshot[8]
                     );
                 }
             }
 
-            zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
-            if (di != 0) {
-                di->flags &= ~0x08;
-                di->blendScale = 0.0f;
+            if (node->userDataOrDiRef != 0) {
+                ((zDiPartial*)(node->userDataOrDiRef))->flags &= ~0x08;
+                ((zDiPartial*)(node->userDataOrDiRef))->blendScale = 0.0f;
             }
         }
 

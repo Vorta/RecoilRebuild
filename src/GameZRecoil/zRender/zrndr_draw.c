@@ -8712,7 +8712,7 @@ void __fastcall zRndrSpanOcclusionTestSample(int x, int y, int color16)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoutline16-framebuffer
  * @recoil-artifact defines .text recoil:function:0x498fb0: zRndrDrawCircleOutline16Framebuffer.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: draw a 16-bit framebuffer circle outline through midpoint octant
@@ -9239,7 +9239,7 @@ void __fastcall zRndrFillSpan565Solid(int packedColor16, int blendAlpha, int pix
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkey
  * @recoil-artifact defines .text recoil:function:0x499930: zRndrSetPaletteRemapKey.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Span.cpp.
  * Source file evidence: Binary Ninja function source comment.
@@ -10015,7 +10015,7 @@ void __fastcall zRndrSpanOcclusionFilterSampleList(int visibleSampleIndex, zVec3
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-setvisiblesamplestage
  * @recoil-artifact defines .text recoil:function:0x49aa40: zRndrLensFlareSetVisibleSampleStage
- *
+ * @recoil-match byte
  *
  * Purpose: Store one lens-flare stage texture and refresh the visibility-active flag.
  */

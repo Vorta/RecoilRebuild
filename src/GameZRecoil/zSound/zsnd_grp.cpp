@@ -166,7 +166,7 @@ extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuependingloadsfromconfignode
  * @recoil-artifact defines .text recoil:function:0x4a4530: zSndGroupQueuePendingLoadsFromConfigNode.
- *
+ * @recoil-match byte
  *
  * Purpose: queue every parsed sound group from a top-level config array for
  * deferred stream loading.
@@ -184,9 +184,8 @@ extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(zReader::Node
         }
     }
 
-    zReader::Node* nodeArray = readerNode->value.nodes;
-    for (int i = 1; i < nodeArray[0].value.i32; ++i) {
-        zSndGroup* payload = zSndGroupLoadFromConfigNode(&nodeArray[i]);
+    for (int i = 1; i < readerNode->value.nodes[0].value.i32; ++i) {
+        zSndGroup* payload = zSndGroupLoadFromConfigNode(&readerNode->value.nodes[i]);
         if (payload != 0) {
             zArchiveListAddHead(g_zSndStream_PendingList, payload);
         }
@@ -479,7 +478,7 @@ int __fastcall UpdateActiveRequestPredicate(void* payload, void*)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statebegingroup
  * @recoil-artifact defines .text recoil:function:0x4a4cb0: zSndStreamRequest::StateBeginGroup.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize stream-request playback state and select the first
  * playable group entry.
@@ -497,7 +496,11 @@ int zSndStreamRequest::StateBeginGroup()
     }
 
     currentEntry = group->SelectWeightedEntry();
-    streamState = currentEntry != 0 ? 1 : 4;
+    if (currentEntry != 0) {
+        streamState = 1;
+    } else {
+        streamState = 4;
+    }
     return 1;
 }
 
@@ -635,7 +638,7 @@ void zSndStreamRequest::StatePlayCurrentEntry()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-statewaitrepeatdelay
  * @recoil-artifact defines .text recoil:function:0x4a4fd0: zSndStreamRequest::StateWaitRepeatDelay.
- *
+ * @recoil-match byte
  *
  * Purpose: wait for the repeat delay before selecting the next playable group
  * entry.
@@ -649,7 +652,11 @@ void zSndStreamRequest::StateWaitRepeatDelay()
 
     elapsedSec = 0.0f;
     currentEntry = group->SelectWeightedEntry();
-    streamState = currentEntry != 0 ? 1 : 4;
+    if (currentEntry != 0) {
+        streamState = 1;
+    } else {
+        streamState = 4;
+    }
 }
 
 /**
@@ -807,24 +814,24 @@ extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(void* payload, vo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestsimple
  * @recoil-artifact defines .text recoil:function:0x4a5230: zSndGroup::QueueStreamRequestSimple.
- *
+ * @recoil-match byte
  *
  * Purpose: queue a non-positional stream request for this sound group.
  */
 zSndPlayHandle* zSndGroup::QueueStreamRequestSimple(float gain)
 {
-    return QueueStreamRequest(0, gain, 0, 0);
+    return QueueStreamRequest(gain, 0, 0, 0);
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequest
  * @recoil-artifact defines .text recoil:function:0x4a5250: zSndGroup::QueueStreamRequest.
- *
+ * @recoil-match byte
  *
  * Purpose: allocate or recycle a stream request, fill its group playback state,
  * and begin queued stream playback.
  */
-zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequest(int hasWorldPos, float gain, zVec3* worldPos, zVec3* velocity)
+zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequest(float gain, int hasWorldPos, zVec3* worldPos, zVec3* velocity)
 {
     if (g_zSndStream_RootNode == 0) {
         zSndStreamMgrEnsureInit();
@@ -855,7 +862,11 @@ zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequest(int hasWorldPos, float 
         request->worldPos = *worldPos;
         if (velocity != 0) {
             request->velocity = *velocity;
+        } else {
+            request->velocity.x = request->velocity.y = request->velocity.z = 0.0f;
         }
+    } else {
+        request->hasWorldPos = 0;
     }
 
     return request->StateBeginGroup() != 0 ? (zSndPlayHandle*)(request) : 0;
@@ -906,11 +917,11 @@ extern "C" int __cdecl zSndStreamMgrEnsureInit()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-queuestreamrequestwithworldpos
  * @recoil-artifact defines .text recoil:function:0x4a53d0: zSndGroup::QueueStreamRequestWithWorldPos.
- *
+ * @recoil-match byte
  *
  * Purpose: queue a positional stream request for this sound group.
  */
 zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequestWithWorldPos(zVec3* worldPos, float gain, zVec3* velocity)
 {
-    return QueueStreamRequest(1, gain, worldPos, velocity);
+    return QueueStreamRequest(gain, 1, worldPos, velocity);
 }

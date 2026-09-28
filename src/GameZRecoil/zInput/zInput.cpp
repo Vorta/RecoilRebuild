@@ -1401,7 +1401,7 @@ int zInput_BindMapContext::ReadCommandInputState(int commandIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-copycommandlabel
  * @recoil-artifact defines .text recoil:function:0x470f50: zInput_BindMapContext::CopyCommandLabel.
- *
+ * @recoil-match byte
  *
  * Binary Ninja reads the class-owned m_commandLabels table at offset 0x10,
  * returns null for a missing command label, and otherwise copies the label with
@@ -1411,11 +1411,11 @@ int zInput_BindMapContext::ReadCommandInputState(int commandIndex)
 char* zInput_BindMapContext::CopyCommandLabel(int commandId, char* destBuf, int maxBytes)
 {
     char* source = m_commandLabels[commandId];
-    if (source == 0) {
-        return 0;
+    if (source != 0) {
+        return strncpy(destBuf, source, maxBytes);
     }
 
-    return strncpy(destBuf, source, maxBytes);
+    return 0;
 }
 
 /**
@@ -1654,7 +1654,7 @@ void __cdecl BindMapInitDikKeyNameTable()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initjoystickbuttonnametable
  * @recoil-artifact defines .text recoil:function:0x4715e0: zInput::BindMapInitJoystickButtonNameTable.
- *
+ * @recoil-match byte
  *
  * Binary Ninja shows the zinput.cpp initializer filling one-based
  * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
@@ -1675,7 +1675,7 @@ void __cdecl BindMapInitJoystickButtonNameTable()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initmousebuttonnametable
  * @recoil-artifact defines .text recoil:function:0x471640: zInput::BindMapInitMouseButtonNameTable.
- *
+ * @recoil-match byte
  *
  * Binary Ninja shows the zinput.cpp initializer filling one-based
  * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.

@@ -19,7 +19,7 @@ struct DipropDwordInit {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-applyclientcursorpostoos
  * @recoil-artifact defines .text recoil:function:0x470020: zInput::MouseApplyClientCursorPosToOS.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Convert the cached client mouse point to screen coordinates and
@@ -37,7 +37,7 @@ void __cdecl MouseApplyClientCursorPosToOS()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-updateclientrectandcenter
  * @recoil-artifact defines .text recoil:function:0x470060: zInput::MouseUpdateClientRectAndCenter.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Refresh mouse client dimensions, center coordinates, and inverse
@@ -55,7 +55,7 @@ void __cdecl MouseUpdateClientRectAndCenter()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-setnormalizedcursorpos
  * @recoil-artifact defines .text recoil:function:0x4700a0: zInput::MouseSetNormalizedCursorPos.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Clamp normalized cursor coordinates, convert them to cached client
@@ -88,7 +88,7 @@ void __stdcall MouseSetNormalizedCursorPos(float normX, float normY)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-recentercursor
  * @recoil-artifact defines .text recoil:function:0x470150: zInput::MouseRecenterCursor.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Move the cached mouse cursor position to the client center and
@@ -121,7 +121,7 @@ void __cdecl MouseRecenterCursorX()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-isinitialized
  * @recoil-artifact defines .text recoil:function:0x470190: zInput::MouseIsInitialized.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Return whether the DirectInput mouse device has been initialized.
@@ -256,7 +256,7 @@ void __cdecl MouseUpdateAcquireState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-shutdowndevice
  * @recoil-artifact defines .text recoil:function:0x470360: zInput::MouseShutdownDevice.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: deactivate mouse acquisition, release the mouse DirectInput device,

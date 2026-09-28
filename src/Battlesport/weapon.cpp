@@ -826,7 +826,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-cachegunhardpointsanddetachdisplays
  * @recoil-artifact defines .text recoil:function:0x4390d0: Player::CacheGunHardpointsAndDetachDisplays
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: cache the gun node and its fpnt_c/fpnt_l/fpnt_r hardpoint
@@ -839,9 +839,7 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
     playerState->gunNode = CZClass::FindSubNodeByName(playerState->rootNode, "gun");
     if (playerState->gunNode != 0) {
         float* const gunMatrix = CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode);
-        playerState->gunNodeMatrixPos.x = gunMatrix[9];
-        playerState->gunNodeMatrixPos.y = gunMatrix[10];
-        playerState->gunNodeMatrixPos.z = gunMatrix[11];
+        memcpy(&playerState->gunNodeMatrixPos, &gunMatrix[9], sizeof(playerState->gunNodeMatrixPos));
     }
 
     if (playerState->gunNode == 0) {
@@ -857,13 +855,12 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             &playerState->firePointCenter.z
         );
         if (detachDisplays != 0) {
-            unsigned int displayInstanceValue = 0;
+            unsigned int displayInstanceValue;
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
-            zDiPartial* const displayInstance = (zDiPartial*)displayInstanceValue;
-            if (displayInstance != 0 && displayInstance->refCount != 0) {
-                zDi::Release(displayInstance);
-                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
+                zDi::Release((zDiPartial*)displayInstanceValue);
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }
     }
@@ -877,13 +874,12 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             &playerState->firePointLeft.z
         );
         if (detachDisplays != 0) {
-            unsigned int displayInstanceValue = 0;
+            unsigned int displayInstanceValue;
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
-            zDiPartial* const displayInstance = (zDiPartial*)displayInstanceValue;
-            if (displayInstance != 0 && displayInstance->refCount != 0) {
-                zDi::Release(displayInstance);
-                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
+                zDi::Release((zDiPartial*)displayInstanceValue);
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }
     }
@@ -897,13 +893,12 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             &playerState->firePointRight.z
         );
         if (detachDisplays != 0) {
-            unsigned int displayInstanceValue = 0;
+            unsigned int displayInstanceValue;
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
-            zDiPartial* const displayInstance = (zDiPartial*)displayInstanceValue;
-            if (displayInstance != 0 && displayInstance->refCount != 0) {
-                zDi::Release(displayInstance);
-                zModel_DiPool::FreeIfUnreferenced(displayInstance);
+            if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
+                zDi::Release((zDiPartial*)displayInstanceValue);
+                zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }
     }
@@ -1039,11 +1034,10 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(int keyCode)
 
     zUtil_PlayerStateStorage* const displayPlayerState
         = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
-    PlayerGunFireController* const activeController = displayPlayerState->activePrimaryGunController;
     HudUiMessage::UpdateSelectedWeaponDisplay(
-        activeController->weaponBankIndex,
-        activeController->weaponSideIndex,
-        activeController->ammoOrCharge
+        displayPlayerState->activePrimaryGunController->weaponBankIndex,
+        displayPlayerState->activePrimaryGunController->weaponSideIndex,
+        displayPlayerState->activePrimaryGunController->ammoOrCharge
     );
 }
 /**
@@ -2243,7 +2237,7 @@ void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-buildgunfiretransform
  * @recoil-artifact defines .text recoil:function:0x43b1b0: Player::BuildGunFireTransform
- *
+ * @recoil-match byte
  *
  * Purpose: build the player gun-fire transform from the root and active modal
  * node matrices.
@@ -2253,38 +2247,37 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerModalState* const primaryModalState = saveState->primaryModalState;
 
-    zMat4x3 rootMatrix = { 0 };
+    zMat4x3 rootMatrix;
     memcpy(&rootMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode), sizeof(rootMatrix));
 
-    if (primaryModalState->modalNode == 0) {
+    if (primaryModalState->modalNode != 0) {
+        zMat4x3 modalMatrix;
+        memcpy(&modalMatrix, CZObject3D::gwObject3DGetMatrixPtr(primaryModalState->modalNode), sizeof(modalMatrix));
+
+        playerState->gunFireTransform.xx
+            = modalMatrix.xx * rootMatrix.xx + modalMatrix.xy * rootMatrix.yx + modalMatrix.xz * rootMatrix.zx;
+        playerState->gunFireTransform.xy
+            = modalMatrix.xx * rootMatrix.xy + modalMatrix.xy * rootMatrix.yy + modalMatrix.xz * rootMatrix.zy;
+        playerState->gunFireTransform.xz
+            = modalMatrix.xx * rootMatrix.xz + modalMatrix.xy * rootMatrix.yz + modalMatrix.xz * rootMatrix.zz;
+        playerState->gunFireTransform.yx
+            = modalMatrix.yx * rootMatrix.xx + modalMatrix.yy * rootMatrix.yx + modalMatrix.yz * rootMatrix.zx;
+        playerState->gunFireTransform.yy
+            = modalMatrix.yx * rootMatrix.xy + modalMatrix.yy * rootMatrix.yy + modalMatrix.yz * rootMatrix.zy;
+        playerState->gunFireTransform.yz
+            = modalMatrix.yx * rootMatrix.xz + modalMatrix.yy * rootMatrix.yz + modalMatrix.yz * rootMatrix.zz;
+        playerState->gunFireTransform.zx = modalMatrix.zy * rootMatrix.yx + modalMatrix.zz * rootMatrix.zx;
+        playerState->gunFireTransform.zy = modalMatrix.zy * rootMatrix.yy + modalMatrix.zz * rootMatrix.zy;
+        playerState->gunFireTransform.zz = modalMatrix.zy * rootMatrix.yz + modalMatrix.zz * rootMatrix.zz;
+        playerState->gunFireTransform.posX
+            = modalMatrix.posY * rootMatrix.yx + modalMatrix.posZ * rootMatrix.zx + rootMatrix.posX;
+        playerState->gunFireTransform.posY
+            = modalMatrix.posY * rootMatrix.yy + modalMatrix.posZ * rootMatrix.zy + rootMatrix.posY;
+        playerState->gunFireTransform.posZ
+            = modalMatrix.posY * rootMatrix.yz + modalMatrix.posZ * rootMatrix.zz + rootMatrix.posZ;
+    } else {
         memcpy(&playerState->gunFireTransform, &rootMatrix, sizeof(rootMatrix));
-        return;
     }
-
-    zMat4x3 modalMatrix = { 0 };
-    memcpy(&modalMatrix, CZObject3D::gwObject3DGetMatrixPtr(primaryModalState->modalNode), sizeof(modalMatrix));
-
-    playerState->gunFireTransform.xx
-        = modalMatrix.xx * rootMatrix.xx + modalMatrix.xy * rootMatrix.yx + modalMatrix.xz * rootMatrix.zx;
-    playerState->gunFireTransform.xy
-        = modalMatrix.xx * rootMatrix.xy + modalMatrix.xy * rootMatrix.yy + modalMatrix.xz * rootMatrix.zy;
-    playerState->gunFireTransform.xz
-        = modalMatrix.xx * rootMatrix.xz + modalMatrix.xy * rootMatrix.yz + modalMatrix.xz * rootMatrix.zz;
-    playerState->gunFireTransform.yx
-        = modalMatrix.yx * rootMatrix.xx + modalMatrix.yy * rootMatrix.yx + modalMatrix.yz * rootMatrix.zx;
-    playerState->gunFireTransform.yy
-        = modalMatrix.yx * rootMatrix.xy + modalMatrix.yy * rootMatrix.yy + modalMatrix.yz * rootMatrix.zy;
-    playerState->gunFireTransform.yz
-        = modalMatrix.yx * rootMatrix.xz + modalMatrix.yy * rootMatrix.yz + modalMatrix.yz * rootMatrix.zz;
-    playerState->gunFireTransform.zx = modalMatrix.zy * rootMatrix.yx + modalMatrix.zz * rootMatrix.zx;
-    playerState->gunFireTransform.zy = modalMatrix.zy * rootMatrix.yy + modalMatrix.zz * rootMatrix.zy;
-    playerState->gunFireTransform.zz = modalMatrix.zy * rootMatrix.yz + modalMatrix.zz * rootMatrix.zz;
-    playerState->gunFireTransform.posX
-        = modalMatrix.posY * rootMatrix.yx + modalMatrix.posZ * rootMatrix.zx + rootMatrix.posX;
-    playerState->gunFireTransform.posY
-        = modalMatrix.posY * rootMatrix.yy + modalMatrix.posZ * rootMatrix.zy + rootMatrix.posY;
-    playerState->gunFireTransform.posZ
-        = modalMatrix.posY * rootMatrix.yz + modalMatrix.posZ * rootMatrix.zz + rootMatrix.posZ;
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
@@ -2435,7 +2428,7 @@ int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-recordrecenthitfeedback
  * @recoil-artifact defines .text recoil:function:0x43b730: Player::RecordRecentHitFeedback
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: cache the latest hit source/context and restart the recent-hit
@@ -2482,7 +2475,7 @@ UpdateTimedHitStatusFromHitSource(zUtil_SaveGameState* saveState, OptCatalogEntr
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
-    if ((hitSource->flags & 0x800u) != 0) {
+    if ((unsigned char)(hitSource->flags >> 11) & 1) {
         HitSource::UpdateTimedStatus(hitSource, &playerState->timedHitStatus, masterCommonData->maxHealth);
         return damage;
     }
@@ -2905,9 +2898,10 @@ int __fastcall EnterDestroyedState(
 int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
     if (playerState->statusMeterValue > 0.0f) {
-        DamageFeedback::SetIntensityScalar(playerState->masterCommonData->invMaxHealth * playerState->statusMeterValue);
+        DamageFeedback::SetIntensityScalar(masterCommonData->invMaxHealth * playerState->statusMeterValue);
         return 0;
     }
 
@@ -3346,7 +3340,7 @@ void __fastcall ResetAltGunDoorAnimationState(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetaltgunruntimestate
  * @recoil-artifact defines .text recoil:function:0x43c850: Player::ResetAltGunRuntimeState
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear active alternate-gun firing, attachment, door, and transition
@@ -3362,11 +3356,15 @@ void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState* saveState)
         OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);
     }
 
-    OptCatalogRuntimeInstanceStorage* const attachState
-        = (OptCatalogRuntimeInstanceStorage*)(activeAltGunController->attachState);
-    if (attachState != 0) {
-        CZClass::RemoveChild(activeAltGunController->attachNodePrimary, attachState->projectileNode);
-        OptCatalog::RecycleRuntimeInstanceStorage(activeAltGunController->optCatalogEntry, attachState);
+    if (activeAltGunController->attachState != 0) {
+        CZClass::RemoveChild(
+            activeAltGunController->attachNodePrimary,
+            ((OptCatalogRuntimeInstanceStorage*)(activeAltGunController->attachState))->projectileNode
+        );
+        OptCatalog::RecycleRuntimeInstanceStorage(
+            activeAltGunController->optCatalogEntry,
+            (OptCatalogRuntimeInstanceStorage*)(activeAltGunController->attachState)
+        );
         activeAltGunController->attachState = 0;
     }
 
@@ -3378,37 +3376,33 @@ void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState* saveState)
 
     PlayerAltWeaponBank* bank = &playerState->altWeaponBanks[2];
     for (int i = 0; i < 8; ++i, ++bank) {
-        PlayerGunFireController* controller = &bank->controllerA;
-        CZNodePartial* attachNode = controller->attachNodePrimary;
-        if (attachNode != 0) {
-            CZClass::gwNodeSetActive(attachNode, 0);
+        if (bank->controllerA.attachNodePrimary != 0) {
+            CZClass::gwNodeSetActive(bank->controllerA.attachNodePrimary, 0);
             CZObject3D::gwObject3DSetPosition(
-                attachNode,
-                controller->attachPosX,
-                controller->attachPosY,
-                controller->attachPosZ
+                bank->controllerA.attachNodePrimary,
+                bank->controllerA.attachPosX,
+                bank->controllerA.attachPosY,
+                bank->controllerA.attachPosZ
             );
-            CZObject3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(bank->controllerA.attachNodePrimary, 1.0f, 1.0f, 1.0f);
         }
 
-        controller = &bank->controllerB;
-        attachNode = controller->attachNodePrimary;
-        if (attachNode != 0) {
-            CZClass::gwNodeSetActive(attachNode, 0);
+        if (bank->controllerB.attachNodePrimary != 0) {
+            CZClass::gwNodeSetActive(bank->controllerB.attachNodePrimary, 0);
             CZObject3D::gwObject3DSetPosition(
-                attachNode,
-                controller->attachPosX,
-                controller->attachPosY,
-                controller->attachPosZ
+                bank->controllerB.attachNodePrimary,
+                bank->controllerB.attachPosX,
+                bank->controllerB.attachPosY,
+                bank->controllerB.attachPosZ
             );
-            CZObject3D::gwObject3DSetScale(attachNode, 1.0f, 1.0f, 1.0f);
+            CZObject3D::gwObject3DSetScale(bank->controllerB.attachNodePrimary, 1.0f, 1.0f, 1.0f);
         }
     }
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-removealldeployedmines
  * @recoil-artifact defines .text recoil:function:0x43c950: Player::RemoveAllDeployedMines
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: remove deployed mine runtime instances from banks 4/5 controller
@@ -3417,26 +3411,25 @@ void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState* saveState)
 void __fastcall RemoveAllDeployedMines(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    CZNodePartial* const ownerNode = playerState->rootNode;
 
     OptCatalogEntryDef* entry = playerState->altWeaponBanks[4].controllerA.optCatalogEntry;
     if (entry != 0) {
-        OptCatalog::RemoveRuntimeInstance(entry, 0, ownerNode);
+        OptCatalog::RemoveRuntimeInstance(entry, 0, playerState->rootNode);
     }
 
     entry = playerState->altWeaponBanks[4].controllerB.optCatalogEntry;
     if (entry != 0) {
-        OptCatalog::RemoveRuntimeInstance(entry, 0, ownerNode);
+        OptCatalog::RemoveRuntimeInstance(entry, 0, playerState->rootNode);
     }
 
     entry = playerState->altWeaponBanks[5].controllerA.optCatalogEntry;
     if (entry != 0) {
-        OptCatalog::RemoveRuntimeInstance(entry, 0, ownerNode);
+        OptCatalog::RemoveRuntimeInstance(entry, 0, playerState->rootNode);
     }
 
     entry = playerState->altWeaponBanks[5].controllerB.optCatalogEntry;
     if (entry != 0) {
-        OptCatalog::RemoveRuntimeInstance(entry, 0, ownerNode);
+        OptCatalog::RemoveRuntimeInstance(entry, 0, playerState->rootNode);
     }
 }
 /**
@@ -3473,7 +3466,7 @@ enum { kOptCatalogKillVerbStringBytes = 20, kOptCatalogKillVerbStringCopyLimit =
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-zweapon-optcatalog-loadkillverbstring
  * @recoil-artifact defines .text recoil:function:0x43ca20: zWeapon_OptCatalog::LoadKillVerbString
- *
+ * @recoil-match byte
  *
  * Purpose: Allocate and populate the entry kill-verb string from the
  * optional KILL_VERB catalog node or default localized message.
@@ -3484,14 +3477,15 @@ void __fastcall LoadKillVerbString(zReader::Node* entryNode, OptCatalogEntryDef*
     entry->killVerbString = killVerbString;
 
     zReader::Node* const killVerbNode = zRdrGetNode(entryNode, g_Player_KillVerbToken);
-    const char* sourceText = 0;
     if (killVerbNode != 0) {
-        sourceText = zLoc::ResolveMessageKeyOrFallback(killVerbNode->value.nodes[1].value.str);
+        strncpy(
+            killVerbString,
+            zLoc::ResolveMessageKeyOrFallback(killVerbNode->value.nodes[1].value.str),
+            kOptCatalogKillVerbStringCopyLimit
+        );
     } else {
-        sourceText = zLoc::GetMessageString(0x250);
+        strncpy(killVerbString, zLoc::GetMessageString(0x250), kOptCatalogKillVerbStringCopyLimit);
     }
-
-    strncpy(killVerbString, sourceText, kOptCatalogKillVerbStringCopyLimit);
 }
 } // namespace zWeapon_OptCatalog
 

@@ -25,6 +25,13 @@
 #include <string.h>
 
 /*
+ * Writable option-name strings owned by the HUD option table; retail surface
+ * creation passes these globals (0x4da834/0x4da888), not pooled literals.
+ */
+extern "C" char g_zOpt_OptionName_GfxFlagsHw[];
+extern "C" char g_zOpt_OptionName_GfxFlagsSw[];
+
+/*
  * Recovered literal-backed zvid_dd.c physical contribution
  * [0x4a7b40, 0x4a9ac0). Definitions remain in natural retail source order.
  */
@@ -1230,8 +1237,9 @@ namespace zVideo_dd
         DDSURFACEDESC desc = { 0 };
         DDSCAPS attachedCaps = { 0 };
         int defaultGfxFlagsPayload = 0;
-        zOptionEntryPartial* gfxFlagsOption
-            = zGame::OptionsFindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
+        zOptionEntryPartial* gfxFlagsOption = zGame::OptionsFindOption(
+            g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_GfxFlagsHw : g_zOpt_OptionName_GfxFlagsSw
+        );
         if (gfxFlagsOption == 0) {
             gfxFlagsOption = (zOptionEntryPartial*)(&defaultGfxFlagsPayload);
         }
@@ -1313,8 +1321,9 @@ namespace zVideo_dd
     {
         DDSURFACEDESC desc = { 0 };
         int defaultGfxFlagsPayload = 0;
-        zOptionEntryPartial* gfxFlagsOption
-            = zGame::OptionsFindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
+        zOptionEntryPartial* gfxFlagsOption = zGame::OptionsFindOption(
+            g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_GfxFlagsHw : g_zOpt_OptionName_GfxFlagsSw
+        );
         if (gfxFlagsOption == 0) {
             gfxFlagsOption = (zOptionEntryPartial*)(&defaultGfxFlagsPayload);
         }

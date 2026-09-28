@@ -647,7 +647,7 @@ namespace zMath
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-crtmatherrhandler
  * @recoil-artifact defines .text recoil:function:0x472d30: zMath::CrtMatherrHandler
- *
+ * @recoil-match byte
  *
  * Purpose: reports CRT math exceptions and supplies recovered return values
  * for zMath asin, ceil, and floor failures.
@@ -1462,18 +1462,18 @@ zMathVec3ArrayAddScaled(zVec3* outArray, const zVec3* biasArray, const zVec3* sr
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-dirfromyaw
  * @recoil-artifact defines .text recoil:function:0x474580: zMathVec3DirFromYaw
- *
+ * @recoil-match byte
  *
  * Purpose: Clears the output vector, stages the canonical forward direction,
  * and rotates it around Y to produce a unit XZ direction from yaw.
  */
 void __fastcall zMathVec3DirFromYaw(zVec3* outDir, float yawAngle)
 {
+    zVec3 forward = { 0.0f, 0.0f, -1.0f };
     outDir->x = 0.0f;
     outDir->y = 0.0f;
     outDir->z = 0.0f;
 
-    const zVec3 forward = { 0.0f, 0.0f, -1.0f };
     zMath::Vec3RotateY(yawAngle, outDir, &forward);
 }
 

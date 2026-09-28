@@ -318,19 +318,15 @@ int __fastcall FindPointIndexXY(zGeometry_ClipPolygonPartial* clipPolygon, zVec3
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-upsertpointlistxy
  * @recoil-artifact defines .text recoil:function:0x46ab90: zGeometry_ClipPolygon::UpsertPointListXY
- *
+ * @recoil-match byte
  *
  * Purpose: Update matching clip-polygon points and insert candidate points that lie on clip-polygon edges.
  */
 int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int pointCount, zVec3* points)
 {
     int result = 0;
-    if (pointCount <= 0) {
-        return result;
-    }
-
-    zVec3* point = points;
-    {
+    if (pointCount > 0) {
+        zVec3* point = points;
         for (int remaining = pointCount; remaining != 0; --remaining) {
             const int existingIndex = zGeometry_ClipPolygon::FindPointIndexXY(clipPolygon, point);
             if (existingIndex != -1) {
@@ -339,19 +335,19 @@ int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int 
             } else {
                 const int edgeIndex = zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex(clipPolygon, point);
                 if (edgeIndex != -1) {
-                    const int oldPointCount = clipPolygon->pointCount;
-                    clipPolygon->points = (zVec3*)(realloc(clipPolygon->points, (oldPointCount + 1) * sizeof(zVec3)));
+                    clipPolygon->points
+                        = (zVec3*)(realloc(clipPolygon->points, (clipPolygon->pointCount + 1) * sizeof(zVec3)));
 
-                    if (edgeIndex != oldPointCount - 1) {
+                    if (edgeIndex != clipPolygon->pointCount - 1) {
                         memmove(
                             &clipPolygon->points[edgeIndex + 2],
                             &clipPolygon->points[edgeIndex + 1],
-                            (oldPointCount - edgeIndex - 1) * sizeof(zVec3)
+                            (clipPolygon->pointCount - edgeIndex - 1) * sizeof(zVec3)
                         );
                     }
 
                     clipPolygon->points[edgeIndex + 1] = *point;
-                    clipPolygon->pointCount = oldPointCount + 1;
+                    ++clipPolygon->pointCount;
                     result = 1;
                 }
             }
@@ -894,19 +890,17 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-getlinearbufferofpolygonvertices
  * @recoil-artifact defines .text recoil:function:0x46b650: zGeometry_Model::GetLinearBufferOfPolygonVertices
- *
+ * @recoil-match byte
  *
  * Purpose: Expand a model polygon's indexed vertices into a linear point buffer.
  */
 zVec3* __fastcall
 GetLinearBufferOfPolygonVertices(zModel_DrawBatchBasePartial* model, zModel_PolygonPartial* polygon, zVec3* points)
 {
-    const unsigned int vertexCount = polygon->vertexCountAndFlags & 0xff;
-    zVec3* result = (zVec3*)(realloc(points, vertexCount * sizeof(zVec3)));
+    zVec3* const result = (zVec3*)(realloc(points, (polygon->vertexCountAndFlags & 0xff) * sizeof(zVec3)));
 
-    for (unsigned int i = 0; i < vertexCount; ++i) {
-        const int vertexIndex = polygon->vertexIndices[i];
-        result[i] = model->verts[vertexIndex];
+    for (unsigned int i = 0; i < (polygon->vertexCountAndFlags & 0xff); ++i) {
+        result[i] = model->verts[polygon->vertexIndices[i]];
     }
 
     return result;

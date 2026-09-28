@@ -53,7 +53,7 @@ namespace zUtil_ZAR {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-registersectionhandler
  * @recoil-artifact defines .text recoil:function:0x4bffe0: zUtil_ZAR::RegisterSectionHandler
- *
+ * @recoil-match byte
  *
  * Purpose: forward a section handler registration to the active ZBD manager.
  */
@@ -65,9 +65,8 @@ void __fastcall RegisterSectionHandler(
     void* userData
 )
 {
-    zZbdManager* manager = g_zUtil_ZbdManager;
-    if (manager != 0) {
-        manager->RegisterSectionHandler(sectionName, onPreLoad, onDataReady, sortOrder, userData);
+    if (g_zUtil_ZbdManager != 0) {
+        g_zUtil_ZbdManager->RegisterSectionHandler(sectionName, onPreLoad, onDataReady, sortOrder, userData);
     }
 }
 
@@ -89,35 +88,35 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zbd-loadentriesglobal
  * @recoil-artifact defines .text recoil:function:0x4c0030: zUtil::ZBDLoadEntriesGlobal
- *
+ * @recoil-match byte
  *
  * Purpose: load ZBD entries through the active global ZBD manager when present.
  */
 int __fastcall ZBDLoadEntriesGlobal(const char* filename)
 {
-    zZbdManager* const manager = g_zUtil_ZbdManager;
-    if (manager == 0) {
-        return 0;
+    int result = 0;
+    if (g_zUtil_ZbdManager != 0) {
+        result = g_zUtil_ZbdManager->LoadEntries(filename);
     }
 
-    return manager->LoadEntries(filename);
+    return result;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zar-loadfileglobal
  * @recoil-artifact defines .text recoil:function:0x4c0050: zUtil::zZarLoadFileGlobal
- *
+ * @recoil-match byte
  *
  * Purpose: load a ZAR file through the active global ZBD manager when present.
  */
 int __fastcall zZarLoadFileGlobal(const char* filepath)
 {
-    zZbdManager* const manager = g_zUtil_ZbdManager;
-    if (manager == 0) {
-        return 0;
+    int result = 0;
+    if (g_zUtil_ZbdManager != 0) {
+        result = g_zUtil_ZbdManager->LoadZarFile(filepath);
     }
 
-    return manager->LoadZarFile(filepath);
+    return result;
 }
 
 /**
@@ -281,7 +280,7 @@ bool __fastcall zZbdSectionHandler::CompareSortOrderLessThan(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-registersectionhandler
  * @recoil-artifact defines .text recoil:function:0x4c0280: zZbdManager::RegisterSectionHandler
- *
+ * @recoil-match byte
  *
  * Purpose: add a unique section handler node to the manager's handler list.
  */
@@ -295,19 +294,21 @@ void zZbdManager::RegisterSectionHandler(
 {
     zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
     while (node != sectionHandlers.end()) {
-        if (strcmp(node->sectionName, sectionName) == 0) {
-            return;
+        if (strcmp(sectionName, node->sectionName) == 0) {
+            break;
         }
         ++node;
     }
 
-    zZbdSectionHandler sectionHandler;
-    sectionHandler.sectionName = sectionName;
-    sectionHandler.onPreLoad = onPreLoad;
-    sectionHandler.onDataReady = onDataReady;
-    sectionHandler.sortOrder = sortOrder;
-    sectionHandler.userData = userData;
-    sectionHandlers.push_back(sectionHandler);
+    if (node == sectionHandlers.end()) {
+        zZbdSectionHandler sectionHandler;
+        sectionHandler.sectionName = sectionName;
+        sectionHandler.onPreLoad = onPreLoad;
+        sectionHandler.onDataReady = onDataReady;
+        sectionHandler.sortOrder = sortOrder;
+        sectionHandler.userData = userData;
+        sectionHandlers.push_back(sectionHandler);
+    }
 }
 
 /**
@@ -426,18 +427,18 @@ int zZbdManager::WriteSectionRecord(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdsectionhandler-invokepreload
  * @recoil-artifact defines .text recoil:function:0x4c06a0: zZbdSectionHandler::InvokePreLoad
- *
+ * @recoil-match byte
  *
  * Purpose: invoke an optional pre-load section callback with user data.
  */
 int zZbdSectionHandler::InvokePreLoad(zZbdSectionCallbackCtx* callbackCtx)
 {
-    if (onPreLoad == 0) {
-        return 1;
+    typedef int(__fastcall * PreLoadCallback)(zZbdSectionCallbackCtx*, void*);
+    if (onPreLoad != 0) {
+        return ((PreLoadCallback)(onPreLoad))(callbackCtx, userData);
     }
 
-    typedef int(__fastcall * PreLoadCallback)(zZbdSectionCallbackCtx*, void*);
-    return ((PreLoadCallback)(onPreLoad))(callbackCtx, userData);
+    return 1;
 }
 
 /**

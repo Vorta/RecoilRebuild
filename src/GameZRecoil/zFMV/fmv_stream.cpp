@@ -101,7 +101,7 @@ char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-init
  * @recoil-artifact defines .text recoil:function:0x463d50: zFMV_Stream::Init.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize an FMV stream object, audio/video state, and critical section.
  */

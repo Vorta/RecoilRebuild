@@ -516,8 +516,9 @@ void __fastcall SetFatalDisconnectCallback(zNetworkFatalDisconnectCallback callb
  */
 void __cdecl ClearServiceProviderList()
 {
-    zNetworkServiceProviderListVec* const list = g_zNetwork_ServiceProviderList;
-    for (zNetworkServiceProviderListVec::iterator it = list->begin(); it != list->end(); ++it) {
+    zNetworkServiceProviderListVec::iterator it = g_zNetwork_ServiceProviderList->begin();
+    const zNetworkServiceProviderListVec::iterator end = g_zNetwork_ServiceProviderList->end();
+    for (; it != end; ++it) {
         zNetworkDPlayServiceProviderInfo* const info = *it;
         if (info != 0) {
             free(info->displayName);
@@ -530,7 +531,7 @@ void __cdecl ClearServiceProviderList()
         *it = 0;
     }
 
-    list->clear();
+    g_zNetwork_ServiceProviderList->clear();
 }
 
 /**
@@ -626,7 +627,7 @@ zNetworkServiceProviderListVec* __cdecl RefreshAndGetServiceProviderList()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-initializeconnectionfromproviderinfo
  * @recoil-artifact defines .text recoil:function:0x48a140: zNetworkDPlay::InitializeConnectionFromProviderInfo.
- *
+ * @recoil-match byte
  *
  * Purpose: pass provider connection data to DirectPlay and report failures.
  */
@@ -636,15 +637,15 @@ int __fastcall InitializeConnectionFromProviderInfo(zNetworkDPlayServiceProvider
     zNetwork_DPlay4* const directPlay = g_zNetwork_pDirectPlay4;
     const int hresult = directPlay->InitializeConnection(providerInfo->connectionData, 0);
 
-    if (hresult >= 0) {
-        return 1;
-    }
+    if (hresult < 0) {
+        if (hresult != kDPlayUserCancel) {
+            return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x7d);
+        }
 
-    if (hresult == kDPlayUserCancel) {
         return 0;
     }
 
-    return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x7d);
+    return 1;
 }
 
 /**
@@ -787,7 +788,7 @@ namespace zNetworkDPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-querycapsandconfiguresendmode
  * @recoil-artifact defines .text recoil:function:0x48a350: zNetworkDPlay::QueryCapsAndConfigureSendMode.
- *
+ * @recoil-match byte
  *
  * Purpose: query DirectPlay capabilities and select the TCP/IP synchronous or
  * asynchronous send path based on provider flags.
@@ -1290,7 +1291,7 @@ extern "C" int __fastcall zNetworkDPlaySendReliable(zNetworkPacketHeader* packet
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-dplay-sendexunreliabletracked
  * @recoil-artifact defines .text recoil:function:0x48ad70: zNetworkDPlaySendExUnreliableTracked.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: send an asynchronous unreliable packet and track the DirectPlay
@@ -1299,7 +1300,7 @@ extern "C" int __fastcall zNetworkDPlaySendReliable(zNetworkPacketHeader* packet
 extern "C" int __fastcall
 zNetworkDPlaySendExUnreliableTracked(zNetworkPacketHeader* packet, unsigned int packetSizeBytes)
 {
-    unsigned int flags = 0x600;
+    unsigned int flags;
     if (packet->packetType == 6) {
         flags = 0x200;
         if (g_zNetwork_LastSendExCompleted == 0) {
@@ -1307,6 +1308,8 @@ zNetworkDPlaySendExUnreliableTracked(zNetworkPacketHeader* packet, unsigned int 
         } else {
             g_zNetwork_LastSendExCompleted = 0;
         }
+    } else {
+        flags = 0x600;
     }
 
     const int hresult = g_zNetwork_pDirectPlay4->SendEx(
@@ -2162,37 +2165,35 @@ zNetworkDispatchHandlerList g_zNetwork_DispatchHandlerList;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketunreliable
  * @recoil-artifact defines .text recoil:function:0x48c060: zNetworkSendPacketUnreliable.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zNetwork/znet_dplay.cpp.
  * Purpose: route an unreliable packet to the sync or async DirectPlay send path.
  */
 extern "C" int __fastcall zNetworkSendPacketUnreliable(zNetworkPacketHeader* packet)
 {
-    const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
-        return zNetworkDPlaySendExUnreliableTracked(packet, packetSizeBytes);
+        return zNetworkDPlaySendExUnreliableTracked(packet, (unsigned short)(packet->packetSizeBytes));
     }
 
-    return zNetworkDPlaySendUnreliable(packet, packetSizeBytes);
+    return zNetworkDPlaySendUnreliable(packet, (unsigned short)(packet->packetSizeBytes));
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-sendpacketreliable
  * @recoil-artifact defines .text recoil:function:0x48c080: zNetworkSendPacketReliable.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: route a reliable packet to the sync or async DirectPlay send path.
  */
 extern "C" int __fastcall zNetworkSendPacketReliable(zNetworkPacketHeader* packet)
 {
-    const unsigned int packetSizeBytes = (unsigned short)(packet->packetSizeBytes);
     if (g_zNetwork_TcpIpAsyncSendEnabled != 0) {
-        return zNetworkDPlaySendExReliable(packet, packetSizeBytes);
+        return zNetworkDPlaySendExReliable(packet, (unsigned short)(packet->packetSizeBytes));
     }
 
-    return zNetworkDPlaySendReliable(packet, packetSizeBytes);
+    return zNetworkDPlaySendReliable(packet, (unsigned short)(packet->packetSizeBytes));
 }
 
 namespace zNetwork {

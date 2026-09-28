@@ -2715,7 +2715,7 @@ void __fastcall BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-dividecontoursegmentatpoint
  * @recoil-artifact defines .text recoil:function:0x468580: zGeometry_Weiler::DivideContourSegmentAtPoint
- *
+ * @recoil-match byte
  *
  * Purpose: Split a contour segment at a crossing point while preserving contour links.
  */
@@ -2744,11 +2744,10 @@ int __fastcall DivideContourSegmentAtPoint(
         nextSegment->startPoint = xing;
         nextSegment->endPoint = segment->endPoint;
 
-        zGeometry_WeilerContourSegmentPartial* const oldNext = segment->next;
         segment->endPoint = xing;
-        nextSegment->next = oldNext;
+        nextSegment->next = segment->next;
         nextSegment->prev = segment;
-        oldNext->prev = nextSegment;
+        segment->next->prev = nextSegment;
         segment->next = nextSegment;
 
         nextSegment->contourType = segment->contourType;
@@ -3769,7 +3768,7 @@ int __fastcall IsNearEqualXY(zVec3* vecA, zVec3* vecB, float tolerance)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-snappointtosegmentxyifnear
  * @recoil-artifact defines .text recoil:function:0x469e90: zGeometry_Vec3::SnapPointToSegmentXYIfNear
- *
+ * @recoil-match byte
  *
  * Purpose: Snap a nearby point onto a segment in XY while preserving Z.
  */
@@ -4069,7 +4068,7 @@ namespace zGeometry_Bounds2D {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-overlapswithunitmargin
  * @recoil-artifact defines .text recoil:function:0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
- *
+ * @recoil-match byte
  *
  * Purpose: Test XY bounds overlap with the retail one-unit margin.
  */

@@ -59,9 +59,9 @@ namespace {
 struct HudSensorTrackerMissionData {
     int missionId;
     int missionFlags;
+    int completedObjectiveCount;
     int currentObjectiveIndex;
     int firstIncompleteObjectiveIndex;
-    int completedObjectiveCount;
     int objectiveFlowState;
     float objectiveFlowDeadlineSecRaw;
     int missionStat0;
@@ -287,7 +287,7 @@ HudSensorTracker* HudSensorTracker::Constructor()
  */
 int HudSensorTracker::WriteMissionDataSection(zZbdSectionCallbackCtx* writer)
 {
-    HudSensorTrackerMissionData missionData = { 0 };
+    HudSensorTrackerMissionData missionData;
     missionData.missionId = missionId;
     missionData.missionFlags = missionFlags;
     missionData.currentObjectiveIndex = currentObjectiveIndex;
@@ -422,8 +422,7 @@ int __fastcall HudSensorTracker::ZarMissionRestoreCallback(
     HudSensorTracker* self
 )
 {
-    self->ApplyMissionDataAndReload(reader, token, missionData, dataSize);
-    return 1;
+    return self->ApplyMissionDataAndReload(reader, token, missionData, dataSize);
 }
 
 /**
@@ -1064,15 +1063,14 @@ void HudSensorTracker::AdvanceObjectiveState()
         HudUi::PlayPowerupSfx(0);
     }
 
-    HudSensorObjectiveSlot& firstIncompleteSlot = objectiveSlots[firstIncompleteObjectiveIndex];
     if (firstIncompleteObjectiveIndex == currentObjectiveIndex + 1) {
         SetObjectivePanelVisible(1);
-        currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
+        currentObjectiveReadSound = objectiveSlots[firstIncompleteObjectiveIndex].readSoundSample;
         currentObjectiveReadSound->PlayA3DSimple(1.0f);
-        objectiveFlowState = 0x68;
         objectiveFlowDeadlineSecRaw = objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
+        objectiveFlowState = 0x68;
     } else {
-        currentObjectiveReadSound = firstIncompleteSlot.readSoundSample;
+        currentObjectiveReadSound = objectiveSlots[firstIncompleteObjectiveIndex].readSoundSample;
         currentObjectiveReadSound->PlayDirectSound(0, 1.0f, 0x3e7);
         objectiveFlowState = 0x69;
     }
@@ -1291,15 +1289,13 @@ void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance
  */
 int HudSensorTracker::FindAndHighlightFirstIncompleteObjective()
 {
-    int objectiveIndex = 0;
-    while (objectiveIndex < objectiveCount && objectiveSlots[objectiveIndex].completedFlag != 0) {
-        ++objectiveIndex;
+    int objectiveIndex;
+    for (objectiveIndex = 0; objectiveIndex < objectiveCount; ++objectiveIndex) {
+        if (objectiveSlots[objectiveIndex].completedFlag == 0) {
+            SetObjectiveMarkerEnabledAndColor(objectiveIndex, 1, g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24);
+            break;
+        }
     }
-
-    if (objectiveIndex < objectiveCount) {
-        SetObjectiveMarkerEnabledAndColor(objectiveIndex, 1, g_HudSensorTracker_ObjectiveMarkerColorBlueRgb24);
-    }
-
     return objectiveIndex;
 }
 
@@ -1467,8 +1463,8 @@ void HudSensorTracker::SaveAndQueueMissionState()
  */
 int HudSensorTracker::QueueMissionFmvStateForMissionId(int missionId)
 {
-    g_RecoilApp.m_missionFmvState.SetMissionId(missionId);
     g_RecoilApp.m_missionFmvState.m_skipMissionFmv = 0;
+    g_RecoilApp.m_missionFmvState.SetMissionId(missionId);
     g_RecoilApp.QueueSwitchCurrentState(&g_RecoilApp.m_missionFmvState, 0);
     return 1;
 }
@@ -2110,7 +2106,7 @@ void HudUiNetGameSetupPanel_CancelButton::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduinumerictextinput-baseconstructor
  * @recoil-artifact defines .text recoil:function:0x41a190: Parameterized network text-input construction.
- *
+ * @recoil-match byte
  *
  * Retail constructs the numeric-input base at 0x4b49e0 before installing the
  * intermediate table at 0x4cfa70. The explicit argument sizes its text buffer.
@@ -2192,7 +2188,8 @@ int HudUiClampedIntTextInput::CommitAndGetValue()
 void HudUiClampedIntStepButton::OnActivate()
 {
     if (targetInput != 0) {
-        targetInput->SetValue(stepDelta + targetInput->CommitAndGetValue());
+        const int value = targetInput->CommitAndGetValue();
+        targetInput->SetValue(stepDelta + value);
         targetInput->Invalidate();
     }
 
@@ -2392,22 +2389,22 @@ HudUiNetGameSetupOverlayOwner g_HudUiNetGameSetupOverlayOwner;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-constructor
  * @recoil-artifact defines .text recoil:function:0x41aba0: HudUiNetGameSetupOverlayOwner constructor.
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: initialize the overlay owner state with no active setup panel and
  * no pending reconfigure request.
  */
 HudUiNetGameSetupOverlayOwner::HudUiNetGameSetupOverlayOwner()
-    : m_reconfigureExistingSession(0)
 {
     m_dialog = 0;
+    m_reconfigureExistingSession = 0;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetgamesetupoverlayowner-destructor
  * @recoil-artifact defines .text recoil:function:0x41abe0: HudUiNetGameSetupOverlayOwner destructor.
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: disable and delete any live multiplayer setup panel before clearing
@@ -3380,16 +3377,9 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
 
     GameNet::UpdateRemotePlayerHudWidgetScreenPos(saveState);
 
-    if (playerState->cameraTransitionTimer != 0) {
-        playerState->worldPos = playerState->netReceivedPos;
-        playerState->vehiclePitchRad = playerState->netReceivedAngles.x;
-        playerState->restartYawRad = playerState->netReceivedAngles.y;
-        playerState->vehicleRollRad = playerState->netReceivedAngles.z;
-    } else {
+    if (playerState->cameraTransitionTimer == 0) {
         zMath::Vec3Lerp(&playerState->worldPos, &playerState->netReceivedPos, 0.649999976f);
-        playerState->vehiclePitchRad = playerState->netReceivedAngles.x;
-        playerState->restartYawRad = playerState->netReceivedAngles.y;
-        playerState->vehicleRollRad = playerState->netReceivedAngles.z;
+        playerState->vehicleRotationAngles = playerState->netReceivedAngles;
 
         if (playerState->lifecycleState != kPlayerLifecycleDestroyed) {
             UpdateAltGunAimDirection(saveState);
@@ -3401,6 +3391,9 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
         if (ApplyDamageLocal(saveState) != 0) {
             playerState->cameraTransitionTimer = 1;
         }
+    } else {
+        playerState->worldPos = playerState->netReceivedPos;
+        playerState->vehicleRotationAngles = playerState->netReceivedAngles;
     }
 
     CZObject3D::gwObject3DSetPosition(
@@ -3411,9 +3404,9 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
     );
     CZObject3D::gwObject3DSetRotation(
         playerState->rootNode,
-        playerState->vehiclePitchRad,
-        playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRotationAngles.x,
+        playerState->vehicleRotationAngles.y,
+        playerState->vehicleRotationAngles.z
     );
 }
 
@@ -3586,17 +3579,16 @@ void __fastcall ClearRespawnTransitionFlagCallback(zUtil_SaveGameState* saveStat
  */
 void __cdecl DestroyedStateResetLocalFinalize()
 {
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
-    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    zUtil_PlayerStateStorage* const playerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
         playerState->lifecycleState = kPlayerLifecycleLocal;
         zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
         ApplyCameraState(g_PlayerPrevCameraState);
-        ResetMouseControlStateAndRecenterCursor(saveState);
-        ResetDamageStateAndTimedHitStatus(saveState);
+        ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState*)g_GameStateOrMapTable);
+        ResetDamageStateAndTimedHitStatus((zUtil_SaveGameState*)g_GameStateOrMapTable);
     }
 
-    Pickup::ApplyEffect(0x386, 0, saveState);
+    Pickup::ApplyEffect(0x386, 0, (zUtil_SaveGameState*)g_GameStateOrMapTable);
 }
 
 } // namespace Player
@@ -3731,9 +3723,8 @@ void CHudUiNetExitPanelResumeWidget::HidePreview()
 
         if (zInp::GetJoystickOption() == 0) {
             HudUiMgr::UpdateTargetReticleFromCursor(1, 0.0f, 0.0f, 0);
-            HudUiBackgroundContainer* const backgroundOwner = (HudUiBackgroundContainer*)(owner);
-            g_HudUiNetExitPanel_SavedInputFocus = backgroundOwner->GetInputFocus();
-            backgroundOwner->SetInputFocus(0);
+            g_HudUiNetExitPanel_SavedInputFocus = ((HudUiBackgroundContainer*)(owner))->GetInputFocus();
+            ((HudUiBackgroundContainer*)(owner))->SetInputFocus(0);
         }
 
         previewInputCaptureActive = 0;
@@ -3745,7 +3736,7 @@ void CHudUiNetExitPanelResumeWidget::HidePreview()
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-createglobal
  * @recoil-artifact defines .text recoil:function:0x41c000: HudUiNetExitPanel::CreateGlobal.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: allocate and construct the process-global network exit panel singleton.
@@ -3889,11 +3880,8 @@ void AiPropertyDlg::OnDestroy()
 {
     CWnd::OnDestroy();
 
-    const LRESULT selectedPropertyComboIndex = ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedPropertyIndex = ::SendMessageA(m_propertyCombo.m_hWnd, CB_GETITEMDATA, selectedPropertyComboIndex, 0);
-
-    const LRESULT selectedBehaviorComboIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETCURSEL, 0, 0);
-    m_selectedBehaviorIndex = ::SendMessageA(m_behaviorCombo.m_hWnd, CB_GETITEMDATA, selectedBehaviorComboIndex, 0);
+    m_selectedPropertyIndex = m_propertyCombo.GetItemData(m_propertyCombo.GetCurSel());
+    m_selectedBehaviorIndex = m_behaviorCombo.GetItemData(m_behaviorCombo.GetCurSel());
 
     ::ShowCursor(FALSE);
 }

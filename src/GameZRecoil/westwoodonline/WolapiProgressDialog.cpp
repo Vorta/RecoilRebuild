@@ -13,7 +13,7 @@ extern "C" HWND g_hWestwoodOnlineUpgradeProgressDialog;
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-constructor
  * @recoil-artifact defines .text recoil:function:0x442220: WestwoodOnlineUpgradeProgressDialog::WestwoodOnlineUpgradeProgressDialog (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: initialize the standalone WOL download progress dialog with its
  * MFC dialog resource and optional parent window. The implicit virtual
@@ -74,7 +74,7 @@ const AFX_MSGMAP* WestwoodOnlineUpgradeProgressDialog::GetMessageMap() const
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-setstatustextfmt
  * @recoil-artifact defines .text recoil:function:0x442270: WestwoodOnlineUpgradeProgressDialog::SetStatusTextFmt (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: formats text into the recovered 0x40-byte global buffer and writes
  * the progress status control.

@@ -1522,7 +1522,7 @@ struct HudUiManagerMeterBaseCandidate : HudUiBar {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-manager-meter-base.constructor
      * @recoil-artifact defines .text recoil:function:0x40d9e0: HudUiManagerMeterBaseCandidate::HudUiManagerMeterBaseCandidate.
-     *
+     * @recoil-match byte
      *
      * Purpose: clear the meter dimension words after bar construction.
      * Inline: retail 0x40fb70 expands it inside the out-of-line manager-meter
@@ -1553,7 +1553,7 @@ struct HudUiManagerMeterCandidate : HudUiMeterDimensionsCandidate {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-manager-meter.constructor
      * @recoil-artifact defines .text recoil:function:0x40fb70: HudUiManagerMeterCandidate::HudUiManagerMeterCandidate.
-     *
+     * @recoil-match byte
      *
      * Purpose: construct a manager meter through its dimension base.
      * Inline: InitHudLayouts calls this out-of-line copy for the shield
