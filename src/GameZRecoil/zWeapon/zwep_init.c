@@ -2700,13 +2700,13 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-buildimpacthitlist
      * @recoil-artifact defines .text recoil:function:0x4b09d0: OptCatalog::BuildImpactHitList
-     *
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is
      * OptCatalogRuntimeInstanceStorage*, with allowOwnerOnlyHit and outHitList
      * on the stack. Temporarily clears projectile raycastability, filters
-     * g_Player_RuntimeDiScene against a sphere at runtimeInstance->pos using
+     * g_OptCatalogRuntimeWorld against a sphere at runtimeInstance->pos using
      * impactProximity, restores raycastability, rejects owner-only hits when
      * requested, and returns success for an accepted hit list.
      * Purpose: collect nearby impact candidates for runtime-probe handling.
@@ -2725,7 +2725,7 @@ namespace OptCatalog
         }
 
         int result = CZDisplayInstance::FilterRegionsAgainstSphere(
-            g_Player_RuntimeDiScene,
+            g_OptCatalogRuntimeWorld,
             &runtimeInstance->pos,
             0,
             self->impactProximity,

@@ -10705,7 +10705,7 @@ void HudLayoutHW::UpdateObjectiveDirtyRect()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-onactivated
  * @recoil-artifact defines .text recoil:function:0x413340: HudLayoutHW::OnActivated.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: activate hardware HUD widgets, image variants, and sensor bounds.
@@ -10834,7 +10834,7 @@ void HudLayoutHW::UpdateAll(float deltaSeconds)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-enable
  * @recoil-artifact defines .text recoil:function:0x413540: HudLayoutHW::Enable.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: enable hardware HUD layout children and mark dependent widgets visible.

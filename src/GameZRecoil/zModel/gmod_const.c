@@ -3608,7 +3608,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setcurrentvariantcycletexturecount
      * @recoil-artifact defines .text recoil:function:0x484250: zDi::SetCurrentVariantCycleTextureCount
-     *
+     * @recoil-match byte
      *
      * Purpose: configure the current material cycle texture count.
      */
@@ -3617,8 +3617,8 @@ namespace zDi
         if (self == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
-                "%s(%d): ERROR setting model cycle texture. Model 3D pointer is NULL.\n",
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                g_zModel_SetModelCycleTextureNullModelFmt,
+                g_zModel_SourceFile_GmodConstC,
                 0xf3f
             );
             fprintf(stderr, g_zError_DebugMsgBuffer);
