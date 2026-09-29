@@ -7,6 +7,7 @@
 #include <dplobby.h>
 #include <objbase.h>
 
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2212,46 +2213,44 @@ RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mod
 }
 
 /**
+ * Original-source helper: std::remove_if predicate matching one registered
+ * packet handler; expanded inline into UnregisterPacketHandler.
+ */
+struct zNetworkDispatchHandlerMatch {
+    short packetType;
+    zNetworkPacketHandler handler;
+
+    zNetworkDispatchHandlerMatch(short type, zNetworkPacketHandler proc)
+        : packetType(type)
+        , handler(proc)
+    {
+    }
+
+    int operator()(zNetworkDispatchHandlerRecord* record) const
+    {
+        return packetType == record->packetType && handler == record->handler;
+    }
+};
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-unregisterpackethandler
  * @recoil-artifact defines .text recoil:function:0x48c120: zNetwork::UnregisterPacketHandler.
- *
+ * @recoil-match byte
  *
  * Purpose: remove packet-handler registrations matching a packet type and
  * handler procedure from the dispatch list.
  */
 int __fastcall UnregisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc)
 {
-    zNetworkDispatchHandlerList::iterator node = g_zNetwork_DispatchHandlerList.begin();
     const zNetworkDispatchHandlerList::iterator end = g_zNetwork_DispatchHandlerList.end();
-    if (node != end) {
-        do {
-            zNetworkDispatchHandlerRecord* const record = *node;
-            if (record->packetType == packetType && record->handler == handlerProc) {
-                break;
-            }
-
-            ++node;
-        } while (node != end);
-    }
-
-    if (node != end) {
-        zNetworkDispatchHandlerList::iterator write = node;
-        ++node;
-        if (node != end) {
-            do {
-                zNetworkDispatchHandlerRecord* const record = *node;
-                if (record->packetType != packetType || record->handler != handlerProc) {
-                    *write = record;
-                    ++write;
-                }
-
-                ++node;
-            } while (node != end);
-        }
-
-        g_zNetwork_DispatchHandlerList.erase(write, end);
-    }
-
+    g_zNetwork_DispatchHandlerList.erase(
+        std::remove_if(
+            g_zNetwork_DispatchHandlerList.begin(),
+            end,
+            zNetworkDispatchHandlerMatch((short)(packetType), handlerProc)
+        ),
+        end
+    );
     return 1;
 }
 
