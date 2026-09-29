@@ -9463,7 +9463,7 @@ void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolypervertexalphaorshade
  * @recoil-artifact defines .text recoil:function:0x499ec0: zRndrSubmitTexturedPolyPerVertexAlphaOrShade
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.

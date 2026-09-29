@@ -11063,7 +11063,7 @@ namespace HudUiMgr {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.destroysensorwindow
  * @recoil-artifact defines .text recoil:function:0x413730: HudUiMgr::DestroySensorWindow.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiMgr::DestroySensorWindow.
  */

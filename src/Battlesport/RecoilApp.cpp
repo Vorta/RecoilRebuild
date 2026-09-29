@@ -5467,7 +5467,7 @@ RecoilApp_MfcOleModule::~RecoilApp_MfcOleModule()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoilapp-mfcolemodule-initinstance
  * @recoil-artifact defines .text recoil:function:0x4429d0: RecoilApp_MfcOleModule::InitInstance.
- *
+ * @recoil-match byte
  *
  * Purpose: create, connect, show, and update the primary Recoil frame window.
  */
