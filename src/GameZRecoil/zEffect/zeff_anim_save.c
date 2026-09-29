@@ -131,7 +131,7 @@ namespace zEffect_Anim
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: release the queued activation-record table and reset the record count.
      */
-    void __cdecl ClearActivationRecords()
+    void __fastcall ClearActivationRecords()
     {
         if (g_zEffectAnim_ActivationRecordTable != 0) {
             free(g_zEffectAnim_ActivationRecordTable);

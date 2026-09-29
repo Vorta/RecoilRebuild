@@ -401,7 +401,7 @@ extern float g_Player_CameraHeadingLerpBaseWhenFlagSet;
 }
 
 namespace Checkpoint {
-void __cdecl InstantiateNamedObjects();
+void __fastcall InstantiateNamedObjects();
 void __fastcall UpdatePlayerLapProgressAndNotifyNet(zUtil_SaveGameState* saveState, int checkpointIndex);
 } // namespace Checkpoint
 
@@ -571,7 +571,7 @@ void __fastcall zZarReadMissionSaveDataSection(
     unsigned int byteCount,
     void* userData
 );
-void __cdecl zZarRegisterSections();
+void __fastcall zZarRegisterSections();
 int __fastcall zZarWriteMissionSaveDataSection(zZbdSectionCallbackCtx* writer, void* userData);
 void __fastcall zZarReadVehicleListSection(
     zZbdSectionCallbackCtx* reader,
@@ -731,7 +731,7 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState);
 void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState* saveState);
 void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState);
 void __fastcall DestroySaveGameState(zUtil_SaveGameState* saveState);
-void __cdecl ShutdownMissionRuntime();
+void __fastcall ShutdownMissionRuntime();
 } // namespace Player
 
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterWeaponSpec, next) == 0x00);

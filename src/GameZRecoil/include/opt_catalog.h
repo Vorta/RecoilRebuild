@@ -287,7 +287,7 @@ void __fastcall ClearRuntimeInstances(OptCatalogEntryDef* self);
 void __fastcall
 RecycleRuntimeInstanceStorage(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance);
 int __cdecl Shutdown();
-int __cdecl ShutdownCore();
+int __fastcall ShutdownCore();
 int __fastcall FreeTrailRuntimeStateStorage(void* trailRuntimeState);
 int __fastcall DeactivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState);
 void __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState, int playerOrdinal);

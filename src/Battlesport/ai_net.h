@@ -144,7 +144,7 @@ struct AINet {
     static void __cdecl BuildAiPeerRingsByAiNetId();
     static void __fastcall AiDiscardNegativeBranchPathNodes(zUtil_SaveGameState* saveState);
     void Free();
-    static void __cdecl FreeAll();
+    static void __fastcall FreeAll();
 };
 
 extern "C" {

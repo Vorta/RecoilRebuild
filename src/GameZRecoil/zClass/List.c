@@ -350,7 +350,7 @@ namespace CZClass
      * Purpose: process dirty deferred-removal buckets and then drain pending
      * node frees while deferred work is enabled.
      */
-    int __cdecl ProcessDeferredWork()
+    int __fastcall ProcessDeferredWork()
     {
         if (g_CZClass_DeferredProcessingEnabled == 0) {
             return 1;
@@ -538,12 +538,12 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences
      * @recoil-artifact defines .text recoil:function:0x44ebe0: CZTypeList::UpdateSequences.
-     *
+     * @recoil-match byte
      *
      * Purpose: update all non-pending sequence nodes while deferring list
      * mutations during the pass.
      */
-    int __cdecl UpdateSequences()
+    int __fastcall UpdateSequences()
     {
         CZTypeListLink* link = g_CZTypeList_Buckets[14].head;
         if (link == 0) {
@@ -568,12 +568,12 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateanimations
      * @recoil-artifact defines .text recoil:function:0x44ec30: CZTypeList::UpdateAnimations.
-     *
+     * @recoil-match byte
      *
      * Purpose: update active animation nodes while deferring list mutations
      * during the pass.
      */
-    int __cdecl UpdateAnimations()
+    int __fastcall UpdateAnimations()
     {
         CZTypeListLink* link = g_CZTypeList_Buckets[15].head;
         if (link == 0) {

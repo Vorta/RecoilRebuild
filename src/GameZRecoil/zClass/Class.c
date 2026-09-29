@@ -289,12 +289,12 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.allocnodefromfreelist
      * @recoil-artifact defines .text recoil:function:0x4478c0: CZClass::gwNodeNew.
-     *
+     * @recoil-match byte
      *
      * Purpose: pop a node from the global free list, clear it, and install
      * default active-node state.
      */
-    CZNodePartial* __cdecl gwNodeNew()
+    CZNodePartial* __fastcall gwNodeNew()
     {
         const int index = g_CZClass_NodeFreeHeadIndex;
         if (index != -1) {

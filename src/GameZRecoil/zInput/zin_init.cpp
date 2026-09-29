@@ -534,7 +534,7 @@ int __cdecl DIReleaseJoystickRef()
  * Purpose: Increment the mouse polling reference count and reset transition
  * state when the first active reference is acquired.
  */
-int __cdecl MouseAddRef()
+int __fastcall MouseAddRef()
 {
     if ((g_zInputMouseFlags & 1) != 0) {
         if (g_zInputMousePollRefCount == 0) {

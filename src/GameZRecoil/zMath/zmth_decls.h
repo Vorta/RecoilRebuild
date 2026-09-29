@@ -103,7 +103,7 @@ extern float** g_currentMatrixPtrSlot;
 int __cdecl CrtMatherrHandler(_exception* except);
 void __fastcall MatStackPushPtr(float* matrix);
 void __fastcall MatStackPushAndCloneParent(float* newSlotBuffer);
-void __cdecl MatStackPopPtr();
+void __fastcall MatStackPopPtr();
 void __cdecl MatLoadCameraScratchB();
 void __cdecl MatLoadCameraScratchA();
 void __cdecl MatLoadIdentity();

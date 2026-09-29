@@ -469,7 +469,7 @@ extern char g_zSndConfig_LoopedKey[0x07];
 extern char g_zSndConfig_3dKey[0x03];
 extern "C" char g_zEffectAnim_TokenRange[0x06];
 
-extern "C" int __cdecl zSndBackendInitA3D();
+extern "C" int __fastcall zSndBackendInitA3D();
 extern "C" int __cdecl zSndBackendInitDirectSound();
 extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd);
 extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity);

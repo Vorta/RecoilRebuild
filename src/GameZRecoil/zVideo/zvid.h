@@ -922,7 +922,7 @@ extern "C" zVidImagePartial* __fastcall zVidTexturePackLoadBuiltinImageByName(co
 
 namespace zVid_TexturePack {
 void __cdecl ShutdownBuiltinPacks();
-void __cdecl Shutdown();
+void __fastcall Shutdown();
 } // namespace zVid_TexturePack
 
 namespace zVideo_dd {

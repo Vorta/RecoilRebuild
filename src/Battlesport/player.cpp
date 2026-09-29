@@ -2914,14 +2914,14 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-zar-registersections
  * @recoil-artifact defines .text recoil:function:0x41f5b0: Player::zZarRegisterSections
- *
+ * @recoil-match byte
  *
  * BN evidence: resets g_Player_RuntimeInputFlags and registers VehicleList and
  * Player callbacks through zUtil_ZAR::RegisterSectionHandler with sort orders 100
  * and 200.
  * Purpose: install Player-owned ZAR section callbacks for save/load.
  */
-void __cdecl zZarRegisterSections()
+void __fastcall zZarRegisterSections()
 {
     g_Player_RuntimeInputFlags = 0;
     zUtil_ZAR::RegisterSectionHandler(
@@ -3167,7 +3167,7 @@ namespace Player {
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
  */
-void __cdecl ShutdownMissionRuntime()
+void __fastcall ShutdownMissionRuntime()
 {
     while (1) {
         zUtil_SaveGameState* const saveStateHead = g_PlayerSaveStateList.head;
@@ -3738,7 +3738,7 @@ namespace zReader {
 /**
  * Purpose: load mover definitions from the current ZRD tree.
  */
-void __cdecl LoadMoversFromZrd()
+void __fastcall LoadMoversFromZrd()
 {
     Node* const treeRoot = Load("movers.zrd", 0, 0);
     if (treeRoot == 0) {
@@ -3763,12 +3763,12 @@ namespace Checkpoint {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-checkpoint-instantiatenamedobjects
  * @recoil-artifact defines .text recoil:function:0x420c60: Checkpoint::InstantiateNamedObjects
- *
+ * @recoil-match byte
  *
  * Purpose: Resolves checkpoint nodes by name and recursively stamps their race
  * checkpoint flags and callback context.
  */
-void __cdecl InstantiateNamedObjects()
+void __fastcall InstantiateNamedObjects()
 {
     CString searchName;
     const int checkpointCount = g_HudSensorTracker.checkpointCount;

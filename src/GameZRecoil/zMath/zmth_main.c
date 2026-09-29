@@ -747,7 +747,7 @@ namespace zMath
      *
      * Purpose: pops the current zMath matrix pointer and identity-flag slots.
      */
-    void __cdecl MatStackPopPtr()
+    void __fastcall MatStackPopPtr()
     {
         --g_currentMatrixIdentityFlagSlot;
         --g_currentMatrixPtrSlot;

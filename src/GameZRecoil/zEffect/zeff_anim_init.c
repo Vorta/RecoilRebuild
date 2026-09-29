@@ -51,7 +51,7 @@ namespace zEffect_Anim
      * Purpose: reset animation globals, seed runtime random values, and register
      * animation save/load ZAR section handlers.
      */
-    int __cdecl Init()
+    int __fastcall Init()
     {
         if (g_zEffectAnim_State.entriesInstantiated != 0) {
             Shutdown();
@@ -1124,13 +1124,13 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.loadandinstantiate
      * @recoil-artifact defines .text recoil:function:0x45fb30: zEffect_Anim::LoadAndInstantiate.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: ensure animation entries are loaded, bind runtime roots, install
      * callbacks, capture initial node state, and mark entries instantiated.
      */
-    int __cdecl LoadAndInstantiate()
+    int __fastcall LoadAndInstantiate()
     {
         char runtimeNodeName[0x24];
         if (g_zEffectAnim_State.entriesInstantiated != 0) {
@@ -1286,13 +1286,13 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.shutdown
      * @recoil-artifact defines .text recoil:function:0x45fe50: zEffect_Anim::Shutdown.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: free loaded animation heap, entries, localized text records, and
      * queued activation records, then clear animation-load state.
      */
-    int __cdecl Shutdown()
+    int __fastcall Shutdown()
     {
         if (g_zEffectAnim_State.heapPtr != 0) {
             free(g_zEffectAnim_State.heapPtr);

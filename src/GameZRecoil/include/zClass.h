@@ -883,7 +883,7 @@ int __fastcall UpdateAllSounds(CZNodePartial* world);
 } // namespace CZWorld
 
 namespace CZObject3D {
-CZNodePartial* __cdecl gwObject3DInit();
+CZNodePartial* __fastcall gwObject3DInit();
 int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
 int __fastcall PropagateTransformDirty(CZNodePartial* node);
 int __fastcall gwObject3DSetVisibleFlag(CZNodePartial* node, int visible);
@@ -963,7 +963,7 @@ int __fastcall SetTargetNodeAndRange(CZNodePartial* node, CZNodePartial* target,
 } // namespace CZLod
 
 namespace CZLight {
-CZNodePartial* __cdecl gwLightNew();
+CZNodePartial* __fastcall gwLightNew();
 int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
 int __fastcall DeleteNode(CZNodePartial* node);
 int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
@@ -1067,8 +1067,8 @@ int __fastcall InsertChildNodes(int bucket, CZNodePartial* node);
 void __cdecl UpdateAllBuckets();
 void __fastcall UpdateBucket(CZTypeListLink* bucket);
 int __cdecl UpdateQueuedTrees();
-int __cdecl UpdateSequences();
-int __cdecl UpdateAnimations();
+int __fastcall UpdateSequences();
+int __fastcall UpdateAnimations();
 } // namespace CZTypeList
 
 namespace CZNode {
@@ -1100,7 +1100,7 @@ int __cdecl Init();
 int __cdecl ResetCurrentZbdPath();
 int __cdecl ShutdownCore();
 int __cdecl Shutdown();
-int __cdecl ProcessDeferredWork();
+int __fastcall ProcessDeferredWork();
 int __fastcall NodePtrToValidatedIndex(CZNodePartial* node);
 CZNodePartial* __fastcall FindByTypeAndName(int bucket, const char* name);
 int __fastcall FindNextByTypePrefixPredicate(CZNodePartial* node);
@@ -1110,7 +1110,7 @@ int __fastcall RemoveChildChecked(CZNodePartial* parent, CZNodePartial* child);
 } // namespace CZClass
 
 namespace CZClass {
-CZNodePartial* __cdecl gwNodeNew();
+CZNodePartial* __fastcall gwNodeNew();
 int __fastcall DeleteNodeByType(CZNodePartial* node);
 int __fastcall gwNodeUpdate(CZNodePartial* node);
 int __cdecl gwNodeUpdateAll();
@@ -1231,7 +1231,7 @@ int __fastcall Update(CZNodePartial* node);
 } // namespace CZSequence
 
 namespace CZLight {
-int __cdecl InitThermalGlowPool();
+int __fastcall InitThermalGlowPool();
 int __cdecl DestroyThermalGlowPool();
 CZNodePartial* __fastcall AllocFromFreeListAndAttach(zColorRgb* specularColor);
 void __fastcall ReturnToFreeList(CZNodePartial* lightNode);

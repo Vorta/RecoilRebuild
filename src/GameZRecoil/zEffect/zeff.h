@@ -906,10 +906,10 @@ extern char g_zEffectAnim_ResetTraceFmt[0x12];
 }
 
 namespace zEffect_Anim {
-int __cdecl Init();
-int __cdecl Shutdown();
+int __fastcall Init();
+int __fastcall Shutdown();
 int __cdecl ShutdownIfLoaded();
-void __cdecl ClearActivationRecords();
+void __fastcall ClearActivationRecords();
 int __fastcall HasActivationRecord(zEffectAnimActivationRecord* record);
 zEffectAnimActivationRecord* __cdecl AllocActivationRecord();
 int __cdecl GetActivationRecordCount();
@@ -961,7 +961,7 @@ int __fastcall GetActivationRecordPackedSize(zEffectAnimActivationRecord* record
 void __cdecl DiscardLastActivationRecord();
 void __fastcall SetZbdFilename(const char* filename);
 int __cdecl LoadZbd();
-int __cdecl LoadAndInstantiate();
+int __fastcall LoadAndInstantiate();
 void __fastcall
 SetActivationDispatchContext(void(__fastcall* callback)(zEffectAnimActivationRecord* record), int context);
 } // namespace zEffect_Anim
@@ -1087,7 +1087,7 @@ int __fastcall ShutdownEntry(zEffectAnimEntry* self);
 } // namespace zEffectAnim
 
 namespace zEffect {
-int __cdecl Init();
+int __fastcall Init();
 int __fastcall InitFromPath(CZNodePartial* worldNode, CZNodePartial* cameraNode, const char* path);
 void __fastcall SetWorldNode(CZNodePartial* worldNode);
 void __fastcall SetResourceNode(CZNodePartial* resourceNode);
@@ -1183,6 +1183,6 @@ HandleCallbackEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtime, 
 int __fastcall HandleTopMessageEvent(zEffectAnimEntry* self, zEffectTopMessageEvent* event);
 int __fastcall CleanupLightRefs(zEffectAnimEntry* self);
 int __fastcall CleanupSoundRefs(zEffectAnimEntry* self);
-int __cdecl Reset();
+int __fastcall Reset();
 int __cdecl ShutdownAll();
 } // namespace zEffect

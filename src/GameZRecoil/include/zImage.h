@@ -69,7 +69,7 @@ int __cdecl ShutdownSubsystem();
 } // namespace zImage
 
 namespace zVid_TexDir {
-int __cdecl Shutdown();
+int __fastcall Shutdown();
 }
 
 namespace zImg {

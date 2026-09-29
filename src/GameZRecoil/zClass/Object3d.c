@@ -105,7 +105,7 @@ namespace CZObject3D
      * Purpose: allocate an Object3D node, attach zeroed Object3D data, and
      * initialize/queue its default transform state.
      */
-    CZNodePartial* __cdecl gwObject3DInit()
+    CZNodePartial* __fastcall gwObject3DInit()
     {
         CZNodePartial* node = CZClass::gwNodeNew();
         if (node == 0) {

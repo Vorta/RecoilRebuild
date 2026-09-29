@@ -750,7 +750,7 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.
  */
-extern "C" int __cdecl zSndBackendInitA3D()
+extern "C" int __fastcall zSndBackendInitA3D()
 {
     if (CoInitialize(0) < 0) {
         return 0;

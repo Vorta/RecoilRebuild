@@ -45,7 +45,7 @@ int __fastcall FindGlobalStringPrefixIndex(const char* text);
 int __fastcall FileExists(const char* path);
 const char* __fastcall FindFile(const char* filename, const char* extraSearchPath);
 int __fastcall BuildResolvedParentDir(const char* filename, char* outParentDir);
-void __cdecl LoadMoversFromZrd();
+void __fastcall LoadMoversFromZrd();
 } // namespace zReader
 
 extern "C" {

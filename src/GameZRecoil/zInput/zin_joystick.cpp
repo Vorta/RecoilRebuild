@@ -211,7 +211,7 @@ int __stdcall DIEnumDevicesCallbackSelectFirstJoystick(const DIDeviceInstance* i
  *
  * Purpose: Acquire the DirectInput joystick device when one is available.
  */
-int __cdecl DIAcquireJoystickDevice()
+int __fastcall DIAcquireJoystickDevice()
 {
     if (g_zInput_JoystickDevice != 0) {
         const int result = g_zInput_JoystickDevice->Acquire();

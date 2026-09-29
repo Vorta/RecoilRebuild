@@ -3681,12 +3681,12 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdowncore
      * @recoil-artifact defines .text recoil:function:0x4b1d90: OptCatalog::ShutdownCore.
-     *
+     * @recoil-match byte
      *
      * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
      * and reset runtime globals to initialization defaults.
      */
-    int __cdecl ShutdownCore()
+    int __fastcall ShutdownCore()
     {
         OptCatalogEntryDef* entryPtr = g_OptCatalog_EntryTable;
         for (int i = 0; i < g_OptCatalog_EntryCount; ++i, ++entryPtr) {
@@ -3910,7 +3910,7 @@ namespace CZLight
      * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
      * names, positions, and ranges, then link every node onto the free list.
      */
-    int __cdecl InitThermalGlowPool()
+    int __fastcall InitThermalGlowPool()
     {
         for (int i = 0; i < 8; ++i) {
             CZNodePartial* const light = CZLight::gwLightNew();

@@ -459,7 +459,7 @@ namespace zVid_TexDir {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-texdir-shutdown
  * @recoil-artifact defines .text recoil:function:0x46d5d0: zVid_TexDir::Shutdown.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: shut down texture-directory entries, palette remap storage, and
@@ -470,7 +470,7 @@ namespace zVid_TexDir {
  * then unconditionally calls the active upload-surface release callback before
  * freeing palette remap tables, recipes, and both texture-pack banks.
  */
-int __cdecl Shutdown()
+int __fastcall Shutdown()
 {
     for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
         zImage_TexDirEntryPartial& entry = g_zImage_TexDirEntries[i];
@@ -593,7 +593,7 @@ namespace zVid_TexturePack {
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Purpose: release the dynamically loaded texture-pack bank.
  */
-void __cdecl Shutdown()
+void __fastcall Shutdown()
 {
     for (int i = 0; i < g_zVid_TexturePackCount; ++i) {
         zVidTexturePackEntry& entry = g_zVid_TexturePacks[i];

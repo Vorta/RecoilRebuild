@@ -42,7 +42,7 @@ namespace zEffect
      * Purpose: reset the runtime effect manager and initialize zEffect animation
      * state.
      */
-    int __cdecl Init()
+    int __fastcall Init()
     {
         g_zEffect_RuntimeManager.initialized = 0;
         g_zEffect_RuntimeManager.templateCount = 0;
@@ -177,13 +177,13 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.reset
      * @recoil-artifact defines .text recoil:function:0x460330: zEffect::Reset.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: free loaded runtime template data, delete recycled effect nodes,
      * destroy the free list, and reinitialize zEffect state.
      */
-    int __cdecl Reset()
+    int __fastcall Reset()
     {
         if (g_zEffect_RuntimeManager.loadedTemplateTree != 0) {
             // Retail stores zReader::Free's (zero) result back into the tree slot.

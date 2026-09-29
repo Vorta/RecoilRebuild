@@ -22,12 +22,12 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightnew
      * @recoil-artifact defines .text recoil:function:0x452fd0: CZLight::gwLightNew
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate and initialize a light node, its light-class data,
      * default bounds, modes, color, range, and type-list membership.
      */
-    CZNodePartial* __cdecl gwLightNew()
+    CZNodePartial* __fastcall gwLightNew()
     {
         CZNodePartial* node = CZClass::gwNodeNew();
         if (node == 0) {
