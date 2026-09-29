@@ -206,7 +206,7 @@ ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char
     if (resolvedNode == 0) {
         zError::ReportOld(
             0x400,
-            "D:\\Proj\\Battlesport\\mission.cpp",
+            g_HudSensorTracker_MissionCppSourcePath,
             sourceLine,
             missingFormat,
             objectiveIndex,
@@ -899,7 +899,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         if (objectiveIndex == 10) {
             zError::ReportOld(
                 0x400,
-                "D:\\Proj\\Battlesport\\mission.cpp",
+                g_HudSensorTracker_MissionCppSourcePath,
                 0x2ee,
                 g_HudSensorTracker_ObjectivesArrayOverflowFmt,
                 objectiveIndex
@@ -922,7 +922,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         if (slot.objectiveImage == 0) {
             zError::ReportOld(
                 0x800,
-                "D:\\Proj\\Battlesport\\mission.cpp",
+                g_HudSensorTracker_MissionCppSourcePath,
                 0x2ff,
                 g_HudSensorTracker_ObjectiveImageMissingFmt,
                 objectiveNumber,
@@ -1500,7 +1500,7 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\mission.cpp",
+            g_HudSensorTracker_MissionCppSourcePath,
             0x5f6,
             g_HudSensorTracker_ReadFileFailedFmt,
             zrdPath
@@ -3307,7 +3307,7 @@ int NetSessionBrowserDialog::ValidatePlayerName()
  * @recoil-artifact defines .text recoil:function:0x41b780: NetSessionBrowserDialog::OnHelpDocs.
  * @recoil-artifact emits .text recoil:data:0x41b898: VC5-generated five-entry switch jump table.
  * @recoil-artifact emits .text recoil:data:0x41b8ac: VC5-generated FindExecutableA result classifier table.
- *
+ * @recoil-match byte
  *
  * Purpose: Open the bundled help document or show the matching shell error.
  */

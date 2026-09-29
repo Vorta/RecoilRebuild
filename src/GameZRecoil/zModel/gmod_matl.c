@@ -433,7 +433,7 @@ namespace zModel_Matl
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-initglobals
      * @recoil-artifact defines .text recoil:function:0x480ae0: zModel_Matl::InitGlobals
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate and initialize the global material-slot pool and default material.
      */
@@ -826,7 +826,7 @@ namespace zModel_Material
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-setcycletexturecount
      * @recoil-artifact defines .text recoil:function:0x481050: zModel_Material::SetCycleTextureCount
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate or grow the material texture-cycle frame table.
      */

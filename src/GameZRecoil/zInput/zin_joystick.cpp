@@ -401,7 +401,7 @@ int __cdecl DIIsJoystickDeviceReady()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-polljoystickstate
  * @recoil-artifact defines .text recoil:function:0x4722c0: zInput::DIPollJoystickState.
- *
+ * @recoil-match byte
  *
  * Purpose: poll the DirectInput joystick, normalize absent axes, and update
  * the current/previous joystick state snapshots.
@@ -417,16 +417,12 @@ DIJOYSTATE2* __fastcall DIPollJoystickState(unsigned char dispatchCallbacks)
     const int result = device->GetDeviceState(sizeof(DIJOYSTATE2), &g_zInput_JoystickRawDIState);
 
     if (g_zInput_JoystickAxisCount < 3) {
-        g_zInput_JoystickRawDIState.lZ = 0;
-        g_zInput_JoystickRawDIState.lVZ = 0;
-        g_zInput_JoystickRawDIState.lAZ = 0;
-        g_zInput_JoystickRawDIState.lFZ = 0;
+        g_zInput_JoystickRawDIState.lZ = g_zInput_JoystickRawDIState.lVZ = g_zInput_JoystickRawDIState.lAZ
+            = g_zInput_JoystickRawDIState.lFZ = 0;
     }
     if (g_zInput_JoystickAxisCount < 4) {
-        g_zInput_JoystickRawDIState.lRz = 0;
-        g_zInput_JoystickRawDIState.lVRz = 0;
-        g_zInput_JoystickRawDIState.lARz = 0;
-        g_zInput_JoystickRawDIState.lFRz = 0;
+        g_zInput_JoystickRawDIState.lRz = g_zInput_JoystickRawDIState.lVRz = g_zInput_JoystickRawDIState.lARz
+            = g_zInput_JoystickRawDIState.lFRz = 0;
     }
 
     if (result == kDiInputLost) {

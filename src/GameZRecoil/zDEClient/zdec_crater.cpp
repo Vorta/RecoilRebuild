@@ -125,7 +125,7 @@ int __fastcall InitEventTemplateDefaults(zDEClient_CraterEventTemplate* eventTem
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-instanceevent
  * @recoil-artifact defines .text recoil:function:0x456b20: zDEClient_Crater::InstanceEvent
- *
+ * @recoil-match byte
  *
  * Purpose: instance and submit crater geometry for an event template, restore
  * vertex merge state, and optionally start the crater effect animation.
@@ -545,7 +545,7 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-submitfeaturegeometry
  * @recoil-artifact defines .text recoil:function:0x4575f0: zDEClient::SubmitFeatureGeometry
- *
+ * @recoil-match byte
  *
  * Purpose: submit each generated feature node/DI pair to the feature map tree
  * so later cleanup and serialization can locate it.
@@ -565,7 +565,7 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-clearfeaturedisplaynodes
  * @recoil-artifact defines .text recoil:function:0x457750: zDEClient::ClearFeatureDisplayNodes.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: reload display instances and delete generated ZDEC_FEATURE nodes.
@@ -638,7 +638,7 @@ int __fastcall AppendFeatureEntry(int featureType, const void* featureEventData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-clearfeatureentriesandmaptree
  * @recoil-artifact defines .text recoil:function:0x457ae0: zDEClient::ClearFeatureEntriesAndMapTree.
- *
+ * @recoil-match byte
  *
  * Purpose: reset feature entry storage and clear all feature map-tree nodes.
  */
@@ -653,7 +653,7 @@ int __cdecl ClearFeatureEntriesAndMapTree()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-writefeaturesectionstozar
  * @recoil-artifact defines .text recoil:function:0x457b40: zDEClient::WriteFeatureSectionsToZAR.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: serialize saved crater and quicksand feature entries into ZAR
@@ -723,7 +723,7 @@ void __stdcall ApplyFeatureEntry(zDEClient_FeatureEntry* container, void*, void*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-dispatchfeatureeventtemplates
  * @recoil-artifact defines .text recoil:function:0x457c50: zDEClient::DispatchFeatureEventTemplates.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: iterate feature-entry snapshots and dispatch crater or quicksand

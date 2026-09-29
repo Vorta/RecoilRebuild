@@ -2664,8 +2664,8 @@ namespace zModel_Const
 
         int coplanar = 1;
         for (int i = 0; i < vertexCount; ++i) {
-            const zVec3* const vertex = &vertices[i];
-            const double distance = vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
+            const double distance
+                = vertices[i].x * plane.a + vertices[i].y * plane.b + vertices[i].z * plane.c + plane.d;
             if (fabs(distance) > g_zModel_CoplanarTolerance) {
                 coplanar = 0;
                 break;
@@ -2734,7 +2734,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.splitpolygonchunkedbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x482fe0: zModel_Const::SplitPolygonChunkedByVertexLimit
-     *
+     * @recoil-match byte
      *
      * Purpose: triangulate a polygon into fan triangles for AddPolygonEx.
      */
@@ -2758,41 +2758,37 @@ namespace zModel_Const
         zClipUV triangleUvPairsA[3];
         zVec3 triangleNormalsB[3];
         zClipUV triangleUvPairsB[3];
+        zVec3* const polyEntryNormals = entryNormals != 0 ? triangleEntryNormals : 0;
 
         trianglePoints[0] = points[0];
         if (entryNormals != 0) {
             triangleEntryNormals[0] = entryNormals[0];
         }
 
-        const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
-        if (hasSecondaryUvSet) {
+        if ((material->flags & 0x0100) != 0) {
             triangleUvPairsA[0] = uvPairsA[0];
         }
 
         if (normalsA != 0) {
             triangleNormalsB[0] = normalsBInput[0];
-            if (hasSecondaryUvSet) {
+            if ((material->flags & 0x0100) != 0) {
                 triangleUvPairsB[0] = uvPairsBInput[0];
             }
         }
 
-        if (totalVertexCount <= 2) {
-            return;
-        }
-
-        for (int vertexIndex = 2; vertexIndex < totalVertexCount; ++vertexIndex) {
+        for (int vertexIndex = 1; vertexIndex < totalVertexCount - 1; ++vertexIndex) {
             for (int triangleIndex = 1; triangleIndex < 3; ++triangleIndex) {
-                const int sourceIndex = vertexIndex - 2 + triangleIndex;
+                const int sourceIndex = vertexIndex - 1 + triangleIndex;
                 trianglePoints[triangleIndex] = points[sourceIndex];
                 if (entryNormals != 0) {
                     triangleEntryNormals[triangleIndex] = entryNormals[sourceIndex];
                 }
-                if (hasSecondaryUvSet) {
+                if ((material->flags & 0x0100) != 0) {
                     triangleUvPairsA[triangleIndex] = uvPairsA[sourceIndex];
                 }
                 if (normalsA != 0) {
                     triangleNormalsB[triangleIndex] = normalsBInput[sourceIndex];
-                    if (hasSecondaryUvSet) {
+                    if ((material->flags & 0x0100) != 0) {
                         triangleUvPairsB[triangleIndex] = uvPairsBInput[sourceIndex];
                     }
                 }
@@ -2802,7 +2798,7 @@ namespace zModel_Const
                 self,
                 3,
                 trianglePoints,
-                entryNormals != 0 ? triangleEntryNormals : 0,
+                polyEntryNormals,
                 triangleUvPairsA,
                 normalsA,
                 triangleNormalsB,
@@ -2846,36 +2842,30 @@ namespace zDi
         zClipUV chunkUvPairsA[4];
         zVec3 chunkNormalsB[4];
         zClipUV chunkUvPairsB[4];
+        zVec3* const polyEntryNormals = entryNormals != 0 ? chunkEntryNormals : 0;
 
-        int clampedChunkVertexCount = maxChunkVertexCount;
-        if (clampedChunkVertexCount > 4) {
-            clampedChunkVertexCount = 4;
-        }
+        const int clampedChunkVertexCount = maxChunkVertexCount > 4 ? 4 : maxChunkVertexCount;
 
         chunkPoints[0] = points[0];
         if (entryNormals != 0) {
             chunkEntryNormals[0] = entryNormals[0];
         }
 
-        const int hasSecondaryUvSet = (material->flags & 0x0100) != 0;
-        if (hasSecondaryUvSet) {
+        if ((material->flags & 0x0100) != 0) {
             chunkUvPairsA[0] = uvPairsA[0];
         }
 
         if (normalsA != 0) {
             chunkNormalsB[0] = normalsBInput[0];
-            if (hasSecondaryUvSet) {
+            if ((material->flags & 0x0100) != 0) {
                 chunkUvPairsB[0] = uvPairsBInput[0];
             }
         }
 
         int chunkStartVertexIndex = 1;
-        if (totalVertexCount - 1 <= 1) {
-            return;
-        }
-
-        do {
-            int vertexCount = clampedChunkVertexCount;
+        // The chunk size persists across chunks; only the final chunk is shortened.
+        int vertexCount = clampedChunkVertexCount;
+        while (chunkStartVertexIndex < totalVertexCount - 1) {
             if (chunkStartVertexIndex + vertexCount > totalVertexCount + 1) {
                 vertexCount = totalVertexCount - chunkStartVertexIndex + 1;
             }
@@ -2887,12 +2877,12 @@ namespace zDi
                     if (entryNormals != 0) {
                         chunkEntryNormals[chunkVertexIndex] = entryNormals[sourceIndex];
                     }
-                    if (hasSecondaryUvSet) {
+                    if ((material->flags & 0x0100) != 0) {
                         chunkUvPairsA[chunkVertexIndex] = uvPairsA[sourceIndex];
                     }
                     if (normalsA != 0) {
                         chunkNormalsB[chunkVertexIndex] = normalsBInput[sourceIndex];
-                        if (hasSecondaryUvSet) {
+                        if ((material->flags & 0x0100) != 0) {
                             chunkUvPairsB[chunkVertexIndex] = uvPairsBInput[sourceIndex];
                         }
                     }
@@ -2913,7 +2903,7 @@ namespace zDi
                 self,
                 vertexCount,
                 chunkPoints,
-                entryNormals != 0 ? chunkEntryNormals : 0,
+                polyEntryNormals,
                 chunkUvPairsA,
                 normalsA,
                 chunkNormalsB,
@@ -2924,7 +2914,7 @@ namespace zDi
                 userTag
             );
             chunkStartVertexIndex += vertexCount - 2;
-        } while (chunkStartVertexIndex < totalVertexCount - 1);
+        }
     }
 } // namespace zDi
 
@@ -2933,7 +2923,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.quantizeandnormalizeuvpairs
      * @recoil-artifact defines .text recoil:function:0x483510: zModel_Const::QuantizeAndNormalizeUvPairs
-     *
+     * @recoil-match byte
      *
      * Purpose: quantize UV pairs and normalize them to a local tile origin.
      */

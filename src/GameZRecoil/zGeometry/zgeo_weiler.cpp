@@ -1904,7 +1904,7 @@ int __fastcall EnsureContourOutput(zGeometry_WeilerStatePartial* self, zGeometry
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-mergecontours
  * @recoil-artifact defines .text recoil:function:0x467710: zGeometry_Weiler::MergeContours
- *
+ * @recoil-match byte
  *
  * Purpose: Merge classified Weiler contour segments into contour output chains.
  */
@@ -1933,6 +1933,9 @@ int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
         zGeometry_WeilerContourSegmentPartial* const segment7 = xing->segment7;
 
         switch (xing->xingType - 3) {
+        case 0:
+            break;
+
         case 1:
             segment0->next = segment5;
             segment1->next = segment7;
@@ -1972,6 +1975,270 @@ int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
                     g_zGeometry_MergeContoursNewContourFailedFmt,
                     g_zGeometry_SourceFile_ZgeoWeilerCpp,
                     0xce0
+                );
+                return 0;
+            }
+            break;
+
+        case 10:
+            segment0->next = segment6;
+            segment2->prev = segment7;
+            segment6->prev = segment0;
+            segment7->prev = segment2;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0
+                || zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xcf5
+                );
+                return 0;
+            }
+            break;
+
+        case 13:
+            segment1->next = segment7;
+            segment3->prev = segment6;
+            segment6->prev = segment3;
+            segment7->prev = segment1;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0
+                || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xd0a
+                );
+                return 0;
+            }
+            break;
+
+        case 16:
+            segment0->next = segment5;
+            segment2->prev = segment4;
+            segment4->next = segment2;
+            segment5->next = segment0;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0
+                || zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xd1f
+                );
+                return 0;
+            }
+            break;
+
+        case 19:
+            segment1->next = segment4;
+            segment3->prev = segment5;
+            segment4->next = segment1;
+            segment5->next = segment3;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
+                || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xd34
+                );
+                return 0;
+            }
+            break;
+
+        case 21:
+            if (segment5 != 0) {
+                segment0->next = segment5;
+                segment2->prev = segment7;
+                segment5->next = segment0;
+                segment7->prev = segment2;
+
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0
+                    || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                    fprintf(
+                        stderr,
+                        g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0xd4a
+                    );
+                    return 0;
+                }
+            } else {
+                segment0->next = segment6;
+                segment2->prev = segment4;
+                segment4->next = segment2;
+                segment6->prev = segment0;
+
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
+                    || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                    fprintf(
+                        stderr,
+                        g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0xd5a
+                    );
+                    return 0;
+                }
+            }
+            break;
+
+        case 22:
+            if (segment5 != 0) {
+                segment5->next = segment3;
+                segment3->prev = segment5;
+                segment7->prev = segment1;
+                segment1->next = segment7;
+
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0
+                    || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
+                    fprintf(
+                        stderr,
+                        g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0xd71
+                    );
+                    return 0;
+                }
+            } else {
+                segment4->next = segment3;
+                segment3->prev = segment4;
+                segment6->prev = segment1;
+                segment1->next = segment6;
+
+                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
+                    || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                    fprintf(
+                        stderr,
+                        g_zGeometry_MergeContoursNewContourFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0xd82
+                    );
+                    return 0;
+                }
+            }
+            break;
+
+        case 9:
+            segment2->prev = segment7;
+            segment7->prev = segment2;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xd95
+                );
+                return 0;
+            }
+            break;
+
+        case 11:
+            segment0->next = segment6;
+            segment6->prev = segment0;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xda7
+                );
+                return 0;
+            }
+            break;
+
+        case 12:
+            segment3->prev = segment6;
+            segment6->prev = segment3;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xdb9
+                );
+                return 0;
+            }
+            break;
+
+        case 14:
+            segment1->next = segment7;
+            segment7->prev = segment1;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xdcb
+                );
+                return 0;
+            }
+            break;
+
+        case 15:
+            segment2->prev = segment4;
+            segment4->next = segment2;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xddd
+                );
+                return 0;
+            }
+            break;
+
+        case 17:
+            segment0->next = segment5;
+            segment5->next = segment0;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xdef
+                );
+                return 0;
+            }
+            break;
+
+        case 18:
+            segment3->prev = segment5;
+            segment5->next = segment3;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment3) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xe01
+                );
+                return 0;
+            }
+            break;
+
+        case 20:
+            segment1->next = segment4;
+            segment4->next = segment1;
+
+            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_MergeContoursNewContourFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0xe13
                 );
                 return 0;
             }
@@ -2115,270 +2382,6 @@ int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
                         g_zGeometry_MergeContoursNewContourFailedFmt,
                         g_zGeometry_SourceFile_ZgeoWeilerCpp,
                         0xeb4
-                    );
-                    return 0;
-                }
-            }
-            break;
-
-        case 9:
-            segment2->prev = segment7;
-            segment7->prev = segment2;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xd95
-                );
-                return 0;
-            }
-            break;
-
-        case 10:
-            segment0->next = segment6;
-            segment2->prev = segment7;
-            segment6->prev = segment0;
-            segment7->prev = segment2;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0
-                || zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xcf5
-                );
-                return 0;
-            }
-            break;
-
-        case 11:
-            segment0->next = segment6;
-            segment6->prev = segment0;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xda7
-                );
-                return 0;
-            }
-            break;
-
-        case 12:
-            segment3->prev = segment6;
-            segment6->prev = segment3;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xdb9
-                );
-                return 0;
-            }
-            break;
-
-        case 13:
-            segment1->next = segment7;
-            segment3->prev = segment6;
-            segment6->prev = segment3;
-            segment7->prev = segment1;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0
-                || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xd0a
-                );
-                return 0;
-            }
-            break;
-
-        case 14:
-            segment1->next = segment7;
-            segment7->prev = segment1;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment1) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xdcb
-                );
-                return 0;
-            }
-            break;
-
-        case 15:
-            segment2->prev = segment4;
-            segment4->next = segment2;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xddd
-                );
-                return 0;
-            }
-            break;
-
-        case 16:
-            segment0->next = segment5;
-            segment2->prev = segment4;
-            segment4->next = segment2;
-            segment5->next = segment0;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0
-                || zGeometry_Weiler::EnsureContourOutput(self, segment2) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xd1f
-                );
-                return 0;
-            }
-            break;
-
-        case 17:
-            segment0->next = segment5;
-            segment5->next = segment0;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment0) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xdef
-                );
-                return 0;
-            }
-            break;
-
-        case 18:
-            segment3->prev = segment5;
-            segment5->next = segment3;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment3) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xe01
-                );
-                return 0;
-            }
-            break;
-
-        case 19:
-            segment1->next = segment4;
-            segment3->prev = segment5;
-            segment4->next = segment1;
-            segment5->next = segment3;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
-                || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xd34
-                );
-                return 0;
-            }
-            break;
-
-        case 20:
-            segment1->next = segment4;
-            segment4->next = segment1;
-
-            if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_MergeContoursNewContourFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0xe13
-                );
-                return 0;
-            }
-            break;
-
-        case 21:
-            if (segment5 != 0) {
-                segment0->next = segment5;
-                segment2->prev = segment7;
-                segment5->next = segment0;
-                segment7->prev = segment2;
-
-                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0
-                    || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
-                    fprintf(
-                        stderr,
-                        g_zGeometry_MergeContoursNewContourFailedFmt,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0xd4a
-                    );
-                    return 0;
-                }
-            } else {
-                segment0->next = segment6;
-                segment2->prev = segment4;
-                segment4->next = segment2;
-                segment6->prev = segment0;
-
-                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
-                    || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
-                    fprintf(
-                        stderr,
-                        g_zGeometry_MergeContoursNewContourFailedFmt,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0xd5a
-                    );
-                    return 0;
-                }
-            }
-            break;
-
-        case 22:
-            if (segment5 != 0) {
-                segment5->next = segment3;
-                segment3->prev = segment5;
-                segment7->prev = segment1;
-                segment1->next = segment7;
-
-                if (zGeometry_Weiler::EnsureContourOutput(self, segment5) == 0
-                    || zGeometry_Weiler::EnsureContourOutput(self, segment7) == 0) {
-                    fprintf(
-                        stderr,
-                        g_zGeometry_MergeContoursNewContourFailedFmt,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0xd71
-                    );
-                    return 0;
-                }
-            } else {
-                segment4->next = segment3;
-                segment3->prev = segment4;
-                segment6->prev = segment1;
-                segment1->next = segment6;
-
-                if (zGeometry_Weiler::EnsureContourOutput(self, segment4) == 0
-                    || zGeometry_Weiler::EnsureContourOutput(self, segment6) == 0) {
-                    fprintf(
-                        stderr,
-                        g_zGeometry_MergeContoursNewContourFailedFmt,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0xd82
                     );
                     return 0;
                 }

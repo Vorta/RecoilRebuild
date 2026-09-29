@@ -403,7 +403,7 @@ int __fastcall KeyboardGetKeyTransitionState(int keyIndex)
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_registerkeycallback
  * @recoil-artifact defines .text recoil:function:0x46f9b0: zInput::KeyboardRegisterKeyCallback.
- *
+ * @recoil-match byte
  *
  * Purpose: install a keyboard dispatch callback for an unused modifier-aware key slot.
  */
@@ -424,7 +424,7 @@ int __fastcall KeyboardRegisterKeyCallback(
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_unregisterkeycallback
  * @recoil-artifact defines .text recoil:function:0x46f9d0: zInput::KeyboardUnregisterKeyCallback.
- *
+ * @recoil-match byte
  *
  * Purpose: clear a keyboard dispatch callback slot while preserving its key state.
  */
@@ -438,7 +438,7 @@ void __fastcall KeyboardUnregisterKeyCallback(int comboIdx)
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_clearkeycallbacktable
  * @recoil-artifact defines .text recoil:function:0x46f9f0: zInput::KeyboardClearKeyCallbackTable.
- *
+ * @recoil-match byte
  *
  * Purpose: clear all keyboard dispatch callback slots while preserving key states.
  */

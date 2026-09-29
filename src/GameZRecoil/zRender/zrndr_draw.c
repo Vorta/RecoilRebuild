@@ -9400,8 +9400,8 @@ void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
             return;
         }
 
-        ++zRndr::g_overwriteQueueCount;
         zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
+        zRndr::g_overwriteQueueCount = queueIndex + 1;
         cmd.commandTag = 1;
         cmd.vertexCount = vertexCount;
         cmd.materialRef = entry;
@@ -9423,7 +9423,7 @@ void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
     }
 
     zVidImagePartial* image = entry != 0 ? entry->image : 0;
-    if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF < 1.0f) {
+    if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF >= 1.0f) {
         zRndrDrawTexturedQueuedAlpha(
             entry,
             projectedPolyVerts,

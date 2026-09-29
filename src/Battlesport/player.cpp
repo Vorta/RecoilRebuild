@@ -5018,7 +5018,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processpendingcontactqueues
  * @recoil-artifact defines .text recoil:function:0x423460: Player::ProcessPendingContactQueues.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessPendingContactQueues from the recovered

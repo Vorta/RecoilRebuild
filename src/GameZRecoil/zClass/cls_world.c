@@ -1278,7 +1278,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addlight
      * @recoil-artifact defines .text recoil:function:0x451360: CZWorld::AddLight.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a light and its data to the world lists and attach the
@@ -1289,19 +1289,19 @@ namespace CZWorld
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         CZLightDataPartial* lightData = (CZLightDataPartial*)(light->classData);
 
-        const int lightListBytes = (data->lightCount + 1) * sizeof(CZNodePartial*);
-        data->lightNodes = (CZNodePartial**)(realloc(data->lightNodes, lightListBytes));
-        data->lightNodes[data->lightCount] = light;
+        const int lightCount = data->lightCount + 1;
+        data->lightNodes = (CZNodePartial**)(realloc(data->lightNodes, lightCount * sizeof(CZNodePartial*)));
+        data->lightNodes[lightCount - 1] = light;
 
-        data->lightDataList = (CZLightDataPartial**)(realloc(data->lightDataList, lightListBytes));
-        data->lightDataList[data->lightCount] = lightData;
+        data->lightDataList
+            = (CZLightDataPartial**)(realloc(data->lightDataList, lightCount * sizeof(CZLightDataPartial*)));
+        data->lightDataList[lightCount - 1] = lightData;
         ++data->lightCount;
 
-        lightData->attachedWorlds = (CZNodePartial**)(realloc(
-            lightData->attachedWorlds,
-            (lightData->attachedWorldCount + 1) * sizeof(CZNodePartial*)
-        ));
-        lightData->attachedWorlds[lightData->attachedWorldCount] = world;
+        const int worldCount = lightData->attachedWorldCount + 1;
+        lightData->attachedWorlds
+            = (CZNodePartial**)(realloc(lightData->attachedWorlds, worldCount * sizeof(CZNodePartial*)));
+        lightData->attachedWorlds[worldCount - 1] = world;
         ++lightData->attachedWorldCount;
         return 0;
     }
@@ -1415,7 +1415,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addsound
      * @recoil-artifact defines .text recoil:function:0x451590: CZWorld::AddSound.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: append a sound and its data to the world lists and attach the
@@ -1426,19 +1426,19 @@ namespace CZWorld
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         CZSoundDataPartial* soundData = (CZSoundDataPartial*)(sound->classData);
 
-        const int soundListBytes = (data->soundCount + 1) * sizeof(CZNodePartial*);
-        data->soundNodes = (CZNodePartial**)(realloc(data->soundNodes, soundListBytes));
-        data->soundNodes[data->soundCount] = sound;
+        const int soundCount = data->soundCount + 1;
+        data->soundNodes = (CZNodePartial**)(realloc(data->soundNodes, soundCount * sizeof(CZNodePartial*)));
+        data->soundNodes[soundCount - 1] = sound;
 
-        data->soundDataList = (CZSoundDataPartial**)(realloc(data->soundDataList, soundListBytes));
-        data->soundDataList[data->soundCount] = soundData;
+        data->soundDataList
+            = (CZSoundDataPartial**)(realloc(data->soundDataList, soundCount * sizeof(CZSoundDataPartial*)));
+        data->soundDataList[soundCount - 1] = soundData;
         ++data->soundCount;
 
-        soundData->attachedWorlds = (CZNodePartial**)(realloc(
-            soundData->attachedWorlds,
-            (soundData->attachedWorldCount + 1) * sizeof(CZNodePartial*)
-        ));
-        soundData->attachedWorlds[soundData->attachedWorldCount] = world;
+        const int worldCount = soundData->attachedWorldCount + 1;
+        soundData->attachedWorlds
+            = (CZNodePartial**)(realloc(soundData->attachedWorlds, worldCount * sizeof(CZNodePartial*)));
+        soundData->attachedWorlds[worldCount - 1] = world;
         ++soundData->attachedWorldCount;
         return 0;
     }

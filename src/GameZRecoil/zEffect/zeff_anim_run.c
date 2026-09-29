@@ -1868,6 +1868,7 @@ namespace zEffect_Anim
         float* deltaTime
     )
     {
+        float sampleDurationSec;
         float preStartDelaySec = 0.0f;
         if (sequenceRuntime->eventElapsedSec < sampleHeader->startTimeSec) {
             const float savedDeltaTimeSec = *deltaTime;
@@ -1880,7 +1881,6 @@ namespace zEffect_Anim
             *deltaTime = sampleHeader->startTimeSec;
         }
 
-        float sampleDurationSec;
         if (sequenceRuntime->eventElapsedSec > sampleHeader->endTimeSec) {
             const float savedLocalTimeSec = keyframeEvent->keyframeLocalTime;
             const int savedOffset = keyframeEvent->currentKeyframeOffset;
@@ -3574,11 +3574,13 @@ namespace zEffect_Anim
 
             sequenceRuntime->runState = (unsigned char)dispatchResult;
             if (sequenceRuntime->runState == 2) {
-                zEffectAnimEventHeader* const finishedEvent = (zEffectAnimEventHeader*)sequenceRuntime->currentEvent;
+                const zEffectAnimEventHeader* const finishedEvent
+                    = (zEffectAnimEventHeader*)(sequenceRuntime->currentEvent);
                 sequenceRuntime->eventElapsedSec = 0.0f;
-                unsigned char* const nextEvent = (unsigned char*)finishedEvent + finishedEvent->recordSize;
-                sequenceRuntime->currentEvent = nextEvent;
-                if (nextEvent < (unsigned char*)sequenceRuntime->eventStream + sequenceRuntime->eventStreamSize) {
+                sequenceRuntime->currentEvent
+                    = (unsigned char*)(sequenceRuntime->currentEvent) + finishedEvent->recordSize;
+                if (sequenceRuntime->currentEvent
+                    < (unsigned char*)sequenceRuntime->eventStream + sequenceRuntime->eventStreamSize) {
                     sequenceRuntime->runState = 0;
                 } else if (sequenceRuntime->resetMode == 3) {
                     zEffect::HandleEmitterResetEvent(sequenceRuntime);

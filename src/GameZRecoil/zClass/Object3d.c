@@ -186,7 +186,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetvisibleflag
      * @recoil-artifact defines .text recoil:function:0x44dbb0: CZObject3D::gwObject3DSetVisibleFlag
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data and set or clear the visible render flag.
      */
@@ -198,14 +198,18 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1b1, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x1b2, "Null class data pointer");
+            return 5;
+        }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x1b3,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 3;
         }
@@ -441,7 +445,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetscale
      * @recoil-artifact defines .text recoil:function:0x44dfd0: CZObject3D::gwObject3DGetScale
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data and return the local scale vector.
      */
@@ -451,6 +455,10 @@ namespace CZObject3D
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x331, "Null node pointer.");
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x332, "Null class data pointer");
             return 5;
         }
         data = (CZObject3DDataPartial*)(node->classData);
@@ -476,6 +484,10 @@ namespace CZObject3D
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x357, "Null node pointer.");
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x358, "Null class data pointer");
             return 5;
         }
         data = (CZObject3DDataPartial*)(node->classData);
@@ -504,7 +516,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetrotation
      * @recoil-artifact defines .text recoil:function:0x44e110: CZObject3D::gwObject3DGetRotation
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data and return the local rotation vector.
      */
@@ -514,6 +526,10 @@ namespace CZObject3D
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3a9, "Null node pointer.");
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3aa, "Null class data pointer");
             return 5;
         }
         data = (CZObject3DDataPartial*)(node->classData);
@@ -568,7 +584,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dgetposition
      * @recoil-artifact defines .text recoil:function:0x44e270: CZObject3D::gwObject3DGetPosition
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data and return translation components from
      * the local matrix.
@@ -581,14 +597,18 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x41a, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x41b, "Null class data pointer");
+            return 5;
+        }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x41c,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 3;
         }
@@ -615,6 +635,10 @@ namespace CZObject3D
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x441, "Null node pointer.");
+            return 5;
+        }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x442, "Null class data pointer");
             return 5;
         }
         data = (CZObject3DDataPartial*)(node->classData);
@@ -688,7 +712,7 @@ namespace CZObject3D
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.gwobject3dsetmatrix
      * @recoil-artifact defines .text recoil:function:0x44e4f0: CZObject3D::gwObject3DSetMatrix
-     *
+     * @recoil-match byte
      *
      * Purpose: validate Object3D data, copy local matrix storage when needed,
      * mark matrix-authored transform state, and enqueue transform propagation.
@@ -701,14 +725,18 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x4bb, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x4bc, "Null class data pointer");
+            return 5;
+        }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x4bd,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 3;
         }

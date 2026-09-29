@@ -438,7 +438,7 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
- *
+ * @recoil-match byte
  *
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */

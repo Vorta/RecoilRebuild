@@ -79,7 +79,7 @@ int __cdecl zVid::QueryCachedClientRectUpdateMaskIf3dfx()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-findfileondrivetype
  * @recoil-artifact defines .text recoil:function:0x4a59e0: zSys::FindFileOnDriveType.
- *
+ * @recoil-match byte
  *
  * Purpose: Scans logical drives of a requested type and returns the first path containing a file.
  */

@@ -61,7 +61,7 @@ const AFX_MSGMAP WestwoodOnlineUpgradeProgressDialog::messageMap = {
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeprogressdialog-getmessagemap
  * @recoil-artifact defines .text recoil:function:0x442260: WestwoodOnlineUpgradeProgressDialog::GetMessageMap (D:\Proj\GameZRecoil\westwoodonline\WolapiProgressDialog.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: returns the sentinel-only MFC message-map record for the raw dialog
  * proc.

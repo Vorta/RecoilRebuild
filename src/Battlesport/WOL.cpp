@@ -3048,7 +3048,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-applyencodedquerystring1
  * @recoil-artifact defines .text recoil:function:0x4407e0: WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1.
- *
+ * @recoil-match byte
  *
  * Purpose: Parses encoded query data for the alternate session result callback shape.
  */
@@ -3087,7 +3087,7 @@ WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString1(int status, int, int
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-applyencodedquerystring0
  * @recoil-artifact defines .text recoil:function:0x440a30: WestwoodOnlineUpgradeApiEventSink::ApplyEncodedQueryString0.
- *
+ * @recoil-match byte
  *
  * Purpose: Parses encoded query data for one Westwood Online session result variant.
  */

@@ -1068,7 +1068,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.queuecmdtype1transformrotvelocity
      * @recoil-artifact defines .text recoil:function:0x461970: zEffectAnim::QueueCmdType1TransformRotVelocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim_activation.c.
      * Purpose: build the command type 1 activation record for transform, rotation,
@@ -1168,7 +1168,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.queuecmdtype2velocity
      * @recoil-artifact defines .text recoil:function:0x461aa0: zEffectAnim::QueueCmdType2Velocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim_activation.c.
      * Purpose: build the command type 2 activation record for velocity-only
@@ -1233,7 +1233,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.queuecmdtype3positionrefandvelocity
      * @recoil-artifact defines .text recoil:function:0x461ba0: zEffectAnim::QueueCmdType3PositionRefAndVelocity.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim_activation.c.
      * Purpose: build the command type 3 activation record for a position reference
@@ -1307,7 +1307,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.queuecmdtype4transformrefs
      * @recoil-artifact defines .text recoil:function:0x461d00: zEffectAnim::QueueCmdType4TransformRefs.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim_activation.c.
      * Purpose: build the command type 4 activation record for two transform
@@ -1391,7 +1391,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.setactivationdispatchcontext
      * @recoil-artifact defines .text recoil:function:0x461eb0: zEffect_Anim::SetActivationDispatchContext.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zEffect.cpp.
      * Purpose: store the activation-dispatch callback and high-byte context tag.

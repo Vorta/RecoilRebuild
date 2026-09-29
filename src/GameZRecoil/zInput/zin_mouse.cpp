@@ -194,7 +194,7 @@ int __cdecl MouseInitDevice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-getbuttontransitionstate
  * @recoil-artifact defines .text recoil:function:0x4702e0: zInput::MouseGetButtonTransitionState.
- *
+ * @recoil-match byte
  *
  * Purpose: compare the current and previous mouse button byte and return the
  * transition mask for a 1-based mouse button number.
@@ -308,7 +308,7 @@ void __fastcall MousePollAndStoreState(unsigned char dispatchCallbacks)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-pollstate
  * @recoil-artifact defines .text recoil:function:0x4703c0: zInput::MousePollState.
- *
+ * @recoil-match byte
  *
  * Purpose: Poll the DirectInput mouse state and update the zInput mouse snapshots.
  */
@@ -423,7 +423,7 @@ int __fastcall MouseGetStateSnapshot(MouseStateSnapshot* outState)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-resettransitionstate
  * @recoil-artifact defines .text recoil:function:0x470610: zInput::MouseResetTransitionState.
- *
+ * @recoil-match byte
  *
  * Purpose: copy current mouse state into previous state, clear transition deltas,
  * and refresh the derived mouse snapshot when mouse input is initialized.

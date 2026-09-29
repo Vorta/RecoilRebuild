@@ -11697,7 +11697,7 @@ void __fastcall AdvanceAndLog(const char* messageOrNull)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.inittable
  * @recoil-artifact defines .text recoil:function:0x414210: HudUiLoadingCheckpoint::InitTable.
- *
+ * @recoil-match byte
  *
  * Purpose: seed the embedded HudUiMgr loading checkpoint table and derive
  * normalized briefing progress from the retail checkpoint second values.
@@ -13199,7 +13199,7 @@ extern "C" unsigned long __stdcall GetTickCount();
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.zfmv-action-runblockingtimed
  * @recoil-artifact defines .text recoil:function:0x4159e0: zFMV_Action::RunBlockingTimed.
- *
+ * @recoil-match byte
  *
  * Purpose: run an action to completion using elapsed milliseconds from GetTickCount.
  */
