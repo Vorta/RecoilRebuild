@@ -1367,7 +1367,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelist
      * @recoil-artifact defines .text recoil:function:0x443f80: CZDisplayInstance::BuildPickCandidateList.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1817,7 +1817,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpoints
      * @recoil-artifact defines .text recoil:function:0x444890: CZDisplayInstance::BuildPickCandidatesForPoints.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2200,18 +2200,32 @@ namespace CZDisplayInstance
             return 5;
         }
 
-        if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
+        if (g_CZTypeList_Buckets[7].head != 0) {
             CZTypeList::UpdateQueuedTrees();
         }
 
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
-
-        g_DiSegmentMinX = startX < endX ? startX : endX;
-        g_DiSegmentMaxX = startX > endX ? startX : endX;
-        g_DiSegmentMinY = startY < endY ? startY : endY;
-        g_DiSegmentMaxY = startY > endY ? startY : endY;
-        g_DiSegmentMinZ = startZ < endZ ? startZ : endZ;
-        g_DiSegmentMaxZ = startZ > endZ ? startZ : endZ;
+        if (startX < endX) {
+            g_DiSegmentMinX = startX;
+            g_DiSegmentMaxX = endX;
+        } else {
+            g_DiSegmentMinX = endX;
+            g_DiSegmentMaxX = startX;
+        }
+        if (startY < endY) {
+            g_DiSegmentMinY = startY;
+            g_DiSegmentMaxY = endY;
+        } else {
+            g_DiSegmentMinY = endY;
+            g_DiSegmentMaxY = startY;
+        }
+        if (startZ < endZ) {
+            g_DiSegmentMinZ = startZ;
+            g_DiSegmentMaxZ = endZ;
+        } else {
+            g_DiSegmentMinZ = endZ;
+            g_DiSegmentMaxZ = startZ;
+        }
 
         g_DiPickQueryPoint.x = startX;
         g_DiPickQueryPoint.y = startY;
@@ -2222,112 +2236,144 @@ namespace CZDisplayInstance
         g_DiPickCandidateBuffer = rayData;
         g_DiPickCandidateCursor = rayData->entries;
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
 
-        const bool segmentOverlapsWorld = g_DiSegmentMaxX >= worldData->originX
-            && g_DiSegmentMinX <= worldData->worldMaxX && g_DiSegmentMaxZ >= worldData->originZ
-            && g_DiSegmentMinZ <= worldData->worldMaxZ;
-
-        if ((worldData->clampQueriesToBounds != 0 || segmentOverlapsWorld) && worldData->areaGridRows != 0
-            && worldData->areaGridColCount > 0 && worldData->areaGridRowCount > 0) {
+        if (worldData->clampQueriesToBounds != 0
+            || (g_DiSegmentMinX < worldData->worldMaxX && g_DiSegmentMaxX >= worldData->originX
+                && g_DiSegmentMinZ <= worldData->originZ && g_DiSegmentMaxZ > worldData->worldMaxZ)) {
+            worldData = (CZWorldDataPartial*)(world->classData);
             int gridCol = (int)(floor((g_DiPickQueryPoint.x - worldData->originX) * worldData->areaInvSizeX));
             int gridRow = (int)(floor((g_DiPickQueryPoint.z - worldData->originZ) * worldData->areaInvSizeZ));
+            zVec3 delta;
+            delta.x = g_DiSegmentEnd.x - g_DiPickQueryPoint.x;
+            delta.z = g_DiSegmentEnd.z - g_DiPickQueryPoint.z;
+            int gridColStep;
+            int gridRowStep;
+            float invDeltaX;
+            float invDeltaZ;
+            if (delta.x == 0.0f) {
+                gridColStep = 0;
+            } else {
+                invDeltaX = 1.0f / delta.x;
+                int deltaBitsX;
+                int scaleBitsX;
+                memcpy(&deltaBitsX, &delta.x, sizeof(int));
+                memcpy(&scaleBitsX, &worldData->areaInvSizeX, sizeof(int));
+                gridColStep = ((deltaBitsX ^ scaleBitsX) & 0x80000000) != 0 ? -1 : 1;
+            }
+            if (delta.z == 0.0f) {
+                gridRowStep = 0;
+            } else {
+                invDeltaZ = 1.0f / delta.z;
+                int deltaBitsZ;
+                int scaleBitsZ;
+                memcpy(&deltaBitsZ, &delta.z, sizeof(int));
+                memcpy(&scaleBitsZ, &worldData->areaInvSizeZ, sizeof(int));
+                gridRowStep = ((deltaBitsZ ^ scaleBitsZ) & 0x80000000) != 0 ? -1 : 1;
+            }
 
-            const float deltaX = g_DiSegmentEnd.x - g_DiPickQueryPoint.x;
-            const float deltaZ = g_DiSegmentEnd.z - g_DiPickQueryPoint.z;
-            const int gridColStep = deltaX > 0.0f ? 1 : (deltaX < 0.0f ? -1 : 0);
-            const int gridRowStep = deltaZ > 0.0f ? 1 : (deltaZ < 0.0f ? -1 : 0);
-            const float invDeltaX = gridColStep != 0 ? 1.0f / deltaX : 0.0f;
-            const float invDeltaZ = gridRowStep != 0 ? 1.0f / deltaZ : 0.0f;
-
-            while (true) {
-                const bool insideGrid = gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
-                    && gridRow < worldData->areaGridRowCount;
-
-                if (insideGrid || worldData->clampQueriesToBounds != 0) {
-                    int cellCol = gridCol;
-                    int cellRow = gridRow;
-                    bool queryWasClamped = false;
-                    if (!insideGrid) {
-                        queryWasClamped = true;
-                        if (cellCol < 0) {
-                            cellCol = 0;
-                        } else if (cellCol >= worldData->areaGridColCount) {
-                            cellCol = worldData->areaGridColCount - 1;
-                        }
-
-                        if (cellRow < 0) {
-                            cellRow = 0;
-                        } else if (cellRow >= worldData->areaGridRowCount) {
-                            cellRow = worldData->areaGridRowCount - 1;
-                        }
+            float tToNextGridColBoundary = 2.0f;
+            float tToNextGridRowBoundary = 2.0f;
+            for (;;) {
+                int visitCell = 1;
+                int usedClampedCell;
+                int candidateCountBeforeCell;
+                int cellCol;
+                int cellRow;
+                float offsetX;
+                float offsetZ;
+                if (gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
+                    && gridRow < worldData->areaGridRowCount) {
+                    usedClampedCell = 0;
+                } else if (worldData->clampQueriesToBounds == 0) {
+                    visitCell = 0;
+                } else {
+                    usedClampedCell = 1;
+                    candidateCountBeforeCell = g_DiPickCandidateBuffer->candidateCount;
+                    cellCol = gridCol;
+                    cellRow = gridRow;
+                    if (gridCol > worldData->areaGridColCount - 1) {
+                        cellCol = worldData->areaGridColCount - 1;
+                    } else if (gridCol < 0) {
+                        cellCol = 0;
                     }
 
-                    const float offsetX = (float)(cellCol - gridCol) * worldData->areaCellSizeX;
-                    const float offsetZ = (float)(cellRow - gridRow) * worldData->areaCellSizeZ;
-                    const int candidateCountBeforeCell = rayData->candidateCount;
+                    if (gridRow > worldData->areaGridRowCount - 1) {
+                        cellRow = worldData->areaGridRowCount - 1;
+                    } else if (gridRow < 0) {
+                        cellRow = 0;
+                    }
 
-                    if (queryWasClamped) {
+                    offsetX = (float)(cellCol - gridCol) * worldData->areaCellSizeX;
+                    offsetZ = (float)(cellRow - gridRow) * worldData->areaCellSizeZ;
+                }
+
+                if (visitCell != 0) {
+                    zWorldAreaPartial* area;
+                    if (usedClampedCell != 0) {
                         g_DiPickQueryPoint.x += offsetX;
                         g_DiPickQueryPoint.z += offsetZ;
                         g_DiSegmentEnd.x += offsetX;
                         g_DiSegmentEnd.z += offsetZ;
                         g_DiSegmentMinX += offsetX;
-                        g_DiSegmentMaxX += offsetX;
                         g_DiSegmentMinZ += offsetZ;
+                        g_DiSegmentMaxX += offsetX;
                         g_DiSegmentMaxZ += offsetZ;
+                        area = &worldData->areaGridRows[cellRow][cellCol];
+                    } else {
+                        area = &worldData->areaGridRows[gridRow][gridCol];
                     }
 
-                    zWorldAreaPartial* area = &worldData->areaGridRows[cellRow][cellCol];
                     for (int i = 0; i < area->childCount; ++i) {
                         CZNodePartial* node = area->childList[i];
-                        const int flags = node->flags;
-                        if ((flags & kNodeFlagEnabledForPick) != 0 && (flags & kNodeFlagRaycastable) != 0) {
+                        if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0) {
                             BuildPickCandidatesForSegmentChildFallback(node, area->childCount + 1);
-                        }
-
-                        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                            break;
+                            if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
+                                break;
+                            }
                         }
                     }
 
-                    if (queryWasClamped) {
+                    // Retail leaves the clamped-cell offsets applied when the first hit ends the walk.
+                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
+                        break;
+                    }
+
+                    if (usedClampedCell != 0) {
                         g_DiPickQueryPoint.x -= offsetX;
                         g_DiPickQueryPoint.z -= offsetZ;
                         g_DiSegmentEnd.x -= offsetX;
                         g_DiSegmentEnd.z -= offsetZ;
                         g_DiSegmentMinX -= offsetX;
-                        g_DiSegmentMaxX -= offsetX;
                         g_DiSegmentMinZ -= offsetZ;
+                        g_DiSegmentMaxX -= offsetX;
                         g_DiSegmentMaxZ -= offsetZ;
-                        for (int i = candidateCountBeforeCell; i < rayData->candidateCount; ++i) {
-                            rayData->entries[i].hitPos.x -= offsetX;
-                            rayData->entries[i].hitPos.z -= offsetZ;
+                        for (int i = candidateCountBeforeCell; i < g_DiPickCandidateBuffer->candidateCount; ++i) {
+                            g_DiPickCandidateBuffer->entries[i].hitPos.x -= offsetX;
+                            g_DiPickCandidateBuffer->entries[i].hitPos.z -= offsetZ;
                         }
                     }
-
-                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                        break;
-                    }
-                } else if (gridColStep == 0 && gridRowStep == 0) {
-                    break;
                 }
 
-                float tToNextGridColBoundary = 2.0f;
                 if (gridColStep != 0) {
-                    const int nextGridCol = gridColStep == 1 ? gridCol + 1 : gridCol;
+                    int boundaryCol = gridCol;
+                    if (gridColStep == 1) {
+                        boundaryCol = gridCol + 1;
+                    }
                     tToNextGridColBoundary
-                        = ((float)(nextGridCol)*worldData->areaCellSizeX + worldData->originX - g_DiPickQueryPoint.x)
+                        = ((float)(boundaryCol)*worldData->areaCellSizeX + worldData->originX - g_DiPickQueryPoint.x)
                         * invDeltaX;
                 }
 
-                float tToNextGridRowBoundary = 2.0f;
                 if (gridRowStep != 0) {
-                    const int nextGridRow = gridRowStep == 1 ? gridRow + 1 : gridRow;
+                    int boundaryRow = gridRow;
+                    if (gridRowStep == 1) {
+                        boundaryRow = gridRow + 1;
+                    }
                     tToNextGridRowBoundary
-                        = ((float)(nextGridRow)*worldData->areaCellSizeZ + worldData->originZ - g_DiPickQueryPoint.z)
+                        = ((float)(boundaryRow)*worldData->areaCellSizeZ + worldData->originZ - g_DiPickQueryPoint.z)
                         * invDeltaZ;
                 }
 
@@ -2335,10 +2381,10 @@ namespace CZDisplayInstance
                     break;
                 }
 
-                if (tToNextGridColBoundary <= tToNextGridRowBoundary && gridColStep != 0) {
+                if (tToNextGridColBoundary <= tToNextGridRowBoundary) {
                     gridCol += gridColStep;
                 }
-                if (tToNextGridRowBoundary <= tToNextGridColBoundary && gridRowStep != 0) {
+                if (tToNextGridRowBoundary <= tToNextGridColBoundary) {
                     gridRow += gridRowStep;
                 }
             }
@@ -2389,7 +2435,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentchildfallback
      * @recoil-artifact defines .text recoil:function:0x445650: CZDisplayInstance::BuildPickCandidatesForSegmentChildFallback.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2859,118 +2905,129 @@ namespace CZDisplayInstance
      */
     void __fastcall BuildPickCandidatesForSegmentsInGridWindow(CZNodePartial * world, int* activeMask)
     {
-        const int segmentCount = g_DiPickPointCount;
-        if (segmentCount <= 0) {
-            return;
-        }
-
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
+        int minCol;
+        int maxCol;
+        int minRow;
+        int maxRow;
+        {
+            // Grid cells of each segment's (minX, maxZ) and (maxX, minZ) corners; the grid rows run opposite to Z.
+            int minCell[12][2];
+            int maxCell[12][2];
+            for (int i = 0; i < g_DiPickPointCount; ++i) {
+                minCell[i][0]
+                    = (int)(floor((g_DiSegmentBounds[i].minX - worldData->originX) * worldData->areaInvSizeX));
+                minCell[i][1]
+                    = (int)(floor((g_DiSegmentBounds[i].maxZ - worldData->originZ) * worldData->areaInvSizeZ));
+                maxCell[i][0]
+                    = (int)(floor((g_DiSegmentBounds[i].maxX - worldData->originX) * worldData->areaInvSizeX));
+                maxCell[i][1]
+                    = (int)(floor((g_DiSegmentBounds[i].minZ - worldData->originZ) * worldData->areaInvSizeZ));
+            }
 
-        int segmentMinCol[24] = { 0 };
-        int segmentMaxCol[24] = { 0 };
-        int segmentMinRow[24] = { 0 };
-        int segmentMaxRow[24] = { 0 };
-
-        for (int i = 0; i < segmentCount; ++i) {
-            const CZDisplayInstanceSegmentBounds* bounds = &g_DiSegmentBounds[i];
-            segmentMinCol[i] = (int)(floor((bounds->minX - worldData->originX) * worldData->areaInvSizeX));
-            segmentMaxCol[i] = (int)(floor((bounds->maxX - worldData->originX) * worldData->areaInvSizeX));
-            segmentMinRow[i] = (int)(floor((bounds->minZ - worldData->originZ) * worldData->areaInvSizeZ));
-            segmentMaxRow[i] = (int)(floor((bounds->maxZ - worldData->originZ) * worldData->areaInvSizeZ));
+            minCol = minCell[0][0];
+            minRow = minCell[0][1];
+            maxCol = maxCell[0][0];
+            maxRow = maxCell[0][1];
+            for (int windowIndex = 1; windowIndex < g_DiPickPointCount; ++windowIndex) {
+                if (minCell[windowIndex][0] < minCol) {
+                    minCol = minCell[windowIndex][0];
+                }
+                if (minCell[windowIndex][1] < minRow) {
+                    minRow = minCell[windowIndex][1];
+                }
+                if (maxCell[windowIndex][0] > maxCol) {
+                    maxCol = maxCell[windowIndex][0];
+                }
+                if (maxCell[windowIndex][1] > maxRow) {
+                    maxRow = maxCell[windowIndex][1];
+                }
+            }
         }
 
-        int windowMinCol = segmentMinCol[0];
-        int windowMaxCol = segmentMaxCol[0];
-        int windowMinRow = segmentMinRow[0];
-        int windowMaxRow = segmentMaxRow[0];
-        for (int windowIndex = 1; windowIndex < segmentCount; ++windowIndex) {
-            if (segmentMinCol[windowIndex] < windowMinCol) {
-                windowMinCol = segmentMinCol[windowIndex];
-            }
-            if (segmentMaxCol[windowIndex] > windowMaxCol) {
-                windowMaxCol = segmentMaxCol[windowIndex];
-            }
-            if (segmentMinRow[windowIndex] < windowMinRow) {
-                windowMinRow = segmentMinRow[windowIndex];
-            }
-            if (segmentMaxRow[windowIndex] > windowMaxRow) {
-                windowMaxRow = segmentMaxRow[windowIndex];
-            }
-        }
-
-        for (int row = windowMinRow; row <= windowMaxRow; ++row) {
-            for (int col = windowMinCol; col <= windowMaxCol; ++col) {
-                int cellCol = col;
-                int cellRow = row;
-                int usedClampedCell = 0;
-                int firstNewCandidate[24] = { 0 };
-                float offsetX = 0.0f;
-                float offsetZ = 0.0f;
-
-                const int insideGrid
-                    = col >= 0 && col < worldData->areaGridColCount && row >= 0 && row < worldData->areaGridRowCount;
-                if (insideGrid == 0) {
-                    if (worldData->clampQueriesToBounds == 0) {
-                        continue;
-                    }
-
+        for (int row = minRow; row <= maxRow; ++row) {
+            for (int col = minCol; col <= maxCol; ++col) {
+                int visitCell = 1;
+                int usedClampedCell;
+                int firstNewCandidate[12];
+                int cellCol;
+                int cellRow;
+                float offsetX;
+                float offsetZ;
+                if (col >= 0 && col < worldData->areaGridColCount && row >= 0 && row < worldData->areaGridRowCount) {
+                    usedClampedCell = 0;
+                } else if (worldData->clampQueriesToBounds == 0) {
+                    visitCell = 0;
+                } else {
                     usedClampedCell = 1;
-                    for (int candidateIndex = 0; candidateIndex < segmentCount; ++candidateIndex) {
-                        firstNewCandidate[candidateIndex] = g_DiPickCandidateBuffer[candidateIndex].candidateCount;
+                    for (int segmentIndex = 0; segmentIndex < g_DiPickPointCount; ++segmentIndex) {
+                        firstNewCandidate[segmentIndex] = g_DiPickCandidateBuffer[segmentIndex].candidateCount;
                     }
-                    if (cellCol < 0) {
-                        cellCol = 0;
-                    } else if (cellCol >= worldData->areaGridColCount) {
+
+                    cellCol = col;
+                    cellRow = row;
+                    if (col > worldData->areaGridColCount - 1) {
                         cellCol = worldData->areaGridColCount - 1;
+                    } else if (col < 0) {
+                        cellCol = 0;
                     }
-                    if (cellRow < 0) {
-                        cellRow = 0;
-                    } else if (cellRow >= worldData->areaGridRowCount) {
+
+                    if (row > worldData->areaGridRowCount - 1) {
                         cellRow = worldData->areaGridRowCount - 1;
+                    } else if (row < 0) {
+                        cellRow = 0;
                     }
+
                     offsetX = (float)(cellCol - col) * worldData->areaCellSizeX;
                     offsetZ = (float)(cellRow - row) * worldData->areaCellSizeZ;
                 }
 
-                zWorldAreaPartial* area = &worldData->areaGridRows[cellRow][cellCol];
-                for (int cellPass = 0; cellPass <= usedClampedCell; ++cellPass) {
+                if (visitCell != 0) {
+                    zWorldAreaPartial* area;
                     if (usedClampedCell != 0) {
-                        const float passOffsetX = cellPass == 0 ? offsetX : -offsetX;
-                        const float passOffsetZ = cellPass == 0 ? offsetZ : -offsetZ;
-                        CZDisplayInstanceSegmentEndpoints* segments
-                            = (CZDisplayInstanceSegmentEndpoints*)((void*)(g_DiPickPointArray));
-                        for (int segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
-                            segments[segmentIndex].start.x += passOffsetX;
-                            segments[segmentIndex].start.z += passOffsetZ;
-                            segments[segmentIndex].end.x += passOffsetX;
-                            segments[segmentIndex].end.z += passOffsetZ;
-                            g_DiSegmentBounds[segmentIndex].minX += passOffsetX;
-                            g_DiSegmentBounds[segmentIndex].maxX += passOffsetX;
-                            g_DiSegmentBounds[segmentIndex].minZ += passOffsetZ;
-                            g_DiSegmentBounds[segmentIndex].maxZ += passOffsetZ;
+                        for (int segmentIndex = 0; segmentIndex < g_DiPickPointCount; ++segmentIndex) {
+                            g_DiPickPointArray[segmentIndex * 2].x += offsetX;
+                            g_DiPickPointArray[segmentIndex * 2].z += offsetZ;
+                            g_DiPickPointArray[segmentIndex * 2 + 1].x += offsetX;
+                            g_DiPickPointArray[segmentIndex * 2 + 1].z += offsetZ;
+                            g_DiSegmentBounds[segmentIndex].minX += offsetX;
+                            g_DiSegmentBounds[segmentIndex].minZ += offsetZ;
+                            g_DiSegmentBounds[segmentIndex].maxX += offsetX;
+                            g_DiSegmentBounds[segmentIndex].maxZ += offsetZ;
                         }
+                        area = &worldData->areaGridRows[cellRow][cellCol];
+                    } else {
+                        area = &worldData->areaGridRows[row][col];
                     }
 
-                    if (cellPass == 0) {
-                        for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                            CZNodePartial* child = area->childList[childIndex];
-                            if ((child->flags & kNodeFlagEnabledForPick) != 0
-                                && (child->flags & kNodeFlagRaycastable) != 0) {
-                                BuildPickCandidatesForSegmentsRecursive(child, area->childCount + 1, activeMask);
-                            }
-
+                    for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
+                        CZNodePartial* child = area->childList[childIndex];
+                        if ((child->flags & kNodeFlagEnabledForPick) != 0
+                            && (child->flags & kNodeFlagRaycastable) != 0) {
+                            BuildPickCandidatesForSegmentsRecursive(child, area->childCount + 1, activeMask);
                             if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
                                 break;
                             }
                         }
-                    } else {
-                        for (int segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
-                            PlayerProbeSampleCandidateBuffer* buffer = &g_DiPickCandidateBuffer[segmentIndex];
-                            for (int candidateIndex = firstNewCandidate[segmentIndex];
-                                candidateIndex < buffer->candidateCount;
+                    }
+
+                    if (usedClampedCell != 0) {
+                        for (int segmentIndex = 0; segmentIndex < g_DiPickPointCount; ++segmentIndex) {
+                            g_DiPickPointArray[segmentIndex * 2].x -= offsetX;
+                            g_DiPickPointArray[segmentIndex * 2].z -= offsetZ;
+                            g_DiPickPointArray[segmentIndex * 2 + 1].x -= offsetX;
+                            g_DiPickPointArray[segmentIndex * 2 + 1].z -= offsetZ;
+                            g_DiSegmentBounds[segmentIndex].minX -= offsetX;
+                            g_DiSegmentBounds[segmentIndex].minZ -= offsetZ;
+                            g_DiSegmentBounds[segmentIndex].maxX -= offsetX;
+                            g_DiSegmentBounds[segmentIndex].maxZ -= offsetZ;
+                        }
+                        for (int bufferIndex = 0; bufferIndex < g_DiPickPointCount; ++bufferIndex) {
+                            for (int candidateIndex = firstNewCandidate[bufferIndex];
+                                candidateIndex < g_DiPickCandidateBuffer[bufferIndex].candidateCount;
                                 ++candidateIndex) {
-                                buffer->entries[candidateIndex].hitPos.x -= offsetX;
-                                buffer->entries[candidateIndex].hitPos.z -= offsetZ;
+                                g_DiPickCandidateBuffer[bufferIndex].entries[candidateIndex].hitPos.x -= offsetX;
+                                g_DiPickCandidateBuffer[bufferIndex].entries[candidateIndex].hitPos.z -= offsetZ;
                             }
                         }
                     }
@@ -2982,7 +3039,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforsegmentsrecursive
      * @recoil-artifact defines .text recoil:function:0x446440: CZDisplayInstance::BuildPickCandidatesForSegmentsRecursive.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.

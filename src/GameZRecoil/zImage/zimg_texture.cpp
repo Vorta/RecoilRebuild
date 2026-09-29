@@ -1560,7 +1560,7 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
     const float yScale = (float)(image->height) * inverseSideLength;
 
     unsigned short* const newPixels = (unsigned short*)(malloc(sideLength * sideLength * sizeof(unsigned short)));
-    char* newAlphaMap = 0;
+    char* newAlphaMap;
     if (image->alphaMap != 0) {
         newAlphaMap = (char*)(malloc(sideLength * sideLength));
     }
@@ -1585,9 +1585,9 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
         }
     }
 
-    free(image->pixels);
     image->height = (short)(sideLength);
     image->width = (short)(sideLength);
+    free(image->pixels);
     image->pixels = newPixels;
     if (image->alphaMap != 0) {
         free(image->alphaMap);

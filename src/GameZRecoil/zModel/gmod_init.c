@@ -4586,7 +4586,7 @@ void __fastcall zVideoSetActiveViewContext(CZCameraDataPartial* viewContext)
 {
     g_zVideo_pActiveProjectionViewContext = viewContext;
 
-    if (g_zVideo_pActiveProjectionViewContext->nearClip < 1.0f) {
+    if (g_zVideo_pActiveProjectionViewContext->nearClip < 1.0) {
         g_zVideo_pActiveProjectionViewContext->nearClip = 1.0f;
     }
 
@@ -4598,67 +4598,59 @@ void __fastcall zVideoSetActiveViewContext(CZCameraDataPartial* viewContext)
 
     gClipRect_Primary.zMax = g_zVideo_pActiveProjectionViewContext->farClip;
 
-    int windowX;
-    int windowY;
-    if (CZWindow::gwWindowGetSize(g_zVideo_pActiveProjectionViewContext->windowNode, &windowX, &windowY) != 0) {
-        windowX = 0;
-        windowY = 0;
+    int origin[2];
+    if (CZWindow::gwWindowGetSize(g_zVideo_pActiveProjectionViewContext->windowNode, &origin[0], &origin[1]) != 0) {
+        origin[0] = 0;
+        origin[1] = 0;
     }
 
-    int width;
-    int height;
-    if (CZWindow::gwWindowGetResolution(g_zVideo_pActiveProjectionViewContext->windowNode, &width, &height) != 0) {
-        width = zVideo::GetPrimarySurfaceWidth();
-        height = zVideo::GetPrimarySurfaceHeight();
+    int size[2];
+    if (CZWindow::gwWindowGetResolution(g_zVideo_pActiveProjectionViewContext->windowNode, &size[0], &size[1]) != 0) {
+        size[0] = zVideo::GetPrimarySurfaceWidth();
+        size[1] = zVideo::GetPrimarySurfaceHeight();
     }
 
-    const int rightPx = windowX + width;
-    const int bottomPx = windowY + height;
-    const float left = (float)(windowX);
-    const float top = (float)(windowY);
-    const float right = (float)(rightPx);
-    const float bottom = (float)(bottomPx);
-    float viewportOriginX;
-    float viewportOriginY;
-    float viewportBottom;
-    float projectClipLeft;
+    float left;
+    float top;
+    float right;
+    float bottom;
 
-    if (g_zVideo_ActiveRendererPath == 0) {
-        viewportOriginX = left;
-        viewportOriginY = top;
-        viewportBottom = bottom;
-        projectClipLeft = left;
-        gClipRect_Primary.xMin = left + 0.5f - 0.999000013f;
-        gClipRect_Primary.xMax = right + 1.49900007f;
-        gClipRect_Primary.xMaxAlt = right + 0.5f - 0.00100000005f;
-        gClipRect_Primary.yMin = top + 0.5f - 0.999000013f;
-        gClipRect_Primary.yMax = bottom + 1.49900007f;
-        gClipRect_Primary.yMaxAlt = bottom + 0.5f - 0.00100000005f;
-    } else {
+    if (g_zVideo_ActiveRendererPath != 0) {
+        left = (float)(origin[0]);
+        right = (float)(origin[0] + size[0]);
         const float rightWithSlop = right + 0.00100000005f;
+        top = (float)(origin[1]);
+        bottom = (float)(origin[1] + size[1]);
         const float bottomWithSlop = bottom + 0.00100000005f;
-        viewportOriginX = left;
-        viewportOriginY = top;
-        viewportBottom = bottomWithSlop;
-        projectClipLeft = left;
         gClipRect_Primary.xMin = left;
         gClipRect_Primary.xMax = rightWithSlop;
         gClipRect_Primary.xMaxAlt = rightWithSlop;
         gClipRect_Primary.yMin = top;
         gClipRect_Primary.yMax = bottomWithSlop;
         gClipRect_Primary.yMaxAlt = bottomWithSlop;
+    } else {
+        left = (float)(origin[0]);
+        top = (float)(origin[1]);
+        right = (float)(origin[0] + size[0]);
+        bottom = (float)(origin[1] + size[1]);
+        gClipRect_Primary.xMin = left + 0.5f - 0.999000013f;
+        gClipRect_Primary.xMax = right + 1.49900007f;
+        gClipRect_Primary.xMaxAlt = right + 0.5f - 0.00100000005f;
+        gClipRect_Primary.yMin = top + 0.5f - 0.999000013f;
+        gClipRect_Primary.yMax = bottom + 1.49900007f;
+        gClipRect_Primary.yMaxAlt = bottom + 0.5f - 0.00100000005f;
     }
 
-    g_zVideo_ProjectClipLeft = projectClipLeft;
-    g_zVideo_ProjectClipTop = viewportOriginY;
+    g_zVideo_ProjectClipLeft = left;
+    g_zVideo_ProjectClipTop = top;
     g_zVideo_ProjectClipRight = right - 0.00100000005f;
-    g_zVideo_ProjectClipBottom = viewportBottom - 0.00100000005f;
+    g_zVideo_ProjectClipBottom = bottom - 0.00100000005f;
 
     zMathSetupProjection(
-        viewportOriginX,
-        viewportOriginY,
-        (float)(width) * 0.5f,
-        (float)(height) * 0.5f,
+        left,
+        top,
+        (float)(size[0]) * 0.5f,
+        (float)(size[1]) * 0.5f,
         g_zVideo_pActiveProjectionViewContext->viewportScaleX,
         g_zVideo_pActiveProjectionViewContext->viewportScaleY,
         g_zVideo_pActiveProjectionViewContext->nearClip,

@@ -10570,27 +10570,24 @@ HudLayoutHW::HudLayoutHW()
 int HudLayoutHW::LoadTypeIIFromZarRoot(zReader::Node* parentNode)
 {
     zReader::Node* const typeIINode = zRdrGetNode(parentNode, g_HudLayout_TypeIISectionName);
-    if (typeIINode == 0) {
-        return 1;
+    if (typeIINode != 0) {
+        HudLayoutBase* const layout = (HudLayoutBase*)(this);
+
+        HudUiLayoutNode::ReadRectOffsetAndSize(&typeIINode->value.nodes[1], &layout->layoutRect, 0, 0, 0);
+        layout->activeRect = layout->layoutRect;
+
+        HudUiLayoutNode::ApplyImageWidget(&typeIINode->value.nodes[2], &widget1, 0, 0, 0, 0, 0);
+        HudUiLayoutNode::ApplyImageWidget(&typeIINode->value.nodes[3], &widget3, 0, g_HudUiMgrHudOriginY, 0, 0, 0);
+        HudUiLayoutNode::ApplyImageWidget(&typeIINode->value.nodes[4], &widget2, 0, g_HudUiMgrHudOriginY, 0, 0, 0);
+
+        zReader::Node* const imageNames = typeIINode->value.nodes[5].value.nodes;
+        widget1ImageDefault = widget1.image;
+        widget1Image320 = zImage::TexDirFindOrCreateByPath(imageNames[1].value.str);
+        widget1Image400 = zImage::TexDirFindOrCreateByPath(imageNames[2].value.str);
+        widget2ImageDefault = widget2.image;
+        widget2Image320 = zImage::TexDirFindOrCreateByPath(imageNames[3].value.str);
+        widget2Image400 = zImage::TexDirFindOrCreateByPath(imageNames[4].value.str);
     }
-
-    zReader::Node* const typeIIPayload = typeIINode->value.nodes;
-    HudLayoutBase* const layout = (HudLayoutBase*)(this);
-
-    HudUiLayoutNode::ReadRectOffsetAndSize(&typeIIPayload[1], &layout->layoutRect, 0, 0, 0);
-    layout->activeRect = layout->layoutRect;
-
-    HudUiLayoutNode::ApplyImageWidget(&typeIIPayload[2], &widget1, 0, 0, 0, 0, 0);
-    HudUiLayoutNode::ApplyImageWidget(&typeIIPayload[3], &widget3, 0, g_HudUiMgrHudOriginY, 0, 0, 0);
-    HudUiLayoutNode::ApplyImageWidget(&typeIIPayload[4], &widget2, 0, g_HudUiMgrHudOriginY, 0, 0, 0);
-
-    zReader::Node* const imageNames = typeIIPayload[5].value.nodes;
-    widget1ImageDefault = widget1.image;
-    widget1Image320 = zImage::TexDirFindOrCreateByPath(imageNames[1].value.str);
-    widget1Image400 = zImage::TexDirFindOrCreateByPath(imageNames[2].value.str);
-    widget2ImageDefault = widget2.image;
-    widget2Image320 = zImage::TexDirFindOrCreateByPath(imageNames[3].value.str);
-    widget2Image400 = zImage::TexDirFindOrCreateByPath(imageNames[4].value.str);
 
     return 1;
 }
@@ -13223,3 +13220,4 @@ void zFMV_Action::RunBlockingTimed()
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
 extern int g_HudSortRangeIdCounterAlignment2;
+extern int g_HudSortRangeIdCounterAlignment3;

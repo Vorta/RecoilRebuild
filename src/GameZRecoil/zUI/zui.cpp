@@ -2334,9 +2334,8 @@ static inline zVidImagePartial* HudUiMessageBoxCreateSolidImage(int width, int h
     void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(image) * width * height);
     zVidImageSetPixels(image, pixels, 0);
 
-    unsigned short* const pixelWords = (unsigned short*)(pixels);
     for (int index = 0; index < image->pixelCount; ++index) {
-        pixelWords[index] = color565;
+        ((unsigned short*)(image->pixels))[index] = color565;
     }
 
     return image;

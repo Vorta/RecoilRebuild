@@ -4910,7 +4910,7 @@ void HudUiPanel::SetFont(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-rebuildtextrect
  * @recoil-artifact defines .text recoil:function:0x4bac10: HudUiPanel::RebuildTextRect.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::RebuildTextRect.
  */
@@ -4921,137 +4921,144 @@ void HudUiPanel::RebuildTextRect()
         textRect.left = textRect.top = textRect.right = textRect.bottom = 0;
         textHeightPx = 0;
         textWidthPx = 0;
-        textDirty = 0;
-        return;
-    }
-
-    HDC measureDc = CreateCompatibleDC(0);
-    if (measureDc == 0) {
-        textDirty = 0;
-        return;
-    }
-
-    SelectObject(measureDc, hFont);
-
-    UINT drawFormat = DT_LEFT;
-    BOOL measured = FALSE;
-    if (wordWrapEnabled != 0) {
-        textRect = wrapRect;
-        drawFormat = DT_WORDBREAK;
-        measured = TRUE;
     } else {
-        measured = DrawTextA(measureDc, textBuffer, -1, (RECT*)(&textRect), DT_CALCRECT);
-    }
+        HDC measureDc = CreateCompatibleDC(0);
+        if (measureDc != 0) {
+            SelectObject(measureDc, hFont);
 
-    if (measured != 0) {
-        if (shadowEnabled != 0) {
-            textRect.bottom += abs(shadowOffsetY);
-            textRect.right += abs(shadowOffsetX);
-        }
-
-        textWidthPx = textRect.right - textRect.left;
-        textHeightPx = textRect.bottom - textRect.top;
-
-        if (textPick != 0) {
-            if (textWidthPx > textPick->width || textHeightPx > textPick->height) {
-                zVid_Image::Destroy(textPick);
-                textPick = zVid_Image::Create();
-                zVid_Image::SetFormatCode(textPick, 3);
-                zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
-                void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
-                zVidImageSetPixels(textPick, pixels, 0);
-                textPick->formatFlagsPacked |= 0x20;
+            UINT drawFormat;
+            BOOL measured;
+            if (wordWrapEnabled != 0) {
+                textRect = wrapRect;
+                drawFormat = DT_WORDBREAK;
+                measured = TRUE;
+            } else {
+                drawFormat = DT_LEFT;
+                measured = DrawTextA(measureDc, textBuffer, -1, (RECT*)(&textRect), DT_CALCRECT);
             }
-        } else {
-            textPick = zVid_Image::Create();
-            zVid_Image::SetFormatCode(textPick, 3);
-            zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
-            void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
-            zVidImageSetPixels(textPick, pixels, 0);
-            textPick->formatFlagsPacked |= 0x20;
-        }
 
-        if (textPick != 0) {
-            const int clearBytes = zVid_Image::QueryBytesPerPixel(textPick) * textPick->pixelCount;
-            memset(textPick->pixels, 0, clearBytes);
-
-            HDC drawDc;
-            if (g_zVideo_pfnImageUploadPixelsToSurface(textPick, &drawDc) != 0) {
-                RECT mainRect = *(RECT*)(&textRect);
-                SelectObject(drawDc, hFont);
-
+            if (measured != 0) {
                 if (shadowEnabled != 0) {
-                    RECT shadowRect = *(RECT*)(&textRect);
-                    if (shadowOffsetX > 0) {
-                        shadowRect.left += shadowOffsetX;
-                    } else {
-                        mainRect.left -= shadowOffsetX;
-                    }
-
-                    if (shadowOffsetY > 0) {
-                        shadowRect.top += shadowOffsetY;
-                    } else {
-                        mainRect.top -= shadowOffsetY;
-                    }
-
-                    ::SetTextColor(drawDc, 0x00141414);
-                    if (bkMode == OPAQUE) {
-                        SetBkColor(drawDc, 0x20);
-                    }
-
-                    SetBkMode(drawDc, bkMode);
-                    DrawTextA(drawDc, textBuffer, -1, &shadowRect, drawFormat);
+                    textRect.bottom += abs(shadowOffsetY);
+                    textRect.right += abs(shadowOffsetX);
                 }
 
-                ::SetTextColor(drawDc, textColor0 == textColor1 ? textColor0 : 0x00ffffff);
-                if (bkMode == OPAQUE) {
-                    SetBkColor(drawDc, bkColor);
+                textWidthPx = textRect.right - textRect.left;
+                textHeightPx = textRect.bottom - textRect.top;
+
+                if (textPick != 0) {
+                    if (textWidthPx > textPick->width || textHeightPx > textPick->height) {
+                        zVid_Image::Destroy(textPick);
+                        textPick = zVid_Image::Create();
+                        zVid_Image::SetFormatCode(textPick, 3);
+                        zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
+                        void* const pixels
+                            = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
+                        zVidImageSetPixels(textPick, pixels, 0);
+                        textPick->formatFlagsPacked |= 0x20;
+                    }
+                } else {
+                    textPick = zVid_Image::Create();
+                    zVid_Image::SetFormatCode(textPick, 3);
+                    zVid_Image::SetSize(textPick, (short)(textWidthPx), (short)(textHeightPx));
+                    void* const pixels = malloc(zVid_Image::QueryBytesPerPixel(textPick) * textWidthPx * textHeightPx);
+                    zVidImageSetPixels(textPick, pixels, 0);
+                    textPick->formatFlagsPacked |= 0x20;
                 }
 
-                SetBkMode(drawDc, bkMode);
-                DrawTextA(drawDc, textBuffer, -1, &mainRect, drawFormat);
+                if (textPick != 0) {
+                    memset(textPick->pixels, 0, zVid_Image::QueryBytesPerPixel(textPick) * textPick->pixelCount);
 
-                g_zVideo_pfnImageReleaseSurface(textPick, drawDc);
-            }
+                    HDC drawDc;
+                    if (g_zVideo_pfnImageUploadPixelsToSurface(textPick, &drawDc) != 0) {
+                        RECT mainRect = *(RECT*)(&textRect);
+                        SelectObject(drawDc, hFont);
 
-            TEXTMETRICA metrics;
-            if (GetTextMetricsA(measureDc, &metrics) != 0) {
-                if (textColor0 != textColor1) {
-                    const unsigned short sourceWhite = (unsigned short)(zVidPackColorRGB(0xff, 0xff, 0xff));
-                    unsigned short* pixel = (unsigned short*)(textPick->pixels);
-                    {
-                        for (int row = 0; row < textPick->height; ++row) {
-                            const int lineSpan = metrics.tmHeight + metrics.tmExternalLeading;
-                            const int rowPhase = (shadowEnabled != 0 ? row + shadowOffsetY : row) % lineSpan;
-                            const float blend = (float)(rowPhase - metrics.tmInternalLeading)
-                                / (float)(metrics.tmAscent - metrics.tmInternalLeading);
-                            const unsigned int blendedColor
-                                = HudUiFlashPanel::ComputeFlashBlendColor(textColor0, textColor1, blend);
-                            const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
-                                (unsigned char)(blendedColor & 0xffu),
-                                (unsigned char)((blendedColor >> 8) & 0xffu),
-                                (unsigned char)((blendedColor >> 16) & 0xffu)
-                            ));
+                        if (shadowEnabled != 0) {
+                            RECT shadowRect = *(RECT*)(&textRect);
+                            if (shadowOffsetX > 0) {
+                                shadowRect.left += shadowOffsetX;
+                            } else {
+                                mainRect.left -= shadowOffsetX;
+                            }
 
+                            if (shadowOffsetY > 0) {
+                                shadowRect.top += shadowOffsetY;
+                            } else {
+                                mainRect.top -= shadowOffsetY;
+                            }
+
+                            ::SetTextColor(drawDc, 0x00141414);
+                            if (bkMode == OPAQUE) {
+                                SetBkColor(drawDc, 0x20);
+                            }
+
+                            SetBkMode(drawDc, bkMode);
+                            DrawTextA(drawDc, textBuffer, -1, &shadowRect, drawFormat);
+                        }
+
+                        if (textColor0 != textColor1) {
+                            ::SetTextColor(drawDc, 0x00ffffff);
+                        } else {
+                            ::SetTextColor(drawDc, textColor0);
+                        }
+                        if (bkMode == OPAQUE) {
+                            SetBkColor(drawDc, bkColor);
+                        }
+
+                        SetBkMode(drawDc, bkMode);
+                        DrawTextA(drawDc, textBuffer, -1, &mainRect, drawFormat);
+
+                        g_zVideo_pfnImageReleaseSurface(textPick, drawDc);
+                    }
+
+                    TEXTMETRICA metrics;
+                    if (GetTextMetricsA(measureDc, &metrics) != 0) {
+                        if (textColor0 != textColor1) {
+                            const unsigned short sourceWhite = (unsigned short)(zVidPackColorRGB(0xff, 0xff, 0xff));
+                            unsigned short* pixel = (unsigned short*)(textPick->pixels);
                             {
-                                for (int col = 0; col < textPick->width; ++col, ++pixel) {
-                                    if (*pixel == sourceWhite) {
-                                        *pixel = packedColor;
+                                for (int row = 0; row < textPick->height; ++row) {
+                                    int rowPhase;
+                                    if (shadowEnabled != 0) {
+                                        rowPhase
+                                            = (row + shadowOffsetY) % (metrics.tmHeight + metrics.tmExternalLeading);
+                                    } else {
+                                        rowPhase = row % (metrics.tmHeight + metrics.tmExternalLeading);
+                                    }
+                                    const float blend = (float)(rowPhase - metrics.tmInternalLeading)
+                                        / (float)(metrics.tmAscent - metrics.tmInternalLeading);
+                                    const unsigned int blendedColor
+                                        = HudUiFlashPanel::ComputeFlashBlendColor(textColor0, textColor1, blend);
+                                    const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
+                                        GetRValue(blendedColor),
+                                        GetGValue(blendedColor),
+                                        blendedColor >> 16
+                                    ));
+
+                                    {
+                                        for (int col = 0; col < textPick->width; ++col) {
+                                            if (*pixel == sourceWhite) {
+                                                *pixel = packedColor;
+                                            }
+                                            ++pixel;
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        unknown274 = (int)(metrics.tmExternalLeading);
                     }
                 }
-
-                unknown274 = (int)(metrics.tmExternalLeading);
+            } else {
+                GetLastError();
             }
+
+            DeleteDC(measureDc);
         }
-    } else {
-        GetLastError();
     }
 
-    DeleteDC(measureDc);
     textDirty = 0;
 }
 

@@ -1048,7 +1048,7 @@ int HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, con
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudgeom2d-classifypointagainstsegment
  * @recoil-artifact defines .text recoil:function:0x416390: HudGeom2D::ClassifyPointAgainstSegment
- *
+ * @recoil-match byte
  *
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */
