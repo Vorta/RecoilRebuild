@@ -155,13 +155,12 @@ const DWORD kFailureDisplaySleepMs = 1000;
  */
 #define GetWolLanguageId(languageId)                                                                                   \
     do {                                                                                                               \
-        const LANGID primaryLanguage = GetSystemDefaultLangID() & 0x3ff;                                               \
+        (languageId) = kWolLanguageDefault;                                                                            \
+        const int primaryLanguage = GetSystemDefaultLangID() & 0x3ff;                                                  \
         if (primaryLanguage == LANG_GERMAN) {                                                                          \
             (languageId) = kWolLanguageGerman;                                                                         \
         } else if (primaryLanguage == LANG_FRENCH) {                                                                   \
             (languageId) = kWolLanguageFrench;                                                                         \
-        } else {                                                                                                       \
-            (languageId) = kWolLanguageDefault;                                                                        \
         }                                                                                                              \
     } while (0)
 
@@ -209,6 +208,14 @@ const DWORD kFailureDisplaySleepMs = 1000;
                 = WaitForMultipleObjects(3, g_WestwoodOnlineUpgradeInitWaitEvents, FALSE, kBootstrapWaitTimeoutMs);    \
         }                                                                                                              \
     } while (0)
+
+/**
+ * Logical fold alias of the shared RET representative 0x4076f0.
+ * Evidence: retail 0x43f6b0 and 0x440f40 pass their sprintf debug buffer in
+ * ECX to 0x4076f0 right after formatting it.
+ * Purpose: release-build debug-text sink; compiled empty.
+ */
+void __fastcall WolDebugTrace(const char* text) { }
 } // namespace
 
 #include "Battlesport/wol_api_event_sink.h"
@@ -1119,7 +1126,7 @@ int WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(const char* format, ...)
  * Purpose: initialize COM/MFC control hosting, create the WOL ActiveX API,
  * advise the event sink, and apply the selected upgrade profile.
  */
-int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HANDLE bootstrapServerListEvent)
+int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HINSTANCE moduleHandle)
 {
     char failureCaption[kFailureMessageBufferSize];
     char failureText[kFailureMessageBufferSize];
@@ -1127,7 +1134,7 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HANDLE bootstrapServer
     CoInitialize(0);
     g_WestwoodOnlineUpgradeApiInitState.structSize = kWestwoodOnlineUpgradeInitStateSize;
     g_WestwoodOnlineUpgradeApiShutdownState = 0;
-    WestwoodOnlineUpgradeApiInitState::Init(&g_WestwoodOnlineUpgradeApiInitState, bootstrapServerListEvent, 0);
+    WestwoodOnlineUpgradeApiInitState::Init(&g_WestwoodOnlineUpgradeApiInitState, 0, moduleHandle);
     AfxEnableControlContainer(0);
     CoCreateInstance(
         g_WestwoodOnlineUpgradeApi_CLSID,
@@ -1208,8 +1215,7 @@ int WestwoodOnlineUpgradeApi::Init()
     memset(&g_WestwoodOnlineUpgradeCachedBrowseRecord, 0, sizeof(g_WestwoodOnlineUpgradeCachedBrowseRecord));
     zGame::ReturnOnlyStub();
 
-    WestwoodOnlineUpgradeApi api;
-    if (api.CreateInstanceAndLoadConfig(g_hWestwoodOnlineUpgradeModuleInstance) == 0) {
+    if (WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(g_hWestwoodOnlineUpgradeModuleInstance) == 0) {
         return 0;
     }
 
@@ -1228,14 +1234,17 @@ int WestwoodOnlineUpgradeApi::Init()
             zLoc::GetMessageString(kWolApiInitConnectingMessageId)
         );
 
-    IWestwoodOnlineUpgradeProviderApi* apiCom = GetApiComObject();
+    IWestwoodOnlineUpgradeProviderApi* apiCom;
     {
         int wolLanguageId;
         GetWolLanguageId(wolLanguageId);
-        CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
-        CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
-
-        apiCom->BeginConnect(wolLanguageId, kWolProductId, playerName, connectString, kWolConnectTimeoutSeconds);
+        GetApiComObject()->BeginConnect(
+            wolLanguageId,
+            kWolProductId,
+            g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName(),
+            g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString(),
+            kWolConnectTimeoutSeconds
+        );
     }
 
     g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
@@ -1253,7 +1262,7 @@ int WestwoodOnlineUpgradeApi::Init()
     }
 
     g_WestwoodOnlineUpgradeAbortFlag = 0;
-    ResetEvent(g_WestwoodOnlineUpgradeFailureEvent);
+    ResetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[2]);
     g_WestwoodOnlineUpgradeApiAsyncErrorFlag = 0;
 
     apiCom = GetApiComObject();
@@ -1271,20 +1280,18 @@ int WestwoodOnlineUpgradeApi::Init()
             zLoc::GetMessageString(kWolApiInitReadyMessageId)
         );
 
-    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag != 0) {
-        return 0;
-    }
-
-    if (waitResult != WAIT_OBJECT_0 + 2) {
+    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0 && waitResult != WAIT_OBJECT_0 + 2) {
         apiCom = GetApiComObject();
         apiCom->RequestListMode(kWolRequestListMode, 1);
         return 1;
     }
 
-    CopyFailureMessage(failureCaption, zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId));
-    CopyFailureMessage(failureText, zLoc::GetMessageString(kWolApiInitFailureTextMessageId));
-    ((CWnd*)((unsigned int)g_RecoilApp.m_pMainWnd))
-        ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
+    if (g_WestwoodOnlineUpgradeApiAsyncErrorFlag == 0) {
+        CopyFailureMessage(failureCaption, zLoc::GetMessageString(kWolApiInitFailureCaptionMessageId));
+        CopyFailureMessage(failureText, zLoc::GetMessageString(kWolApiInitFailureTextMessageId));
+        ((CWnd*)((unsigned int)g_RecoilApp.m_pMainWnd))
+            ->MessageBoxA(failureText, failureCaption, kWolApiFailureMessageBoxType);
+    }
     return 0;
 }
 
@@ -2365,6 +2372,8 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
 )
 {
     char debugText[4096];
+    int foundIrcServer = 0;
+    WestwoodOnlineUpgradeBootstrapServerRecord* server = serverList;
     sprintf(
         debugText,
         /* Retail literal 0x4dd2dc is the compiler-emitted bootstrap-server
@@ -2372,15 +2381,13 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
         "\nOnServerList:\n\tResult Code: %d\n",
         resultCode
     );
-    zGame::ReturnOnlyStub();
+    WolDebugTrace(debugText);
 
     if (resultCode < 0) {
         SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
         return 0;
     }
 
-    int foundIrcServer = 0;
-    WestwoodOnlineUpgradeBootstrapServerRecord* server = serverList;
     while (server != 0) {
         if (strcmp(
                 server->m_serverType,
@@ -2403,19 +2410,18 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
             server->m_connectData,
             server->m_gameType
         );
-        zGame::ReturnOnlyStub();
+        WolDebugTrace(debugText);
         server = server->m_next;
     }
 
-    {
-        CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
-        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName, (const char*)playerName);
-    }
-
-    {
-        CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
-        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString, (const char*)connectString);
-    }
+    strcpy(
+        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName,
+        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName()
+    );
+    strcpy(
+        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
+        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString()
+    );
 
     SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0]);
     return 0;
@@ -3326,7 +3332,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
     }
 
     sprintf(debugStatusText, kNetworkStatusDebugFormat, statusName, connectionStatusCode);
-    zGame::ReturnOnlyStub();
+    WolDebugTrace(debugStatusText);
 
     if (connectionStatusCode == kNetworkStatusDisconnected && g_WestwoodOnlineUpgradeAbortFlag == 0) {
         g_pWestwoodOnlineUpgradeDialog->SetAbortAndClose();
@@ -3783,6 +3789,10 @@ CString WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString()
     return m_selectedProfileConnectString;
 }
 
+#define _AFXWIN_INLINE inline
+#include <afxwin2.inl>
+#undef _AFXWIN_INLINE
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-westwoodonlineupgradeconfigdialog
  * @recoil-artifact defines .text recoil:function:0x441750: WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog
@@ -3935,7 +3945,7 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog()
     }
     m_selectedProfileIndex = 0;
     m_profileComboEditDirty = 0;
-    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETCURSEL, 0, 0);
+    m_profileCombo.SetCurSel(0);
     ((CWnd*)&m_connectStringEdit)->SetWindowTextA((const char*)m_profileConnectStrings[0]);
     return TRUE;
 }

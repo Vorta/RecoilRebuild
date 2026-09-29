@@ -2721,6 +2721,7 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
     { 0x0f, sizeof(NetPkt0F_CraterEvent), 0 },
     0,
     0,
+    0,
     { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
@@ -2732,6 +2733,7 @@ NetPkt0F_CraterEvent g_NetPkt0F_CraterEventRelayBuf = {
  */
 NetPkt0F_CraterEvent g_NetPkt0F_CraterEventSendBuf = {
     { 0x0f, sizeof(NetPkt0F_CraterEvent), 0 },
+    0,
     0,
     0,
     { 0.0f, 0.0f, 0.0f },
@@ -2747,6 +2749,7 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
     { 0x10, sizeof(NetPkt10_QSandEvent), 0 },
     0,
     0,
+    0,
     { 0.0f, 0.0f, 0.0f },
     0.0f,
 };
@@ -2758,6 +2761,7 @@ NetPkt10_QSandEvent g_NetPkt10_QSandEventRelayBuf = {
  */
 NetPkt10_QSandEvent g_NetPkt10_QSandEventSendBuf = {
     { 0x10, sizeof(NetPkt10_QSandEvent), 0 },
+    0,
     0,
     0,
     { 0.0f, 0.0f, 0.0f },

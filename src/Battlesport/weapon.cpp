@@ -3141,7 +3141,7 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
     }
 
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable && zInputDIIsForceFeedbackEnabled() != 0) {
-        zInputDIRestartPrimaryFireEffect(g_zInputFfEffectSet);
+        g_zInputFfEffectSet->RestartPrimaryFireEffect();
     }
 
     return 1;

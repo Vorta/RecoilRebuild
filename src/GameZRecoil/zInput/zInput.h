@@ -124,6 +124,8 @@ struct zInput_FFEffectSet {
     zInput_DiEffect* SteerForce;
     zInput_DiEffect* PitchForce;
 
+    zInput_FFEffectSet();
+    void RestartPrimaryFireEffect();
     void PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ, float gain);
     void PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ, float gain);
 };
@@ -518,9 +520,7 @@ zInput_DiEffect* __stdcall zInputDICreateConstantForceEffectScaled(float gain);
 zInput_DiEffect* __fastcall zInputDICreateConstantForceEffectWithDirection(int direction);
 zInput_DiEffect* __stdcall zInputDICreateSineEffectScaled(float gain);
 void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(int dikCode);
-void __fastcall zInputDIRestartPrimaryFireEffect(zInput_FFEffectSet* effectSet);
 void __fastcall zInputDIPlayAltFireEffect(zInput_FFEffectSet* effectSet, float gain);
-zInput_FFEffectSet* __fastcall zInputDIInitForceFeedbackEffectSet(zInput_FFEffectSet* effectSet);
 void __fastcall zInputDIUpdateSteerAndPitchForceEffects(zInput_FFEffectSet* effectSet);
 }
 

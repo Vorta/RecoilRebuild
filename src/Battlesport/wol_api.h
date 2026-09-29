@@ -67,13 +67,9 @@ struct WestwoodOnlineUpgradeQueryRequest {
  */
 struct IWestwoodOnlineUpgradeProviderApi : IUnknown {
     virtual void STDMETHODCALLTYPE ProcessCallbacks() = 0;
-    virtual void STDMETHODCALLTYPE BeginConnect(
-        int languageId,
-        int productId,
-        const CString& playerName,
-        const CString& connectString,
-        int timeoutSeconds
-    ) = 0;
+    virtual void STDMETHODCALLTYPE
+    BeginConnect(int languageId, int productId, const char* playerName, const char* connectString, int timeoutSeconds)
+        = 0;
     virtual void STDMETHODCALLTYPE RequestBootstrapServerList(
         WestwoodOnlineUpgradeBootstrapServerRecord* selectedBootstrapServer,
         int timeoutSeconds,
@@ -91,7 +87,7 @@ struct IWestwoodOnlineUpgradeProviderApi : IUnknown {
     ) = 0;
     virtual void STDMETHODCALLTYPE Disconnect() = 0;
     virtual void STDMETHODCALLTYPE Reserved38() = 0;
-    virtual void STDMETHODCALLTYPE SubmitEncodedQueryString(const CString& encodedQuery) = 0;
+    virtual void STDMETHODCALLTYPE SubmitEncodedQueryString(const char* encodedQuery) = 0;
     virtual void STDMETHODCALLTYPE Reserved40() = 0;
     virtual void STDMETHODCALLTYPE Reserved44() = 0;
     virtual void STDMETHODCALLTYPE SubmitPendingSessionList(WestwoodOnlineUpgradeSessionRequest* sessionRequestList)
@@ -179,7 +175,7 @@ struct WestwoodOnlineUpgradeApiInitState {
 
 struct WestwoodOnlineUpgradeApi {
     static int Init();
-    int CreateInstanceAndLoadConfig(HANDLE bootstrapServerListEvent);
+    static int CreateInstanceAndLoadConfig(HINSTANCE moduleHandle);
     static void Shutdown();
 };
 

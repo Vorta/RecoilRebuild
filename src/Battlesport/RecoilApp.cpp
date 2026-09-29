@@ -1310,23 +1310,22 @@ int RecoilApp_LeaveNetworkState::OnUpdateShouldQuit()
  * Purpose: create the seven gameplay force-feedback effects and start the
  * steady steer and pitch force effects when creation succeeds.
  */
-zInput_FFEffectSet* __fastcall zInputDIInitForceFeedbackEffectSet(zInput_FFEffectSet* effectSet)
+zInput_FFEffectSet::zInput_FFEffectSet()
 {
-    effectSet->PrimaryFire = zInputDICreateConstantForceEffectScaled(0.25f);
-    effectSet->AltFire = zInputDICreateConstantForceEffectScaled(0.5f);
-    effectSet->CollisionImpact = zInputDICreateConstantForceEffectScaled(0.5f);
-    effectSet->DamageHit = zInputDICreateConstantForceEffectScaled(0.5f);
-    effectSet->AmbientSine = zInputDICreateSineEffectScaled(0.05f);
-    effectSet->SteerForce = zInputDICreateConstantForceEffectWithDirection(0x6978);
-    effectSet->PitchForce = zInputDICreateConstantForceEffectWithDirection(0x4650);
+    PrimaryFire = zInputDICreateConstantForceEffectScaled(0.25f);
+    AltFire = zInputDICreateConstantForceEffectScaled(0.5f);
+    CollisionImpact = zInputDICreateConstantForceEffectScaled(0.5f);
+    DamageHit = zInputDICreateConstantForceEffectScaled(0.5f);
+    AmbientSine = zInputDICreateSineEffectScaled(0.05f);
+    SteerForce = zInputDICreateConstantForceEffectWithDirection(0x6978);
+    PitchForce = zInputDICreateConstantForceEffectWithDirection(0x4650);
 
-    if (effectSet->SteerForce != 0) {
-        effectSet->SteerForce->Start(1, 0);
+    if (SteerForce != 0) {
+        SteerForce->Start(1, 0);
     }
-    if (effectSet->PitchForce != 0) {
-        effectSet->PitchForce->Start(1, 0);
+    if (PitchForce != 0) {
+        PitchForce->Start(1, 0);
     }
-    return effectSet;
 }
 
 /**
@@ -1347,14 +1346,13 @@ extern "C" int __cdecl zInputDIIsForceFeedbackEnabled()
 /**
  * Purpose: Stops and restarts the primary-fire force-feedback effect.
  */
-void __fastcall zInputDIRestartPrimaryFireEffect(zInput_FFEffectSet* effectSet)
+void zInput_FFEffectSet::RestartPrimaryFireEffect()
 {
-    zInput_DiEffect* const effect = effectSet->PrimaryFire;
-    if (effect == 0) {
+    if (PrimaryFire == 0) {
         return;
     }
-    effect->Stop();
-    effectSet->PrimaryFire->Start(1, 0);
+    PrimaryFire->Stop();
+    PrimaryFire->Start(1, 0);
 }
 
 /**
@@ -4313,7 +4311,7 @@ int __fastcall SendPkt10QSandEvent(zDEClient_QSandEventTemplate* eventTemplate)
     ::g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     ::g_NetPkt10_QSandEventRelayBuf.center = eventTemplate->center;
     ::g_NetPkt10_QSandEventRelayBuf.radius = eventTemplate->radius;
-    ::g_NetPkt10_QSandEventRelayBuf.eventFlags &= 0xffff0000u;
+    ::g_NetPkt10_QSandEventRelayBuf.eventFlags = 0;
 
     if (zNetwork::IsHost() != 0) {
         zDEClient_QSand::NetRelayCallback(zNetworkGetLocalPlayerKey(), &::g_NetPkt10_QSandEventRelayBuf);
@@ -4509,7 +4507,7 @@ namespace GameNet {
 /**
  * Purpose: send the local alternate-gun dispatch packet to peers.
  */
-void __fastcall SendPkt07_AltGunDispatch(short weaponId, unsigned int dispatchFlags)
+void __fastcall SendPkt07_AltGunDispatch(int weaponId, unsigned int dispatchFlags)
 {
     zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
@@ -6133,16 +6131,6 @@ void HudUiSaveGameDialog::OnPrimaryActionThunk()
 }
 
 /**
- * Purpose: Tears down common save/load dialog child widgets, entry storage, and background state.
- */
-inline HudUiSaveLoadDialog::~HudUiSaveLoadDialog() { }
-
-/**
- * Purpose: Tears down save-game dialog child widgets, entry storage, and background state.
- */
-HudUiSaveGameDialog::~HudUiSaveGameDialog() { }
-
-/**
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiLoadGameDialog::HudUiLoadGameDialog()
@@ -6176,11 +6164,6 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk()
 {
     ProcessDialogResult();
 }
-
-/**
- * Purpose: Tears down load-game dialog child widgets, entry storage, and background state.
- */
-HudUiLoadGameDialog::~HudUiLoadGameDialog() { }
 
 /**
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.

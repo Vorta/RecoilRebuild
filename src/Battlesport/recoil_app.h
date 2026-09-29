@@ -147,7 +147,6 @@ struct CRecoilAppAttractFmvState : RecoilApp_FmvState {
     int m_clientRect[4];
 
     CRecoilAppAttractFmvState();
-    ~CRecoilAppAttractFmvState() { }
     int OnTryBecomeCurrent();
     int OnUpdateShouldQuit();
     void OnDeactivate();

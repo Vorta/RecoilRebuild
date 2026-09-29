@@ -6169,7 +6169,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-registergameplaycommandcallbacksandcreateffeffects
  * @recoil-artifact defines .text recoil:function:0x425920: Player::RegisterGameplayCommandCallbacksAndCreateFfEffects.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RegisterGameplayCommandCallbacksAndCreateFfEffects from the recovered
@@ -6197,12 +6197,7 @@ void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects()
     zInput::BindMapCurrentSetCommandCallback(44, hudHotkeyCallback);
     zInput::BindMapCurrentSetCommandCallback(45, hudHotkeyCallback);
 
-    zInput_FFEffectSet* const effectSet = new zInput_FFEffectSet;
-    if (effectSet != 0) {
-        g_zInputFfEffectSet = zInputDIInitForceFeedbackEffectSet(effectSet);
-    } else {
-        g_zInputFfEffectSet = 0;
-    }
+    g_zInputFfEffectSet = new zInput_FFEffectSet;
 }
 } // namespace Player
 namespace Player {

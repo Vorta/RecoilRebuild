@@ -271,7 +271,8 @@ struct NetPkt0E_PlayerLapProgress {
 
 struct NetPkt10_QSandEvent {
     zNetworkPacketHeader header;
-    unsigned int eventFlags;
+    unsigned short eventFlags;
+    unsigned short reserved_0a;
     int reserved_0c;
     zVec3 center;
     float radius;
@@ -279,7 +280,8 @@ struct NetPkt10_QSandEvent {
 
 struct NetPkt0F_CraterEvent {
     zNetworkPacketHeader header;
-    unsigned int eventFlags;
+    unsigned short eventFlags;
+    unsigned short reserved_0a;
     int craterTypeId;
     zVec3 center;
     float radius;
@@ -352,7 +354,7 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
 int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId, NetPkt06_PlayerStateSnapshot* packet);
 int __fastcall HandlePkt06PlayerStateSnapshot(int senderPlayerId, NetPkt06_PlayerStateSnapshot* packet);
 int __fastcall HandlePkt07_AltGunDispatch(int senderPlayerId, NetPkt07_AltGunDispatch* packet);
-void __fastcall SendPkt07_AltGunDispatch(short weaponId, unsigned int dispatchFlags);
+void __fastcall SendPkt07_AltGunDispatch(int weaponId, unsigned int dispatchFlags);
 int __fastcall AltGunDispatchNoOpCallback(OptCatalogEntryDef* entry, void** saveStateSlot);
 int __fastcall HostSendPkt10QSandFeature(zDEClient_QSandEventTemplate* eventTemplate);
 int __fastcall SendPkt10QSandEvent(zDEClient_QSandEventTemplate* eventTemplate);

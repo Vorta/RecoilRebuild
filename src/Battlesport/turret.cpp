@@ -838,7 +838,7 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(const zVec3* targetPos)
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-fireweapon
  * @recoil-artifact defines .text recoil:function:0x437820: zTurret_Runtime::FireWeapon.
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Spawns the configured OptCatalog weapon or activates its trail runtime state.

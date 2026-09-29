@@ -670,7 +670,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-altgundispatchallocruntimegatecallback
      * @recoil-artifact defines .text recoil:function:0x4340c0: OptCatalog::AltGunDispatchAllocRuntimeGateCallback
-     *
+     * @recoil-match byte
      *
      * Purpose: gate pkt07 alt-gun runtime allocation and launch-time callback
      * dispatch for local map-owned rows.

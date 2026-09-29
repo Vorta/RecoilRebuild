@@ -166,7 +166,6 @@ struct HudUiSaveLoadDialog : HudUiBackground {
     int selectedEntryIndex;
 
     virtual void OnPrimaryActionThunk() = 0;
-    virtual ~HudUiSaveLoadDialog();
     void InitializeFileEntries();
     void DeleteSaveFile(int confirmDelete);
     void RefreshSaveFileList();
@@ -192,7 +191,6 @@ struct HudUiSaveGameDialog : HudUiSaveLoadDialog {
     HudUiSaveGamePrimaryActionButton primaryActionButton;
 
     HudUiSaveGameDialog();
-    virtual ~HudUiSaveGameDialog();
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
@@ -202,7 +200,6 @@ struct HudUiLoadGameDialog : HudUiSaveLoadDialog {
     HudUiLoadGamePrimaryActionButton primaryActionButton;
 
     HudUiLoadGameDialog();
-    virtual ~HudUiLoadGameDialog();
     virtual void OnPrimaryActionThunk();
     void ProcessDialogResult();
 };
