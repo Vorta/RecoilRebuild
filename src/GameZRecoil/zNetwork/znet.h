@@ -34,16 +34,27 @@ struct zNetwork_PlayerRecord {
     char playerName[0x50];
     char altName[0x50];
     int colorIndex;
+
+    zNetwork_PlayerRecord(const char* name)
+    {
+        strncpy(playerName, name, 0x50);
+        playerName[0x4f] = 0;
+    }
 };
 
 struct zNetworkDPlaySystemMessageFields {
     unsigned char reserved_004[0x04];
     unsigned int playerId;
     unsigned char reserved_00c[0x0c];
-    unsigned int createFlagsOrPlayerType;
-    unsigned int nameShortOrAsyncHandle;
-    char* nameLong;
-    char* nameDisplay;
+    union {
+        zNetworkDPlayName playerName;
+        struct {
+            unsigned int createFlagsOrPlayerType;
+            unsigned int nameShortOrAsyncHandle;
+            char* nameLong;
+            char* nameDisplay;
+        };
+    };
 };
 
 struct zNetworkDPlaySystemMessage {
@@ -120,12 +131,12 @@ struct zNetworkDPlayServiceProviderInfo {
         const GUID* serviceProviderGuid,
         void* connectionData,
         DWORD connectionDataSize,
-        const zNetworkDPlayName* providerName,
+        const char* providerDisplayName,
         DWORD providerFlags
     )
     {
         this->serviceProviderGuid = *serviceProviderGuid;
-        displayName = _strdup(providerName->lpszShortNameA);
+        displayName = _strdup(providerDisplayName);
         this->connectionData = calloc(connectionDataSize, 1);
         memcpy(this->connectionData, connectionData, connectionDataSize);
         this->providerFlags = (int)providerFlags;
@@ -152,11 +163,7 @@ struct zNetworkPlayerRecordListNode {
     zNetwork_PlayerRecord* playerRecord;
 };
 
-struct zNetworkPlayerRecordList {
-    int flags;
-    zNetworkPlayerRecordListNode* sentinelNode;
-    int count;
-};
+typedef std::list<zNetwork_PlayerRecord*> zNetworkPlayerRecordList;
 
 struct zNetworkDispatchHandlerRecord {
     short packetType;
@@ -270,12 +277,12 @@ int __fastcall ReceivePendingMessages(int messageBudget);
 
 namespace zNetwork {
 int __cdecl IsHost();
-int __cdecl AllocFreePlayerColorIndex();
+int __fastcall AllocFreePlayerColorIndex(int playerKey);
 void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey);
 int __fastcall GetPlayerNameByKey(int playerKey, char* destination, unsigned int maxCount);
 void __cdecl DeleteAllDispatchHandlers();
 zNetworkDispatchHandlerRecord* __fastcall
-RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode);
+RegisterPacketHandler(short packetType, zNetworkPacketHandler handlerProc, int mode);
 int __fastcall UnregisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc);
 void __fastcall RemovePlayerRecordByKey(int playerKey);
 void __cdecl ClearEnumeratedSessionList();

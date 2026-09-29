@@ -39,7 +39,6 @@ extern "C" zSndListenerState g_zSnd_ListenerState = { 0 };
 extern "C" zVec3 g_zSnd_ListenerVelocity = { 0 };
 
 namespace {
-const char kZSnd3dSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp";
 } // namespace
 
 /**
@@ -233,12 +232,12 @@ int __fastcall zSndPlayHandle::Update3D(zVec3* worldPos, zVec3* velocity, int ve
 
     int error = buffer->SetPan(pan);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSnd3dSourceFile, 0x160);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp", 0x160);
     }
 
     error = buffer->SetVolume(gain);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, kZSnd3dSourceFile, 0x164);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp", 0x164);
     }
 
     return 1;

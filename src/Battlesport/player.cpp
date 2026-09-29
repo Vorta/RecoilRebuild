@@ -1756,8 +1756,8 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerCollisionContactContextPartial, saveState) =
     do {                                                                                                               \
         zReader::Node* const playerFxListNode = zRdrGetNode((modalNode), (name));                                      \
         if (playerFxListNode != 0) {                                                                                   \
-            int playerFxCount = PlayerZrdArrayCount(playerFxListNode) - 1;                                             \
-            if (playerFxCount > 2) {                                                                                   \
+            int playerFxCount = PlayerZrdArrayCount(playerFxListNode);                                                 \
+            if (playerFxCount >= 2) {                                                                                  \
                 playerFxCount = 2;                                                                                     \
             }                                                                                                          \
             for (int playerFxIndex = 0; playerFxIndex < playerFxCount; ++playerFxIndex) {                              \
@@ -2219,15 +2219,17 @@ void SetState7FxPass3Visible(int visible)
         PlayerPendingContactQueue* const playerPendingQueue = (queue);                                                 \
         PlayerPendingContact* const playerPendingContact = new PlayerPendingContact;                                   \
         memset(playerPendingContact, 0, sizeof(*playerPendingContact));                                                \
-        playerPendingContact->next = 0;                                                                                \
-        if (playerPendingQueue->count == 0) {                                                                          \
-            playerPendingQueue->head = playerPendingContact;                                                           \
-        } else {                                                                                                       \
-            playerPendingQueue->tail->next = playerPendingContact;                                                     \
+        if (playerPendingContact != 0) {                                                                               \
+            playerPendingContact->next = 0;                                                                            \
+            if (playerPendingQueue->count == 0) {                                                                      \
+                playerPendingQueue->head = playerPendingContact;                                                       \
+            } else {                                                                                                   \
+                playerPendingQueue->tail->next = playerPendingContact;                                                 \
+            }                                                                                                          \
+            playerPendingQueue->tail = playerPendingContact;                                                           \
+            playerPendingContact->next = 0;                                                                            \
+            ++playerPendingQueue->count;                                                                               \
         }                                                                                                              \
-        playerPendingQueue->tail = playerPendingContact;                                                               \
-        playerPendingContact->next = 0;                                                                                \
-        ++playerPendingQueue->count;                                                                                   \
         (contactOut) = playerPendingContact;                                                                           \
     } while (0)
 
@@ -3167,33 +3169,60 @@ namespace Player {
  */
 void __cdecl ShutdownMissionRuntime()
 {
-    while (g_PlayerSaveStateList.head != 0) {
-        DestroySaveGameState(g_PlayerSaveStateList.head);
+    while (1) {
+        zUtil_SaveGameState* const saveStateHead = g_PlayerSaveStateList.head;
+        if (saveStateHead == 0) {
+            break;
+        }
+        DestroySaveGameState(saveStateHead);
     }
 
-    DeleteRemainingTrackNodes();
+    HudUiMgrSensorTrackNode* trackNode = g_HudUiMgrSensor_TrackList.head;
+    while (trackNode != 0) {
+        HudUiMgrSensorTrackNode* const next = trackNode != 0 ? trackNode->next : 0;
+        ::operator delete(trackNode);
+        trackNode = next;
+    }
+
+    g_HudUiMgrSensor_TrackList.trackListAux = 0;
+    g_HudUiMgrSensor_TrackList.tail = 0;
+    g_HudUiMgrSensor_TrackList.head = 0;
+    g_HudUiMgrSensor_TrackList.count = 0;
 
     zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
+    while (saveState != 0) {
+        zUtil_SaveGameState* const next = saveState != 0 ? saveState->next : 0;
+        if (saveState != 0) {
+            saveState->FreeOwnedResources();
+            ::operator delete(saveState);
+        }
+        saveState = next;
+    }
+
     g_PlayerSaveStateList.listAux = 0;
     g_PlayerSaveStateList.tail = 0;
     g_PlayerSaveStateList.head = 0;
     g_PlayerSaveStateList.count = 0;
-    while (saveState != 0) {
-        zUtil_SaveGameState* const next = saveState->next;
-        saveState->FreeOwnedResources();
-        ::operator delete(saveState);
-        saveState = next;
-    }
 
-    PlayerMasterCommonData* commonData = g_PlayerMasterCommonDataList.head;
-    while (commonData != 0) {
-        DeleteWeaponSpecs(commonData);
-        commonData = commonData->next;
+    PlayerMasterCommonData* commonData;
+    for (commonData = g_PlayerMasterCommonDataList.head; commonData != 0;
+        commonData = commonData != 0 ? commonData->next : 0) {
+        PlayerMasterWeaponSpec* weaponSpec = commonData->weaponSpecHead;
+        while (weaponSpec != 0) {
+            PlayerMasterWeaponSpec* const next = weaponSpec != 0 ? weaponSpec->next : 0;
+            ::operator delete(weaponSpec);
+            weaponSpec = next;
+        }
+
+        commonData->weaponSpecListAux = 0;
+        commonData->weaponSpecTail = 0;
+        commonData->weaponSpecHead = 0;
+        commonData->weaponSpecCount = 0;
     }
 
     commonData = g_PlayerMasterCommonDataList.head;
     while (commonData != 0) {
-        PlayerMasterCommonData* const next = commonData->next;
+        PlayerMasterCommonData* const next = commonData != 0 ? commonData->next : 0;
         ::operator delete(commonData);
         commonData = next;
     }
@@ -3205,7 +3234,7 @@ void __cdecl ShutdownMissionRuntime()
 
     PlayerMasterModalData* modalData = g_PlayerMasterModalDataList.head;
     while (modalData != 0) {
-        PlayerMasterModalData* const next = modalData->next;
+        PlayerMasterModalData* const next = modalData != 0 ? modalData->next : 0;
         ::operator delete(modalData);
         modalData = next;
     }
@@ -3239,32 +3268,57 @@ void __fastcall DestroySaveGameState(zUtil_SaveGameState* saveState)
 
     HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(playerState->rootNode->callbackContext);
     if (trackNode != 0) {
-        RemoveTrackNode(trackNode);
+        if (g_HudUiMgrSensor_TrackList.count != 0) {
+            if (trackNode == g_HudUiMgrSensor_TrackList.head) {
+                --g_HudUiMgrSensor_TrackList.count;
+                g_HudUiMgrSensor_TrackList.head = trackNode->next;
+                if (g_HudUiMgrSensor_TrackList.head == 0) {
+                    g_HudUiMgrSensor_TrackList.trackListAux = 0;
+                    g_HudUiMgrSensor_TrackList.tail = 0;
+                }
+            } else {
+                for (HudUiMgrSensorTrackNode* cursor = g_HudUiMgrSensor_TrackList.head; cursor != 0;
+                    cursor = cursor->next) {
+                    if (cursor->next == trackNode) {
+                        --g_HudUiMgrSensor_TrackList.count;
+                        cursor->next = trackNode->next;
+                        if (g_HudUiMgrSensor_TrackList.tail == trackNode) {
+                            g_HudUiMgrSensor_TrackList.tail = cursor;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
         free(trackNode);
     }
 
-    zUtil_SaveGameState* previous = 0;
-    zUtil_SaveGameState* current = g_PlayerSaveStateList.head;
-    while (current != saveState) {
-        previous = current;
-        current = current->next;
+    if (saveState != 0 && g_PlayerSaveStateList.count != 0) {
+        if (saveState == g_PlayerSaveStateList.head) {
+            --g_PlayerSaveStateList.count;
+            g_PlayerSaveStateList.head = saveState->next;
+            if (g_PlayerSaveStateList.head == 0) {
+                g_PlayerSaveStateList.listAux = 0;
+                g_PlayerSaveStateList.tail = 0;
+            }
+        } else {
+            for (zUtil_SaveGameState* cursor = g_PlayerSaveStateList.head; cursor != 0; cursor = cursor->next) {
+                if (cursor->next == saveState) {
+                    --g_PlayerSaveStateList.count;
+                    cursor->next = saveState->next;
+                    if (g_PlayerSaveStateList.tail == saveState) {
+                        g_PlayerSaveStateList.tail = cursor;
+                    }
+                    break;
+                }
+            }
+        }
     }
 
-    zUtil_SaveGameState* const next = saveState->next;
-    if (previous != 0) {
-        previous->next = next;
-    } else {
-        g_PlayerSaveStateList.head = next;
+    if (saveState != 0) {
+        saveState->FreeOwnedResources();
+        ::operator delete(saveState);
     }
-    if (g_PlayerSaveStateList.tail == saveState) {
-        g_PlayerSaveStateList.tail = previous;
-    }
-    --g_PlayerSaveStateList.count;
-    if (g_PlayerSaveStateList.count == 0) {
-        g_PlayerSaveStateList.listAux = 0;
-    }
-    saveState->FreeOwnedResources();
-    ::operator delete(saveState);
 }
 } // namespace Player
 namespace Player {
@@ -3749,7 +3803,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 )
 {
     zUtil_SaveGameState* const localSaveState = GetSaveStateListHead();
-    zUtil_PlayerStateStorage* const localPlayerState = localSaveState != 0 ? localSaveState->playerState : 0;
+    zUtil_PlayerStateStorage* const localPlayerState = localSaveState->playerState;
     GetSaveStateListHead();
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
@@ -3759,7 +3813,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             playerState->masterCommonData = commonData;
             break;
         }
-        commonData = commonData->next;
+        commonData = commonData != 0 ? commonData->next : 0;
     }
 
     if (playerState->masterCommonData == 0) {
@@ -3803,22 +3857,23 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     playerState->previousTransform = playerState->motionBasis;
-    playerState->steerBasisRaw.x = -playerState->motionBasis.zx;
-    playerState->steerBasisRaw.y = -playerState->motionBasis.zy;
-    playerState->steerBasisRaw.z = -playerState->motionBasis.zz;
     playerState->steerBasisRef.x = playerState->motionBasis.yx;
     playerState->steerBasisRef.y = playerState->motionBasis.yy;
     playerState->steerBasisRef.z = playerState->motionBasis.yz;
+    playerState->steerBasisRaw.x = -playerState->motionBasis.zx;
+    playerState->steerBasisRaw.y = -playerState->motionBasis.zy;
+    playerState->steerBasisRaw.z = -playerState->motionBasis.zz;
     playerState->steerBasisNorm = playerState->steerBasisRaw;
     playerState->steerBasisNorm.y = 0.0f;
     zMath::Vec3NormalizeXZ(&playerState->steerBasisNorm, &playerState->steerBasisNorm);
     playerState->cameraDirFlat = playerState->steerBasisNorm;
 
-    AINet* aiNet = 0;
-    if (playerState->aiNetId != 0) {
-        aiNet = AINet::FindByNetId(playerState->aiNetId);
+    AINet* aiNet;
+    if (playerState->aiNetId != 0 && (aiNet = AINet::FindByNetId(playerState->aiNetId)) != 0) {
+        playerState->lifecycleState = kPlayerLifecycleAi;
+    } else {
+        playerState->lifecycleState = kPlayerLifecycleInactive;
     }
-    playerState->lifecycleState = aiNet != 0 ? kPlayerLifecycleAi : kPlayerLifecycleInactive;
     if (playerState->lifecycleState == kPlayerLifecycleAi) {
         playerState->aiNet = aiNet;
         switch (aiNet->aiType) {
@@ -3854,12 +3909,12 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         if (aiNet->attackRadius != 0.0f) {
             playerState->aiAttackRadiusSq = aiNet->attackRadius * aiNet->attackRadius;
         } else {
-            playerState->aiAttackRadiusSq = kPlayerDefaultAiAttackRadiusSq;
+            playerState->aiAttackRadiusSq = 1500.0f;
         }
         if (aiNet->attackDwell != 0.0f) {
             playerState->aiMode2AttackDwell = aiNet->attackDwell;
         } else {
-            playerState->aiMode2AttackDwell = kPlayerDefaultAiAttackDwellTime;
+            playerState->aiMode2AttackDwell = 10.0f;
         }
         if (aiNet->notPursuitDwell != 0.0f) {
             playerState->aiNotPursuitDwell = aiNet->notPursuitDwell;
@@ -3869,7 +3924,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         }
 
         saveState->aiPeerRingNext = saveState;
-        playerState->aiStateUntilTime = g_Time_AccumulatedTimeSec + kPlayerAiInitialStateDelaySec;
+        playerState->aiStateUntilTime = g_Time_AccumulatedTimeSec + 10.0f;
         playerState->aiStateStartTime = playerState->aiStateUntilTime;
     }
 
@@ -3893,13 +3948,15 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             0.0f
         );
     }
-    zEffectAnim::SetVelocityThunk(
-        zEffectAnim::FindEntryByName(commonData->startAnimsName),
-        playerState->rootNode,
-        0.0f,
-        0.0f,
-        0.0f
-    );
+    if (commonData->startAnimsName != 0) {
+        zEffectAnim::SetVelocityThunk(
+            zEffectAnim::FindEntryByName(commonData->startAnimsName),
+            playerState->rootNode,
+            0.0f,
+            0.0f,
+            0.0f
+        );
+    }
 
     playerState->cameraState = zOpt::GetCameraModePlayerState();
     playerState->cameraLerpActive = 0;
@@ -3914,7 +3971,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->cameraYOffset = commonData->aimYawRate;
     playerState->cameraYOffset = commonData->aimYawMax;
     playerState->cameraState2TargetOffset.x = 0.0f;
-    playerState->cameraState2TargetOffset.y = kPlayerCameraState2TargetYOffset;
+    playerState->cameraState2TargetOffset.y = 150.0f;
     playerState->cameraState2TargetOffset.z = 0.0f;
     playerState->unknown_00d4 = 0;
     playerState->unknown_00d8 = 0;
@@ -4734,18 +4791,31 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->frictionDynamic = 10.0f;
         modalData->frictionSlide = 0.0f;
     }
-    if (modalData->frictionDynamic >= modalData->frictionStatic) {
+
+    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Stopping);
+    if (node != 0) {
+        modalData->stoppingForce = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->stoppingForce = 8.0f;
+    }
+
+    if (modalData->frictionDynamic > modalData->frictionStatic) {
         modalData->frictionDynamic = modalData->frictionStatic * 0.899999976f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Stopping);
-    modalData->stoppingForce = node != 0 ? PlayerZrdArrayFloat(node, 1) : 8.0f;
-
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_QuicksandSlowdown);
-    modalData->quicksandSlowdown = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.899999976f;
+    if (node != 0) {
+        modalData->quicksandSlowdown = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->quicksandSlowdown = 0.899999976f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_LavaSlowdown);
-    modalData->lavaSlowdown = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.800000012f;
+    if (node != 0) {
+        modalData->lavaSlowdown = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->lavaSlowdown = 0.800000012f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_Turns);
     if (node != 0) {
@@ -4757,7 +4827,11 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_TurnDamping);
-    modalData->yawDamping = node != 0 ? PlayerZrdArrayFloat(node, 1) : 30.0f;
+    if (node != 0) {
+        modalData->yawDamping = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->yawDamping = 30.0f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_RateDamping);
     if (node != 0) {
@@ -4769,7 +4843,11 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_AccelDamping);
-    modalData->aDamping = node != 0 ? PlayerZrdArrayFloat(node, 1) : 8.0f;
+    if (node != 0) {
+        modalData->aDamping = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->aDamping = 8.0f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_AltControl);
     if (node != 0) {
@@ -4783,7 +4861,11 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     }
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_Mass);
-    modalData->mass = node != 0 ? PlayerZrdArrayFloat(node, 1) : 1.0f;
+    if (node != 0) {
+        modalData->mass = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->mass = 1.0f;
+    }
     modalData->invMass = 1.0f / modalData->mass;
 
     node = zRdrGetNode(modalNode, g_Player_ConfigKey_GunPitch);
@@ -4795,11 +4877,23 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->gunPitchRate = 0.5f;
     }
 
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_AmphibWave);
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_HoverWave);
+    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_SubWave);
+
     node = zRdrGetNode(modalNode, g_Player_NodeName_ModeAlt);
-    modalData->modeAltTransitionTime = node != 0 ? PlayerZrdArrayFloat(node, 1) : 2.0f;
+    if (node != 0) {
+        modalData->modeAltTransitionTime = PlayerZrdArrayFloat(node, 1);
+    } else {
+        modalData->modeAltTransitionTime = 2.0f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisSmooth);
-    modalData->chassisSmoothFactor = node != 0 ? (float)(fabs(PlayerZrdArrayFloat(node, 1))) : 0.0f;
+    if (node != 0) {
+        modalData->chassisSmoothFactor = (float)(fabs(PlayerZrdArrayFloat(node, 1)));
+    } else {
+        modalData->chassisSmoothFactor = 0.0f;
+    }
 
     node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisPitch);
     if (node != 0) {
@@ -4824,10 +4918,6 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_AmphibWave);
-    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_HoverWave);
-    PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_SubWave);
-
     node = zRdrGetNode(modalNode, g_Player_NodeName_CollisionDamage);
     if (node != 0) {
         modalData->collisionDampingA = PlayerZrdArrayFloat(node, 1);
@@ -4841,20 +4931,20 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2TAnims, modalData->fxList_fromAmphibToTrack);
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_T2HAnims, modalData->fxList_fromTrackToHover);
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_H2TAnims, modalData->fxList_fromHoverToTrack);
-    PlayerLoadModalFxList(modalNode, g_Player_NodeName_S2AAnims, modalData->fxList_fromSubToAmphib);
-    PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2SAnims, modalData->fxList_fromAmphibToSub);
-    PlayerLoadModalFxList(modalNode, g_Player_NodeName_H2AAnims, modalData->fxList_fromHoverToAmphib);
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2HAnims, modalData->fxList_fromAmphibToHover);
+    PlayerLoadModalFxList(modalNode, g_Player_NodeName_H2AAnims, modalData->fxList_fromHoverToAmphib);
+    PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2SAnims, modalData->fxList_fromAmphibToSub);
+    PlayerLoadModalFxList(modalNode, g_Player_NodeName_S2AAnims, modalData->fxList_fromSubToAmphib);
 
     zReader::Node* const soundsNode = zRdrGetNode(modalNode, g_Player_NodeName_Sounds);
     if (soundsNode == 0) {
         return;
     }
 
-    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Engine, &modalData->sfxEngine[0]);
-    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_External, &modalData->sfxEngine[1]);
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Idle, &modalData->sfxEngine[2]);
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Skid, &modalData->sfxEngine[3]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Engine, &modalData->sfxEngine[0]);
+    PlayerLoadSoundSample(soundsNode, g_Player_NodeName_External, &modalData->sfxEngine[1]);
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Collide, &modalData->sfxCollide);
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Land, &modalData->sfxLand);
 
@@ -4910,9 +5000,9 @@ namespace Player {
 void __fastcall RefreshHudFromState(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    zUtil_SaveGameState* const localSaveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
+    zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)(g_GameStateOrMapTable))->playerState;
     HudUiMgrSensor::SetShieldMessageRatio(
-        playerState->statusMeterValue / localSaveState->playerState->masterCommonData->maxHealth
+        playerState->statusMeterValue / localPlayerState->masterCommonData->maxHealth
     );
     HudUiMgr::SetNanitePanelCount(playerState->nanitePanelLevel);
 
@@ -4920,24 +5010,22 @@ void __fastcall RefreshHudFromState(zUtil_SaveGameState* saveState)
         PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
         PlayerGunFireController& left = bank.controllerA;
         PlayerGunFireController& right = bank.controllerB;
-        const int leftEnabled = (left.flags >> 2) & 1;
-        const int rightEnabled = (right.flags >> 2) & 1;
 
-        if (leftEnabled != 0) {
+        if ((unsigned char)((unsigned int)(left.flags) >> 2) & 1) {
             if (left.ammoOrCharge != 0.0f) {
                 HudUiMessage::SelectVariantDisplay(bankIndex, 0);
                 HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, left.ammoOrCharge);
                 bank.selectedSide = 0;
-                if (rightEnabled != 0) {
+                if ((unsigned char)((unsigned int)(right.flags) >> 2) & 1) {
                     HudUiMessage::ApplySideImageSwap(bankIndex, 1);
                 }
-            } else if (rightEnabled != 0 && right.ammoOrCharge != 0.0f) {
+            } else if ((right.flags & 4) != 0 && right.ammoOrCharge != 0.0f) {
                 HudUiMessage::SelectVariantDisplay(bankIndex, 1);
                 HudUiMessage::SetValueIfOwnerMatches(bankIndex, 1, right.ammoOrCharge);
                 bank.selectedSide = 1;
                 HudUiMessage::ApplySideImageSwap(bankIndex, 0);
             }
-        } else if (rightEnabled != 0) {
+        } else if ((unsigned char)((unsigned int)(right.flags) >> 2) & 1) {
             HudUiMessage::SelectVariantDisplay(bankIndex, 1);
             HudUiMessage::SetValueIfOwnerMatches(bankIndex, 1, right.ammoOrCharge);
             bank.selectedSide = 1;
@@ -5279,7 +5367,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-classifypendingcontactsforsegment
  * @recoil-artifact defines .text recoil:function:0x423c20: Player::ClassifyPendingContactsForSegment.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ClassifyPendingContactsForSegment from the recovered
@@ -5297,55 +5385,50 @@ void __fastcall ClassifyPendingContactsForSegment(
 
     for (int hitIndex = 0; hitIndex < sceneResults->candidateCount; ++hitIndex) {
         zClassDiPickCandidateEntry* const candidate = &sceneResults->entries[hitIndex];
-        CZNodePartial* node = candidate->node;
-        PlayerPendingContact* queuedContact = 0;
+        PlayerPendingContact* queuedContact;
 
         if (g_HudSensorTracker.raceCheckpointMode != 0) {
             const int checkpointNumber = HudSensorTracker::ParseCheckpointNumberFromNode(candidate->node);
             g_PlayerPendingCheckpointNumber = checkpointNumber;
             if (checkpointNumber != 0) {
                 PLAYER_APPEND_PENDING_CONTACT(&playerState->checkpointQueue, queuedContact);
-                CopyPendingContactPayload(queuedContact, candidate, segmentStart, segmentEnd, segmentTag);
+                queuedContact->sweepStart = *segmentStart;
+                queuedContact->sweepEnd = *segmentEnd;
+                queuedContact->segmentTag = segmentTag;
+                queuedContact->hit = *candidate;
                 continue;
             }
         }
 
-        if ((node->flags & 0x8000000) != 0) {
+        if ((candidate->node->flags & 0x8000000) != 0) {
             continue;
         }
 
         if (Pickup::ResolveOwnerFromBvolHit(&candidate->node) != 0) {
             PLAYER_APPEND_PENDING_CONTACT(&playerState->pickupQueue, queuedContact);
+        } else if ((candidate->node->flags & 0x100000) != 0 && candidate->node->callbackContext != 0) {
+            if (*(int*)(candidate->node->callbackContext) == 2) {
+                PLAYER_APPEND_PENDING_CONTACT(&playerState->playerCollisionQueue, queuedContact);
+            }
+        } else if ((unsigned int)(GetNodeDamageHandler(candidate->node)) > 1
+            && GetNodeDamageHandler(candidate->node)->timerCallback != 0) {
+            PLAYER_APPEND_PENDING_CONTACT(&playerState->transferQueue, queuedContact);
+        } else if (candidate->surfaceNormal.y < -0.9f) {
+            PLAYER_APPEND_PENDING_CONTACT(&playerState->worldCollisionQueue, queuedContact);
+        } else if (candidate->surfaceNormal.y < 0.71f) {
+            PLAYER_APPEND_PENDING_CONTACT(&playerState->preferredCollisionQueue, queuedContact);
         } else {
-            node = candidate->node;
-            if ((node->flags & 0x100000) != 0 && node->callbackContext != 0) {
-                int* const playerType = (int*)(node->callbackContext);
-                if (*playerType == 2) {
-                    PLAYER_APPEND_PENDING_CONTACT(&playerState->playerCollisionQueue, queuedContact);
-                }
-            } else {
-                OptCatalogDamageHandlerPartial* const damageHandler = GetNodeDamageHandler(node);
-                if (damageHandler != 0 && damageHandler != (OptCatalogDamageHandlerPartial*)(1)
-                    && damageHandler->timerContext != 0) {
-                    PLAYER_APPEND_PENDING_CONTACT(&playerState->transferQueue, queuedContact);
-                } else if (candidate->surfaceNormal.y < -0.9f) {
-                    PLAYER_APPEND_PENDING_CONTACT(&playerState->worldCollisionQueue, queuedContact);
-                } else if (candidate->surfaceNormal.y < 0.71f) {
-                    PLAYER_APPEND_PENDING_CONTACT(&playerState->preferredCollisionQueue, queuedContact);
-                } else {
-                    PlayerContactSurfacePayload* const scenePayload
-                        = (PlayerContactSurfacePayload*)(candidate->scenePayload);
-                    const int impactSlot = scenePayload != 0 ? scenePayload->impactSlot : 0;
-                    if (impactSlot == 5 && playerState->recentHitValid == 0) {
-                        playerState->recentHitValid = 1;
-                    }
-                }
+            PlayerContactSurfacePayload* const scenePayload = (PlayerContactSurfacePayload*)(candidate->scenePayload);
+            const int impactSlot = scenePayload != 0 ? scenePayload->impactSlot : 0;
+            if (impactSlot != 5) {
+                continue;
+            }
+            if (playerState->recentHitValid == 0) {
+                playerState->recentHitValid = 1;
             }
         }
 
-        if (queuedContact != 0) {
-            CopyPendingContactPayload(queuedContact, candidate, segmentStart, segmentEnd, segmentTag);
-        }
+        CopyPendingContactPayload(queuedContact, candidate, segmentStart, segmentEnd, segmentTag);
     }
 }
 } // namespace Player
@@ -7485,8 +7568,9 @@ void __fastcall UpdateBankVelocityFromSteerInput(zUtil_SaveGameState* saveState)
 
     playerState->restartYawRad = 0.0f;
     if (playerState->steeringInput != 0.0f) {
-        if ((playerState->steeringInputCopy > 0.0f && playerState->localVel.x > 0.0f)
-            || (playerState->steeringInputCopy < 0.0f && playerState->localVel.x < 0.0f)) {
+        if (playerState->steeringInputCopy > 0.0f && playerState->localVel.x > 0.0f) {
+            playerState->localVel.x = 0.0f;
+        } else if (playerState->steeringInputCopy < 0.0f && playerState->localVel.x < 0.0f) {
             playerState->localVel.x = 0.0f;
         }
 
@@ -7946,51 +8030,50 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
     *outSelectedImpactSlot = 0;
     *outTaggedHeight = -300.0f;
 
-    const int candidateCount = candidateBuffer->candidateCount;
-    if (candidateCount <= 0) {
-        return sampleHeight;
-    }
-
     float bestAbsDelta = 10000.9f;
-    for (int i = 0; i < candidateCount; ++i) {
-        zClassDiPickCandidateEntry* const candidate = &candidateBuffer->entries[i];
-        const float candidateHeight = candidate->hitPos.y;
-        int impactSlot = 0;
-        if (candidate->scenePayload != 0) {
-            impactSlot = ((zModel_MaterialPartial*)candidate->scenePayload)->userTag;
-        }
+    const int candidateCount = candidateBuffer->candidateCount;
+    if (candidateCount > 0) {
+        for (int i = 0; i < candidateBuffer->candidateCount; ++i) {
+            zClassDiPickCandidateEntry* const candidate = &candidateBuffer->entries[i];
+            const float candidateHeight = candidate->hitPos.y;
+            const int impactSlot
+                = candidate->scenePayload != 0 ? ((zModel_MaterialPartial*)candidate->scenePayload)->userTag : 0;
 
-        if (impactSlot != 0) {
-            *outTaggedHeight = candidateHeight;
-            selectedImpactSlot = impactSlot;
-            if (preferAttachmentSlot1 != 0 && impactSlot == 1) {
-                continue;
+            if (impactSlot != 0) {
+                *outTaggedHeight = candidateHeight;
+                selectedImpactSlot = impactSlot;
+                if (preferAttachmentSlot1 != 0 && impactSlot == 1) {
+                    continue;
+                }
+            }
+
+            const float heightDelta = candidateHeight - sampleHeight;
+            const float absDelta = (float)(fabs(heightDelta));
+            if (absDelta < bestAbsDelta) {
+                bestAbsDelta = absDelta;
+                nearestFallbackHeight = candidateHeight;
+            }
+
+            if (candidateHeight > selectedHeight && candidateHeight - maxRiseWindow <= sampleHeight) {
+                selectedHeight = candidateHeight;
+                *outBestCandidateIndex = i;
             }
         }
 
-        const float absDelta = (float)(fabs(candidateHeight - sampleHeight));
-        if (absDelta < bestAbsDelta) {
-            bestAbsDelta = absDelta;
-            nearestFallbackHeight = candidateHeight;
+        if (*outTaggedHeight + maxRiseWindow >= sampleHeight) {
+            *outSelectedImpactSlot = selectedImpactSlot;
         }
 
-        if (candidateHeight > selectedHeight && candidateHeight - maxRiseWindow <= sampleHeight) {
-            selectedHeight = candidateHeight;
-            *outBestCandidateIndex = i;
+        if (selectedHeight == -250.0f && nearestFallbackHeight != -300.0f) {
+            return nearestFallbackHeight;
         }
+        if (selectedHeight <= -250.0f) {
+            return -250.0f;
+        }
+        return selectedHeight;
     }
 
-    if (*outTaggedHeight + maxRiseWindow >= sampleHeight) {
-        *outSelectedImpactSlot = selectedImpactSlot;
-    }
-
-    if (selectedHeight == -250.0f && nearestFallbackHeight != -300.0f) {
-        return nearestFallbackHeight;
-    }
-    if (selectedHeight <= -250.0f) {
-        return -250.0f;
-    }
-    return selectedHeight;
+    return sampleHeight;
 }
 } // namespace Player
 namespace Player {
@@ -9485,7 +9568,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-synclocalposefromrootnode
  * @recoil-artifact defines .text recoil:function:0x42b810: Player::SyncLocalPoseFromRootNode.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SyncLocalPoseFromRootNode from the recovered
@@ -9493,7 +9576,9 @@ namespace Player {
  */
 void __cdecl SyncLocalPoseFromRootNode()
 {
-    zUtil_PlayerStateStorage* const playerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
+    zInput_GameStateOrMapTablePartial* const gameState = g_GameStateOrMapTable;
+    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)gameState;
+    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
     CZObject3D::gwObject3DGetPosition(
         playerState->rootNode,
@@ -9513,8 +9598,8 @@ void __cdecl SyncLocalPoseFromRootNode()
         playerState->restartYawRad,
         playerState->vehicleRollRad
     );
-    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posX = playerState->worldPos.x;
+    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     playerState->previousTransform = playerState->motionBasis;
     playerState->lifecycleState = 1;

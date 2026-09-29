@@ -347,7 +347,7 @@ namespace zNetwork {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-initsessionruntime
  * @recoil-artifact defines .text recoil:function:0x489d00: zNetwork::InitSessionRuntime.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: initialize DirectPlay session globals, lists, and default handlers.
@@ -358,7 +358,8 @@ int __fastcall InitSessionRuntime(GUID* appGuid)
     g_zNetwork_FatalDisconnectCallback = 0;
     g_zNetwork_ReceiveBuffer = 0;
 
-    if (zNetwork_DPlay::CreateInterfaceAndCoInitialize(&directPlay4) >= 0) {
+    const int createResult = zNetwork_DPlay::CreateInterfaceAndCoInitialize(&directPlay4);
+    if (createResult >= 0) {
         g_zNetwork_SessionRuntimeInitialized = 1;
         g_zNetwork_FatalDisconnectTriggered = 0;
         g_zNetwork_AppGuid = appGuid;
@@ -372,19 +373,7 @@ int __fastcall InitSessionRuntime(GUID* appGuid)
         g_zNetwork_EnumeratedSessionList = zArchiveListNew();
     }
 
-    zNetworkPlayerRecordList* playerRecordList
-        = (zNetworkPlayerRecordList*)(::operator new(sizeof(zNetworkPlayerRecordList)));
-    if (playerRecordList != 0) {
-        zNetworkPlayerRecordListNode* const sentinel
-            = (zNetworkPlayerRecordListNode*)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-        sentinel->next = sentinel;
-        sentinel->prev = sentinel;
-        playerRecordList->sentinelNode = sentinel;
-        playerRecordList->count = 0;
-    } else {
-        playerRecordList = 0;
-    }
-    g_zNetwork_PlayerRecordList = playerRecordList;
+    g_zNetwork_PlayerRecordList = new zNetworkPlayerRecordList;
 
     g_zNetwork_ServiceProviderList = new zNetworkServiceProviderListVec;
 
@@ -395,7 +384,7 @@ int __fastcall InitSessionRuntime(GUID* appGuid)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-shutdownsessionruntime
  * @recoil-artifact defines .text recoil:function:0x489e10: zNetwork::ShutdownSessionRuntime.
- *
+ * @recoil-match byte
  *
  * Purpose: close DirectPlay and release all session-runtime network lists and
  * buffers.
@@ -416,25 +405,8 @@ int __cdecl ShutdownSessionRuntime()
     g_zNetwork_ServiceProviderList = 0;
 
     ClearPlayerRecordList();
-    zNetworkPlayerRecordList* const playerRecordList = g_zNetwork_PlayerRecordList;
-    if (playerRecordList != 0) {
-        zNetworkPlayerRecordListNode* const sentinel = playerRecordList->sentinelNode;
-        zNetworkPlayerRecordListNode* node = sentinel->next;
-        while (node != sentinel) {
-            zNetworkPlayerRecordListNode* const next = node->next;
-            node->prev->next = node->next;
-            node->next->prev = node->prev;
-            ::operator delete(node);
-            --playerRecordList->count;
-            node = next;
-        }
-
-        ::operator delete(playerRecordList->sentinelNode);
-        playerRecordList->sentinelNode = 0;
-        playerRecordList->count = 0;
-        ::operator delete(playerRecordList);
-        g_zNetwork_PlayerRecordList = 0;
-    }
+    delete g_zNetwork_PlayerRecordList;
+    g_zNetwork_PlayerRecordList = 0;
 
     if (g_zNetwork_ReceiveBuffer != 0) {
         free(g_zNetwork_ReceiveBuffer);
@@ -539,45 +511,24 @@ void __cdecl ClearServiceProviderList()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-clearplayerrecordlist
  * @recoil-artifact defines .text recoil:function:0x48a030: zNetwork::ClearPlayerRecordList.
- *
+ * @recoil-match byte
  *
  * Purpose: release player-record payloads and delete all player-record list
  * nodes while preserving the sentinel.
  */
 void __cdecl ClearPlayerRecordList()
 {
-    zNetworkPlayerRecordList* list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode* node = sentinel->next;
-    zNetworkPlayerRecordListNode* clearNode = node;
-    int hasNode = node != sentinel;
-    while (hasNode != 0) {
-        if (node->playerRecord != 0) {
-            ::operator delete(node->playerRecord);
+    zNetworkPlayerRecordList::iterator it = g_zNetwork_PlayerRecordList->begin();
+    const zNetworkPlayerRecordList::iterator end = g_zNetwork_PlayerRecordList->end();
+    zNetworkPlayerRecordList::iterator clearIt = it;
+    for (; it != end; ++it, ++clearIt) {
+        if (*it != 0) {
+            ::operator delete(*it);
         }
-
-        clearNode->playerRecord = 0;
-        node = node->next;
-        clearNode = clearNode->next;
-        hasNode = node != sentinel;
+        *clearIt = 0;
     }
 
-    list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const deleteSentinel = list->sentinelNode;
-    node = deleteSentinel->next;
-    hasNode = node != deleteSentinel;
-    if (hasNode != 0) {
-        int* const count = &list->count;
-        do {
-            zNetworkPlayerRecordListNode* const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --*count;
-            hasNode = node != deleteSentinel;
-        } while (hasNode != 0);
-    }
+    g_zNetwork_PlayerRecordList->clear();
 }
 
 } // namespace zNetwork
@@ -781,7 +732,7 @@ int __cdecl EnumPlayers()
         return zNetworkDPlayReportError(hresult, g_zNetwork_SourceFile_ZnetDplayCpp, 0xd9);
     }
 
-    return g_zNetwork_PlayerRecordList->count;
+    return g_zNetwork_PlayerRecordList->size();
 }
 
 } // namespace zNetwork_DPlay
@@ -1116,7 +1067,7 @@ namespace zNetwork_DPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createlocalplayerrecordandregister
  * @recoil-artifact defines .text recoil:function:0x48a9c0: zNetwork_DPlay::CreateLocalPlayerRecordAndRegister.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: create the local player record, register it with DirectPlay, and
@@ -1124,35 +1075,21 @@ namespace zNetwork_DPlay {
  */
 int __fastcall CreateLocalPlayerRecordAndRegister(char* playerName)
 {
-    zNetwork_PlayerRecord* const localPlayerRecord
-        = (zNetwork_PlayerRecord*)(::operator new(sizeof(zNetwork_PlayerRecord)));
-    if (localPlayerRecord != 0) {
-        strncpy(localPlayerRecord->playerName, g_zNetwork_DefaultPlayerName, 0x50);
-        localPlayerRecord->playerName[0x4f] = 0;
-    }
+    zNetwork_PlayerRecord* const localPlayerRecord = new zNetwork_PlayerRecord(g_zNetwork_DefaultPlayerName);
 
     EnumPlayers();
     g_zNetwork_LocalPlayerRecord = localPlayerRecord;
 
-    memcpy(g_zNetwork_LocalPlayerNameScratch, playerName, strlen(playerName) + 1);
+    strcpy(g_zNetwork_LocalPlayerNameScratch, playerName);
     localPlayerRecord->playerNameInfo.lpszShortNameA = g_zNetwork_LocalPlayerNameScratch;
     localPlayerRecord->playerNameInfo.lpszLongNameA = g_zNetwork_LocalPlayerNameScratch;
     localPlayerRecord->createPlayerEventHandle = 0;
     localPlayerRecord->playerNameInfo.dwSize = sizeof(zNetworkDPlayName);
     localPlayerRecord->playerNameInfo.dwFlags = 0;
-    memcpy(
-        localPlayerRecord->playerName,
-        g_zNetwork_LocalPlayerNameScratch,
-        strlen(g_zNetwork_LocalPlayerNameScratch) + 1
-    );
-    memcpy(
-        localPlayerRecord->altName,
-        localPlayerRecord->playerNameInfo.lpszShortNameA,
-        strlen(localPlayerRecord->playerNameInfo.lpszShortNameA) + 1
-    );
+    strcpy(localPlayerRecord->playerName, g_zNetwork_LocalPlayerNameScratch);
+    strcpy(localPlayerRecord->altName, localPlayerRecord->playerNameInfo.lpszShortNameA);
 
-    zNetwork_DPlay4* const directPlay = g_zNetwork_pDirectPlay4;
-    const int createResult = directPlay->CreatePlayer(
+    const int createResult = g_zNetwork_pDirectPlay4->CreatePlayer(
         (LPDPID)&localPlayerRecord->playerKey,
         (LPDPNAME)&localPlayerRecord->playerNameInfo,
         (HANDLE)localPlayerRecord->createPlayerEventHandle,
@@ -1209,34 +1146,23 @@ int __fastcall CreateLocalPlayerRecordAndRegister(char* playerName)
 
     memset(&localPlayerRecord->playerCaps, 0, sizeof(zNetworkDPlayCaps));
     localPlayerRecord->playerCaps.dwSize = sizeof(zNetworkDPlayCaps);
-    const int capsResult
-        = directPlay->GetPlayerCaps(localPlayerRecord->playerKey, (LPDPCAPS)&localPlayerRecord->playerCaps, 0);
+    const int capsResult = g_zNetwork_pDirectPlay4->GetPlayerCaps(
+        localPlayerRecord->playerKey,
+        (LPDPCAPS)&localPlayerRecord->playerCaps,
+        0
+    );
     g_zNetwork_IsHostFlag = localPlayerRecord->playerCaps.dwFlags & 2;
     zNetworkDPlay::ReceivePendingMessages(-1);
     if (capsResult < 0) {
         return zNetworkDPlayReportError(capsResult, g_zNetwork_SourceFile_ZnetDplayCpp, 0x20e);
     }
 
-    zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
     g_zNetworkCurrentPlayerCountCached = g_zNetwork_CurrentSessionDescCache->desc.dwCurrentPlayers + 1;
     g_zNetwork_LocalPlayerKey = localPlayerRecord->playerKey;
-
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode* prev = sentinel->prev;
-    zNetworkPlayerRecordListNode* const node
-        = (zNetworkPlayerRecordListNode*)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-    node->next = sentinel != 0 ? sentinel : node;
-    if (prev == 0) {
-        prev = node;
-    }
-    node->prev = prev;
-    sentinel->prev = node;
-    node->prev->next = node;
-    node->playerRecord = localPlayerRecord;
-    ++list->count;
+    g_zNetwork_PlayerRecordList->push_back(localPlayerRecord);
 
     if (zNetwork::IsHost() != 0) {
-        localPlayerRecord->colorIndex = zNetwork::AllocFreePlayerColorIndex();
+        localPlayerRecord->colorIndex = zNetwork::AllocFreePlayerColorIndex(localPlayerRecord->playerKey);
     } else {
         localPlayerRecord->colorIndex = 0;
     }
@@ -1458,7 +1384,7 @@ namespace zNetworkDPlay {
 int __fastcall PumpIncomingMessages(zNetworkDPlaySystemMessage* systemMessage)
 {
     int result = 0;
-    const int msgType = systemMessage->msgType;
+    const unsigned int msgType = systemMessage->msgType;
 
     switch (msgType) {
     case 0x21:
@@ -1467,32 +1393,15 @@ int __fastcall PumpIncomingMessages(zNetworkDPlaySystemMessage* systemMessage)
 
     case 3: {
         zNetworkPacketHeader packet;
-        zNetwork_PlayerRecord* playerRecord = (zNetwork_PlayerRecord*)(::operator new(sizeof(zNetwork_PlayerRecord)));
-        if (playerRecord != 0) {
-            strncpy(playerRecord->playerName, g_zNetwork_DefaultPlayerName, 0x50);
-            playerRecord->playerName[0x4f] = 0;
-        }
+        zNetwork_PlayerRecord* playerRecord = new zNetwork_PlayerRecord(g_zNetwork_DefaultPlayerName);
 
         playerRecord->playerKey = systemMessage->fields.playerId;
-        playerRecord->playerNameInfo.dwSize = systemMessage->fields.createFlagsOrPlayerType;
-        playerRecord->playerNameInfo.dwFlags = systemMessage->fields.nameShortOrAsyncHandle;
-        playerRecord->playerNameInfo.lpszShortNameA = systemMessage->fields.nameLong;
-        playerRecord->playerNameInfo.lpszLongNameA = systemMessage->fields.nameDisplay;
+        playerRecord->playerNameInfo = systemMessage->fields.playerName;
         strcpy(playerRecord->playerName, playerRecord->playerNameInfo.lpszLongNameA);
         strcpy(playerRecord->altName, playerRecord->playerNameInfo.lpszShortNameA);
         playerRecord->colorIndex = 0;
 
-        zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
-        zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-        zNetworkPlayerRecordListNode* prev = sentinel->prev;
-        zNetworkPlayerRecordListNode* const node
-            = (zNetworkPlayerRecordListNode*)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-        node->next = sentinel != 0 ? sentinel : node;
-        node->prev = prev != 0 ? prev : node;
-        sentinel->prev = node;
-        node->prev->next = node;
-        node->playerRecord = playerRecord;
-        ++list->count;
+        g_zNetwork_PlayerRecordList->push_back(playerRecord);
 
         ++g_zNetworkCurrentPlayerCountCached;
         packet.packetType = 2;
@@ -1517,16 +1426,16 @@ int __fastcall PumpIncomingMessages(zNetworkDPlaySystemMessage* systemMessage)
         break;
     }
 
+    case 0x101:
+        g_zNetwork_IsHostFlag = 1;
+        break;
+
     case 0x31:
         if (g_zNetwork_FatalDisconnectCallback != 0) {
             g_zNetwork_FatalDisconnectCallback(-1);
         }
         g_zNetwork_FatalDisconnectTriggered = 1;
         result = -1;
-        break;
-
-    case 0x101:
-        g_zNetwork_IsHostFlag = 1;
         break;
 
     case 0x102: {
@@ -1590,7 +1499,7 @@ int __stdcall EnumConnectionsCallbackAddServiceProviderInfo(
         serviceProviderGuid,
         connectionData,
         connectionDataSize,
-        providerName,
+        providerName->lpszShortNameA,
         providerFlags
     );
 
@@ -1623,37 +1532,20 @@ int __stdcall EnumSessionCallbackAddSessionDescCache(const zNetworkDPlaySessionD
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumplayercallback-addplayerrecord
  * @recoil-artifact defines .text recoil:function:0x48b660: zNetworkDPlay::EnumPlayerCallbackAddPlayerRecord.
- *
+ * @recoil-match byte
  *
  * Purpose: append an enumerated DirectPlay player record if it is not cached.
  */
 int __stdcall
 EnumPlayerCallbackAddPlayerRecord(DPID playerId, DWORD, const zNetworkDPlayName* playerNameInfo, DWORD, void*)
 {
-    if (zNetworkFindPlayerRecordByKey((int)(playerId)) != 0) {
-        return 1;
+    zNetwork_PlayerRecord* const existingRecord = zNetworkFindPlayerRecordByKey((int)(playerId));
+    if (existingRecord == 0) {
+        zNetwork_PlayerRecord* const playerRecord = new zNetwork_PlayerRecord(playerNameInfo->lpszShortNameA);
+        playerRecord->playerKey = playerId;
+        g_zNetwork_PlayerRecordList->push_back(playerRecord);
     }
 
-    zNetwork_PlayerRecord* const playerRecord = (zNetwork_PlayerRecord*)(::operator new(sizeof(zNetwork_PlayerRecord)));
-    strncpy(playerRecord->playerName, playerNameInfo->lpszShortNameA, 0x50);
-    playerRecord->playerName[0x4f] = 0;
-    playerRecord->playerKey = playerId;
-
-    zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode* prev = sentinel->prev;
-    zNetworkPlayerRecordListNode* const node
-        = (zNetworkPlayerRecordListNode*)(::operator new(sizeof(zNetworkPlayerRecordListNode)));
-
-    node->next = sentinel != 0 ? sentinel : node;
-    if (prev == 0) {
-        prev = node;
-    }
-    node->prev = prev;
-    sentinel->prev = node;
-    node->prev->next = node;
-    node->playerRecord = playerRecord;
-    ++list->count;
     return 1;
 }
 
@@ -1746,7 +1638,7 @@ namespace zNetwork {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-hostsendplayercolorassignmentspacket
  * @recoil-artifact defines .text recoil:function:0x48b860: zNetwork::HostSendPlayerColorAssignmentsPacket.
- *
+ * @recoil-match byte
  *
  * Purpose: host-build and send the player color-assignment packet.
  */
@@ -1762,7 +1654,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey)
     }
 
     if (joiningPlayer->colorIndex <= 0) {
-        joiningPlayer->colorIndex = AllocFreePlayerColorIndex();
+        joiningPlayer->colorIndex = AllocFreePlayerColorIndex(joiningPlayerKey);
     }
 
     const int playerCount = zNetworkGetPlayerRecordCount();
@@ -1775,13 +1667,14 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey)
     packet->header.packetSizeBytes = (short)(packetSizeBytes);
     packet->pairCount = playerCount;
 
-    zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
+    zNetworkPlayerColorPair* const pairs = packet->pairs;
     int pairIndex = 0;
-    for (zNetworkPlayerRecordListNode* node = sentinel->next; node != sentinel; node = node->next) {
-        zNetwork_PlayerRecord* const playerRecord = node->playerRecord;
-        packet->pairs[pairIndex].playerKey = (int)(playerRecord->playerKey);
-        packet->pairs[pairIndex].colorIndex = playerRecord->colorIndex;
+    for (zNetworkPlayerRecordList::iterator it = g_zNetwork_PlayerRecordList->begin();
+        it != g_zNetwork_PlayerRecordList->end();
+        ++it) {
+        zNetwork_PlayerRecord* const playerRecord = *it;
+        pairs[pairIndex].playerKey = (int)(playerRecord->playerKey);
+        pairs[pairIndex].colorIndex = playerRecord->colorIndex;
         ++pairIndex;
     }
 
@@ -1796,7 +1689,7 @@ void __fastcall HostSendPlayerColorAssignmentsPacket(int joiningPlayerKey)
  *
  * Purpose: reserve and return the first unused player color index.
  */
-int __cdecl AllocFreePlayerColorIndex()
+int __fastcall AllocFreePlayerColorIndex(int)
 {
     for (unsigned int colorIndex = 1; colorIndex <= g_zNetwork_CurrentSessionDescCache->desc.dwMaxPlayers;
         ++colorIndex) {
@@ -1862,14 +1755,14 @@ extern "C" int __fastcall zNetworkGetPlayerColorIndexByKey(int playerKey)
  */
 extern "C" int __cdecl zNetworkGetPlayerRecordCount()
 {
-    return g_zNetwork_PlayerRecordList->count;
+    return g_zNetwork_PlayerRecordList->size();
 }
 
 namespace zNetwork {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-removeplayerrecordbykey
  * @recoil-artifact defines .text recoil:function:0x48b9e0: zNetwork::RemovePlayerRecordByKey.
- *
+ * @recoil-match byte
  *
  * Purpose: remove a player record by DirectPlay key and release its color slot.
  */
@@ -1885,21 +1778,7 @@ void __fastcall RemovePlayerRecordByKey(int playerKey)
         g_zNetwork_PlayerColorInUseFlags[colorIndex] = 0;
     }
 
-    zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-    zNetworkPlayerRecordListNode* node = sentinel->next;
-    while (node != sentinel) {
-        if (node->playerRecord == playerRecord) {
-            zNetworkPlayerRecordListNode* const deleteNode = node;
-            node = node->next;
-            deleteNode->prev->next = deleteNode->next;
-            deleteNode->next->prev = deleteNode->prev;
-            ::operator delete(deleteNode);
-            --list->count;
-        } else {
-            node = node->next;
-        }
-    }
+    g_zNetwork_PlayerRecordList->remove(playerRecord);
 }
 
 } // namespace zNetwork
@@ -1907,19 +1786,18 @@ void __fastcall RemovePlayerRecordByKey(int playerKey)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-znetwork-findplayerrecordbykey
  * @recoil-artifact defines .text recoil:function:0x48ba60: zNetworkFindPlayerRecordByKey.
- *
+ * @recoil-match byte
  *
  * Purpose: find a player record in the runtime player list by DirectPlay
  * player key.
  */
 extern "C" zNetwork_PlayerRecord* __fastcall zNetworkFindPlayerRecordByKey(int playerKey)
 {
-    zNetworkPlayerRecordList* const list = g_zNetwork_PlayerRecordList;
-    zNetworkPlayerRecordListNode* const sentinel = list->sentinelNode;
-    for (zNetworkPlayerRecordListNode* node = sentinel->next; node != sentinel; node = node->next) {
-        zNetwork_PlayerRecord* const playerRecord = node->playerRecord;
-        if (playerRecord->playerKey == (unsigned int)(playerKey)) {
-            return playerRecord;
+    for (zNetworkPlayerRecordList::iterator it = g_zNetwork_PlayerRecordList->begin();
+        it != g_zNetwork_PlayerRecordList->end();
+        ++it) {
+        if ((*it)->playerKey == (unsigned int)(playerKey)) {
+            return *it;
         }
     }
 
@@ -1988,6 +1866,7 @@ namespace zNetworkDPlay {
  */
 int __fastcall SelectTcpIpProviderAndEnumSessions(char* addressString, int skipSessionEnumeration)
 {
+    const GUID tcpIpProviderGuid = DPSPGUID_TCPIP;
     DPCOMPOUNDADDRESSELEMENT elements[2];
     elements[0].guidDataType = DPAID_ServiceProvider;
     elements[0].dwDataSize = sizeof(DPSPGUID_TCPIP);
@@ -2003,14 +1882,8 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(char* addressString, int skipS
     lobby3A->CreateCompoundAddress(elements, 2, 0, &compoundAddressSize);
     void* const compoundAddress = malloc(compoundAddressSize);
     lobby3A->CreateCompoundAddress(elements, 2, compoundAddress, &compoundAddressSize);
-    const DWORD compoundAddressBytes = compoundAddressSize;
-
-    zNetworkDPlayServiceProviderInfo providerInfo;
-    providerInfo.serviceProviderGuid = DPSPGUID_TCPIP;
-    providerInfo.displayName = _strdup(g_zNetwork_ForcedTcpIpModeName);
-    providerInfo.connectionData = calloc(compoundAddressBytes, 1);
-    memcpy(providerInfo.connectionData, compoundAddress, compoundAddressBytes);
-    providerInfo.providerFlags = 0;
+    zNetworkDPlayServiceProviderInfo
+        providerInfo(&tcpIpProviderGuid, compoundAddress, compoundAddressSize, g_zNetwork_ForcedTcpIpModeName, 0);
 
     SelectServiceProviderAndInitConnection(&providerInfo);
     if (skipSessionEnumeration != 0) {
@@ -2197,12 +2070,12 @@ namespace zNetwork {
  * Purpose: allocate a packet-handler record and append it to the dispatch list.
  */
 zNetworkDispatchHandlerRecord* __fastcall
-RegisterPacketHandler(int packetType, zNetworkPacketHandler handlerProc, int mode)
+RegisterPacketHandler(short packetType, zNetworkPacketHandler handlerProc, int mode)
 {
     zNetworkDispatchHandlerRecord* const record
         = (zNetworkDispatchHandlerRecord*)(::operator new(sizeof(zNetworkDispatchHandlerRecord)));
     if (record != 0) {
-        record->packetType = (short)(packetType);
+        record->packetType = packetType;
         record->handler = handlerProc;
         record->mode = mode;
     }

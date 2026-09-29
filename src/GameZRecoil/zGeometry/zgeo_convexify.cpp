@@ -521,7 +521,7 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryemittrianglefromedgepair
  * @recoil-artifact defines .text recoil:function:0x46bfc0: zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair
- *
+ * @recoil-match byte
  *
  * Purpose: Emit a triangle from two incident live edges and their closing edge.
  */

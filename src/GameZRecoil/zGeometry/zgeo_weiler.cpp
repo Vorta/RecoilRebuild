@@ -313,7 +313,7 @@ void __fastcall DestroyState(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-clippointlist
  * @recoil-artifact defines .text recoil:function:0x464810: zGeometry_Weiler::ClipPointList
- *
+ * @recoil-match byte
  *
  * Purpose: Initialize clip output state, handle preclassified contour relationships, dispatch the Weiler clipping
  * pipeline, and restore caller-visible output state.
@@ -2831,7 +2831,7 @@ int __fastcall CreateForwardSegmentPairAtPoint(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputselectedinputcontourtopolygonseta
  * @recoil-artifact defines .text recoil:function:0x468700: zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA
- *
+ * @recoil-match byte
  *
  * Purpose: Append the selected input contour into polygon set A of the caller-owned Weiler clip output.
  */

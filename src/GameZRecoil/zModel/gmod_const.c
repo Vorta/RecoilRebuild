@@ -2817,7 +2817,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     *
+     * @recoil-match byte
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
@@ -2892,9 +2892,9 @@ namespace zDi
             if (vertexCount < 3) {
                 zError::ReportOld(
                     0x400,
-                    "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                    g_zModel_SourceFile_GmodConstC,
                     0xa16,
-                    "Attempting to add polygon with only %d verts",
+                    g_zModel_AddPolygonTooFewVertsFmt,
                     vertexCount
                 );
             }

@@ -1047,7 +1047,7 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(int keyCode)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyaltweaponswitch
  * @recoil-artifact defines .text recoil:function:0x439540: Player::ApplyAltWeaponSwitch
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: install the selected alternate weapon controller, start the
@@ -1062,9 +1062,8 @@ void __fastcall ApplyAltWeaponSwitch(
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     playerState->activeAltGunController = newController;
 
-    const int weaponBankIndex = newController->weaponBankIndex;
-    playerState->activeAltBankIndex = weaponBankIndex;
-    playerState->altWeaponBanks[weaponBankIndex].selectedSide = newController->weaponSideIndex;
+    playerState->activeAltBankIndex = newController->weaponBankIndex;
+    playerState->altWeaponBanks[playerState->activeAltBankIndex].selectedSide = newController->weaponSideIndex;
     playerState->altHardpointSelectState = 0;
     playerState->altGunTransitionTimerA = 0.0f;
     playerState->altGunTransitionTimerB = 0.0f;
@@ -1332,7 +1331,8 @@ void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState)
         HudLowMeterLoopSound::SetLoopActive(0);
         if (g_Time_AccumulatedTimeSec > g_Hud_LowMeterNextBeepTime) {
             g_Hud_LowMeterBeepSample->PlayA3DSimple(1.0f);
-            g_Hud_LowMeterNextBeepTime = g_Hud_LowMeterBeepInterval + g_Time_AccumulatedTimeSec;
+            const float beepInterval = g_Hud_LowMeterBeepInterval;
+            g_Hud_LowMeterNextBeepTime = beepInterval + g_Time_AccumulatedTimeSec;
         }
     }
 }
@@ -2291,7 +2291,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- *
+ * @recoil-source previously-byte-matched
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -2299,24 +2299,23 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
-    zMat4x3 gunMatrix = { 0 };
+    zMat4x3 gunMatrix;
     memcpy(&gunMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode), sizeof(gunMatrix));
 
-    zMat4x3 turretMatrix = { 0 };
+    zMat4x3 turretMatrix;
     memcpy(&turretMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode), sizeof(turretMatrix));
 
-    zMat4x3 gunFireTransform = { 0 };
+    const float localAimZ = gunMatrix.posZ * turretMatrix.zz + turretMatrix.posZ;
+    const float localAimY = gunMatrix.posY + turretMatrix.posY;
+
+    zMat4x3 gunFireTransform;
     memcpy(&gunFireTransform, &playerState->gunFireTransform, sizeof(gunFireTransform));
 
-    const float localAimX = turretMatrix.zx * gunMatrix.posZ;
-    const float localAimY = turretMatrix.posY + gunMatrix.posY;
-    const float localAimZ = turretMatrix.zz * gunMatrix.posZ + turretMatrix.posZ;
-
-    outBasisOrigin->x = gunFireTransform.xx * localAimX + gunFireTransform.yx * localAimY
+    outBasisOrigin->x = gunFireTransform.xx * gunMatrix.posZ * turretMatrix.zx + gunFireTransform.yx * localAimY
         + gunFireTransform.zx * localAimZ + gunFireTransform.posX;
-    outBasisOrigin->y = gunFireTransform.xy * localAimX + gunFireTransform.yy * localAimY
+    outBasisOrigin->y = gunFireTransform.xy * gunMatrix.posZ * turretMatrix.zx + gunFireTransform.yy * localAimY
         + gunFireTransform.zy * localAimZ + gunFireTransform.posY;
-    outBasisOrigin->z = gunFireTransform.xz * localAimX + gunFireTransform.yz * localAimY
+    outBasisOrigin->z = gunFireTransform.xz * gunMatrix.posZ * turretMatrix.zx + gunFireTransform.yz * localAimY
         + gunFireTransform.zz * localAimZ + gunFireTransform.posZ;
 }
 /**
@@ -3513,7 +3512,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-checkmissionweaponavailability
  * @recoil-artifact defines .text recoil:function:0x43ca90: Player::CheckMissionWeaponAvailability
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: decide whether the current mission/network rules allow one packed
@@ -3528,13 +3527,7 @@ void __fastcall CheckMissionWeaponAvailability(
 {
     (void)saveState;
 
-    const int currentMissionId = g_HudSensorTracker.GetMissionId();
-    if (zOpt::GetNetworkEnabled() == 0) {
-        *availableOut = missionThreshold != 0 && missionThreshold <= currentMissionId ? 1 : 0;
-        return;
-    }
-
-    const int networkWhitelist[13][4] = {
+    int networkWhitelist[13][4] = {
         { 0, 0, 0, 0 },
         { 0, 0, 0, 0 },
         { 0, 0, 0, 0 },
@@ -3550,13 +3543,19 @@ void __fastcall CheckMissionWeaponAvailability(
         { 0x10, 0x11, 0x31, 0 },
     };
 
-    *availableOut = 0;
-    const int* const row = networkWhitelist[currentMissionId - 1];
-    for (int i = 0; i < 4; ++i) {
-        if (packedWeaponSlotId == row[i]) {
-            *availableOut = 1;
-            return;
+    const int currentMissionId = g_HudSensorTracker.GetMissionId();
+    if (zOpt::GetNetworkEnabled() != 0) {
+        for (int i = 0; i < 4; ++i) {
+            if (packedWeaponSlotId == networkWhitelist[currentMissionId - 1][i]) {
+                *availableOut = 1;
+                return;
+            }
         }
+        *availableOut = 0;
+    } else if (missionThreshold != 0 && missionThreshold <= currentMissionId) {
+        *availableOut = 1;
+    } else {
+        *availableOut = 0;
     }
 }
 /**

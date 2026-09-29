@@ -766,14 +766,14 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
 {
     if (isEnabled != 0) {
         blinkTimerSec -= 0.075000003f;
-        if (blinkTimerSec <= 0.0f) {
+        if (blinkTimerSec <= 0.0) {
             const unsigned int colorPair = (unsigned int)(packedColor565Pair);
             blinkTimerSec = 0.25f;
-            packedColor565Pair = (int)((colorPair << 16) | (colorPair >> 16));
+            packedColor565Pair = (int)((colorPair >> 16) | (colorPair << 16));
         }
     }
 
-    zVec3 projectedPathPointBuffer[0x401];
+    zVec3 projectedPathPointBuffer[0x400];
     tracker->ProjectWorldPointsToOverlay((const zVec3*)(points), projectedPathPointBuffer, pointCount);
     projectedPathPointBuffer[pointCount] = projectedPathPointBuffer[0];
 
@@ -794,13 +794,12 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
             continue;
         }
 
-        const int color16 = packedColor565Pair & 0xffff;
         zRndrDrawImmediateLine(
             (int)(segmentStart.x),
             (int)(segmentStart.y),
             (int)(segmentEnd.x),
             (int)(segmentEnd.y),
-            color16
+            (unsigned short)(packedColor565Pair)
         );
 
         if (splitResult == 2) {
@@ -809,17 +808,16 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
                 (int)(g_HudSensor_ClipSegmentStart.y),
                 (int)(g_HudSensor_ClipSegmentEnd.x),
                 (int)(g_HudSensor_ClipSegmentEnd.y),
-                color16
+                (unsigned short)(packedColor565Pair)
             );
         }
     }
 
     if (selectedPointIndex != -1) {
-        zVec3 selectedPoint;
-        tracker->ProjectWorldPointsToOverlay((const zVec3*)(&points[selectedPointIndex]), &selectedPoint, 1);
+        tracker->ProjectWorldPointsToOverlay((const zVec3*)(&points[selectedPointIndex]), projectedPathPointBuffer, 1);
         HudSensorTracker::DrawDiamondMarker(
-            (int)(selectedPoint.x),
-            (int)(selectedPoint.y),
+            (int)(projectedPathPointBuffer[0].x),
+            (int)(projectedPathPointBuffer[0].y),
             4,
             4,
             (unsigned int)(packedColor565Pair) >> 16,
@@ -1064,21 +1062,14 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
     const float dy = segmentEnd->y - segmentStart->y;
     const float px = point->x - segmentStart->x;
     const float py = point->y - segmentStart->y;
-    const float cross = dx * py - dy * px;
 
-    if (cross > 0.0f) {
+    if (dx * py > dy * px) {
         return 1;
     }
-    if (cross < 0.0f) {
+    if (dx * py < dy * px || px * dx < 0.0f || py * dy < 0.0f) {
         return -1;
     }
-    if (px * dx < 0.0f) {
-        return -1;
-    }
-    if (py * dy < 0.0f) {
-        return -1;
-    }
-    if (px * px + py * py > dx * dx + dy * dy) {
+    if (dx * dx + dy * dy < px * px + py * py) {
         return 1;
     }
     return 0;
@@ -1841,7 +1832,7 @@ int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkercolorblink
  * @recoil-artifact defines .text recoil:function:0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
- *
+ * @recoil-match byte
  *
  * Purpose: Recolor matching objective map nodes and swap their packed full/half 565 blink colors.
  */
@@ -1852,7 +1843,8 @@ int HudSensorTracker::SetObjectiveMarkerColorBlink(int objectiveIndex, const uns
         if (mapNode->objectiveIndex == objectiveIndex) {
             mapNode->SetColorRgb(colorRgb24);
             const unsigned int packedColor = (unsigned int)(mapNode->packedColor565Pair);
-            mapNode->packedColor565Pair = (int)((packedColor << 16) | ((packedColor >> 16) & 0xffff));
+            const unsigned short highColor = (unsigned short)(packedColor >> 16);
+            mapNode->packedColor565Pair = (int)((packedColor << 16) | highColor);
         }
 
         mapNode = mapNode->next;

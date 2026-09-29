@@ -5,14 +5,13 @@
 #include <string.h>
 
 namespace {
-const char kZSndParmSourceFile[] = "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp";
 
 } // namespace
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setfreqscaled
  * @recoil-artifact defines .text recoil:function:0x4a10e0: zSndPlayHandle::SetFreqScaled
- *
+ * @recoil-match byte
  *
  * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
  * active DirectSound or A3D backend handle.
@@ -57,7 +56,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
         const int error = buffer->SetFrequency((int)((sample->playbackParam2 - sample->playbackParam3) * scale
             + sample->playbackParam3));
         if (error != 0) {
-            return zSnd::ReportDirectSoundError(error, kZSndParmSourceFile, 218);
+            return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_parm.cpp", 218);
         }
         break;
     }

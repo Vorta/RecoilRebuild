@@ -854,7 +854,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
     if (rootNode == 0) {
         zError::ReportOld(
             0x200,
-            "D:\\Proj\\Battlesport\\mission.cpp",
+            g_HudSensorTracker_MissionCppSourcePath,
             0x2c7,
             g_HudSensorTracker_ReadFileFailedFmt,
             path

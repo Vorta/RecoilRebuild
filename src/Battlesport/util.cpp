@@ -105,7 +105,7 @@ zUtil_SaveGameState* __fastcall zUtilSaveGameStateListInit(zUtil_SaveGameState* 
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestate-freeownedresources
  * @recoil-artifact defines .text recoil:function:0x438430: zUtil_SaveGameState::FreeOwnedResources
- *
+ * @recoil-match byte
  *
  * Purpose: detach save-state back-references, free modal-state nodes, and
  * release the owned player-state storage.
@@ -122,8 +122,8 @@ void zUtil_SaveGameState::FreeOwnedResources()
 
     PlayerModalState* modalState = modalStateListHead;
     while (modalState != 0) {
-        PlayerModalState* const nextModalState = modalState->next;
-        if (modalStateCount != 0) {
+        PlayerModalState* const nextModalState = modalState != 0 ? modalState->next : 0;
+        if (modalState != 0 && modalStateCount != 0) {
             if (modalState == modalStateListHead) {
                 --modalStateCount;
                 modalStateListHead = modalState->next;
@@ -132,10 +132,8 @@ void zUtil_SaveGameState::FreeOwnedResources()
                     modalStateListTail = 0;
                 }
             } else {
-                PlayerModalState* cursor = modalStateListHead;
-                while (cursor != 0) {
-                    PlayerModalState* const cursorNext = cursor->next;
-                    if (cursorNext == modalState) {
+                for (PlayerModalState* cursor = modalStateListHead; cursor != 0; cursor = cursor->next) {
+                    if (cursor->next == modalState) {
                         --modalStateCount;
                         cursor->next = modalState->next;
                         if (modalStateListTail == modalState) {
@@ -143,8 +141,6 @@ void zUtil_SaveGameState::FreeOwnedResources()
                         }
                         break;
                     }
-
-                    cursor = cursorNext;
                 }
             }
         }
