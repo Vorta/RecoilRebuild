@@ -1721,9 +1721,10 @@ void HudWeatherFx::ApplyPass3()
                 *surfacePixels++ = packedColor16;
                 *surfaceAlphaMap++ = (char)(alphaValue / 16);
             }
+
+            g_zVideo_pfnTextureRecordFinalizeUpload(textureRecord, 0, softwareImage);
         }
 
-        g_zVideo_pfnTextureRecordFinalizeUpload(textureRecord, 0, softwareImage);
         zVideoD3D::SceneEnter();
 
         for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {

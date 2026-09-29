@@ -863,23 +863,22 @@ namespace zVideo_dd
         lockedSurfaceDesc.dwSize = sizeof(lockedSurfaceDesc);
         HRESULT hresult;
 
-        int retrySurfaceCall;
-        do {
-            retrySurfaceCall = 0;
+        while (1) {
             hresult = image->surface->Lock(0, &lockedSurfaceDesc, DDLOCK_WAIT, 0);
-            if (hresult != DD_OK) {
-                if (hresult != DDERR_SURFACELOST) {
-                    ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x31f);
-                    return 0;
-                }
-
-                hresult = image->surface->Restore();
-                if (hresult != DD_OK) {
-                    ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x31b);
-                }
-                retrySurfaceCall = 1;
+            if (hresult == DD_OK) {
+                break;
             }
-        } while (retrySurfaceCall != 0);
+
+            if (hresult != DDERR_SURFACELOST) {
+                ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x31f);
+                return 0;
+            }
+
+            hresult = image->surface->Restore();
+            if (hresult != DD_OK) {
+                ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x31b);
+            }
+        }
 
         const int rowBytes = (int)(image->width) << 1;
         unsigned char* srcPixels = (unsigned char*)(image->pixels);
@@ -896,22 +895,22 @@ namespace zVideo_dd
         image->pixels = lockedSurfaceDesc.lpSurface;
         image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
-        do {
-            retrySurfaceCall = 0;
+        while (1) {
             hresult = image->surface->Unlock(&lockedSurfaceDesc);
-            if (hresult != DD_OK) {
-                if (hresult != DDERR_SURFACELOST) {
-                    ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x33f);
-                    return 0;
-                }
-
-                hresult = image->surface->Restore();
-                if (hresult != DD_OK) {
-                    ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x33b);
-                }
-                retrySurfaceCall = 1;
+            if (hresult == DD_OK) {
+                break;
             }
-        } while (retrySurfaceCall != 0);
+
+            if (hresult != DDERR_SURFACELOST) {
+                ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x33f);
+                return 0;
+            }
+
+            hresult = image->surface->Restore();
+            if (hresult != DD_OK) {
+                ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x33b);
+            }
+        }
 
         return 1;
     }

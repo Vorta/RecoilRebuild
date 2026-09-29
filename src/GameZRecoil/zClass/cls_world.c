@@ -184,35 +184,32 @@ namespace CZWorld
             return 0;
         }
 
-        zBBoxCorners corners = { 0 };
+        zBBoxCorners corners;
         int childIndex = 0;
         for (; childIndex < childCount; ++childIndex) {
             CZNodePartial* child = area->childList[childIndex];
-            if ((child->flags & 0x100) == 0) {
-                continue;
-            }
-
-            area->areaFlags |= 0x100;
-            CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
-            area->bbox[1] = corners.corners[0].y;
-            area->bbox[4] = corners.corners[0].y;
-            for (int i = 1; i < 8; ++i) {
-                const float y = corners.corners[i].y;
-                if (y < area->bbox[1]) {
-                    area->bbox[1] = y;
-                } else if (y > area->bbox[4]) {
-                    area->bbox[4] = y;
+            if ((child->flags & 0x100) != 0) {
+                area->areaFlags |= 0x100;
+                CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
+                area->bbox[1] = corners.corners[0].y;
+                area->bbox[4] = corners.corners[0].y;
+                for (int i = 1; i < 8; ++i) {
+                    if (corners.corners[i].y < area->bbox[1]) {
+                        area->bbox[1] = corners.corners[i].y;
+                    } else if (corners.corners[i].y > area->bbox[4]) {
+                        area->bbox[4] = corners.corners[i].y;
+                    }
                 }
+                ++childIndex;
+                break;
             }
-            ++childIndex;
-            break;
         }
 
         if ((area->areaFlags & 0x100) == 0) {
             return 0;
         }
 
-        for (; childIndex < childCount; ++childIndex) {
+        for (; childIndex < area->childCount; ++childIndex) {
             CZNodePartial* child = area->childList[childIndex];
             if ((child->flags & 0x100) == 0) {
                 continue;
@@ -220,11 +217,10 @@ namespace CZWorld
 
             CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
             for (int i = 0; i < 8; ++i) {
-                const float y = corners.corners[i].y;
-                if (y < area->bbox[1]) {
-                    area->bbox[1] = y;
-                } else if (y > area->bbox[4]) {
-                    area->bbox[4] = y;
+                if (corners.corners[i].y < area->bbox[1]) {
+                    area->bbox[1] = corners.corners[i].y;
+                } else if (corners.corners[i].y > area->bbox[4]) {
+                    area->bbox[4] = corners.corners[i].y;
                 }
             }
         }
@@ -324,31 +320,28 @@ namespace CZWorld
 
         CZTypeList::UpdateQueuedTrees();
 
-        for (int col = 0; col < data->areaGridColCount; ++col) {
-            zWorldAreaPartial* area = &data->areaGridRows[0][col];
+        zWorldAreaPartial* area = data->areaGridRows[0];
+        for (int col = 0; col < data->areaGridColCount; ++col, ++area) {
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial* child = area->childList[0];
-                    CZObject3D::gwObject3DAddChild(statics, child);
-                    CZWorld::RemoveChildAtGrid(world, child);
+                    CZObject3D::gwObject3DAddChild(statics, area->childList[0]);
+                    CZWorld::RemoveChildAtGrid(world, area->childList[0]);
                 }
                 CZTypeList::UpdateQueuedTrees();
                 CZWorld::AddChildAtGrid(world, statics);
             }
         }
 
-        zWorldAreaPartial* lastRow = data->areaGridRows[data->areaGridRowCount - 1];
-        for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol) {
-            zWorldAreaPartial* area = &lastRow[lastCol];
+        area = data->areaGridRows[data->areaGridRowCount - 1];
+        for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol, ++area) {
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial* child = area->childList[0];
-                    CZObject3D::gwObject3DAddChild(statics, child);
-                    CZWorld::RemoveChildAtGrid(world, child);
+                    CZObject3D::gwObject3DAddChild(statics, area->childList[0]);
+                    CZWorld::RemoveChildAtGrid(world, area->childList[0]);
                 }
                 CZTypeList::UpdateQueuedTrees();
                 CZWorld::AddChildAtGrid(world, statics);
@@ -356,14 +349,13 @@ namespace CZWorld
         }
 
         for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
-            zWorldAreaPartial* area = &data->areaGridRows[firstEdgeRow][0];
+            area = &data->areaGridRows[firstEdgeRow][0];
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial* child = area->childList[0];
-                    CZObject3D::gwObject3DAddChild(statics, child);
-                    CZWorld::RemoveChildAtGrid(world, child);
+                    CZObject3D::gwObject3DAddChild(statics, area->childList[0]);
+                    CZWorld::RemoveChildAtGrid(world, area->childList[0]);
                 }
                 CZTypeList::UpdateQueuedTrees();
                 CZWorld::AddChildAtGrid(world, statics);
@@ -371,14 +363,13 @@ namespace CZWorld
         }
 
         for (int lastEdgeRow = 1; lastEdgeRow < data->areaGridRowCount - 1; ++lastEdgeRow) {
-            zWorldAreaPartial* area = &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
+            area = &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
                 while (area->childCount > 0) {
-                    CZNodePartial* child = area->childList[0];
-                    CZObject3D::gwObject3DAddChild(statics, child);
-                    CZWorld::RemoveChildAtGrid(world, child);
+                    CZObject3D::gwObject3DAddChild(statics, area->childList[0]);
+                    CZWorld::RemoveChildAtGrid(world, area->childList[0]);
                 }
                 CZTypeList::UpdateQueuedTrees();
                 CZWorld::AddChildAtGrid(world, statics);
@@ -547,7 +538,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclamped
      * @recoil-artifact defines .text recoil:function:0x450790: CZWorld::WorldToGridCoordsClamped.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
@@ -1159,47 +1150,46 @@ namespace CZWorld
      */
     int __fastcall AddChildAtGrid(CZNodePartial * world, CZNodePartial * child)
     {
-        int gridCol = -1;
-        int gridRow = -1;
+        CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        int gridCol;
+        int gridRow;
 
         if ((child->flags & 0x80) == 0) {
-            float minX = 0.0f;
-            float maxX = 0.0f;
-            float minZ = 0.0f;
-            float maxZ = 0.0f;
-
-            if ((child->flags & 0x100) != 0) {
-                zBBoxCorners corners = { 0 };
+            zBBox3f bounds;
+            if ((child->flags & 0x100) == 0) {
+                bounds.min.x = data->originX;
+                bounds.min.z = data->originZ;
+                bounds.max.x = data->originX + data->worldSizeX;
+                bounds.max.z = data->originZ + data->worldSizeZ;
+            } else {
+                zBBoxCorners corners;
                 CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
-                minX = corners.corners[0].x;
-                maxX = corners.corners[0].x;
-                minZ = corners.corners[0].z;
-                maxZ = corners.corners[0].z;
-
+                bounds.max.x = bounds.min.x = corners.corners[0].x;
+                bounds.max.y = bounds.min.y = corners.corners[0].y;
+                bounds.max.z = bounds.min.z = corners.corners[0].z;
                 for (int i = 1; i < 8; ++i) {
-                    const float x = corners.corners[i].x;
-                    const float z = corners.corners[i].z;
-                    if (x < minX) {
-                        minX = x;
-                    } else if (x > maxX) {
-                        maxX = x;
+                    const zVec3* const corner = &corners.corners[i];
+                    if (corner->x < bounds.min.x) {
+                        bounds.min.x = corner->x;
+                    } else if (corner->x > bounds.max.x) {
+                        bounds.max.x = corner->x;
                     }
-
-                    if (z < minZ) {
-                        minZ = z;
-                    } else if (z > maxZ) {
-                        maxZ = z;
+                    if (corner->y < bounds.min.y) {
+                        bounds.min.y = corner->y;
+                    } else if (corner->y > bounds.max.y) {
+                        bounds.max.y = corner->y;
+                    }
+                    if (corner->z < bounds.min.z) {
+                        bounds.min.z = corner->z;
+                    } else if (corner->z > bounds.max.z) {
+                        bounds.max.z = corner->z;
                     }
                 }
-            } else {
-                CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
-                minX = data->originX;
-                minZ = data->originZ;
-                maxX = data->originX + data->worldSizeX;
-                maxZ = data->originZ + data->worldSizeZ;
             }
 
-            WorldRectToGridIndex(world, &gridCol, minX, maxX, minZ, maxZ, &gridRow);
+            WorldRectToGridIndex(world, &gridCol, bounds.min.x, bounds.max.x, bounds.min.z, bounds.max.z, &gridRow);
+        } else {
+            gridCol = gridRow = -1;
         }
 
         return AddChildToGridCell(world, child, gridCol, gridRow);
@@ -1310,7 +1300,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removelight
      * @recoil-artifact defines .text recoil:function:0x451410: CZWorld::RemoveLight.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a light from the world lists and remove the world from
@@ -1319,6 +1309,7 @@ namespace CZWorld
     RemoveLight(CZNodePartial * world, CZNodePartial * light)
     {
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        CZLightDataPartial* const lightData = (CZLightDataPartial*)(light->classData);
 
         int lightIndex = -1;
         for (int i = 0; i < data->lightCount; ++i) {
@@ -1328,7 +1319,7 @@ namespace CZWorld
             }
         }
 
-        if (lightIndex < 0) {
+        if (lightIndex == -1) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorDeleteLightNotFoundInWorldListFmt,
@@ -1341,7 +1332,6 @@ namespace CZWorld
             return 5;
         }
 
-        CZLightDataPartial* lightData = data->lightDataList[lightIndex];
         for (int i_681 = lightIndex; i_681 < data->lightCount - 1; ++i_681) {
             data->lightNodes[i_681] = data->lightNodes[i_681 + 1];
             data->lightDataList[i_681] = data->lightDataList[i_681 + 1];
@@ -1356,7 +1346,7 @@ namespace CZWorld
             }
         }
 
-        if (worldIndex < 0) {
+        if (worldIndex == -1) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorDeleteLightWorldNotFoundFmt,
@@ -1447,7 +1437,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.removesound
      * @recoil-artifact defines .text recoil:function:0x451640: CZWorld::RemoveSound.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: remove a sound from the world lists and remove the world from
@@ -1456,6 +1446,7 @@ namespace CZWorld
     RemoveSound(CZNodePartial * world, CZNodePartial * sound)
     {
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
+        CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(sound->classData);
 
         int soundIndex = -1;
         for (int i = 0; i < data->soundCount; ++i) {
@@ -1465,7 +1456,7 @@ namespace CZWorld
             }
         }
 
-        if (soundIndex < 0) {
+        if (soundIndex == -1) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorDeleteSoundNotFoundInWorldListFmt,
@@ -1478,7 +1469,6 @@ namespace CZWorld
             return 5;
         }
 
-        CZSoundDataPartial* soundData = data->soundDataList[soundIndex];
         for (int i_789 = soundIndex; i_789 < data->soundCount - 1; ++i_789) {
             data->soundNodes[i_789] = data->soundNodes[i_789 + 1];
             data->soundDataList[i_789] = data->soundDataList[i_789 + 1];
@@ -1493,7 +1483,7 @@ namespace CZWorld
             }
         }
 
-        if (worldIndex < 0) {
+        if (worldIndex == -1) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorDeleteSoundWorldNotFoundFmt,

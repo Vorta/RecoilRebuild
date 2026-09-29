@@ -4040,13 +4040,9 @@ int PlayerTimedHitStatus::TickAndUpdateLight(float hitStatus)
     if ((runtimeFlags & 2u) != 0) {
         const float previousLevel = currentLevel;
         const float delta = targetLevel - currentLevel;
-        const float absDelta = delta < 0.0f ? -delta : delta;
-        if (absDelta <= 0.001f) {
-            runtimeFlags &= ~2u;
-            currentLevel = targetLevel;
-        } else {
+        if (fabs(delta) > 0.001) {
             float step = source->timedStatusInterpRate * g_FrameDeltaTimeSec;
-            if (step > 1.0f) {
+            if (1.0f < step) {
                 step = 1.0f;
             }
 
@@ -4056,13 +4052,15 @@ int PlayerTimedHitStatus::TickAndUpdateLight(float hitStatus)
             } else if (currentLevel < -1.0f) {
                 currentLevel = -1.0f;
             }
+        } else {
+            runtimeFlags &= ~2u;
+            currentLevel = targetLevel;
         }
 
         nextUpdateTime = source->timedStatusUpdateDelay + g_Time_AccumulatedTimeSec;
+        const float lightScale = (float)(fabs(hitStatus * currentLevel));
 
         if (lightNode != 0) {
-            const float signedLightScale = hitStatus * currentLevel;
-            const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
             CZLight::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,
@@ -4083,12 +4081,10 @@ int PlayerTimedHitStatus::TickAndUpdateLight(float hitStatus)
         currentLevel = fadedLevel;
         targetLevel = fadedLevel;
 
-        const float absFadedLevel = fadedLevel < 0.0f ? -fadedLevel : fadedLevel;
-        if (absFadedLevel < 0.001f) {
+        if (fabs(fadedLevel) < 0.001) {
             ClearLightAndReset();
         } else if (lightNode != 0) {
-            const float signedLightScale = hitStatus * fadedLevel;
-            const float lightScale = signedLightScale < 0.0f ? -signedLightScale : signedLightScale;
+            const float lightScale = (float)(fabs(fadedLevel * hitStatus));
             CZLight::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,

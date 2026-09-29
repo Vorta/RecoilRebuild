@@ -1673,7 +1673,7 @@ namespace CZAnimate
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b710
      * @recoil-artifact defines .text recoil:function:0x44b710: CZAnimate::RenderTraverse
-     *
+     * @recoil-match byte
      *
      * Purpose: cull an animate node, push its animated transform when active,
      * render the node and children, and restore traversal state.
@@ -1723,16 +1723,18 @@ namespace CZAnimate
         }
 
         if (result == 0) {
-            int matrixPushed = 0;
+            int matrixPushed;
             node->flags |= 0x80000000;
             if ((data->statusFlags & 0x04) != 0) {
-                matrixPushed = 1;
                 zMath::MatStackPushAndCloneParent(data->savedParentMatrix);
                 zMath::MatMultiply((const zMat4x3*)data->animatedTransform, 3);
                 if (g_CZClass_RenderBoundsContextActive == 0) {
                     boundsContextPushed = 1;
                     g_CZClass_RenderBoundsContextActive = 1;
                 }
+                matrixPushed = 1;
+            } else {
+                matrixPushed = 0;
             }
             if (node->userDataOrDiRef != 0) {
                 if (g_CZClass_RenderRangeFadeActive != 0) {
@@ -2938,14 +2940,14 @@ namespace CZCamera
 
         g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
         CZNodePartial* world = gwCameraGetWorld(camera);
-        CZCameraDataPartial* viewContext = g_zVideo_pActiveViewContext;
-        CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
+        CZWindowDataPartial* windowData = (CZWindowDataPartial*)(g_zVideo_pActiveViewContext->windowNode->classData);
 
         if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
+            const float scale = g_CZClass_CameraAutoClipDistanceScale;
             if (g_FrameDeltaTimeSec > g_CZClass_CameraAutoClipDistanceThreshold) {
-                g_CZClass_CameraAutoClipDistanceScale -= g_CZClass_CameraAutoClipDistanceStep;
+                g_CZClass_CameraAutoClipDistanceScale = scale - g_CZClass_CameraAutoClipDistanceStep;
             } else {
-                g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
+                g_CZClass_CameraAutoClipDistanceScale = scale + g_CZClass_CameraAutoClipDistanceStep;
             }
 
             if (g_CZClass_CameraAutoClipDistanceScale > 1.0f) {
@@ -2969,11 +2971,12 @@ namespace CZCamera
         if (CZTypeList::CountNodes(8) > 1) {
             zRndr::SpanOcclusionResetFrame();
             if ((windowData->clearPolyIndexFlags & 0x80000000) != 0) {
-                const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
-                for (int i = 0; i < clearPolyCount; ++i) {
-                    CZWindowClearPoly* poly = &windowData->clearPolys[i];
-                    if ((poly->vertCount & 0x80000000) != 0) {
-                        zRndr::SpanOcclusionAddPolygon(poly->vertices, poly->vertCount & 0x7fffffff);
+                for (unsigned int i = 0; i < (unsigned int)(windowData->clearPolyIndexFlags & 0x7fffffff); ++i) {
+                    if ((windowData->clearPolys[i].vertCount & 0x80000000) != 0) {
+                        zRndr::SpanOcclusionAddPolygon(
+                            windowData->clearPolys[i].vertices,
+                            windowData->clearPolys[i].vertCount & 0x7fffffff
+                        );
                     }
                 }
             }
@@ -2981,21 +2984,27 @@ namespace CZCamera
         zRndr::SpanOcclusionBuildColumnHeadTable();
 
         const int variantFilterEnabled = g_Variant_FilterEnabled;
-        viewContext = g_zVideo_pActiveViewContext;
         if (variantFilterEnabled != 0) {
-            if (viewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
-                g_Variant_CurrentTag = viewContext->variantTag;
+            if (g_zVideo_pActiveViewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
+                g_Variant_CurrentTag = g_zVideo_pActiveViewContext->variantTag;
             } else {
-                PlayerProbeSampleCandidateBuffer pickCandidates = { 0 };
+                PlayerProbeSampleCandidateBuffer pickCandidates;
                 g_Variant_FilterEnabled = 0;
-                CZDisplayInstance::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos, &pickCandidates);
+                CZDisplayInstance::FindBestPickCandidateBelowPoint(
+                    world,
+                    &g_zVideo_pActiveViewContext->cameraPos,
+                    &pickCandidates
+                );
                 g_Variant_FilterEnabled = variantFilterEnabled;
 
-                if (pickCandidates.candidateCount <= 0) {
+                if (pickCandidates.candidateCount > 0) {
+                    if (pickCandidates.entries[0].variantTag.count > 0) {
+                        g_zVideo_pActiveViewContext->variantTag = pickCandidates.entries[0].variantTag;
+                        g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
+                    }
+                } else {
+                    zTag4::Clear(&g_zVideo_pActiveViewContext->variantTag);
                     g_Variant_CurrentTag = g_zVideo_pActiveViewContext->variantTag;
-                } else if (pickCandidates.entries[0].variantTag.count > 0) {
-                    g_zVideo_pActiveViewContext->variantTag = pickCandidates.entries[0].variantTag;
-                    g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
                 }
             }
             g_zVideo_ActiveViewVariantTag = g_zVideo_pActiveViewContext->variantTag;
@@ -3012,7 +3021,6 @@ namespace CZCamera
         zRndrLensFlareDrawVisibleSamples();
         zRndrFlushTransparentQueue();
         zRndrOverlayRectFlushSw();
-        zTag4::Clear(&g_zVideo_pActiveViewContext->variantTag);
 
         return 0;
     }
@@ -3038,14 +3046,14 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
 
     g_zVideo_pActiveViewContext = (CZCameraDataPartial*)(camera->classData);
     CZNodePartial* world = CZCamera::gwCameraGetWorld(camera);
-    CZCameraDataPartial* viewContext = g_zVideo_pActiveViewContext;
-    CZWindowDataPartial* windowData = (CZWindowDataPartial*)(viewContext->windowNode->classData);
+    CZWindowDataPartial* windowData = (CZWindowDataPartial*)(g_zVideo_pActiveViewContext->windowNode->classData);
 
     if (g_CZClass_CameraAutoClipDistanceAdjustEnabled != 0) {
+        const float scale = g_CZClass_CameraAutoClipDistanceScale;
         if (g_FrameDeltaTimeSec > g_CZClass_CameraAutoClipDistanceThreshold) {
-            g_CZClass_CameraAutoClipDistanceScale -= g_CZClass_CameraAutoClipDistanceStep;
+            g_CZClass_CameraAutoClipDistanceScale = scale - g_CZClass_CameraAutoClipDistanceStep;
         } else {
-            g_CZClass_CameraAutoClipDistanceScale += g_CZClass_CameraAutoClipDistanceStep;
+            g_CZClass_CameraAutoClipDistanceScale = scale + g_CZClass_CameraAutoClipDistanceStep;
         }
 
         if (g_CZClass_CameraAutoClipDistanceScale > 1.0f) {
@@ -3065,31 +3073,33 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
     CZWorld::UpdateAllLights(world);
     CZWorld::UpdateAllSounds(world);
 
-    const int variantFilterEnabled = g_Variant_FilterEnabled;
     g_CZClass_LodDistanceStateStackTop = 0;
-    PlayerProbeSampleCandidateBuffer pickCandidates = { 0 };
-    if (variantFilterEnabled != 0) {
-        viewContext = g_zVideo_pActiveViewContext;
-        if (viewContext->variantOverrideEnabled != 0 && variantFilterEnabled == 1) {
-            g_Variant_CurrentTag = viewContext->variantTag;
+    PlayerProbeSampleCandidateBuffer pickCandidates;
+    if (g_Variant_FilterEnabled != 0) {
+        if (g_zVideo_pActiveViewContext->variantOverrideEnabled != 0 && g_Variant_FilterEnabled == 1) {
+            g_Variant_CurrentTag = g_zVideo_pActiveViewContext->variantTag;
         } else {
+            const int variantFilterEnabled = g_Variant_FilterEnabled;
             g_Variant_FilterEnabled = 0;
-            CZDisplayInstance::FindBestPickCandidateBelowPoint(world, &viewContext->cameraPos, &pickCandidates);
+            CZDisplayInstance::FindBestPickCandidateBelowPoint(
+                world,
+                &g_zVideo_pActiveViewContext->cameraPos,
+                &pickCandidates
+            );
             g_Variant_FilterEnabled = variantFilterEnabled;
 
-            if (pickCandidates.candidateCount <= 0) {
+            if (pickCandidates.candidateCount > 0) {
+                if (pickCandidates.entries[0].variantTag.count > 0) {
+                    g_zVideo_pActiveViewContext->variantTag = pickCandidates.entries[0].variantTag;
+                    g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
+                }
+            } else {
                 zTag4::Clear(&g_zVideo_pActiveViewContext->variantTag);
-                viewContext = g_zVideo_pActiveViewContext;
-                g_Variant_CurrentTag = viewContext->variantTag;
-            } else if (pickCandidates.entries[0].variantTag.count > 0) {
-                g_zVideo_pActiveViewContext->variantTag = pickCandidates.entries[0].variantTag;
-                viewContext = g_zVideo_pActiveViewContext;
-                g_Variant_CurrentTag = pickCandidates.entries[0].variantTag;
+                g_Variant_CurrentTag = g_zVideo_pActiveViewContext->variantTag;
             }
         }
 
-        viewContext = g_zVideo_pActiveViewContext;
-        g_zVideo_ActiveViewVariantTag = viewContext->variantTag;
+        g_zVideo_ActiveViewVariantTag = g_zVideo_pActiveViewContext->variantTag;
     }
 
     zVideoD3D::SceneEnter();
@@ -3105,17 +3115,16 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
 
     const int visibleLensFlareSampleCount = zRndrLensFlareBuildVisibleSampleListFromQueue(queuedLensFlareSampleCount);
     for (int sampleIndex = 0; sampleIndex < visibleLensFlareSampleCount; ++sampleIndex) {
-        zVec3 visibleSamplePoint = { 0 };
+        zVec3 visibleSamplePoint;
         zRndrSpanOcclusionFilterSampleList(sampleIndex, &visibleSamplePoint);
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
-        viewContext = g_zVideo_pActiveViewContext;
         const int raycastHit = CZDisplayInstance::RaycastFindClosest(
-            viewContext->worldNode,
+            g_zVideo_pActiveViewContext->worldNode,
             &pickCandidates,
-            viewContext->cameraPos.x,
-            viewContext->cameraPos.y,
-            viewContext->cameraPos.z,
+            g_zVideo_pActiveViewContext->cameraPos.x,
+            g_zVideo_pActiveViewContext->cameraPos.y,
+            g_zVideo_pActiveViewContext->cameraPos.z,
             visibleSamplePoint.x,
             visibleSamplePoint.y,
             visibleSamplePoint.z
@@ -3132,44 +3141,33 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
     zVideoD3D::SceneLeave();
 
     if (CZTypeList::CountNodes(8) > 1 && (windowData->clearPolyIndexFlags & 0x80000000) != 0) {
-        const int clearPolyCount = windowData->clearPolyIndexFlags & 0x7fffffff;
-        for (int i = 0; i < clearPolyCount; ++i) {
-            CZWindowClearPoly* poly = &windowData->clearPolys[i];
-            if ((poly->vertCount & 0x80000000) == 0) {
-                continue;
+        for (unsigned int i = 0; i < (unsigned int)(windowData->clearPolyIndexFlags & 0x7fffffff); ++i) {
+            if ((windowData->clearPolys[i].vertCount & 0x80000000) != 0) {
+                zVidRect32 rect;
+                rect.left = rect.right = (int)(windowData->clearPolys[i].vertices[0].x);
+                rect.top = rect.bottom = (int)(windowData->clearPolys[i].vertices[0].y);
+
+                for (unsigned int vertexIndex = 1;
+                    vertexIndex < (unsigned int)(windowData->clearPolys[i].vertCount & 0x7fffffff);
+                    ++vertexIndex) {
+                    if (rect.left > windowData->clearPolys[i].vertices[vertexIndex].x) {
+                        rect.left = (int)(windowData->clearPolys[i].vertices[vertexIndex].x);
+                    }
+                    if (rect.right < windowData->clearPolys[i].vertices[vertexIndex].x) {
+                        rect.right = (int)(windowData->clearPolys[i].vertices[vertexIndex].x);
+                    }
+                    if (rect.top > windowData->clearPolys[i].vertices[vertexIndex].y) {
+                        rect.top = (int)(windowData->clearPolys[i].vertices[vertexIndex].y);
+                    }
+                    if (rect.bottom < windowData->clearPolys[i].vertices[vertexIndex].y) {
+                        rect.bottom = (int)(windowData->clearPolys[i].vertices[vertexIndex].y);
+                    }
+                }
+
+                zVideo_dd3d::CallClearZBufferRect(&rect);
             }
-
-            const int vertexCount = poly->vertCount & 0x7fffffff;
-            if (vertexCount <= 0) {
-                continue;
-            }
-
-            zVidRect32 rect;
-            rect.left = (int)(poly->vertices[0].x);
-            rect.right = rect.left;
-            rect.top = (int)(poly->vertices[0].y);
-            rect.bottom = rect.top;
-
-            for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
-                const zVec3* vertex = &poly->vertices[vertexIndex];
-                if (rect.left > vertex->x) {
-                    rect.left = (int)(vertex->x);
-                }
-                if (rect.right < vertex->x) {
-                    rect.right = (int)(vertex->x);
-                }
-                if (rect.top > vertex->y) {
-                    rect.top = (int)(vertex->y);
-                }
-                if (rect.bottom < vertex->y) {
-                    rect.bottom = (int)(vertex->y);
-                }
-            }
-
-            zVideo_dd3d::CallClearZBufferRect(&rect);
         }
     }
-
     return 0;
 }
 

@@ -777,12 +777,14 @@ namespace zEffect
                 - (sequenceRuntime->eventElapsedSec - animEvent->durationSec);
         }
 
-        float lightRangeInner = 0.0f;
-        float lightRangeOuter = 0.0f;
+        float lightRangeInner;
+        float lightRangeOuter;
         CZLight::gwLightGetRange(lightRef->runtimeNode, &lightRangeInner, &lightRangeOuter);
 
-        lightRangeInner += stepSec * animEvent->currentRangeInner;
-        lightRangeOuter += stepSec * animEvent->currentRangeOuter;
+        const float innerStep = stepSec * animEvent->currentRangeInner;
+        const float outerStep = stepSec * animEvent->currentRangeOuter;
+        lightRangeInner += innerStep;
+        lightRangeOuter += outerStep;
         if (lightRangeInner < 0.0f) {
             lightRangeInner = 1.0f;
         }
@@ -790,22 +792,22 @@ namespace zEffect
             lightRangeOuter = lightRangeInner + 1.0f;
         }
 
-        animEvent->currentRangeInner += stepSec * animEvent->rangeInnerDelta;
-        animEvent->currentRangeOuter += stepSec * animEvent->rangeOuterDelta;
+        animEvent->currentRangeInner += animEvent->rangeInnerDelta * stepSec;
+        animEvent->currentRangeOuter += animEvent->rangeOuterDelta * stepSec;
         CZLight::gwLightSetRange(lightRef->runtimeNode, lightRangeInner, lightRangeOuter);
 
-        float specularR = 0.0f;
-        float specularG = 0.0f;
-        float specularB = 0.0f;
+        float specularR;
+        float specularG;
+        float specularB;
         CZLight::gwLightGetSpecularColor(lightRef->runtimeNode, &specularR, &specularG, &specularB);
 
         specularR += stepSec * animEvent->currentSpecularR;
         specularG += stepSec * animEvent->currentSpecularG;
         specularB += stepSec * animEvent->currentSpecularB;
 
-        animEvent->currentSpecularR += stepSec * animEvent->specularRDelta;
-        animEvent->currentSpecularG += stepSec * animEvent->specularGDelta;
-        animEvent->currentSpecularB += stepSec * animEvent->specularBDelta;
+        animEvent->currentSpecularR += animEvent->specularRDelta * stepSec;
+        animEvent->currentSpecularG += animEvent->specularGDelta * stepSec;
+        animEvent->currentSpecularB += animEvent->specularBDelta * stepSec;
 
         if (specularR > 1.0f) {
             specularR = 1.0f;
@@ -3154,16 +3156,21 @@ namespace zEffect
         zEffectScreenColorFxEvent * event
     )
     {
+        int result = 1;
         if (self == 0 || sequenceRuntime == 0 || event == 0) {
             return 2;
         }
 
-        int result = 1;
-        const float timeSlice = sequenceRuntime->eventElapsedSec <= event->endTimeSec
-            ? g_zEffectAnim_State.frameDeltaRemainingSec
-            : g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - event->endTimeSec);
-        const float colorTime = sequenceRuntime->eventElapsedSec <= event->endTimeSec ? sequenceRuntime->eventElapsedSec
-                                                                                      : event->endTimeSec;
+        float timeSlice;
+        float colorTime;
+        if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
+            timeSlice
+                = g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - event->endTimeSec);
+            colorTime = event->endTimeSec;
+        } else {
+            colorTime = sequenceRuntime->eventElapsedSec;
+            timeSlice = g_zEffectAnim_State.frameDeltaRemainingSec;
+        }
 
         float red = event->redSlope * colorTime + event->redBase;
         float green = event->greenSlope * colorTime + event->greenBase;
@@ -3181,22 +3188,26 @@ namespace zEffect
 
         if (red < 0.0f) {
             red = 0.0f;
-        } else if (red > 1.0f) {
+        }
+        if (red > 1.0f) {
             red = 1.0f;
         }
         if (green < 0.0f) {
             green = 0.0f;
-        } else if (green > 1.0f) {
+        }
+        if (green > 1.0f) {
             green = 1.0f;
         }
         if (alpha < 0.0f) {
             alpha = 0.0f;
-        } else if (alpha > 1.0f) {
+        }
+        if (alpha > 1.0f) {
             alpha = 1.0f;
         }
         if (blue < 0.0f) {
             blue = 0.0f;
-        } else if (blue > 1.0f) {
+        }
+        if (blue > 1.0f) {
             blue = 1.0f;
         }
 
@@ -3981,55 +3992,61 @@ namespace zEffectAnim
         }
 
         zEffectAnimEntry* entry = self;
-        if (targetNode != 0) {
-            if (entry->boundNode != targetNode) {
-                while (entry->runtimeSibling != 0 && entry->activationState == 2) {
-                    entry = entry->runtimeSibling;
-                }
+        const int cleanupRequested = targetNode == 0 || self->boundNode == targetNode;
 
-                if (entry->activationState == 2) {
-                    zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
-                    entry->runtimeSibling = clonedEntry;
-                    if (clonedEntry == 0) {
-                        return -1;
-                    }
-                    entry = clonedEntry;
-                }
-
-                if (RebindEntryToNode(entry, targetNode) == 0) {
-                    return -1;
-                }
-            } else if (entry->activationState == 2 || entry->activationState == 6) {
-                Stop(entry);
+        if (cleanupRequested != 0 && targetNode != 0) {
+            if (self->activationState == 2 || self->activationState == 6) {
+                Stop(self);
             }
-
             entry->activationState = 0;
         }
 
-        if (immediateCleanup != 0) {
-            entry->flags |= 0x40u;
-        } else {
-            entry->flags &= ~0x40u;
+        if (cleanupRequested != 0) {
+            if (immediateCleanup != 0) {
+                entry->flags |= 0x40u;
+            } else {
+                entry->flags &= ~0x40u;
+            }
         }
 
-        if (entry->activationState != 1) {
-            if ((entry->flags & 0x40u) != 0) {
-                zEffect_Anim::RestoreNodeStates(entry);
-            }
+        if (cleanupRequested != 0 && entry->activationState != 1 && (entry->flags & 0x40u) != 0) {
+            zEffect_Anim::RestoreNodeStates(entry);
+        }
 
-            if (entry->surfacePrimary.eventStream != 0) {
-                zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
-                zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
-                const unsigned char runState = entry->surfacePrimary.runState;
-                if (runState == 0 || runState == 1) {
-                    CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
-                    return 0;
-                }
+        if (cleanupRequested != 0 && entry->activationState != 1 && entry->surfacePrimary.eventStream != 0) {
+            zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
+            zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
+            const unsigned char runState = entry->surfacePrimary.runState;
+            if (runState == 0 || runState == 1) {
+                CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
+                return 0;
             }
+        }
 
+        if (cleanupRequested != 0 && entry->activationState != 1) {
             FinalizeStop(entry);
         }
+        if (cleanupRequested != 0) {
+            return 0;
+        }
 
+        while (entry->runtimeSibling != 0 && entry->activationState == 2) {
+            entry = entry->runtimeSibling;
+        }
+
+        if (entry->activationState == 2) {
+            zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
+            entry->runtimeSibling = clonedEntry;
+            if (clonedEntry == 0) {
+                return -1;
+            }
+            entry = clonedEntry;
+        }
+
+        if (RebindEntryToNode(entry, targetNode) == 0) {
+            return -1;
+        }
+        entry->activationState = 0;
         return 0;
     }
 

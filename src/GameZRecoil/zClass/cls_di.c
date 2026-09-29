@@ -1375,19 +1375,18 @@ namespace CZDisplayInstance
      */
     int __fastcall BuildPickCandidateList(CZNodePartial * node, int cullCount)
     {
-        int nodeFlags = node->flags;
-        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+        if ((node->flags & kNodeFlagEnabledForPick) == 0) {
             return 1;
         }
-        if ((nodeFlags & 0x08) == 0) {
+        if ((node->flags & 0x08) == 0) {
             return 1;
         }
-        if ((nodeFlags & 0x01000000) != 0 && VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+        if ((node->flags & 0x01000000) != 0 && VariantTag::CurrentAllowsId(node->nodeType) == 0) {
             return 1;
         }
 
-        nodeFlags &= ~kNodeFlagClearDuringPick;
-        node->flags = nodeFlags;
+        node->flags &= ~kNodeFlagClearDuringPick;
+        const int nodeFlags = node->flags;
         if (g_DiPickCandidateBuffer->candidateCount >= kMaxPickCandidates) {
             zError::ReportOld(
                 0x200,
@@ -1398,28 +1397,36 @@ namespace CZDisplayInstance
             return 1;
         }
 
+        int result; // Unset for sound nodes (retail returns the stale slot).
         switch (node->classId) {
         case kNodeClassObject3D: {
-            if (cullCount > 1 && IsPickQueryPointOutsideViewBBoxXZ(node) != 0) {
-                return 1;
+            if (cullCount > 1) {
+                const int outside = IsPickQueryPointOutsideViewBBoxXZ(node);
+                if (outside != 0) {
+                    return outside;
+                }
             }
 
             CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
-            int pushedMatrix = 0;
+            int pushedMatrix;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
-                if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
-                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
-                } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
-                    zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                if ((node->flags & kNodeFlagUseLocalMatrixMode3) != 0) {
+                    if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
+                        zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                        zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
+                        if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
+                            objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
+                        }
+                    } else {
+                        zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                    }
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
                     zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
-                    if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
-                        objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
-                    }
                 }
+            } else {
+                pushedMatrix = 0;
             }
 
             zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
@@ -1433,10 +1440,12 @@ namespace CZDisplayInstance
                 }
             }
 
-            for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial* child = node->listB[i];
-                if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
-                    BuildPickCandidateList(child, node->listCountB);
+            if (node->listCountB > 0) {
+                for (int i = 0; i < node->listCountB; ++i) {
+                    CZNodePartial* child = node->listB[i];
+                    if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
+                        BuildPickCandidateList(child, node->listCountB);
+                    }
                 }
             }
 
@@ -1449,12 +1458,15 @@ namespace CZDisplayInstance
 
         case kNodeClassLod: {
             CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
-            if (lodData->nearRangeSq > 5.0f) {
+            if (lodData->nearRangeSq > 5.0) {
                 return 1;
             }
 
-            if (cullCount > 1 && IsPickQueryPointOutsideViewBBoxXZ(node) != 0) {
-                return 1;
+            if (cullCount > 1) {
+                const int outside = IsPickQueryPointOutsideViewBBoxXZ(node);
+                if (outside != 0) {
+                    return outside;
+                }
             }
 
             for (int i = 0; i < node->listCountB; ++i) {
@@ -1467,12 +1479,14 @@ namespace CZDisplayInstance
             zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
 
-            int pushedMatrix = 0;
+            int pushedMatrix;
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
                 // Retail 0x4441c1 passes camera data +0x20 in ECX and +0x14 in EDX.
                 zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
+            } else {
+                pushedMatrix = 0;
             }
 
             zDiPartial* di = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
@@ -1486,10 +1500,12 @@ namespace CZDisplayInstance
                 }
             }
 
-            for (int i = 0; i < node->listCountB; ++i) {
-                CZNodePartial* child = node->listB[i];
-                if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
-                    BuildPickCandidateList(child, node->listCountB);
+            if (node->listCountB > 0) {
+                for (int i = 0; i < node->listCountB; ++i) {
+                    CZNodePartial* child = node->listB[i];
+                    if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & 0x08) != 0) {
+                        BuildPickCandidateList(child, node->listCountB);
+                    }
                 }
             }
 
@@ -1506,12 +1522,16 @@ namespace CZDisplayInstance
                 return 1;
             }
 
-            if (cullCount > 1 && IsPickQueryPointOutsideViewBBoxXZ(node) != 0) {
-                return 1;
+            if (cullCount > 1) {
+                const int outside = IsPickQueryPointOutsideViewBBoxXZ(node);
+                if (outside != 0) {
+                    return outside;
+                }
             }
 
-            BuildPickCandidateList(sequenceData->entries[sequenceData->currentIndex].node, node->listCountB);
-            return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
+            const int childResult
+                = BuildPickCandidateList(sequenceData->entries[sequenceData->currentIndex].node, node->listCountB);
+            return childResult;
         }
 
         case kNodeClassAnimate:
@@ -1521,7 +1541,7 @@ namespace CZDisplayInstance
             return BuildPickCandidatesForLight(node, cullCount);
 
         case kNodeClassSound:
-            return 1;
+            break;
 
         default:
             zError::ReportOld(
@@ -1532,8 +1552,11 @@ namespace CZDisplayInstance
                 node,
                 node->classId
             );
-            return 3;
+            result = 3;
+            break;
         }
+
+        return result;
     }
 
     /**
@@ -1671,80 +1694,76 @@ namespace CZDisplayInstance
             pointCount = 24;
         }
 
-        if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
+        if (g_CZTypeList_Buckets[7].head != 0) {
             CZTypeList::UpdateQueuedTrees();
         }
 
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
-        zWorldAreaPartial* gridCellForPoint[24] = { 0 };
-        zWorldAreaPartial* uniqueGridCells[24] = { 0 };
-        int pointActive[24] = { 0 };
-        int pointWasClamped[24] = { 0 };
-        float clampOffsetX[24] = { 0.0f };
-        float clampOffsetZ[24] = { 0.0f };
+        int pointActive[24];
+        zWorldAreaPartial* gridCellForPoint[24];
+        zWorldAreaPartial* uniqueGridCells[24];
+        int pointWasClamped[24];
+        float clampOffsetXZ[24][2];
 
-        for (int i = 0; i < pointCount; ++i) {
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersByPoint[i];
-            buffer->candidateCount = 0;
+        zVec3* point = pointArray;
+        for (int i = 0; i < pointCount; ++i, ++point) {
+            pointActive[i] = 1;
+            pointWasClamped[i] = 0;
+            outCandidateBuffersByPoint[i].candidateCount = 0;
 
-            const int gridCol = (int)(floor((pointArray[i].x - worldData->originX) * worldData->areaInvSizeX));
-            const int gridRow = (int)(floor((pointArray[i].z - worldData->originZ) * worldData->areaInvSizeZ));
-
+            const int gridCol = (int)(floor((point->x - worldData->originX) * worldData->areaInvSizeX));
+            const int gridRow = (int)(floor((point->z - worldData->originZ) * worldData->areaInvSizeZ));
             if (gridCol >= 0 && gridCol < worldData->areaGridColCount && gridRow >= 0
                 && gridRow < worldData->areaGridRowCount) {
-                pointActive[i] = 1;
                 gridCellForPoint[i] = &worldData->areaGridRows[gridRow][gridCol];
                 continue;
             }
 
             if (worldData->clampQueriesToBounds == 0) {
+                pointActive[i] = 0;
+                pointWasClamped[i] = 0;
                 continue;
             }
 
             int clampedCol = gridCol;
-            if (clampedCol < 0) {
-                clampedCol = 0;
-            } else if (clampedCol >= worldData->areaGridColCount) {
-                clampedCol = worldData->areaGridColCount - 1;
-            }
-
             int clampedRow = gridRow;
-            if (clampedRow < 0) {
-                clampedRow = 0;
-            } else if (clampedRow >= worldData->areaGridRowCount) {
-                clampedRow = worldData->areaGridRowCount - 1;
+            if (gridCol > worldData->areaGridColCount - 1) {
+                clampedCol = worldData->areaGridColCount - 1;
+            } else if (gridCol < 0) {
+                clampedCol = 0;
             }
 
-            pointActive[i] = 1;
+            if (gridRow > worldData->areaGridRowCount - 1) {
+                clampedRow = worldData->areaGridRowCount - 1;
+            } else if (gridRow < 0) {
+                clampedRow = 0;
+            }
+
             pointWasClamped[i] = 1;
             gridCellForPoint[i] = &worldData->areaGridRows[clampedRow][clampedCol];
-            clampOffsetX[i] = (float)(clampedCol - gridCol) * worldData->areaCellSizeX;
-            clampOffsetZ[i] = (float)(clampedRow - gridRow) * worldData->areaCellSizeZ;
-            pointArray[i].x += clampOffsetX[i];
-            pointArray[i].z += clampOffsetZ[i];
+            clampOffsetXZ[i][0] = (float)(clampedCol - gridCol) * worldData->areaCellSizeX;
+            clampOffsetXZ[i][1] = (float)(clampedRow - gridRow) * worldData->areaCellSizeZ;
+            point->x += clampOffsetXZ[i][0];
+            point->z += clampOffsetXZ[i][1];
         }
 
         int uniqueGridCellCount = 0;
         for (int uniquePointIndex = 0; uniquePointIndex < pointCount; ++uniquePointIndex) {
-            zWorldAreaPartial* cell = gridCellForPoint[uniquePointIndex];
-            if (cell == 0) {
-                continue;
-            }
-
-            int alreadyAdded = 0;
-            for (int j = 0; j < uniqueGridCellCount; ++j) {
-                if (uniqueGridCells[j] == cell) {
-                    alreadyAdded = 1;
-                    break;
+            if (pointActive[uniquePointIndex] != 0) {
+                int isNewCell = 1;
+                for (int j = 0; j < uniqueGridCellCount; ++j) {
+                    if (gridCellForPoint[uniquePointIndex] == uniqueGridCells[j]) {
+                        isNewCell = 0;
+                    }
                 }
-            }
 
-            if (alreadyAdded == 0) {
-                uniqueGridCells[uniqueGridCellCount++] = cell;
+                if (isNewCell != 0) {
+                    uniqueGridCells[uniqueGridCellCount++] = gridCellForPoint[uniquePointIndex];
+                }
             }
         }
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
 
@@ -1756,15 +1775,18 @@ namespace CZDisplayInstance
 
         for (int cellIndex = 0; cellIndex < uniqueGridCellCount; ++cellIndex) {
             zWorldAreaPartial* cell = uniqueGridCells[cellIndex];
-            int hitFlags[24] = { 0 };
+            int hitFlags[24];
             for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
-                hitFlags[pointIndex] = pointActive[pointIndex] != 0 && gridCellForPoint[pointIndex] == cell ? 1 : 0;
+                if (pointActive[pointIndex] != 0 && gridCellForPoint[pointIndex] == cell) {
+                    hitFlags[pointIndex] = 1;
+                } else {
+                    hitFlags[pointIndex] = 0;
+                }
             }
 
             for (int childIndex = 0; childIndex < cell->childCount; ++childIndex) {
                 CZNodePartial* node = cell->childList[childIndex];
-                const int nodeFlags = node->flags;
-                if ((nodeFlags & kNodeFlagEnabledForPick) != 0 && (nodeFlags & 0x08) != 0) {
+                if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & 0x08) != 0) {
                     BuildPickCandidatesForPoints(node, cell->childCount + 1, hitFlags);
                 }
             }
@@ -1772,17 +1794,19 @@ namespace CZDisplayInstance
 
         for (int restoreIndex = 0; restoreIndex < pointCount; ++restoreIndex) {
             if (pointWasClamped[restoreIndex] != 0) {
-                pointArray[restoreIndex].x -= clampOffsetX[restoreIndex];
-                pointArray[restoreIndex].z -= clampOffsetZ[restoreIndex];
+                pointArray[restoreIndex].x -= clampOffsetXZ[restoreIndex][0];
+                pointArray[restoreIndex].z -= clampOffsetXZ[restoreIndex][1];
             }
         }
 
-        for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
-            CZNodePartial* node = world->listB[worldNodeIndex];
-            const int nodeFlags = node->flags;
-            if ((nodeFlags & kNodeFlagEnabledForPick) != 0 && (nodeFlags & 0x08) != 0
-                && ((nodeFlags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
-                BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
+        if (world->listCountB > 0) {
+            for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
+                CZNodePartial* node = world->listB[worldNodeIndex];
+                const int nodeFlags = node->flags;
+                if ((nodeFlags & kNodeFlagEnabledForPick) != 0 && (nodeFlags & 0x08) != 0
+                    && ((nodeFlags & 0x01000000) == 0 || VariantTag::CurrentAllowsId(node->nodeType) != 0)) {
+                    BuildPickCandidatesForPoints(node, world->listCountB + 1, pointActive);
+                }
             }
         }
 
@@ -2373,14 +2397,13 @@ namespace CZDisplayInstance
      */
     int __fastcall BuildPickCandidatesForSegmentChildFallback(CZNodePartial * node, int nodeCountHint)
     {
-        int nodeFlags = node->flags;
-        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+        if ((node->flags & kNodeFlagEnabledForPick) == 0) {
             return 1;
         }
-        if ((nodeFlags & kNodeFlagRaycastable) == 0) {
+        if ((node->flags & kNodeFlagRaycastable) == 0) {
             return 1;
         }
-        if ((g_cls_di_StopAfterFirstHit & nodeFlags) != 0) {
+        if ((g_cls_di_StopAfterFirstHit & node->flags) != 0) {
             return 1;
         }
         if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -2390,8 +2413,8 @@ namespace CZDisplayInstance
             return 1;
         }
 
-        nodeFlags &= ~kNodeFlagClearDuringPick;
-        node->flags = nodeFlags;
+        node->flags &= ~kNodeFlagClearDuringPick;
+        const int nodeFlags = node->flags;
         if (g_DiPickCandidateBuffer->candidateCount >= kMaxPickCandidates) {
             zError::ReportOld(
                 0x200,
@@ -2402,6 +2425,7 @@ namespace CZDisplayInstance
             return 1;
         }
 
+        int result; // Unset for sound nodes (retail returns the stale slot).
         switch (node->classId) {
         case kNodeClassObject3D: {
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
@@ -2419,21 +2443,25 @@ namespace CZDisplayInstance
             }
 
             CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
-            int pushedMatrix = 0;
+            int pushedMatrix;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
-                if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
-                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
-                } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
-                    zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                if ((node->flags & kNodeFlagUseLocalMatrixMode3) != 0) {
+                    if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
+                        zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                        zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
+                        if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
+                            objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
+                        }
+                    } else {
+                        zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                    }
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
-                    if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
-                        objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
-                    }
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
                 }
+            } else {
+                pushedMatrix = 0;
             }
 
             zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
@@ -2444,15 +2472,15 @@ namespace CZDisplayInstance
                 ++g_DiPickCandidateCursor;
                 ++g_DiPickCandidateBuffer->candidateCount;
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+                && node->listCountB > 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                     CZNodePartial* child = node->listB[childIndex];
                     if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0) {
                         BuildPickCandidatesForSegmentChildFallback(child, node->listCountB);
-                    }
-
-                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                        break;
+                        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
+                            break;
+                        }
                     }
                 }
             }
@@ -2466,7 +2494,7 @@ namespace CZDisplayInstance
 
         case kNodeClassLod: {
             CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
-            if (lodData->nearRangeSq > 5.0f) {
+            if (lodData->nearRangeSq > 5.0) {
                 return 1;
             }
 
@@ -2514,11 +2542,11 @@ namespace CZDisplayInstance
                 }
             }
 
-            BuildPickCandidatesForSegmentChildFallback(
+            const int childResult = BuildPickCandidatesForSegmentChildFallback(
                 sequenceData->entries[sequenceData->currentIndex].node,
                 node->listCountB
             );
-            return g_DiPickCandidateBuffer->candidateCount <= 0 ? 1 : 0;
+            return childResult;
         }
 
         case kNodeClassAnimate:
@@ -2531,7 +2559,7 @@ namespace CZDisplayInstance
             return BuildPickCandidatesForSegmentForLight(node, nodeCountHint);
 
         case kNodeClassSound:
-            return (int)((unsigned int)(node));
+            break;
 
         default:
             zError::ReportOld(
@@ -2542,8 +2570,11 @@ namespace CZDisplayInstance
                 node,
                 node->classId
             );
-            return 3;
+            result = 3;
+            break;
         }
+
+        return result;
     }
 
     /**
@@ -2712,7 +2743,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildprobehitbatchesforsegments
      * @recoil-artifact defines .text recoil:function:0x445d40: CZDisplayInstance::BuildProbeHitBatchesForSegments.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2736,12 +2767,12 @@ namespace CZDisplayInstance
             endpointCount = 24;
         }
 
-        if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
+        if (g_CZTypeList_Buckets[7].head != 0) {
             CZTypeList::UpdateQueuedTrees();
         }
 
         const int segmentCount = endpointCount >> 1;
-        int segmentActive[24] = { 0 };
+        int segmentActive[12];
         for (int activeIndex = 0; activeIndex < segmentCount; ++activeIndex) {
             segmentActive[activeIndex] = 1;
             hitBatches[activeIndex].candidateCount = 0;
@@ -2749,19 +2780,38 @@ namespace CZDisplayInstance
 
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
         int anyActive = 0;
-        for (int boundsIndex = 0; boundsIndex < segmentCount; ++boundsIndex) {
-            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpoints[boundsIndex];
-            CZDisplayInstanceSegmentBounds* bounds = &g_DiSegmentBounds[boundsIndex];
-            bounds->minX = segment->start.x < segment->end.x ? segment->start.x : segment->end.x;
-            bounds->maxX = segment->start.x < segment->end.x ? segment->end.x : segment->start.x;
-            bounds->minY = segment->start.y < segment->end.y ? segment->start.y : segment->end.y;
-            bounds->maxY = segment->start.y < segment->end.y ? segment->end.y : segment->start.y;
-            bounds->minZ = segment->start.z < segment->end.z ? segment->start.z : segment->end.z;
-            bounds->maxZ = segment->start.z < segment->end.z ? segment->end.z : segment->start.z;
+        const CZDisplayInstanceSegmentEndpoints* segment = segmentEndpoints;
+        for (int boundsIndex = 0; boundsIndex < segmentCount; ++boundsIndex, ++segment) {
+            const zVec3* start = &segment->start;
+            const zVec3* end = &segment->end;
+            if (start->x < end->x) {
+                g_DiSegmentBounds[boundsIndex].minX = start->x;
+                g_DiSegmentBounds[boundsIndex].maxX = end->x;
+            } else {
+                g_DiSegmentBounds[boundsIndex].minX = end->x;
+                g_DiSegmentBounds[boundsIndex].maxX = start->x;
+            }
+            if (start->y < end->y) {
+                g_DiSegmentBounds[boundsIndex].minY = start->y;
+                g_DiSegmentBounds[boundsIndex].maxY = end->y;
+            } else {
+                g_DiSegmentBounds[boundsIndex].minY = end->y;
+                g_DiSegmentBounds[boundsIndex].maxY = start->y;
+            }
+            if (start->z < end->z) {
+                g_DiSegmentBounds[boundsIndex].minZ = start->z;
+                g_DiSegmentBounds[boundsIndex].maxZ = end->z;
+            } else {
+                g_DiSegmentBounds[boundsIndex].minZ = end->z;
+                g_DiSegmentBounds[boundsIndex].maxZ = start->z;
+            }
+
+            // Retail tests the first segment's bounds (g_DiSegmentBounds[0]) for every segment.
             if (worldData->clampQueriesToBounds == 0
                 && !(
-                    bounds->minX < worldData->worldMaxX && bounds->maxX >= worldData->originX
-                    && bounds->minZ <= worldData->originZ && bounds->maxZ > worldData->worldMaxZ
+                    g_DiSegmentBounds[0].minX < worldData->worldMaxX && g_DiSegmentBounds[0].maxX >= worldData->originX
+                    && g_DiSegmentBounds[0].minZ <= worldData->originZ
+                    && g_DiSegmentBounds[0].maxZ > worldData->worldMaxZ
                 )) {
                 segmentActive[boundsIndex] = 0;
             } else {
@@ -2770,7 +2820,7 @@ namespace CZDisplayInstance
         }
 
         if (anyActive != 0) {
-            zMat4x3 slotBuffer = { 0 };
+            zMat4x3 slotBuffer;
             zMath::MatStackPushPtr((float*)(&slotBuffer));
             zMath::MatLoadIdentity();
 
@@ -2779,15 +2829,16 @@ namespace CZDisplayInstance
             g_DiPickPointCount = segmentCount;
 
             BuildPickCandidatesForSegmentsInGridWindow(world, segmentActive);
-            for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
-                CZNodePartial* node = world->listB[worldNodeIndex];
-                if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0
-                    && VariantTag::CurrentAllowsId(node->nodeType) != 0) {
-                    BuildPickCandidatesForSegmentsRecursive(node, world->listCountB + 1, segmentActive);
-                }
-
-                if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                    break;
+            if (world->listCountB > 0) {
+                for (int worldNodeIndex = 0; worldNodeIndex < world->listCountB; ++worldNodeIndex) {
+                    CZNodePartial* node = world->listB[worldNodeIndex];
+                    if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0
+                        && VariantTag::CurrentAllowsId(node->nodeType) != 0) {
+                        BuildPickCandidatesForSegmentsRecursive(node, world->listCountB + 1, segmentActive);
+                        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -2939,29 +2990,27 @@ namespace CZDisplayInstance
      */
     int __fastcall BuildPickCandidatesForSegmentsRecursive(CZNodePartial * node, int nodeCountHint, int* activeMask)
     {
-        int nodeFlags = node->flags;
-        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+        if ((node->flags & kNodeFlagEnabledForPick) == 0) {
             return 1;
         }
-        if ((nodeFlags & kNodeFlagRaycastable) == 0) {
+        if ((node->flags & kNodeFlagRaycastable) == 0) {
             return 1;
         }
-        if ((g_cls_di_StopAfterFirstHit & nodeFlags) != 0) {
+        if ((g_cls_di_StopAfterFirstHit & node->flags) != 0) {
             return 1;
         }
         if (VariantTag::CurrentAllowsId(node->nodeType) == 0) {
             return 1;
         }
 
-        nodeFlags &= ~kNodeFlagClearDuringPick;
-        node->flags = nodeFlags;
+        node->flags &= ~kNodeFlagClearDuringPick;
+        const int nodeFlags = node->flags;
 
+        int result; // Unset for sound nodes (retail returns the stale slot).
         switch (node->classId) {
         case kNodeClassObject3D: {
-            int localActive[24];
-            for (int activeIndex = 0; activeIndex < g_DiPickPointCount; ++activeIndex) {
-                localActive[activeIndex] = activeMask[activeIndex];
-            }
+            int localActive[12];
+            memcpy(localActive, activeMask, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
@@ -2973,21 +3022,25 @@ namespace CZDisplayInstance
             }
 
             CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(node->classData);
-            int pushedMatrix = 0;
+            int pushedMatrix;
             if ((objectData->flags & kObjectFlagNoPickMatrixPush) == 0) {
                 pushedMatrix = 1;
-                if ((node->flags & kNodeFlagUseLocalMatrixMode3) == 0) {
-                    zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
-                } else if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) == 0) {
-                    zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                if ((node->flags & kNodeFlagUseLocalMatrixMode3) != 0) {
+                    if ((objectData->flags & kObjectFlagUseCachedWorldMatrix) != 0) {
+                        zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
+                        zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
+                        if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
+                            objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
+                        }
+                    } else {
+                        zMath::MatStackPushPtr(objectData->cachedWorldMatrix);
+                    }
                 } else {
                     zMath::MatStackPushAndCloneParent(objectData->cachedWorldMatrix);
-                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 1);
-                    if ((objectData->flags & kObjectFlagTransformDirty) == 0) {
-                        objectData->flags &= ~kObjectFlagUseCachedWorldMatrix;
-                    }
+                    zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), 3);
                 }
+            } else {
+                pushedMatrix = 0;
             }
 
             zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
@@ -3001,14 +3054,15 @@ namespace CZDisplayInstance
                     g_DiPickCandidateBuffer
                 );
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+                && node->listCountB > 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                     CZNodePartial* child = node->listB[childIndex];
                     if ((child->flags & kNodeFlagEnabledForPick) != 0 && (child->flags & kNodeFlagRaycastable) != 0) {
                         BuildPickCandidatesForSegmentsRecursive(child, node->listCountB, localActive);
-                    }
-                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                        break;
+                        if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
+                            break;
+                        }
                     }
                 }
             }
@@ -3020,14 +3074,12 @@ namespace CZDisplayInstance
 
         case kNodeClassLod: {
             CZLodDataPartial* lodData = (CZLodDataPartial*)(node->classData);
-            if (lodData->nearRangeSq > 5.0f) {
+            if (lodData->nearRangeSq > 5.0) {
                 return 1;
             }
 
-            int localActive[24];
-            for (int activeIndex = 0; activeIndex < g_DiPickPointCount; ++activeIndex) {
-                localActive[activeIndex] = activeMask[activeIndex];
-            }
+            int localActive[12];
+            memcpy(localActive, activeMask, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
@@ -3053,10 +3105,8 @@ namespace CZDisplayInstance
                 return 1;
             }
 
-            int localActive[24];
-            for (int activeIndex = 0; activeIndex < g_DiPickPointCount; ++activeIndex) {
-                localActive[activeIndex] = activeMask[activeIndex];
-            }
+            int localActive[12];
+            memcpy(localActive, activeMask, (size_t)(g_DiPickPointCount) * sizeof(int));
             if (nodeCountHint > 1 || (nodeFlags & kNodeFlagPointCandidate) != 0) {
                 const int result = FrustumTestAndPick(node, localActive);
                 if (result != 0) {
@@ -3067,11 +3117,12 @@ namespace CZDisplayInstance
                 }
             }
 
-            return BuildPickCandidatesForSegmentsRecursive(
+            const int childResult = BuildPickCandidatesForSegmentsRecursive(
                 sequenceData->entries[sequenceData->currentIndex].node,
                 node->listCountB,
                 localActive
             );
+            return childResult;
         }
 
         case kNodeClassAnimate:
@@ -3080,11 +3131,13 @@ namespace CZDisplayInstance
         case kNodeClassCamera: {
             zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
             CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(node->classData);
-            int pushedMatrix = 0;
+            int pushedMatrix;
             if ((nodeFlags & kNodeFlagEnabledForPick) != 0) {
                 pushedMatrix = 1;
                 zMath::MatStackPushAndCloneParent(cameraData->worldTransform);
                 zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
+            } else {
+                pushedMatrix = 0;
             }
 
             zModel_PickFaceData* faceData = (zModel_PickFaceData*)((unsigned int)(node->userDataOrDiRef));
@@ -3098,7 +3151,8 @@ namespace CZDisplayInstance
                     g_DiPickCandidateBuffer
                 );
             }
-            if (g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0) {
+            if ((g_cls_di_BreakOnFirstCandidate == 0 || g_DiPickCandidateBuffer->candidateCount <= 0)
+                && node->listCountB > 0) {
                 for (int childIndex = 0; childIndex < node->listCountB; ++childIndex) {
                     BuildPickCandidatesForSegmentsRecursive(node->listB[childIndex], node->listCountB, activeMask);
                     if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
@@ -3116,7 +3170,7 @@ namespace CZDisplayInstance
             return BuildPickCandidatesForSegmentsForLight(node, nodeCountHint, activeMask);
 
         case kNodeClassSound:
-            return (int)((unsigned int)(activeMask));
+            break;
 
         default:
             zError::ReportOld(
@@ -3127,8 +3181,11 @@ namespace CZDisplayInstance
                 node,
                 node->classId
             );
-            return 3;
+            result = 3;
+            break;
         }
+
+        return result;
     }
 
     /**
@@ -3280,24 +3337,28 @@ namespace CZDisplayInstance
             return 5;
         }
 
-        if (*g_CZTypeList_HeadSlotPtrs[0] != 0) {
+        if (g_CZTypeList_Buckets[7].head != 0) {
             CZTypeList::UpdateQueuedTrees();
         }
 
         outHitList->hitCount = 0;
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
 
-        int minCol = 0;
-        int startRow = 0;
-        int maxCol = 0;
-        int endRow = 0;
-        int result
-            = CZWorld::WorldToGridCoordsClamped(world, &minCol, center->x - radius, center->z + radius, &startRow);
+        const float minX = center->x - radius;
+        const float maxZ = center->z + radius;
+        const float minZ = center->z - radius;
+        const float maxX = center->x + radius;
+
+        int minCol;
+        int startRow;
+        int result = CZWorld::WorldToGridCoordsClamped(world, &minCol, minX, maxZ, &startRow);
         if (result != 0) {
             return result;
         }
 
-        result = CZWorld::WorldToGridCoordsClamped(world, &maxCol, center->x + radius, center->z - radius, &endRow);
+        int maxCol;
+        int endRow;
+        result = CZWorld::WorldToGridCoordsClamped(world, &maxCol, maxX, minZ, &endRow);
         if (result != 0) {
             return result;
         }
@@ -3310,11 +3371,11 @@ namespace CZDisplayInstance
         g_CZDisplayInstance_FilterRegions_OutHitList = outHitList;
 
         for (int row = startRow; row <= endRow; ++row) {
-            for (int col = minCol; col <= maxCol; ++col) {
-                zWorldAreaPartial* area = &worldData->areaGridRows[row][col];
+            zWorldAreaPartial* area = &worldData->areaGridRows[row][minCol];
+            for (int col = minCol; col <= maxCol; ++col, ++area) {
                 for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
                     CZNodePartial* node = area->childList[childIndex];
-                    if (outHitList->hitCount >= kMaxPickCandidates) {
+                    if (g_CZDisplayInstance_FilterRegions_OutHitList->hitCount >= kMaxPickCandidates) {
                         zError::ReportOld(
                             0x200,
                             "D:\\Proj\\GameZRecoil\\zClass\\cls_di.c",
@@ -3325,8 +3386,13 @@ namespace CZDisplayInstance
                     }
 
                     int nodeFlags = node->flags;
-                    if ((nodeFlags & kNodeFlagEnabledForPick) == 0 || (nodeFlags & kNodeFlagFilterRegionCandidate) == 0
-                        || VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+                    if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+                        continue;
+                    }
+                    if ((nodeFlags & kNodeFlagFilterRegionCandidate) == 0) {
+                        continue;
+                    }
+                    if (VariantTag::CurrentAllowsId(node->nodeType) == 0) {
                         continue;
                     }
                     const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
@@ -3350,10 +3416,11 @@ namespace CZDisplayInstance
                     zBBoxCorners corners;
                     CZBBox::ExpandToCorners(&bbox, &corners);
 
-                    zMat4x3 slotBuffer = { 0 };
+                    zMat4x3 slotBuffer;
                     zMath::MatStackPushPtr((float*)(&slotBuffer));
                     zMath::MatLoadIdentity();
-                    if (CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1) != 0) {
+                    result = CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
+                    if (result != 0) {
                         zMath::MatStackPopPtr();
                         continue;
                     }
@@ -3361,53 +3428,56 @@ namespace CZDisplayInstance
                     zMath::MatStackPopPtr();
 
                     zVec3 boundsCenter;
-                    float boundsRadius = 0.0f;
+                    float boundsRadius;
                     CZBBox::CornersToBoundingSphere(&corners, &boundsCenter, &boundsRadius);
-                    float distanceSq = 0.0f;
+                    float distanceSq;
                     if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck != 0) {
-                        float clearance
+                        const float clearance
                             = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, &boundsCenter)
                             - boundsRadius;
-                        if (clearance > 0.0f) {
+                        if (clearance < 0.0f) {
+                            distanceSq = 0.0f;
+                        } else {
                             distanceSq = clearance * clearance;
                         }
-                    }
-                    if (distanceSq > g_CZDisplayInstance_FilterRegions_RadiusSq) {
-                        continue;
+                        if (distanceSq > g_CZDisplayInstance_FilterRegions_RadiusSq) {
+                            continue;
+                        }
+                    } else {
+                        distanceSq = 0.0f;
                     }
 
-                    int lineOfSightBlocked = 0;
-                    CZNodePartial* lineOfSightWorld = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
-                    if (lineOfSightWorld != 0 && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
-                        PlayerProbeSampleCandidateBuffer rayData = { 0 };
+                    if (g_CZDisplayInstance_FilterRegions_LineOfSightWorld != 0
+                        && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
+                        PlayerProbeSampleCandidateBuffer rayData;
                         CZDisplayInstance::SetBreakOnFirstCandidate(1);
                         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
                         CZClass::gwNodeSetRaycastable(node, 0);
-                        zVec3* queryCenter = g_CZDisplayInstance_FilterRegions_Center;
                         const int rayResult = CZDisplayInstance::RaycastFindClosest(
-                            lineOfSightWorld,
+                            g_CZDisplayInstance_FilterRegions_LineOfSightWorld,
                             &rayData,
-                            queryCenter->x,
-                            queryCenter->y,
-                            queryCenter->z,
+                            g_CZDisplayInstance_FilterRegions_Center->x,
+                            g_CZDisplayInstance_FilterRegions_Center->y,
+                            g_CZDisplayInstance_FilterRegions_Center->z,
                             boundsCenter.x,
                             boundsCenter.y,
                             boundsCenter.z
                         );
                         CZClass::gwNodeSetRaycastable(node, 1);
                         CZDisplayInstance::SetBreakOnFirstCandidate(0);
-                        lineOfSightBlocked = rayResult == 0 && rayData.candidateCount != 0;
-                    }
-                    if (lineOfSightBlocked != 0) {
-                        continue;
+                        if (rayResult == 0 && rayData.candidateCount != 0) {
+                            continue;
+                        }
                     }
 
-                    OptCatalogRaycastHitEntry* entry = &outHitList->hits[outHitList->hitCount];
+                    OptCatalogRaycastHitEntry* entry
+                        = &g_CZDisplayInstance_FilterRegions_OutHitList
+                               ->hits[g_CZDisplayInstance_FilterRegions_OutHitList->hitCount];
                     entry->hitNode = node;
                     entry->pos = boundsCenter;
                     entry->surfaceRef = 0;
                     entry->distance = distanceSq;
-                    ++outHitList->hitCount;
+                    ++g_CZDisplayInstance_FilterRegions_OutHitList->hitCount;
                 }
             }
         }
@@ -3485,8 +3555,13 @@ namespace CZDisplayInstance
         }
 
         int nodeFlags = node->flags;
-        if ((nodeFlags & kNodeFlagEnabledForPick) == 0 || (nodeFlags & kNodeFlagFilterRegionCandidate) == 0
-            || VariantTag::CurrentAllowsId(node->nodeType) == 0) {
+        if ((nodeFlags & kNodeFlagEnabledForPick) == 0) {
+            return 1;
+        }
+        if ((nodeFlags & kNodeFlagFilterRegionCandidate) == 0) {
+            return 1;
+        }
+        if (VariantTag::CurrentAllowsId(node->nodeType) == 0) {
             return 1;
         }
         const char* prefix = g_CZDisplayInstance_FilterRegions_NodeNamePrefix;
@@ -3539,7 +3614,7 @@ namespace CZDisplayInstance
         vertices[7].y = bbox.max.y;
         vertices[7].z = bbox.min.z;
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
         const int matrixResult = CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
@@ -3552,34 +3627,37 @@ namespace CZDisplayInstance
         zMath::MatStackPopPtr();
 
         zVec3 boundsCenter;
-        float boundsRadius = 0.0f;
+        float boundsRadius;
         CZBBox::CornersToBoundingSphere(&corners, &boundsCenter, &boundsRadius);
 
-        float distanceSq = 0.0f;
+        float distanceSq;
         if (g_CZDisplayInstance_FilterRegions_EnableClearanceCheck != 0) {
-            float clearance
+            const float clearance
                 = zMath::Vec3DeltaLength(g_CZDisplayInstance_FilterRegions_Center, &boundsCenter) - boundsRadius;
-            if (clearance > 0.0f) {
+            if (clearance < 0.0f) {
+                distanceSq = 0.0f;
+            } else {
                 distanceSq = clearance * clearance;
             }
-        }
-        if (distanceSq > g_CZDisplayInstance_FilterRegions_RadiusSq) {
-            return 1;
+            if (distanceSq > g_CZDisplayInstance_FilterRegions_RadiusSq) {
+                return 1;
+            }
+        } else {
+            distanceSq = 0.0f;
         }
 
-        CZNodePartial* lineOfSightWorld = g_CZDisplayInstance_FilterRegions_LineOfSightWorld;
-        if (lineOfSightWorld != 0 && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
-            PlayerProbeSampleCandidateBuffer rayData = { 0 };
+        if (g_CZDisplayInstance_FilterRegions_LineOfSightWorld != 0
+            && (node->flags & kNodeFlagRequiresLineOfSight) != 0) {
+            PlayerProbeSampleCandidateBuffer rayData;
             CZDisplayInstance::SetBreakOnFirstCandidate(1);
             CZDisplayInstance::SetStopAfterFirstHit(0x40000);
             CZClass::gwNodeSetRaycastable(node, 0);
-            zVec3* queryCenter = g_CZDisplayInstance_FilterRegions_Center;
             const int rayResult = CZDisplayInstance::RaycastFindClosest(
-                lineOfSightWorld,
+                g_CZDisplayInstance_FilterRegions_LineOfSightWorld,
                 &rayData,
-                queryCenter->x,
-                queryCenter->y,
-                queryCenter->z,
+                g_CZDisplayInstance_FilterRegions_Center->x,
+                g_CZDisplayInstance_FilterRegions_Center->y,
+                g_CZDisplayInstance_FilterRegions_Center->z,
                 boundsCenter.x,
                 boundsCenter.y,
                 boundsCenter.z
@@ -3591,13 +3669,13 @@ namespace CZDisplayInstance
             }
         }
 
-        OptCatalogRaycastHitList* hitList = g_CZDisplayInstance_FilterRegions_OutHitList;
-        OptCatalogRaycastHitEntry* entry = &hitList->hits[hitList->hitCount];
+        OptCatalogRaycastHitEntry* entry = &g_CZDisplayInstance_FilterRegions_OutHitList
+                                                ->hits[g_CZDisplayInstance_FilterRegions_OutHitList->hitCount];
         entry->hitNode = node;
         entry->pos = boundsCenter;
         entry->surfaceRef = 0;
         entry->distance = distanceSq;
-        ++hitList->hitCount;
+        ++g_CZDisplayInstance_FilterRegions_OutHitList->hitCount;
         return 0;
     }
 

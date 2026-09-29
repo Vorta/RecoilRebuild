@@ -3571,14 +3571,14 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
 {
     (void)userData;
 
+    int mineCount = 0;
     PlayerMineSaveEntry data;
     data.resetMarker = 1;
     strncpy(data.ownerNodeName, "Dummy", 0x24);
 
     int writeOk = zUtil_ZAR::WriteSectionBlob(writer, "DummyMineData", &data, 0x60);
-    int mineCount = 0;
-    for (int bankIndex = 4; writeOk != 0 && bankIndex < 6; ++bankIndex) {
-        for (int sideIndex = 0; writeOk != 0 && sideIndex < 2; ++sideIndex) {
+    for (int bankIndex = 4; bankIndex < 6 && writeOk != 0; ++bankIndex) {
+        for (int sideIndex = 0; sideIndex < 2 && writeOk != 0; ++sideIndex) {
             OptCatalogEntryDef* const entry
                 = (&((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->altWeaponBanks[bankIndex].controllerA
                     + sideIndex)
@@ -3596,8 +3596,7 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
                 strncpy(data.ownerNodeName, CZClass::gwNodeGetName(runtime->ownerNode), 0x24);
 
                 char blobToken[0x14];
-                sprintf(blobToken, "MineData%03d", mineCount);
-                ++mineCount;
+                sprintf(blobToken, "MineData%03d", mineCount++);
                 writeOk = zUtil_ZAR::WriteSectionBlob(writer, blobToken, &data, 0x60);
                 runtime = OptCatalog_MineIterator::Next();
             }

@@ -88,7 +88,7 @@ namespace zEffect
         zReader::Node* const rootNode = zReader::Load(path, 0, 0);
         g_zEffect_RuntimeManager.loadedTemplateTree = (CZNodePartial*)(rootNode);
         if (rootNode == 0) {
-            fprintf(stderr, g_zEffect_ReadFieldFailedFmt, kZeffInitSourceFile, 0xd8, path);
+            fprintf(stderr, g_zEffect_ReadFieldFailedFmt, g_zEffect_SourceFile_ZeffInitC, 0xd8, path);
             return -1;
         }
 
@@ -100,6 +100,7 @@ namespace zEffect
         g_zEffect_RuntimeManager.listenerNode = cameraNode;
 
         for (int i = 0; i < g_zEffect_RuntimeManager.templateCount; ++i) {
+            float textureSpeed = 0.0f;
             zReader::Node* const effectNode = &effectsNode->value.nodes[i + 1];
             zReader::Node* const mapsNode = zRdrGetNode(effectNode, g_zEffect_TokenMaps);
             zEffect_RuntimeEntry* const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
@@ -113,7 +114,7 @@ namespace zEffect
                 fprintf(
                     stderr,
                     g_zEffect_NodeLookupFailedFmt,
-                    kZeffInitSourceFile,
+                    g_zEffect_SourceFile_ZeffInitC,
                     0xf3,
                     runtimeEntry->modelNodeName,
                     runtimeEntry->effectName
@@ -125,7 +126,7 @@ namespace zEffect
             if (gfxData == 0) {
                 zError::ReportOld(
                     0x400,
-                    kZeffInitSourceFile,
+                    g_zEffect_SourceFile_ZeffInitC,
                     0xfb,
                     g_zEffect_FailedToFindGfxDataFmt,
                     runtimeEntry->modelNodeName
@@ -144,16 +145,15 @@ namespace zEffect
             const int textureCount = mapsNode->value.nodes->value.i32 - 1;
             zDi::SetCurrentVariantCycleTextureCount(displayInstance, textureCount);
 
-            float textureSpeed = 0.0f;
             zReader::GetFloat(effectNode, g_zEffectAnim_TokenSpeed, &textureSpeed);
             zDi::SetCurrentVariantCycleTextureSpeed(displayInstance, textureSpeed);
 
             zReader::Node* const loopingNode = zRdrGetNode(effectNode, g_zEffectAnim_TokenLooping);
             if (loopingNode != 0) {
-                const char* const loopingText = loopingNode->type == zReader::ZRDR_NODE_ARRAY
-                    ? loopingNode->value.nodes[1].value.str
-                    : loopingNode->value.str;
-                zModel_Instance::SetCycleTextureLoop(displayInstance, strcmp(loopingText, "ON") == 0 ? 1 : 0);
+                zModel_Instance::SetCycleTextureLoop(
+                    displayInstance,
+                    strcmp(loopingNode->value.nodes[1].value.str, "ON") == 0 ? 1 : 0
+                );
             }
 
             {

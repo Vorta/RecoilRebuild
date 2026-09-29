@@ -287,7 +287,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.loadactivationrecords
      * @recoil-artifact defines .text recoil:function:0x4606d0: zEffect_Anim::LoadActivationRecords.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: restore queued activation records, activation states, tracked-node
@@ -321,12 +321,10 @@ namespace zEffect_Anim
             }
         }
 
-        if (record->base.nodeToken >= 0 && entry != 0) {
+        if (record->base.nodeToken >= 0) {
             CZNodePartial* const rootNode = CZZbd::NodeIndexToPtr(record->base.nodeToken);
-            zEffectAnimEntry* sibling = entry->runtimeSibling;
-            while (sibling != 0 && entry->boundNode != rootNode) {
-                entry = sibling;
-                sibling = entry->runtimeSibling;
+            while (entry->runtimeSibling != 0 && entry->boundNode != rootNode) {
+                entry = entry->runtimeSibling;
             }
 
             NodeActionCallback(entry, rootNode);
@@ -338,8 +336,7 @@ namespace zEffect_Anim
         }
 
         entry->flags |= 0x4000u;
-        const unsigned char savedState = record->savedActivationState;
-        if (savedState == 2) {
+        if (record->savedActivationState == 2) {
             if (entry->activationState != 2) {
                 NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
                 entry = ProcessActivationRecord(&record->base);
@@ -349,13 +346,12 @@ namespace zEffect_Anim
                     0x1b6,
                     g_zEffectAnim_ProcessActivationRecordName
                 );
-            }
-            if (record->base.nodeToken == -1) {
+            } else if (record->base.nodeToken == -1) {
                 memcpy(AllocActivationRecord(), &record->base, sizeof(zEffectAnimActivationRecord));
             }
         }
 
-        if (savedState == 3) {
+        if (record->savedActivationState == 3) {
             if (entry->activationState != 3) {
                 zEffectAnim::Stop(entry);
                 entry->activationState = 3;
@@ -366,12 +362,13 @@ namespace zEffect_Anim
             zError::ReportOld(0x100, g_zEffect_SourceFile_ZeffAnimSaveC, 0x1c9, g_zEffectAnim_StateExecutedMsg);
         }
 
-        if (savedState == 1) {
+        if (record->savedActivationState == 1) {
             if (entry->activationState != 1) {
+                CZNodePartial* const node = CZZbd::NodeIndexToPtr(record->base.nodeToken);
                 if (entry->activationState == 4) {
                     entry->activationState = 3;
                 }
-                NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
+                NodeActionCallback(entry, node);
                 zError::ReportOld(0x100, g_zEffect_SourceFile_ZeffAnimSaveC, 0x1d3, g_zEffectAnim_ResetFunctionName);
             }
             if (record->base.nodeToken == -1) {
@@ -379,26 +376,28 @@ namespace zEffect_Anim
             }
         }
 
-        if (savedState == 6) {
+        if (record->savedActivationState == 6) {
             if (entry->activationState != 6) {
+                CZNodePartial* const node = CZZbd::NodeIndexToPtr(record->base.nodeToken);
                 if (entry->activationState == 4) {
                     entry->activationState = 3;
+                    NodeActionCallback(entry, node);
+                    entry = ProcessActivationRecord(&record->base);
+                    zError::ReportOld(
+                        0x100,
+                        g_zEffect_SourceFile_ZeffAnimSaveC,
+                        0x1e4,
+                        g_zEffectAnim_ProcessActivationRecordName
+                    );
+                } else if (record->base.nodeToken == -1) {
+                    memcpy(AllocActivationRecord(), &record->base, sizeof(zEffectAnimActivationRecord));
                 }
-                NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
-                entry = ProcessActivationRecord(&record->base);
-                zError::ReportOld(
-                    0x100,
-                    g_zEffect_SourceFile_ZeffAnimSaveC,
-                    0x1e4,
-                    g_zEffectAnim_ProcessActivationRecordName
-                );
-            }
-            if (record->base.nodeToken == -1) {
+            } else if (record->base.nodeToken == -1) {
                 memcpy(AllocActivationRecord(), &record->base, sizeof(zEffectAnimActivationRecord));
             }
         }
 
-        if (savedState == 4) {
+        if (record->savedActivationState == 4) {
             if (entry->activationState != 4) {
                 zEffectAnim::Stop(entry);
                 entry->activationState = 4;
@@ -450,10 +449,13 @@ namespace zEffect_Anim
                 }
             }
 
-            if (node->userDataOrDiRef != 0 && (tracked->diFlagBits & 1) != 0) {
-                unsigned int* const di = (unsigned int*)(node->userDataOrDiRef);
-                di[1] = (di[1] & ~0x08u) | 0x08u;
-                di[8] = (unsigned int)(tracked->diUserValue);
+            if (node->userDataOrDiRef != 0) {
+                const int diFlag = tracked->diFlagBits & 1;
+                if (diFlag != 0) {
+                    unsigned int* const di = (unsigned int*)(node->userDataOrDiRef);
+                    di[1] = (di[1] & ~0x08u) | (unsigned int)(diFlag << 3);
+                    ((unsigned int*)(node->userDataOrDiRef))[8] = (unsigned int)(tracked->diUserValue);
+                }
             }
         }
     }

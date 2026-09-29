@@ -4115,17 +4115,12 @@ namespace zRndr
         zVideo::PixelPackGetRgbMasks(&g_pixelPackRedMask, &g_pixelPackGreenMask, &g_pixelPackBlueMask);
         zVideo::PixelPackGetPackingParams(&g_pixelPackRedShift, &g_pixelPackGreenShift, &g_pixelPackBlueShift);
 
-        if (g_graphicsFlags != 0) {
-            *g_graphicsFlags &= ~4;
+        *g_graphicsFlags &= ~4;
+        if ((*g_graphicsFlags & 8) != 0) {
+            SetPerspectiveAdaptiveSpanParams(0x10, 0x40, 0.100000001f);
+        } else {
+            SetPerspectiveAdaptiveSpanParams(0x20, 0x200, 0.100000001f);
         }
-
-        const int graphicsFlags = g_graphicsFlags != 0 ? *g_graphicsFlags : 0;
-        const bool useShortAdaptiveSpans = (graphicsFlags & 8) != 0;
-        SetPerspectiveAdaptiveSpanParams(
-            useShortAdaptiveSpans ? 0x10 : 0x20,
-            useShortAdaptiveSpans ? 0x40 : 0x200,
-            0.100000001f
-        );
 
         if (g_bytesPerPixel != 2) {
             return;
@@ -4140,7 +4135,7 @@ namespace zRndr
         g_pfnSelectedSpanOp_Mode0 = SpanMasked16FromTex16SwitchVShift;
         if (g_pixelPackGreenBits == 5) {
             g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndrFillSpan555Solid;
-            if ((graphicsFlags & 0x4) != 0) {
+            if ((*g_graphicsFlags & 0x4) != 0) {
                 g_pfnTexturedQueuedSpanOp_Mode0
                     = zSys::CheckCpuSignatureMask() != 0 ? SpanCopy16FromTex16ExplicitVShift : SpanCopy16FromTex16;
                 g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
@@ -4154,7 +4149,7 @@ namespace zRndr
             }
         } else {
             g_pfnFlatImmediateSpanOp = (FlatImmediateSpanProc)zRndrFillSpan565Solid;
-            if ((graphicsFlags & 0x4) != 0) {
+            if ((*g_graphicsFlags & 0x4) != 0) {
                 g_pfnTexturedQueuedSpanOp_Mode0
                     = zSys::CheckCpuSignatureMask() != 0 ? SpanCopy16FromTex16ExplicitVShift : SpanCopy16FromTex16;
                 g_pfnTexturedQueuedSpanOp_Mode1 = SpanCopy16FromPal8SwitchVShift;
@@ -4168,14 +4163,13 @@ namespace zRndr
             }
         }
 
-        if ((graphicsFlags & 0x4) != 0) {
+        if ((*g_graphicsFlags & 0x4) != 0) {
             SpanMmxSetPixelFormatMasks(g_pixelPackGreenBits);
         }
 
-        const bool transparentSpansEnabled = (graphicsFlags & 2) != 0;
-        if (transparentSpansEnabled) {
+        if ((*g_graphicsFlags & 2) != 0) {
             if (g_pixelPackGreenBits == 6) {
-                if ((graphicsFlags & 4) != 0) {
+                if ((*g_graphicsFlags & 4) != 0) {
                     g_pfnFlatQueuedSpanOp_Mode0 = SpanAlphaBlend565MmxFromTex16Alpha8;
                     g_pfnFlatQueuedSpanOpAlt_Mode0 = SpanAlphaBlend565MmxFromPal8Alpha8;
                 } else {
@@ -4190,7 +4184,7 @@ namespace zRndr
                 g_pfnPolyTlvSpanOp_Mode1 = SpanMasked16FromTex16To565;
                 g_pfnPolyTlvSpanOpAlt_Mode1 = SpanMasked16FromPal8To565;
             } else {
-                if ((graphicsFlags & 4) != 0) {
+                if ((*g_graphicsFlags & 4) != 0) {
                     g_pfnFlatQueuedSpanOp_Mode0 = SpanAlphaBlend555MmxFromTex16Alpha8;
                     g_pfnFlatQueuedSpanOpAlt_Mode0 = SpanAlphaBlend555MmxFromPal8Alpha8;
                 } else {
@@ -9331,9 +9325,9 @@ void __fastcall zRndrSubmitPolyWithSpanList(
             return;
         }
 
-        ++zRndr::g_overwriteQueueCount;
         zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-        cmd.hasClippedTriVerts = 0;
+        zRndr::g_overwriteQueueCount = queueIndex + 1;
+        cmd.commandTag = 0;
         memcpy(cmd.polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
         memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
         cmd.alphaOrShadeF = (float)(alpha255);
@@ -9490,19 +9484,20 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
 {
     const int kMaxQueuedPolys = 0x15e;
     const char* kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
+    zVec3 fanVerts[64];
+    float fanShade[64];
 
+    int usingDerivedPaletteKey = 0;
     zVidImagePartial* image = entry != 0 ? entry->image : 0;
     int texKey = g_zRndr_ActivePaletteRemapKey;
-    int usingDerivedPaletteKey = 0;
 
-    if (texKey == -1 && preservePaletteRemapKey == 0 && entry != 0 && entry->image->paletteMetaPacked > 0) {
+    if (texKey == -1 && preservePaletteRemapKey == 0 && entry->image->paletteMetaPacked > 0) {
         texKey = zVidPaletteRemapFindRecipeIndexFromRgb((zColorRgb*)(zRndr::g_fogParamsActive.colorRgb01));
         if (texKey >= 0) {
             int shadeBucket = (int)(perVertexAlphaOrShadeF[0] * 0.125f);
             if (shadeBucket > 0x1f) {
                 shadeBucket = 0x1f;
-            }
-            if (shadeBucket < 0) {
+            } else if (shadeBucket < 0) {
                 shadeBucket = 0;
             }
             texKey = (texKey << 5) + shadeBucket;
@@ -9533,8 +9528,8 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
             return;
         }
 
-        ++zRndr::g_overwriteQueueCount;
         zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
+        zRndr::g_overwriteQueueCount = queueIndex + 1;
         cmd.commandTag = usingDerivedPaletteKey != 0 ? 1 : 2;
         cmd.vertexCount = vertexCount;
         cmd.materialRef = entry;
@@ -9558,33 +9553,25 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
         return;
     }
 
+    fanVerts[0] = projectedPolyVerts[0];
+    fanShade[0] = perVertexAlphaOrShadeF[0];
     if ((image->formatFlagsPacked & 2) == 0) {
-        if (vertexCount - 2 <= 0) {
-            return;
-        }
-
-        zVec3 fanVerts[3];
-        zVec3 shadeTriplet;
-        fanVerts[0] = projectedPolyVerts[0];
-        shadeTriplet.x = perVertexAlphaOrShadeF[0];
-        {
-            for (int fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
-                fanVerts[1] = projectedPolyVerts[fanTriIndex + 1];
-                fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
-                shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
-                shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-                zRndrDrawTexturedQueued(
-                    entry,
-                    fanVerts,
-                    clippedTriVerts,
-                    triData9f,
-                    triUVs,
-                    &shadeTriplet,
-                    3,
-                    fanTriIndex,
-                    texKey
-                );
-            }
+        for (int fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
+            fanVerts[1] = projectedPolyVerts[fanTriIndex + 1];
+            fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
+            fanShade[1] = perVertexAlphaOrShadeF[fanTriIndex + 1];
+            fanShade[2] = perVertexAlphaOrShadeF[fanTriIndex + 2];
+            zRndrDrawTexturedQueued(
+                entry,
+                fanVerts,
+                clippedTriVerts,
+                triData9f,
+                triUVs,
+                (zVec3*)(fanShade),
+                3,
+                fanTriIndex,
+                texKey
+            );
         }
         return;
     }
@@ -9710,128 +9697,127 @@ void __cdecl zRndrFlushTransparentQueue()
  */
 void __cdecl zRndrFlushOverwriteQueue()
 {
+    zVec3 fanVerts[64];
+    float fanShade[64];
+
     zRndr::g_pfnBuildSpanList = zRndrSpanOcclusionInsertSpanNodeNoDepthTest;
     zRndr::g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanListFast;
 
-    {
-        for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
-            zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-            const int commandTag = cmd.commandTag;
-            zVec3* polyVerts = (zVec3*)(cmd.polyVerts);
-            zVec3* clippedTriVerts
-                = cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0;
-            zVec3* triVerts = (zVec3*)(cmd.triVerts);
-            zVec2* triUVs = (zVec2*)(cmd.triUVs);
-            float* perVertexAlphaOrShadeF = cmd.perVertexAlphaOrShadeF;
-            const int texKey = cmd.texKey;
+    for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
+        zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
+        zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
+        zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
+        zRndr::g_scanConvertMode = cmd.scanConvertMode;
 
-            zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
-            zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
-            zRndr::g_scanConvertMode = cmd.scanConvertMode;
+        int useFallback = 0;
+        zVidImagePartial* image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
+        switch (cmd.commandTag) {
+        case 0:
+            if (cmd.alphaOrShadeF >= 255.0f) {
+                zRndrRasterizePolyWithSpanList(
+                    (zVec3*)(cmd.polyVerts),
+                    (zVec3*)(cmd.triVerts),
+                    cmd.vertexCount,
+                    cmd.shadeOrSpanMode
+                );
+            } else {
+                useFallback = 1;
+            }
+            break;
 
-            zVidImagePartial* image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
-            bool useFallback = false;
-
-            switch (commandTag) {
-            case 0:
-                if (cmd.alphaOrShadeF >= 255.0f) {
-                    zRndrRasterizePolyWithSpanList(polyVerts, triVerts, cmd.vertexCount, cmd.shadeOrSpanMode);
-                } else {
-                    useFallback = true;
-                }
-                break;
-
-            case 1:
-                if ((image->formatFlagsPacked & 2) == 0) {
-                    if (cmd.alphaOrShadeF >= 1.0f) {
-                        zRndrDrawTexturedQueuedAlpha(
-                            cmd.materialRef,
-                            polyVerts,
-                            clippedTriVerts,
-                            triVerts,
-                            triUVs,
-                            cmd.vertexCount,
-                            texKey
-                        );
-                        break;
-                    }
-                    cmd.alphaOrShadeF *= 255.0f;
-                }
-                useFallback = true;
-                break;
-
-            case 2:
-                if ((image->formatFlagsPacked & 2) == 0) {
-                    if (cmd.vertexCount - 2 > 0) {
-                        zVec3 fanVerts[3];
-                        zVec3 shadeTriplet;
-                        fanVerts[0] = polyVerts[0];
-                        shadeTriplet.x = perVertexAlphaOrShadeF[0];
-                        for (int fanTriIndex = 0; fanTriIndex < cmd.vertexCount - 2; ++fanTriIndex) {
-                            fanVerts[1] = polyVerts[fanTriIndex + 1];
-                            fanVerts[2] = polyVerts[fanTriIndex + 2];
-                            shadeTriplet.y = perVertexAlphaOrShadeF[fanTriIndex + 1];
-                            shadeTriplet.z = perVertexAlphaOrShadeF[fanTriIndex + 2];
-                            zRndrDrawTexturedQueued(
-                                cmd.materialRef,
-                                fanVerts,
-                                clippedTriVerts,
-                                triVerts,
-                                triUVs,
-                                &shadeTriplet,
-                                3,
-                                fanTriIndex,
-                                texKey
-                            );
-                        }
-                    }
-                } else {
-                    cmd.alphaOrShadeF = 255.0f;
-                    useFallback = true;
-                }
+        case 1:
+            if ((image->formatFlagsPacked & 2) == 0 && cmd.alphaOrShadeF >= 1.0f) {
+                zRndrDrawTexturedQueuedAlpha(
+                    cmd.materialRef,
+                    (zVec3*)(cmd.polyVerts),
+                    cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
+                    (zVec3*)(cmd.triVerts),
+                    (zVec2*)(cmd.triUVs),
+                    cmd.vertexCount,
+                    cmd.texKey
+                );
                 break;
             }
-
-            if (!useFallback) {
-                continue;
+            if ((image->formatFlagsPacked & 2) == 0) {
+                cmd.alphaOrShadeF *= 255.0f;
             }
+            useFallback = 1;
+            break;
 
-            if (image != 0) {
-                if ((image->formatFlagsPacked & 2) != 0) {
-                    if (cmd.alphaOrShadeF >= 1.0f) {
-                        zRndrDrawFlatQueued(cmd.materialRef, polyVerts, triVerts, triUVs, cmd.vertexCount, texKey);
-                    } else {
-                        RendererDrawPolyTLV(
-                            cmd.materialRef,
-                            polyVerts,
-                            triVerts,
-                            triUVs,
-                            cmd.vertexCount,
-                            cmd.alphaOrShadeF,
-                            texKey
-                        );
-                    }
-                } else {
-                    zRndrDrawTexturedFanTri(
+        case 2:
+            fanVerts[0] = ((zVec3*)(cmd.polyVerts))[0];
+            fanShade[0] = cmd.perVertexAlphaOrShadeF[0];
+            if ((image->formatFlagsPacked & 2) == 0) {
+                for (int fanTriIndex = 0; fanTriIndex < cmd.vertexCount - 2; ++fanTriIndex) {
+                    fanVerts[1] = ((zVec3*)(cmd.polyVerts))[fanTriIndex + 1];
+                    fanVerts[2] = ((zVec3*)(cmd.polyVerts))[fanTriIndex + 2];
+                    fanShade[1] = cmd.perVertexAlphaOrShadeF[fanTriIndex + 1];
+                    fanShade[2] = cmd.perVertexAlphaOrShadeF[fanTriIndex + 2];
+                    zRndrDrawTexturedQueued(
                         cmd.materialRef,
-                        polyVerts,
-                        clippedTriVerts,
-                        triVerts,
-                        triUVs,
-                        cmd.vertexCount,
-                        (int)(cmd.alphaOrShadeF),
-                        texKey
+                        fanVerts,
+                        cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
+                        (zVec3*)(cmd.triVerts),
+                        (zVec2*)(cmd.triUVs),
+                        (zVec3*)(fanShade),
+                        3,
+                        fanTriIndex,
+                        cmd.texKey
                     );
                 }
             } else {
-                zRndrDrawFlatImmediate(
-                    polyVerts,
-                    triVerts,
+                cmd.alphaOrShadeF = 255.0f;
+                useFallback = 1;
+            }
+            break;
+        }
+
+        if (useFallback == 0) {
+            continue;
+        }
+
+        if (image != 0) {
+            if ((image->formatFlagsPacked & 2) != 0) {
+                if (cmd.alphaOrShadeF >= 1.0f) {
+                    zRndrDrawFlatQueued(
+                        cmd.materialRef,
+                        (zVec3*)(cmd.polyVerts),
+                        (zVec3*)(cmd.triVerts),
+                        (zVec2*)(cmd.triUVs),
+                        cmd.vertexCount,
+                        cmd.texKey
+                    );
+                } else {
+                    RendererDrawPolyTLV(
+                        cmd.materialRef,
+                        (zVec3*)(cmd.polyVerts),
+                        (zVec3*)(cmd.triVerts),
+                        (zVec2*)(cmd.triUVs),
+                        cmd.vertexCount,
+                        cmd.alphaOrShadeF,
+                        cmd.texKey
+                    );
+                }
+            } else {
+                zRndrDrawTexturedFanTri(
+                    cmd.materialRef,
+                    (zVec3*)(cmd.polyVerts),
+                    cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
+                    (zVec3*)(cmd.triVerts),
+                    (zVec2*)(cmd.triUVs),
                     cmd.vertexCount,
                     (int)(cmd.alphaOrShadeF),
-                    cmd.shadeOrSpanMode
+                    cmd.texKey
                 );
             }
+        } else {
+            zRndrDrawFlatImmediate(
+                (zVec3*)(cmd.polyVerts),
+                (zVec3*)(cmd.triVerts),
+                cmd.vertexCount,
+                (int)(cmd.alphaOrShadeF),
+                cmd.shadeOrSpanMode
+            );
         }
     }
 

@@ -3054,79 +3054,62 @@ int __fastcall Intersect2d(
     zVec3 edge1End
 )
 {
+    zGeometry_WeilerXingPartial* createdXing = 0;
     int xingType = zGeometry_Weiler::ClassifyIntersect2d(&edge0Start, &edge0End, &edge1Start, &edge1End, self);
 
-    zGeometry_WeilerXingPartial* createdXing = 0;
-    if ((unsigned int)(xingType) <= 0x17) {
-        switch (kIntersect2dOutputKindByXingType[xingType]) {
-        case 1: {
+    {
+        switch (xingType) {
+        case 4:
+        case 5: {
             const double edge1ReverseDeltaX = (double)(edge1Start.x) - (double)(edge1End.x);
             const double edge1ReverseDeltaY = (double)(edge1Start.y) - (double)(edge1End.y);
             const double edge0DeltaX = (double)(edge0End.x) - (double)(edge0Start.x);
             const double edge0DeltaY = (double)(edge0End.y) - (double)(edge0Start.y);
             const double divisor = edge1ReverseDeltaY * edge0DeltaX - edge1ReverseDeltaX * edge0DeltaY;
 
-            if (divisor == 0.0) {
-                xingType = 0;
-                break;
-            }
+            if (divisor != 0.0) {
+                createdXing
+                    = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
+                if (createdXing == 0) {
+                    fprintf(
+                        stderr,
+                        g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                        0x1301
+                    );
+                    return 1;
+                }
 
-            createdXing
-                = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
-            const double edge0Param = (((double)(edge1Start.x) - (double)(edge0Start.x)) * edge1ReverseDeltaY
-                                          + ((double)(edge1Start.y) - (double)(edge0Start.y)) * -edge1ReverseDeltaX)
-                / divisor;
-            createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
-            createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
+                const double edge0Param = (((double)(edge1Start.x) - (double)(edge0Start.x)) * edge1ReverseDeltaY
+                                              + ((double)(edge1Start.y) - (double)(edge0Start.y)) * -edge1ReverseDeltaX)
+                    / divisor;
+                createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
+                createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
 
-            if (edge1ReverseDeltaX != 0.0) {
-                createdXing->point.z
-                    = (float)((((double)(edge1Start.x) - (double)(createdXing->point.x)) / edge1ReverseDeltaX)
+                if (edge1ReverseDeltaX != 0.0) {
+                    createdXing->point.z
+                        = (float)((((double)(edge1Start.x) - (double)(createdXing->point.x)) / edge1ReverseDeltaX)
+                                * ((double)(edge1End.z) - (double)(edge1Start.z))
+                            + (double)(edge1Start.z));
+                } else {
+                    createdXing->point.z = (float)((((double)(edge1Start.y) - (double)(createdXing->point.y))
+                                                       / ((double)(edge1Start.y) - (double)(edge1End.y)))
                             * ((double)(edge1End.z) - (double)(edge1Start.z))
                         + (double)(edge1Start.z));
+                }
             } else {
-                createdXing->point.z = (float)((((double)(edge1Start.y) - (double)(createdXing->point.y))
-                                                   / ((double)(edge1Start.y) - (double)(edge1End.y)))
-                        * ((double)(edge1End.z) - (double)(edge1Start.z))
-                    + (double)(edge1Start.z));
+                xingType = 0;
             }
 
             break;
         }
 
-        case 2:
-            createdXing
-                = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
-            if (createdXing == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_Intersect2dBufferEntryFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0x1351
-                );
-                return 1;
-            }
-
-            createdXing->point = edge0Start;
-            break;
-
-        case 3:
-            createdXing
-                = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
-            if (createdXing == 0) {
-                fprintf(
-                    stderr,
-                    g_zGeometry_Intersect2dBufferEntryFailedFmt,
-                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                    0x1363
-                );
-                return 1;
-            }
-
-            createdXing->point = edge0End;
-            break;
-
-        case 4:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
             createdXing
                 = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
@@ -3139,10 +3122,17 @@ int __fastcall Intersect2d(
                 return 1;
             }
 
-            createdXing->point = edge1Start;
+            createdXing->point.x = edge1Start.x;
+            createdXing->point.y = edge1Start.y;
+            createdXing->point.z = edge1Start.z;
             break;
 
-        case 5:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23:
             createdXing
                 = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
             if (createdXing == 0) {
@@ -3155,7 +3145,50 @@ int __fastcall Intersect2d(
                 return 1;
             }
 
-            createdXing->point = edge1End;
+            createdXing->point.x = edge1End.x;
+            createdXing->point.y = edge1End.y;
+            createdXing->point.z = edge1End.z;
+            break;
+
+        case 6:
+        case 7:
+            createdXing
+                = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
+            if (createdXing == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0x1351
+                );
+                return 1;
+            }
+
+            createdXing->point.x = edge0Start.x;
+            createdXing->point.y = edge0Start.y;
+            createdXing->point.z = edge0Start.z;
+            break;
+
+        case 8:
+        case 9:
+            createdXing
+                = (zGeometry_WeilerXingPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(&self->xingBuffer, 1, 0));
+            if (createdXing == 0) {
+                fprintf(
+                    stderr,
+                    g_zGeometry_Intersect2dBufferEntryFailedFmt,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0x1363
+                );
+                return 1;
+            }
+
+            createdXing->point.x = edge0End.x;
+            createdXing->point.y = edge0End.y;
+            createdXing->point.z = edge0End.z;
+            break;
+
+        case 0:
             break;
 
         default:

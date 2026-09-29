@@ -4181,30 +4181,34 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
 
         CZNodePartial* const worldChild
             = CZClass::gwNodeGetWorldChild(candidateBuffer.entries[bestCandidateIndex].node);
-        const int nodeType
-            = worldChild != 0 ? worldChild->nodeType : candidateBuffer.entries[bestCandidateIndex].variantTag.tags[0];
+        int nodeType;
+        if (worldChild != 0) {
+            nodeType = worldChild->nodeType;
+        } else {
+            const zTag4Partial candidateTag = candidateBuffer.entries[bestCandidateIndex].variantTag;
+            nodeType = candidateTag.tags[0];
+        }
         CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
 
         if (updateRotation == 0) {
             return;
         }
-
-        playerState->steerBasisRef = candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
-        zVec3 yawRelativeNormal = candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
+        const zVec3* const surfaceNormal = &candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
+        playerState->steerBasisRef = *surfaceNormal;
+        zVec3 yawRelativeNormal = *surfaceNormal;
         RebuildSteerBasisRawFromRef(saveState);
         zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
 
         const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
-        float clampedPitchAngleRad = pitchAngleRad;
-        if (clampedPitchAngleRad > 0.523599982f) {
-            clampedPitchAngleRad = 0.523599982f;
-        } else if (clampedPitchAngleRad < -0.523599982f) {
-            clampedPitchAngleRad = -0.523599982f;
+        playerState->vehiclePitchRad = pitchAngleRad;
+        const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
+        playerState->vehicleRollRad = rollAngleRad;
+        if (pitchAngleRad > 0.523599982f) {
+            playerState->vehiclePitchRad = 0.523599982f;
+        } else if (pitchAngleRad < -0.523599982f) {
+            playerState->vehiclePitchRad = -0.523599982f;
         }
 
-        const float rollAngleRad = (float)(asin(-yawRelativeNormal.x));
-        playerState->vehiclePitchRad = clampedPitchAngleRad;
-        playerState->vehicleRollRad = rollAngleRad;
         CZObject3D::gwObject3DSetRotation(
             playerState->rootNode,
             playerState->vehiclePitchRad,
@@ -8854,17 +8858,17 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
     }
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    PlayerGunFireController* const altController = playerState->activeAltGunController;
-    const int reticleMode = altController->optCatalogEntry->range > playerState->aimTargetDistanceApprox
-            && altController->ammoOrCharge != 0.0f
-        ? 1
-        : 0;
-    HudUiMgr::SetReticleMode(reticleMode);
+    HudUiMgr::SetReticleMode(
+        playerState->activeAltGunController->optCatalogEntry->range > playerState->aimTargetDistanceApprox
+                && playerState->activeAltGunController->ammoOrCharge != 0.0f
+            ? 1
+            : 0
+    );
 
     HudUiMessage::SetValueIfOwnerMatches(
-        altController->weaponBankIndex,
-        altController->weaponSideIndex,
-        altController->ammoOrCharge
+        playerState->activeAltGunController->weaponBankIndex,
+        playerState->activeAltGunController->weaponSideIndex,
+        playerState->activeAltGunController->ammoOrCharge
     );
 
     PlayerGunFireController* const primaryController = playerState->activePrimaryGunController;
@@ -8878,53 +8882,51 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
 
     HudUiMgrObjective::RefreshCounterText(g_Player_HudCounterValue);
 
-    const char* masterTypeNameSource;
+    char masterTypeName[12];
     switch (saveState->primaryModalState->masterModalData->masterType) {
     case 0:
-        masterTypeNameSource = g_Player_MasterTypeName_Basic;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Basic);
         break;
     case kPlayerMasterTypeFly:
-        masterTypeNameSource = g_Player_MasterTypeName_Fly;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Fly);
         break;
     case kPlayerMasterTypeSub:
-        masterTypeNameSource = g_Player_MasterTypeName_Sub;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Sub);
         break;
     case kPlayerMasterTypeTrack:
-        masterTypeNameSource = g_Player_MasterTypeName_Track;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Track);
         break;
     case kPlayerMasterTypeHover:
-        masterTypeNameSource = g_Player_MasterTypeName_Hover;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Hover);
         break;
     case kPlayerMasterTypeAmphib:
-        masterTypeNameSource = g_Player_MasterTypeName_Amphib;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Amphib);
         break;
     default:
-        masterTypeNameSource = g_Player_MasterTypeName_Unknown;
+        strcpy(masterTypeName, g_Player_MasterTypeName_Unknown);
         break;
     }
-    char masterTypeName[12];
-    strcpy(masterTypeName, masterTypeNameSource);
 
     char debugLine[256];
-    const char* const rootName = playerState->rootNode->name;
-    if (playerState->lifecycleState == kPlayerLifecycleAi) {
+    const int lifecycleState = playerState->lifecycleState;
+    if (lifecycleState == kPlayerLifecycleLocal || lifecycleState == 0) {
+        if (playerState->airborneFlag != 0) {
+            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsA, playerState->rootNode->name, masterTypeName);
+        } else if (playerState->slipSfxActive != 0) {
+            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsS, playerState->rootNode->name, masterTypeName);
+        } else {
+            sprintf(debugLine, g_Player_HudReadoutFmt_Dynamics, playerState->rootNode->name, masterTypeName);
+        }
+    } else if (lifecycleState == kPlayerLifecycleAi) {
         sprintf(
             debugLine,
             g_Player_HudReadoutFmt_ModeGoalNode,
-            rootName,
+            playerState->rootNode->name,
             playerState->aiTopLevelState,
             playerState->aiCurrentPathNode->nodeIndex
         );
-    } else if (playerState->lifecycleState == kPlayerLifecycleInactive) {
-        sprintf(debugLine, g_Player_HudReadoutFmt_Dead, rootName);
-    } else if (playerState->lifecycleState == kPlayerLifecycleLocal || playerState->lifecycleState == 0) {
-        if (playerState->airborneFlag != 0) {
-            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsA, rootName, masterTypeName);
-        } else if (playerState->slipSfxActive != 0) {
-            sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsS, rootName, masterTypeName);
-        } else {
-            sprintf(debugLine, g_Player_HudReadoutFmt_Dynamics, rootName, masterTypeName);
-        }
+    } else if (lifecycleState == kPlayerLifecycleInactive) {
+        sprintf(debugLine, g_Player_HudReadoutFmt_Dead, playerState->rootNode->name);
     }
 
     HudUiAuxOverlay::UpdateTextLine(2, 1, debugLine);
@@ -9240,7 +9242,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-transitiontomastertypesub
  * @recoil-artifact defines .text recoil:function:0x42b2a0: Player::TransitionToMasterTypeSub
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: enter sub mode after applying gun-slot offsets, transition gates,
@@ -9269,8 +9271,8 @@ int __fastcall TransitionToMasterTypeSub(zUtil_SaveGameState* saveState, int fla
         return 0;
     }
 
-    const int sourceMasterType = masterModalData->masterType;
-    if (sourceMasterType == kPlayerMasterTypeTrack) {
+    switch (masterModalData->masterType) {
+    case kPlayerMasterTypeTrack: {
         if (flags == 0) {
             return 0;
         }
@@ -9281,9 +9283,9 @@ int __fastcall TransitionToMasterTypeSub(zUtil_SaveGameState* saveState, int fla
             CZObject3D::gwObject3DSetRotation(modalNode, 0.0f, 0.0f, 0.0f);
         }
 
-        playerState->localVel.y = -3.0f;
-        playerState->worldPos.y -= 4.0999999f;
-    } else if (sourceMasterType == kPlayerMasterTypeAmphib) {
+        // Retail falls through into the amphib transition; with flags set its checks and FX triggers are no-ops.
+    }
+    case kPlayerMasterTypeAmphib:
         if (playerState->bankInput != 0 && flags == 0) {
             return 0;
         }
@@ -9291,12 +9293,14 @@ int __fastcall TransitionToMasterTypeSub(zUtil_SaveGameState* saveState, int fla
         PLAYER_TRIGGER_ZERO_VELOCITY_FX_LIST(masterModalData->fxList_fromAmphibToSub, playerState->rootNode, flags);
         playerState->localVel.y = -3.0f;
         playerState->worldPos.y -= 4.0999999f;
-    } else if (sourceMasterType == kPlayerMasterTypeSub) {
+        break;
+    case kPlayerMasterTypeSub:
         if (flags == 0) {
             return 1;
         }
 
         saveState->StopMasterTypeLoopSfxHandle(kPlayerMasterTypeTrack);
+        break;
     }
 
     playerState->currentMasterType = masterModalData->masterType;

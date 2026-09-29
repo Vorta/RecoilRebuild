@@ -2405,47 +2405,44 @@ HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
         boundsRect.left = x;
         boundsRect.bottom = y + widgetImage->height;
         boundsRect.right = x + widgetImage->width;
-        return &boundsRect;
-    }
+        result = &boundsRect;
+    } else if (labelPanels.begin() != 0) {
+        boundsRect.top = labelPanels[0]->GetCenterY();
+        boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
 
-    if (labelPanels.begin() == 0) {
-        return result;
-    }
+        for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
+            boundsRect.bottom += (*panelIt)->QueryTextHeight();
 
-    boundsRect.top = labelPanels[0]->GetCenterY();
-    boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
+            switch ((*panelIt)->alignMode) {
+            case 0:
+                boundsRect.left = labelPanels[0]->GetCenterX();
+                boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() > boundsRect.right
+                    ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth()
+                    : boundsRect.right;
+                break;
 
-    for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
-        boundsRect.bottom += (*panelIt)->QueryTextHeight();
+            case 1:
+                boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2 < boundsRect.left
+                    ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2
+                    : boundsRect.left;
+                boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2 > boundsRect.right
+                    ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2
+                    : boundsRect.right;
+                break;
 
-        switch ((*panelIt)->alignMode) {
-        case 0:
-            boundsRect.left = labelPanels[0]->GetCenterX();
-            boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() > boundsRect.right
-                ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth()
-                : boundsRect.right;
-            break;
-
-        case 1:
-            boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2 < boundsRect.left
-                ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() / 2
-                : boundsRect.left;
-            boundsRect.right = (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2 > boundsRect.right
-                ? (*panelIt)->GetCenterX() + (*panelIt)->QueryTextWidth() / 2
-                : boundsRect.right;
-            break;
-
-        case 2:
-            boundsRect.right = labelPanels[0]->GetCenterX();
-            boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() > boundsRect.left
-                ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth()
-                : boundsRect.left;
-            break;
+            case 2:
+                boundsRect.right = labelPanels[0]->GetCenterX();
+                boundsRect.left = (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth() > boundsRect.left
+                    ? (*panelIt)->GetCenterX() - (*panelIt)->QueryTextWidth()
+                    : boundsRect.left;
+                break;
+            }
         }
+
+        boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
+        result = &boundsRect;
     }
 
-    boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
-    result = &boundsRect;
     return result;
 }
 
@@ -2877,18 +2874,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style = &owner->fontStyles[styleIndex];
-            if (style->validMarker == 0) {
-                style = 0;
-            }
+            const HudFontStyle* style
+                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                checkedLabelPanel->textColor0 = style->textColor;
-                checkedLabelPanel->textColor1 = style->textColor;
-                checkedLabelPanel->textDirty = 1;
-                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
-                checkedLabelPanel->shadowOffsetX = 1;
-                checkedLabelPanel->shadowOffsetY = 1;
+                checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
+                checkedLabelPanel->SetShadow(style->shadowEnabled, 1, 1);
             }
             checkedLabelPanel->SetVisible(0);
             ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
@@ -2912,18 +2903,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style = &owner->fontStyles[styleIndex];
-            if (style->validMarker == 0) {
-                style = 0;
-            }
+            const HudFontStyle* style
+                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                checkedLabelPanel->textColor0 = style->textColor;
-                checkedLabelPanel->textColor1 = style->textColor;
-                checkedLabelPanel->textDirty = 1;
-                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
-                checkedLabelPanel->shadowOffsetX = 1;
-                checkedLabelPanel->shadowOffsetY = 1;
+                checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
+                checkedLabelPanel->SetShadow(style->shadowEnabled, 1, 1);
             }
             checkedLabelPanel->SetVisible(0);
             ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
@@ -2949,18 +2934,12 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style = &owner->fontStyles[styleIndex];
-            if (style->validMarker == 0) {
-                style = 0;
-            }
+            const HudFontStyle* style
+                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                checkedLabelPanel->textColor0 = style->textColor;
-                checkedLabelPanel->textColor1 = style->textColor;
-                checkedLabelPanel->textDirty = 1;
-                checkedLabelPanel->shadowEnabled = style->shadowEnabled;
-                checkedLabelPanel->shadowOffsetX = 1;
-                checkedLabelPanel->shadowOffsetY = 1;
+                checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
+                checkedLabelPanel->SetShadow(style->shadowEnabled, 1, 1);
             }
             checkedLabelPanel->SetVisible(0);
             ((HudUiContainer*)owner)->AddChild(checkedLabelPanel);
@@ -2968,10 +2947,10 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
     }
 
     if (uncheckedImage != 0) {
-        boundsRect.left = x;
         boundsRect.top = y;
-        boundsRect.right = x + uncheckedImage->width;
+        boundsRect.left = x;
         boundsRect.bottom = y + uncheckedImage->height;
+        boundsRect.right = x + uncheckedImage->width;
     } else if (labelPanels.begin() != labelPanels.end()) {
         HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
         HudUiPanel* const firstPanel = *panelIt;
@@ -3668,9 +3647,9 @@ int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
 
         for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
             boundsRect.bottom += (*panelIt)->QueryTextHeight();
-            if ((*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right) {
-                boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left;
-            }
+            boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right
+                ? (*panelIt)->QueryTextWidth() + boundsRect.left
+                : boundsRect.right;
         }
 
         boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
@@ -4537,99 +4516,97 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
         return 0;
     }
 
-    zReader::Node* primitiveNode;
-    primitiveNode = zRdrGetNode(cfgRoot, g_HudUiBackground_ZrdKey_Primitives);
+    zReader::Node* primitiveNode = zRdrGetNode(cfgRoot, g_HudUiBackground_ZrdKey_Primitives);
     if (primitiveNode != 0) {
         primitiveNode = zRdrGetNode(primitiveNode, name);
-        if (primitiveNode != 0) {
-            ((HudUiContainer*)(this))->AddChild(element);
+    }
 
-            zReader::Node* bitmapNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
-            if (bitmapNode != 0) {
-                ((HudUiWidget*)(element))->SetImageByPathOwned(bitmapNode->value.nodes[1].value.str);
-            }
+    if (primitiveNode != 0) {
+        ((HudUiContainer*)(this))->AddChild(element);
 
-            zReader::Node* positionNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Position);
-            if (positionNode != 0) {
-                zReader::Node* const positionBase = positionNode->value.nodes;
-                element->SetPos(uiOriginX + positionBase[1].value.i32, uiOriginY + positionBase[2].value.i32);
-            }
-
-            zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_WordWrap);
-            if (wordWrapNode != 0) {
-                zReader::Node* const wordWrapBase = wordWrapNode->value.nodes;
-                HudUiRect wordWrapRect;
-                wordWrapRect.left = 0;
-                wordWrapRect.top = 0;
-                wordWrapRect.right = wordWrapBase[1].value.i32;
-                wordWrapRect.bottom = wordWrapBase[2].value.i32;
-                element->EnableWordWrapWithRect(&wordWrapRect);
-            }
-
-            zReader::Node* fontNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Font);
-            if (fontNode != 0) {
-                const int fontIndex = fontNode->value.i32;
-                const HudFontStyle* style = fontStyles[fontIndex].validMarker != 0 ? &fontStyles[fontIndex] : 0;
-                if (style != 0) {
-                    HudUiPanel* const panel = (HudUiPanel*)(element);
-                    panel->alignMode = style->alignMode;
-                    panel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                    const unsigned int textColor = style->textColor;
-                    panel->textColor0 = textColor;
-                    panel->textColor1 = textColor;
-                    panel->textDirty = 1;
-                    panel->shadowEnabled = style->shadowEnabled;
-                    panel->shadowOffsetX = 1;
-                    panel->shadowOffsetY = 1;
-                    panel->bkColor = style->bkColor;
-                    panel->bkMode = style->bkMode;
-                }
-            }
-
-            zReader::Node* colorNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Color);
-            if (colorNode != 0) {
-                zReader::Node* const colorBase = colorNode->value.nodes;
-                ((HudUiPrimitiveBindTarget*)(element))->color565 = zVidPackColorRGB(
-                                                                       (unsigned char)(colorBase[1].value.i32),
-                                                                       (unsigned char)(colorBase[2].value.i32),
-                                                                       (unsigned char)(colorBase[3].value.i32)
-                                                                   )
-                    & 0xffffu;
-            }
-
-            zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointRelative);
-            if (relativeEndNode != 0) {
-                zReader::Node* const relativeEndBase = relativeEndNode->value.nodes;
-                ((HudUiPrimitiveBindTarget*)(element))
-                    ->SetSegmentEndpoints(
-                        element->GetCenterX(),
-                        element->GetCenterY(),
-                        element->GetCenterX() + relativeEndBase[1].value.i32,
-                        element->GetCenterY() + relativeEndBase[2].value.i32
-                    );
-            }
-
-            zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointAbsolute);
-            if (absoluteEndNode != 0) {
-                zReader::Node* const absoluteEndBase = absoluteEndNode->value.nodes;
-                ((HudUiPrimitiveBindTarget*)(element))
-                    ->SetSegmentEndpoints(
-                        element->GetCenterX(),
-                        element->GetCenterY(),
-                        absoluteEndBase[1].value.i32,
-                        absoluteEndBase[2].value.i32
-                    );
-            }
-
-            HudUiRect clipRect;
-            clipRect.left = element->GetCenterX();
-            clipRect.top = element->GetCenterY();
-            clipRect.right = element->GetCenterX();
-            clipRect.bottom = element->GetCenterY();
-            element->SetBltSourceAndClipRect(capturedCompositeImage, &clipRect);
-
-            element->flags = (unsigned int)((unsigned char)(element->flags) & 0x10u) | 0x02u;
+        zReader::Node* bitmapNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        if (bitmapNode != 0) {
+            ((HudUiWidget*)(element))->SetImageByPathOwned(bitmapNode->value.nodes[1].value.str);
         }
+
+        zReader::Node* positionNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Position);
+        if (positionNode != 0) {
+            zReader::Node* const positionBase = positionNode->value.nodes;
+            element->SetPos(uiOriginX + positionBase[1].value.i32, uiOriginY + positionBase[2].value.i32);
+        }
+
+        zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_WordWrap);
+        if (wordWrapNode != 0) {
+            zReader::Node* const wordWrapBase = wordWrapNode->value.nodes;
+            HudUiRect wordWrapRect;
+            wordWrapRect.left = 0;
+            wordWrapRect.top = 0;
+            wordWrapRect.right = wordWrapBase[1].value.i32;
+            wordWrapRect.bottom = wordWrapBase[2].value.i32;
+            element->EnableWordWrapWithRect(&wordWrapRect);
+        }
+
+        zReader::Node* fontNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Font);
+        if (fontNode != 0) {
+            const int fontIndex = fontNode->value.i32;
+            const HudFontStyle* style = fontStyles[fontIndex].validMarker != 0 ? &fontStyles[fontIndex] : 0;
+            if (style != 0) {
+                HudUiPanel* const panel = (HudUiPanel*)(element);
+                panel->alignMode = style->alignMode;
+                panel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
+                const unsigned int textColor = style->textColor;
+                panel->textColor0 = textColor;
+                panel->textColor1 = textColor;
+                panel->textDirty = 1;
+                panel->shadowEnabled = style->shadowEnabled;
+                panel->shadowOffsetX = 1;
+                panel->shadowOffsetY = 1;
+                panel->SetTextBackground(style->bkMode, style->bkColor);
+            }
+        }
+
+        zReader::Node* colorNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Color);
+        if (colorNode != 0) {
+            zReader::Node* const colorBase = colorNode->value.nodes;
+            ((HudUiPrimitiveBindTarget*)(element))->color565 = zVidPackColorRGB(
+                                                                   (unsigned char)(colorBase[1].value.i32),
+                                                                   (unsigned char)(colorBase[2].value.i32),
+                                                                   (unsigned char)(colorBase[3].value.i32)
+                                                               )
+                & 0xffffu;
+        }
+
+        zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointRelative);
+        if (relativeEndNode != 0) {
+            ((HudUiPrimitiveBindTarget*)(element))
+                ->SetSegmentEndpoints(
+                    element->GetCenterX(),
+                    element->GetCenterY(),
+                    element->GetCenterX() + relativeEndNode->value.nodes[1].value.i32,
+                    element->GetCenterY() + relativeEndNode->value.nodes[2].value.i32
+                );
+        }
+
+        zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointAbsolute);
+        if (absoluteEndNode != 0) {
+            zReader::Node* const absoluteEndBase = absoluteEndNode->value.nodes;
+            ((HudUiPrimitiveBindTarget*)(element))
+                ->SetSegmentEndpoints(
+                    element->GetCenterX(),
+                    element->GetCenterY(),
+                    absoluteEndBase[1].value.i32,
+                    absoluteEndBase[2].value.i32
+                );
+        }
+
+        HudUiRect clipRect;
+        clipRect.left = element->GetCenterX();
+        clipRect.top = element->GetCenterY();
+        clipRect.right = element->GetCenterX();
+        clipRect.bottom = element->GetCenterY();
+        element->SetBltSourceAndClipRect(capturedCompositeImage, &clipRect);
+
+        element->flags = (unsigned int)((unsigned char)(element->flags) & 0x10u) | 0x02u;
     }
     return 0;
 }
@@ -5000,11 +4977,11 @@ void HudUiPanel::RebuildTextRect()
 
             HDC drawDc;
             if (g_zVideo_pfnImageUploadPixelsToSurface(textPick, &drawDc) != 0) {
-                RECT shadowRect = *(RECT*)(&textRect);
                 RECT mainRect = *(RECT*)(&textRect);
                 SelectObject(drawDc, hFont);
 
                 if (shadowEnabled != 0) {
+                    RECT shadowRect = *(RECT*)(&textRect);
                     if (shadowOffsetX > 0) {
                         shadowRect.left += shadowOffsetX;
                     } else {
@@ -5094,9 +5071,9 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int col
         return color1;
     }
 
-    const double inverseBlend = 1.0 - blend;
-    const int blue = (int)((int)(color0 & 0xffu) * inverseBlend + (int)(color1 & 0xffu) * blend);
-    const int green = (int)((int)((color0 >> 8) & 0xffu) * inverseBlend + (int)((color1 >> 8) & 0xffu) * blend);
+    const float inverseBlend = 1.0 - blend;
+    const int blue = (int)(GetRValue(color0) * inverseBlend + GetRValue(color1) * blend);
+    const int green = (int)(GetGValue(color0) * inverseBlend + GetGValue(color1) * blend);
     const int red = (int)((int)((color0 >> 16) & 0xffu) * inverseBlend + (int)((color1 >> 16) & 0xffu) * blend);
     return RGB(blue, green, red);
 }

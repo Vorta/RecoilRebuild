@@ -557,6 +557,10 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3cf, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x3d0, "Null class data pointer");
+            return 5;
+        }
         data = (CZObject3DDataPartial*)(node->classData);
 
         if ((data->flags & 0x10) != 0) {
@@ -677,14 +681,18 @@ namespace CZObject3D
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x47e, "Null node pointer.");
             return 5;
         }
+        if (node->classData == 0) {
+            zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c", 0x47f, "Null class data pointer");
+            return 5;
+        }
         if (node->classId != kZClassNodeObject3D) {
             zError::ReportOld(
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zClass\\Object3d.c",
                 0x480,
                 "Bad Class Found.\n Wanted (%d)\n Found (%d)",
-                kZClassNodeObject3D,
-                node->classId
+                node->classId,
+                kZClassNodeObject3D
             );
             return 3;
         }

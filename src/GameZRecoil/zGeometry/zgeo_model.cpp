@@ -369,11 +369,12 @@ int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int 
 int __fastcall FindPointInsertionEdgeXYIndex(zGeometry_ClipPolygonPartial* clipPolygon, zVec3* point)
 {
     const float tolerance = 0.00999999978f;
-    zVec3* current = clipPolygon->points;
+    zVec3* const points = clipPolygon->points;
     const int pointCount = clipPolygon->pointCount;
 
     for (int i = 0; i < pointCount; ++i) {
-        zVec3* const next = &clipPolygon->points[(i + 1) % pointCount];
+        zVec3* const current = &points[i];
+        zVec3* const next = &points[(i + 1) % pointCount];
         const float edgeDx = next->x - current->x;
         const float edgeDy = next->y - current->y;
 
@@ -400,8 +401,6 @@ int __fastcall FindPointInsertionEdgeXYIndex(zGeometry_ClipPolygonPartial* clipP
                 return i;
             }
         }
-
-        current = next;
     }
 
     return -1;
@@ -917,6 +916,9 @@ GetLinearBufferOfPolygonVertices(zModel_DrawBatchBasePartial* model, zModel_Poly
 int __fastcall
 ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatchBasePartial* model, zDiPartial** outDi)
 {
+    zVec3* polygonPointsBuffer = 0;
+    int clipPolygonDirty = 0;
+    int clipTouched = 0;
     if (model == 0 || clipPolygon == 0) {
         return 1;
     }
@@ -931,9 +933,6 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
     zUtil::StoreInt32(&di->mode, 0);
 
     zModel_PolygonPartial* polygon = model->faceList;
-    zVec3* polygonPointsBuffer = 0;
-    int clipPolygonDirty = 0;
-    int clipTouched = 0;
 
     for (int polygonIndex = 0; polygonIndex < model->faceCount; ++polygonIndex, ++polygon) {
         const int pointCount = (int)(polygon->vertexCountAndFlags & 0xff);
@@ -964,7 +963,7 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
         zGeometry_BoundsXY bounds;
         zGeometry_Vec3Array::ComputeBoundsXY(&bounds, polygonPointsBuffer, pointCount);
 
-        int clipResult = 1;
+        int clipResult;
         if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds) != 0) {
             if (clipPolygonDirty != 0) {
                 zGeometry_ClipPolygon::ResetWeilerStateFromContourPoints(
@@ -982,16 +981,11 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 pointCount,
                 &clipOutput
             );
+        } else {
+            clipResult = 1;
         }
 
         switch (clipResult) {
-        case 0:
-            if (polygonPointsBuffer != 0) {
-                free(polygonPointsBuffer);
-            }
-            zModel_DiPool::FreeIfUnreferenced(di);
-            return 0;
-
         case 2: {
             zGeometry_PolygonPointSpanPartial* const upsertPolygon = clipOutput.polygonSetA.polygons;
             clipTouched = 1;
@@ -1088,6 +1082,13 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
         case 1:
             zGeometry_Model::AddIndexedPolygonToDi(di, model, polygon);
             break;
+
+        case 0:
+            if (polygonPointsBuffer != 0) {
+                free(polygonPointsBuffer);
+            }
+            zModel_DiPool::FreeIfUnreferenced(di);
+            return 0;
 
         default:
             break;

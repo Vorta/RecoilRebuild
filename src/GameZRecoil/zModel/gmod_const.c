@@ -4009,59 +4009,74 @@ namespace zModelConst
         const zModel_PickFaceEntry* faceEntry
     )
     {
+        int anyActive = 1;
+        int slopesPending = 1;
         zVec3 normal;
         zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
         if (normal.y <= 0.0f) {
             return;
         }
 
-        int activeFlags[0x20];
-        for (int i = 0; i < samplePointCount; ++i) {
+        int activeFlags[24];
+        for (int i = samplePointCount - 1; i >= 0; --i) {
             activeFlags[i] = sampleMaskSeeds[i];
         }
 
-        int anyActive = 1;
-        const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
-        for (int edgeEnd = vertexCount - 1; edgeEnd >= 0 && anyActive != 0; --edgeEnd) {
-            const int edgeStart = edgeEnd == vertexCount - 1 ? 0 : edgeEnd + 1;
-            const zVec3* start = &polygonVertices[edgeStart];
-            const zVec3* end = &polygonVertices[edgeEnd];
-            const float dx = end->x - start->x;
-            const float dz = start->z - end->z;
+        zVec3 edgeNormal;
+        int edgeStart = 0;
+        for (int edgeEnd = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1; edgeEnd >= 0 && anyActive != 0;
+            --edgeEnd) {
+            edgeNormal.x = polygonVertices[edgeStart].z - polygonVertices[edgeEnd].z;
+            edgeNormal.z = polygonVertices[edgeEnd].x - polygonVertices[edgeStart].x;
 
             anyActive = 0;
             for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
                 if (activeFlags[sampleIndex] != 0) {
                     const zVec3* point = &samplePoints[sampleIndex];
-                    const float edgeTest = (point->x - end->x) * dz + (point->z - end->z) * dx;
-                    activeFlags[sampleIndex] = edgeTest > -0.0001f ? 1 : 0;
+                    activeFlags[sampleIndex] = (point->x - polygonVertices[edgeEnd].x) * edgeNormal.x
+                                + (point->z - polygonVertices[edgeEnd].z) * edgeNormal.z
+                            > -0.0001
+                        ? 1
+                        : 0;
                     if (activeFlags[sampleIndex] != 0) {
                         anyActive = 1;
                     }
                 }
             }
+
+            edgeStart = edgeEnd;
         }
 
         if (anyActive == 0 || samplePointCount <= 0) {
             return;
         }
 
-        const float invNormalY = 1.0f / normal.y;
-        const float xSlope = -normal.x * invNormalY;
-        const float zSlope = -normal.z * invNormalY;
+        float xSlope;
+        float zSlope;
         for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
             if (activeFlags[sampleIndex] != 0) {
-                PlayerProbeSampleCandidateBuffer* bucket = &outputBuckets[sampleIndex];
-                if (bucket->candidateCount < 0x20) {
-                    zClassDiPickCandidateEntry* entry = &bucket->entries[bucket->candidateCount];
-                    entry->surfaceNormal = normal;
-                    entry->hitPos.y = (samplePoints[sampleIndex].z - polygonVertices[0].z) * zSlope
+                if (outputBuckets[sampleIndex].candidateCount < 0x20) {
+                    outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].surfaceNormal
+                        = normal;
+                    if (slopesPending != 0) {
+                        // Retail derives the plane slopes lazily from the first accepted sample.
+                        const float invNormalY = 1.0f / normal.y;
+                        slopesPending = 0;
+                        xSlope = -(normal.x * invNormalY);
+                        zSlope = -(normal.z * invNormalY);
+                    }
+
+                    outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].hitPos.y
+                        = (samplePoints[sampleIndex].z - polygonVertices[0].z) * zSlope
                         + (samplePoints[sampleIndex].x - polygonVertices[0].x) * xSlope + polygonVertices[0].y;
-                    if (entry->hitPos.y <= maxProjectedY) {
-                        entry->node = node;
-                        entry->variantTag = faceEntry->variantTag;
-                        entry->scenePayload = faceEntry->scenePayload;
-                        ++bucket->candidateCount;
+                    if (outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].hitPos.y
+                        <= maxProjectedY) {
+                        outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].node = node;
+                        outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].variantTag
+                            = faceEntry->variantTag;
+                        outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].scenePayload
+                            = faceEntry->scenePayload;
+                        ++outputBuckets[sampleIndex].candidateCount;
                     }
                 }
             }
@@ -4300,7 +4315,7 @@ namespace CZDisplayInstance
             return 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        // Each face only rewrites the scratch slots that differ from the previous face.
         g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
         g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[5];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[4];
@@ -4316,7 +4331,6 @@ namespace CZDisplayInstance
         }
 
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[5];
-        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
         g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[6];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
@@ -4332,7 +4346,6 @@ namespace CZDisplayInstance
 
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[7];
         g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[6];
-        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[3];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate,
@@ -4347,7 +4360,6 @@ namespace CZDisplayInstance
 
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
         g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[3];
-        g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[1];
         if (CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon(
                 candidate,
@@ -5288,8 +5300,8 @@ namespace CZDisplayInstance
     )
     {
         zModel_PickFaceEntry faceEntry;
-        memset(&faceEntry, 0, sizeof(faceEntry));
-        faceEntry.flagsAndVertexCount = 4;
+        faceEntry.flagsAndVertexCount = (faceEntry.flagsAndVertexCount & ~0x1ffu) | 4u;
+        faceEntry.scenePayload = 0;
 
         int result = 0;
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
@@ -5309,7 +5321,7 @@ namespace CZDisplayInstance
             result = 1;
         }
 
-        g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
+        // Each face only rewrites the scratch slots that differ from the previous face.
         g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[1];
         g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[5];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[4];
@@ -5361,7 +5373,6 @@ namespace CZDisplayInstance
         }
 
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];
-        g_CZClass_DiFaceVertexScratch4[1] = bboxCorners->corners[3];
         g_CZClass_DiFaceVertexScratch4[2] = bboxCorners->corners[2];
         g_CZClass_DiFaceVertexScratch4[3] = bboxCorners->corners[1];
         if (BuildPickCandidatesForSegmentBatchVsPolygon(

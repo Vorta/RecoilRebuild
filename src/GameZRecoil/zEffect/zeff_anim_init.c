@@ -635,13 +635,16 @@ namespace zEffectAnim
             return 0;
         }
 
-        const int callbackNeedsLookup = self->callbackNode != self->boundNode;
-        self->boundNode = node;
-
-        if (callbackNeedsLookup) {
+        if (self->callbackNode == self->boundNode) {
+            self->boundNode = node;
             strcpy(self->rootNodeName, node->name);
-            self->callbackNode = FindNodeRecursiveByName(self->boundNode, self->attachNodeName);
-            if (self->callbackNode == 0) {
+            self->callbackNode = node;
+            strcpy(self->attachNodeName, node->name);
+        } else {
+            self->boundNode = node;
+            strcpy(self->rootNodeName, node->name);
+            CZNodePartial* const callbackNode = FindNodeRecursiveByName(self->boundNode, self->attachNodeName);
+            if (callbackNode == 0) {
                 zError::ReportOld(
                     0x400,
                     "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
@@ -653,46 +656,48 @@ namespace zEffectAnim
                 self->activationState = 5;
                 return 0;
             }
-        } else {
-            strcpy(self->rootNodeName, node->name);
-            self->callbackNode = node;
-            strcpy(self->attachNodeName, node->name);
+            self->callbackNode = callbackNode;
         }
 
-        for (int i = 0; i < self->trackedNodeCount; ++i) {
-            zEffectAnimTrackedNode* const tracked = &self->trackedNodeList[i];
-            if (tracked->trackedNode != 0) {
-                tracked->trackedNode = ResolveNodeByName(self, tracked->trackedNodeName);
-                if (tracked->trackedNode == 0) {
-                    zError::ReportOld(
-                        0x400,
-                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                        0x2811,
-                        kAnimationNodeNotFoundMessage,
-                        self,
-                        tracked->trackedNodeName
-                    );
-                    self->activationState = 5;
-                    return 0;
+        if (self->trackedNodeCount > 0) {
+            for (int i = 0; i < self->trackedNodeCount; ++i) {
+                if (self->trackedNodeList[i].trackedNode != 0) {
+                    CZNodePartial* const trackedNode
+                        = ResolveNodeByName(self, self->trackedNodeList[i].trackedNodeName);
+                    if (trackedNode == 0) {
+                        zError::ReportOld(
+                            0x400,
+                            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                            0x2811,
+                            kAnimationNodeNotFoundMessage,
+                            self,
+                            self->trackedNodeList[i].trackedNodeName
+                        );
+                        self->activationState = 5;
+                        return 0;
+                    }
+                    self->trackedNodeList[i].trackedNode = trackedNode;
                 }
             }
         }
 
-        for (int i_1669 = 0; i_1669 < self->nodeRefCount; ++i_1669) {
-            zEffectAnimNodeRef28* const nodeRef = &self->nodeRefList[i_1669];
-            if (nodeRef->node != 0) {
-                nodeRef->node = ResolveNodeByName(self, nodeRef->name.text);
-                if (nodeRef->node == 0) {
-                    zError::ReportOld(
-                        0x400,
-                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                        0x282c,
-                        kAnimationNodeNotFoundMessage,
-                        self,
-                        nodeRef->name.text
-                    );
-                    self->activationState = 5;
-                    return 0;
+        if (self->nodeRefCount > 0) {
+            for (int i_1669 = 0; i_1669 < self->nodeRefCount; ++i_1669) {
+                if (self->nodeRefList[i_1669].node != 0) {
+                    CZNodePartial* const refNode = ResolveNodeByName(self, self->nodeRefList[i_1669].name.text);
+                    if (refNode == 0) {
+                        zError::ReportOld(
+                            0x400,
+                            "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                            0x282c,
+                            kAnimationNodeNotFoundMessage,
+                            self,
+                            self->nodeRefList[i_1669].name.text
+                        );
+                        self->activationState = 5;
+                        return 0;
+                    }
+                    self->nodeRefList[i_1669].node = refNode;
                 }
             }
         }
@@ -700,7 +705,7 @@ namespace zEffectAnim
         CZNodePartial* prereqSearchRoot = 0;
         for (int i_1682 = 0; i_1682 < self->activationPrereqCount; ++i_1682) {
             zEffectAnimActivationPrereq* const prereq = &self->activationPrereqList[i_1682];
-            if (prereq->mode == 2 || prereq->mode == 3) {
+            if (prereq->mode == 3 || prereq->mode == 2) {
                 const char* const nodeName = &prereq->targetName[4];
                 prereqSearchRoot = prereqSearchRoot == 0 ? ResolveNodeByName(self, nodeName)
                                                          : CZClass::FindSubNodeByName(prereqSearchRoot, nodeName);
