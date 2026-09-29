@@ -469,11 +469,11 @@ namespace CZZbd
             result = 1;
             zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0xfc, g_CZClass_WriteSoundNodeDataIncompleteMsg);
 
-            CZSoundDataPartial* data = (CZSoundDataPartial*)(node->classData);
-            if (!WriteZbdBlob(data, sizeof(CZSoundDataPartial), stream)) {
+            if (!WriteZbdBlob(node->classData, sizeof(CZSoundDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x105, g_CZClass_WriteNodeSoundDataErrorMsg);
             }
 
+            CZSoundDataPartial* data = (CZSoundDataPartial*)(node->classData);
             if (data->attachedWorldCount > 0) {
                 WriteNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             }
@@ -496,11 +496,11 @@ namespace CZZbd
 
         case kZClassNodeLight: {
             result = 1;
-            CZLightDataPartial* data = (CZLightDataPartial*)(node->classData);
-            if (!WriteZbdBlob(data, sizeof(CZLightDataPartial), stream)) {
+            if (!WriteZbdBlob(node->classData, sizeof(CZLightDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x137, g_CZClass_WriteNodeLightDataErrorMsg);
             }
 
+            CZLightDataPartial* data = (CZLightDataPartial*)(node->classData);
             if (data->attachedWorldCount > 0) {
                 WriteNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
             }
@@ -538,23 +538,30 @@ namespace CZZbd
 
         case kZClassNodeWorld: {
             result = 1;
-            CZWorldDataPartial* data = (CZWorldDataPartial*)(node->classData);
-            if (!WriteZbdBlob(data, sizeof(CZWorldDataPartial), stream)) {
+            if (!WriteZbdBlob(node->classData, sizeof(CZWorldDataPartial), stream)) {
                 return ReportZbdWriteFailure(0x18c, g_CZClass_WriteNodeWorldDataErrorMsg);
             }
 
-            if (data->lightCount > 0) {
-                WriteNodeRefListIndices(data->lightNodes, data->lightCount, stream);
+            if (((CZWorldDataPartial*)(node->classData))->lightCount > 0) {
+                WriteNodeRefListIndices(
+                    ((CZWorldDataPartial*)(node->classData))->lightNodes,
+                    ((CZWorldDataPartial*)(node->classData))->lightCount,
+                    stream
+                );
             }
-            if (data->soundCount > 0) {
-                WriteNodeRefListIndices(data->soundNodes, data->soundCount, stream);
+            if (((CZWorldDataPartial*)(node->classData))->soundCount > 0) {
+                WriteNodeRefListIndices(
+                    ((CZWorldDataPartial*)(node->classData))->soundNodes,
+                    ((CZWorldDataPartial*)(node->classData))->soundCount,
+                    stream
+                );
             }
 
             {
-                for (int row = 0; row < data->areaGridRowCount; ++row) {
-                    zWorldAreaPartial* area = data->areaGridRows[row];
+                for (int row = 0; row < ((CZWorldDataPartial*)(node->classData))->areaGridRowCount; ++row) {
+                    zWorldAreaPartial* area = ((CZWorldDataPartial*)(node->classData))->areaGridRows[row];
                     {
-                        for (int col = 0; col < data->areaGridColCount; ++col) {
+                        for (int col = 0; col < ((CZWorldDataPartial*)(node->classData))->areaGridColCount; ++col) {
                             if (!WriteZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
                                 return ReportZbdWriteFailure(0x1a8, g_CZClass_WriteWorldAreaPartitionDataErrorMsg);
                             }

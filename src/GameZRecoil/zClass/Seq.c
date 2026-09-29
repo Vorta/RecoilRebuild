@@ -53,7 +53,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-gwsequenceaddchild
      * @recoil-artifact defines .text recoil:function:0x453f40: CZSequence::gwSequenceAddChild
-     *
+     * @recoil-match byte
      *
      * Purpose: append a child node, grow the sequence entry storage, and insert
      * the child delay record at the requested sequence index.
@@ -90,8 +90,7 @@ namespace CZSequence
         ));
         parent->classData = data;
 
-        entryCount = data->entryCount + 1;
-        data->entryCount = entryCount;
+        entryCount = ++data->entryCount;
         for (i = entryCount - 1; i > insertIndex; --i) {
             data->entries[i] = data->entries[i - 1];
         }
@@ -263,7 +262,7 @@ namespace CZSequence
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-sequence-update
      * @recoil-artifact defines .text recoil:function:0x4541c0: CZSequence::Update
-     *
+     * @recoil-match byte
      *
      * Purpose: accumulate frame time and advance the active sequence entry,
      * applying repeat, wrap, and direction-reversal behavior at the bounds.
@@ -283,11 +282,12 @@ namespace CZSequence
             return 5;
         }
 
+        const float deltaTime = g_FrameDeltaTimeSec;
         if (data->isPaused != 0 || data->isActive == 0) {
             return 0;
         }
 
-        data->currentTime += g_FrameDeltaTimeSec;
+        data->currentTime += deltaTime;
         int currentIndex = data->currentIndex;
         if (data->currentTime <= data->entries[currentIndex].triggerTime) {
             return 0;
@@ -347,7 +347,7 @@ namespace CZLod
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.seq.zclass-lod-gwlodnew
      * @recoil-artifact defines .text recoil:function:0x4542a0: CZLod::gwLodNew.
-     *
+     * @recoil-match byte
      *
      * The original implementation translation unit is unresolved; Seq.c is
      * the provisional current compile host.
@@ -363,8 +363,23 @@ namespace CZLod
         CZLodDataPartial* data = (CZLodDataPartial*)(calloc(1, sizeof(CZLodDataPartial)));
         node->classData = data;
         data->computeOwnDistance = 1;
+        // Retail also stores the float fields calloc already cleared.
+        data->nearRangeSq = 0.0f;
         data->nearRange = 1000.0f;
         data->farRangeSq = 1000000.0f;
+        data->fadeWidth.x = 0.0f;
+        data->fadeWidth.y = 0.0f;
+        data->fadeWidth.z = 0.0f;
+        data->fadeAmount.x = 0.0f;
+        data->fadeAmount.y = 0.0f;
+        data->fadeAmount.z = 0.0f;
+        data->fadeEndScale.x = 0.0f;
+        data->fadeEndScale.y = 0.0f;
+        data->fadeEndScale.z = 0.0f;
+        data->fogFadeWidth = 0.0f;
+        data->fogFadeAmount = 0.0f;
+        data->fogStartDist = 0.0f;
+        data->vertexShadingAmount = 0.0f;
         data->active = 1;
         return node;
     }

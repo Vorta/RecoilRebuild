@@ -2187,59 +2187,43 @@ namespace CZCamera
      */
     int __fastcall FindConvexHullXZ(zVec3 * points, int count)
     {
-        int candidateIndex = 1;
         int selectedIndex = 0;
-
-        if (count > 1) {
-            float selectedZ = points[0].z;
-            while (candidateIndex < count) {
-                if (points[candidateIndex].z - selectedZ > 0.1) {
-                    selectedIndex = candidateIndex;
-                    selectedZ = points[candidateIndex].z;
-                }
-                ++candidateIndex;
+        for (int candidateIndex = 1; candidateIndex < count; ++candidateIndex) {
+            if (points[candidateIndex].z - points[selectedIndex].z > 0.1) {
+                selectedIndex = candidateIndex;
             }
         }
 
         float previousAngle = 0.0f;
         points[count] = points[selectedIndex];
 
-        if (count > 0) {
-            zVec3* hullPoint = points;
-            int hullIndex = 0;
-            int scanStart = 1;
+        zVec3* hullPoint = points;
+        int scanStart = 1;
+        for (int hullIndex = 0; hullIndex < count; ++hullIndex) {
+            const zVec3 savedPoint = *hullPoint;
+            *hullPoint = points[selectedIndex];
+            points[selectedIndex] = savedPoint;
+            selectedIndex = count;
 
-            do {
-                const zVec3 savedPoint = *hullPoint;
-                *hullPoint = points[selectedIndex];
-                selectedIndex = count;
-                points[selectedIndex] = savedPoint;
+            const float minAngle = previousAngle;
+            previousAngle = 6.28318548f;
 
-                const float minAngle = previousAngle;
-                previousAngle = 6.28318548f;
-
-                if (scanStart <= count) {
-                    zVec3* candidate = hullPoint + 1;
-                    int scanIndex = scanStart;
-                    do {
-                        const float angle = FastAngleXZ(hullPoint, candidate);
-                        if (angle > minAngle && angle < previousAngle) {
-                            previousAngle = angle;
-                            selectedIndex = scanIndex;
-                        }
-                        ++scanIndex;
-                        ++candidate;
-                    } while (scanIndex <= count);
+            zVec3* candidate = hullPoint + 1;
+            for (int scanIndex = scanStart; scanIndex <= count; ++scanIndex) {
+                const float angle = FastAngleXZ(hullPoint, candidate);
+                if (angle > minAngle && angle < previousAngle) {
+                    previousAngle = angle;
+                    selectedIndex = scanIndex;
                 }
+                ++candidate;
+            }
 
-                if (selectedIndex == count) {
-                    return hullIndex + 1;
-                }
+            if (selectedIndex == count) {
+                return hullIndex + 1;
+            }
 
-                ++hullPoint;
-                ++hullIndex;
-                ++scanStart;
-            } while (hullIndex < count);
+            ++hullPoint;
+            ++scanStart;
         }
 
         zError::ReportOld(

@@ -3981,7 +3981,8 @@ int WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues()
 
         g_pWestwoodOnlineUpgradeDialog->SetSelectedProfilePlayerName(CString(playerName));
         g_pWestwoodOnlineUpgradeDialog->SetSelectedProfileConnectString(CString(connectString));
-        g_pWestwoodOnlineUpgradeDialog->m_selectedProfileConnectStringMode = connectStringMode;
+        WestwoodOnlineUpgradeDialog* const wolDialog = g_pWestwoodOnlineUpgradeDialog;
+        wolDialog->m_selectedProfileConnectStringMode = connectStringMode;
 
         return 1;
     }

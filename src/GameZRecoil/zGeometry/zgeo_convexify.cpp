@@ -525,7 +525,7 @@ namespace zGeometry_TriangulateHole {
  *
  * Purpose: Emit a triangle from two incident live edges and their closing edge.
  */
-void __fastcall TryEmitTriangleFromEdgePair(
+int __fastcall TryEmitTriangleFromEdgePair(
     int edgeIndex0,
     int edgeIndex1,
     int vertexIndex,
@@ -533,35 +533,39 @@ void __fastcall TryEmitTriangleFromEdgePair(
     zGeometry_TriangulateHole_EdgeState* edgeStates
 )
 {
+    zGeometry_TriangleIndexTriple* const triangle
+        = &g_zGeometry_TriangulateHole_TriangleIndices[g_zGeometry_TriangulateHole_TriangleCount];
     zGeometry_TriangulateHole_EdgeState* const edge0 = &edgeStates[edgeIndex0];
     zGeometry_TriangulateHole_EdgeState* const edge1 = &edgeStates[edgeIndex1];
 
     if (edge0->remainingUseCount == 0 || edge1->remainingUseCount == 0) {
-        return;
+        return 0;
     }
 
-    int vertexIndex0 = edge0->vertexIndex0;
-    if (vertexIndex0 == vertexIndex) {
+    int vertexIndex0;
+    if (edge0->vertexIndex0 == vertexIndex) {
         vertexIndex0 = edge0->vertexIndex1;
+    } else {
+        vertexIndex0 = edge0->vertexIndex0;
     }
 
-    int vertexIndex1 = edge1->vertexIndex0;
-    if (vertexIndex1 == vertexIndex) {
+    int vertexIndex1;
+    if (edge1->vertexIndex0 == vertexIndex) {
         vertexIndex1 = edge1->vertexIndex1;
+    } else {
+        vertexIndex1 = edge1->vertexIndex0;
     }
 
     if (vertexIndex0 + vertexIndex1 + vertexIndex == 3) {
-        return;
+        return 0;
     }
 
     zGeometry_TriangulateHole_EdgeState* const closingEdge
         = FindActiveEdgeState(vertexIndex0, vertexIndex1, edgeCount, edgeStates);
     if (closingEdge == 0) {
-        return;
+        return 0;
     }
 
-    zGeometry_TriangleIndexTriple* const triangle
-        = &g_zGeometry_TriangulateHole_TriangleIndices[g_zGeometry_TriangulateHole_TriangleCount];
     triangle->i0 = vertexIndex0;
     triangle->i1 = vertexIndex1;
     triangle->i2 = vertexIndex;
@@ -570,6 +574,7 @@ void __fastcall TryEmitTriangleFromEdgePair(
     --edge0->remainingUseCount;
     --edge1->remainingUseCount;
     --closingEdge->remainingUseCount;
+    return 0;
 }
 } // namespace zGeometry_TriangulateHole
 

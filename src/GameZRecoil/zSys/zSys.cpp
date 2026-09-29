@@ -215,15 +215,16 @@ char* __fastcall ResolveMessageKeyOrFallback(const char* key)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-formatmessage
  * @recoil-artifact defines .text recoil:function:0x4a5b60: zLoc::FormatMessage.
- *
+ * @recoil-match byte
  *
  * Purpose: Formats a message resource from the loaded DLL into a caller-provided buffer.
  */
 unsigned int FormatMessage(char* outBuffer, int maxChars, unsigned int messageId, ...)
 {
     char* arguments = (char*)(&messageId + 1);
+    unsigned int result;
     HLOCAL sourceHandle = 0;
-    const unsigned int result = ::FormatMessageA(
+    result = ::FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE,
         g_zLoc_MessagesDllHandle,
         messageId,

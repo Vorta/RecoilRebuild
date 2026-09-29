@@ -355,10 +355,10 @@ void __fastcall KeyboardPollState(unsigned char dispatchCallbacks)
                 continue;
             }
 
-            void* const callback = g_zInputKbdKeyDispatchTable[dispatchIndex].callback;
-            if (callback != 0 && (g_zInputKbdKeyDispatchTable[dispatchIndex].state & 1) != 0) {
-                ((KeyboardComboCallbackFn)(callback))(dispatchIndex);
-                g_zInputKbdKeyDispatchTable[dispatchIndex].state = 0;
+            KbdKeyDispatchEntry& entry = g_zInputKbdKeyDispatchTable[dispatchIndex];
+            if (entry.callback != 0 && (entry.state & 1) != 0) {
+                ((KeyboardComboCallbackFn)(entry.callback))(dispatchIndex);
+                entry.state = 0;
             }
         }
     }

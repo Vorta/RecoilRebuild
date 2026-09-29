@@ -1671,25 +1671,34 @@ namespace CZClass
             return 0;
         }
 
-        zBBox3f merged = { 0 };
-        const zBBox3f* bboxSource = 0;
-        const bool hasPrimaryBBox = (node->flags & 0x200) != 0;
-        const bool hasChildBBox = (node->flags & 0x400) != 0;
+        zBBox3f merged;
+        const zBBox3f* bboxSource;
         CZNodeFreeListSlot* nodeSlot = (CZNodeFreeListSlot*)(node);
-        const zBBox3f* primaryBBox = hasPrimaryBBox ? &nodeSlot->primaryBounds : 0;
-        const zBBox3f* secondaryBBox = hasChildBBox ? &nodeSlot->secondaryBounds : 0;
-        if (hasPrimaryBBox && hasChildBBox) {
-            merged.min.x = primaryBBox->min.x < secondaryBBox->min.x ? primaryBBox->min.x : secondaryBBox->min.x;
-            merged.min.y = primaryBBox->min.y < secondaryBBox->min.y ? primaryBBox->min.y : secondaryBBox->min.y;
-            merged.min.z = primaryBBox->min.z < secondaryBBox->min.z ? primaryBBox->min.z : secondaryBBox->min.z;
-            merged.max.x = primaryBBox->max.x > secondaryBBox->max.x ? primaryBBox->max.x : secondaryBBox->max.x;
-            merged.max.y = primaryBBox->max.y > secondaryBBox->max.y ? primaryBBox->max.y : secondaryBBox->max.y;
-            merged.max.z = primaryBBox->max.z > secondaryBBox->max.z ? primaryBBox->max.z : secondaryBBox->max.z;
+        if ((node->flags & 0x200) != 0 && (node->flags & 0x400) != 0) {
+            float value;
+            value = nodeSlot->primaryBounds.min.x < nodeSlot->secondaryBounds.min.x ? nodeSlot->primaryBounds.min.x
+                                                                                    : nodeSlot->secondaryBounds.min.x;
+            merged.min.x = value;
+            value = nodeSlot->primaryBounds.min.y < nodeSlot->secondaryBounds.min.y ? nodeSlot->primaryBounds.min.y
+                                                                                    : nodeSlot->secondaryBounds.min.y;
+            merged.min.y = value;
+            value = nodeSlot->primaryBounds.min.z < nodeSlot->secondaryBounds.min.z ? nodeSlot->primaryBounds.min.z
+                                                                                    : nodeSlot->secondaryBounds.min.z;
+            merged.min.z = value;
+            value = nodeSlot->primaryBounds.max.x > nodeSlot->secondaryBounds.max.x ? nodeSlot->primaryBounds.max.x
+                                                                                    : nodeSlot->secondaryBounds.max.x;
+            merged.max.x = value;
+            value = nodeSlot->primaryBounds.max.y > nodeSlot->secondaryBounds.max.y ? nodeSlot->primaryBounds.max.y
+                                                                                    : nodeSlot->secondaryBounds.max.y;
+            merged.max.y = value;
+            value = nodeSlot->primaryBounds.max.z > nodeSlot->secondaryBounds.max.z ? nodeSlot->primaryBounds.max.z
+                                                                                    : nodeSlot->secondaryBounds.max.z;
+            merged.max.z = value;
             bboxSource = &merged;
-        } else if (hasPrimaryBBox) {
-            bboxSource = primaryBBox;
-        } else if (hasChildBBox) {
-            bboxSource = secondaryBBox;
+        } else if ((node->flags & 0x200) != 0) {
+            bboxSource = &nodeSlot->primaryBounds;
+        } else if ((node->flags & 0x400) != 0) {
+            bboxSource = &nodeSlot->secondaryBounds;
         } else {
             node->flags &= ~0x100;
             return 0;
@@ -1699,21 +1708,26 @@ namespace CZClass
         memcpy(node->cachedBounds, bboxSource, sizeof(*bboxSource));
         node->boundsFlags |= 0x04;
 
-        bool worldRectComputed = false;
-        float minX = 0.0f;
-        float maxX = 0.0f;
-        float minZ = 0.0f;
-        float maxZ = 0.0f;
+        if (node->listCountA <= 0) {
+            return 0;
+        }
+
+        int worldRectComputed = 0;
+        float minX;
+        float maxX;
+        float minZ;
+        float maxZ;
         for (int i = 0; i < node->listCountA; ++i) {
             CZNodePartial* parent = node->listA[i];
             if (parent->classId == 2) {
                 if (!worldRectComputed) {
-                    zBBoxCorners corners = { 0 };
+                    zBBoxCorners corners;
+                    worldRectComputed = 1;
                     gwNodeGetWorldBBoxCorners(node, &corners);
                     minX = maxX = corners.corners[0].x;
                     minZ = maxZ = corners.corners[0].z;
-                    for (int cornerIndex = 1; cornerIndex < 8; ++cornerIndex) {
-                        const zVec3* corner = &corners.corners[cornerIndex];
+                    const zVec3* corner = &corners.corners[1];
+                    for (i = 7; i > 0; --i) {
                         if (corner->x < minX)
                             minX = corner->x;
                         else if (corner->x > maxX)
@@ -1722,14 +1736,16 @@ namespace CZClass
                             minZ = corner->z;
                         else if (corner->z > maxZ)
                             maxZ = corner->z;
+                        ++corner;
                     }
-                    worldRectComputed = true;
                 }
 
-                int gridCol = -1;
-                int gridRow = -1;
+                int gridCol;
+                int gridRow;
                 if ((node->flags & 0x80) == 0) {
                     CZWorld::WorldRectToGridIndex(parent, &gridCol, minX, maxX, minZ, maxZ, &gridRow);
+                } else {
+                    gridCol = gridRow = -1;
                 }
 
                 if (gridCol == node->gridCol && gridRow == node->gridRow) {
@@ -1893,14 +1909,14 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.buildnodetoancestormatrix
      * @recoil-artifact defines .text recoil:function:0x449480: CZNode::gwNodeBuildNodeToAncestorMatrix
-     *
+     * @recoil-match byte
      *
      * Purpose: apply a node's parent-chain transforms into the current matrix.
      */
     int __fastcall gwNodeBuildNodeToAncestorMatrix(CZNodePartial * node, int matMode)
     {
+        zVec3 zeroAngles = { 0.0f, 0.0f, 0.0f };
         zVec3 unitScale = { 1.0f, 1.0f, 1.0f };
-        zVec3 zeroAngles = { 0 };
 
         if (node == 0) {
             zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Class.c", 0xb66, "Null node pointer.");
@@ -1915,11 +1931,11 @@ namespace CZNode
             }
         }
 
-        CZNodePartial* parentChain[15] = { 0 };
+        CZNodePartial* parentChain[15];
         int chainCount = 1;
         parentChain[0] = node;
         CZNodePartial* current = node;
-        while (current != 0) {
+        for (;;) {
             if (current->listCountA > 1) {
                 zError::ReportOld(
                     0x800,
@@ -1932,10 +1948,7 @@ namespace CZNode
                 );
                 return 1;
             }
-            if (current->listCountA != 1) {
-                break;
-            }
-            current = current->listA[0];
+            current = current->listCountA == 1 ? current->listA[0] : 0;
             if (current == 0) {
                 break;
             }
@@ -1952,8 +1965,8 @@ namespace CZNode
 
         for (int i_1435 = chainCount - 1; i_1435 >= 0; --i_1435) {
             CZNodePartial* ancestor = parentChain[i_1435];
-            const int ancestorFlags = ancestor->flags & ~kNodeTransformDirtyPropagatedFlag;
-            ancestor->flags = ancestorFlags;
+            ancestor->flags &= ~kNodeTransformDirtyPropagatedFlag;
+            const int ancestorFlags = ancestor->flags;
             switch (ancestor->classId) {
             case 5: {
                 CZObject3DDataPartial* objectData = (CZObject3DDataPartial*)(ancestor->classData);
@@ -1963,8 +1976,11 @@ namespace CZNode
                         if ((objectFlags & 0x20) != 0) {
                             zMath::MatMultiply((const zMat4x3*)(objectData->localMatrix), matMode);
                             zMat4x3 currentMatrix;
-                            zMath::MatCopyCurrentTo(&currentMatrix);
-                            memcpy(objectData->cachedWorldMatrix, &currentMatrix, sizeof(currentMatrix));
+                            memcpy(
+                                objectData->cachedWorldMatrix,
+                                zMath::MatCopyCurrentTo(&currentMatrix),
+                                sizeof(currentMatrix)
+                            );
                             objectData->flags &= ~0x20;
                         } else {
                             zMath::MatLoadCurrentFrom((const zMat4x3*)(objectData->cachedWorldMatrix));
@@ -1974,8 +1990,11 @@ namespace CZNode
                     }
                 } else if ((ancestorFlags & kSingleParentFlag) != 0 && (objectFlags & 0x20) != 0) {
                     zMat4x3 currentMatrix;
-                    zMath::MatCopyCurrentTo(&currentMatrix);
-                    memcpy(objectData->cachedWorldMatrix, &currentMatrix, sizeof(currentMatrix));
+                    memcpy(
+                        objectData->cachedWorldMatrix,
+                        zMath::MatCopyCurrentTo(&currentMatrix),
+                        sizeof(currentMatrix)
+                    );
                     objectData->flags &= ~0x20;
                 }
                 break;

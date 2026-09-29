@@ -331,9 +331,9 @@ int __fastcall ClipPointList(
         return 0;
     }
 
+    self->clipMode = clipMode;
     self->inputContourBBuffer.base = points;
     self->inputContourBBuffer.count = pointCount;
-    self->clipMode = clipMode;
 
     if (self->contourSource != 0) {
         zGeometry_Weiler::TogglePointAxesForContourSource(self);
@@ -390,7 +390,6 @@ int __fastcall ClipPointList(
 
     zGeometry_Weiler::PreclassifyInputContourAAdjacentEdgePairs(self);
     if (zGeometry_Weiler::InitInputContourPair(self, (zVec3*)(self->inputContourBBuffer.base), pointCount, 2) == 0) {
-        zGeometry_WeilerClipOutput::Destroy(outClip);
         if (self->pointsRecentered) {
             zGeometry_Weiler::RestorePointTranslation(self);
         }
@@ -399,12 +398,12 @@ int __fastcall ClipPointList(
             zGeometry_Weiler::TogglePointAxesForContourSource(self);
         }
 
+        zGeometry_WeilerClipOutput::Destroy(outClip);
         return 0;
     }
 
     zGeometry_Weiler::BuildPointSideTablesForContourPair(self);
     if (zGeometry_Weiler::PreclassifyInputContourPair(self) == 0) {
-        zGeometry_WeilerClipOutput::Destroy(outClip);
         if (self->pointsRecentered) {
             zGeometry_Weiler::RestorePointTranslation(self);
         }
@@ -413,12 +412,12 @@ int __fastcall ClipPointList(
             zGeometry_Weiler::TogglePointAxesForContourSource(self);
         }
 
+        zGeometry_WeilerClipOutput::Destroy(outClip);
         return 0;
     }
 
     int clipResult = zGeometry_Weiler::ClassifyContainedContour(self);
     if (clipResult == 1) {
-        zGeometry_WeilerClipOutput::Destroy(outClip);
         if (self->pointsRecentered) {
             zGeometry_Weiler::RestorePointTranslation(self);
         }
@@ -427,12 +426,12 @@ int __fastcall ClipPointList(
             zGeometry_Weiler::TogglePointAxesForContourSource(self);
         }
 
+        zGeometry_WeilerClipOutput::Destroy(outClip);
         return 0;
     }
 
     if (clipResult != 0) {
         if (zGeometry_Weiler::MergeContours(self) == 0) {
-            zGeometry_WeilerClipOutput::Destroy(outClip);
             if (self->pointsRecentered) {
                 zGeometry_Weiler::RestorePointTranslation(self);
             }
@@ -441,12 +440,13 @@ int __fastcall ClipPointList(
                 zGeometry_Weiler::TogglePointAxesForContourSource(self);
             }
 
+            zGeometry_WeilerClipOutput::Destroy(outClip);
             return 0;
         }
 
         zGeometry_Weiler::NewContour(self);
 
-        if (!self->allContoursSingleSided || preclassifiedMode == 2) {
+        if (self->allContoursSingleSided != true || preclassifiedMode == 2) {
             if (zGeometry_Weiler::OutputContoursForClipMode(self) == 0) {
                 fprintf(stderr, g_zGeometry_WeilerGatherContoursFailedFmt, g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x3b2);
                 if (self->pointsRecentered) {
@@ -477,7 +477,7 @@ int __fastcall ClipPointList(
         self->outClip->polygonSetA.polygonCount = 0;
     }
 
-    int outputMode = 1;
+    int outputMode;
     if (preclassifiedMode == 2) {
         if (zGeometry_Weiler::GenerateOutsideResults(self) == 0
             || zGeometry_Weiler::OutputSelectedInputContourToPolygonSetA(self, 4) == 0) {
@@ -509,6 +509,8 @@ int __fastcall ClipPointList(
         }
 
         outputMode = 3;
+    } else {
+        outputMode = 1;
     }
 
     if (self->pointsRecentered) {
@@ -765,7 +767,7 @@ int __fastcall OutputPreclassifiedContourPairResult(
  *
  * Purpose: Preclassify overlapping input contours by splitting coincident segments and merging contour type flags.
  */
-int __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self)
+bool __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self)
 {
     WeilerPreclassifyContourPacket* const contourPacket = (WeilerPreclassifyContourPacket*)(self->contourBuffer.base);
 
@@ -2551,7 +2553,7 @@ int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputcontourtopolygonset
  * @recoil-artifact defines .text recoil:function:0x4682c0: zGeometry_Weiler::OutputContourToPolygonSet
- *
+ * @recoil-match byte
  *
  * Purpose: Append a polygon span and copy contour segment points into the output point list.
  */
@@ -2833,10 +2835,10 @@ int __fastcall CreateForwardSegmentPairAtPoint(
  *
  * Purpose: Append the selected input contour into polygon set A of the caller-owned Weiler clip output.
  */
-int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial* self, int mode)
+bool __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial* self, int mode)
 {
     if ((self->clipMode & 1) == 0) {
-        return 1;
+        return true;
     }
 
     zGeometry_WeilerBufferPartial* selectedInputContour = &self->inputContourBBuffer;
@@ -2844,26 +2846,25 @@ int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePart
         selectedInputContour = &self->inputContourABuffer;
     }
 
-    zGeometry_WeilerClipOutputPartial* const outClip = self->outClip;
-    outClip->polygonSetA.polygonCount = 1;
+    self->outClip->polygonSetA.polygonCount = 1;
 
-    const int oldPointCount = outClip->pointList.pointCount;
-    const int selectedPointCount = selectedInputContour->count;
-    const int totalPointCount = oldPointCount + selectedPointCount;
-
-    if ((unsigned int)(totalPointCount) > 0x80) {
-        outClip->pointList.points
-            = (zVec3*)(realloc(outClip->pointList.points, (size_t)(totalPointCount) * sizeof(zVec3)));
+    if ((unsigned int)(self->outClip->pointList.pointCount + selectedInputContour->count) > 0x80) {
+        self->outClip->pointList.points = (zVec3*)(realloc(
+            self->outClip->pointList.points,
+            (size_t)(self->outClip->pointList.pointCount + selectedInputContour->count) * sizeof(zVec3)
+        ));
     }
 
-    outClip->polygonSetA.polygons->pointCount = selectedPointCount;
-    outClip->polygonSetA.polygons->pointDwordOffset = oldPointCount * 3;
+    self->outClip->polygonSetA.polygons->pointCount = selectedInputContour->count;
+    self->outClip->polygonSetA.polygons->pointDwordOffset = self->outClip->pointList.pointCount * 3;
+    memcpy(
+        &self->outClip->pointList.points[self->outClip->pointList.pointCount],
+        selectedInputContour->base,
+        (size_t)(selectedInputContour->count) * sizeof(zVec3)
+    );
 
-    const size_t pointBytes = (size_t)(selectedPointCount) * sizeof(zVec3);
-    memcpy(&outClip->pointList.points[oldPointCount], selectedInputContour->base, pointBytes);
-
-    outClip->pointList.pointCount = oldPointCount + selectedPointCount;
-    return 1;
+    self->outClip->pointList.pointCount += selectedInputContour->count;
+    return true;
 }
 
 /**
@@ -2873,7 +2874,7 @@ int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePart
  *
  * Purpose: Emit an outside-result polygon span and wrapped B/A point bridge when clip mode requests outside output.
  */
-int __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
+bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
 {
     const int contourAPointCount = self->inputContourABuffer.count;
     zVec3* const contourBPoints = (zVec3*)(self->inputContourBBuffer.base);

@@ -345,7 +345,7 @@ namespace CZClass
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processdeferredwork
      * @recoil-artifact defines .text recoil:function:0x44e920: CZClass::ProcessDeferredWork.
-     *
+     * @recoil-match byte
      *
      * Purpose: process dirty deferred-removal buckets and then drain pending
      * node frees while deferred work is enabled.
@@ -356,29 +356,54 @@ namespace CZClass
             return 1;
         }
 
-#define ZCLASS_PROCESS_PENDING_BUCKET(bucket)                                                                          \
-    if (((CZTypeListBucket*)g_CZTypeList_HeadSlotPtrs[bucket])->pendingRemovalDirty != 0) {                            \
-        CZTypeList::ProcessPendingRemovals(bucket);                                                                    \
-    }
-
-        ZCLASS_PROCESS_PENDING_BUCKET(6);
-        ZCLASS_PROCESS_PENDING_BUCKET(0);
-        ZCLASS_PROCESS_PENDING_BUCKET(1);
-        ZCLASS_PROCESS_PENDING_BUCKET(2);
-        ZCLASS_PROCESS_PENDING_BUCKET(3);
-        ZCLASS_PROCESS_PENDING_BUCKET(4);
-        ZCLASS_PROCESS_PENDING_BUCKET(5);
-        ZCLASS_PROCESS_PENDING_BUCKET(7);
-        ZCLASS_PROCESS_PENDING_BUCKET(8);
-        ZCLASS_PROCESS_PENDING_BUCKET(9);
-        ZCLASS_PROCESS_PENDING_BUCKET(10);
-        ZCLASS_PROCESS_PENDING_BUCKET(13);
-        ZCLASS_PROCESS_PENDING_BUCKET(14);
-        ZCLASS_PROCESS_PENDING_BUCKET(15);
-        ZCLASS_PROCESS_PENDING_BUCKET(11);
-        ZCLASS_PROCESS_PENDING_BUCKET(12);
-
-#undef ZCLASS_PROCESS_PENDING_BUCKET
+        if (g_CZTypeList_Buckets[0].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(6);
+        }
+        if (g_CZTypeList_Buckets[1].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(0);
+        }
+        if (g_CZTypeList_Buckets[2].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(1);
+        }
+        if (g_CZTypeList_Buckets[3].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(2);
+        }
+        if (g_CZTypeList_Buckets[4].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(3);
+        }
+        if (g_CZTypeList_Buckets[5].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(4);
+        }
+        if (g_CZTypeList_Buckets[6].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(5);
+        }
+        if (g_CZTypeList_Buckets[7].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(7);
+        }
+        if (g_CZTypeList_Buckets[8].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(8);
+        }
+        if (g_CZTypeList_Buckets[9].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(9);
+        }
+        if (g_CZTypeList_Buckets[10].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(10);
+        }
+        if (g_CZTypeList_Buckets[11].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(13);
+        }
+        if (g_CZTypeList_Buckets[12].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(14);
+        }
+        if (g_CZTypeList_Buckets[13].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(15);
+        }
+        if (g_CZTypeList_Buckets[14].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(11);
+        }
+        if (g_CZTypeList_Buckets[15].pendingRemovalDirty != 0) {
+            CZTypeList::ProcessPendingRemovals(12);
+        }
 
         if (g_CZNodeList_PendingFreeHead != 0) {
             CZNodeList::ProcessPendingFrees();
@@ -520,7 +545,7 @@ namespace CZTypeList
      */
     int __cdecl UpdateSequences()
     {
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[11];
+        CZTypeListLink* link = g_CZTypeList_Buckets[14].head;
         if (link == 0) {
             return 0;
         }
@@ -550,7 +575,7 @@ namespace CZTypeList
      */
     int __cdecl UpdateAnimations()
     {
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[12];
+        CZTypeListLink* link = g_CZTypeList_Buckets[15].head;
         if (link == 0) {
             return 0;
         }
@@ -792,7 +817,7 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.markpendingremoval
      * @recoil-artifact defines .text recoil:function:0x44eed0: CZTypeList::MarkPendingRemoval.
-     *
+     * @recoil-match byte
      *
      * Purpose: mark a matching type-list link for deferred removal and set
      * the bucket dirty flag.
@@ -810,8 +835,55 @@ namespace CZTypeList
 
         if (link != 0) {
             link->pendingRemove = 1;
-            if (bucket >= 0 && bucket < 16) {
-                ((CZTypeListBucket*)g_CZTypeList_HeadSlotPtrs[bucket])->pendingRemovalDirty = 1;
+            switch (bucket) {
+            case 6:
+                g_CZTypeList_Buckets[0].pendingRemovalDirty = 1;
+                break;
+            case 0:
+                g_CZTypeList_Buckets[1].pendingRemovalDirty = 1;
+                break;
+            case 1:
+                g_CZTypeList_Buckets[2].pendingRemovalDirty = 1;
+                break;
+            case 2:
+                g_CZTypeList_Buckets[3].pendingRemovalDirty = 1;
+                break;
+            case 3:
+                g_CZTypeList_Buckets[4].pendingRemovalDirty = 1;
+                break;
+            case 4:
+                g_CZTypeList_Buckets[5].pendingRemovalDirty = 1;
+                break;
+            case 5:
+                g_CZTypeList_Buckets[6].pendingRemovalDirty = 1;
+                break;
+            case 7:
+                g_CZTypeList_Buckets[7].pendingRemovalDirty = 1;
+                break;
+            case 8:
+                g_CZTypeList_Buckets[8].pendingRemovalDirty = 1;
+                break;
+            case 9:
+                g_CZTypeList_Buckets[9].pendingRemovalDirty = 1;
+                break;
+            case 10:
+                g_CZTypeList_Buckets[10].pendingRemovalDirty = 1;
+                break;
+            case 13:
+                g_CZTypeList_Buckets[11].pendingRemovalDirty = 1;
+                break;
+            case 14:
+                g_CZTypeList_Buckets[12].pendingRemovalDirty = 1;
+                break;
+            case 15:
+                g_CZTypeList_Buckets[13].pendingRemovalDirty = 1;
+                break;
+            case 11:
+                g_CZTypeList_Buckets[14].pendingRemovalDirty = 1;
+                break;
+            case 12:
+                g_CZTypeList_Buckets[15].pendingRemovalDirty = 1;
+                break;
             }
         }
 
@@ -824,7 +896,7 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletenodefromlists
      * @recoil-artifact defines .text recoil:function:0x44f000: CZList::DeleteNodeFromLists.
-     *
+     * @recoil-match byte
      *
      * Purpose: queue a node for removal from every type, callback, and
      * update list that can reference it.
@@ -835,20 +907,20 @@ namespace CZList
         case 1:
             CZTypeList::MarkPendingRemoval(8, node);
             break;
-        case 2:
-            CZTypeList::MarkPendingRemoval(13, node);
-            break;
-        case 3:
-            CZTypeList::MarkPendingRemoval(14, node);
-            break;
-        case 4:
-            CZTypeList::MarkPendingRemoval(15, node);
+        case 8:
+            CZTypeList::MarkPendingRemoval(12, node);
             break;
         case 7:
             CZTypeList::MarkPendingRemoval(11, node);
             break;
-        case 8:
-            CZTypeList::MarkPendingRemoval(12, node);
+        case 4:
+            CZTypeList::MarkPendingRemoval(15, node);
+            break;
+        case 3:
+            CZTypeList::MarkPendingRemoval(14, node);
+            break;
+        case 2:
+            CZTypeList::MarkPendingRemoval(13, node);
             break;
         case 9:
             CZTypeList::MarkPendingRemoval(9, node);
@@ -856,16 +928,19 @@ namespace CZList
         case 10:
             CZTypeList::MarkPendingRemoval(10, node);
             break;
+        case 0:
+        case 5:
+        case 6:
+        case 11:
+            break;
         default:
-            if ((unsigned int)(node->classId) > 11) {
-                sprintf(
-                    g_zError_DebugMsgBuffer,
-                    "%s: Line %d: Unknown class type while deleting node from lists.\n",
-                    "D:\\Proj\\GameZRecoil\\zClass\\List.c",
-                    0x75d
-                );
-                zError::EmitDebugBuffer(1);
-            }
+            sprintf(
+                g_zError_DebugMsgBuffer,
+                "%s: Line %d: Unknown class type while deleting node from lists.\n",
+                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
+                0x75d
+            );
+            zError::EmitDebugBuffer(3);
             break;
         }
 
@@ -884,7 +959,7 @@ namespace CZList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletealloftype
      * @recoil-artifact defines .text recoil:function:0x44f120: CZList::DeleteAllOfType.
-     *
+     * @recoil-match byte
      *
      * Purpose: repeatedly delete every node in one type-list bucket and
      * verify that the bucket is empty afterward.
@@ -895,16 +970,17 @@ namespace CZList
 
         CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
         int deletedInLastPass = 1;
-        while (link != 0 && deletedInLastPass != 0) {
+        while (link != 0 && deletedInLastPass == 1) {
             deletedInLastPass = 0;
-            while (link != 0 && deletedInLastPass == 0) {
-                CZNodePartial* node = link->node;
+            CZTypeListLink* passLink = link;
+            do {
+                CZNodePartial* node = passLink->node;
                 if (_gwListDeleteANode(node) == 0) {
                     deletedInLastPass = 1;
                 } else {
-                    link = link->next;
+                    passLink = passLink->next;
                 }
-            }
+            } while (passLink != 0 && deletedInLastPass == 0);
 
             CZClass::ProcessDeferredWork();
             link = *g_CZTypeList_HeadSlotPtrs[bucket];

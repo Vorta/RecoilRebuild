@@ -2363,7 +2363,8 @@ void CZRecoilFrame::OnMenuToggleArchiveBanks()
 {
     m_useArchiveBanks = m_useArchiveBanks == 0 ? 1 : 0;
     CheckMenuItem(m_mainMenu.m_hMenu, 0x9c6b, m_useArchiveBanks == 0 ? MF_UNCHECKED : MF_CHECKED);
-    g_HudSensorTracker.missionFlags = m_useArchiveBanks;
+    const int useArchiveBanks = m_useArchiveBanks;
+    g_HudSensorTracker.missionFlags = useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
 }
 
@@ -2917,7 +2918,7 @@ void __cdecl InitFromZrd()
             CZNodePartial* const rootNode = playerState->rootNode;
             CZClass::RemoveChild(rootNode->listA[0], rootNode);
         }
-        saveState = saveState->next;
+        saveState = saveState != 0 ? saveState->next : 0;
     }
 
     zTurret_System::DisableTickCallback();
@@ -3101,7 +3102,7 @@ void __cdecl UnregisterGameplayPacketHandlers()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reset-hud-timer-panel-net-state-long-countdown
  * @recoil-artifact defines .text recoil:function:0x4322a0: GameNet::ResetHudTimerPanelNetStateLongCountdown.
- *
+ * @recoil-match byte
  *
  * Purpose: Reset the replicated HUD timer state to the long race countdown
  * defaults and update the displayed timer panel.
@@ -3117,8 +3118,8 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown()
     g_HudTimerPanelNetState.startGateTriggered = 0;
     g_HudTimerPanelNetState.raceFinishCountdownTriggered = 0;
     g_GameNetAllPlayersLapTargetCheckStarted = 0;
-    memset(g_HudTimerPanelNetState.tailFlags, 0, sizeof(g_HudTimerPanelNetState.tailFlags));
     g_GameNetOneLapLeftMessageShown = 0;
+    memset(g_HudTimerPanelNetState.tailFlags, 0, sizeof(g_HudTimerPanelNetState.tailFlags));
 }
 
 /**
@@ -3315,7 +3316,7 @@ GameNetPlayerRow* __fastcall FindPlayerRowByKey(int playerKey)
             return row;
         }
 
-        row = row->next;
+        row = row != 0 ? row->next : 0;
     }
 
     return 0;
@@ -3556,7 +3557,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-reassign-player-colors-and-refresh-rows
  * @recoil-artifact defines .text recoil:function:0x432e70: GameNet::ReassignPlayerColorsAndRefreshRows.
- *
+ * @recoil-match byte
  *
  * Purpose: Refresh player-row colors after network color assignment changes.
  */
@@ -3569,9 +3570,7 @@ int __cdecl ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader*)
 
         const unsigned int color = g_GameNetPlayerRowStyleColors_00RRGGBB[colorIndex];
         row->playerColorPackedRgb = color;
-        row->hudWidget.textColor0 = color;
-        row->hudWidget.textColor1 = color;
-        row->hudWidget.textDirty = 1;
+        row->hudWidget.SetTextColorsAndMarkDirty(color, color);
         HudUi::RefreshScoreboardEntryRow(row);
         row->ApplyPlayerColorTint();
 
@@ -4178,11 +4177,10 @@ float __fastcall
 GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNetPlayerSaveState** outSaveState)
 {
     float nearestDistanceSq = 1.0e23f;
-    GameNetPlayerSaveState* const localSaveState = (GameNetPlayerSaveState*)(g_GameStateOrMapTable);
     GameNetPlayerRow* row = g_GameNetPlayerRowHead;
     while (row != 0) {
         GameNetPlayerSaveState* const saveState = row->saveState;
-        if (saveState != localSaveState) {
+        if (saveState != (GameNetPlayerSaveState*)(g_GameStateOrMapTable)) {
             const float distanceSq = zMath::Vec3DeltaLengthSq(&saveState->playerState->worldPos, &spawnPoint->position);
             if (distanceSq < nearestDistanceSq) {
                 nearestDistanceSq = distanceSq;
@@ -4190,7 +4188,7 @@ GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNet
             }
         }
 
-        row = row->next;
+        row = row != 0 ? row->next : 0;
     }
 
     return nearestDistanceSq;
@@ -6203,15 +6201,13 @@ void HudUiSaveLoadDialog::InitializeFileEntries()
 
     int index = 0;
     HudUiSaveLoadEntry* entry = fileEntries.begin();
-    HudUiSaveLoadListItem* listItem = entryWidgets;
     while (entry != fileEntries.end() && index < 9) {
-        listItem->layoutX = index;
-        listItem->SetTextFmt("%s", entry->cFileName);
-        listItem->SetVisible(1);
+        entryWidgets[index].layoutX = index;
+        entryWidgets[index].SetTextFmt("%s", entry->cFileName);
+        entryWidgets[index].SetVisible(1);
 
         ++entry;
         ++index;
-        ++listItem;
     }
 }
 

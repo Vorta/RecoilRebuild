@@ -558,12 +558,12 @@ void HudUiTransitionTextPanel::Update(float deltaSeconds)
     case 2:
     case 3:
         if (flashCountdown < 0.0) {
+            flashDirectionSign = -flashDirectionSign;
             flashCountdown = flashResetValue;
             textDirty = 1;
-            flashDirectionSign = -flashDirectionSign;
 
-            const unsigned int oldTextColor1 = textColor1;
             const unsigned int oldTextColor0 = textColor0;
+            const unsigned int oldTextColor1 = textColor1;
             textColor0 = (unsigned int)(flashAltColor0);
             textColor1 = (unsigned int)(flashAltColor1);
             flashAltColor0 = (int)(oldTextColor0);
@@ -2383,23 +2383,26 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
         return;
     }
 
-    const int centerX = HudUiDialogSignedDivPow2(blitRect.right, 1);
-    const int centerY = HudUiDialogSignedDivPow2(blitRect.bottom, 1);
+    const int left = blitRect.right / 2 - 150;
     fallbackWidth = 300;
     fallbackHeight = 200;
+    const int top = blitRect.bottom / 2 - 100;
 
     backgroundImage = HudUiMessageBoxCreateSolidImage(
         fallbackWidth,
         fallbackHeight,
         (unsigned short)(zVidPackColorRGB(128, 128, 128))
     );
-
-    const int buttonWidth = HudUiDialogSignedDivPow2(fallbackWidth, 2);
-    const int buttonHeight = HudUiDialogSignedDivPow2(fallbackHeight, 2);
-    okButtonNormalImage
-        = HudUiMessageBoxCreateSolidImage(buttonWidth, buttonHeight, (unsigned short)(zVidPackColorRGB(192, 192, 192)));
-    okButtonPressedImage
-        = HudUiMessageBoxCreateSolidImage(buttonWidth, buttonHeight, (unsigned short)(zVidPackColorRGB(160, 192, 160)));
+    okButtonNormalImage = HudUiMessageBoxCreateSolidImage(
+        fallbackWidth / 4,
+        fallbackHeight / 4,
+        (unsigned short)(zVidPackColorRGB(192, 192, 192))
+    );
+    okButtonPressedImage = HudUiMessageBoxCreateSolidImage(
+        fallbackWidth / 4,
+        fallbackHeight / 4,
+        (unsigned short)(zVidPackColorRGB(160, 192, 160))
+    );
 
     backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
     messagePanel.SetTextFmt("");
@@ -2408,13 +2411,10 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
     okButton.defaultImage = okButton.SetImageBorrowedAndInvalidate(okButtonNormalImage);
     okButton.rolloverImage = okButtonPressedImage;
 
-    backdropWidget.SetPos(centerX - 150, centerY - 100);
-    titlePanel.SetPos(centerX - 140, centerY - 90);
-    messagePanel.SetPos(centerX - 140, centerY - 70);
-    okButton.SetPos(
-        centerX - 150 + HudUiDialogSignedDivPow2(fallbackWidth, 1) - HudUiDialogSignedDivPow2(fallbackWidth, 3),
-        centerY - 100 - HudUiDialogSignedDivPow2(fallbackHeight, 2) + fallbackHeight - 10
-    );
+    backdropWidget.SetPos(left, top);
+    titlePanel.SetPos(left + 10, top + 10);
+    messagePanel.SetPos(left + 10, top + 30);
+    okButton.SetPos(left + fallbackWidth / 2 - fallbackWidth / 8, top - fallbackHeight / 4 + fallbackHeight - 10);
 
     AddChild(&backdropWidget);
     AddChild(&messagePanel);

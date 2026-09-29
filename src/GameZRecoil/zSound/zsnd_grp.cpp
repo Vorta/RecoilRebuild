@@ -350,30 +350,15 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
     }
     outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
 
-    zReader::Node* nodeArray = readerNode->value.nodes;
-    {
-        for (int childIndex = 1; childIndex < nodeArray[0].value.i32; ++childIndex) {
-            zReader::Node* childNode = &nodeArray[childIndex];
-            if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
-                if (childIndex == 1) {
-                    zSndGroupLoadConfigBlock(childNode, groupFields, outConfigBlock);
-                } else {
-                    zSndGroupConfigBlock* nested = (zSndGroupConfigBlock*)(calloc(1, sizeof(zSndGroupConfigBlock)));
-                    if (nested != 0) {
-                        outConfigBlock->child = nested;
-                        zSndGroupLoadConfigBlock(childNode, groupFields, nested);
-                        outConfigBlock = nested;
-                    }
-                }
-                continue;
-            }
+    for (int childIndex = 1; childIndex < readerNode->value.nodes[0].value.i32; ++childIndex) {
+        zReader::Node* const childNode = &readerNode->value.nodes[childIndex];
+        switch (childNode->type) {
+        case zReader::ZRDR_NODE_INT:
+            break;
 
-            if (childNode->type != zReader::ZRDR_NODE_STRING) {
-                continue;
-            }
-
-            const char* key = childNode->value.str;
-            zReader::Node* valueNode = &nodeArray[childIndex + 1];
+        case zReader::ZRDR_NODE_STRING: {
+            const char* const key = childNode->value.str;
+            zReader::Node* const valueNode = &readerNode->value.nodes[childIndex + 1];
             if (strcmp(key, g_zSnd_SoundGroupDelayPlayKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->delayPlaySec = valueNode->value.f32;
@@ -394,11 +379,9 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
             } else if (strcmp(key, g_zSnd_SoundGroupPlayCountKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->maxPlayCount = (unsigned short)(valueNode->value.f32 + 0.5f);
-                    outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                     ++childIndex;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
                     outConfigBlock->maxPlayCount = (unsigned short)(valueNode->value.i32);
-                    outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                     ++childIndex;
                 } else {
                     zError::ReportOld(
@@ -409,8 +392,8 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
                         groupFields->groupName
                     );
                     ++childIndex;
-                    outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
                 }
+                outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
             } else if (strcmp(key, g_zSnd_SoundGroupWeightKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->weight = valueNode->value.f32;
@@ -431,6 +414,21 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
             } else {
                 outConfigBlock->streamName = key;
             }
+            break;
+        }
+
+        case zReader::ZRDR_NODE_ARRAY:
+            if (childIndex == 1) {
+                zSndGroupLoadConfigBlock(childNode, groupFields, outConfigBlock);
+            } else {
+                zSndGroupConfigBlock* const nested = (zSndGroupConfigBlock*)(calloc(1, sizeof(zSndGroupConfigBlock)));
+                if (nested != 0) {
+                    outConfigBlock->child = nested;
+                    zSndGroupLoadConfigBlock(childNode, groupFields, nested);
+                    outConfigBlock = nested;
+                }
+            }
+            break;
         }
     }
 

@@ -794,7 +794,7 @@ namespace zGame
     /**
      * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-options_shutdownregistrycontext
      * @recoil-artifact defines .text recoil:function:0x4b32c0: zGame::OptionsShutdownRegistryContext.
-     *
+     * @recoil-match byte
      *
      * Purpose: free the option-entry list and registry-key context globals.
      */
@@ -804,28 +804,30 @@ namespace zGame
             return;
         }
 
-        zOptionEntryPartial* entry = g_zGame_Options_OptionListHead;
-        while (entry != 0) {
-            zOptionEntryPartial* const next = entry->next;
-            if (entry->name != 0) {
-                free(entry->name);
-                entry->name = 0;
-            }
-
-            if (entry->storageType != ZGAME_OPTION_INLINE_DWORD && entry->storageType > ZGAME_OPTION_INLINE_BINARY8
-                && entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
-                void* const payload = (void*)((unsigned int)(entry->payloadOrBuffer));
-                if (payload != 0) {
-                    free(payload);
-                    entry->payloadOrBuffer = 0;
+        if (g_zGame_Options_OptionListHead != 0) {
+            zOptionEntryPartial* entry = g_zGame_Options_OptionListHead;
+            while (entry != 0) {
+                zOptionEntryPartial* const next = entry->next;
+                if (entry->name != 0) {
+                    free(entry->name);
+                    entry->name = 0;
                 }
+
+                if (entry->storageType != ZGAME_OPTION_INLINE_DWORD && entry->storageType > ZGAME_OPTION_INLINE_BINARY8
+                    && entry->storageType <= ZGAME_OPTION_STORAGE_MAX) {
+                    void* const payload = (void*)((unsigned int)(entry->payloadOrBuffer));
+                    if (payload != 0) {
+                        free(payload);
+                        entry->payloadOrBuffer = 0;
+                    }
+                }
+
+                free(entry);
+                entry = next;
             }
 
-            free(entry);
-            entry = next;
+            g_zGame_Options_OptionListHead = 0;
         }
-
-        g_zGame_Options_OptionListHead = 0;
         if (g_zGame_Options_RegKeyGame != 0) {
             free(g_zGame_Options_RegKeyGame);
             g_zGame_Options_RegKeyGame = 0;

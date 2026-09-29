@@ -1122,7 +1122,9 @@ int CZFMVActionBlurV::Update(double)
  */
 CZFMVActionPlayMci::CZFMVActionPlayMci(HWND hwnd, const char* mediaRootPath, const char* playbackTitle)
 {
-    mediaPath = (char*)(calloc(strlen(mediaRootPath) + strlen(playbackTitle) + 0x1b, 1));
+    const size_t rootLength = strlen(mediaRootPath);
+    const size_t titleLength = strlen(playbackTitle);
+    mediaPath = (char*)(calloc(rootLength + titleLength + 0x1b, 1));
     sprintf(mediaPath, "%s\\%s", mediaRootPath, playbackTitle);
 
     CZFMVPlayback* const playbackObject = new CZFMVPlayback(mediaPath, hwnd);

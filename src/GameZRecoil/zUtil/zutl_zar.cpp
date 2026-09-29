@@ -153,7 +153,7 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zar-zutil-zrdr-addsearchpaths
  * @recoil-artifact defines .text recoil:function:0x4a5ce0: zUtil::zRdrAddSearchPaths.
- *
+ * @recoil-match byte
  *
  * Purpose: split and append semicolon-delimited paths to a search-path list.
  */
@@ -180,7 +180,7 @@ void __fastcall zRdrAddSearchPaths(zArchiveList* list, const char* pathText)
             free(copy);
         }
 
-        if (activeList == g_zRdr_ScratchSearchPathList && activeList != 0) {
+        if (activeList == g_zRdr_ScratchSearchPathList && (activeList != 0 || g_zRdr_ScratchSearchPathList != 0)) {
             return;
         }
 

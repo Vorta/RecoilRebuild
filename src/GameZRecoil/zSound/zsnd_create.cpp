@@ -447,75 +447,90 @@ unsigned int zSndSample::GetPlayCursorBytes()
  */
 int zSndSample::DestroyOwnedData()
 {
-    if (this == 0 || createGuard != 0) {
+    if (this == 0) {
+        return 0;
+    }
+    if (createGuard != 0) {
         return 0;
     }
 
-    const int activeBackend = g_zSnd_ActiveBackend;
-    free(markerTimes);
-    markerTimes = 0;
-    free(markerValues);
-    markerValues = 0;
-    free(markerAux);
-    markerAux = 0;
-    free((char*)(highVariant.sampleName));
-    highVariant.sampleName = 0;
-    free((char*)(medVariant.sampleName));
-    medVariant.sampleName = 0;
-    free((char*)(lowVariant.sampleName));
-    lowVariant.sampleName = 0;
+    if (markerTimes != 0) {
+        free(markerTimes);
+        markerTimes = 0;
+    }
+    if (markerValues != 0) {
+        free(markerValues);
+        markerValues = 0;
+    }
+    if (markerAux != 0) {
+        free(markerAux);
+        markerAux = 0;
+    }
+    if (highVariant.sampleName != 0) {
+        free((char*)(highVariant.sampleName));
+        highVariant.sampleName = 0;
+    }
+    if (medVariant.sampleName != 0) {
+        free((char*)(medVariant.sampleName));
+        medVariant.sampleName = 0;
+    }
+    if (lowVariant.sampleName != 0) {
+        free((char*)(lowVariant.sampleName));
+        lowVariant.sampleName = 0;
+    }
 
-    switch (activeBackend) {
+    switch (g_zSnd_ActiveBackend) {
     case 1: {
         for (int i = 0; i < duplicateVoiceCount; ++i) {
-            zSndPlayHandle* voice = duplicateVoices[i];
-            if (voice != 0) {
-                zSndBuffer* const backendBuffer = voice->backendBuffer;
-                if (backendBuffer != 0) {
-                    ((zA3dProviderSource*)backendBuffer)->Release();
-                }
-                voice->backendBuffer = 0;
-                free(voice);
+            zSndBuffer** const voiceBuffer = &duplicateVoices[i]->backendBuffer;
+            if (*voiceBuffer != 0) {
+                ((zA3dProviderSource*)(*voiceBuffer))->Release();
+                *voiceBuffer = 0;
             }
+            free(duplicateVoices[i]);
         }
 
-        free(duplicateVoices);
+        if (duplicateVoices != 0) {
+            free(duplicateVoices);
+            duplicateVoices = 0;
+        }
+        duplicateVoiceCount = 0;
         if (primaryVoice.backendBuffer != 0) {
-            if (((zA3dProviderSource*)(primaryVoice.backendBuffer))->FreeWaveData() < 0) {
+            const int freeResult = ((zA3dProviderSource*)(primaryVoice.backendBuffer))->FreeWaveData();
+            if (freeResult < 0) {
                 return 0;
             }
 
             ((IUnknown*)(primaryVoice.backendBuffer))->Release();
+            primaryVoice.backendBuffer = 0;
+            replayFields.flags &= ~0x08;
         }
         break;
     }
     case 0: {
         for (int i = 0; i < duplicateVoiceCount; ++i) {
-            zSndPlayHandle* voice = duplicateVoices[i];
-            if (voice != 0) {
-                zSndBuffer* const backendBuffer = voice->backendBuffer;
-                if (backendBuffer != 0) {
-                    ((LPDIRECTSOUNDBUFFER)backendBuffer)->Release();
-                }
-                voice->backendBuffer = 0;
-                free(voice);
+            zSndBuffer** const voiceBuffer = &duplicateVoices[i]->backendBuffer;
+            if (*voiceBuffer != 0) {
+                ((LPDIRECTSOUNDBUFFER)(*voiceBuffer))->Release();
+                *voiceBuffer = 0;
             }
+            free(duplicateVoices[i]);
         }
 
-        free(duplicateVoices);
+        if (duplicateVoices != 0) {
+            free(duplicateVoices);
+            duplicateVoices = 0;
+        }
+        duplicateVoiceCount = 0;
         if (primaryVoice.backendBuffer != 0) {
             ((IUnknown*)(primaryVoice.backendBuffer))->Release();
+            primaryVoice.backendBuffer = 0;
+            replayFields.flags &= ~0x08;
         }
         break;
     }
-    default:
-        return 0;
     }
 
-    duplicateVoices = 0;
-    duplicateVoiceCount = 0;
-    primaryVoice.backendBuffer = 0;
-    replayFields.flags &= ~0x08;
     return 1;
 }
 

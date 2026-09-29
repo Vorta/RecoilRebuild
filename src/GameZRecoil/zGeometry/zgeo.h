@@ -72,8 +72,8 @@ struct zGeometry_WeilerContourOutputPartial {
 };
 
 struct zGeometry_PolygonPointSpanPartial {
-    int pointDwordOffset;
     int pointCount;
+    int pointDwordOffset;
 };
 
 struct zGeometry_PolygonSpanArrayPartial {
@@ -311,7 +311,7 @@ int __fastcall CollectActiveEdgeIndicesForVertex(
     zGeometry_TriangulateHole_EdgeState* edgeStates,
     int* outEdgeIndices
 );
-void __fastcall TryEmitTriangleFromEdgePair(
+int __fastcall TryEmitTriangleFromEdgePair(
     int edgeIndex0,
     int edgeIndex1,
     int vertexIndex,
@@ -453,7 +453,7 @@ int __fastcall OutputContourToPolygonSet(
 int __fastcall OutputContoursForClipMode(zGeometry_WeilerStatePartial* self);
 void __fastcall
 SelectForwardStartPointInContourA(zVec3* point, zVec3** selectedPoint, zGeometry_WeilerStatePartial* self);
-int __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self);
+bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self);
 int __fastcall ClassifyInputContourPairBounds(zGeometry_WeilerStatePartial* self);
 int __fastcall OutputPreclassifiedContourPairResult(
     int contourAPointCount,
@@ -462,10 +462,10 @@ int __fastcall OutputPreclassifiedContourPairResult(
     zVec3* contourBPoints,
     int resultCode
 );
-int __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial* self, int mode);
+bool __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePartial* self, int mode);
 void __fastcall PreclassifyInputContourAAdjacentEdgePairs(zGeometry_WeilerStatePartial* self);
 void __fastcall BuildPointSideTablesForContourPair(zGeometry_WeilerStatePartial* self);
-int __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self);
+bool __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self);
 int __fastcall ClassifyContainedContour(zGeometry_WeilerStatePartial* self);
 int __fastcall ClassifyIntersect2d(
     zVec3* edge0Start,
