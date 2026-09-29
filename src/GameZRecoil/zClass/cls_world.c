@@ -469,8 +469,8 @@ namespace CZWorld
             do {
                 zWorldAreaPartial* area = *pendingAreaUpdates;
                 RebuildAreaBounds(data, area);
-                ++pendingAreaUpdates;
                 area->areaFlags &= ~0x01;
+                ++pendingAreaUpdates;
                 --data->pendingAreaUpdateCount;
             } while (data->pendingAreaUpdateCount > 0);
         }

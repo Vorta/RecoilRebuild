@@ -9203,18 +9203,18 @@ void __fastcall zRndrFillSpan565Solid(int packedColor16, int blendAlpha, int pix
             if (blendAlpha >= 0xfc) {
                 *cursor = (unsigned short)(packedColor16);
             } else {
-                const int dst = (short)(*cursor);
+                int dst = (short)(*cursor);
                 int greenDelta = (packedColor16 & 0x07e0) - (dst & 0x07e0);
-                greenDelta *= blendAlpha;
                 int redDelta = (packedColor16 & 0xf800) - (dst & 0xf800);
+                greenDelta *= blendAlpha;
                 redDelta *= blendAlpha;
                 redDelta = (redDelta >> 8) & 0xfffff800;
-                const int redAdjusted = dst + redDelta;
-                int blueDelta = (packedColor16 & 0x001f) - (redAdjusted & 0x001f);
+                dst += redDelta;
+                int blueDelta = (packedColor16 & 0x001f) - (dst & 0x001f);
                 blueDelta *= blendAlpha;
                 greenDelta = (greenDelta >> 8) & 0xffffffe0;
                 blueDelta >>= 8;
-                *cursor = (unsigned short)(redAdjusted + blueDelta + greenDelta);
+                *cursor = (unsigned short)(dst + blueDelta + greenDelta);
             }
         }
 
@@ -10195,20 +10195,18 @@ void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex)
         return;
     }
 
-    const float visibility = 1.0f / visibleSampleDef->depthDivisor;
+    float visibility = 1.0f / visibleSampleDef->depthDivisor;
     if (!(visibility < lensFlareSource->fadeFar)) {
         return;
     }
 
     if (visibility < lensFlareSource->fadeNear) {
-        zRndrLensFlareDrawVisibleSampleStages(visibleSampleDef, 1.0f);
-        return;
+        visibility = 1.0f;
+    } else {
+        visibility = (lensFlareSource->fadeFar - visibility) / (lensFlareSource->fadeFar - lensFlareSource->fadeNear);
     }
 
-    zRndrLensFlareDrawVisibleSampleStages(
-        visibleSampleDef,
-        (lensFlareSource->fadeFar - visibility) / (lensFlareSource->fadeFar - lensFlareSource->fadeNear)
-    );
+    zRndrLensFlareDrawVisibleSampleStages(visibleSampleDef, visibility);
 }
 
 /**

@@ -1152,7 +1152,10 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
     PlayerGunFireController* const pairedController = &bank->controllerA + pairedWeaponSideIndex;
     int updateValueText = 1;
 
-    const float maxAmount = controller->optCatalogEntry->ammoOrChargeMax;
+    // Retail copies the catalog maximum through the FPU (fld/fstp); the double
+    // intermediate reproduces that copy.
+    const double catalogAmmoMax = controller->optCatalogEntry->ammoOrChargeMax;
+    const float maxAmount = (float)catalogAmmoMax;
     if (controller->ammoOrCharge != kUnlimitedAmmoSentinel && controller->ammoOrCharge >= maxAmount
         && pickupType->weaponKeyName == 0) {
         zLoc::FormatMessage(messageBuffer, 64, 0x237, zLoc::GetMessageString(pickupType->msgIdOrClassId));

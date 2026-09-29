@@ -140,7 +140,7 @@ int zImage_Font::BuildGlyphRects()
             } while (IsImageColumnTransparent(image, x) != 0);
         }
 
-        x = x - (x - right) / 2;
+        x = x + (right - x) / 2;
         glyph->left = left;
         glyph->right = right + 1;
         ++glyph;

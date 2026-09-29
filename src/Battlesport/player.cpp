@@ -6539,15 +6539,15 @@ namespace Player {
  */
 void __cdecl TickAllPlayers()
 {
-    g_Player_DeltaTime = g_FrameDeltaTimeSec >= kPlayerMinFrameDeltaSec ? g_FrameDeltaTimeSec : kPlayerMinFrameDeltaSec;
+    g_Player_DeltaTime = 0.00499999989f > g_FrameDeltaTimeSec ? 0.00499999989f : g_FrameDeltaTimeSec;
     g_Player_InvDeltaTime = 1.0f / g_Player_DeltaTime;
     g_Player_TotalTimeSecScaled = g_Time_AccumulatedTimeSec;
-    g_Player_DeltaTimeScaled001 = g_Player_DeltaTime * kPlayerDeltaTimeScaled001Factor;
+    g_Player_DeltaTimeScaled001 = g_Player_DeltaTime * 0.00999999978f;
 
-    int totalMode2Count = 0;
     int activeMode2Count = 0;
-    zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
-    while (saveState != 0) {
+    int totalMode2Count = 0;
+    zUtil_SaveGameState* saveState;
+    for (saveState = g_PlayerSaveStateList.head; saveState != 0; saveState = saveState != 0 ? saveState->next : 0) {
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         const int lifecycleState = playerState->lifecycleState;
         playerState->generalFlags |= kPlayerPerFrameGeneralFlag;
@@ -6578,40 +6578,31 @@ void __cdecl TickAllPlayers()
                 TickLocalPlayerControls(saveState);
             } else if (lifecycleState == kPlayerLifecycleAi) {
                 ++totalMode2Count;
-                if (VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0) {
-                    zUtil_PlayerStateStorage* const localPlayerState
-                        = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
-                    const float targetDistanceSq
-                        = zMath::Vec3DistSqXZ(&playerState->worldPos, &localPlayerState->worldPos);
-                    playerState->targetDistanceSq = targetDistanceSq;
-
-                    if ((targetDistanceSq <= playerState->aiActivationRadiusSq || playerState->recentHitFlag != 0)
-                        && playerState->aiTickSuppressed == 0) {
-                        playerState->aiActive = 1;
-                        ++activeMode2Count;
-                        AINet::TickAiMode2TopLevel(saveState);
-                    } else {
-                        if (playerState->cameraTickEnabled != 0) {
-                            TickActiveCameraState(saveState);
-                        }
-                        if (zSnd::GetAudioApiOption() == 1) {
-                            saveState->UpdateModalLoopSfx(0);
-                        }
-
-                        const int altGunFireHeldFlag = playerState->altGunFireHeldFlag;
-                        playerState->aiActive = 0;
-                        if (altGunFireHeldFlag != 0) {
-                            PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
-                            playerState->altGunFireHeldFlag = 0;
-                            OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);
-                        }
-
-                        saveState = saveState != 0 ? saveState->next : 0;
-                        continue;
-                    }
+                if (VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0
+                    && ((playerState->targetDistanceSq = zMath::Vec3DistSqXZ(
+                             &playerState->worldPos,
+                             &((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos
+                         )) <= playerState->aiActivationRadiusSq
+                        || playerState->recentHitFlag != 0)
+                    && playerState->aiTickSuppressed == 0) {
+                    playerState->aiActive = 1;
+                    ++activeMode2Count;
+                    AINet::TickAiMode2TopLevel(saveState);
                 } else {
+                    if (playerState->cameraTickEnabled != 0) {
+                        TickActiveCameraState(saveState);
+                    }
+                    if (zSnd::GetAudioApiOption() == 1) {
+                        saveState->UpdateModalLoopSfx(0);
+                    }
+
+                    const int altGunFireHeldFlag = playerState->altGunFireHeldFlag;
                     playerState->aiActive = 0;
-                    saveState = saveState != 0 ? saveState->next : 0;
+                    if (altGunFireHeldFlag != 0) {
+                        PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
+                        playerState->altGunFireHeldFlag = 0;
+                        OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);
+                    }
                     continue;
                 }
             }
@@ -6626,19 +6617,14 @@ void __cdecl TickAllPlayers()
                         UpdateAltGunAimDirection(saveState);
                     }
 
-                    int altGunLatch = 0;
-                    if (playerState->altGunDispatchRequested != 0
-                        && playerState->activeAltGunController->ammoOrCharge > 0.0f) {
-                        altGunLatch = 1;
-                    }
-                    playerState->netInputBit16Latch = altGunLatch;
-
-                    int primaryGunLatch = 0;
-                    if (playerState->primaryGunDispatchRequested != 0
-                        && playerState->activePrimaryGunController->ammoOrCharge > 0.0f) {
-                        primaryGunLatch = 1;
-                    }
-                    playerState->netInputBit17Latch = primaryGunLatch;
+                    playerState->netInputBit16Latch = playerState->altGunDispatchRequested != 0
+                            && playerState->activeAltGunController->ammoOrCharge > 0.0f
+                        ? 1
+                        : 0;
+                    playerState->netInputBit17Latch = playerState->primaryGunDispatchRequested != 0
+                            && playerState->activePrimaryGunController->ammoOrCharge > 0.0f
+                        ? 1
+                        : 0;
 
                     TickAltGunRuntimeState(saveState);
                 }
@@ -6654,8 +6640,6 @@ void __cdecl TickAllPlayers()
                 saveState->UpdateModalLoopSfx(1);
             }
         }
-
-        saveState = saveState != 0 ? saveState->next : 0;
     }
 
     if (zSnd::GetAudioApiOption() != 1) {

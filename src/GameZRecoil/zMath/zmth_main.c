@@ -1409,7 +1409,7 @@ void __stdcall zMathSetScreenSize(int screenWidthPx, int screenHeightPx)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-setup-projection-gamezrecoil-zmath-zmath-proj-cpp
  * @recoil-artifact defines .text recoil:function:0x474400: zMathSetupProjection (GameZRecoil/zMath/zmath_proj.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: Derives cached projection scale, inverse scale, viewport, offset, radius-scale, and depth globals.
  */
@@ -1425,19 +1425,19 @@ void __stdcall zMathSetupProjection(
 )
 {
     g_zMath_FocalScaleX = focalScaleX;
-    g_zMath_FocalScaleY = focalScaleY;
     g_zMath_InvFocalScaleX = 1.0f / focalScaleX;
     g_zMath_ProjScaleX = focalScaleX * halfViewWidthPx;
     g_zMath_ProjScaleY = focalScaleY * halfViewHeightPx;
     g_zMath_InvFocalScaleY = 1.0f / focalScaleY;
+    g_zMath_FocalScaleY = focalScaleY;
     g_zMath_InvProjScaleX = 1.0f / g_zMath_ProjScaleX;
     g_zMath_InvProjScaleY = 1.0f / g_zMath_ProjScaleY;
-    g_zMath_ProjOffsetX = halfViewWidthPx + viewportOriginX;
-    g_zMath_ProjOffsetY = halfViewHeightPx + viewportOriginY;
     g_zMath_HalfViewWidth = halfViewWidthPx;
     g_zMath_HalfViewHeight = halfViewHeightPx;
     g_zMath_ViewportOriginX = viewportOriginX;
     g_zMath_ViewportOriginY = viewportOriginY;
+    g_zMath_ProjOffsetX = halfViewWidthPx + viewportOriginX;
+    g_zMath_ProjOffsetY = halfViewHeightPx + viewportOriginY;
     g_zMath_ProjSphereRadiusScale = clipDistance;
     g_zMath_ProjDepth = projDepth;
 }

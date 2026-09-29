@@ -1552,21 +1552,27 @@ zInput_DiEffect* __stdcall zInputDICreateConstantForceEffectScaled(float gain)
 {
     DWORD axes[2] = { 0, 4 };
     LONG direction[2] = { 0, 0 };
-    DICONSTANTFORCE constantForce = { 10000 };
-    DIEFFECT effect = { 0 };
-    effect.dwSize = sizeof(effect);
-    effect.dwFlags = 0x22;
-    effect.dwDuration = 100000;
     if (gain > 1.0f) {
         gain = 1.0f;
     } else if (gain < 0.0f) {
         gain = 0.0f;
     }
+
+    DICONSTANTFORCE constantForce;
+    constantForce.lMagnitude = 10000;
+
+    DIEFFECT effect;
+    effect.dwSize = sizeof(effect);
+    effect.dwFlags = 0x22;
+    effect.dwDuration = 100000;
+    effect.dwSamplePeriod = 0;
     effect.dwGain = (DWORD)(gain * 10000.0f);
     effect.dwTriggerButton = (DWORD)(-1);
+    effect.dwTriggerRepeatInterval = 0;
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
+    effect.lpEnvelope = 0;
     effect.cbTypeSpecificParams = sizeof(constantForce);
     effect.lpvTypeSpecificParams = &constantForce;
     return zInputDICreateForceFeedbackEffect(&GUID_ConstantForce, &effect);
@@ -1579,15 +1585,22 @@ zInput_DiEffect* __fastcall zInputDICreateConstantForceEffectWithDirection(int d
 {
     DWORD axes[2] = { 0, 4 };
     LONG direction[2] = { directionValue, 0 };
-    DICONSTANTFORCE constantForce = { 10000 };
-    DIEFFECT effect = { 0 };
+
+    DICONSTANTFORCE constantForce;
+    constantForce.lMagnitude = 10000;
+
+    DIEFFECT effect;
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
     effect.dwDuration = (DWORD)(-1);
+    effect.dwSamplePeriod = 0;
+    effect.dwGain = 0;
     effect.dwTriggerButton = (DWORD)(-1);
+    effect.dwTriggerRepeatInterval = 0;
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
+    effect.lpEnvelope = 0;
     effect.cbTypeSpecificParams = sizeof(constantForce);
     effect.lpvTypeSpecificParams = &constantForce;
     return zInputDICreateForceFeedbackEffect(&GUID_ConstantForce, &effect);
@@ -1600,23 +1613,30 @@ zInput_DiEffect* __stdcall zInputDICreateSineEffectScaled(float gain)
 {
     DWORD axes[2] = { 0, 4 };
     LONG direction[2] = { 0, 0 };
-    DIPERIODIC periodic = { 0 };
     if (gain > 1.0f) {
         gain = 1.0f;
     } else if (gain < 0.0f) {
         gain = 0.0f;
     }
+
+    DIPERIODIC periodic;
     periodic.dwMagnitude = (DWORD)(gain * 10000.0f);
+    periodic.lOffset = 0;
+    periodic.dwPhase = 0;
     periodic.dwPeriod = 20000;
-    DIEFFECT effect = { 0 };
+
+    DIEFFECT effect;
     effect.dwSize = sizeof(effect);
     effect.dwFlags = 0x22;
     effect.dwDuration = (DWORD)(-1);
+    effect.dwSamplePeriod = 0;
     effect.dwGain = 10000;
     effect.dwTriggerButton = (DWORD)(-1);
+    effect.dwTriggerRepeatInterval = 0;
     effect.cAxes = 2;
     effect.rgdwAxes = axes;
     effect.rglDirection = direction;
+    effect.lpEnvelope = 0;
     effect.cbTypeSpecificParams = sizeof(periodic);
     effect.lpvTypeSpecificParams = &periodic;
     return zInputDICreateForceFeedbackEffect(&GUID_Sine, &effect);
@@ -4298,28 +4318,25 @@ int __fastcall HostSendPkt0FCraterFeature(zDEClient_CraterEventTemplate* eventTe
  */
 int __fastcall SendPkt10QSandEvent(zDEClient_QSandEventTemplate* eventTemplate)
 {
-    if (eventTemplate->radius <= 0.0f) {
-        eventTemplate->radius = -eventTemplate->radius;
-        return 1;
-    }
+    if (eventTemplate->radius > 0.0f) {
+        if (eventTemplate->damageOwnerNode == ((zUtil_SaveGameState*)(g_GameStateOrMapTable))->playerState->rootNode) {
+            ::g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
+            ::g_NetPkt10_QSandEventRelayBuf.center = eventTemplate->center;
+            ::g_NetPkt10_QSandEventRelayBuf.radius = eventTemplate->radius;
+            ::g_NetPkt10_QSandEventRelayBuf.eventFlags = 0;
 
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
-    if (eventTemplate->damageOwnerNode != saveState->playerState->rootNode) {
+            if (zNetwork::IsHost() != 0) {
+                zDEClient_QSand::NetRelayCallback(zNetworkGetLocalPlayerKey(), &::g_NetPkt10_QSandEventRelayBuf);
+            } else {
+                zNetworkSendPacketReliable(&::g_NetPkt10_QSandEventRelayBuf.header);
+            }
+        }
+
         return 0;
     }
 
-    ::g_NetPkt10_QSandEventRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
-    ::g_NetPkt10_QSandEventRelayBuf.center = eventTemplate->center;
-    ::g_NetPkt10_QSandEventRelayBuf.radius = eventTemplate->radius;
-    ::g_NetPkt10_QSandEventRelayBuf.eventFlags = 0;
-
-    if (zNetwork::IsHost() != 0) {
-        zDEClient_QSand::NetRelayCallback(zNetworkGetLocalPlayerKey(), &::g_NetPkt10_QSandEventRelayBuf);
-        return 0;
-    }
-
-    zNetworkSendPacketReliable(&::g_NetPkt10_QSandEventRelayBuf.header);
-    return 0;
+    eventTemplate->radius = -eventTemplate->radius;
+    return 1;
 }
 } // namespace GameNet
 
@@ -4676,9 +4693,9 @@ void __cdecl SendAllPkt13EffectAnimActivationRecords()
 int __fastcall SendPkt14HudTimerAndFlagsSync(int eventCode, unsigned int statusFlags, int valueOrTime, int auxParam)
 {
     g_NetPkt14_HudTimerAndFlagsSyncBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
-    g_NetPkt14_HudTimerAndFlagsSyncBuf.valueOrTime = valueOrTime;
     g_NetPkt14_HudTimerAndFlagsSyncBuf.eventCode = (short)(eventCode);
     g_NetPkt14_HudTimerAndFlagsSyncBuf.auxParam = (short)(auxParam);
+    g_NetPkt14_HudTimerAndFlagsSyncBuf.valueOrTime = valueOrTime;
     g_NetPkt14_HudTimerAndFlagsSyncBuf.statusFlags = statusFlags;
     return zNetworkSendPacketReliable(&g_NetPkt14_HudTimerAndFlagsSyncBuf.header);
 }

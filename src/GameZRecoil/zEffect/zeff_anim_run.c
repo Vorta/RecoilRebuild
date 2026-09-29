@@ -636,7 +636,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightevent
      * @recoil-artifact defines .text recoil:function:0x459080: zEffect::HandleLightEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: activate a runtime light reference and apply serialized light
@@ -696,12 +696,11 @@ namespace zEffect
 
             if (basisNode != 0) {
                 CZNode::TransformPoint(basisNode, &worldPosition);
+                worldPosition.x += event->basisOrColorX;
+                worldPosition.y += event->basisOrColorY;
+                worldPosition.z += event->basisOrColorZ;
+                CZLight::gwLightSetPosition(lightRef->runtimeNode, worldPosition.x, worldPosition.y, worldPosition.z);
             }
-
-            worldPosition.x += event->basisOrColorX;
-            worldPosition.y += event->basisOrColorY;
-            worldPosition.z += event->basisOrColorZ;
-            CZLight::gwLightSetPosition(lightRef->runtimeNode, worldPosition.x, worldPosition.y, worldPosition.z);
         }
 
         if ((event->fieldMask & 0x04) != 0) {
@@ -1856,7 +1855,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatekeyframesample
      * @recoil-artifact defines .text recoil:function:0x45ae90: zEffect_Anim::AnimateKeyframeSample.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply position, rotation, and scale channels for one keyframe
@@ -1938,9 +1937,8 @@ namespace zEffect_Anim
 
         if ((sampleHeader->channelFlags & 0x02) != 0) {
             const float localTimeSec = keyframeEvent->keyframeLocalTime;
-            const zVec3 rotationVector = { sampleChannel->rate.x * localTimeSec,
-                sampleChannel->rate.y * localTimeSec,
-                sampleChannel->rate.z * localTimeSec };
+            const zVec3* const rate = &sampleChannel->rate;
+            const zVec3 rotationVector = { rate->x * localTimeSec, rate->y * localTimeSec, rate->z * localTimeSec };
 
             zQuat deltaQuat;
             zMathQuatFromRotationVector(&rotationVector, &deltaQuat);
@@ -2549,8 +2547,9 @@ namespace zEffect
         zEffectSurfaceRefEvent * event
     )
     {
+        zEffectAnimEntry* childEntry = 0;
+        CZNodePartial* boundNode = 0;
         if (runtime->runState == 0) {
-            zEffectAnimEntry* childEntry = 0;
             if (event->runtimeRefIndex >= 0) {
                 self->runtimeRefList[event->runtimeRefIndex].cachedChildEntry = 0;
             }
@@ -2565,21 +2564,18 @@ namespace zEffect
                 }
             }
             if (event->animEntryIndex > 0) {
-                CZNodePartial* boundNode = 0;
                 if (event->boundNodeRefIndex > 0) {
                     boundNode = self->nodeRefList[event->boundNodeRefIndex].node;
                 }
 
                 const unsigned short flags = (unsigned short)(event->flags);
-                zEffectAnimEntry* const targetEntry = &g_zEffectAnim_State.entryList[event->animEntryIndex];
-
                 if ((flags & 0x01u) != 0) {
                     CZNodePartial* const refNode = event->refNodeIndex > 0 ? self->nodeRefList[event->refNodeIndex].node
                         : event->refNodeIndex == -200 ? (CZNodePartial*)((unsigned int)(self->resetScratch[0]))
                                                       : 0;
                     if (refNode != 0) {
                         zVec3 position = event->position;
-                        zVec3 orientation = { 0 };
+                        zVec3 orientation;
                         if ((flags & 0x04u) != 0) {
                             CZNode::GetWorldPosAndOrientation(refNode, &position, &orientation);
                             orientation.x += event->orientationOffset.x;
@@ -2587,10 +2583,11 @@ namespace zEffect
                             orientation.z += event->orientationOffset.z;
                         } else {
                             CZNode::TransformPoint(refNode, &position);
+                            orientation.x = orientation.y = orientation.z = 0.0f;
                         }
 
                         childEntry = zEffectAnim::SetTransformRotAndVelocity(
-                            targetEntry,
+                            &g_zEffectAnim_State.entryList[event->animEntryIndex],
                             boundNode,
                             position.x,
                             position.y,
@@ -2606,7 +2603,7 @@ namespace zEffect
                 } else if ((flags & 0x08u) != 0) {
                     zVec3 position = event->position;
                     childEntry = zEffectAnim::SetPositionRefAndVelocity(
-                        targetEntry,
+                        &g_zEffectAnim_State.entryList[event->animEntryIndex],
                         boundNode,
                         event->refNodeIndex > 0           ? self->nodeRefList[event->refNodeIndex].node
                             : event->refNodeIndex == -200 ? (CZNodePartial*)((unsigned int)(self->resetScratch[0]))
@@ -2616,7 +2613,7 @@ namespace zEffect
                     );
                 } else {
                     childEntry = zEffectAnim::SetVelocity(
-                        targetEntry,
+                        &g_zEffectAnim_State.entryList[event->animEntryIndex],
                         boundNode,
                         self->velocityX,
                         self->velocityY,
@@ -3327,7 +3324,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handletopmessageevent
      * @recoil-artifact defines .text recoil:function:0x45cbc0: zEffect::HandleTopMessageEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: push a top HUD message using a localized message id or fallback
@@ -3339,12 +3336,11 @@ namespace zEffect
         if (textIdIndex >= 0) {
             zEffectAnimTextIdEntry* const textEntry = &g_zEffectAnim_State.textIdEntryList[textIdIndex];
             const int messageId = textEntry->messageId;
-            const char* message = textEntry->messageKey;
             if (messageId != 0) {
-                message = zLoc::GetMessageString((unsigned int)(messageId));
+                HudUi::PushTopMessageLine(zLoc::GetMessageString((unsigned int)(messageId)), 3.0f);
+            } else {
+                HudUi::PushTopMessageLine(textEntry->messageKey, 3.0f);
             }
-
-            HudUi::PushTopMessageLine(message, 3.0f);
         }
 
         return 2;
@@ -3979,7 +3975,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stopandcleanup
      * @recoil-artifact defines .text recoil:function:0x45d570: zEffectAnim::StopAndCleanup.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: stop or rebind an animation entry and run immediate or sequenced
@@ -3987,66 +3983,69 @@ namespace zEffectAnim
      */
     int __fastcall StopAndCleanup(zEffectAnimEntry * self, CZNodePartial * targetNode, int immediateCleanup)
     {
-        if (self == 0 || self->activationState == 5) {
+        if (self == 0) {
             return -1;
         }
 
+        // One state pointer serves both paths: a successful rebind retargets it to the rebound entry,
+        // which then runs the shared flag and cleanup sequence.
         zEffectAnimEntry* entry = self;
-        const int cleanupRequested = targetNode == 0 || self->boundNode == targetNode;
-
-        if (cleanupRequested != 0 && targetNode != 0) {
-            if (self->activationState == 2 || self->activationState == 6) {
-                Stop(self);
-            }
-            entry->activationState = 0;
+        unsigned char* state = &self->activationState;
+        if (*state == 5) {
+            return -1;
         }
 
-        if (cleanupRequested != 0) {
-            if (immediateCleanup != 0) {
-                entry->flags |= 0x40u;
+        if (targetNode != 0) {
+            if (self->boundNode == targetNode) {
+                if (*state == 2 || *state == 6) {
+                    Stop(self);
+                }
             } else {
-                entry->flags &= ~0x40u;
+                while (entry->runtimeSibling != 0 && entry->activationState == 2) {
+                    entry = entry->runtimeSibling;
+                }
+
+                if (entry->activationState == 2) {
+                    zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
+                    entry->runtimeSibling = clonedEntry;
+                    if (clonedEntry == 0) {
+                        return -1;
+                    }
+                    entry = clonedEntry;
+                }
+
+                if (RebindEntryToNode(entry, targetNode) == 0) {
+                    return -1;
+                }
             }
+            state = &entry->activationState;
+            *state = 0;
         }
 
-        if (cleanupRequested != 0 && entry->activationState != 1 && (entry->flags & 0x40u) != 0) {
-            zEffect_Anim::RestoreNodeStates(entry);
+        if (immediateCleanup != 0) {
+            entry->flags |= 0x40u;
+        } else {
+            entry->flags &= ~0x40u;
         }
 
-        if (cleanupRequested != 0 && entry->activationState != 1 && entry->surfacePrimary.eventStream != 0) {
-            zEffect::HandleEmitterResetEvent(&entry->surfacePrimary);
-            zEffect_Anim::RunSequenceEvents(entry, &entry->surfacePrimary);
-            const unsigned char runState = entry->surfacePrimary.runState;
-            if (runState == 0 || runState == 1) {
-                CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
-                return 0;
+        if (*state != 1) {
+            if ((entry->flags & 0x40u) != 0) {
+                zEffect_Anim::RestoreNodeStates(entry);
             }
-        }
 
-        if (cleanupRequested != 0 && entry->activationState != 1) {
+            if (entry->surfacePrimary.eventStream != 0) {
+                zEffectAnimSurfaceRuntime* const surface = &entry->surfacePrimary;
+                zEffect::HandleEmitterResetEvent(surface);
+                zEffect_Anim::RunSequenceEvents(entry, surface);
+                const unsigned char runState = surface->runState;
+                if (runState == 0 || runState == 1) {
+                    CZClass::gwNodeSetActionCallbackTail(entry->runtimeNode, (void*)(&RunStopSequenceCallback));
+                    return 0;
+                }
+            }
+
             FinalizeStop(entry);
         }
-        if (cleanupRequested != 0) {
-            return 0;
-        }
-
-        while (entry->runtimeSibling != 0 && entry->activationState == 2) {
-            entry = entry->runtimeSibling;
-        }
-
-        if (entry->activationState == 2) {
-            zEffectAnimEntry* const clonedEntry = CloneEntryForNode(entry, targetNode);
-            entry->runtimeSibling = clonedEntry;
-            if (clonedEntry == 0) {
-                return -1;
-            }
-            entry = clonedEntry;
-        }
-
-        if (RebindEntryToNode(entry, targetNode) == 0) {
-            return -1;
-        }
-        entry->activationState = 0;
         return 0;
     }
 

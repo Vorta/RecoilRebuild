@@ -362,7 +362,8 @@ void zTurret_Runtime::InitFromReaderNode(
         CZClass::RemoveChild(partBarrelNode, firePointNode0);
         CZUtil::DestroyNodeRecursive(firePointNode0);
         firePointNode0 = 0;
-        firePos.y += firePointLocal[0].y;
+        const float baseY = firePos.y;
+        firePos.y = baseY + firePointLocal[0].y;
     }
 
     if (firePointNode1 != 0) {
@@ -838,7 +839,7 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(const zVec3* targetPos)
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-fireweapon
  * @recoil-artifact defines .text recoil:function:0x437820: zTurret_Runtime::FireWeapon.
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Spawns the configured OptCatalog weapon or activates its trail runtime state.
@@ -892,7 +893,8 @@ void zTurret_Runtime::FireWeapon()
         OptCatalog::SetPendingSpawnTargetOverrides(&runtimeAimPending, &runtimeAimTarget);
         OptCatalog::ActivateTrailRuntimeState(trailRuntimeState, 0);
         OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
-        nextFireTime = g_Time_AccumulatedTimeSec + fireBurstDuration + postBurstCooldown;
+        const float burstDuration = fireBurstDuration;
+        nextFireTime = g_Time_AccumulatedTimeSec + burstDuration + postBurstCooldown;
     }
 }
 
@@ -1077,7 +1079,8 @@ void __cdecl TickAllRuntimesRoundRobin()
 
     g_zTurret_CallbackIterationActive = 1;
     g_zTurret_CallbackIterIndex = g_zTurret_CallbackStartIndex;
-    for (int runtimeScanCount = 0; runtimeScanCount < g_zTurret_RuntimeCount; ++runtimeScanCount) {
+    for (int runtimeScanCount = 0; runtimeScanCount < g_zTurret_RuntimeCount;
+        ++runtimeScanCount, ++g_zTurret_CallbackIterIndex) {
         if (g_zTurret_CallbackIterIndex >= g_zTurret_RuntimeCount) {
             g_zTurret_CallbackIterIndex = 0;
         }
@@ -1087,8 +1090,6 @@ void __cdecl TickAllRuntimesRoundRobin()
                 &g_LocalPlayerSaveState->playerState->fxOffsetWorld
             );
         }
-
-        ++g_zTurret_CallbackIterIndex;
     }
 
     ++g_zTurret_CallbackStartIndex;

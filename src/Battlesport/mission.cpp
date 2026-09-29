@@ -557,7 +557,7 @@ int HudSensorTracker::LoadMissionCoreResources()
     CZClass::Init();
     zModel::Init();
 
-    if (((const char*)zbdPath)[0] == '\0') {
+    if (zbdPath.IsEmpty()) {
         if (missionFlags != 0) {
             zbdPath.Format(g_HudSensorTracker_MissionZbdGsFmt, missionId);
         } else {
@@ -1367,57 +1367,47 @@ int HudSensorTracker::UpdateObjectiveFlow()
     if (zOpt::GetNetworkEnabled() == 0) {
         firstIncompleteObjectiveIndex = FindAndHighlightFirstIncompleteObjective();
 
-        if (menuTransitionDelaySec > 0.0f
-            && objectiveReadTimeSecRaw + menuTransitionDelaySec <= g_Time_AccumulatedTimeSec) {
+        if (menuTransitionDelaySec > 0.0) {
             zUtil_PlayerStateStorage* const playerState
                 = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
-            if (playerState->lifecycleState == 4) {
-                RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
-            }
+            if (objectiveReadTimeSecRaw + menuTransitionDelaySec <= g_Time_AccumulatedTimeSec) {
+                if (playerState->lifecycleState == 4) {
+                    RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
+                }
 
-            menuTransitionDelaySec = -1.0f;
+                menuTransitionDelaySec = -1.0f;
+            }
         }
 
         {
-            for (int objectiveIndex = 0; objectiveIndex < objectiveCount; ++objectiveIndex) {
-                HudSensorObjectiveSlot& slot = objectiveSlots[objectiveIndex];
-                if (slot.completedFlag != 0) {
-                    continue;
+            HudSensorObjectiveSlot* slot = objectiveSlots;
+            for (int objectiveIndex = 0; objectiveIndex < objectiveCount; ++objectiveIndex, ++slot) {
+                if (slot->completedFlag == 0
+                    && ((slot->activationNode != 0 && (slot->activationNode->flags & 4) != 0)
+                        || (slot->inactivationNode != 0 && (slot->inactivationNode->flags & 4) == 0))) {
+                    slot->completedFlag = 1;
+                    ++completedObjectiveCount;
+                    objectiveFlowState = 0x67;
+                    currentObjectiveIndex = objectiveIndex;
+                    objectiveFlowDeadlineSecRaw = objectiveReviewDelaySecRaw + g_Time_UnscaledAccumulatedTimeSec;
+                    SetObjectiveMarkerEnabledAndColor(firstIncompleteObjectiveIndex, 0, 0);
+                    SetObjectiveMarkerColorBlink(
+                        firstIncompleteObjectiveIndex,
+                        g_HudSensorTracker_ObjectiveBlinkColorRedRgb24
+                    );
+
+                    if (finalMissionFlag != 0 && completedObjectiveCount == 5) {
+                        g_HudSensorTracker_ObjectiveCommandLocked = 1;
+                        AINet::AiFinalizeMode2State1ForAllPlayers();
+                        zTurret_System::DisableTickCallback();
+                        HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
+                        SetObjectivePanelVisible(1);
+                        objectiveFlowDeadlineSecRaw = g_Time_UnscaledAccumulatedTimeSec + 60.0f;
+                        objectiveFlowState = 0x68;
+                    }
+
+                    break;
                 }
-
-                int completed = 0;
-                if (slot.activationNode != 0 && (slot.activationNode->flags & 4) != 0) {
-                    completed = 1;
-                } else if (slot.inactivationNode != 0 && (slot.inactivationNode->flags & 4) == 0) {
-                    completed = 1;
-                }
-
-                if (completed == 0) {
-                    continue;
-                }
-
-                slot.completedFlag = 1;
-                ++completedObjectiveCount;
-                objectiveFlowState = 0x67;
-                currentObjectiveIndex = objectiveIndex;
-                objectiveFlowDeadlineSecRaw = objectiveReviewDelaySecRaw + g_Time_UnscaledAccumulatedTimeSec;
-                SetObjectiveMarkerEnabledAndColor(firstIncompleteObjectiveIndex, 0, 0);
-                SetObjectiveMarkerColorBlink(
-                    firstIncompleteObjectiveIndex,
-                    g_HudSensorTracker_ObjectiveBlinkColorRedRgb24
-                );
-
-                if (finalMissionFlag != 0 && completedObjectiveCount == 5) {
-                    g_HudSensorTracker_ObjectiveCommandLocked = 1;
-                    AINet::AiFinalizeMode2State1ForAllPlayers();
-                    zTurret_System::DisableTickCallback();
-                    HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
-                    SetObjectivePanelVisible(1);
-                    objectiveFlowState = 0x68;
-                    objectiveFlowDeadlineSecRaw = g_Time_UnscaledAccumulatedTimeSec + 60.0f;
-                }
-
-                break;
             }
         }
 
@@ -3051,28 +3041,28 @@ BOOL NetSessionBrowserDialog::OnInitDialog()
 
     zNetworkServiceProviderListVec* const providerList = zNetworkDPlay::RefreshAndGetServiceProviderList();
     const int providerCount = (int)providerList->size();
-
-    HWND providerComboHwnd = m_providerCombo.m_hWnd;
-    int providerIndex;
-    for (providerIndex = 0; providerIndex < providerCount; ++providerIndex) {
-        zNetworkDPlayServiceProviderInfo* const providerInfo = (*providerList)[providerIndex];
-        char* const displayName = providerInfo->displayName;
-        if (strstr(displayName, g_zNetwork_ProviderName_Ipx) != 0
-            || strstr(displayName, g_zNetwork_ProviderName_TcpIp) != 0
-            || strstr(displayName, g_zNetwork_ProviderName_Modem) != 0) {
-            const LRESULT comboIndex = ::SendMessageA(providerComboHwnd, CB_ADDSTRING, 0, (LPARAM)displayName);
-            ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, comboIndex, (LPARAM)providerInfo);
+    for (int providerIndex = 0; providerIndex < providerCount; ++providerIndex) {
+        if (strstr((*providerList)[providerIndex]->displayName, g_zNetwork_ProviderName_Ipx) != 0
+            || strstr((*providerList)[providerIndex]->displayName, g_zNetwork_ProviderName_TcpIp) != 0
+            || strstr((*providerList)[providerIndex]->displayName, g_zNetwork_ProviderName_Modem) != 0) {
+            const LRESULT comboIndex = ::SendMessageA(
+                m_providerCombo.m_hWnd,
+                CB_ADDSTRING,
+                0,
+                (LPARAM)(*providerList)[providerIndex]->displayName
+            );
+            ::SendMessageA(m_providerCombo.m_hWnd, CB_SETITEMDATA, comboIndex, (LPARAM)(*providerList)[providerIndex]);
         }
     }
 
     const LRESULT noProviderIndex = ::SendMessageA(
-        providerComboHwnd,
+        m_providerCombo.m_hWnd,
         CB_ADDSTRING,
         0,
         (LPARAM)zLoc::GetMessageString(kNetSessionBrowserNoProviderMessageId)
     );
-    ::SendMessageA(providerComboHwnd, CB_SETITEMDATA, noProviderIndex, 0);
-    ::SendMessageA(providerComboHwnd, CB_SETCURSEL, 0, 0);
+    ::SendMessageA(m_providerCombo.m_hWnd, CB_SETITEMDATA, noProviderIndex, 0);
+    ::SendMessageA(m_providerCombo.m_hWnd, CB_SETCURSEL, 0, 0);
     ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
     ((CWnd*)this)->UpdateData(FALSE);
     return TRUE;

@@ -73,7 +73,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.initfrompath
      * @recoil-artifact defines .text recoil:function:0x460070: zEffect::InitFromPath.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: load runtime effect templates from a zReader tree and prepare the
@@ -150,10 +150,11 @@ namespace zEffect
 
             zReader::Node* const loopingNode = zRdrGetNode(effectNode, g_zEffectAnim_TokenLooping);
             if (loopingNode != 0) {
-                zModel_Instance::SetCycleTextureLoop(
-                    displayInstance,
-                    strcmp(loopingNode->value.nodes[1].value.str, "ON") == 0 ? 1 : 0
-                );
+                if (strcmp(loopingNode->value.nodes[1].value.str, "ON") == 0) {
+                    zModel_Instance::SetCycleTextureLoop(displayInstance, 1);
+                } else {
+                    zModel_Instance::SetCycleTextureLoop(displayInstance, 0);
+                }
             }
 
             {

@@ -10016,7 +10016,7 @@ namespace HudUiMgrTarget {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.updateselectedprogressmeter
  * @recoil-artifact defines .text recoil:function:0x4124b0: HudUiMgrTarget::UpdateSelectedProgressMeter.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * The selected progress meter consumes the HudUiSlot pointer saved by the
@@ -10028,18 +10028,16 @@ namespace HudUiMgrTarget {
  */
 void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack)
 {
-    HudUiSlot* trackedProgressSlot = 0;
     if (clearSelectedTrack != 0) {
         g_HudUiMgrSensorTrackedProgressSlot = 0;
-    } else {
-        trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
     }
 
-    if (g_HudUiMgr.enabled == 0 || g_HudUiMgrObjectivePhase != 0 || trackedProgressSlot == 0) {
+    if (g_HudUiMgr.enabled == 0 || g_HudUiMgrObjectivePhase != 0 || g_HudUiMgrSensorTrackedProgressSlot == 0) {
         return;
     }
 
-    HudUiMgrSensorTrackNode* const selectedTrackNode = (HudUiMgrSensorTrackNode*)(trackedProgressSlot->trackNode);
+    HudUiMgrSensorTrackNode* const selectedTrackNode
+        = (HudUiMgrSensorTrackNode*)(g_HudUiMgrSensorTrackedProgressSlot->trackNode);
     float selectedHealthCurrent;
     float selectedHealthMax;
     if (selectedTrackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
@@ -10055,10 +10053,9 @@ void __fastcall UpdateSelectedProgressMeter(int clearSelectedTrack)
 
     if (selectedHealthCurrent == 0.0f) {
         g_HudUiMgrSensorMeter.SetVisible(0);
-        trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
     }
 
-    if (zClipAlt::RemapPointXYInPlace(&trackedProgressSlot->screenX) == 0) {
+    if (zClipAlt::RemapPointXYInPlace(&g_HudUiMgrSensorTrackedProgressSlot->screenX) == 0) {
         return;
     }
 
@@ -13219,4 +13216,3 @@ void zFMV_Action::RunBlockingTimed()
  */
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
-extern int g_HudSortRangeIdCounterAlignment2;

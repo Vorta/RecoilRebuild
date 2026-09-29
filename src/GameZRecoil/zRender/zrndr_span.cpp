@@ -1720,16 +1720,18 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
             if ((unsigned int)(g_spanActiveConstAlphaBits) >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int greenDelta
-                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
-                const int redDelta
-                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta
-                    = (((srcColor & 0x001f) - (blended & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                unsigned int greenDelta = (srcColor & 0x07e0) - (dstColor & 0x07e0);
+                unsigned int redDelta = (srcColor & 0xf800) - (dstColor & 0xf800);
+                greenDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
+                redDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
+                redDelta = (redDelta >> 8) & 0xfffff800;
+                dstColor += redDelta;
+                unsigned int blueDelta = (srcColor & 0x001f) - (dstColor & 0x001f);
+                blueDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
+                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                blueDelta >>= 8;
+                *dst = (unsigned short)(dstColor + blueDelta + greenDelta);
             }
         }
 

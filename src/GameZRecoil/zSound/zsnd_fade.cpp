@@ -181,19 +181,20 @@ void __cdecl StopAllAndShutdown()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelist-deletenodeandadvancecursor
  * @recoil-artifact defines .text recoil:function:0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
- *
+ * @recoil-match byte
  *
  * Purpose: remove the current fade-list node, release its storage, and advance
  * the caller's cursor to the next node.
  */
 void zSndFadeList::DeleteNodeAndAdvanceCursor(zSndFadeListNode** outCursor, zSndFadeListNode* node)
 {
-    node->prev->next = node->next;
-    node->next->prev = node->prev;
-    zSndFadeListNode* const outNext = node->next;
-    ::operator delete(node);
+    zSndFadeListNode* const erased = node;
+    node = node->next;
+    erased->prev->next = erased->next;
+    erased->next->prev = erased->prev;
+    ::operator delete(erased);
     --count;
-    *outCursor = outNext;
+    *outCursor = node;
 }
 
 /**

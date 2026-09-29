@@ -3288,7 +3288,7 @@ void HudUiCycleSelectorWidget::AddBitmapEntry(int index, const char* imagePath, 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduicycleselectorwidget-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b82e0: HudUiCycleSelectorWidget::LoadFromZrd.
- *
+ * @recoil-match byte
  *
  * Purpose: load the recovered HUD data handled by HudUiCycleSelectorWidget::LoadFromZrd.
  */
@@ -3323,7 +3323,8 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
     }
 
     for (int index = 0; index < itemCount; ++index) {
-        zReader::Node* const entryNode = &cycleNode->value.nodes[index + 1];
+        // Unsigned slot index: VC5 then forms the entry address as scaled index + array base, as in retail.
+        zReader::Node* const entryNode = &cycleNode->value.nodes[(unsigned int)(index + 1)];
 
         zReader::Node* const textNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {

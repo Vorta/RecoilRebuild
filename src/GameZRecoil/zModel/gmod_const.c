@@ -2106,7 +2106,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.freecontents
      * @recoil-artifact defines .text recoil:function:0x482160: zDi::FreeContents
-     *
+     * @recoil-match byte
      *
      * Purpose: release all heap-owned arrays and materials held by a display instance.
      */
@@ -2117,20 +2117,20 @@ namespace zDi
         }
 
         zDiEntryPartial* entries = self->entries;
-        for (int i = 0; i < self->entryCount; ++i) {
-            zDiEntryPartial& entry = entries[i];
-            if (entry.vertexIndices != 0) {
-                free(entry.vertexIndices);
+        zDiEntryPartial* entry = entries;
+        for (int i = 0; i < self->entryCount; ++i, ++entry) {
+            if (entry->vertexIndices != 0) {
+                free(entry->vertexIndices);
             }
-            entry.vertexIndices = 0;
-            if (entry.normalIndices != 0) {
-                free(entry.normalIndices);
+            entry->vertexIndices = 0;
+            if (entry->normalIndices != 0) {
+                free(entry->normalIndices);
             }
-            entry.normalIndices = 0;
-            if (entry.uvPairs != 0) {
-                free(entry.uvPairs);
+            entry->normalIndices = 0;
+            if (entry->uvPairs != 0) {
+                free(entry->uvPairs);
             }
-            entry.uvPairs = 0;
+            entry->uvPairs = 0;
         }
 
         self->entryCount = 0;
@@ -2619,31 +2619,39 @@ namespace zModel_Const
     zVec3* __fastcall
     SetNormalizedCrossFromVertexTriplet(zVec3 * vertex0, zVec3 * vertex1, zVec3 * outNormal, zVec3 * vertex2)
     {
-        const float edge0X = vertex0->x - vertex1->x;
-        const float edge0Y = vertex0->y - vertex1->y;
-        const float edge0Z = vertex0->z - vertex1->z;
-        const float edge2X = vertex2->x - vertex1->x;
-        const float edge2Y = vertex2->y - vertex1->y;
-        const float edge2Z = vertex2->z - vertex1->z;
+        zVec3 edge0;
+        zVec3 edge2;
+        edge2.y = vertex2->y - vertex1->y;
+        edge2.z = vertex2->z - vertex1->z;
+        edge0.y = vertex0->y - vertex1->y;
+        edge0.z = vertex0->z - vertex1->z;
+        edge2.x = vertex2->x - vertex1->x;
+        edge0.x = vertex0->x - vertex1->x;
 
-        const float normalX = edge0Z * edge2Y - edge0Y * edge2Z;
-        const float normalY = edge0X * edge2Z - edge0Z * edge2X;
-        const float normalZ = edge0Y * edge2X - edge0X * edge2Y;
+        const float normalX = edge0.z * edge2.y - edge0.y * edge2.z;
+        const float normalY = edge0.x * edge2.z - edge0.z * edge2.x;
+        const float normalZ = edge0.y * edge2.x - edge0.x * edge2.y;
 
-        double length = 0.0;
+        float length;
         if (fabs(normalX) > g_zModel_ColinearTolerance || fabs(normalY) > g_zModel_ColinearTolerance
             || fabs(normalZ) > g_zModel_ColinearTolerance) {
             length = sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        } else {
+            length = 0.0f;
         }
 
-        double scale = 0.0;
+        float scale;
         if (fabs(length) > g_zModel_ColinearTolerance) {
-            scale = 1.0 / length;
+            scale = 1.0f / length;
+        } else {
+            scale = 0.0f;
         }
 
-        outNormal->x = (float)(normalX * scale);
-        outNormal->y = (float)(normalY * scale);
-        outNormal->z = (float)(normalZ * scale);
+        zVec3 normal;
+        normal.x = normalX * scale;
+        normal.y = normalY * scale;
+        normal.z = normalZ * scale;
+        *outNormal = normal;
         return outNormal;
     }
 } // namespace zModel_Const
@@ -4062,7 +4070,7 @@ namespace zModelConst
                         // Retail derives the plane slopes lazily from the first accepted sample.
                         const float invNormalY = 1.0f / normal.y;
                         slopesPending = 0;
-                        xSlope = -(normal.x * invNormalY);
+                        xSlope = -normal.x * invNormalY;
                         zSlope = -(normal.z * invNormalY);
                     }
 

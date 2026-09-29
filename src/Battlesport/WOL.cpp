@@ -208,14 +208,6 @@ const DWORD kFailureDisplaySleepMs = 1000;
                 = WaitForMultipleObjects(3, g_WestwoodOnlineUpgradeInitWaitEvents, FALSE, kBootstrapWaitTimeoutMs);    \
         }                                                                                                              \
     } while (0)
-
-/**
- * Logical fold alias of the shared RET representative 0x4076f0.
- * Evidence: retail 0x43f6b0 and 0x440f40 pass their sprintf debug buffer in
- * ECX to 0x4076f0 right after formatting it.
- * Purpose: release-build debug-text sink; compiled empty.
- */
-void __fastcall WolDebugTrace(const char* text) { }
 } // namespace
 
 #include "Battlesport/wol_api_event_sink.h"
@@ -2381,7 +2373,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
         "\nOnServerList:\n\tResult Code: %d\n",
         resultCode
     );
-    WolDebugTrace(debugText);
+    zGame::ReturnOnlyStub();
 
     if (resultCode < 0) {
         SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
@@ -2410,18 +2402,19 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
             server->m_connectData,
             server->m_gameType
         );
-        WolDebugTrace(debugText);
+        zGame::ReturnOnlyStub();
         server = server->m_next;
     }
 
-    strcpy(
-        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName,
-        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName()
-    );
-    strcpy(
-        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
-        g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString()
-    );
+    {
+        CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
+        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName, (const char*)playerName);
+    }
+
+    {
+        CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
+        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString, (const char*)connectString);
+    }
 
     SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0]);
     return 0;
@@ -3332,7 +3325,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
     }
 
     sprintf(debugStatusText, kNetworkStatusDebugFormat, statusName, connectionStatusCode);
-    WolDebugTrace(debugStatusText);
+    zGame::ReturnOnlyStub();
 
     if (connectionStatusCode == kNetworkStatusDisconnected && g_WestwoodOnlineUpgradeAbortFlag == 0) {
         g_pWestwoodOnlineUpgradeDialog->SetAbortAndClose();
@@ -3789,10 +3782,6 @@ CString WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString()
     return m_selectedProfileConnectString;
 }
 
-#define _AFXWIN_INLINE inline
-#include <afxwin2.inl>
-#undef _AFXWIN_INLINE
-
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-westwoodonlineupgradeconfigdialog
  * @recoil-artifact defines .text recoil:function:0x441750: WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog
@@ -3945,7 +3934,7 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog()
     }
     m_selectedProfileIndex = 0;
     m_profileComboEditDirty = 0;
-    m_profileCombo.SetCurSel(0);
+    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETCURSEL, 0, 0);
     ((CWnd*)&m_connectStringEdit)->SetWindowTextA((const char*)m_profileConnectStrings[0]);
     return TRUE;
 }
@@ -4118,7 +4107,7 @@ void WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-onconnectstringeditkillfocus
  * @recoil-artifact defines .text recoil:function:0x442100: WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp.
  * Purpose: stores edited connect-string text and marks the profile as custom
@@ -4126,12 +4115,11 @@ void WestwoodOnlineUpgradeConfigDialog::OnConnectStringModeClicked()
  */
 void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditKillFocus()
 {
-    const int selectedIndex = m_selectedProfileIndex;
-    ((CWnd*)&m_connectStringEdit)->GetWindowTextA(m_profileConnectStrings[selectedIndex]);
+    ((CWnd*)&m_connectStringEdit)->GetWindowTextA(m_profileConnectStrings[m_selectedProfileIndex]);
 
-    if (strcmp((const char*)m_profileConnectStrings[selectedIndex], (const char*)m_savedConnectStrings[selectedIndex])
-        != 0) {
-        m_profileConnectStringModes[selectedIndex] = 0;
+    if ((bool)(strcmp(m_profileConnectStrings[m_selectedProfileIndex], m_savedConnectStrings[m_selectedProfileIndex])
+            != 0)) {
+        m_profileConnectStringModes[m_selectedProfileIndex] = 0;
     }
 }
 

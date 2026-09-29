@@ -2379,12 +2379,14 @@ void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, int mode,
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
     if (mode != 0) {
-        playerState->statusMeterValue += delta;
+        const float statusMeterValue = playerState->statusMeterValue;
+        playerState->statusMeterValue = statusMeterValue + delta;
     } else {
         playerState->statusMeterValue = delta;
     }
 
-    if (!(playerState->statusMeterValue <= masterCommonData->maxHealth)) {
+    const float newValue = playerState->statusMeterValue;
+    if (masterCommonData->maxHealth < newValue) {
         playerState->statusMeterValue = masterCommonData->maxHealth;
     } else if (playerState->statusMeterValue < 0.0f) {
         playerState->statusMeterValue = 0.0f;

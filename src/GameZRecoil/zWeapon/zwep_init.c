@@ -4077,14 +4077,13 @@ int PlayerTimedHitStatus::TickAndUpdateLight(float hitStatus)
             }
         }
     } else if (g_Time_AccumulatedTimeSec >= nextUpdateTime) {
-        const float fadedLevel = zMath::ApproxExpNeg(g_FrameDeltaTimeSec * 0.75f) * currentLevel;
-        currentLevel = fadedLevel;
-        targetLevel = fadedLevel;
+        currentLevel = zMath::ApproxExpNeg(g_FrameDeltaTimeSec * 0.75f) * currentLevel;
+        targetLevel = currentLevel;
 
-        if (fabs(fadedLevel) < 0.001) {
+        if (fabs(currentLevel) < 0.001) {
             ClearLightAndReset();
         } else if (lightNode != 0) {
-            const float lightScale = (float)(fabs(fadedLevel * hitStatus));
+            const float lightScale = (float)(fabs(hitStatus * currentLevel));
             CZLight::gwLightSetRange(
                 lightNode,
                 source->timedStatusLightRangeMin * lightScale,

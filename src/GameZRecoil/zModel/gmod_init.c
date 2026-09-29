@@ -2698,7 +2698,7 @@ namespace zTag4
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-ztag4-clear
      * @recoil-artifact defines .text recoil:function:0x476320: zTag4::Clear
-     *
+     * @recoil-match byte
      *
      * Purpose: reset a variant tag set to the empty sentinel state.
      */
@@ -2709,7 +2709,9 @@ namespace zTag4
         }
 
         tag->count = 0;
-        memset(tag->tags, 0xff, sizeof(tag->tags));
+        for (int i = 0; i < 3; ++i) {
+            tag->tags[i] = 0xff;
+        }
     }
 } // namespace zTag4
 
@@ -4678,11 +4680,10 @@ namespace zClipAlt
     {
         gClipRect_Alt.flags = 0x0f;
         gClipRect_Alt.xMin = rect->left;
-        gClipRect_Alt.yMin = rect->top;
         gClipRect_Alt.xMax = rect->right;
-        gClipRect_Alt.yMax = rect->bottom;
-        gClipRect_Alt.xMaxAlt = rect->right;
-        gClipRect_Alt.yMaxAlt = rect->bottom;
+        gClipRect_Alt.yMin = rect->top;
+        gClipRect_Alt.yMaxAlt = gClipRect_Alt.yMax = rect->bottom;
+        gClipRect_Alt.xMaxAlt = gClipRect_Alt.xMax;
 
         g_zClipAlt_RemapOffsetX = rect->left - g_zClipAlt_SourceLeft;
         g_zClipAlt_RemapOffsetY = rect->top - g_zClipAlt_SourceTop;
@@ -4696,12 +4697,13 @@ namespace zClipAlt
             primaryOriginY *= 0.5f;
         }
 
-        g_zClipAlt_RemapBiasX = g_zClipAlt_SourceLeft - gClipRect_Alt.xMin * g_zClipAlt_RemapScaleX;
-        g_zClipAlt_RemapBiasY = g_zClipAlt_SourceTop - gClipRect_Alt.yMin * g_zClipAlt_RemapScaleY;
-
         if (g_zClipAlt_BiasIncludesPrimaryOrigin != 0) {
-            g_zClipAlt_RemapBiasX += primaryOriginX;
-            g_zClipAlt_RemapBiasY += primaryOriginY;
+            g_zClipAlt_RemapBiasX
+                = g_zClipAlt_SourceLeft - gClipRect_Alt.xMin * g_zClipAlt_RemapScaleX + primaryOriginX;
+            g_zClipAlt_RemapBiasY = g_zClipAlt_SourceTop - gClipRect_Alt.yMin * g_zClipAlt_RemapScaleY + primaryOriginY;
+        } else {
+            g_zClipAlt_RemapBiasX = g_zClipAlt_SourceLeft - gClipRect_Alt.xMin * g_zClipAlt_RemapScaleX;
+            g_zClipAlt_RemapBiasY = g_zClipAlt_SourceTop - gClipRect_Alt.yMin * g_zClipAlt_RemapScaleY;
         }
     }
 } // namespace zClipAlt

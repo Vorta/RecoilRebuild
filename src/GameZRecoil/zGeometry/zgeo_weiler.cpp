@@ -2454,8 +2454,8 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
                     zGeometry_WeilerContourOutputPartial* const oldOutput = segment->contourOutput;
                     if (oldOutput != 0) {
                         oldOutput->firstSegment = 0;
+                        segment->contourOutput = 0;
                     }
-                    segment->contourOutput = 0;
                     segment = zGeometry_Weiler::GetNextContourSegmentForTraversal(segment);
                 }
             }
@@ -2783,7 +2783,7 @@ int __fastcall DivideContourSegmentAtPoint(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-createforwardsegmentpairatpoint
  * @recoil-artifact defines .text recoil:function:0x468650: zGeometry_Weiler::CreateForwardSegmentPairAtPoint
- *
+ * @recoil-match byte
  *
  * Purpose: Insert matching forward contour split segments at a shared point.
  */
@@ -2798,11 +2798,14 @@ int __fastcall CreateForwardSegmentPairAtPoint(
 {
     zGeometry_WeilerContourSegmentPartial* segment = firstSegment;
     int segmentCount = 2;
-    zGeometry_WeilerBufferPartial* const buffer = &self->segmentBuffer;
 
     while (segmentCount-- != 0) {
         zGeometry_WeilerContourSegmentPartial* const newSegment
-            = (zGeometry_WeilerContourSegmentPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(buffer, 1, 0));
+            = (zGeometry_WeilerContourSegmentPartial*)(zGeometry_WeilerBuffer::GetAppendSpace(
+                &self->segmentBuffer,
+                1,
+                0
+            ));
         if (newSegment == 0) {
             zError::ReportOld(0x200, g_zGeometry_SourceFile_ZgeoWeilerCpp, 0x1181, g_zGeometry_BufferEntryFailedMsg);
             return 0;
