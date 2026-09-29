@@ -1228,7 +1228,7 @@ namespace CZDisplayInstance
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
      */
-    void __fastcall FindBestPickCandidateBelowPoint(
+    int __fastcall FindBestPickCandidateBelowPoint(
         CZNodePartial * world,
         const zVec3* position,
         PlayerProbeSampleCandidateBuffer* outResults
@@ -1251,11 +1251,12 @@ namespace CZDisplayInstance
 
             outResults->entries[0] = *best;
             outResults->candidateCount = 1;
-            return;
+            return 0;
         }
 
         outResults->candidateCount = 0;
         zTag4::Clear(&outResults->entries[0].variantTag);
+        return 0;
     }
 
     /**

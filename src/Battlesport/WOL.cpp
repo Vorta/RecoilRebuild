@@ -3027,7 +3027,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
                 int raw;
             } timerSeconds = { (float)(unsigned int)statusFields.valueOrTime * 60.0f };
             GameNet::SetStatusBitsFromFlags(statusFields.statusFlags);
-            g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, statusFields.auxParam);
+            g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.value, statusFields.auxParam);
             g_WestwoodOnlineUpgradeSelectedMissionIndex = statusFields.eventCode;
         }
     }

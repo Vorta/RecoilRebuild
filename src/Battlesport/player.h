@@ -592,7 +592,7 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
 void __fastcall
 UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count, int unusedTotalMode2Count);
 void __fastcall RefreshHudFromState(zUtil_SaveGameState* saveState);
-void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, int mode, float delta);
+void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, float delta, int mode);
 int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float delta);
 int __fastcall IsMissionProbeType1EnabledById(int missionId);
 void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, CZNodePartial* cameraNode);

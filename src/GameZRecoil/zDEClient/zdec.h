@@ -202,7 +202,7 @@ int __cdecl ClearFeatureEntriesAndMapTree();
 void __cdecl ClearFeatureDisplayNodes();
 void __fastcall SetCameraNode(CZNodePartial* cameraNode);
 int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx* callbackCtx);
-void __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate);
+int __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate);
 zDEClient_FeatureGridCell* __fastcall GetFeatureGridCell(int gridCol, int gridRow);
 CZNodePartial* __cdecl GetCameraNode();
 zDiPartial* __fastcall CreateFeatureNodeAndDiFromClipPatchPartition(

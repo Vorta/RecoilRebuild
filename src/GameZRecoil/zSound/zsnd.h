@@ -52,7 +52,7 @@ struct zSndPlayHandle {
 
     int StopIfActive();
     int SetFreqScaled(float scale);
-    void SetEnableScale(float scale);
+    int SetEnableScale(float scale);
     int __fastcall Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);

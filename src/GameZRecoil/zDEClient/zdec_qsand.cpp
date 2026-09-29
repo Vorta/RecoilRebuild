@@ -73,9 +73,10 @@ namespace zDEClient {
  * Purpose: copy the configured quicksand event template defaults into a
  * caller-owned event template.
  */
-void __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate)
+int __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate)
 {
     memcpy(eventTemplate, &g_zDEClient_QuickSandEventTemplateDefaults, sizeof(zDEClient_QSandEventTemplate));
+    return 0;
 }
 } /* namespace zDEClient */
 namespace zDEClient_QSand {

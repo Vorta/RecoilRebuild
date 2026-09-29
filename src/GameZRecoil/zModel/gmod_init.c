@@ -4152,7 +4152,7 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-instance-updatescrollingtexturesifneeded
  * @recoil-artifact defines .text recoil:function:0x478fc0: zModelInstanceUpdateScrollingTexturesIfNeeded
- *
+ * @recoil-match byte
  *
  * Purpose: update all scrolling-texture surface entries once per video frame.
  */
@@ -4167,10 +4167,11 @@ int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePart
     }
 
     instance->scrollingTextureFrameTick = g_zVideo_FrameTick;
-    for (int i = 0; i < instance->surfaceEntryCount; ++i) {
-        zModel_InstanceSurfaceEntryPartial* entry = &instance->surfaceEntries[i];
+    zModel_InstanceSurfaceEntryPartial* entry = instance->surfaceEntries;
+    for (int i = 0; i < instance->surfaceEntryCount; ++i, ++entry) {
+        const int vertexCount = (int)(entry->vertexCountAndFlags & 0xff);
         zModel_MaterialTextureBindingPartial* material = entry->materialBinding;
-        if ((material->flags & 1) == 0) {
+        if ((material->flags & 0x0100) == 0) {
             continue;
         }
 
@@ -4178,7 +4179,7 @@ int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePart
             material->textureRef->textureInfo,
             entry->uvs,
             &instance->scrollRateU,
-            (int)(entry->vertexCountAndFlags & 0xff)
+            vertexCount
         );
     }
 

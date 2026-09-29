@@ -2373,7 +2373,7 @@ void __fastcall ApplyAimPitchToDirection(zVec3* direction, float pitchY)
  * PlayerMasterCommonData::maxHealth/invMaxHealth provide the HUD and clamp
  * contracts used by callers.
  */
-void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, int mode, float delta)
+void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, float delta, int mode)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
@@ -2419,7 +2419,7 @@ int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
     if (mode == 0) {
-        ApplyStatusMeterChange(saveState, mode, masterCommonData->maxHealth);
+        ApplyStatusMeterChange(saveState, masterCommonData->maxHealth, mode);
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x902), 5.0f);
         HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x246), 5.0f);
         zEffectAnim::SetVelocityThunk(playerState->regenSkinFxEntry, 0, 0.0f, 0.0f, 0.0f);
@@ -2428,7 +2428,7 @@ int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float
     }
 
     const float oldStatusMeterRatio = g_PlayerStatusMeterRatio;
-    ApplyStatusMeterChange(saveState, 1, delta);
+    ApplyStatusMeterChange(saveState, delta, 1);
 
     char message[64];
     const int percentGain = (int)((g_PlayerStatusMeterRatio - oldStatusMeterRatio) * 100.0f);
@@ -2791,7 +2791,7 @@ int __fastcall EnterDestroyedState(
             damage = masterCommonData->maxHealth;
         }
 
-        ApplyStatusMeterChange(saveState, 1, -damage);
+        ApplyStatusMeterChange(saveState, -damage, 1);
         if (g_PlayerStatusMeterRatio <= 0.0f) {
             const int nanitePanelLevel = playerState->nanitePanelLevel;
             if (nanitePanelLevel != 0 && nanitePanelLevel != kPlayerNanitePanelDisabledSentinel) {

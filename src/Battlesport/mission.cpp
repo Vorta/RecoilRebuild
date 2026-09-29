@@ -1639,8 +1639,8 @@ int HudSensorTracker::LoadRaceCheckpointMeta()
         zReader::Node* cpCountNode = zRdrGetNode(raceRoot, kHudSensorTrackerRaceCheckpointCountNodeName);
         if (cpCountNode != 0) {
             raceCheckpointMode = 1;
-            runtimeTimerSecRaw = FloatToRawSeconds(20.0f);
             checkpointCount = cpCountNode->value.nodes[1].value.i32;
+            runtimeTimerSec = 20.0f;
         }
 
         zReader::Free(raceRoot);
@@ -1652,10 +1652,10 @@ int HudSensorTracker::LoadRaceCheckpointMeta()
 /**
  * Purpose: Store the runtime timer seconds payload and mission goal value.
  */
-void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue)
+void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(float timerSec, int goalValue)
 {
     runtimeGoalValue = goalValue;
-    runtimeTimerSecRaw = timerSecRaw;
+    runtimeTimerSec = timerSec;
 }
 
 /**
@@ -2222,13 +2222,12 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
         statusFlags |= 2;
     }
 
-    HudUiClampedIntTextInput* const killsInput = &ownerPanel->killsInput;
     if (zOpt::GetNetworkModemEnabled() == 0 && ownerPanel->reconfigureExistingSession == 0) {
         zNetworkSessionDescStatusFields statusFields;
         statusFields.eventCode = ownerPanel->worldSelector.selectedIndex + 1;
         statusFields.statusFlags = statusFlags;
         statusFields.valueOrTime = ownerPanel->timeLimitInput.CommitAndGetValue();
-        statusFields.auxParam = killsInput->CommitAndGetValue();
+        statusFields.auxParam = ownerPanel->killsInput.CommitAndGetValue();
         statusFields.maxPlayers = ownerPanel->maxPlayersInput.CommitAndGetValue();
         strcpy(statusFields.sessionNameBuf, ownerPanel->gameNameInput.GetBuffer());
 
@@ -2237,7 +2236,7 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
             zNetwork_DPlay::CreateLocalPlayerRecordAndRegister(zOptGetPlayerName());
         }
     } else {
-        const int auxParam = killsInput->CommitAndGetValue();
+        const int auxParam = ownerPanel->killsInput.CommitAndGetValue();
         const int valueOrTime = ownerPanel->timeLimitInput.CommitAndGetValue();
         GameNet::SendPkt14HudTimerAndFlagsSync(
             ownerPanel->worldSelector.selectedIndex + 1,
@@ -2246,10 +2245,12 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
             auxParam
         );
         if (zNetwork::IsHost() != 0) {
+            const int hostValueOrTime = ownerPanel->timeLimitInput.CommitAndGetValue();
+            const int hostAuxParam = ownerPanel->killsInput.CommitAndGetValue();
             GameNet::HostUpdateSessionDescStatusFields(
                 ownerPanel->worldSelector.selectedIndex + 1,
-                killsInput->CommitAndGetValue(),
-                ownerPanel->timeLimitInput.CommitAndGetValue(),
+                hostAuxParam,
+                hostValueOrTime,
                 statusFlags
             );
         }
@@ -2263,14 +2264,11 @@ void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
 
     const int goalValue = ownerPanel->killsInput.CommitAndGetValue();
     const int timeLimitMinutes = ownerPanel->timeLimitInput.CommitAndGetValue();
-    union TimerSecondsRaw {
-        float seconds;
-        int raw;
-    } timerSeconds = { (float)(timeLimitMinutes) * 60.0f };
-    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, goalValue);
+    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue((float)(timeLimitMinutes) * 60.0f, goalValue);
 
+    const int worldIndex = ownerPanel->worldSelector.selectedIndex;
     CZRecoilFrame* const mainWnd = (CZRecoilFrame*)((unsigned int)(g_RecoilApp.GetMainWnd()));
-    g_HudSensorTracker.InitMissionIdAndFlags(ownerPanel->worldSelector.selectedIndex + 7, mainWnd->m_useArchiveBanks);
+    g_HudSensorTracker.InitMissionIdAndFlags(worldIndex + 7, mainWnd->m_useArchiveBanks);
     g_RecoilApp.QueueExitCurrentState(0);
 }
 

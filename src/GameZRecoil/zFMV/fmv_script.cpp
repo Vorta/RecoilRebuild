@@ -343,7 +343,7 @@ int zFMV_Script::LoadActionsFromZrd(const char* zrdPath, const char* tagPrefix)
                 actionNode->value.nodes[2].value.nodes[3].value.i32,
                 actionNode->value.nodes[3].value.u32,
                 -1,
-                actionNode->value.nodes[4].value.i32
+                actionNode->value.nodes[4].value.f32
             ));
         } else if (strcmp(actionTag, g_zFMV_ActionTagStrings.fadeOutTag) == 0) {
             AppendAction(new CZFMVActionFade(
@@ -352,7 +352,7 @@ int zFMV_Script::LoadActionsFromZrd(const char* zrdPath, const char* tagPrefix)
                 actionNode->value.nodes[2].value.nodes[3].value.i32,
                 actionNode->value.nodes[3].value.u32,
                 1,
-                actionNode->value.nodes[4].value.i32
+                actionNode->value.nodes[4].value.f32
             ));
         } else if (strcmp(actionTag, g_zFMV_ActionTagStrings.playAviTag) == 0) {
             const int actionArgCount = actionNode->value.nodes[0].value.i32;
@@ -725,7 +725,7 @@ void CZFMVActionImage::End()
 /**
  * Purpose: initialize fade color, duration, direction, and alpha settings.
  */
-CZFMVActionFade::CZFMVActionFade(int red, int green, int blue, unsigned int duration, int direction, int alpha)
+CZFMVActionFade::CZFMVActionFade(int red, int green, int blue, unsigned int duration, int direction, float alpha)
 {
     fadeColorPacked16 = (unsigned short)(zVidPackColorRGB(red, green, blue));
     durationSecRaw = duration;
@@ -752,7 +752,7 @@ void CZFMVActionFade::Begin(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionfade-update
  * @recoil-artifact defines .text recoil:function:0x463440: CZFMVActionFade::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: composite the captured frame with a timed fade overlay.
  */
@@ -789,7 +789,7 @@ int CZFMVActionFade::Update(double timeSec)
         zVideo::DispatchUnlockSwSurfaceState();
     }
 
-    zRndrOverlayRectSubmit(fadeColorPacked16, 0, (double)(maxAlpha)*fadeProgress);
+    zRndrOverlayRectSubmit(fadeColorPacked16, 0, maxAlpha * (double)fadeProgress);
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideoD3D::SceneEnter();

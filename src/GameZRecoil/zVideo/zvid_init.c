@@ -177,15 +177,13 @@ namespace zVideo
 /**
  * Purpose: provide the recovered zVidPackColor00RRGGBB behavior.
  */
-unsigned int __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
+unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
 {
-    const unsigned char red = (unsigned char)(color00RRGGBB);
-    const unsigned char green = (unsigned char)(color00RRGGBB >> 8);
-    const unsigned char blue = (unsigned char)(color00RRGGBB >> 16);
-
-    return ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8)
-        | ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase)
-        | (blue >> g_zVideo_PixelPack.bShiftTo8);
+    unsigned short packed = (unsigned short)((g_zVideo_PixelPack.gMaskShifted & GetGValue(color00RRGGBB))
+        << g_zVideo_PixelPack.sumMinus8);
+    packed |= (g_zVideo_PixelPack.rMaskShifted & GetRValue(color00RRGGBB)) << g_zVideo_PixelPack.packedBase;
+    packed |= GetBValue(color00RRGGBB) >> g_zVideo_PixelPack.bShiftTo8;
+    return packed;
 }
 
 /**
@@ -193,11 +191,12 @@ unsigned int __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
  * BN passes red and green as low-byte fastcall registers and consumes the low
  * byte of the stack blue argument.
  */
-unsigned int __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue)
+unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue)
 {
-    return ((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8)
-        | ((g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase)
-        | ((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
+    unsigned short packed = (unsigned short)((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8);
+    packed |= (g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase;
+    packed |= (unsigned char)((unsigned char)blue >> g_zVideo_PixelPack.bShiftTo8);
+    return packed;
 }
 
 /**

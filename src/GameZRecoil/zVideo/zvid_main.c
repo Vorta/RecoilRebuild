@@ -1654,12 +1654,12 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonswbuffer
      * @recoil-artifact defines .text recoil:function:0x4a6770: zVideo::RunPostprocessOnSwBuffer.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: provide the recovered zVideo::RunPostprocessOnSwBuffer behavior.
      */
-    void __cdecl RunPostprocessOnSwBuffer()
+    int __cdecl RunPostprocessOnSwBuffer()
     {
         g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
         zRndr::SetFrameBufferRegion(g_zVideo_SwSurfaceState.pixels, 0, 0, g_zVideo_SwSurfaceState.pitch);
@@ -1675,6 +1675,7 @@ namespace zVideo
             g_zVideo_SwSurfaceState.height,
             g_zVideo_SwSurfaceState.pitch
         );
+        return 0;
     }
 
     /**

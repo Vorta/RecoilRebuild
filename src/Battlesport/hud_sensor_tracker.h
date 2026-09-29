@@ -166,7 +166,7 @@ struct HudSensorTracker {
     int raceCheckpointMode;
     int checkpointCount;
     int runtimeGoalValue;
-    int runtimeTimerSecRaw;
+    float runtimeTimerSec;
     HudUiElement* fxPass3Obj;
     int finalMissionFlag;
     float menuTransitionDelaySec;
@@ -226,7 +226,7 @@ struct HudSensorTracker {
     int SetObjectiveMarkerEnabledAndColor(int objectiveIndex, int enabled, const unsigned char* colorRgb24);
     int SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24);
     int FindAndHighlightFirstIncompleteObjective();
-    void SetRuntimeTimerSecAndGoalValue(int timerSecRaw, int goalValue);
+    void SetRuntimeTimerSecAndGoalValue(float timerSec, int goalValue);
     int SetObjectiveReviewVisible(int visible);
     void AdvanceObjectiveState();
     void ResetHudForMissionStart();

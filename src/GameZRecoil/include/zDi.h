@@ -304,7 +304,7 @@ extern zVec3 g_CZClass_DiFaceVertexScratch4[64];
 namespace CZDisplayInstance {
 void __fastcall SetBreakOnFirstCandidate(int enabled);
 void __fastcall SetStopAfterFirstHit(int flag);
-void __fastcall FindBestPickCandidateBelowPoint(
+int __fastcall FindBestPickCandidateBelowPoint(
     CZNodePartial* world,
     const zVec3* position,
     PlayerProbeSampleCandidateBuffer* outResults

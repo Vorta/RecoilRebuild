@@ -2524,7 +2524,7 @@ namespace zRndr
  * Source file evidence: recovered original path on the prior source label.
  * Purpose: Submit an overlay rectangle to Direct3D or stage it for software overlay blending.
  */
-void __fastcall zRndrOverlayRectSubmit(unsigned int packedColor16, zVidRect32* rectOrNull, double alpha)
+void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32* rectOrNull, double alpha)
 {
     const unsigned short overlayColor16 = (unsigned short)(packedColor16);
     zVidRect32 rect;
@@ -3428,7 +3428,7 @@ namespace zVideo_FxSurface
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawcoloredlinesbatch
      * @recoil-artifact defines .text recoil:function:0x48ec90: zVideo_FxSurface::DrawColoredLinesBatch.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: provide the recovered zVideo_FxSurface::DrawColoredLinesBatch behavior.
@@ -3494,7 +3494,7 @@ namespace zVideo_FxSurface
         int y1,
         int x0,
         int y0,
-        unsigned int color16,
+        unsigned short color16,
         float alphaEnd,
         float alphaStart,
         int clipInset
@@ -8581,8 +8581,8 @@ namespace zRndr
      */
     void __fastcall LensFlareDrawQueuedSample16ClippedFramebuffer(
         LensFlareSamplePartial * sample,
-        int yOffsetPixels,
-        float screenScale
+        float screenScale,
+        int yOffsetPixels
     )
     {
         if (sample == 0 || g_frameBuffer == 0) {
@@ -9869,7 +9869,7 @@ namespace zRndr
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsamplesscaled16-clippedframebuffer
      * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer
-     *
+     * @recoil-match byte
      *
      * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
      * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
@@ -9880,8 +9880,8 @@ namespace zRndr
             for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
                 LensFlareDrawQueuedSample16ClippedFramebuffer(
                     &g_lensFlareSampleQueue[sampleIndex],
-                    yOffsetPixels,
-                    screenScale
+                    screenScale,
+                    yOffsetPixels
                 );
             }
         }

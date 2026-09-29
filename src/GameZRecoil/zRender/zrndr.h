@@ -460,7 +460,7 @@ void __cdecl CommitStagedFogParamsIfChanged();
 void __fastcall BlendPackedColor565WithFogInPlace(int* ioPackedColor, int blend255);
 void __cdecl LensFlareResetSampleQueue();
 void __fastcall
-LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, int yOffsetPixels, float screenScale);
+LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, float screenScale, int yOffsetPixels);
 void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(int yOffsetPixels, float screenScale);
 } // namespace zRndr
 
@@ -618,7 +618,7 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
 
 void __cdecl zRndrFlushTransparentQueue();
 void __cdecl zRndrFlushOverwriteQueue();
-void __fastcall zRndrOverlayRectSubmit(unsigned int packedColor16, zVidRect32* rectOrNull, double alpha);
+void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32* rectOrNull, double alpha);
 void __cdecl zRndrOverlayRectFlushSw();
 
 void __fastcall zRndrDrawImmediateLine(int x0, int y0, int x1, int y1, int color16);

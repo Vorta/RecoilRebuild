@@ -696,8 +696,8 @@ extern char g_zVideo_DDErrorName_NotInitialized[0x15];
 extern char g_zVideo_DDErrorName_Generic[0x0e];
 extern char g_zVideo_DDErrorName_Unsupported[0x12];
 
-unsigned int __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue);
-unsigned int __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB);
+unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue);
+unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB);
 unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color);
 void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16);
 void __fastcall zVideoSetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat* color);
@@ -760,7 +760,7 @@ void __fastcall DrawAlphaBlendedLine(
     int y1,
     int x0,
     int y0,
-    unsigned int color16,
+    unsigned short color16,
     float alphaEnd,
     float alphaStart,
     int clipInset
@@ -859,7 +859,7 @@ void __fastcall FxPass3QueueElementLocal(
 void __fastcall FxPass3QueuePrimitive(void* primitive, int width, int height, int pitchBytes);
 void __fastcall FxPass3SetInputRectByIndex(int index, HudUiRect* rectOrNull);
 void __fastcall FxPass3UpdateLocal(float deltaTime);
-void __cdecl RunPostprocessOnSwBuffer();
+int __cdecl RunPostprocessOnSwBuffer();
 int __cdecl RunPostprocessOnPrimaryBuffer();
 int __fastcall
 AdjustSurfacesIfEnabled(zVidRect32* srcRect, zVidRect32* dstRect, int waitForPresent, int blitPrimaryToSwFirst);

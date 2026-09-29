@@ -136,7 +136,7 @@ struct CZFMVActionFade : zFMV_Action {
     int reserved14;
     double startSec;
     void* capturedFrame;
-    int maxAlpha;
+    float maxAlpha;
 
     /**
      * Original inline helper evidence: No standalone retail function is expected for default test/setup construction.
@@ -146,7 +146,7 @@ struct CZFMVActionFade : zFMV_Action {
     /**
      * Purpose: initialize fade color, duration, direction, and alpha settings.
      */
-    CZFMVActionFade(int red, int green, int blue, unsigned int durationSecRaw, int fadeDirectionSign, int maxAlpha);
+    CZFMVActionFade(int red, int green, int blue, unsigned int durationSecRaw, int fadeDirectionSign, float maxAlpha);
     void Begin(double timeSec);
     int Update(double timeSec);
     void End();

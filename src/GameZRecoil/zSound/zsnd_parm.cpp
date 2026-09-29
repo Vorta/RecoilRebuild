@@ -73,23 +73,26 @@ int zSndPlayHandle::SetFreqScaled(float scale)
  * Purpose: apply global volume scaling to the backend handle and refresh its
  * active 3D/backend state.
  */
-void zSndPlayHandle::SetEnableScale(float scale)
+int zSndPlayHandle::SetEnableScale(float scale)
 {
+    int result = 0;
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
-        return;
+        return result;
     }
 
-    const float globalScale = *(float*)(g_zSnd_GlobalVolumeScalePtr);
-    const float scaledGain = globalScale * scale;
-    if (g_zSnd_ActiveBackend == 1) {
-        // BN stores the x87 product directly into this int-backed gain field
-        // for A3D, preserving the raw float bits for later replay.
-        memcpy(&gainScaled, &scaledGain, sizeof(gainScaled));
-        Update3DDispatch(0, 0, 0);
-    } else if (g_zSnd_ActiveBackend == 0) {
-        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(scaledGain);
-        Update3DDispatch(0, 0, 0);
+    switch (g_zSnd_ActiveBackend) {
+    case 0:
+        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(*(float*)(g_zSnd_GlobalVolumeScalePtr)*scale);
+        result = Update3DDispatch(0, 0, 0);
+        break;
+    case 1:
+        // A3D keeps the raw float gain bits in the int-backed gain field.
+        *(float*)&gainScaled = *(float*)(g_zSnd_GlobalVolumeScalePtr)*scale;
+        result = Update3DDispatch(0, 0, 0);
+        break;
     }
+
+    return result;
 }
 
 /**

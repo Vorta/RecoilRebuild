@@ -147,8 +147,7 @@ struct zModel_TextureRefPartial {
 };
 
 struct zModel_MaterialTextureBindingPartial {
-    unsigned char unknown_00;
-    unsigned char flags;
+    unsigned short flags;
     unsigned char unknown_02[0x0e];
     zModel_TextureRefPartial* textureRef;
 };
@@ -174,7 +173,7 @@ struct zModel_InstancePartial {
 RECOIL_STATIC_ASSERT(sizeof(zModel_Uv) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_TextureScrollInfoPartial, wrapShiftU) == 0x0a);
 RECOIL_STATIC_ASSERT(offsetof(zModel_TextureScrollInfoPartial, wrapShiftV) == 0x0b);
-RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialTextureBindingPartial, flags) == 0x01);
+RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialTextureBindingPartial, flags) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialTextureBindingPartial, textureRef) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zModel_InstanceSurfaceEntryPartial) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zModel_InstanceSurfaceEntryPartial, uvs) == 0x10);

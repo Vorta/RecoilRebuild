@@ -1,4 +1,5 @@
 #include "recoil/Mfc42Abi.h"
+#include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zTime/time.h"
 #include "zdi.h"
@@ -3897,22 +3898,29 @@ namespace zModel_Const
         float value2
     )
     {
-        const float edge20A = vertex2A - vertex1A;
-        const float edge20B = vertex2B - vertex1B;
-        const float edge10A = vertex0A - vertex1A;
-        const float edge10B = vertex0B - vertex1B;
-        const float value20 = value2 - value1;
-        const float value10 = value0 - value1;
-        const float determinant = edge20B * edge10A - edge20A * edge10B;
+        zVec3 edge10;
+        zVec3 edge20;
+        edge10.x = vertex0A - vertex1A;
+        edge10.y = vertex0B - vertex1B;
+        edge10.z = value0 - value1;
+        edge20.x = vertex2A - vertex1A;
+        edge20.y = vertex2B - vertex1B;
+        edge20.z = value2 - value1;
 
-        zClipUV gradient = { 0 };
-        if (determinant == 0.0f) {
+        float normalZ = edge20.y * edge10.x - edge20.x * edge10.y;
+        const float normalX = edge20.z * edge10.y - edge20.y * edge10.z;
+        const float normalY = edge20.x * edge10.z - edge20.z * edge10.x;
+
+        zClipUV gradient;
+        if (normalZ != 0.0f) {
+            normalZ = 1.0f / normalZ;
+            gradient.u = -normalX * normalZ;
+            gradient.v = -normalY * normalZ;
             return gradient;
         }
 
-        const float inverseDeterminant = 1.0f / determinant;
-        gradient.u = -((value20 * edge10B - edge20B * value10) * inverseDeterminant);
-        gradient.v = -((edge20A * value10 - value20 * edge10A) * inverseDeterminant);
+        gradient.u = 0.0f;
+        gradient.v = 0.0f;
         return gradient;
     }
 } // namespace zModel_Const

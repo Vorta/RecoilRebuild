@@ -2292,11 +2292,10 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser()
 
                     GameNet::SetStatusBitsFromFlags(statusFields.statusFlags);
 
-                    union TimerSecondsBits {
-                        float seconds;
-                        int raw;
-                    } timerSeconds = { (float)(statusFields.valueOrTime) * kSecondsPerMinute };
-                    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, statusFields.auxParam);
+                    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(
+                        (float)(statusFields.valueOrTime) * kSecondsPerMinute,
+                        statusFields.auxParam
+                    );
 
                     g_RecoilApp.LoadZbdAndSetupSensorTracker(
                         statusFields.eventCode + kMultiplayerMissionBase,
@@ -3004,7 +3003,7 @@ void __cdecl InitFromZrd()
         playerRow->ApplyPlayerColorTint();
         if (g_HudSensorTracker.raceCheckpointMode == 0) {
             float runtimeTimerSec;
-            memcpy(&runtimeTimerSec, &g_HudSensorTracker.runtimeTimerSecRaw, sizeof(runtimeTimerSec));
+            memcpy(&runtimeTimerSec, &g_HudSensorTracker.runtimeTimerSec, sizeof(runtimeTimerSec));
             g_GameNetHostHudTimerInitFlag = 0;
             HudUiTimerPanel::SetSeconds(runtimeTimerSec, -1.0f);
             g_HudTimerPanelNetState.timerDirectionNeg = 1;
@@ -4710,11 +4709,7 @@ int __fastcall HandlePkt14HudTimerAndFlagsSync(int senderPlayerId, NetPkt14_HudT
     UnregisterGameplayPacketHandlers();
     ResetRemotePlayersAndSpawnLists();
 
-    union TimerSecondsBits {
-        float seconds;
-        int raw;
-    } timerSeconds = { (float)(packet->valueOrTime) * 60.0f };
-    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.raw, packet->auxParam);
+    g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue((float)(packet->valueOrTime) * 60.0f, packet->auxParam);
 
     CZRecoilFrame* const mainWnd = (CZRecoilFrame*)((unsigned int)(g_RecoilApp.GetMainWnd()));
     g_HudSensorTracker.InitMissionIdAndFlags(packet->eventCode + 6, mainWnd->m_useArchiveBanks);
