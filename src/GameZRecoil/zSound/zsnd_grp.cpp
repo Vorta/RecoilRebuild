@@ -334,7 +334,7 @@ extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* read
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadconfigblock
  * @recoil-artifact defines .text recoil:function:0x4a49b0: zSndGroupLoadConfigBlock.
- *
+ * @recoil-match byte
  *
  * Purpose: parse one sound-group config block, including nested blocks and
  * per-entry playback controls.

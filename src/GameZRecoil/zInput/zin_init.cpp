@@ -205,7 +205,7 @@ void __cdecl OnAppActivate()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-init
  * @recoil-artifact defines .text recoil:function:0x471b50: zInput::Init.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: initialize DirectInput, clear device status state, create keyboard,
