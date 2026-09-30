@@ -429,15 +429,15 @@ namespace zGeometry_Segment {
  * @recoil-artifact defines .text recoil:function:0x46be20: zGeometry_Segment::IntersectsSegmentXY
  *
  *
- * Purpose: Test whether two XY segments intersect with both parametric coordinates in the half-open unit range.
+ * Purpose: Test whether two XY segments intersect with both parametric coordinates strictly inside the unit range.
  */
 int __fastcall
 IntersectsSegmentXY(zVec3* segmentAPoint0, zVec3* segmentAPoint1, zVec3* segmentBPoint0, zVec3* segmentBPoint1)
 {
     const float segmentAX = segmentAPoint1->x - segmentAPoint0->x;
+    const float segmentBX = segmentBPoint0->x - segmentBPoint1->x;
     const float segmentAY = segmentAPoint1->y - segmentAPoint0->y;
-    const float segmentBX = segmentBPoint1->x - segmentBPoint0->x;
-    const float segmentBY = segmentBPoint1->y - segmentBPoint0->y;
+    const float segmentBY = segmentBPoint0->y - segmentBPoint1->y;
     const float determinant = segmentAX * segmentBY - segmentAY * segmentBX;
 
     if (determinant == 0.0f) {
@@ -447,10 +447,9 @@ IntersectsSegmentXY(zVec3* segmentAPoint0, zVec3* segmentAPoint1, zVec3* segment
     const float originDeltaX = segmentBPoint0->x - segmentAPoint0->x;
     const float originDeltaY = segmentBPoint0->y - segmentAPoint0->y;
     const float segmentAParameter = (originDeltaX * segmentBY - originDeltaY * segmentBX) / determinant;
-    const float segmentBParameter = (originDeltaX * segmentAY - originDeltaY * segmentAX) / determinant;
+    const float segmentBParameter = (originDeltaY * segmentAX - originDeltaX * segmentAY) / determinant;
 
-    if (segmentAParameter >= 0.0f && segmentBParameter >= 0.0f && segmentAParameter < 1.0f
-        && segmentBParameter < 1.0f) {
+    if (segmentAParameter > 0.0f && segmentBParameter > 0.0f && segmentAParameter < 1.0f && segmentBParameter < 1.0f) {
         return 1;
     }
 

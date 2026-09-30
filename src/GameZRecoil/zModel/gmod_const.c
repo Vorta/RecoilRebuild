@@ -887,13 +887,13 @@ namespace
         zVec3* center = g_CZDisplayInstance_FilterRegions_Center;
         const int result = CZDisplayInstance::RaycastFindClosest(
             world,
-            &rayData,
             center->x,
             center->y,
             center->z,
             boundsCenter->x,
             boundsCenter->y,
-            boundsCenter->z
+            boundsCenter->z,
+            &rayData
         );
         CZClass::gwNodeSetRaycastable(node, 1);
         CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -4301,7 +4301,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentvsbboxfaces
      * @recoil-artifact defines .text recoil:function:0x485380: CZDisplayInstance::BuildPickCandidatesForSegmentVsBBoxFaces.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.

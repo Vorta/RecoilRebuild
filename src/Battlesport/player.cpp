@@ -1946,7 +1946,7 @@ zSndPlayHandle* zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(int modeIndex,
         worldPos = &saveState->playerState->worldPos;
     }
     zSndPlayHandle* const handle
-        = saveState->playerState->masterCommonData->sfxWeaponUp[modeIndex]->PlayA3D(worldPos, sfxVolume, 0);
+        = saveState->playerState->masterCommonData->sfxWeaponUp[modeIndex]->PlayA3D(sfxVolume, worldPos, 0);
     saveState->playerState->modeLoopSfxHandle[modeIndex] = handle;
     return handle;
 }
@@ -1964,7 +1964,7 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(int modalSfxIndex, float sfxVo
     zUtil_SaveGameState* const saveState = this;
     PlayerModalState* const modalState = saveState->primaryModalState;
     zSndSample* const sample = modalState->masterModalData->sfxEngine[modalSfxIndex];
-    zSndPlayHandle* const handle = sample->PlayA3D(&saveState->playerState->worldPos, sfxVolume, 0);
+    zSndPlayHandle* const handle = sample->PlayA3D(sfxVolume, &saveState->playerState->worldPos, 0);
     saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = handle;
 }
 
@@ -3162,7 +3162,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-shutdownmissionruntime
  * @recoil-artifact defines .text recoil:function:0x41fb80: Player::ShutdownMissionRuntime
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Clear mission-owned player runtime lists, AI net state, and pass-3 UI links.
@@ -3255,7 +3255,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-destroysavegamestate
  * @recoil-artifact defines .text recoil:function:0x41fd20: Player::DestroySaveGameState
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\player.cpp.
  * Purpose: Tear down a mission save state, its sensor track node, and owned resources.
@@ -5534,13 +5534,13 @@ int __fastcall PassesCollectionTest(zUtil_SaveGameState* saveState, PlayerPendin
     PlayerProbeSampleCandidateBuffer rayData;
     const int raycastResult = CZDisplayInstance::RaycastFindClosest(
         g_Player_RuntimeDiScene,
-        &rayData,
         contact->hit.hitPos.x,
         contact->hit.hitPos.y - 1.0f,
         contact->hit.hitPos.z,
         contact->hit.node->cachedSphereCenter[0],
         contact->hit.node->cachedSphereCenter[1] - 1.0f,
-        contact->hit.node->cachedSphereCenter[2]
+        contact->hit.node->cachedSphereCenter[2],
+        &rayData
     );
 
     CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -5712,7 +5712,7 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
         impactGain = 1.0f;
     }
     saveState->StartModalLoopSfxHandle(4, impactGain);
-    if (zInputDIIsForceFeedbackEnabled() != 0 && g_zInputFfEffectSet != 0) {
+    if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0 && g_zInputFfEffectSet != 0) {
         g_zInputFfEffectSet->PlayCollisionImpactEffect(&contactNormal, impactGain);
     }
 }
@@ -6660,7 +6660,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-tickmastertypeandforcefeedback
  * @recoil-artifact defines .text recoil:function:0x4266b0: Player::TickMasterTypeAndForceFeedback.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::TickMasterTypeAndForceFeedback from the recovered
@@ -6707,7 +6707,7 @@ void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState* saveState)
 
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
         zEffect::SetConditionalRefPos(&playerState->worldPos);
-        if (zInputDIIsForceFeedbackEnabled() != 0) {
+        if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
             zInputDIUpdateSteerAndPitchForceEffects(g_zInputFfEffectSet);
         }
     }

@@ -358,7 +358,7 @@ struct zFMV_Stream : zVidImagePartial {
     int modeFlags;
 
     void Constructor();
-    zFMV_Stream* Init(const char* mediaPath, int modeFlags);
+    zFMV_Stream(const char* mediaPath, int modeFlags);
     void OpenAudio();
     int ReadAndDecodeFrame(unsigned int frameIndex);
     int FillAudioBuffer(unsigned int offset, unsigned int bytes);

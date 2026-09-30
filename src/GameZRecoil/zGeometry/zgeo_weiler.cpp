@@ -721,24 +721,20 @@ int __fastcall OutputPreclassifiedContourPairResult(
         bool pointMatched = true;
         zVec3* contourBPoint = contourBPoints;
 
-        for (int i = contourBPointCount; i != 0; --i) {
-            pointMatched = false;
+        for (int i = contourBPointCount; pointMatched && i != 0; --i) {
+            int j = contourAPointCount;
             zVec3* contourAPoint = contourAPoints;
+            pointMatched = false;
 
-            for (int j = contourAPointCount; j != 0; --j) {
+            for (; j != 0; --j, ++contourAPoint) {
                 if (fabs((double)(contourAPoint->x) - (double)(contourBPoint->x)) <= 0.0010000000474974513
                     && fabs((double)(contourAPoint->y) - (double)(contourBPoint->y)) <= 0.0010000000474974513) {
                     pointMatched = true;
                     break;
                 }
-
-                ++contourAPoint;
             }
 
             ++contourBPoint;
-            if (!pointMatched) {
-                break;
-            }
         }
 
         if (pointMatched) {
@@ -746,15 +742,14 @@ int __fastcall OutputPreclassifiedContourPairResult(
         }
     }
 
-    zVec3* contourAPoint = contourAPoints;
-    int remaining = contourAPointCount;
-    while (remaining-- != 0) {
-        if (zGeometry_Weiler::ClassifyPointInContourPointListXY(contourAPoint, contourBPointCount, contourBPoints)
-            < 0) {
+    while (contourAPointCount-- != 0) {
+        const int pointClass
+            = zGeometry_Weiler::ClassifyPointInContourPointListXY(contourAPoints, contourBPointCount, contourBPoints);
+        if (pointClass < 0) {
             return 0;
         }
 
-        ++contourAPoint;
+        ++contourAPoints;
     }
 
     return resultCode;
@@ -3403,21 +3398,25 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
 {
     int result = 0;
     if (firstSegment->endPoint == secondSegment->startPoint) {
-        const float contourDeltaY = contourSegment->endPoint->y - contourSegment->startPoint->y;
-        const float contourDeltaX = contourSegment->endPoint->x - contourSegment->startPoint->x;
-        const float firstSide = (firstSegment->startPoint->x - contourSegment->startPoint->x) * contourDeltaY
-            - (firstSegment->startPoint->y - contourSegment->startPoint->y) * contourDeltaX;
-        const float secondSide = (secondSegment->endPoint->x - contourSegment->startPoint->x) * contourDeltaY
-            - (secondSegment->endPoint->y - contourSegment->startPoint->y) * contourDeltaX;
+        const zVec3* const contourStart = contourSegment->startPoint;
+        const zVec3* const contourEnd = contourSegment->endPoint;
+        const zVec3* const firstStart = firstSegment->startPoint;
+        const zVec3* const secondEnd = secondSegment->endPoint;
+        const float contourDeltaY = contourEnd->y - contourStart->y;
+        const float contourDeltaX = contourEnd->x - contourStart->x;
+        const float firstSide
+            = (firstStart->x - contourStart->x) * contourDeltaY - (firstStart->y - contourStart->y) * contourDeltaX;
+        const float secondSide
+            = (secondEnd->x - contourStart->x) * contourDeltaY - (secondEnd->y - contourStart->y) * contourDeltaX;
 
-        if (!((firstSide < 0.0 && secondSide > 0.0) || (firstSide > 0.0 && secondSide < 0.0))) {
-            const float firstDeltaX = firstSegment->endPoint->x - firstSegment->startPoint->x;
-            const float firstDeltaY = firstSegment->endPoint->y - firstSegment->startPoint->y;
-            return ((secondSegment->endPoint->x - firstSegment->startPoint->x) * firstDeltaY
-                       - (secondSegment->endPoint->y - firstSegment->startPoint->y) * firstDeltaX)
-                    > 0.0f
-                ? 1
-                : 2;
+        if (!((firstSide < 0.0 || secondSide < 0.0) && (firstSide > 0.0 || secondSide > 0.0))) {
+            if ((secondEnd->x - firstStart->x) * (firstSegment->endPoint->y - firstStart->y)
+                    - (firstSegment->endPoint->x - firstStart->x) * (secondEnd->y - firstStart->y)
+                > 0.0f) {
+                return 1;
+            }
+
+            return 2;
         }
 
         result = 7;

@@ -2047,7 +2047,7 @@ namespace CZSwitch
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44bfb0
      * @recoil-artifact defines .text recoil:function:0x44bfb0: CZSwitch::RenderTraverse
-     *
+     * @recoil-match byte
      *
      * Purpose: cull the switch node, push the clip mask, and render only the
      * active child-mask entries.
@@ -2060,29 +2060,37 @@ namespace CZSwitch
             return 0;
         }
 
-        CZSwitchDataPartial* data = (CZSwitchDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
-
+        CZSwitchDataPartial* const data = (CZSwitchDataPartial*)(node->classData);
         node->flags = flags & ~0x02000000;
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
             if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0) {
-                zBBoxCorners corners = { 0 };
+                zBBoxCorners corners;
                 CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-                CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+                CZBBox::CornersToBoundingSphere(
+                    &corners,
+                    (zVec3*)node->cachedSphereCenter,
+                    &node->cachedSphereCenter[3]
+                );
                 node->boundsFlags &= ~0x04;
+                if (g_CZClass_RenderBoundsContextActive == 0) {
+                    boundsContextPushed = 1;
+                    g_CZClass_RenderBoundsContextActive = 1;
+                }
             }
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
-            if ((node->flags & 0x80) != 0 && result == 0x20) {
-                result = 0;
+
+            result = zVideoFrustumTestSphereClipMask(
+                (zVec3*)node->cachedSphereCenter,
+                node->cachedSphereCenter[3],
+                &clipMask
+            );
+            if ((node->flags & 0x80) != 0) {
+                if (result == 0x20) {
+                    result = 0;
+                }
                 clipMask &= ~0x20;
             }
-        }
-        if (g_CZClass_RenderBoundsContextActive == 0) {
-            boundsContextPushed = 1;
-            g_CZClass_RenderBoundsContextActive = 1;
         }
 
         if (result == 0) {
@@ -2199,9 +2207,9 @@ namespace CZCamera
         float previousAngle = 0.0f;
         points[count] = points[selectedIndex];
 
-        zVec3* hullPoint = points;
         int scanStart = 1;
         for (int hullIndex = 0; hullIndex < count; ++hullIndex) {
+            zVec3* const hullPoint = &points[hullIndex];
             const zVec3 savedPoint = *hullPoint;
             *hullPoint = points[selectedIndex];
             points[selectedIndex] = savedPoint;
@@ -2224,7 +2232,6 @@ namespace CZCamera
                 return hullIndex + 1;
             }
 
-            ++hullPoint;
             ++scanStart;
         }
 
@@ -3121,13 +3128,13 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
         const int raycastHit = CZDisplayInstance::RaycastFindClosest(
             g_zVideo_pActiveViewContext->worldNode,
-            &pickCandidates,
             g_zVideo_pActiveViewContext->cameraPos.x,
             g_zVideo_pActiveViewContext->cameraPos.y,
             g_zVideo_pActiveViewContext->cameraPos.z,
             visibleSamplePoint.x,
             visibleSamplePoint.y,
-            visibleSamplePoint.z
+            visibleSamplePoint.z,
+            &pickCandidates
         );
         CZDisplayInstance::SetBreakOnFirstCandidate(0);
         if (raycastHit != 0 || pickCandidates.candidateCount == 0) {

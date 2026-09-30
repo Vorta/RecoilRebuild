@@ -595,7 +595,7 @@ void zSndStreamRequest::StatePlayCurrentEntry()
             zSndSample* sample = currentEntry->cachedSample;
             if (sample != 0) {
                 if (hasWorldPos != 0) {
-                    sample->PlayA3D(&worldPos, gain, &velocity);
+                    sample->PlayA3D(gain, &worldPos, &velocity);
                 } else {
                     sample->PlayA3DSimple(gain);
                 }

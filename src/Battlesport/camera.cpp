@@ -968,13 +968,13 @@ void UpdateCameraWeatherFxEmitterVisibility()
         PlayerProbeSampleCandidateBuffer raycastCandidates;
         const int raycastResult = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
-            &raycastCandidates,
             cameraTarget.x,
             cameraTarget.y,
             cameraTarget.z,
             cameraTarget.x,
             cameraTarget.y - kVerticalProbeOffset,
-            cameraTarget.z
+            cameraTarget.z,
+            &raycastCandidates
         );
 
         CZDisplayInstance::SetBreakOnFirstCandidate(0);

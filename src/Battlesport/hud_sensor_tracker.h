@@ -47,7 +47,7 @@ struct HudRectI {
 
 struct HudSensorMapNode {
     HudSensorMapNode* next;
-    char colorRgb[4];
+    unsigned char colorRgb[4];
     int pointCount;
     HudSensorMapPoint* points;
     int objectiveIndex;
@@ -57,7 +57,7 @@ struct HudSensorMapNode {
     int packedColor565Pair;
     HudSensorMapBounds cachedBounds;
 
-    HudSensorMapNode* Init();
+    HudSensorMapNode();
     void FreePointArray();
     int SetEnabled(int enabled);
     HudSensorMapPoint* SelectPoint(int pointIndex);

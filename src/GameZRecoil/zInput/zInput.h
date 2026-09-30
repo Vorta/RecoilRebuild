@@ -514,7 +514,7 @@ extern float g_zInput_DiPitchAngleLowpassRad;
 int __cdecl zInputKeyboardIsUnsuspended();
 int __fastcall zInputWaitForAnyKeyPressWithTimeoutMs(int timeoutMs);
 int __cdecl zInputDIHasForceFeedback();
-int __cdecl zInputDIIsForceFeedbackEnabled();
+int __fastcall zInputDIIsForceFeedbackEnabled(zInput_FFEffectSet* effectSet);
 zInput_DiEffect* __fastcall zInputDICreateForceFeedbackEffect(const GUID* rguidEffect, const DIEFFECT* effect);
 zInput_DiEffect* __stdcall zInputDICreateConstantForceEffectScaled(float gain);
 zInput_DiEffect* __fastcall zInputDICreateConstantForceEffectWithDirection(int direction);

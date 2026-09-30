@@ -100,12 +100,12 @@ char g_zFMV_CannotReadAviVideoStreamMsg[] = "Cannot Read AVI Video Stream";
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zfmv.fmv-stream.zfmv-stream-init
- * @recoil-artifact defines .text recoil:function:0x463d50: zFMV_Stream::Init.
+ * @recoil-artifact defines .text recoil:function:0x463d50: zFMV_Stream::zFMV_Stream.
  * @recoil-match byte
  *
- * Purpose: initialize an FMV stream object, audio/video state, and critical section.
+ * Purpose: construct an FMV stream object, audio/video state, and critical section.
  */
-zFMV_Stream* zFMV_Stream::Init(const char* mediaPath, int modeFlags)
+zFMV_Stream::zFMV_Stream(const char* mediaPath, int modeFlags)
 {
     this->mediaPath = DuplicateCString(mediaPath);
     srcFormat = 0;
@@ -126,7 +126,6 @@ zFMV_Stream* zFMV_Stream::Init(const char* mediaPath, int modeFlags)
     AVIFileInit();
     OpenAudio();
     Constructor();
-    return this;
 }
 
 /**

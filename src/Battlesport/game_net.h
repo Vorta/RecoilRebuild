@@ -185,6 +185,8 @@ struct GameNetPlayerRowListState {
     GameNetPlayerRow* head;
     GameNetPlayerRow* tail;
     unsigned int count;
+
+    GameNetPlayerRow* AppendNewRow(int zeroInitializeRow);
 };
 
 struct GameNetSpawnPoint {
@@ -386,7 +388,6 @@ void __cdecl InitGlobals();
 
 namespace GameNetPlayerRowList {
 void __cdecl Reset();
-GameNetPlayerRow* __fastcall AppendNewRow(GameNetPlayerRowListState* self, int zeroInitializeRow);
 } // namespace GameNetPlayerRowList
 
 extern "C" {

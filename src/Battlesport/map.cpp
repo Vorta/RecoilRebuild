@@ -566,15 +566,14 @@ static inline bool IsPointStrictlyInsideRect(const HudUiRect& rect, const zVec3&
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-init
- * @recoil-artifact defines .text recoil:function:0x415ab0: HudSensorMapNode::Init
+ * @recoil-artifact defines .text recoil:function:0x415ab0: HudSensorMapNode::HudSensorMapNode
  * @recoil-match byte
  *
- * Purpose: Apply map-node defaults and return this node.
+ * Purpose: Construct a map node with its defaults applied.
  */
-HudSensorMapNode* HudSensorMapNode::Init()
+HudSensorMapNode::HudSensorMapNode()
 {
     InitDefaults();
-    return this;
 }
 
 /**
@@ -631,23 +630,23 @@ HudSensorMapPoint* HudSensorMapNode::SelectPoint(int pointIndex)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-initdefaults
  * @recoil-artifact defines .text recoil:function:0x415b40: HudSensorMapNode::InitDefaults
- *
+ * @recoil-match byte
  *
  * Purpose: Initialize map-node links, point storage, marker state, and default color fields.
  */
 int HudSensorMapNode::InitDefaults()
 {
-    colorRgb[0] = (char)(0xff);
-    colorRgb[1] = (char)(0xff);
-    colorRgb[2] = (char)(0xff);
+    colorRgb[0] = 0xff;
+    colorRgb[1] = 0xff;
+    colorRgb[2] = 0xff;
     pointCount = 0;
     points = 0;
-    isEnabled = 0;
-    blinkTimerSec = 0.0f;
-    next = 0;
     objectiveIndex = -1;
     selectedPointIndex = -1;
+    isEnabled = 0;
+    blinkTimerSec = 0.0f;
     packedColor565Pair = -1;
+    next = 0;
     return 1;
 }
 
@@ -835,7 +834,7 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawdiamondmarker
  * @recoil-artifact defines .text recoil:function:0x415f40: HudSensorTracker::DrawDiamondMarker
- *
+ * @recoil-match byte
  *
  * Purpose: Draw a centered diamond marker as a closed clipped immediate line strip.
  */
@@ -858,8 +857,7 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
     points[2].y = centerY;
     points[3].x = centerX;
     points[3].y = centerY - halfHeight;
-    points[4].x = points[0].x;
-    points[4].y = centerY;
+    points[4] = points[0];
 
     zRndrDrawClippedImmediateLineStrip(points, 4, tracker, markerColor & 0xffff);
 }
@@ -1314,7 +1312,7 @@ int HudSensorTracker::MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmapfromstream
  * @recoil-artifact defines .text recoil:function:0x4168d0: HudSensorTracker::LoadMapFromStream
- *
+ * @recoil-match byte
  *
  * Purpose: Read a versioned map stream into tracker bounds and linked map nodes.
  */
@@ -1341,8 +1339,7 @@ int HudSensorTracker::LoadMapFromStream(FILE* stream)
     fread(&mapBoundsMinX, sizeof(HudSensorMapBounds), 1, stream);
 
     for (;;) {
-        HudSensorMapNode* mapNode = (HudSensorMapNode*)(::operator new(sizeof(HudSensorMapNode)));
-        mapNode = mapNode != 0 ? mapNode->Init() : 0;
+        HudSensorMapNode* const mapNode = new HudSensorMapNode;
         if (mapNode->LoadFromStream(stream) == 0) {
             if (mapNode != 0) {
                 mapNode->FreePointArray();

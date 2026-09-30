@@ -33,7 +33,7 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-fontsloadfrompath
  * @recoil-artifact defines .text recoil:function:0x46efe0: zImage::FontsLoadFromPath.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: load the FONTS node, create font records, load each font image,
@@ -65,13 +65,12 @@ int __fastcall FontsLoadFromPath(const char* path)
     }
 
     zImage_Font* font = (zImage_Font*)(malloc((size_t)(fontsNode->value.nodes[0].value.i32 - 1) * sizeof(zImage_Font)));
-    zImage_Font** slot = g_zImage_FontTable;
 
-    for (int i = 1; i < fontsNode->value.nodes[0].value.i32; ++i, ++slot) {
-        *slot = font;
-        (*slot)->image = TexDirFindOrCreateByPath(fontsNode->value.nodes[i].value.str);
-        if ((*slot)->image != 0) {
-            (*slot)->image->formatFlagsPacked |= 0x02;
+    for (int fontIndex = 0, nodeIndex = 1; nodeIndex < fontsNode->value.nodes[0].value.i32; ++fontIndex, ++nodeIndex) {
+        g_zImage_FontTable[fontIndex] = font;
+        g_zImage_FontTable[fontIndex]->image = TexDirFindOrCreateByPath(fontsNode->value.nodes[nodeIndex].value.str);
+        if (g_zImage_FontTable[fontIndex]->image != 0) {
+            g_zImage_FontTable[fontIndex]->image->formatFlagsPacked |= 0x02;
             const int glyphCount = font->BuildGlyphRects();
             if (glyphCount != 0x5f) {
                 zError::ReportOld(
@@ -95,7 +94,7 @@ int __fastcall FontsLoadFromPath(const char* path)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-buildglyphrects
  * @recoil-artifact defines .text recoil:function:0x46f130: zImage_Font::BuildGlyphRects.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: scan the font image into glyph rectangles and compute the space
@@ -109,19 +108,22 @@ int __fastcall FontsLoadFromPath(const char* path)
 int zImage_Font::BuildGlyphRects()
 {
     zVidImagePartial* image = this->image;
-    int x = 0;
+    int start = 0;
     RECT* glyph = this->glyphRects;
     int result;
     this->spaceWidth = image->width / 95 - 1;
 
     for (result = 1; result < 95; ++result) {
-        if (x >= image->width) {
+        if (start >= image->width) {
             break;
         }
 
         glyph->top = 0;
         glyph->bottom = image->height - 1;
 
+        // Retail scans with a per-glyph column and carries the midpoint of the
+        // trailing gap into the next glyph as a separate start column.
+        int x = start;
         if (IsImageColumnTransparent(image, x) != 0) {
             do {
                 ++x;
@@ -140,7 +142,7 @@ int zImage_Font::BuildGlyphRects()
             } while (IsImageColumnTransparent(image, x) != 0);
         }
 
-        x = x + (right - x) / 2;
+        start = x - (x - right) / 2;
         glyph->left = left;
         glyph->right = right + 1;
         ++glyph;

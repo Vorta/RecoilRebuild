@@ -984,7 +984,7 @@ int __fastcall CheckActivationPrereqs(zEffectAnimEntry* self);
 int __fastcall ResetForNode(zEffectAnimEntry* self);
 int __fastcall Stop(zEffectAnimEntry* self);
 int __fastcall FinalizeStop(zEffectAnimEntry* self);
-int __fastcall RunStopDelayCallback(CZNodePartial* node);
+void __fastcall RunStopDelayCallback(CZNodePartial* node);
 int __fastcall RunStopSequenceCallback(CZNodePartial* node);
 int __fastcall StopAndCleanup(zEffectAnimEntry* self, CZNodePartial* targetNode, int immediateCleanup);
 zEffectAnimEntry* __fastcall ActivateRuntime(zEffectAnimEntry* self, CZNodePartial* targetNode);

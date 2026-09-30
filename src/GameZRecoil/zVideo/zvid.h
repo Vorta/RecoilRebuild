@@ -877,7 +877,7 @@ namespace zVid_Image {
 extern zVidImagePartial g_zImage_DefaultImage;
 
 zVidImagePartial* __cdecl Create();
-int __fastcall Destroy(zVidImagePartial* image);
+int __fastcall Destroy(zVidImagePartial* image) throw();
 zVidImagePartial* __fastcall ReleaseIfNotDefault(zVidImagePartial* image) throw();
 void __fastcall ReleaseOwnedBuffers(zVidImagePartial* image);
 void __fastcall CalcPow2ScratchFields(zVidImagePartial* image);
@@ -891,9 +891,10 @@ int __fastcall ReadHeader(FILE* file, zVidImagePartial* image);
 int __fastcall ReadData(FILE* file, zVidImagePartial* image, int bytesPerPixel = 0);
 zVidImagePartial* __fastcall ReadFromFile(FILE* file);
 void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength);
-void __fastcall BlitToActiveTarget(zVidImagePartial* image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect);
 void __fastcall
-BlitToFramebufferClipped(zVidImagePartial* image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect);
+BlitToActiveTarget(zVidImagePartial* image, int dstX, int dstY, unsigned short colorKey, zVidRect32* srcRect);
+void __fastcall
+BlitToFramebufferClipped(zVidImagePartial* image, int dstX, int dstY, unsigned short clipFlags, zVidRect32* srcRect);
 } // namespace zVid_Image
 
 namespace zVid_PaletteRemap {

@@ -224,6 +224,7 @@ struct CZSequenceDataPartial {
 
 struct CZSwitchDataPartial {
     int activeMaskIndex;
+    int maskCount;
     unsigned int childMasks[1];
 };
 
@@ -580,7 +581,7 @@ RECOIL_STATIC_ASSERT(offsetof(CZSequenceEntryPartial, node) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(CZSequenceEntryPartial, triggerTime) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(CZSequenceEntryPartial) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(CZSwitchDataPartial, activeMaskIndex) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(CZSwitchDataPartial, childMasks) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(CZSwitchDataPartial, childMasks) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(CZRenderColorAlphaState) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(CZLodDistanceState) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(CZLodDataPartial, computeOwnDistance) == 0x00);

@@ -2291,7 +2291,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -2880,7 +2880,7 @@ int __fastcall EnterDestroyedState(
                     );
                 }
 
-                if (zInputDIIsForceFeedbackEnabled() != 0) {
+                if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
                     g_zInputFfEffectSet->PlayDamageHitEffect(&direction, damage * 0.0500000007f);
                 }
             }
@@ -3037,7 +3037,7 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState)
             }
 
             if (didFire != 0 && saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
-                && zInputDIIsForceFeedbackEnabled() != 0) {
+                && zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
                 zInputDIPlayAltFireEffect(
                     g_zInputFfEffectSet,
                     activeAltGunController->optCatalogEntry->damage * 0.0151515156f
@@ -3142,7 +3142,8 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
         return 0;
     }
 
-    if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable && zInputDIIsForceFeedbackEnabled() != 0) {
+    if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
+        && zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
         g_zInputFfEffectSet->RestartPrimaryFireEffect();
     }
 
@@ -3563,7 +3564,7 @@ void __fastcall CheckMissionWeaponAvailability(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-writemineszarsection
  * @recoil-artifact defines .text recoil:function:0x43cc70: Player::WriteMinesZarSection
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: serialize deployed mine runtime instances for banks 4 and 5 into
@@ -3600,7 +3601,7 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
                 char blobToken[0x14];
                 sprintf(blobToken, "MineData%03d", mineCount++);
                 writeOk = zUtil_ZAR::WriteSectionBlob(writer, blobToken, &data, 0x60);
-                runtime = OptCatalog_MineIterator::Next();
+                runtime = OptCatalog_MineIterator::Next(entry);
             }
         }
     }

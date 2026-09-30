@@ -537,7 +537,7 @@ int zSndSample::DestroyOwnedData()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-createqueuedstreamingsample
  * @recoil-artifact defines .text recoil:function:0x4a3850: zSndSampleCreateQueuedStreamingSample.
- *
+ * @recoil-match byte
  *
  * Evidence: BN assembly allocates a zeroed zSndSample, constructs a temporary
  * zSndWaveData around caller-owned PCM storage, dispatches InitFromWaveData,
@@ -556,10 +556,9 @@ zSndSampleCreateQueuedStreamingSample(WAVEFORMATEX* audioFormat, void* audioBuff
     waveData.pcmByteCount = bufferBytes;
 
     sample->replayFields.flags |= 0x101;
-    const int initResult = sample->InitFromWaveData(&waveData);
+    sample->replayFields.flagBits.loaded = sample->InitFromWaveData(&waveData);
     sample->replayFields.gain = 1.0f;
-    sample->replayFields.flags = (sample->replayFields.flags & ~0x08) | ((initResult & 1) << 3);
-    if ((sample->replayFields.flags & 0x08) == 0) {
+    if (sample->replayFields.flagBits.loaded == 0) {
         free(sample);
         sample = 0;
     }

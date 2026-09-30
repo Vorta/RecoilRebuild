@@ -1258,7 +1258,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-tracklist-add
  * @recoil-artifact defines .text recoil:function:0x438920: HudUiMgrSensor::TrackListAdd.
- *
+ * @recoil-match byte
  *
  * Purpose: append one payload-bearing sensor tracking node to the recovered
  * global track-list owner while preserving its head, tail, and count fields.
@@ -3410,7 +3410,7 @@ void HudUiFillBitmap::DestructorCore()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-draw
  * @recoil-artifact defines .text recoil:function:0x4b8520: HudUiFillBitmap::Draw.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
  */

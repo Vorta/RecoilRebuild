@@ -30,10 +30,25 @@ enum zSndPlayHandleKind {
     ZSND_PLAYHANDLE_STREAM_REQUEST = 1,
 };
 
+struct zSndSampleReplayFlagBits {
+    unsigned int looping : 1;
+    unsigned int flag02 : 1;
+    unsigned int flag04 : 1;
+    unsigned int loaded : 1;
+    unsigned int flag10 : 1;
+    unsigned int flag20 : 1;
+    unsigned int flag40 : 1;
+    unsigned int flag80 : 1;
+    unsigned int streaming : 1;
+};
+
 struct zSndSampleReplayFields {
     const char* resourceName;
     const char* sampleId;
-    int flags;
+    union {
+        int flags;
+        zSndSampleReplayFlagBits flagBits;
+    };
     float gain;
 };
 
@@ -180,7 +195,7 @@ struct zSndSample {
     zSndPlayHandle* __fastcall PlayOnActiveBackend(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnDirectSound(int attenuation, zVec3* worldPos, zVec3* velocity, int backendArg);
-    zSndPlayHandle* __fastcall PlayA3D(zVec3* worldPos, float gainScale, zVec3* velocity);
+    zSndPlayHandle* __fastcall PlayA3D(float gainScale, zVec3* worldPos, zVec3* velocity);
     zSndPlayHandle* __fastcall PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex);
     zSndPlayHandle* PlayA3DSimple(float gainScale);
     int StopActiveVoicesIfPlaying();

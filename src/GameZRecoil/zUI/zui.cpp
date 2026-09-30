@@ -1063,7 +1063,7 @@ void zTimedTask::RemoveFromActiveList()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-ztimedtask-runimmediateaction
  * @recoil-artifact defines .text recoil:function:0x4bd4d0: zTimedTask::RunImmediateAction.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for zTimedTask::RunImmediateAction.
  */
@@ -2283,8 +2283,9 @@ void __fastcall FxPass3UpdateLocal(float deltaTime)
 zVideoFxPass3Config::zVideoFxPass3Config()
 {
     int slotIndex;
-    inputRectsOrNull[0] = 0;
-    inputRectsOrNull[1] = 0;
+    for (int rectIndex = 0; rectIndex < 2; ++rectIndex) {
+        inputRectsOrNull[rectIndex] = 0;
+    }
     surfacePixels = 0;
     surfaceWidth = 0;
     surfaceHeight = 0;
@@ -2698,7 +2699,7 @@ HudUiBackgroundCursorWidget::HudUiBackgroundCursorWidget(const char* imagePath, 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcursorwidget-huduibackgroundcursorwidget-0x4bfa20
  * @recoil-artifact defines .text recoil:function:0x4bfa20: HudUiBackgroundCursorWidget::~HudUiBackgroundCursorWidget.
- *
+ * @recoil-match byte
  *
  * Purpose: restore the cursor widget dispatch state, release a captured image, and tear down the widget base.
  */
@@ -2911,7 +2912,7 @@ void HudUiBackgroundVideoWidget::Destructor()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-setmediapathownedandrefresh
  * @recoil-artifact defines .text recoil:function:0x4bfd40: HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh.
- *
+ * @recoil-match byte
  *
  * Purpose: Stores the movie path, resolves missing media, opens the stream, and refreshes clipping.
  */
@@ -2932,12 +2933,7 @@ void HudUiBackgroundVideoWidget::SetMediaPathOwnedAndRefresh(const char* path)
         return;
     }
 
-    zFMV_Stream* const newStream = (zFMV_Stream*)(::operator new(sizeof(zFMV_Stream)));
-    zFMV_Stream* initializedStream = 0;
-    if (newStream != 0) {
-        initializedStream = newStream->Init(mediaPath, 0);
-    }
-    stream = initializedStream;
+    stream = new zFMV_Stream(mediaPath, 0);
 
     RebuildBltRect();
 }
@@ -2983,7 +2979,7 @@ void HudUiBackgroundVideoWidget::Update(float deltaSeconds)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundvideowidget-draw
  * @recoil-artifact defines .text recoil:function:0x4bfe90: HudUiBackgroundVideoWidget::Draw.
- *
+ * @recoil-match byte
  *
  * Purpose: Draws the background layer and blits the active stream with the stored color key.
  */

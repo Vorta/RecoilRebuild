@@ -1402,24 +1402,24 @@ int __fastcall AINet::HasLineOfSightFromLocalPlayerFxOffset(CZNodePartial* node,
     if (directionMode == 1) {
         directionMode = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
-            &rayData,
             playerState->fxOffsetWorld.x,
             playerState->fxOffsetWorld.y,
             playerState->fxOffsetWorld.z,
             point->x,
             point->y,
-            point->z
+            point->z,
+            &rayData
         );
     } else {
         directionMode = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
-            &rayData,
             point->x,
             point->y,
             point->z,
             playerState->fxOffsetWorld.x,
             playerState->fxOffsetWorld.y,
-            playerState->fxOffsetWorld.z
+            playerState->fxOffsetWorld.z,
+            &rayData
         );
     }
     CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -1627,24 +1627,24 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(CZNodePartial* node, const 
     if (directionMode == 1) {
         raycastResult = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
-            &rayData,
             cameraTarget.x,
             cameraTarget.y,
             cameraTarget.z,
             point->x,
             point->y,
-            point->z
+            point->z,
+            &rayData
         );
     } else {
         raycastResult = CZDisplayInstance::RaycastFindClosest(
             g_Player_RuntimeDiScene,
-            &rayData,
             point->x,
             point->y,
             point->z,
             cameraTarget.x,
             cameraTarget.y,
-            cameraTarget.z
+            cameraTarget.z,
+            &rayData
         );
     }
 

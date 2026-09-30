@@ -60,8 +60,13 @@ struct zRndr_LineClipRect2I {
 RECOIL_STATIC_ASSERT(sizeof(zRndr_LineClipRect2I) == 0x10);
 
 extern "C" {
-typedef void(__fastcall*
-        zVideo_BltSourceToPrimaryProc)(zVidImagePartial* image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect);
+typedef void(__fastcall* zVideo_BltSourceToPrimaryProc)(
+    zVidImagePartial* image,
+    int dstX,
+    int dstY,
+    unsigned short colorKey,
+    zVidRect32* srcRect
+);
 
 extern zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary;
 }
@@ -397,7 +402,7 @@ void __fastcall SetPerspectiveTextureDeltaX(int deltaX);
 void __stdcall SetPerspectiveTextureFarZ(float farZ);
 void __stdcall SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection);
 void __fastcall SetPerspectiveAdaptiveSpanParams(int minSpan, int maxSpan, float slope);
-void* __fastcall GetActiveRegionState(int* outWidth, int* outHeight, int* outBitsPerPixel, int* outPitchBytes);
+void* __fastcall GetActiveRegionState(int* outWidth, int* outHeight, int* outBitsPerPixel, int* outPitchBytes) throw();
 void __fastcall
 SetFrameBufferRegion(void* pixels, zOpt_ViewRectSection* activeRegionRect, int bitsPerPixel, int pitchBytes);
 void __fastcall SetActiveRegionSizeFromRect(HudUiRect* rect);

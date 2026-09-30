@@ -381,7 +381,7 @@ void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot* segment);
 
 namespace OptCatalog_MineIterator {
 OptCatalogRuntimeInstanceStorage* __fastcall Begin(OptCatalogEntryDef* entry);
-OptCatalogRuntimeInstanceStorage* __cdecl Next();
+OptCatalogRuntimeInstanceStorage* __fastcall Next(OptCatalogEntryDef* entry);
 } // namespace OptCatalog_MineIterator
 
 namespace DamageFeedback {

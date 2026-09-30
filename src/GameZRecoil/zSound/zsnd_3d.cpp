@@ -46,7 +46,33 @@ namespace {
  */
 extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity)
 {
-    if (g_zSnd_ActiveBackend == 0) {
+    switch (g_zSnd_ActiveBackend) {
+    case 1:
+        if (g_zSnd_BackendListenerHandle == 0) {
+            return -1;
+        }
+
+        if (listenerState != 0) {
+            ((zA3dProviderListener*)(g_zSnd_BackendListenerHandle))
+                ->SetPosition3f(listenerState->position.x, listenerState->position.y, listenerState->position.z);
+            ((zA3dProviderListener*)(g_zSnd_BackendListenerHandle))
+                ->SetOrientation6f(
+                    -listenerState->forward.x,
+                    -listenerState->forward.y,
+                    -listenerState->forward.z,
+                    listenerState->up.x,
+                    listenerState->up.y,
+                    listenerState->up.z
+                );
+        }
+
+        if (listenerVelocity != 0) {
+            ((zA3dProviderListener*)(g_zSnd_BackendListenerHandle))
+                ->SetVelocity3f(listenerVelocity->x, listenerVelocity->y, listenerVelocity->z);
+        }
+        break;
+
+    case 0:
         if (listenerState != 0) {
             memcpy(&g_zSnd_ListenerState, listenerState, sizeof(g_zSnd_ListenerState));
         }
@@ -54,32 +80,7 @@ extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerSta
         if (listenerVelocity != 0) {
             g_zSnd_ListenerVelocity = *listenerVelocity;
         }
-
-        g_zSnd_ListenerStateValid = 1;
-        return 1;
-    }
-
-    if (g_zSnd_ActiveBackend == 1) {
-        zA3dProviderListener* const listener = (zA3dProviderListener*)(g_zSnd_BackendListenerHandle);
-        if (listener == 0) {
-            return -1;
-        }
-
-        if (listenerState != 0) {
-            listener->SetPosition3f(listenerState->position.x, listenerState->position.y, listenerState->position.z);
-            listener->SetOrientation6f(
-                -listenerState->forward.x,
-                -listenerState->forward.y,
-                -listenerState->forward.z,
-                listenerState->up.x,
-                listenerState->up.y,
-                listenerState->up.z
-            );
-        }
-
-        if (listenerVelocity != 0) {
-            listener->SetVelocity3f(listenerVelocity->x, listenerVelocity->y, listenerVelocity->z);
-        }
+        break;
     }
 
     g_zSnd_ListenerStateValid = 1;

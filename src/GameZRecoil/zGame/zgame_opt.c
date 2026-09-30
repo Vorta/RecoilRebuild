@@ -597,7 +597,7 @@ zGame_OptionsRuntimeConfig* zGame_OptionsRuntimeConfig::CopyDefault()
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zgame-zgame_opt-function-zgame_optionsruntimeconfig-initfromsystem
  * @recoil-artifact defines .text recoil:function:0x4b30b0: zGame_OptionsRuntimeConfig::InitFromSystem.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: populate runtime option defaults from CPU, memory, video, and sound probes.
@@ -608,25 +608,12 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem()
     cpuClass = zSys::GetCpuClass();
     cpuMhz = zSys::GetCpuMhz();
 
-    unsigned int probe = (unsigned int)(zSnd::HasMmxMixerSupport()) & 1u;
-    unsigned int flags = defaultFlags;
-    defaultFlags = ((flags ^ probe) & 1u) ^ flags;
-
-    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 1;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~2u) | probe;
-
+    defaultFlagBits.hasMmxMixer = zSnd::HasMmxMixerSupport();
+    defaultFlagBits.capability1 = zSys::ReturnZeroStub();
     systemRamKb = zSys::GetTotalPhysKb();
+    defaultFlagBits.capability2 = zSys::ReturnZeroStub();
+    defaultFlagBits.hasHardware3d = zVid::HasAcceptedHardwareRenderer();
 
-    probe = ((unsigned int)(zSys::ReturnZeroStub()) & 1u) << 2;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~4u) | probe;
-
-    probe = ((unsigned int)(zVid::HasAcceptedHardwareRenderer()) & 1u) << 6;
-    flags = defaultFlags;
-    defaultFlags = (flags & ~0x40u) | probe;
-
-    soundHardwareMemKb = 0;
     if (zSnd::AcquireCachedDirectSound(0) != 0) {
         DSCAPS caps;
         zSnd::CachedDirectSoundGetCaps(&caps);

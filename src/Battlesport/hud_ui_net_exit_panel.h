@@ -11,6 +11,10 @@ struct CHudUiNetExitPanelResumeWidget;
 struct HudUiNetExitPanel_ExitButton : HudUiZrdWidget {
     int previewInputCaptureActive;
 
+    HudUiNetExitPanel_ExitButton()
+        : previewInputCaptureActive(0)
+    {
+    }
     void OnActivate();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetExitPanel_ExitButton) == 0x150);
@@ -19,6 +23,10 @@ RECOIL_STATIC_ASSERT(offsetof(HudUiNetExitPanel_ExitButton, previewInputCaptureA
 struct CHudUiNetExitPanelResumeWidget : HudUiZrdWidget {
     int previewInputCaptureActive;
 
+    CHudUiNetExitPanelResumeWidget()
+        : previewInputCaptureActive(0)
+    {
+    }
     void OnActivate();
     virtual void ShowPreview();
     virtual void HidePreview();

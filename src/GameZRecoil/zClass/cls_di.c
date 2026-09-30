@@ -639,13 +639,13 @@ namespace
         zVec3* center = g_CZDisplayInstance_FilterRegions_Center;
         const int result = CZDisplayInstance::RaycastFindClosest(
             world,
-            &rayData,
             center->x,
             center->y,
             center->z,
             boundsCenter->x,
             boundsCenter->y,
-            boundsCenter->z
+            boundsCenter->z,
+            &rayData
         );
         CZClass::gwNodeSetRaycastable(node, 1);
         CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -1670,7 +1670,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatesforpointbatch
      * @recoil-artifact defines .text recoil:function:0x4444b0: CZDisplayInstance::BuildPickCandidatesForPointBatch.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2131,13 +2131,13 @@ namespace CZDisplayInstance
     {
         if (RaycastFindClosest(
                 world,
-                rayData,
                 startPoint->x,
                 startPoint->y,
                 startPoint->z,
                 endPoint->x,
                 endPoint->y,
-                endPoint->z
+                endPoint->z,
+                rayData
             )
             != 0) {
             return 1;
@@ -2180,13 +2180,13 @@ namespace CZDisplayInstance
      */
     int __fastcall RaycastFindClosest(
         CZNodePartial * world,
-        PlayerProbeSampleCandidateBuffer * rayData,
         float startX,
         float startY,
         float startZ,
         float endX,
         float endY,
-        float endZ
+        float endZ,
+        PlayerProbeSampleCandidateBuffer* rayData
     )
     {
         rayData->candidateCount = 0;
@@ -3513,13 +3513,13 @@ namespace CZDisplayInstance
                         CZClass::gwNodeSetRaycastable(node, 0);
                         const int rayResult = CZDisplayInstance::RaycastFindClosest(
                             g_CZDisplayInstance_FilterRegions_LineOfSightWorld,
-                            &rayData,
                             g_CZDisplayInstance_FilterRegions_Center->x,
                             g_CZDisplayInstance_FilterRegions_Center->y,
                             g_CZDisplayInstance_FilterRegions_Center->z,
                             boundsCenter.x,
                             boundsCenter.y,
-                            boundsCenter.z
+                            boundsCenter.z,
+                            &rayData
                         );
                         CZClass::gwNodeSetRaycastable(node, 1);
                         CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -3712,13 +3712,13 @@ namespace CZDisplayInstance
             CZClass::gwNodeSetRaycastable(node, 0);
             const int rayResult = CZDisplayInstance::RaycastFindClosest(
                 g_CZDisplayInstance_FilterRegions_LineOfSightWorld,
-                &rayData,
                 g_CZDisplayInstance_FilterRegions_Center->x,
                 g_CZDisplayInstance_FilterRegions_Center->y,
                 g_CZDisplayInstance_FilterRegions_Center->z,
                 boundsCenter.x,
                 boundsCenter.y,
-                boundsCenter.z
+                boundsCenter.z,
+                &rayData
             );
             CZClass::gwNodeSetRaycastable(node, 1);
             CZDisplayInstance::SetBreakOnFirstCandidate(0);

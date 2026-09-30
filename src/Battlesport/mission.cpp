@@ -3072,53 +3072,54 @@ BOOL NetSessionBrowserDialog::OnInitDialog()
 int NetSessionBrowserDialog::RefreshSessionList()
 {
     CString selectedSessionText;
-    m_sessionCount = zNetwork_DPlay::EnumSessions();
+    const int sessionCount = zNetwork_DPlay::EnumSessions();
+    m_sessionCount = sessionCount;
 
-    HWND sessionListHwnd = m_sessionList.m_hWnd;
-    const int selectedIndex = (int)(::SendMessageA(sessionListHwnd, LB_GETCURSEL, 0, 0));
+    int selectedIndex = m_sessionList.GetCurSel();
     if (selectedIndex != LB_ERR) {
         ((CListBox*)&m_sessionList)->GetText(selectedIndex, selectedSessionText);
     }
 
-    ::SendMessageA(sessionListHwnd, LB_RESETCONTENT, 0, 0);
-    for (int index = 0; index < m_sessionCount; ++index) {
-        int maxPlayers = 0;
-        int currentPlayers = 0;
-        zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex(index, &currentPlayers, &maxPlayers);
+    ::SendMessageA(m_sessionList.m_hWnd, LB_RESETCONTENT, 0, 0);
+    if (sessionCount > 0) {
+        for (int index = 0; index < sessionCount; ++index) {
+            int maxPlayers = 0;
+            int currentPlayers = 0;
+            zNetworkDPlay::GetEnumeratedSessionPlayerCountsByIndex(index, &currentPlayers, &maxPlayers);
 
-        char sessionText[120];
-        zLoc::FormatMessage(
-            sessionText,
-            sizeof(sessionText),
-            0x112,
-            zNetworkDPlay::GetEnumeratedSessionNameByIndex(index),
-            maxPlayers,
-            currentPlayers
-        );
+            char sessionText[120];
+            zLoc::FormatMessage(
+                sessionText,
+                sizeof(sessionText),
+                0x112,
+                zNetworkDPlay::GetEnumeratedSessionNameByIndex(index),
+                maxPlayers,
+                currentPlayers
+            );
 
-        const int rowIndex = (int)(::SendMessageA(sessionListHwnd, LB_ADDSTRING, 0, (LPARAM)sessionText));
-        ::SendMessageA(sessionListHwnd, LB_SETITEMDATA, rowIndex, index);
-    }
-
-    if (selectedIndex != LB_ERR) {
-        const int restoredIndex = (int)(::SendMessageA(
-            sessionListHwnd,
-            LB_FINDSTRINGEXACT,
-            (WPARAM)-1,
-            (LPARAM)((const char*)selectedSessionText)
-        ));
-        if (restoredIndex != LB_ERR) {
-            ::SendMessageA(sessionListHwnd, LB_SETCURSEL, restoredIndex, 0);
-            ((CWnd*)&m_okButton)->EnableWindow(TRUE);
+            const int rowIndex = (int)(::SendMessageA(m_sessionList.m_hWnd, LB_ADDSTRING, 0, (LPARAM)sessionText));
+            ::SendMessageA(m_sessionList.m_hWnd, LB_SETITEMDATA, rowIndex, index);
         }
-    } else if (m_sessionCount > 0) {
-        ::SendMessageA(sessionListHwnd, LB_SETCURSEL, 0, 0);
+
+        if (selectedIndex != LB_ERR) {
+            selectedIndex = (int)(::SendMessageA(
+                m_sessionList.m_hWnd,
+                LB_FINDSTRINGEXACT,
+                (WPARAM)-1,
+                (LPARAM)((const char*)selectedSessionText)
+            ));
+        }
+        if (selectedIndex == LB_ERR) {
+            ::SendMessageA(m_sessionList.m_hWnd, LB_SETCURSEL, 0, 0);
+        } else {
+            ::SendMessageA(m_sessionList.m_hWnd, LB_SETCURSEL, selectedIndex, 0);
+        }
         ((CWnd*)&m_okButton)->EnableWindow(TRUE);
     } else if (zOpt::GetNetworkModemEnabled() == 0) {
         ((CWnd*)&m_okButton)->EnableWindow(FALSE);
     }
 
-    return m_sessionCount;
+    return sessionCount;
 }
 
 /**
@@ -3139,49 +3140,48 @@ void NetSessionBrowserDialog::ConnectSelectedProvider()
         selectedProviderIndex,
         0
     ));
-    if (providerInfo == 0) {
+    if (providerInfo != 0) {
+        if (strstr(providerInfo->displayName, g_zNetwork_ProviderName_TcpIp) != 0
+            && g_NetUiTcpIpProviderWarningShown == 0) {
+            g_NetUiTcpIpProviderWarningShown = 1;
+
+            char caption[256];
+            strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningCaptionMessageId));
+
+            char messageFormat[256];
+            strcpy(messageFormat, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId));
+
+            if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
+                ::SendMessageA(m_providerCombo.m_hWnd, CB_SETCURSEL, 0, 0);
+                ((CWnd*)&m_okButton)->EnableWindow(FALSE);
+                ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
+                return;
+            }
+        }
+
+        zNetworkDPlay::SelectServiceProviderAndInitConnection(providerInfo);
+        if (strstr(providerInfo->displayName, g_zNetwork_ProviderName_Modem) == 0) {
+            if (RefreshSessionList() >= 0) {
+                ::SetTimer(m_hWnd, 2, 1000, 0);
+            }
+
+            ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
+            ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
+            ((CWnd*)&m_createSessionButton)
+                ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
+            m_selectedProviderIsModem = FALSE;
+        } else {
+            ::SendMessageA(m_sessionList.m_hWnd, LB_RESETCONTENT, 0, 0);
+            ((CWnd*)&m_okButton)->EnableWindow(TRUE);
+            ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemOkButtonMessageId));
+            ((CWnd*)&m_createSessionButton)
+                ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemCreateButtonMessageId));
+            ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
+            m_selectedProviderIsModem = TRUE;
+        }
+    } else {
         ((CWnd*)&m_okButton)->EnableWindow(FALSE);
         ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
-        return;
-    }
-
-    if (strstr(providerInfo->displayName, g_zNetwork_ProviderName_TcpIp) != 0
-        && g_NetUiTcpIpProviderWarningShown == 0) {
-        g_NetUiTcpIpProviderWarningShown = 1;
-
-        char caption[256];
-        strcpy(caption, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningCaptionMessageId));
-
-        char messageFormat[256];
-        strcpy(messageFormat, zLoc::GetMessageString(kNetSessionBrowserTcpIpWarningFormatMessageId));
-
-        if (NetUi::VerifyWinsock2OrPromptContinue(caption, messageFormat) == 0) {
-            ::SendMessageA(m_providerCombo.m_hWnd, CB_SETCURSEL, 0, 0);
-            ((CWnd*)&m_okButton)->EnableWindow(FALSE);
-            ((CWnd*)&m_createSessionButton)->EnableWindow(FALSE);
-            return;
-        }
-    }
-
-    zNetworkDPlay::SelectServiceProviderAndInitConnection(providerInfo);
-    if (strstr(providerInfo->displayName, g_zNetwork_ProviderName_Modem) == 0) {
-        if (RefreshSessionList() >= 0) {
-            ::SetTimer(m_hWnd, 2, 1000, 0);
-        }
-
-        ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
-        ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserJoinButtonMessageId));
-        ((CWnd*)&m_createSessionButton)
-            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserRefreshButtonMessageId));
-        m_selectedProviderIsModem = FALSE;
-    } else {
-        ::SendMessageA(m_sessionList.m_hWnd, LB_RESETCONTENT, 0, 0);
-        ((CWnd*)&m_okButton)->EnableWindow(TRUE);
-        ((CWnd*)&m_okButton)->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemOkButtonMessageId));
-        ((CWnd*)&m_createSessionButton)
-            ->SetWindowTextA(zLoc::GetMessageString(kNetSessionBrowserModemCreateButtonMessageId));
-        ((CWnd*)&m_createSessionButton)->EnableWindow(TRUE);
-        m_selectedProviderIsModem = TRUE;
     }
 }
 
@@ -3631,10 +3631,6 @@ HudUiElement* g_HudUiNetExitPanel_SavedInputFocus = 0;
  */
 HudUiNetExitPanel::HudUiNetExitPanel()
 {
-    resumeWidget.previewInputCaptureActive = 0;
-
-    exitWidget.previewInputCaptureActive = 0;
-
     zReader::Node* const loadedSection = LoadFromZrd("dialog.zrd", "NETEXIT", 1);
     if (loadedSection != 0) {
         BindWidgetByName(loadedSection, &exitWidget, "EXIT");

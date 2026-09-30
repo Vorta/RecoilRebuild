@@ -263,7 +263,7 @@ namespace CZSound
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-updateplayback
      * @recoil-artifact defines .text recoil:function:0x452dc0: CZSound::UpdatePlayback
-     *
+     * @recoil-match byte
      *
      * Purpose: update or create positional and non-positional playback handles
      * for active sound nodes, then clear the dirty playback flag.
@@ -294,7 +294,7 @@ namespace CZSound
             ComputeWorldTransform(node, soundData);
             if (soundData->playHandle == 0) {
                 if (soundData->sample != 0) {
-                    soundData->playHandle = soundData->sample->PlayA3D(&soundData->worldPos, 1.0f, 0);
+                    soundData->playHandle = soundData->sample->PlayA3D(1.0f, &soundData->worldPos, 0);
                     if (zSndPlayHandleTryEnableManaged(soundData->playHandle) != 0) {
                         soundData->runtimeFlags |= 0x08;
                     }

@@ -87,7 +87,16 @@ struct zGame_OptionsRuntimeConfig {
     char cpuVendor[0x10];
     int cpuClass;
     int cpuMhz;
-    unsigned int defaultFlags;
+    union {
+        unsigned int defaultFlags;
+        struct {
+            unsigned int hasMmxMixer : 1;
+            unsigned int capability1 : 1;
+            unsigned int capability2 : 1;
+            unsigned int reserved3 : 3;
+            unsigned int hasHardware3d : 1;
+        } defaultFlagBits;
+    };
     unsigned int systemRamKb;
     unsigned int videoMemoryKb; // Inferred from the VIDEO_KB profile metric.
     unsigned int soundHardwareMemKb;

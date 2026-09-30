@@ -453,7 +453,7 @@ zSndPlayHandle* zSndSample::AcquireVoice()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3dsimple
  * @recoil-artifact defines .text recoil:function:0x49f960: zSndSample::PlayA3DSimple.
- *
+ * @recoil-match byte
  *
  * Purpose: play a non-positional A3D-capable sample or queue a stream group.
  */
@@ -467,7 +467,7 @@ zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
         return ((zSndGroup*)(this))->QueueStreamRequestSimple(gainScale);
     }
 
-    return PlayA3D(0, gainScale, 0);
+    return PlayA3D(gainScale, 0, 0);
 }
 
 /**
@@ -674,7 +674,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
  *
  * Purpose: play a 3D-capable sample through a queued group or active backend.
  */
-zSndPlayHandle* __fastcall zSndSample::PlayA3D(zVec3* worldPos, float gainScale, zVec3* velocity)
+zSndPlayHandle* __fastcall zSndSample::PlayA3D(float gainScale, zVec3* worldPos, zVec3* velocity)
 {
     if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
         return 0;
@@ -1536,7 +1536,7 @@ void zSndSampleSet::DestroyOwnedData()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-init
  * @recoil-artifact defines .text recoil:function:0x4a0c40: zSndSampleSet::Init.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize an unloaded sample set from archive banks first, then
  * from loose sample paths, and mark the set loaded.
@@ -1608,15 +1608,9 @@ int zSndSampleSet::Init()
                         zSndWaveData* waveData = new zSndWaveData(path, 1);
 
                         if (waveData->parsedOk != 0) {
-                            int initResult = sample->InitFromWaveData(waveData);
-                            int flags = replayFields->flags;
-                            initResult &= 1;
-                            flags &= ~0x08;
-                            initResult <<= 3;
-                            flags |= initResult;
-                            replayFields->flags = flags;
+                            replayFields->flagBits.loaded = sample->InitFromWaveData(waveData);
                         } else {
-                            replayFields->flags &= ~0x08;
+                            replayFields->flagBits.loaded = 0;
                         }
 
                         if (waveData != 0) {
@@ -1711,7 +1705,7 @@ zSndSample* zSndSampleSet::FindSampleByName(const char* sampleName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-loadsamplesfromindexarchive
  * @recoil-artifact defines .text recoil:function:0x4a0fb0: zSndSampleSet::LoadSamplesFromIndexArchive.
- *
+ * @recoil-match byte
  *
  * Purpose: load still-unloaded samples from the supplied index archive and
  * mirror each load result into the sample loaded flag.
@@ -1723,21 +1717,15 @@ int zSndSampleSet::LoadSamplesFromIndexArchive(zIndexArchive* archive)
     if (sampleCount > 0) {
         do {
             zSndSampleReplayFields* replayFields = &sample->replayFields;
-            if ((replayFields->flags & 0x08) == 0) {
+            if (replayFields->flagBits.loaded == 0) {
                 zSndWaveData* waveData = new zSndWaveData(replayFields->resourceName, 0);
 
                 waveData->LoadAndParseFromIndexArchiveIfNeeded(archive);
 
                 if (waveData->parsedOk != 0) {
-                    int initResult = sample->InitFromWaveData(waveData);
-                    int flags = replayFields->flags;
-                    initResult &= 1;
-                    flags &= ~0x08;
-                    initResult <<= 3;
-                    flags |= initResult;
-                    replayFields->flags = flags;
+                    replayFields->flagBits.loaded = sample->InitFromWaveData(waveData);
                 } else {
-                    replayFields->flags &= ~0x08;
+                    replayFields->flagBits.loaded = 0;
                 }
 
                 if (waveData != 0) {

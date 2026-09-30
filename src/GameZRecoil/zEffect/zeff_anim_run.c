@@ -529,7 +529,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesamplerefoffsetevent
      * @recoil-artifact defines .text recoil:function:0x458e10: zEffect::HandleSampleRefOffsetEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: play a referenced sound sample either directly or at a referenced
@@ -537,16 +537,15 @@ namespace zEffect
      */
     int __fastcall HandleSampleRefOffsetEvent(zEffectAnimEntry * self, zEffectAnimRefOffsetEvent * event)
     {
-        zSndSample* const sample = self->sampleRefList[event->refIndex].sample;
         if (event->nodeRefIndex > 0) {
-            zVec3 worldPosition = { 0 };
+            zVec3 worldPosition;
             CZNode::GetWorldPosition(self->nodeRefList[event->nodeRefIndex].node, &worldPosition);
             worldPosition.x += event->offsetX;
             worldPosition.y += event->offsetY;
             worldPosition.z += event->offsetZ;
-            sample->PlayA3D(&worldPosition, 1.0f, 0);
+            self->sampleRefList[event->refIndex].sample->PlayA3D(1.0f, &worldPosition, 0);
         } else {
-            sample->PlayA3DSimple(1.0f);
+            self->sampleRefList[event->refIndex].sample->PlayA3DSimple(1.0f);
         }
         return 2;
     }
@@ -1484,7 +1483,7 @@ namespace zEffect
                     = animEvent->lookupScale < 0.0f ? animEvent->nodeAlphaEnd * 10.0f : animEvent->lookupScale;
                 const float gain = speed >= threshold ? 1.0f : speed / threshold;
                 zSndSample* const sample = self->sampleRefList[animEvent->sampleRefIndex].sample;
-                sample->PlayA3D(&worldPos, gain, 0);
+                sample->PlayA3D(gain, &worldPos, 0);
             }
 
             animEvent->rotationOrCameraPosEnd.z += animEvent->rotationOrCameraPosRate.z * frameStepSec;
@@ -1571,7 +1570,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.findnearestpickcandidatebelowpoint
      * @recoil-artifact defines .text recoil:function:0x45a920: zEffect::FindNearestPickCandidateBelowPoint.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: choose the nearest DI pick candidate below a world-space point.
@@ -1579,11 +1578,12 @@ namespace zEffect
     int __fastcall FindNearestPickCandidateBelowPoint(const zVec3* point, zClassDiPickCandidateEntry* outCandidate)
     {
         PlayerProbeSampleCandidateBuffer outResults;
+        const zVec3 query = *point;
         CZDisplayInstance::BuildPickCandidateListBelowPoint(
             g_zEffectAnim_State.worldNode,
-            point->x,
-            point->y,
-            point->z,
+            query.x,
+            query.y,
+            query.z,
             &outResults
         );
 
@@ -1601,12 +1601,12 @@ namespace zEffect
             }
         }
 
-        if (bestIndex < 0) {
-            return 0;
+        if (bestIndex >= 0) {
+            *outCandidate = outResults.entries[bestIndex];
+            return 1;
         }
 
-        *outCandidate = outResults.entries[bestIndex];
-        return 1;
+        return 0;
     }
 
     /**
@@ -3037,13 +3037,13 @@ namespace zEffect
         PlayerProbeSampleCandidateBuffer rayData = { 0 };
         const int result = CZDisplayInstance::RaycastFindClosest(
             g_zEffectAnim_State.worldNode,
-            &rayData,
             startPosition.x,
             startPosition.y,
             startPosition.z,
             startPosition.x,
             startPosition.y + height,
-            startPosition.z
+            startPosition.z,
+            &rayData
         );
 
         CZDisplayInstance::SetBreakOnFirstCandidate(0);
@@ -3079,7 +3079,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-match byte
+     * @recoil-source previously-byte-matched
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
@@ -4118,24 +4118,22 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runstopdelaycallback
      * @recoil-artifact defines .text recoil:function:0x45d770: zEffectAnim::RunStopDelayCallback.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: accumulate stop-delay time and trigger cleanup once the delay expires.
      */
-    int __fastcall RunStopDelayCallback(CZNodePartial * node)
+    void __fastcall RunStopDelayCallback(CZNodePartial * node)
     {
-        zEffectAnimEntry* const entry = node != 0 ? (zEffectAnimEntry*)(node->callbackContext) : 0;
+        zEffectAnimEntry* const entry = (zEffectAnimEntry*)(node->callbackContext);
         if (entry == 0) {
-            return 0;
+            return;
         }
 
         entry->triggerCurrentValue += g_FrameDeltaTimeSec;
-        if (entry->triggerCurrentValue >= entry->triggerBaseValue) {
-            return zEffect_Anim::NodeActionCallback(entry, 0);
+        if (entry->triggerCurrentValue > entry->triggerBaseValue) {
+            zEffect_Anim::NodeActionCallback(entry, 0);
         }
-
-        return 0;
     }
 
     /**

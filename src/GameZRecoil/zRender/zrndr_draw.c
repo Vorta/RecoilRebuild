@@ -112,8 +112,13 @@ namespace zVideo_FxSurface
 
 namespace zVid_Image
 {
-    void __fastcall
-    BlitToFramebufferClipped(zVidImagePartial * image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect);
+    void __fastcall BlitToFramebufferClipped(
+        zVidImagePartial * image,
+        int dstX,
+        int dstY,
+        unsigned short clipFlags,
+        zVidRect32* srcRect
+    );
 }
 
 /**
@@ -1847,12 +1852,13 @@ namespace zVid
      */
     void __cdecl NoiseInitBuffers()
     {
+        int i;
         const int width = zVideo::GetPrimarySurfaceWidth();
         const int height = zVideo::GetPrimarySurfaceHeight();
 
         g_zVid_NoiseByteTableSize = width * 0x19;
         g_zVid_NoiseByteTable = (unsigned char*)(malloc((size_t)(g_zVid_NoiseByteTableSize)));
-        for (int i = 0; i < g_zVid_NoiseByteTableSize; ++i) {
+        for (i = 0; i < g_zVid_NoiseByteTableSize; ++i) {
             g_zVid_NoiseByteTable[i] = (unsigned char)(rand());
         }
 
@@ -3761,14 +3767,15 @@ namespace zVid_Image
      * Purpose: Route an image blit to the primary DirectDraw surface when active, otherwise dispatch through the
      * selected source-to-primary blitter.
      */
-    void __fastcall BlitToActiveTarget(zVidImagePartial * image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect)
+    void __fastcall
+    BlitToActiveTarget(zVidImagePartial * image, int dstX, int dstY, unsigned short colorKey, zVidRect32* srcRect)
     {
         if (image->surface != 0 && zRndr::g_frameBuffer == zVideo::GetPrimarySurfacePixels()) {
-            zVideo_buff::BltSourceToPrimaryClipped(image, dstX, dstY, clipFlags & 0xffff, srcRect);
+            zVideo_buff::BltSourceToPrimaryClipped(image, dstX, dstY, colorKey, srcRect);
             return;
         }
 
-        g_zVideo_pfnBltSourceToPrimary(image, dstX, dstY, clipFlags, srcRect);
+        g_zVideo_pfnBltSourceToPrimary(image, dstX, dstY, colorKey, srcRect);
     }
 } // namespace zVid_Image
 
@@ -3786,8 +3793,13 @@ namespace zVid_Image
      * assembly-visible contracts; BN loses some row-cursor identities in the long
      * memcpy and paletted paths, so source keeps explicit typed row cursors.
      */
-    void __fastcall
-    BlitToFramebufferClipped(zVidImagePartial * image, int dstX, int dstY, int clipFlags, zVidRect32* srcRect)
+    void __fastcall BlitToFramebufferClipped(
+        zVidImagePartial * image,
+        int dstX,
+        int dstY,
+        unsigned short clipFlags,
+        zVidRect32* srcRect
+    )
     {
         int srcLeft = 0;
         int srcTop = 0;
@@ -4584,7 +4596,7 @@ namespace zRndr
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionaddpolygon
      * @recoil-artifact defines .text recoil:function:0x490710: zRndr::SpanOcclusionAddPolygon.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
      * Purpose: append one saved span-occluder polygon for the next column-table
@@ -4605,7 +4617,10 @@ namespace zRndr
             *(zVec3*)(slot->vertices[i]) = vertices[i];
         }
 
-        g_spanOccluderPolys[g_spanOccluderPolyCount].vertCount = vertCount > 8 ? 8 : vertCount;
+        const int clampedVertCount = vertCount > 8 ? 8 : vertCount;
+        // Retail stores through a slot pointer and then re-reads the count for the increment.
+        SpanOccluderPolyPartial* const poly = &g_spanOccluderPolys[g_spanOccluderPolyCount];
+        poly->vertCount = clampedVertCount;
         ++g_spanOccluderPolyCount;
     }
 } // namespace zRndr
@@ -9920,29 +9935,32 @@ void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(int startIn
         return;
     }
 
-    zRndr::LensFlareSamplePartial* sample = &zRndr::g_lensFlareSampleQueue[startIndex];
-    while (startIndex < zRndr::g_lensFlareSampleQueueCount) {
-        if (zRndrSpanOcclusionTestPointVisibility((zVec3*)(sample)) == 0) {
-            const int newCount = zRndr::g_lensFlareSampleQueueCount - 1;
-            zRndr::g_lensFlareSampleQueueCount = newCount;
-            if (startIndex >= newCount) {
-                break;
+    int sampleIndex = startIndex;
+    for (;;) {
+        if (zRndrSpanOcclusionTestPointVisibility((zVec3*)(&zRndr::g_lensFlareSampleQueue[sampleIndex])) != 0) {
+            zRndr_LensFlareSource* source
+                = (zRndr_LensFlareSource*)(zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource);
+            if (source != 0 && source->lensFlareEnabled != 0 && sampleIndex < 0x40
+                && zRndr::g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
+                zRndr_LensFlareVisibleSampleDef** const visibleSlot
+                    = &zRndr::g_lensFlareVisibleSampleDefs[zRndr::g_lensFlareVisibleSampleCount];
+                *visibleSlot = (zRndr_LensFlareVisibleSampleDef*)(&zRndr::g_lensFlareSampleQueue[sampleIndex]);
+                ++zRndr::g_lensFlareVisibleSampleCount;
             }
 
-            memcpy(sample, &zRndr::g_lensFlareSampleQueue[newCount], sizeof(*sample));
-            continue;
-        }
+            ++sampleIndex;
+            if (sampleIndex >= zRndr::g_lensFlareSampleQueueCount) {
+                return;
+            }
+        } else {
+            --zRndr::g_lensFlareSampleQueueCount;
+            if (sampleIndex >= zRndr::g_lensFlareSampleQueueCount) {
+                return;
+            }
 
-        zRndr_LensFlareSource* source = (zRndr_LensFlareSource*)(sample->lensFlareSource);
-        if (source != 0 && source->lensFlareEnabled != 0 && sample < &zRndr::g_lensFlareSampleQueue[0x40]
-            && sample->reciprocalZ != 0.0f) {
-            zRndr::g_lensFlareVisibleSampleDefs[zRndr::g_lensFlareVisibleSampleCount]
-                = (zRndr_LensFlareVisibleSampleDef*)(sample);
-            ++zRndr::g_lensFlareVisibleSampleCount;
+            zRndr::g_lensFlareSampleQueue[sampleIndex]
+                = zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount];
         }
-
-        ++startIndex;
-        ++sample;
     }
 }
 
@@ -9958,22 +9976,17 @@ int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex)
 {
     int visibleSampleCount = 0;
     zRndr::g_lensFlareVisibleSampleCount = 0;
-    if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
-        return visibleSampleCount;
-    }
-
-    zRndr::LensFlareSamplePartial* sample = &zRndr::g_lensFlareSampleQueue[startIndex];
-    while (startIndex < zRndr::g_lensFlareSampleQueueCount) {
-        zRndr_LensFlareSource* source = (zRndr_LensFlareSource*)(sample->lensFlareSource);
-        if (source != 0 && source->lensFlareEnabled != 0 && sample < &zRndr::g_lensFlareSampleQueue[0x40]
-            && sample->reciprocalZ != 0.0f) {
-            zRndr::g_lensFlareVisibleSampleDefs[visibleSampleCount] = (zRndr_LensFlareVisibleSampleDef*)(sample);
+    for (int sampleIndex = startIndex; sampleIndex < zRndr::g_lensFlareSampleQueueCount; ++sampleIndex) {
+        if (zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource != 0
+            && ((zRndr_LensFlareSource*)(zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource))->lensFlareEnabled
+                != 0
+            && sampleIndex < 0x40 && zRndr::g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
+            zRndr_LensFlareVisibleSampleDef** const visibleSlot
+                = &zRndr::g_lensFlareVisibleSampleDefs[visibleSampleCount];
+            *visibleSlot = (zRndr_LensFlareVisibleSampleDef*)(&zRndr::g_lensFlareSampleQueue[sampleIndex]);
             visibleSampleCount = zRndr::g_lensFlareVisibleSampleCount + 1;
             zRndr::g_lensFlareVisibleSampleCount = visibleSampleCount;
         }
-
-        ++startIndex;
-        ++sample;
     }
 
     return visibleSampleCount;

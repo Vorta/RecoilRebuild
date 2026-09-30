@@ -424,10 +424,11 @@ RECOIL_NO_GS int RecoilApp::InitInstance()
         return 0;
     }
 
-    WNDCLASSA wndClass = { 0 };
+    WNDCLASSA wndClass;
+    memset(&wndClass, 0, sizeof(wndClass));
     wndClass.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
     wndClass.lpfnWndProc = DefWindowProcA;
-    wndClass.hInstance = AfxGetModuleState()->m_hCurrentInstanceHandle;
+    wndClass.hInstance = AfxGetInstanceHandle();
     wndClass.hIcon = ::LoadIconA(AfxFindResourceHandle((LPCSTR)0x97, (LPCSTR)0x0e), (LPCSTR)0x97);
     wndClass.hCursor = ::LoadCursorA(AfxFindResourceHandle((LPCSTR)0x7f00, (LPCSTR)0x0c), (LPCSTR)0x7f00);
     wndClass.hbrBackground = CreateSolidBrush(0);
@@ -449,7 +450,7 @@ RECOIL_NO_GS int RecoilApp::InitInstance()
     char registryCompanyNameBuffer[0x100];
 
     if (zLoc::LoadMessagesDll(g_RecoilApp_MessagesDllName) == 0) {
-        char* systemErrorText = 0;
+        char* systemErrorText;
         sprintf(errorTextBuffer, g_RecoilApp_ExitAtFileLineFmt, g_RecoilApp_SourceFile_RecoilAppCpp, 0x188);
         OutputDebugStringA(errorTextBuffer);
         FormatMessageA(
@@ -472,26 +473,24 @@ RECOIL_NO_GS int RecoilApp::InitInstance()
     }
 
     zLoc::FormatMessage(messageCaptionBuffer, 0x100, 0x83);
-    int searchForIntroFmv = 1;
-    while (searchForIntroFmv != 0) {
-        searchForIntroFmv = 0;
-        if (zSys::FindFileOnDriveType(5, g_RecoilApp_IntroFmvPath, 0) == 0) {
-            MessageBeep(MB_ICONEXCLAMATION);
-            if (MessageBoxA(
-                    g_RecoilApp_hWndMain,
-                    messageCaptionBuffer,
-                    zLoc::GetMessageString(0x901),
-                    MB_OKCANCEL | MB_ICONEXCLAMATION
-                )
-                != IDOK) {
-                ExitProcess(0);
-            }
-            searchForIntroFmv = 1;
+    while (1) {
+        if (zSys::FindFileOnDriveType(5, g_RecoilApp_IntroFmvPath, 0) != 0) {
+            break;
+        }
+        MessageBeep(MB_ICONEXCLAMATION);
+        if (MessageBoxA(
+                g_RecoilApp_hWndMain,
+                messageCaptionBuffer,
+                zLoc::GetMessageString(0x901),
+                MB_OKCANCEL | MB_ICONEXCLAMATION
+            )
+            != IDOK) {
+            ExitProcess(0);
         }
     }
 
-    zSysVideoCapsLevel videoCaps = ZSYS_VIDEO_CAPS_NONE;
-    zSysPlatformCapsLevel platformCaps = ZSYS_PLATFORM_CAPS_UNSUPPORTED;
+    zSysVideoCapsLevel videoCaps;
+    zSysPlatformCapsLevel platformCaps;
     zSys::ProbePlatformAndVideoCaps(&videoCaps, &platformCaps);
     if ((unsigned int)(videoCaps) < (unsigned int)(ZSYS_VIDEO_CAPS_SURFACE4)) {
         zLoc::FormatMessage(messageCaptionBuffer, 0x100, 0x14);
@@ -1335,7 +1334,7 @@ zInput_FFEffectSet::zInput_FFEffectSet()
  *
  * Purpose: Reports whether joystick input and force feedback are both available.
  */
-extern "C" int __cdecl zInputDIIsForceFeedbackEnabled()
+extern "C" int __fastcall zInputDIIsForceFeedbackEnabled(zInput_FFEffectSet* effectSet)
 {
     if (zInp::GetJoystickOption() != 0 && zInputDIHasForceFeedback() != 0) {
         return 1;
@@ -2012,10 +2011,12 @@ void CZRecoilFrame::OnMenuOpenCampaign()
  */
 RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog()
 {
+    // Retail copies the title buffer's initializer from a 2-byte all-zero .bss literal: a wide empty string.
+    wchar_t fileTitle[0x80] = L"";
     char filter[0x100];
     const int filterLength = LoadStringA(g_RecoilApp_hInstance, 0xc8, filter, sizeof(filter));
+    const char separator = filter[filterLength - 1];
     if (filter[0] != '\0') {
-        const char separator = filterLength > 0 ? filter[filterLength - 1] : '\0';
         for (char* cursor = filter; *cursor != '\0'; ++cursor) {
             if (*cursor == separator) {
                 *cursor = '\0';
@@ -2023,7 +2024,6 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog()
         }
     }
 
-    char fileTitle[0x100] = { 0 };
     OPENFILENAMEA ofn;
     memset(&ofn, 0, sizeof(ofn));
     ofn.lStructSize = 0x4c;
@@ -2032,10 +2032,13 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog()
     ofn.nFilterIndex = 1;
     ofn.lpstrFile = m_openZbdFilePath;
     ofn.nMaxFile = sizeof(m_openZbdFilePath);
-    ofn.lpstrFileTitle = fileTitle;
+    ofn.lpstrFileTitle = (char*)fileTitle;
     ofn.nMaxFileTitle = 0x200;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    // Retail stores these two already-zero fields again after the memset.
+    ofn.lpstrTitle = 0;
+    ofn.lpstrInitialDir = 0;
     ofn.lpstrDefExt = g_CZRecoilFrame_DefaultFileExt;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
     if (GetOpenFileNameA((LPOPENFILENAMEA)(&ofn)) != 0) {
         strcpy(m_openZbdFilePath, ofn.lpstrFile);
@@ -2966,7 +2969,7 @@ void __cdecl InitFromZrd()
     }
 
     zUtil_SaveGameState* const localSaveState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
-    GameNetPlayerRow* const playerRow = GameNetPlayerRowList::AppendNewRow(&g_GameNetPlayerRowList, 1);
+    GameNetPlayerRow* const playerRow = g_GameNetPlayerRowList.AppendNewRow(1);
     playerRow->saveState = (GameNetPlayerSaveState*)(localSaveState);
     playerRow->playerKey = zNetworkGetLocalPlayerKey();
     zNetwork::GetPlayerNameByKey(playerRow->playerKey, playerRow->displayName, sizeof(playerRow->displayName));
@@ -3386,7 +3389,7 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     }
 
     GameNetPlayerRowListState* const rowList = &g_GameNetPlayerRowList;
-    GameNetPlayerRow* const row = GameNetPlayerRowList::AppendNewRow(rowList, 0);
+    GameNetPlayerRow* const row = rowList->AppendNewRow(0);
     row->playerKey = packet->header.payloadDword0;
     row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
     row->playerNode = clonedNode;
@@ -4752,32 +4755,31 @@ int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, in
 }
 } // namespace GameNet
 
-namespace GameNetPlayerRowList {
 /**
- * Purpose: Allocate a scoreboard player row and append it to the supplied
- * GameNet player-row list header.
+ * Purpose: Allocate a scoreboard player row and append it to this GameNet
+ * player-row list header.
  */
-GameNetPlayerRow* __fastcall AppendNewRow(GameNetPlayerRowListState* self, int zeroInitializeRow)
+GameNetPlayerRow* GameNetPlayerRowListState::AppendNewRow(int zeroInitializeRow)
 {
-    GameNetPlayerRow* const row = (GameNetPlayerRow*)(::operator new(sizeof(GameNetPlayerRow)));
-    row->hudWidget.ConstructorDefault(0, 0, 0);
+    GameNetPlayerRow* const row = new GameNetPlayerRow;
     if (zeroInitializeRow != 0) {
         memset(row, 0, sizeof(GameNetPlayerRow));
     }
 
-    row->next = 0;
-    if (self->count == 0) {
-        self->head = row;
-    } else {
-        self->tail->next = row;
-    }
+    if (row != 0) {
+        row->next = 0;
+        if (count == 0) {
+            head = row;
+        } else {
+            tail->next = row;
+        }
 
-    self->tail = row;
-    row->next = 0;
-    ++self->count;
+        tail = row;
+        row->next = 0;
+        ++count;
+    }
     return row;
 }
-} // namespace GameNetPlayerRowList
 
 /**
  * Purpose: Destroys the player row's embedded HUD panel.

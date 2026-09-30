@@ -22,11 +22,11 @@ struct PickupAirdropSpawnRef {
     CZNodePartial* dropAttachNode;
     zVec3 worldPos;
 
-    PickupAirdropSpawnRef* InitNodesFromCarrierNodeName(const char* carrierNodeName);
+    PickupAirdropSpawnRef(const char* carrierNodeName);
     zVec3* GetWorldPos();
     int CanSpawnWithClearance(float clearanceRadius);
     int SpawnPickupTypeAndRelay(int pickupTypeIndex);
-    static void __fastcall InitGlobalFromCarrierNodeName(const char* carrierNodeName);
+    static int __fastcall InitGlobalFromCarrierNodeName(const char* carrierNodeName);
     static int __cdecl ShutdownGlobal();
     static int __cdecl TrySpawnRandomPickupFromGlobal();
 };

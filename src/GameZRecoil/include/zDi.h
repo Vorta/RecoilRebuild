@@ -358,13 +358,13 @@ int __fastcall RaycastSelectClosestHitBetweenPoints(
 );
 int __fastcall RaycastFindClosest(
     CZNodePartial* world,
-    PlayerProbeSampleCandidateBuffer* rayData,
     float startX,
     float startY,
     float startZ,
     float endX,
     float endY,
-    float endZ
+    float endZ,
+    PlayerProbeSampleCandidateBuffer* rayData
 );
 int __fastcall BuildPickCandidatesForSegmentChildFallback(CZNodePartial* node, int nodeCountHint);
 int __fastcall BuildPickCandidatesForSegmentRecursive(CZNodePartial* node, int depth);

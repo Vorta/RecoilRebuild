@@ -891,22 +891,17 @@ int CZFMVActionPlayAvi::Update(double timeSec)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-actionplayavi-begin
  * @recoil-artifact defines .text recoil:function:0x463790: CZFMVActionPlayAvi::Begin.
- *
+ * @recoil-match byte
  *
  * Purpose: allocate and initialize the AVI stream and active destination rectangle.
  */
 void CZFMVActionPlayAvi::Begin(double)
 {
-    zFMV_Stream* const streamStorage = (zFMV_Stream*)(::operator new(sizeof(zFMV_Stream)));
-    zFMV_Stream* initializedStream = 0;
-    if (streamStorage != 0) {
-        initializedStream = streamStorage->Init(mediaPath, modeFlags);
-    }
-    stream = initializedStream;
+    stream = new zFMV_Stream(mediaPath, modeFlags);
 
     destRect.top = 0;
     destRect.left = 0;
-    int discard = 0;
+    int discard;
     zRndr::GetActiveRegionState(&destRect.right, &destRect.bottom, &discard, &discard);
     lastDecodedFrameIndex = -1;
 }

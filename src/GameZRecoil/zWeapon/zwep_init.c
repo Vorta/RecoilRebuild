@@ -1126,7 +1126,7 @@ namespace OptCatalog
         }
 
         if (self->fireFxSelectedSoundIndex != -1) {
-            self->fireFxSoundSamples[self->fireFxSelectedSoundIndex]->PlayA3D(&runtimeInstance->pos, 1.0f, 0);
+            self->fireFxSoundSamples[self->fireFxSelectedSoundIndex]->PlayA3D(1.0f, &runtimeInstance->pos, 0);
         }
 
         if (self->fireFxEffectTemplateIndex != 0) {
@@ -3033,22 +3033,19 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playimpactsound
      * @recoil-artifact defines .text recoil:function:0x4b0fd0: OptCatalog::PlayImpactSound
-     *
+     * @recoil-match byte
      *
      * Purpose: choose and play an impact sound sample at the hit position.
      */
     void __fastcall
     PlayImpactSound(OptCatalogEntryDef * self, OptCatalogHitEventPartial * hitEvent, int impactSlot, float gainScale)
     {
-        OptCatalogFxSpec* const impactSpec = &self->impactFxTable[impactSlot];
-        const int soundCount = impactSpec->soundCount;
-        if (soundCount == 0) {
+        if (self->impactFxTable[impactSlot].soundCount == 0) {
             return;
         }
 
-        const int soundIndex = (rand() * soundCount) >> 15;
-        zSndSample* const sample = impactSpec->soundSamples[soundIndex];
-        sample->PlayA3D(&hitEvent->hitPos, gainScale, 0);
+        const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].soundCount) >> 15;
+        self->impactFxTable[impactSlot].soundSamples[soundIndex]->PlayA3D(gainScale, &hitEvent->hitPos, 0);
     }
 } // namespace OptCatalog
 namespace OptCatalog
@@ -3056,22 +3053,19 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playbouncesound
      * @recoil-artifact defines .text recoil:function:0x4b1030: OptCatalog::PlayBounceSound
-     *
+     * @recoil-match byte
      *
      * Purpose: choose and play a bounce sound sample at the raycast hit.
      */
     void __fastcall
     PlayBounceSound(OptCatalogEntryDef * self, OptCatalogRaycastHitEntry * hitEvent, int impactSlot, float gainScale)
     {
-        OptCatalogFxSpec* const impactSpec = &self->impactFxTable[impactSlot];
-        const int soundCount = impactSpec->bounceSoundCount;
-        if (soundCount == 0) {
+        if (self->impactFxTable[impactSlot].bounceSoundCount == 0) {
             return;
         }
 
-        const int soundIndex = (rand() * soundCount) >> 15;
-        zSndSample* const sample = impactSpec->bounceSoundSamples[soundIndex];
-        sample->PlayA3D(&hitEvent->pos, gainScale, 0);
+        const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].bounceSoundCount) >> 15;
+        self->impactFxTable[impactSlot].bounceSoundSamples[soundIndex]->PlayA3D(gainScale, &hitEvent->pos, 0);
     }
 } // namespace OptCatalog
 /**
@@ -4508,7 +4502,7 @@ namespace OptCatalog_MineIterator
      * g_OptCatalog_MineIteratorCursor at 0x56bcb0.
      * Purpose: advance the current mine runtime-instance iterator cursor.
      */
-    OptCatalogRuntimeInstanceStorage* __cdecl Next()
+    OptCatalogRuntimeInstanceStorage* __fastcall Next(OptCatalogEntryDef * entry)
     {
         OptCatalogRuntimeInstanceStorage* result = g_OptCatalog_MineIteratorCursor;
         if (result != 0) {

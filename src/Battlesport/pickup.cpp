@@ -2359,16 +2359,15 @@ namespace CZNode {
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-initnodesfromcarriernodename
- * @recoil-artifact defines .text recoil:function:0x438990: PickupAirdropSpawnRef::InitNodesFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-artifact defines .text recoil:function:0x438990: PickupAirdropSpawnRef::PickupAirdropSpawnRef (D:\Proj\Battlesport\pickup.cpp).
  * @recoil-match byte
  *
  * Purpose: cache a carrier node and its healthy drop-attachment child.
  */
-PickupAirdropSpawnRef* PickupAirdropSpawnRef::InitNodesFromCarrierNodeName(const char* carrierNodeName)
+PickupAirdropSpawnRef::PickupAirdropSpawnRef(const char* carrierNodeName)
 {
     carrierNode = CZClass::FindByTypeAndName(6, carrierNodeName);
     dropAttachNode = CZClass::FindSubNodeByName(carrierNode, g_Player_HealthySubNodeName);
-    return this;
 }
 
 /**
@@ -2434,19 +2433,20 @@ zVec3* PickupAirdropSpawnRef::GetWorldPos()
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickupairdropspawnref-initglobalfromcarriernodename
  * @recoil-artifact defines .text recoil:function:0x438a90: PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: allocate and validate the global airdrop spawn reference.
  */
-void __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(const char* carrierNodeName)
+int __fastcall PickupAirdropSpawnRef::InitGlobalFromCarrierNodeName(const char* carrierNodeName)
 {
-    PickupAirdropSpawnRef* const spawnRef = new PickupAirdropSpawnRef;
-    g_Pickup_GlobalAirdropSpawnRef = spawnRef->InitNodesFromCarrierNodeName(carrierNodeName);
+    g_Pickup_GlobalAirdropSpawnRef = new PickupAirdropSpawnRef(carrierNodeName);
 
     if (g_Pickup_GlobalAirdropSpawnRef->carrierNode == 0 || g_Pickup_GlobalAirdropSpawnRef->dropAttachNode == 0) {
         ::operator delete(g_Pickup_GlobalAirdropSpawnRef);
         g_Pickup_GlobalAirdropSpawnRef = 0;
     }
+
+    return 0;
 }
 
 /**
