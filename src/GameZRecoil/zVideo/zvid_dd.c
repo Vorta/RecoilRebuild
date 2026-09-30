@@ -1324,7 +1324,7 @@ namespace zVideo_dd
      * initializes pixel packing from the display surface, and installs the window
      * clipper.
      */
-    int __cdecl CreateFullscreenSoftwareSurfaces()
+    int __fastcall CreateFullscreenSoftwareSurfaces()
     {
         DDSURFACEDESC desc = { 0 };
         int defaultGfxFlagsPayload = 0;

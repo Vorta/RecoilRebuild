@@ -211,7 +211,7 @@ struct zSndSample {
         int* buffer2Bytes
     );
     int __fastcall UnlockBackendBuffers(void* buffer1, void* buffer2, int buffer1Bytes, int buffer2Bytes);
-    unsigned int GetPlayCursorBytes();
+    unsigned int __fastcall GetPlayCursorBytes();
     void __fastcall SetPlaybackEventHandler(void(__fastcall* callback)(int eventCode));
     int DestroyOwnedData();
     void Destroy();

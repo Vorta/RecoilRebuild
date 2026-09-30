@@ -102,7 +102,7 @@ typedef void(__fastcall* zVideo_BltImageRectProc)(
 );
 typedef void(__fastcall* zVideo_SetFogEnableProc)(int enable);
 typedef void(__stdcall* zVideo_SetFogFloatProc)(float value);
-typedef void(__stdcall* zVideo_ApplyFogStateProc)(float fogStart, float fogEnd, float unused);
+typedef void(__fastcall* zVideo_ApplyFogStateProc)(float fogStart, float fogEnd, float unused);
 typedef void(__fastcall* zVideo_SubmitPolyFlatColor16Proc)(
     zVideo_XyzVertex* vertices,
     unsigned int packedColor16,
@@ -869,7 +869,7 @@ int __fastcall SelectHwApiDeviceOrFallback(int hwApiIndex);
 int __cdecl ReturnSuccessStub();
 int __cdecl ModuleInit();
 int __cdecl ShutdownVideoSystem();
-int __cdecl UpdateCachedClientRectScreenCoords();
+int __fastcall UpdateCachedClientRectScreenCoords();
 void __cdecl AtExitReleaseAllInterfacesAndSurfaces();
 } // namespace zVideo
 
@@ -973,7 +973,7 @@ HRESULT __fastcall
 CreateSurface3FromDesc(IDirectDraw2* directDraw, DDSURFACEDESC* desc, IDirectDrawSurface3** outSurface, int reserved);
 int __cdecl CreateFullscreenSurfacesForRenderer();
 int __cdecl CreateHalfResBackbufferSurfaces();
-int __cdecl CreateFullscreenSoftwareSurfaces();
+int __fastcall CreateFullscreenSoftwareSurfaces();
 int __cdecl CreateFullscreenHardwareSurfaces();
 int __fastcall GetHwApiDeviceFeatureFlags(int deviceIndex);
 int __cdecl CreateDirectDraw2ForSelectedDevice();
@@ -995,11 +995,11 @@ int __fastcall
 PresentDisplayModeSurface(zVidRect32* srcRect, zVidRect32* dstRect, int waitForPresent, int blitPrimaryToSwFirst);
 zVideo_TextureRecordPartial* __fastcall
 CreateTextureRecord(const char* textureName, zVidImagePartial* image, int useAlpha, int clampU, int clampV);
-int __cdecl CreateDeviceState();
+int __fastcall CreateDeviceState();
 void __fastcall SetFogEnable(int enable);
 void __stdcall SetFogStart(float fogStart);
 void __stdcall SetFogEnd(float fogEnd);
-void __stdcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unused);
+void __fastcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unused);
 void __cdecl UpdateFogColor();
 void __stdcall SetQuadBatchDepthAndRhw(float depthAndRhw);
 void __fastcall SubmitPolyFlatColor16(

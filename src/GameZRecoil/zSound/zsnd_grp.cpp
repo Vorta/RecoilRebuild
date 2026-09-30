@@ -569,7 +569,7 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndstreamrequest-stateplaycurrententry
  * @recoil-artifact defines .text recoil:function:0x4a4ea0: zSndStreamRequest::StatePlayCurrentEntry.
  * @recoil-artifact emits .data recoil:data:0x4e2f9c: Native shared "NULL" comparison literal.
- *
+ * @recoil-match byte
  *
  * Purpose: play due stream entries and advance their state.
  * Uses signed play-count decrement so 0xffff remains the original infinite-play
@@ -614,8 +614,8 @@ void zSndStreamRequest::StatePlayCurrentEntry()
         return;
     }
 
-    const unsigned short repeatCount = group->repeatCount;
-    if (playIndex == (int)((short)(repeatCount))) {
+    const short repeatCount = (short)(group->repeatCount);
+    if (playIndex == repeatCount) {
         if (group->delayTerminationSec > 0.0f) {
             elapsedSec = 0.0f;
             streamState = 3;
@@ -623,7 +623,7 @@ void zSndStreamRequest::StatePlayCurrentEntry()
             streamState = 4;
         }
     } else {
-        if (repeatCount != 0xffff) {
+        if (repeatCount != -1) {
             ++playIndex;
         }
         streamState = 2;

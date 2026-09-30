@@ -4235,10 +4235,8 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
 
             zReader::Node* const fontListNode = zRdrGetNode(cfgRoot, g_HudCfgKey_Fonts);
             if (fontListNode != 0) {
-                int fontCount = fontListNode->value.nodes[0].value.i32;
-                if (fontCount >= 20) {
-                    fontCount = 20;
-                }
+                const int fontCount
+                    = fontListNode->value.nodes[0].value.i32 < 20 ? fontListNode->value.nodes[0].value.i32 : 20;
 
                 for (int index = 1; index < fontCount; ++index) {
                     zReader::Node* const fontEntry = &fontListNode->value.nodes[index];
@@ -4252,37 +4250,24 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     fontStyles[styleIndex].fontSize = fontEntry->value.nodes[3].value.i32;
 
                     if (fontEntry->value.nodes[4].value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {
-                        fontStyles[styleIndex].textColor
-                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[1].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
-                                       .value.nodes[1]
-                                       .value.nodes[2]
-                                       .value.i32)
-                                << 8)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
-                                       .value.nodes[1]
-                                       .value.nodes[3]
-                                       .value.i32)
-                                << 16);
+                        fontStyles[styleIndex].textColor = RGB(
+                            fontEntry->value.nodes[4].value.nodes[1].value.nodes[1].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[1].value.nodes[2].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[1].value.nodes[3].value.i32
+                        );
 
-                        fontStyles[styleIndex].bkColor
-                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[2].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
-                                       .value.nodes[2]
-                                       .value.nodes[2]
-                                       .value.i32)
-                                << 8)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4]
-                                       .value.nodes[2]
-                                       .value.nodes[3]
-                                       .value.i32)
-                                << 16);
+                        fontStyles[styleIndex].bkColor = RGB(
+                            fontEntry->value.nodes[4].value.nodes[2].value.nodes[1].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[2].value.nodes[2].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[2].value.nodes[3].value.i32
+                        );
                         fontStyles[styleIndex].bkMode = 2;
                     } else {
-                        fontStyles[styleIndex].textColor
-                            = (unsigned char)(fontEntry->value.nodes[4].value.nodes[1].value.i32)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4].value.nodes[2].value.i32) << 8)
-                            | ((unsigned int)(unsigned char)(fontEntry->value.nodes[4].value.nodes[3].value.i32) << 16);
+                        fontStyles[styleIndex].textColor = RGB(
+                            fontEntry->value.nodes[4].value.nodes[1].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[2].value.i32,
+                            fontEntry->value.nodes[4].value.nodes[3].value.i32
+                        );
                     }
 
                     if (fontEntry->value.nodes[0].value.i32 >= 6) {
@@ -4293,12 +4278,14 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     }
                     if (fontEntry->value.nodes[0].value.i32 >= 8) {
                         const char* const align = fontEntry->value.nodes[7].value.str;
-                        if (align == 0 || strcmp(align, "LEFT") == 0) {
+                        if (strcmp(align, "LEFT") != 0) {
+                            if (strcmp(align, "RIGHT") == 0) {
+                                fontStyles[styleIndex].alignMode = 2;
+                            } else if (strcmp(align, "CENTER") == 0) {
+                                fontStyles[styleIndex].alignMode = 1;
+                            }
+                        } else {
                             fontStyles[styleIndex].alignMode = 0;
-                        } else if (strcmp(align, "RIGHT") == 0) {
-                            fontStyles[styleIndex].alignMode = 2;
-                        } else if (strcmp(align, "CENTER") == 0) {
-                            fontStyles[styleIndex].alignMode = 1;
                         }
                     }
                 }
@@ -4307,20 +4294,23 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
             zReader::Node* const imageListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
             if (imageListNode != 0) {
                 int imageCount = imageListNode->value.nodes[0].value.i32;
-                if (imageCount > 20) {
+                if (imageCount >= 20) {
                     imageCount = 20;
                 }
 
                 for (int index = 1; index < imageCount; ++index) {
-                    zReader::Node* const imageSpec = imageListNode->value.nodes[index].value.nodes;
+                    const int originX = uiOriginX;
+                    const int originY = uiOriginY;
+                    zReader::Node* const imageEntry = &imageListNode->value.nodes[index];
 
                     HudUiWidget& child = backgroundImageWidgets[index - 1];
-                    child.SetImageByPathOwned(imageSpec[1].value.str);
-                    if (imageSpec[0].value.i32 >= 4) {
-                        const int originX = uiOriginX;
-                        const int originY = uiOriginY;
+                    child.SetImageByPathOwned(imageEntry->value.nodes[1].value.str);
+                    if (imageEntry->value.nodes[0].value.i32 >= 4) {
                         ((HudUiElement*)(&child))
-                            ->SetPos(imageSpec[2].value.i32 + originX, imageSpec[3].value.i32 + originY);
+                            ->SetPos(
+                                imageEntry->value.nodes[2].value.i32 + originX,
+                                imageEntry->value.nodes[3].value.i32 + originY
+                            );
                     }
 
                     child.flags = (unsigned int)((unsigned char)(child.flags) & 0x10u) | 0x02u;
@@ -4332,23 +4322,24 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
 
             zReader::Node* const videoListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_VIDEOS);
             if (videoListNode != 0) {
-                int videoCount = videoListNode->value.nodes[0].value.i32;
-                if (videoCount > 10) {
-                    videoCount = 10;
-                }
+                const int videoCount
+                    = videoListNode->value.nodes[0].value.i32 < 10 ? videoListNode->value.nodes[0].value.i32 : 10;
 
                 for (int index = 1; index < videoCount; ++index) {
-                    zReader::Node* const videoSpec = videoListNode->value.nodes[index].value.nodes;
+                    const int originX = uiOriginX;
+                    const int originY = uiOriginY;
+                    zReader::Node* const videoEntry = &videoListNode->value.nodes[index];
 
                     HudUiBackgroundVideoWidget& child = backgroundVideoWidgets[index - 1];
-                    child.SetMediaPathOwnedAndRefresh(videoSpec[1].value.str);
-                    if (videoSpec[0].value.i32 >= 4) {
-                        const int originX = uiOriginX;
-                        const int originY = uiOriginY;
-                        child.SetPos(videoSpec[2].value.i32 + originX, videoSpec[3].value.i32 + originY);
+                    child.SetMediaPathOwnedAndRefresh(videoEntry->value.nodes[1].value.str);
+                    if (videoEntry->value.nodes[0].value.i32 >= 4) {
+                        child.SetPos(
+                            videoEntry->value.nodes[2].value.i32 + originX,
+                            videoEntry->value.nodes[3].value.i32 + originY
+                        );
                     }
-                    if (videoSpec[0].value.i32 >= 5) {
-                        zReader::Node* const color = videoSpec[4].value.nodes;
+                    if (videoEntry->value.nodes[0].value.i32 >= 5) {
+                        zReader::Node* const color = videoEntry->value.nodes[4].value.nodes;
                         child.SetColorKey565((unsigned short)(zVidPackColorRGB(
                             color[1].value.i32,
                             color[2].value.i32,
@@ -4373,33 +4364,29 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
 
             zReader::Node* const textListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
             if (textListNode != 0) {
-                int textCount = textListNode->value.nodes[0].value.i32;
-                if (textCount > 50) {
-                    textCount = 50;
-                }
+                const int textCount
+                    = textListNode->value.nodes[0].value.i32 < 50 ? textListNode->value.nodes[0].value.i32 : 50;
 
                 for (int index = 1; index < textCount; ++index) {
-                    zReader::Node* const textSpec = textListNode->value.nodes[index].value.nodes;
+                    zReader::Node* const textEntry = &textListNode->value.nodes[index];
 
                     HudUiPanel* const child = (HudUiPanel*)(&backgroundTextPanels[index - 1]);
-                    child->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textSpec[1].value.str));
+                    child->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textEntry->value.nodes[1].value.str));
                     const int originX = uiOriginX;
                     const int originY = uiOriginY;
-                    child->SetPos(textSpec[2].value.i32 + originX, textSpec[3].value.i32 + originY);
-                    const HudFontStyle* style = &fontStyles[textSpec[4].value.i32];
-                    style = style->validMarker != 0 ? style : 0;
+                    child->SetPos(
+                        textEntry->value.nodes[2].value.i32 + originX,
+                        textEntry->value.nodes[3].value.i32 + originY
+                    );
+                    const int styleIndex = textEntry->value.nodes[4].value.i32;
+                    const HudFontStyle* const style
+                        = fontStyles[styleIndex].validMarker != 0 ? &fontStyles[styleIndex] : 0;
                     if (style != 0) {
                         child->alignMode = style->alignMode;
                         child->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                        const unsigned int textColor = style->textColor;
-                        child->textColor0 = textColor;
-                        child->textColor1 = textColor;
-                        child->textDirty = 1;
-                        child->shadowEnabled = style->shadowEnabled;
-                        child->shadowOffsetX = 1;
-                        child->shadowOffsetY = 1;
-                        child->bkColor = style->bkColor;
-                        child->bkMode = style->bkMode;
+                        child->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
+                        child->SetShadow(style->shadowEnabled, 1, 1);
+                        child->SetTextBackground(style->bkMode, style->bkColor);
                     }
                     child->SetVisible(1);
                     AddChild((HudUiElement*)(child));
@@ -4419,9 +4406,8 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 zReader::Node* const bitmapNode = zRdrGetNode(cursorNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
                 if (bitmapNode != 0) {
                     cursorWidget.SetImageByPathOwnedAndRefresh(bitmapNode->value.nodes[1].value.str);
+                    SetInputFocus((HudUiElement*)(&cursorWidget));
                 }
-
-                SetInputFocus((HudUiElement*)(&cursorWidget));
 
                 zReader::Node* const centerNode = zRdrGetNode(cursorNode, "CENTER");
                 if (centerNode != 0) {
@@ -4438,20 +4424,19 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
             zReader::Node* const soundListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_SOUNDS);
             if (soundListNode != 0) {
                 int soundCount = soundListNode->value.nodes[0].value.i32;
-                if (soundCount > 10) {
+                if (soundCount >= 10) {
                     soundCount = 10;
                 }
 
                 for (int index = 1; index < soundCount; ++index) {
-                    zReader::Node* const soundSpec = soundListNode->value.nodes[index].value.nodes;
+                    zReader::Node* const soundEntry = &soundListNode->value.nodes[index];
 
-                    HudUiBackgroundSoundEntry& entry = backgroundSounds[index - 1];
                     float volume = 1.0f;
-                    if (soundSpec[0].value.i32 >= 3) {
-                        volume = soundSpec[2].value.f32;
+                    if (soundEntry->value.nodes[0].value.i32 >= 3) {
+                        volume = soundEntry->value.nodes[2].value.f32;
                     }
-                    entry.sample = zSnd::FindSampleByName(soundSpec[1].value.str);
-                    entry.volume = volume;
+                    backgroundSounds[index - 1].sample = zSnd::FindSampleByName(soundEntry->value.nodes[1].value.str);
+                    backgroundSounds[index - 1].volume = volume;
                 }
             }
         }

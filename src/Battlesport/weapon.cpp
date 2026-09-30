@@ -2398,7 +2398,7 @@ void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, float del
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatestatusmeter
  * @recoil-artifact defines .text recoil:function:0x43b660: Player::UpdateStatusMeter.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_status.cpp.
  * Purpose: process status-meter restore/gain updates, show localized HUD

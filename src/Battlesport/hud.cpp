@@ -11936,12 +11936,12 @@ namespace GameNet {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.beginchatcompose
  * @recoil-artifact defines .text recoil:function:0x4143d0: GameNet::BeginChatCompose
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Open chat-compose mode and bind text-entry keys.
  */
-void __cdecl BeginChatCompose()
+void __fastcall BeginChatCompose()
 {
     if (zOpt::GetNetworkEnabled() == 0) {
         return;

@@ -8866,12 +8866,6 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
     case 0:
         strcpy(masterTypeName, g_Player_MasterTypeName_Basic);
         break;
-    case kPlayerMasterTypeFly:
-        strcpy(masterTypeName, g_Player_MasterTypeName_Fly);
-        break;
-    case kPlayerMasterTypeSub:
-        strcpy(masterTypeName, g_Player_MasterTypeName_Sub);
-        break;
     case kPlayerMasterTypeTrack:
         strcpy(masterTypeName, g_Player_MasterTypeName_Track);
         break;
@@ -8880,6 +8874,12 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
         break;
     case kPlayerMasterTypeAmphib:
         strcpy(masterTypeName, g_Player_MasterTypeName_Amphib);
+        break;
+    case kPlayerMasterTypeSub:
+        strcpy(masterTypeName, g_Player_MasterTypeName_Sub);
+        break;
+    case kPlayerMasterTypeFly:
+        strcpy(masterTypeName, g_Player_MasterTypeName_Fly);
         break;
     default:
         strcpy(masterTypeName, g_Player_MasterTypeName_Unknown);
@@ -8916,7 +8916,7 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
         (int)(playerState->worldPos.x),
         (int)(playerState->worldPos.y),
         (int)(playerState->worldPos.z),
-        (int)((double)(playerState->restartYawRad) * kPlayerRadiansToDegrees)
+        (int)((double)(playerState->restartYawRad) * 57.29577951308)
     );
     HudUiAuxOverlay::UpdateTextLine(2, 2, debugLine);
 }
@@ -11087,12 +11087,10 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiInitState::Init(
         return E_INVALIDARG;
     }
 
+    self->bootstrapServerListEvent = bootstrapServerListEvent;
+    self->moduleHandlePrimary = self->moduleHandleTertiary = self->moduleHandleSecondary = moduleHandle;
     self->eventSinkLiveCount = 0;
     self->failureEvent = 0;
-    self->bootstrapServerListEvent = bootstrapServerListEvent;
-    self->moduleHandleSecondary = moduleHandle;
-    self->moduleHandleTertiary = moduleHandle;
-    self->moduleHandlePrimary = moduleHandle;
     InitializeCriticalSection(&self->criticalSection0);
     InitializeCriticalSection(&self->criticalSection1);
     InitializeCriticalSection(&self->criticalSection2);

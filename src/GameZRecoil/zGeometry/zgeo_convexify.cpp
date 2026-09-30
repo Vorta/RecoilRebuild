@@ -904,71 +904,107 @@ convexify(zGeometry_PolygonSpanArrayPartial* polygonSet, int inputPointCount, zV
     result->totalPointCount = 0;
     result->polygonCount = 0;
 
-    zVec3* outputPointWriteCursor = result->points;
+    float* outputDwords = (float*)(result->points);
+    zGeometry_PolygonPointSpanPartial* outputPolygon = result->polygons - 1;
     zGeometry_PolygonPointSpanPartial* inputPolygon = polygonSet->polygons;
     for (int remaining = polygonSet->polygonCount; remaining != 0; --remaining, ++inputPolygon) {
-        const int polygonPointCount = inputPolygon->pointCount;
-        if (polygonPointCount < 3) {
+        const unsigned int pointCount = inputPolygon->pointCount;
+        if (pointCount < 3) {
             continue;
         }
 
-        const float* sourcePointDwords = (const float*)(points) + inputPolygon->pointDwordOffset;
-        bool copySpan = polygonPointCount == 3;
-        if (polygonPointCount == 4) {
-            const zVec3* quadPoints = (const zVec3*)(sourcePointDwords);
-            int sign = 0;
-            copySpan = true;
+        if (pointCount == 3) {
+            ++outputPolygon;
+            outputPolygon->pointCount = 3;
+            outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+            ++result->polygonCount;
+            result->totalPointCount += 3;
+            memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset, 3 * sizeof(zVec3));
+            outputDwords += 9;
+        } else if (pointCount == 4) {
+            zVec3* a = (zVec3*)((float*)(points) + inputPolygon->pointDwordOffset);
+            zVec3* b = a + 1;
+            zVec3* c = b + 1;
+            int splitVertex = -1;
             for (int i = 0; i < 4; ++i) {
-                const zVec3& a = quadPoints[i];
-                const zVec3& b = quadPoints[(i + 1) & 3];
-                const zVec3& c = quadPoints[(i + 2) & 3];
-                const float cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-                if (cross == 0.0f) {
-                    continue;
+                if (i == 2) {
+                    c = (zVec3*)((float*)(points) + inputPolygon->pointDwordOffset);
+                } else if (i == 3) {
+                    b = (zVec3*)((float*)(points) + inputPolygon->pointDwordOffset);
                 }
 
-                const int thisSign = cross > 0.0f ? 1 : -1;
-                if (sign != 0 && sign != thisSign) {
-                    copySpan = false;
+                if ((c->x - a->x) * (b->y - a->y) - (b->x - a->x) * (c->y - a->y) > 0.0f) {
+                    splitVertex = i + 1;
                     break;
                 }
 
-                sign = thisSign;
+                ++a;
+                ++b;
+                ++c;
             }
-        }
 
-        if (copySpan) {
-            zGeometry_PolygonPointSpanPartial* polygon = &result->polygons[result->polygonCount];
-            polygon->pointCount = polygonPointCount;
-            polygon->pointDwordOffset = result->totalPointCount * 3;
-            memcpy(outputPointWriteCursor, sourcePointDwords, (size_t)(polygonPointCount) * sizeof(zVec3));
-            ++result->polygonCount;
-            result->totalPointCount += polygonPointCount;
-            outputPointWriteCursor += polygonPointCount;
-        } else if (polygonPointCount >= 4) {
-            zGeometry_TriangleDwordOffsetList* triangles = zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
-                polygonPointCount,
-                (float*)(sourcePointDwords),
-                0,
-                0
-            );
-            if (triangles != 0) {
-                const int* triangleOffsets = triangles->triangleDwordOffsets;
-                for (int triangle = 0; triangle < triangles->triangleCount; ++triangle) {
-                    zGeometry_PolygonPointSpanPartial* polygon = &result->polygons[result->polygonCount];
-                    polygon->pointCount = 3;
-                    polygon->pointDwordOffset = result->totalPointCount * 3;
-                    ++result->polygonCount;
+            splitVertex %= 4;
+            if (splitVertex < 0) {
+                ++outputPolygon;
+                outputPolygon->pointCount = 4;
+                outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+                ++result->polygonCount;
+                result->totalPointCount += 4;
+                memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset, 4 * sizeof(zVec3));
+                outputDwords += 12;
+            } else {
+                result->polygonCount += 2;
+                if ((splitVertex & 1) != 0) {
+                    ++outputPolygon;
+                    outputPolygon->pointCount = 3;
+                    outputPolygon->pointDwordOffset = result->totalPointCount * 3;
                     result->totalPointCount += 3;
-
-                    float* outputDwords = (float*)(outputPointWriteCursor);
-                    for (int dwordIndex = 0; dwordIndex < 9; ++dwordIndex) {
-                        outputDwords[dwordIndex] = sourcePointDwords[triangleOffsets[triangle * 9 + dwordIndex]];
-                    }
-                    outputPointWriteCursor += 3;
+                    memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset, 2 * sizeof(zVec3));
+                    memcpy(outputDwords + 6, (float*)(points) + inputPolygon->pointDwordOffset + 9, sizeof(zVec3));
+                    outputDwords += 9;
+                    ++outputPolygon;
+                    outputPolygon->pointCount = 3;
+                    outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+                    result->totalPointCount += 3;
+                    memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset + 3, 3 * sizeof(zVec3));
+                    outputDwords += 9;
+                } else {
+                    ++outputPolygon;
+                    outputPolygon->pointCount = 3;
+                    outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+                    result->totalPointCount += 3;
+                    memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset, 3 * sizeof(zVec3));
+                    outputDwords += 9;
+                    ++outputPolygon;
+                    outputPolygon->pointCount = 3;
+                    outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+                    result->totalPointCount += 3;
+                    memcpy(outputDwords, (float*)(points) + inputPolygon->pointDwordOffset, sizeof(zVec3));
+                    memcpy(outputDwords + 3, (float*)(points) + inputPolygon->pointDwordOffset + 6, 2 * sizeof(zVec3));
+                    outputDwords += 9;
                 }
-                free(triangles);
             }
+        } else if (pointCount > 4) {
+            zGeometry_TriangleDwordOffsetList* const triangles
+                = zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive(
+                    pointCount,
+                    (float*)(points) + inputPolygon->pointDwordOffset,
+                    0,
+                    0
+                );
+            result->polygonCount += triangles->triangleCount;
+            const int* triangleOffset = triangles->triangleDwordOffsets;
+            for (int triangle = triangles->triangleCount; triangle != 0; --triangle) {
+                ++outputPolygon;
+                outputPolygon->pointCount = 3;
+                outputPolygon->pointDwordOffset = result->totalPointCount * 3;
+                result->totalPointCount += 3;
+                for (int dwordIndex = 9; dwordIndex != 0; --dwordIndex) {
+                    *outputDwords++ = ((float*)(points))[*triangleOffset++ + inputPolygon->pointDwordOffset];
+                }
+            }
+
+            free(triangles);
         } else {
             zError::ReportOld(
                 0x100,

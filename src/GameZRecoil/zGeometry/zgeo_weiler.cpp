@@ -2868,16 +2868,16 @@ bool __fastcall OutputSelectedInputContourToPolygonSetA(zGeometry_WeilerStatePar
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-generateoutsideresults
  * @recoil-artifact defines .text recoil:function:0x4687b0: zGeometry_Weiler::GenerateOutsideResults
- *
+ * @recoil-match byte
  *
  * Purpose: Emit an outside-result polygon span and wrapped B/A point bridge when clip mode requests outside output.
  */
 bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
 {
     const int contourAPointCount = self->inputContourABuffer.count;
+    const int contourBPointCount = self->inputContourBBuffer.count;
     zVec3* const contourBPoints = (zVec3*)(self->inputContourBBuffer.base);
     zGeometry_WeilerClipOutputPartial* const outClip = self->outClip;
-    const int contourBPointCount = self->inputContourBBuffer.count;
 
     if ((self->clipMode & 2) == 0) {
         return 1;
@@ -2920,10 +2920,10 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
 
     outClip->pointList.pointCount += polygon->pointCount;
 
-    zVec3* const contourAPoints = (zVec3*)(self->inputContourABuffer.base);
-    zVec3* selectedContourAPoint = contourAPoints;
-    zVec3* contourAPoint = &contourAPoints[1];
-    for (int i = contourAPointCount - 1; i > 0; --i) {
+    zVec3* selectedContourAPoint = (zVec3*)(self->inputContourABuffer.base);
+    zVec3* contourAPoint = selectedContourAPoint + 1;
+    int remainingPointCount = contourAPointCount - 1;
+    while (remainingPointCount-- != 0) {
         if (contourAPoint->x > selectedContourAPoint->x
             || (fabs((double)(contourAPoint->x) - (double)(selectedContourAPoint->x)) < 0.0000099999997473787516
                 && contourAPoint->y > selectedContourAPoint->y)) {
@@ -2934,11 +2934,12 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
     }
 
     zVec3* selectedContourBPoint = contourBPoints;
-    zVec3* contourBPoint = &contourBPoints[1];
-    for (int i_2005 = contourBPointCount - 1; i_2005 > 0; --i_2005) {
+    zVec3* contourBPoint = contourBPoints + 1;
+    remainingPointCount = contourBPointCount - 1;
+    while (remainingPointCount-- != 0) {
         if (contourBPoint->x > selectedContourBPoint->x
             || (fabs((double)(contourBPoint->x) - (double)(selectedContourBPoint->x)) < 0.0000099999997473787516
-                && contourBPoint->y > selectedContourBPoint->y)) {
+                && selectedContourBPoint->y < contourBPoint->y)) {
             selectedContourBPoint = contourBPoint;
         }
 
@@ -2948,22 +2949,24 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
     zGeometry_Weiler::SelectForwardStartPointInContourA(selectedContourBPoint, &selectedContourAPoint, self);
 
     zVec3* const contourBLastPoint = &contourBPoints[contourBPointCount - 1];
-    contourBPoint = selectedContourBPoint;
-    for (int i_2018 = contourBPointCount; i_2018 > 0; --i_2018) {
-        *outPoint++ = *contourBPoint;
-        contourBPoint = contourBPoint == contourBLastPoint ? contourBPoints : contourBPoint + 1;
+    remainingPointCount = contourBPointCount;
+    while (remainingPointCount-- != 0) {
+        *outPoint++ = *selectedContourBPoint;
+        selectedContourBPoint = selectedContourBPoint != contourBLastPoint ? selectedContourBPoint + 1 : contourBPoints;
     }
 
-    *outPoint++ = *contourBPoint;
+    *outPoint++ = *selectedContourBPoint;
 
-    zVec3* contourAWritePoint = selectedContourAPoint;
-    for (int i_2026 = contourAPointCount; i_2026 > 0; --i_2026) {
-        *outPoint++ = *contourAWritePoint;
-        contourAWritePoint
-            = contourAWritePoint == contourAPoints ? &contourAPoints[contourAPointCount - 1] : contourAWritePoint - 1;
+    zVec3* const contourAPoints = (zVec3*)(self->inputContourABuffer.base);
+    remainingPointCount = contourAPointCount;
+    while (remainingPointCount-- != 0) {
+        *outPoint++ = *selectedContourAPoint;
+        selectedContourAPoint = selectedContourAPoint != contourAPoints
+            ? selectedContourAPoint - 1
+            : &((zVec3*)(self->inputContourABuffer.base))[contourAPointCount - 1];
     }
 
-    *outPoint++ = *contourAWritePoint;
+    *outPoint = *selectedContourAPoint;
     return 1;
 }
 

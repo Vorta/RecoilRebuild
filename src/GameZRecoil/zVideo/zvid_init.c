@@ -987,7 +987,7 @@ namespace zVideo
      * g_zVideo_CachedClientRectScreen, then maps the top-left and bottom-right
      * points with ClientToScreen.
      */
-    int __cdecl UpdateCachedClientRectScreenCoords()
+    int __fastcall UpdateCachedClientRectScreenCoords()
     {
         GetClientRect(g_zVideo_hWnd, &g_zVideo_CachedClientRectScreen);
         ClientToScreen(g_zVideo_hWnd, (POINT*)(&g_zVideo_CachedClientRectScreen.left));

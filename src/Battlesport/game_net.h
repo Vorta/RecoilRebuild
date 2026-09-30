@@ -328,7 +328,7 @@ int __cdecl GetLocalPlayerColorIndexOrZero();
 float __fastcall
 GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNetPlayerSaveState** outSaveState);
 int __cdecl AreAllPlayersAtLapTarget();
-void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks();
+void __fastcall RegisterGameplayHandlersAndOptCatalogCallbacks();
 void __cdecl UnregisterGameplayPacketHandlers();
 void __cdecl ResetRemotePlayersAndSpawnLists();
 int __fastcall WaitForLocalPlayerColorIndex(int maxWaitSeconds);
@@ -372,7 +372,7 @@ int __fastcall SendPkt14HudTimerAndFlagsSync(int eventCode, unsigned int statusF
 int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, int valueOrTime, int statusFlags);
 int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveState);
 void __fastcall ChatComposeKeyCallback(int dikCodeWithMods);
-void __cdecl BeginChatCompose();
+void __fastcall BeginChatCompose();
 void __cdecl EndChatComposeAndSend();
 void __cdecl EndChatComposeAndSendThunk();
 } // namespace GameNet

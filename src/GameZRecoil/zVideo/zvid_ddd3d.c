@@ -428,7 +428,7 @@ namespace zVideo_dd3d
      * setup, material and caps initialization, ten
      * fixed render-state writes, fog enablement, and quad-batch depth seeding.
      */
-    int __cdecl CreateDeviceState()
+    int __fastcall CreateDeviceState()
     {
         DDSURFACEDESC zBufferDesc = { 0 };
         D3DVIEWPORT2 viewport2 = { 0 };
@@ -1094,7 +1094,7 @@ namespace zVideo_dd3d
      * linear fog mode, raw fogStart bits to D3DLIGHTSTATE_FOGSTART, and raw
      * fogEnd bits to D3DLIGHTSTATE_FOGEND through IDirect3DDevice2 providers.
      */
-    void __stdcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unused)
+    void __fastcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unused)
     {
         (void)unused;
         g_zVideo_pD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);

@@ -2890,7 +2890,7 @@ namespace GameNet {
 /**
  * Purpose: Register gameplay packet handlers and option catalog callbacks once.
  */
-void __cdecl RegisterGameplayHandlersAndOptCatalogCallbacks()
+void __fastcall RegisterGameplayHandlersAndOptCatalogCallbacks()
 {
     if (g_GameNet_HandlersRegistered == 0) {
         zNetwork::RegisterPacketHandler(6, (zNetworkPacketHandler)&HandlePkt06PlayerStateSnapshot, 2);

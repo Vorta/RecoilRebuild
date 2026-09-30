@@ -417,7 +417,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(void* buffer1, void* buffer2, in
 /**
  * Purpose: return the active backend play cursor in bytes, or zero on failure.
  */
-unsigned int zSndSample::GetPlayCursorBytes()
+unsigned int __fastcall zSndSample::GetPlayCursorBytes()
 {
     int result = 0;
     if (createGuard != 0) {
