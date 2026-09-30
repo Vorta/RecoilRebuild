@@ -1,3 +1,10 @@
+/*
+ * INITGUID makes this unit emit every dinput.h GUID. Retail .rdata holds all
+ * 37 of them in header order between the zin_mouse and zin_joystick
+ * constants, including GUIDs nothing references.
+ */
+#define INITGUID
+
 #include "zinput.h"
 
 #include <stdlib.h>

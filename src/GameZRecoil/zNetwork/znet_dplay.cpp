@@ -1,3 +1,12 @@
+/*
+ * INITGUID makes this unit emit the dplay.h and dplobby.h GUIDs; retail .rdata
+ * holds both complete sets in header order after the gmod_fog constants.
+ * IDIRECTPLAY2_OR_GREATER omits the DirectPlay 1 interface, whose
+ * IID_IDirectPlay retail lacks.
+ */
+#define INITGUID
+#define IDIRECTPLAY2_OR_GREATER
+
 #include "GameZRecoil/zNetwork/znet.h"
 
 #include "GameZRecoil/zError/zerr.h"
@@ -1555,7 +1564,7 @@ namespace zNetwork_DPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createinterfaceandcoinitialize
  * @recoil-artifact defines .text recoil:function:0x48b730: zNetwork_DPlay::CreateInterfaceAndCoInitialize.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize COM and create the DirectPlay4A interface.
  */
@@ -1858,7 +1867,7 @@ namespace zNetworkDPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-selecttcpipproviderandenumsessions
  * @recoil-artifact defines .text recoil:function:0x48bbe0: zNetworkDPlay::SelectTcpIpProviderAndEnumSessions.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: build a forced TCP/IP DirectPlay address and optionally enumerate
@@ -1905,7 +1914,7 @@ int __fastcall SelectTcpIpProviderAndEnumSessions(char* addressString, int skipS
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-createlobby3ainterface
  * @recoil-artifact defines .text recoil:function:0x48be10: zNetworkDPlay::CreateLobby3AInterface.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: create a DirectPlayLobby interface and query IDirectPlayLobby3A.

@@ -185,7 +185,7 @@ int __fastcall DIInitJoystickDevice(HWND hwnd)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-enumdevicescallback-selectfirstjoystick
  * @recoil-artifact defines .text recoil:function:0x471f60: zInput::DIEnumDevicesCallbackSelectFirstJoystick.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Create the first enumerated joystick device and store the upgraded

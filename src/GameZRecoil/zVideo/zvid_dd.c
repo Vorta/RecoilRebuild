@@ -1,4 +1,13 @@
+/*
+ * INITGUID makes this unit emit the ddraw.h, d3d.h and dsound.h GUIDs. Retail
+ * .rdata holds those complete sets in that order after the zvid_init.c
+ * constants, so ddraw.h precedes d3d.h, and this unit sees neither dinput.h
+ * nor vfw.h, whose GUIDs retail keeps elsewhere or lacks.
+ */
+#define INITGUID
 #include "recoil/Mfc42Abi.h"
+
+#include <ddraw.h>
 
 #include "GameZRecoil/zVideo/zvid.h"
 
@@ -7,13 +16,12 @@
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zRender/zrndr.h"
+#include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "zclass.h"
 
 #include <malloc.h>
