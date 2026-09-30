@@ -268,23 +268,34 @@ namespace zVideo
  */
 extern "C" zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sourceSelector)
 {
-    zVideo::DispatchLockDisplayModeSurfaceState();
+    int width;
+    int height;
+    unsigned int pitchWords;
+    unsigned char* srcPixels;
 
-    zVideo_SurfaceStatePartial* surfaceState = 0;
-    if (sourceSelector == 0) {
-        surfaceState = &g_zVideo_SwSurfaceState;
-    } else if (sourceSelector == 1) {
-        surfaceState = &g_zVideo_PrimarySurfaceState;
-    } else if (sourceSelector == 2) {
-        surfaceState = &g_zVideo_DisplayModeSurfaceState;
-    } else {
+    zVideo::DispatchLockDisplayModeSurfaceState();
+    switch (sourceSelector) {
+    case 0:
+        width = g_zVideo_SwSurfaceState.width;
+        height = g_zVideo_SwSurfaceState.height;
+        pitchWords = (unsigned int)(g_zVideo_SwSurfaceState.pitch) >> 1;
+        srcPixels = (unsigned char*)(g_zVideo_SwSurfaceState.pixels);
+        break;
+    case 1:
+        width = g_zVideo_PrimarySurfaceState.width;
+        height = g_zVideo_PrimarySurfaceState.height;
+        pitchWords = (unsigned int)(g_zVideo_PrimarySurfaceState.pitch) >> 1;
+        srcPixels = (unsigned char*)(g_zVideo_PrimarySurfaceState.pixels);
+        break;
+    case 2:
+        width = g_zVideo_DisplayModeSurfaceState.width;
+        height = g_zVideo_DisplayModeSurfaceState.height;
+        pitchWords = (unsigned int)(g_zVideo_DisplayModeSurfaceState.pitch) >> 1;
+        srcPixels = (unsigned char*)(g_zVideo_DisplayModeSurfaceState.pixels);
+        break;
+    default:
         return 0;
     }
-
-    const int width = surfaceState->width;
-    const int height = surfaceState->height;
-    const unsigned int pitchWords = (unsigned int)(surfaceState->pitch) >> 1;
-    unsigned char* srcPixels = (unsigned char*)(surfaceState->pixels);
 
     zVidImagePartial* image = zVid_Image::Create();
     if (image == 0) {
@@ -292,23 +303,23 @@ extern "C" zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sour
     }
 
     zVid_Image::SetSize(image, (short)(width), (short)(height));
-    void* dstPixels = malloc((size_t)(image->pixelCount) * sizeof(unsigned short));
+    unsigned char* dstBytes = (unsigned char*)(malloc((size_t)(image->pixelCount) * sizeof(unsigned short)));
     image->formatFlagsPacked |= 0x20u;
-    zVidImageSetPixels(image, dstPixels, 0);
+    zVidImageSetPixels(image, dstBytes, 0);
 
-    unsigned char* dstBytes = (unsigned char*)(dstPixels);
-    if (width == (int)(pitchWords)) {
-        memcpy(dstBytes, srcPixels, (size_t)(image->pixelCount) * sizeof(unsigned short));
-    } else if (height > 0) {
-        const int rowBytes = width * sizeof(unsigned short);
-        const int pitchBytes = (int)(pitchWords * sizeof(unsigned short));
-        {
-            for (int row = 0; row < height; ++row) {
+    if (width != (int)(pitchWords)) {
+        if (height > 0) {
+            const int rowBytes = width * sizeof(unsigned short);
+            const int pitchBytes = (int)(pitchWords * sizeof(unsigned short));
+            int row = height;
+            do {
                 memcpy(dstBytes, srcPixels, (size_t)(rowBytes));
                 dstBytes += rowBytes;
                 srcPixels += pitchBytes;
-            }
+            } while (--row != 0);
         }
+    } else {
+        memcpy(dstBytes, srcPixels, (size_t)(image->pixelCount) * sizeof(unsigned short));
     }
 
     zVideo::DispatchUnlockDisplayModeSurfaceState();
@@ -354,8 +365,8 @@ namespace zVideo_buff
             return 0;
         }
 
-        int dstOffsetX = 0;
         int dstOffsetY = 0;
+        int dstOffsetX = 0;
         const int originalWidth = rect->right - rect->left;
 
         int clipped = ClipCoordToRange(&rect->left, 0, surfaceWidth);

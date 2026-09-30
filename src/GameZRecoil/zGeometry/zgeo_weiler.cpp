@@ -3232,8 +3232,8 @@ int __fastcall ClassifyIntersect2d(
         return 0;
     }
 
-    const float edge0DeltaX = edge0End->x - edge0Start->x;
     const float edge0DeltaY = edge0End->y - edge0Start->y;
+    const float edge0DeltaX = edge0End->x - edge0Start->x;
     float edge1StartSide
         = (edge1Start->x - edge0Start->x) * edge0DeltaY - (edge1Start->y - edge0Start->y) * edge0DeltaX;
     float edge1EndSide = (edge1End->x - edge0Start->x) * edge0DeltaY - (edge1End->y - edge0Start->y) * edge0DeltaX;
@@ -3246,7 +3246,6 @@ int __fastcall ClassifyIntersect2d(
 
     if (zeroSideCount == 2) {
         zVec3 probe;
-        probe.z = 0.0f;
 
         if (edge1StartSide == 0.0f) {
             probe.x = edge1Start->x + edge1DeltaX * 0.00000999999975f;
@@ -3301,10 +3300,10 @@ int __fastcall ClassifyIntersect2d(
         }
     }
 
-    const int edge0StartClass = edge0StartSide < 0.0f ? 0 : edge0StartSide == 0.0f ? 1 : 2;
-    const int edge0EndClass = edge0EndSide < 0.0f ? 0 : edge0EndSide == 0.0f ? 1 : 2;
-    const int edge1StartClass = edge1StartSide < 0.0f ? 0 : edge1StartSide == 0.0f ? 1 : 2;
-    const int edge1EndClass = edge1EndSide < 0.0f ? 0 : edge1EndSide == 0.0f ? 1 : 2;
+    const int edge0StartClass = edge0StartSide < 0.0 ? 0 : edge0StartSide == 0.0 ? 1 : 2;
+    const int edge0EndClass = edge0EndSide < 0.0 ? 0 : edge0EndSide == 0.0 ? 1 : 2;
+    const int edge1StartClass = edge1StartSide < 0.0 ? 0 : edge1StartSide == 0.0 ? 1 : 2;
+    const int edge1EndClass = edge1EndSide < 0.0 ? 0 : edge1EndSide == 0.0 ? 1 : 2;
     const int index = ((edge0StartClass * 3 + edge0EndClass) * 3 + edge1StartClass) * 3 + edge1EndClass;
 
     return kIntersect2dCaseIdBySignClass[index];
@@ -3452,38 +3451,54 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     const float pairBFirstDeltaY = pairBFirstSegment->endPoint->y - pairBFirstSegment->startPoint->y;
     const float pairBSecondDeltaX = pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x;
     const float pairBSecondDeltaY = pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y;
-    const bool startFirstSideNegative
-        = ((pairAFirstSegment->startPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
-              - (pairAFirstSegment->startPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX)
-        < 0.0f;
-    const bool startSecondSideNegative
-        = ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-              - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX)
-        < 0.0f;
-    int startClass = -1;
-    if ((startFirstSideNegative && startSecondSideNegative)
-        || (startFirstSideNegative != startSecondSideNegative
-            && ((pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX)
-                > 0.0f)) {
+    int startClass;
+    if ((pairAFirstSegment->startPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+            - (pairAFirstSegment->startPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+        < 0.0) {
+        if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
+                    - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+                < 0.0
+            || (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+                    - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+                < 0.0) {
+            startClass = 1;
+        } else {
+            startClass = -1;
+        }
+    } else if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
+                - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+            < 0.0
+        && (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+                - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+            < 0.0) {
         startClass = 1;
+    } else {
+        startClass = -1;
     }
 
-    const bool endFirstSideNegative
-        = ((pairASecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
-              - (pairASecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX)
-        < 0.0f;
-    const bool endSecondSideNegative
-        = ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-              - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX)
-        < 0.0f;
-    int endClass = -1;
-    if ((endFirstSideNegative && endSecondSideNegative)
-        || (endFirstSideNegative != endSecondSideNegative
-            && ((pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX)
-                > 0.0f)) {
+    int endClass;
+    if ((pairASecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+            - (pairASecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+        < 0.0) {
+        if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
+                    - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+                < 0.0
+            || (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+                    - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+                < 0.0) {
+            endClass = 1;
+        } else {
+            endClass = -1;
+        }
+    } else if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
+                - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+            < 0.0
+        && (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
+                - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
+            < 0.0) {
         endClass = 1;
+    } else {
+        endClass = -1;
     }
 
     if (startClass == -1 && endClass == -1) {
@@ -3491,20 +3506,22 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         const float pairAFirstDeltaY = pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
         const float pairASecondDeltaX = pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
         const float pairASecondDeltaY = pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
-        const bool allNegative
-            = ((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                  - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
-                < 0.0f
+        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
+                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+                < 0.0
             && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
                    - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
-                < 0.0f
+                < 0.0
             && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
                    - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
-                < 0.0f
+                < 0.0
             && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
                    - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
-                < 0.0f;
-        return allNegative ? 6 : 5;
+                < 0.0) {
+            return 6;
+        }
+
+        return 5;
     }
 
     if (startClass == 1 && endClass == 1) {
@@ -3512,23 +3529,25 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         const float pairAFirstDeltaY = pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
         const float pairASecondDeltaX = pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
         const float pairASecondDeltaY = pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
-        const bool allNegative
-            = ((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                  - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
-                < 0.0f
+        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
+                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+                < 0.0
             && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
                    - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
-                < 0.0f
+                < 0.0
             && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
                    - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
-                < 0.0f
+                < 0.0
             && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
                    - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
-                < 0.0f;
-        return allNegative ? 4 : 3;
+                < 0.0) {
+            return 4;
+        }
+
+        return 3;
     }
 
-    return startClass == -1 ? 8 : 9;
+    return startClass == 1 ? 9 : 8;
 }
 
 /**
@@ -3930,113 +3949,174 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-validatexings
  * @recoil-artifact defines .text recoil:function:0x46a1f0: zGeometry_Weiler::ValidateXings
- *
+ * @recoil-match byte
  *
  * Purpose: Walk the Weiler crossing array, report the first invalid crossing, and return the validation status.
  */
 int __fastcall ValidateXings(int xingCount, zGeometry_WeilerXingPartial* xingArray, int* failedXingIndex)
 {
     int isValid = 1;
-    zGeometry_WeilerXingPartial* xing = xingArray;
+    for (int xingIndex = 0; xingIndex < xingCount && isValid != 0; ++xingIndex, ++xingArray) {
+        zGeometry_WeilerContourSegmentPartial* const segment0 = xingArray->segment0;
+        zGeometry_WeilerContourSegmentPartial* const segment1 = xingArray->segment1;
+        zGeometry_WeilerContourSegmentPartial* const segment2 = xingArray->segment2;
+        zGeometry_WeilerContourSegmentPartial* const segment3 = xingArray->segment3;
+        zGeometry_WeilerContourSegmentPartial* const segment4 = xingArray->segment4;
+        zGeometry_WeilerContourSegmentPartial* const segment5 = xingArray->segment5;
+        zGeometry_WeilerContourSegmentPartial* const segment6 = xingArray->segment6;
+        zGeometry_WeilerContourSegmentPartial* const segment7 = xingArray->segment7;
 
-    {
-        for (int xingIndex = 0; xingIndex < xingCount; ++xingIndex) {
-            if (xing == 0) {
+        switch (xingArray->xingType) {
+        case 3:
+            break;
+        case 4:
+        case 5:
+            if (segment0 == 0 || segment1 == 0 || segment2 == 0 || segment3 == 0 || segment4 == 0 || segment5 == 0
+                || segment6 == 0 || segment7 == 0) {
                 isValid = 0;
+            }
+            break;
+        case 13:
+            if (segment0 == 0 || segment2 == 0 || segment6 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 16:
+            if (segment1 == 0 || segment3 == 0 || segment6 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 19:
+            if (segment0 == 0 || segment2 == 0 || segment4 == 0 || segment5 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 22:
+            if (segment1 == 0 || segment3 == 0 || segment4 == 0 || segment5 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 24:
+            if (segment5 != 0) {
+                if (segment0 == 0 || segment2 == 0) {
+                    isValid = 0;
+                }
+            } else if (segment0 == 0 || segment2 == 0 || segment4 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 25:
+            if (segment5 != 0) {
+                if (segment1 == 0 || segment3 == 0) {
+                    isValid = 0;
+                }
+            } else if (segment1 == 0 || segment3 == 0 || segment4 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 12:
+            if (segment2 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 14:
+            if (segment0 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 15:
+            if (segment3 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 17:
+            if (segment1 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 18:
+            if (segment2 == 0 || segment4 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 20:
+            if (segment0 == 0 || segment5 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 21:
+            if (segment3 == 0 || segment5 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 23:
+            if (segment1 == 0 || segment4 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 6:
+            if (segment3 == 0 || segment4 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 7:
+            if (segment2 == 0 || segment3 == 0 || segment5 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 8:
+            if (segment0 == 0 || segment1 == 0 || segment4 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 9:
+            if (segment0 == 0 || segment1 == 0 || segment5 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 10:
+            if (segment1 != 0) {
+                if (segment3 == 0 || segment4 == 0 || segment6 == 0) {
+                    isValid = 0;
+                }
+            } else if (segment0 == 0 || segment2 == 0 || segment4 == 0 || segment6 == 0) {
+                isValid = 0;
+            }
+            break;
+        case 11:
+            if (segment1 != 0) {
+                if (segment3 == 0 || segment5 == 0 || segment7 == 0) {
+                    isValid = 0;
+                }
+            } else if (segment0 == 0 || segment2 == 0 || segment5 == 0 || segment7 == 0) {
+                isValid = 0;
+            }
+            break;
+        }
+
+        if (isValid == 0) {
+            if (failedXingIndex != 0) {
+                *failedXingIndex = xingIndex;
+            }
+
+            if (xingArray != 0) {
+                zError::ReportOld(
+                    0x100,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0x1788,
+                    g_zGeometry_ValidateXingTypeFmt,
+                    xingIndex,
+                    xingArray->xingType
+                );
             } else {
-                const bool hasSegment0 = xing->segment0 != 0;
-                const bool hasSegment1 = xing->segment1 != 0;
-                const bool hasSegment2 = xing->segment2 != 0;
-                const bool hasSegment3 = xing->segment3 != 0;
-                const bool hasSegment4 = xing->segment4 != 0;
-                const bool hasSegment5 = xing->segment5 != 0;
-                const bool hasSegment6 = xing->segment6 != 0;
-                const bool hasSegment7 = xing->segment7 != 0;
-                const int xingType = xing->xingType;
-
-                if (xingType == 4 || xingType == 5) {
-                    isValid = hasSegment0 && hasSegment1 && hasSegment2 && hasSegment3 && hasSegment4 && hasSegment5
-                            && hasSegment6 && hasSegment7
-                        ? 1
-                        : 0;
-                } else if (xingType == 6) {
-                    isValid = hasSegment3 && hasSegment4 && hasSegment6 ? 1 : 0;
-                } else if (xingType == 7) {
-                    isValid = hasSegment2 && hasSegment3 && hasSegment5 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 8) {
-                    isValid = hasSegment0 && hasSegment1 && hasSegment4 && hasSegment6 ? 1 : 0;
-                } else if (xingType == 9) {
-                    isValid = hasSegment0 && hasSegment1 && hasSegment5 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 10) {
-                    isValid = hasSegment4 && hasSegment6
-                            && ((hasSegment1 && hasSegment3) || (!hasSegment1 && hasSegment0 && hasSegment2))
-                        ? 1
-                        : 0;
-                } else if (xingType == 11) {
-                    isValid = hasSegment5 && hasSegment7
-                            && ((hasSegment1 && hasSegment3) || (!hasSegment1 && hasSegment0 && hasSegment2))
-                        ? 1
-                        : 0;
-                } else if (xingType == 12) {
-                    isValid = hasSegment2 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 13) {
-                    isValid = hasSegment0 && hasSegment2 && hasSegment6 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 14) {
-                    isValid = hasSegment0 && hasSegment6 ? 1 : 0;
-                } else if (xingType == 15) {
-                    isValid = hasSegment3 && hasSegment6 ? 1 : 0;
-                } else if (xingType == 16) {
-                    isValid = hasSegment1 && hasSegment3 && hasSegment6 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 17) {
-                    isValid = hasSegment1 && hasSegment7 ? 1 : 0;
-                } else if (xingType == 18) {
-                    isValid = hasSegment2 && hasSegment4 ? 1 : 0;
-                } else if (xingType == 19) {
-                    isValid = hasSegment0 && hasSegment2 && hasSegment4 && hasSegment5 ? 1 : 0;
-                } else if (xingType == 20) {
-                    isValid = hasSegment0 && hasSegment5 ? 1 : 0;
-                } else if (xingType == 21) {
-                    isValid = hasSegment3 && hasSegment5 ? 1 : 0;
-                } else if (xingType == 22) {
-                    isValid = hasSegment1 && hasSegment3 && hasSegment4 && hasSegment5 ? 1 : 0;
-                } else if (xingType == 23) {
-                    isValid = hasSegment1 && hasSegment4 ? 1 : 0;
-                } else if (xingType == 24) {
-                    isValid = hasSegment0 && hasSegment2 && (hasSegment5 || (hasSegment4 && hasSegment6)) ? 1 : 0;
-                } else if (xingType == 25) {
-                    isValid = hasSegment1 && hasSegment3 && (hasSegment5 || (hasSegment4 && hasSegment6)) ? 1 : 0;
-                } else {
-                    isValid = 1;
-                }
+                zError::ReportOld(
+                    0x100,
+                    g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                    0x179a,
+                    g_zGeometry_ValidateXingNullFmt,
+                    xingIndex
+                );
             }
-            if (isValid == 0) {
-                if (failedXingIndex != 0) {
-                    *failedXingIndex = xingIndex;
-                }
-
-                if (xing != 0) {
-                    zError::ReportOld(
-                        0x100,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0x1788,
-                        g_zGeometry_ValidateXingTypeFmt,
-                        xingIndex,
-                        xing->xingType
-                    );
-                } else {
-                    zError::ReportOld(
-                        0x100,
-                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                        0x179a,
-                        g_zGeometry_ValidateXingNullFmt,
-                        xingIndex
-                    );
-                }
-
-                break;
-            }
-
-            ++xing;
         }
     }
 

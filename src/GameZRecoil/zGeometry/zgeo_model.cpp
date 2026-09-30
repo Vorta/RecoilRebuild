@@ -655,6 +655,7 @@ int __fastcall ClipPatch(
     zGeometry_ClipPatchOutputPartial* outClipPatchOutput
 )
 {
+    int nodeDiPairCount = 0;
     if (featureGridCell == 0 || points == 0) {
         zError::ReportOld(
             0x100,
@@ -672,121 +673,81 @@ int __fastcall ClipPatch(
         return -1;
     }
 
-    const int oldPartitionCount = outClipPatchOutput->partitionCount;
     outClipPatchOutput->partitions = (zGeometry_ClipPatchPartitionOutput*)(realloc(
         outClipPatchOutput->partitions,
-        (size_t)(oldPartitionCount + 1) * sizeof(zGeometry_ClipPatchPartitionOutput)
+        (size_t)(outClipPatchOutput->partitionCount + 1) * sizeof(zGeometry_ClipPatchPartitionOutput)
     ));
-    ++outClipPatchOutput->partitionCount;
-
-    zGeometry_ClipPatchPartitionOutput* const partitionOutput = &outClipPatchOutput->partitions[oldPartitionCount];
+    zGeometry_ClipPatchPartitionOutput* const partitionOutput
+        = &outClipPatchOutput->partitions[outClipPatchOutput->partitionCount++];
     partitionOutput->featureGridCell = featureGridCell;
-
-    const int featureGridNodeCount = featureGridCell->nodeCount;
-    partitionOutput->nodeDiPairCount = featureGridNodeCount;
-    partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair*)(calloc(
-        (size_t)(featureGridNodeCount),
+    partitionOutput->nodeDiPairCount = featureGridCell->nodeCount;
+    zGeometry_ClipPatchNodeDiPair* nodeDiPair = (zGeometry_ClipPatchNodeDiPair*)(calloc(
+        (size_t)(featureGridCell->nodeCount),
         sizeof(zGeometry_ClipPatchNodeDiPair)
     ));
+    partitionOutput->nodeDiPairs = nodeDiPair;
 
     CZNodePartial* const cameraNode = zDEClient::GetCameraNode();
-    const int candidateCapacity = cameraNode->listCountB + featureGridNodeCount;
-    zGeometry_ClipPatchNodeView** insideNodes
-        = (zGeometry_ClipPatchNodeView**)(malloc((size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView*)));
-    zGeometry_ClipPatchNodeView** clipNodes
-        = (zGeometry_ClipPatchNodeView**)(malloc((size_t)(candidateCapacity) * sizeof(zGeometry_ClipPatchNodeView*)));
-
-    int insideNodeCount = 0;
+    const size_t candidateBytes
+        = (size_t)(featureGridCell->nodeCount + cameraNode->listCountB) * sizeof(zGeometry_ClipPatchNodeView*);
+    zGeometry_ClipPatchNodeView** const insideNodes = (zGeometry_ClipPatchNodeView**)(malloc(candidateBytes));
+    zGeometry_ClipPatchNodeView** const clipNodes = (zGeometry_ClipPatchNodeView**)(malloc(candidateBytes));
     int clipNodeCount = 0;
+    int insideNodeCount = 0;
 
-    {
-        for (int nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
-            zGeometry_ClipPatchNodeView* const node = cameraNode->listB[nodeIndex];
-            if ((node->flags & 0x04) == 0) {
-                continue;
-            }
+    int nodeIndex;
+    for (nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
+        if ((cameraNode->listB[nodeIndex]->flags & 0x04) == 0) {
+            continue;
+        }
 
-            if ((node->flags & 0x20000) != 0) {
-                insideNodes[insideNodeCount] = node;
-                ++insideNodeCount;
-            }
+        if ((cameraNode->listB[nodeIndex]->flags & 0x20000) != 0) {
+            insideNodes[insideNodeCount++] = cameraNode->listB[nodeIndex];
+        }
 
-            if ((node->flags & 0x10000) != 0) {
-                clipNodes[clipNodeCount] = node;
-                ++clipNodeCount;
-            }
+        if ((cameraNode->listB[nodeIndex]->flags & 0x10000) != 0) {
+            clipNodes[clipNodeCount++] = cameraNode->listB[nodeIndex];
         }
     }
 
-    {
-        for (int nodeIndex = 0; nodeIndex < featureGridNodeCount; ++nodeIndex) {
-            zGeometry_ClipPatchNodeView* const node = featureGridCell->nodes[nodeIndex];
-            if ((node->flags & 0x04) == 0) {
-                continue;
-            }
+    for (nodeIndex = 0; nodeIndex < featureGridCell->nodeCount; ++nodeIndex) {
+        if ((featureGridCell->nodes[nodeIndex]->flags & 0x04) == 0) {
+            continue;
+        }
 
-            if ((node->flags & 0x20000) != 0) {
-                insideNodes[insideNodeCount] = node;
-                ++insideNodeCount;
-            }
+        if ((featureGridCell->nodes[nodeIndex]->flags & 0x20000) != 0) {
+            insideNodes[insideNodeCount++] = featureGridCell->nodes[nodeIndex];
+        }
 
-            if ((node->flags & 0x10000) != 0) {
-                clipNodes[clipNodeCount] = node;
-                ++clipNodeCount;
-            }
+        if ((featureGridCell->nodes[nodeIndex]->flags & 0x10000) != 0) {
+            clipNodes[clipNodeCount++] = featureGridCell->nodes[nodeIndex];
         }
     }
 
-    {
-        for (int nodeIndex = 0; nodeIndex < clipNodeCount; ++nodeIndex) {
-            if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(clipPolygon, clipNodes[nodeIndex]) != 0) {
-                zGeometry_Vec3Array::ComputeBoundsXY(
-                    &clipPolygon->bounds,
-                    clipPolygon->points,
-                    clipPolygon->pointCount
-                );
-            }
+    int result = 1;
+    for (nodeIndex = 0; nodeIndex < clipNodeCount; ++nodeIndex) {
+        if (zGeometry_ClipPolygon::SnapPointsNearNodeModelXY(clipPolygon, clipNodes[nodeIndex]) != 0) {
+            zGeometry_Vec3Array::ComputeBoundsXY(&clipPolygon->bounds, clipPolygon->points, clipPolygon->pointCount);
         }
     }
 
     clipPolygon->weilerState = zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
 
-    int result = 1;
-    zGeometry_ClipPatchNodeDiPair* nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
+    for (nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
+        result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, insideNodes[nodeIndex], &nodeDiPair->di);
+    }
 
-    {
-        for (int nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
-            result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(
-                clipPolygon,
-                insideNodes[nodeIndex],
-                &nodeDiPairWriteCursor->di
-            );
+    for (nodeIndex = 0; result != 0 && nodeIndex < clipNodeCount; ++nodeIndex) {
+        nodeDiPair->node = clipNodes[nodeIndex];
+        result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, clipNodes[nodeIndex], &nodeDiPair->di);
+        if (nodeDiPair->di != 0) {
+            ++nodeDiPairCount;
+            ++nodeDiPair;
         }
     }
 
-    int nodeDiPairCount = 0;
-    if (result != 0) {
-        nodeDiPairWriteCursor = partitionOutput->nodeDiPairs;
-        {
-            for (int nodeIndex = 0; nodeIndex < clipNodeCount && result != 0; ++nodeIndex) {
-                nodeDiPairWriteCursor->node = clipNodes[nodeIndex];
-                result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(
-                    clipPolygon,
-                    clipNodes[nodeIndex],
-                    &nodeDiPairWriteCursor->di
-                );
-
-                if (nodeDiPairWriteCursor->di != 0) {
-                    ++nodeDiPairCount;
-                    ++nodeDiPairWriteCursor;
-                }
-            }
-        }
-    }
-
-    int returnValue = nodeDiPairCount;
     if (nodeDiPairCount != 0 && result != 0) {
-        if (nodeDiPairCount != featureGridNodeCount) {
+        if (nodeDiPairCount != featureGridCell->nodeCount) {
             partitionOutput->nodeDiPairCount = nodeDiPairCount;
             partitionOutput->nodeDiPairs = (zGeometry_ClipPatchNodeDiPair*)(realloc(
                 partitionOutput->nodeDiPairs,
@@ -820,7 +781,7 @@ int __fastcall ClipPatch(
             ));
         }
 
-        returnValue = 0;
+        nodeDiPairCount = 0;
     }
 
     zGeometry_ClipPolygon::FinalizeAndDestroy(clipPolygon);
@@ -833,7 +794,7 @@ int __fastcall ClipPatch(
         free(clipNodes);
     }
 
-    return returnValue;
+    return nodeDiPairCount;
 }
 
 } // namespace zGeometry_Model

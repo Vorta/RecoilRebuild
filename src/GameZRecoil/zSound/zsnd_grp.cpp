@@ -362,10 +362,8 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
             if (strcmp(key, g_zSnd_SoundGroupDelayPlayKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->delayPlaySec = valueNode->value.f32;
-                    ++childIndex;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
                     outConfigBlock->delayPlaySec = (float)(valueNode->value.i32);
-                    ++childIndex;
                 } else {
                     zError::ReportOld(
                         0x200,
@@ -374,15 +372,13 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
                         g_zSnd_SoundGroupDelayPlayLoadErrorFmt,
                         groupFields->groupName
                     );
-                    ++childIndex;
                 }
+                ++childIndex;
             } else if (strcmp(key, g_zSnd_SoundGroupPlayCountKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->maxPlayCount = (unsigned short)(valueNode->value.f32 + 0.5f);
-                    ++childIndex;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
                     outConfigBlock->maxPlayCount = (unsigned short)(valueNode->value.i32);
-                    ++childIndex;
                 } else {
                     zError::ReportOld(
                         0x200,
@@ -391,16 +387,14 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
                         g_zSnd_SoundGroupPlayCountLoadErrorFmt,
                         groupFields->groupName
                     );
-                    ++childIndex;
                 }
+                ++childIndex;
                 outConfigBlock->currentPlayCount = outConfigBlock->maxPlayCount;
             } else if (strcmp(key, g_zSnd_SoundGroupWeightKey) == 0) {
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
                     outConfigBlock->weight = valueNode->value.f32;
-                    ++childIndex;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
                     outConfigBlock->weight = (float)(valueNode->value.i32);
-                    ++childIndex;
                 } else {
                     zError::ReportOld(
                         0x200,
@@ -409,8 +403,8 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
                         g_zSnd_SoundGroupWeightLoadErrorFmt,
                         groupFields->groupName
                     );
-                    ++childIndex;
                 }
+                ++childIndex;
             } else {
                 outConfigBlock->streamName = key;
             }
