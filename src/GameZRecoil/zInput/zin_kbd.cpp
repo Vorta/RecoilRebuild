@@ -322,7 +322,7 @@ void __cdecl KeyboardResetTransitionState()
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_pollstate
  * @recoil-artifact defines .text recoil:function:0x46f690: zInput::KeyboardPollState.
- *
+ * @recoil-match byte
  *
  * BN zin_kbd.cpp evidence shows a 0x80-event DirectInput GetDeviceData pump,
  * DIERR_INPUTLOST reacquire handling, modifier-aware transition updates, raw

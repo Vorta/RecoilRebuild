@@ -55,7 +55,7 @@ namespace HudUi {
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-hudui-showmessagebox
  * @recoil-artifact defines .text recoil:function:0x438350: HudUi::ShowMessageBox.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
  * BN source path: D:\Proj\Battlesport\HudUiMessageBoxDialog.cpp.
