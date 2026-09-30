@@ -570,11 +570,11 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
     if ((node->flags & 0x200) != 0) {
         zGeometry_ClipPatchModelNodeBoundsView* modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
 
-        if ((double)(clipPolygon->bounds.maxX + 1.0f) < modelBounds->boundsMinX) {
+        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
             return 0;
         }
 
-        if ((double)(clipPolygon->bounds.minX - 1.0f) > modelBounds->boundsMaxX) {
+        if (modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f) {
             return 0;
         }
 

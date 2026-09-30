@@ -153,12 +153,12 @@ namespace CZDisplay
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetbackgroundcolor
      * @recoil-artifact defines .text recoil:function:0x44ff90: CZDisplay::gwDisplaySetBackgroundColor
-     * @recoil-match byte
      *
-     * Evidence: retail stores the packed clear color from AX into the dead
-     * parameter slot, reloads it as a dword and masks it before the call, which
-     * VC5 emits only for a memory-resident aggregate local; plain, volatile and
-     * address-taken scalar locals keep it in a register.
+     *
+     * Evidence: retail stores the packed clear color from AX into a stack
+     * temporary, reloads it as a dword and masks it before the call. This matches
+     * zVidPackColorRgbFloats returning a small color struct whose .value is read
+     * from the returned temporary; that zvid.h interface change is pending.
      *
      * Purpose: update the display background color, pack it to the video clear
      * color format, and set the renderer clear color.
@@ -189,12 +189,8 @@ namespace CZDisplay
         data->backgroundR = red;
         data->backgroundG = green;
         data->backgroundB = blue;
-        union {
-            unsigned short value;
-            unsigned char bytes[2];
-        } packedColor;
-        packedColor.value = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&data->backgroundR));
-        zVideoSetClearColorPacked16(packedColor.value);
+        const unsigned short packedColor = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&data->backgroundR));
+        zVideoSetClearColorPacked16(packedColor);
         return 0;
     }
 }

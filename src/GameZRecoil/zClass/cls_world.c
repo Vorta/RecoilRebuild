@@ -595,9 +595,9 @@ namespace CZWorld
         *outGridCol = -1;
 
         if (data->originX - data->partitionInclusionTolX > minX
-            || (double)(data->worldMaxX + data->partitionInclusionTolX) <= maxX
-            || (double)(data->originZ + data->partitionInclusionTolZ) < maxZ
-            || (double)(data->worldMaxZ - data->partitionInclusionTolZ) >= minZ) {
+            || maxX >= data->worldMaxX + data->partitionInclusionTolX
+            || maxZ > data->originZ + data->partitionInclusionTolZ
+            || minZ <= data->worldMaxZ - data->partitionInclusionTolZ) {
             return 0;
         }
 
