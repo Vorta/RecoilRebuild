@@ -139,7 +139,7 @@ inline int KeyboardEventDispatchIndex(const DIDeviceObjectData& event)
 /**
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zinput-zin_kbd-function-keyboard_initdevice
  * @recoil-artifact defines .text recoil:function:0x46f300: zInput::KeyboardInitDevice.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_kbd.cpp.
  * Purpose: Create and configure the DirectInput keyboard device, allocate the

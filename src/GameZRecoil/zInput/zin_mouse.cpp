@@ -153,7 +153,7 @@ void __fastcall MouseSetClientSizeAndCenter(int width, int height)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-mouse.mouse-initdevice
  * @recoil-artifact defines .text recoil:function:0x4701f0: zInput::MouseInitDevice.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_mouse.cpp.
  * Purpose: Create and configure the DirectInput mouse device, initialize the
