@@ -2116,7 +2116,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastselectclosesthitbetweenpoints
      * @recoil-artifact defines .text recoil:function:0x444de0: CZDisplayInstance::RaycastSelectClosestHitBetweenPoints.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2162,10 +2162,10 @@ namespace CZDisplayInstance
             } while (--rayData->candidateCount != 0);
 
             rayData->candidateCount = bestCandidateIndex;
-            return 0;
+        } else {
+            rayData->candidateCount = 0;
         }
 
-        rayData->candidateCount = 0;
         return 0;
     }
 

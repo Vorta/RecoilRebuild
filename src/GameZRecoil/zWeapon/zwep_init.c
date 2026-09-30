@@ -2654,8 +2654,7 @@ namespace OptCatalog
 
         PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
         if (suppressFallbackFx == 0 && damageHandled == 0) {
-            OptCatalogFxSpec* const impactSpec = &self->impactFxTable[impactSlot];
-            zEffectAnimEntry* const animationEntry = impactSpec->animationEntry;
+            zEffectAnimEntry* const animationEntry = self->impactFxTable[impactSlot].animationEntry;
             if (animationEntry != 0) {
                 zEffectAnim::SetTransformRotAndVelocityThunk(
                     animationEntry,
@@ -2671,10 +2670,10 @@ namespace OptCatalog
                     0.0f
                 );
             }
+        }
 
-            if (impactSpec->effectTemplateIndex != 0) {
-                zEffect::SpawnRuntimeInstanceAt(impactSpec->effectTemplateIndex, &hitEvent->hitPos);
-            }
+        if (self->impactFxTable[impactSlot].effectTemplateIndex != 0) {
+            zEffect::SpawnRuntimeInstanceAt(self->impactFxTable[impactSlot].effectTemplateIndex, &hitEvent->hitPos);
         }
     }
 } // namespace OptCatalog

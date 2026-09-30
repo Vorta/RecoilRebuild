@@ -50,9 +50,14 @@ struct CHudUiMpExitDialogExitButton : HudUiZrdWidget {
 };
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud-ui-mp-exit-dialog.type
+ * @recoil-artifact emits .text recoil:function:0x419870: HudUiMpExitDialog::~HudUiMpExitDialog (compiler-emitted implicit destructor).
  * Ownership/evidence: BN 0x419740 constructs HudUiBackground, then the two
  * embedded HudUiZrdWidget buttons, and finally installs the HudUiMpExitDialog
- * dispatch identity before storing the singleton pointer.
+ * dispatch identity before storing the singleton pointer. Retail 0x419870 has
+ * no derived vptr store, which VC5 emits only for the implicit destructor.
+ * Purpose: define the multiplayer-exit dialog whose ordinary virtual lifetime
+ * destroys the exit and new-game child widgets before the background base.
  */
 struct HudUiMpExitDialog : HudUiBackground {
     CHudUiMpExitDialogNewGameButton m_mpNewGameButton;
@@ -78,7 +83,6 @@ struct HudUiMpExitDialog : HudUiBackground {
     void UnloadLayout();
     virtual void Update(float deltaSeconds);
     void LoadLayout();
-    virtual ~HudUiMpExitDialog();
 };
 
 extern HudUiMpExitDialog* g_HudUiMpExitDialog;

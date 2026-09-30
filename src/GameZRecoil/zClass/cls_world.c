@@ -402,7 +402,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.applypendingfogsettings
      * @recoil-artifact defines .text recoil:function:0x450530: CZWorld::ApplyPendingFogSettings.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: apply staged world fog changes and queued area-bound updates,
@@ -595,9 +595,9 @@ namespace CZWorld
         *outGridCol = -1;
 
         if (data->originX - data->partitionInclusionTolX > minX
-            || maxX >= data->worldMaxX + data->partitionInclusionTolX
-            || maxZ > data->originZ + data->partitionInclusionTolZ
-            || minZ <= data->worldMaxZ - data->partitionInclusionTolZ) {
+            || (double)(data->worldMaxX + data->partitionInclusionTolX) <= maxX
+            || (double)(data->originZ + data->partitionInclusionTolZ) < maxZ
+            || (double)(data->worldMaxZ - data->partitionInclusionTolZ) >= minZ) {
             return 0;
         }
 

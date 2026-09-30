@@ -1838,15 +1838,6 @@ HudWeatherFxSnow::HudWeatherFxSnow(int particleCount)
 }
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-hudweatherfxsnow-0x4be2e0
- * @recoil-artifact defines .text recoil:function:0x4be2e0: HudWeatherFxSnow::~HudWeatherFxSnow.
- *
- *
- * Purpose: Tear down the snow emitter and continue through the shared C++ base destructor.
- */
-HudWeatherFxSnow::~HudWeatherFxSnow() { }
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-update
  * @recoil-artifact defines .text recoil:function:0x4be2f0: HudWeatherFxSnow::Update.
  *

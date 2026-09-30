@@ -932,7 +932,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatecameraparamsovertime
      * @recoil-artifact defines .text recoil:function:0x4596c0: zEffect::AnimateCameraParamsOverTime.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: interpolate selected camera parameters across the current timed
@@ -944,13 +944,14 @@ namespace zEffect
         zEffectCameraAnimEvent * animEvent
     )
     {
+        int result = 1;
         if (self == 0 || sequenceRuntime == 0 || animEvent == 0 || animEvent->targetNodeRefIndex < 0) {
             return 2;
         }
 
         CZNodePartial* const node = self->nodeRefList[animEvent->targetNodeRefIndex].node;
-        float primaryValue = 0.0f;
-        float secondaryValue = 0.0f;
+        float primaryValue;
+        float secondaryValue;
 
         if (sequenceRuntime->runState == 0) {
             if ((animEvent->flags & 0x01) != 0) {
@@ -988,95 +989,96 @@ namespace zEffect
             }
         }
 
-        float stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
+        float stepSec;
         if (sequenceRuntime->eventElapsedSec > animEvent->endTime) {
             stepSec
                 = g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - animEvent->endTime);
+        } else {
+            stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
         }
 
         if ((animEvent->flags & 0x01) != 0) {
             CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetNearFarClip(node, primaryValue + animEvent->nearClipRate * stepSec, secondaryValue);
+            primaryValue += animEvent->nearClipRate * stepSec;
+            CZCamera::gwCameraSetNearFarClip(node, primaryValue, secondaryValue);
         }
 
         if ((animEvent->flags & 0x02) != 0) {
             CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetNearFarClip(node, primaryValue, secondaryValue + animEvent->farClipRate * stepSec);
+            secondaryValue += animEvent->farClipRate * stepSec;
+            CZCamera::gwCameraSetNearFarClip(node, primaryValue, secondaryValue);
         }
 
         if ((animEvent->flags & 0x04) != 0) {
             CZCamera::gwCameraGetClipDistance(node, &primaryValue);
-            CZCamera::gwCameraSetClipDistance(node, primaryValue + animEvent->clipDistanceRate * stepSec);
+            primaryValue += animEvent->clipDistanceRate * stepSec;
+            CZCamera::gwCameraSetClipDistance(node, primaryValue);
         }
 
         if ((animEvent->flags & 0x08) != 0) {
             CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetFOV(node, primaryValue + animEvent->fovPrimaryRate * stepSec, secondaryValue);
+            primaryValue += animEvent->fovPrimaryRate * stepSec;
+            CZCamera::gwCameraSetFOV(node, primaryValue, secondaryValue);
         }
 
         if ((animEvent->flags & 0x10) != 0) {
             CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetFOV(node, primaryValue, secondaryValue + animEvent->fovSecondaryRate * stepSec);
+            secondaryValue += animEvent->fovSecondaryRate * stepSec;
+            CZCamera::gwCameraSetFOV(node, primaryValue, secondaryValue);
         }
 
         if ((animEvent->flags & 0x20) != 0) {
             CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetViewport(
-                node,
-                primaryValue + animEvent->viewportPrimaryRate * stepSec,
-                secondaryValue
-            );
+            primaryValue += animEvent->viewportPrimaryRate * stepSec;
+            CZCamera::gwCameraSetViewport(node, primaryValue, secondaryValue);
         }
 
         if ((animEvent->flags & 0x40) != 0) {
             CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetViewport(
-                node,
-                primaryValue,
-                secondaryValue + animEvent->viewportSecondaryRate * stepSec
-            );
+            secondaryValue += animEvent->viewportSecondaryRate * stepSec;
+            CZCamera::gwCameraSetViewport(node, primaryValue, secondaryValue);
         }
 
         g_zEffectAnim_State.frameDeltaRemainingSec -= stepSec;
-        if (sequenceRuntime->eventElapsedSec <= animEvent->endTime) {
-            return 1;
+        if (sequenceRuntime->eventElapsedSec > animEvent->endTime) {
+            if ((animEvent->flags & 0x01) != 0) {
+                CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetNearFarClip(node, animEvent->nearClipEnd, secondaryValue);
+            }
+
+            if ((animEvent->flags & 0x02) != 0) {
+                CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetNearFarClip(node, primaryValue, animEvent->farClipEnd);
+            }
+
+            if ((animEvent->flags & 0x04) != 0) {
+                CZCamera::gwCameraSetClipDistance(node, animEvent->clipDistanceEnd);
+            }
+
+            if ((animEvent->flags & 0x08) != 0) {
+                CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetFOV(node, animEvent->fovPrimaryEnd, secondaryValue);
+            }
+
+            if ((animEvent->flags & 0x10) != 0) {
+                CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetFOV(node, primaryValue, animEvent->fovSecondaryEnd);
+            }
+
+            if ((animEvent->flags & 0x20) != 0) {
+                CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetViewport(node, animEvent->viewportPrimaryEnd, secondaryValue);
+            }
+
+            if ((animEvent->flags & 0x40) != 0) {
+                CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
+                CZCamera::gwCameraSetViewport(node, primaryValue, animEvent->viewportSecondaryEnd);
+            }
+
+            result = 2;
         }
 
-        if ((animEvent->flags & 0x01) != 0) {
-            CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetNearFarClip(node, animEvent->nearClipEnd, secondaryValue);
-        }
-
-        if ((animEvent->flags & 0x02) != 0) {
-            CZCamera::gwCameraGetNearFarClip(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetNearFarClip(node, primaryValue, animEvent->farClipEnd);
-        }
-
-        if ((animEvent->flags & 0x04) != 0) {
-            CZCamera::gwCameraSetClipDistance(node, animEvent->clipDistanceEnd);
-        }
-
-        if ((animEvent->flags & 0x08) != 0) {
-            CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetFOV(node, animEvent->fovPrimaryEnd, secondaryValue);
-        }
-
-        if ((animEvent->flags & 0x10) != 0) {
-            CZCamera::gwCameraGetFOV(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetFOV(node, primaryValue, animEvent->fovSecondaryEnd);
-        }
-
-        if ((animEvent->flags & 0x20) != 0) {
-            CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetViewport(node, animEvent->viewportPrimaryEnd, secondaryValue);
-        }
-
-        if ((animEvent->flags & 0x40) != 0) {
-            CZCamera::gwCameraGetViewport(node, &primaryValue, &secondaryValue);
-            CZCamera::gwCameraSetViewport(node, primaryValue, animEvent->viewportSecondaryEnd);
-        }
-
-        return 2;
+        return result;
     }
 
     /**
@@ -2535,7 +2537,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlesurfacerefevent
      * @recoil-artifact defines .text recoil:function:0x45bc60: zEffect::HandleSurfaceRefEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: start a referenced child animation from surface event data and
@@ -2570,9 +2572,13 @@ namespace zEffect
 
                 const unsigned short flags = (unsigned short)(event->flags);
                 if ((flags & 0x01u) != 0) {
-                    CZNodePartial* const refNode = event->refNodeIndex > 0 ? self->nodeRefList[event->refNodeIndex].node
-                        : event->refNodeIndex == -200 ? (CZNodePartial*)((unsigned int)(self->resetScratch[0]))
-                                                      : 0;
+                    CZNodePartial* refNode = 0;
+                    if (event->refNodeIndex > 0) {
+                        refNode = self->nodeRefList[event->refNodeIndex].node;
+                    } else if (event->refNodeIndex == -200) {
+                        refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                    }
+
                     if (refNode != 0) {
                         zVec3 position = event->position;
                         zVec3 orientation;
@@ -2601,13 +2607,18 @@ namespace zEffect
                         );
                     }
                 } else if ((flags & 0x08u) != 0) {
+                    CZNodePartial* refNode = 0;
                     zVec3 position = event->position;
+                    if (event->refNodeIndex > 0) {
+                        refNode = self->nodeRefList[event->refNodeIndex].node;
+                    } else if (event->refNodeIndex == -200) {
+                        refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                    }
+
                     childEntry = zEffectAnim::SetPositionRefAndVelocity(
                         &g_zEffectAnim_State.entryList[event->animEntryIndex],
                         boundNode,
-                        event->refNodeIndex > 0           ? self->nodeRefList[event->refNodeIndex].node
-                            : event->refNodeIndex == -200 ? (CZNodePartial*)((unsigned int)(self->resetScratch[0]))
-                                                          : 0,
+                        refNode,
                         &position,
                         (const zVec3*)(&self->velocityX)
                     );
@@ -2631,14 +2642,19 @@ namespace zEffect
 
         if (((unsigned short)(event->flags) & 0x10u) != 0 && event->runtimeRefIndex >= 0) {
             zEffectAnimEntry*& childEntry = self->runtimeRefList[event->runtimeRefIndex].cachedChildEntry;
-            if (childEntry != 0 && (childEntry->activationState == 2 || childEntry->activationState == 6)) {
-                return 1;
+            if (childEntry != 0) {
+                if (childEntry->activationState != 2 && childEntry->activationState != 6) {
+                    childEntry = 0;
+                    runtime->runState = 2;
+                }
+            } else {
+                runtime->runState = 2;
             }
-            childEntry = 0;
+        } else {
+            runtime->runState = 2;
         }
 
-        runtime->runState = 2;
-        return 2;
+        return runtime->runState;
     }
 
     /**
@@ -2923,11 +2939,11 @@ namespace zEffect
         zEffectConditionalEvent * event
     )
     {
-        int conditionMask = event->conditionMask;
-        zEffectAnimEventValue threshold = event->conditionThreshold;
         int stopAfterGroup = 0;
         int cachedConditionMask = 0;
-        float conditionalValue = 0.0f;
+        int conditionMask = event->conditionMask;
+        zEffectAnimEventValue threshold = event->conditionThreshold;
+        float conditionalValue;
 
         while (stopAfterGroup == 0) {
             int conditionMatched = 0;
@@ -2952,13 +2968,13 @@ namespace zEffect
                     const zVec3 conditionalRefPos = { g_zEffectAnim_State.conditionalRefPosX,
                         g_zEffectAnim_State.conditionalRefPosY,
                         g_zEffectAnim_State.conditionalRefPosZ };
-                    int hit = 0;
+                    int hit;
                     if (TraceUpwardHitFromNodeOrPos(0, &conditionalRefPos, &threshold.f32, &hit) == 0 && hit != 0) {
                         conditionMatched = 1;
                     }
                 }
             } else if ((conditionMask & 0x10) != 0) {
-                int hit = 0;
+                int hit;
                 if (TraceUpwardHitFromNodeOrPos(self->nodeRefList[event->nodeIndex].node, 0, &threshold.f32, &hit) == 0
                     && hit != 0) {
                     conditionMatched = 1;
@@ -2969,31 +2985,24 @@ namespace zEffect
 
             cachedConditionMask = conditionMask;
             if (conditionMatched == 0) {
-                unsigned char* nextEvent = (unsigned char*)(runtime->currentEvent);
-                unsigned char* const eventStreamEnd = (unsigned char*)(runtime->eventStream) + runtime->eventStreamSize;
-
+                unsigned char eventType;
                 do {
-                    const zEffectAnimEventHeader* const header = (zEffectAnimEventHeader*)(nextEvent);
-                    nextEvent += header->byteSize;
-                    runtime->currentEvent = nextEvent;
+                    const zEffectAnimEventHeader* const header = (zEffectAnimEventHeader*)(runtime->currentEvent);
+                    runtime->currentEvent = (unsigned char*)(runtime->currentEvent) + header->byteSize;
+                    eventType = ((zEffectAnimEventHeader*)(runtime->currentEvent))->eventType;
+                } while (eventType != 0x20 && eventType != 0x21 && eventType != 0x22
+                    && runtime->currentEvent < (unsigned char*)(runtime->eventStream) + runtime->eventStreamSize);
 
-                    const unsigned char eventType = ((zEffectAnimEventHeader*)(nextEvent))->eventType;
-                    if (eventType == 0x20 || eventType == 0x21 || eventType == 0x22) {
-                        break;
-                    }
-                } while (nextEvent < eventStreamEnd);
-
-                zEffectAnimEventHeader* const marker = (zEffectAnimEventHeader*)(nextEvent);
+                zEffectAnimEventHeader* const marker = (zEffectAnimEventHeader*)(runtime->currentEvent);
                 if (marker->eventType == 0x21) {
                     zEffectConditionalEvent* const elseIfEvent = (zEffectConditionalEvent*)(marker);
                     threshold = elseIfEvent->conditionThreshold;
                     conditionMask = elseIfEvent->conditionMask;
-                } else {
-                    stopAfterGroup = 1;
+                    continue;
                 }
-            } else {
-                stopAfterGroup = 1;
             }
+
+            stopAfterGroup = 1;
         }
 
         return 2;
@@ -3079,7 +3088,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-source previously-byte-matched
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional

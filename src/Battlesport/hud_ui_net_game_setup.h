@@ -90,6 +90,14 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_AllowMapsToggle) == 0x164);
 struct HudUiNetGameSetupPanel_NameTagsToggle : HudUiCheckToggleWidget { };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNetGameSetupPanel_NameTagsToggle) == 0x164);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud-ui-net-game-setup-panel.type
+ * @recoil-artifact emits .text recoil:function:0x41a400: HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel (compiler-emitted implicit destructor).
+ * Retail 0x41a400 has no derived vptr store, which VC5 emits only for the
+ * implicit destructor.
+ * Purpose: define the network game-setup panel whose ordinary lifetime tears
+ * down the panel-owned controls before the background base.
+ */
 struct HudUiNetGameSetupPanel : HudUiBackground {
     HudUiNetGameSetupTextInput* currentFocusWidget;
     HudUiNetGameSetupPanel_LaunchButton playButton;
@@ -114,7 +122,6 @@ struct HudUiNetGameSetupPanel : HudUiBackground {
     int reconfigureExistingSession;
 
     HudUiNetGameSetupPanel(int reconfigureExistingSessionValue);
-    ~HudUiNetGameSetupPanel();
     /**
      * Original inline constructor evidence: no standalone retail function;
      * local reconstructed callers need the previous constructor-shaped entry,

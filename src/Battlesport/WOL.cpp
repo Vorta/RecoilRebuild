@@ -1038,7 +1038,7 @@ RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeSharedComRefCountOwner, m_ref
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-updatesessionlistqueryfromcontrols
  * @recoil-artifact defines .text recoil:function:0x43cf90: WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls
- *
+ * @recoil-match byte
  *
  * Purpose: encode the global dialog's current query controls and submit the
  * query string to the provider.
@@ -1194,7 +1194,7 @@ void WestwoodOnlineUpgradeApi::Shutdown()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapi-init
  * @recoil-artifact defines .text recoil:function:0x43d2e0: WestwoodOnlineUpgradeApi::Init
- *
+ * @recoil-match byte
  *
  * Purpose: create the WOL startup events and progress UI, begin the selected
  * profile connection, request bootstrap servers, and enter list mode on success.
@@ -3801,17 +3801,6 @@ WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog(CWnd* paren
     m_connectStringEditText = kEmptyString;
     m_wolPasswordFlag = zOptGetWolPasswordFlagValue();
 }
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-destructor-westwoodonlineupgradeconfigdialog
- * @recoil-artifact defines .text recoil:function:0x4418b0: WestwoodOnlineUpgradeConfigDialog::~WestwoodOnlineUpgradeConfigDialog
- *
- *
- * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp.
- * Purpose: tears down the profile CString arrays and embedded MFC controls in
- * the reverse order established by the constructor.
- */
-__inline WestwoodOnlineUpgradeConfigDialog::~WestwoodOnlineUpgradeConfigDialog() { }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-dodataexchange

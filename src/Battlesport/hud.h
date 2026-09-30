@@ -270,6 +270,7 @@ RECOIL_STATIC_ASSERT(offsetof(HudWeatherFx, textureRecord) == 0x88);
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudweatherfxsnow
  * @recoil-artifact emits .text recoil:function:0x4be2c0: VC5 compiler-generated scalar deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-artifact emits .text recoil:function:0x4be2e0: VC5 compiler-generated implicit destructor (no vptr store, tail-jumps to ~HudWeatherFx) anchored to this complete type definition; not an authored body.
  * Purpose: define the snow weather-effect specialization whose ordinary
  * virtual lifetime causes VC5 to emit the deleting-destructor contribution.
  */
@@ -279,7 +280,6 @@ struct HudWeatherFxSnow : HudWeatherFx {
     float emitDepth;
 
     HudWeatherFxSnow(int particleCount);
-    virtual ~HudWeatherFxSnow();
     void Update(float deltaSeconds);
 };
 RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxSnow) == 0x98);
@@ -361,6 +361,14 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_NameInput) == 0x374);
 struct HudUiNewGamePanel_Intensity : CHudRadioGroupWidget { };
 RECOIL_STATIC_ASSERT(sizeof(HudUiNewGamePanel_Intensity) == 0x17c);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-new-game-panel.type
+ * @recoil-artifact emits .text recoil:function:0x41c400: HudUiNewGamePanel::~HudUiNewGamePanel (compiler-emitted implicit destructor).
+ * Retail 0x41c400 has no derived vptr store, which VC5 emits only for the
+ * implicit destructor.
+ * Purpose: define the new-game panel whose ordinary virtual lifetime tears
+ * down its members through reverse C++ member and base cleanup.
+ */
 struct HudUiNewGamePanel : HudUiBackground {
     HudUiMenuBackButton backWidget;
     HudUiNewGamePanel_StartButton startWidget;
@@ -368,7 +376,6 @@ struct HudUiNewGamePanel : HudUiBackground {
     HudUiNewGamePanel_Intensity intensity;
 
     HudUiNewGamePanel();
-    virtual ~HudUiNewGamePanel();
     void SyncIntensityFromDifficulty();
     void StartGameFromFields();
 };

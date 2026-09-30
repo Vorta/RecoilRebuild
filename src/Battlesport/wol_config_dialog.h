@@ -8,9 +8,14 @@
 #include "recoil/recoil_types.h"
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog.type
+ * @recoil-artifact emits .text recoil:function:0x4418b0: WestwoodOnlineUpgradeConfigDialog::~WestwoodOnlineUpgradeConfigDialog (compiler-emitted implicit destructor).
  * Authored Recoil dialog reconstructed over imported MFC42 CDialog and
  * control classes. MFC control behavior is provided by MFC42, not reimplemented
- * in this source tree.
+ * in this source tree. Retail 0x4418b0 has no derived vptr re-store, which VC5
+ * emits only for the implicit destructor; it tears down the profile CString
+ * arrays and embedded MFC controls in reverse construction order.
+ * Purpose: define the WOL configuration dialog type and its implicit lifetime.
  */
 struct WestwoodOnlineUpgradeConfigDialog : CDialog {
 public:
@@ -32,7 +37,6 @@ public:
 
     static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
     WestwoodOnlineUpgradeConfigDialog(CWnd* parentWnd);
-    virtual ~WestwoodOnlineUpgradeConfigDialog();
     virtual const AFX_MSGMAP* GetMessageMap() const;
     WestwoodOnlineUpgradeConfigDialog* Constructor(CWnd* parentWnd);
     void Destructor();

@@ -28,7 +28,7 @@ char g_zSys_DriveTypeSearchPathBuffer[MAX_PATH];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-zsys-exitprocesswithcleanup
  * @recoil-artifact defines .text recoil:function:0x4a5980: zSys::ExitProcessWithCleanup.
- *
+ * @recoil-match byte
  *
  * Purpose: Runs shutdown cleanup hooks, closes CRT streams, and terminates the process.
  * Retail keeps VC5's unreachable pop/ret epilogue after the noreturn ExitProcess import.

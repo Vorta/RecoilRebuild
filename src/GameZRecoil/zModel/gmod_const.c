@@ -1567,182 +1567,167 @@ namespace zModel_DiPool
 
         int result = capacity;
         const long tableOffset = ftell(file);
-        const int tableBytes = capacity * (int)(sizeof(zDiPartial));
-        if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
+        if (fwrite(g_zModel_DiPoolBase, capacity * sizeof(zDiPartial), 1, file) != 1) {
             zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x172, g_zModel_WriteModel3dBufferErrorMsg);
             result = 0;
         }
 
-        {
-            for (int diIndex = 0; diIndex < result; ++diIndex) {
-                const long dynamicOffset = ftell(file);
-                zDiPartial* const di = &g_zModel_DiPoolBase[diIndex];
-                bool wroteDynamicData = false;
+        for (int diIndex = 0; diIndex < result; ++diIndex) {
+            const long dynamicOffset = ftell(file);
+            zDiPartial* const di = &g_zModel_DiPoolBase[diIndex];
+            int wroteDynamicData = 0;
 
-                if (di->vertCount > 0) {
-                    wroteDynamicData = true;
-                    if (fwrite(di->verts, 0x0c, di->vertCount, file) != (size_t)(di->vertCount)) {
+            if (di->vertCount > 0) {
+                wroteDynamicData = 1;
+                if (fwrite(di->verts, 0x0c, di->vertCount, file) != (size_t)(di->vertCount)) {
+                    zError::ReportOld(
+                        0x200,
+                        g_zModel_SourceFile_GmodConstC,
+                        0x18c,
+                        g_zModel_WriteModel3dBufferErrorMsg
+                    );
+                    result = 0;
+                    break;
+                }
+            }
+
+            if (di->normalCount > 0) {
+                wroteDynamicData = 1;
+                if (fwrite(di->normals, 0x0c, di->normalCount, file) != (size_t)(di->normalCount)) {
+                    zError::ReportOld(
+                        0x200,
+                        g_zModel_SourceFile_GmodConstC,
+                        0x19f,
+                        g_zModel_WriteModel3dBufferErrorMsg
+                    );
+                    result = 0;
+                    break;
+                }
+            }
+
+            if (di->blendVertCount > 0) {
+                wroteDynamicData = 1;
+                if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) != (size_t)(di->blendVertCount)) {
+                    zError::ReportOld(
+                        0x200,
+                        g_zModel_SourceFile_GmodConstC,
+                        0x1b2,
+                        g_zModel_WriteModel3dBufferErrorMsg
+                    );
+                    result = 0;
+                    break;
+                }
+            }
+
+            if (di->pointCount > 0) {
+                wroteDynamicData = 1;
+                if (fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount, file)
+                    != (size_t)(di->pointCount)) {
+                    zError::ReportOld(
+                        0x200,
+                        g_zModel_SourceFile_GmodConstC,
+                        0x1c9,
+                        g_zModel_WriteModel3dBufferErrorMsg
+                    );
+                    result = 0;
+                    break;
+                }
+
+                for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
+                    zModel_PointEntryPartial* const point = &di->pointEntries[pointIndex];
+                    if (point->pointCamCount > 0
+                        && fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file)
+                            != (size_t)(point->pointCamCount)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
-                            0x18c,
+                            0x1dd,
                             g_zModel_WriteModel3dBufferErrorMsg
                         );
                         result = 0;
                         break;
                     }
                 }
+            }
 
-                if (di->normalCount > 0) {
-                    wroteDynamicData = true;
-                    if (fwrite(di->normals, 0x0c, di->normalCount, file) != (size_t)(di->normalCount)) {
-                        zError::ReportOld(
-                            0x200,
-                            g_zModel_SourceFile_GmodConstC,
-                            0x19f,
-                            g_zModel_WriteModel3dBufferErrorMsg
-                        );
-                        result = 0;
-                        break;
-                    }
+            const int entryCount = di->entryCount;
+            if (entryCount > 0) {
+                wroteDynamicData = 1;
+                const int entryBytes = entryCount * (int)(sizeof(zDiEntryPartial));
+                zDiEntryPartial* serializedEntries = (zDiEntryPartial*)(malloc(entryBytes));
+                memcpy(serializedEntries, di->entries, entryBytes);
+
+                for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex) {
+                    serializedEntries[entryIndex].material
+                        = (zModel_MaterialPartial*)(zModel_MatlSlot::IndexFromPtrOrMinus1(
+                            (zModel_MaterialSlot*)(serializedEntries[entryIndex].material)
+                        ));
                 }
 
-                if (di->blendVertCount > 0) {
-                    wroteDynamicData = true;
-                    if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) != (size_t)(di->blendVertCount)) {
-                        zError::ReportOld(
-                            0x200,
-                            g_zModel_SourceFile_GmodConstC,
-                            0x1b2,
-                            g_zModel_WriteModel3dBufferErrorMsg
-                        );
-                        result = 0;
-                        break;
-                    }
+                if (fwrite(serializedEntries, entryBytes, 1, file) != 1) {
+                    zError::ReportOld(
+                        0x200,
+                        g_zModel_SourceFile_GmodConstC,
+                        0x209,
+                        g_zModel_WriteModel3dBufferErrorMsg
+                    );
+                    result = 0;
+                    break;
                 }
 
-                if (di->pointCount > 0) {
-                    wroteDynamicData = true;
-                    if (fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount, file)
-                        != (size_t)(di->pointCount)) {
-                        zError::ReportOld(
-                            0x200,
-                            g_zModel_SourceFile_GmodConstC,
-                            0x1c9,
-                            g_zModel_WriteModel3dBufferErrorMsg
-                        );
-                        result = 0;
-                        break;
-                    }
-
-                    {
-                        for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
-                            zModel_PointEntryPartial* const point = &di->pointEntries[pointIndex];
-                            if (point->pointCamCount > 0
-                                && fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file)
-                                    != (size_t)(point->pointCamCount)) {
-                                zError::ReportOld(
-                                    0x200,
-                                    g_zModel_SourceFile_GmodConstC,
-                                    0x1dd,
-                                    g_zModel_WriteModel3dBufferErrorMsg
-                                );
-                                result = 0;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (di->entryCount > 0) {
-                    wroteDynamicData = true;
-                    const int entryBytes = di->entryCount * (int)(sizeof(zDiEntryPartial));
-                    zDiEntryPartial* serializedEntries = (zDiEntryPartial*)(malloc(entryBytes));
-                    memcpy(serializedEntries, di->entries, entryBytes);
-
-                    {
-                        for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
-                            const int materialIndex = zModel_MatlSlot::IndexFromPtrOrMinus1(
-                                (zModel_MaterialSlot*)(serializedEntries[entryIndex].material)
+                for (int writeIndex = 0; writeIndex < entryCount; ++writeIndex) {
+                    zDiEntryPartial* const entry = &serializedEntries[writeIndex];
+                    if ((entry->flagsAndIndexCount & 0xff) > 0) {
+                        if (fwrite(entry->vertexIndices, 4, entry->flagsAndIndexCount & 0xff, file)
+                            != (entry->flagsAndIndexCount & 0xff)) {
+                            zError::ReportOld(
+                                0x200,
+                                g_zModel_SourceFile_GmodConstC,
+                                0x21e,
+                                g_zModel_WriteModel3dBufferErrorMsg
                             );
-                            serializedEntries[entryIndex].material = (zModel_MaterialPartial*)((int)(materialIndex));
+                            result = 0;
+                            break;
+                        }
+                        if ((entry->flagsAndIndexCount & 0x0200) != 0 && entry->normalIndices != 0
+                            && fwrite(entry->normalIndices, 4, entry->flagsAndIndexCount & 0xff, file)
+                                != (entry->flagsAndIndexCount & 0xff)) {
+                            zError::ReportOld(
+                                0x200,
+                                g_zModel_SourceFile_GmodConstC,
+                                0x22e,
+                                g_zModel_WriteModel3dBufferErrorMsg
+                            );
+                            result = 0;
+                            break;
                         }
                     }
 
-                    if (fwrite(serializedEntries, entryBytes, 1, file) != 1) {
+                    if ((di->entries[writeIndex].material->flags & 0x0100) != 0
+                        && fwrite(entry->uvPairs, 8, entry->flagsAndIndexCount & 0xff, file)
+                            != (entry->flagsAndIndexCount & 0xff)) {
                         zError::ReportOld(
                             0x200,
                             g_zModel_SourceFile_GmodConstC,
-                            0x209,
+                            0x240,
                             g_zModel_WriteModel3dBufferErrorMsg
                         );
                         result = 0;
                         break;
                     }
-
-                    bool entryWriteFailed = false;
-                    {
-                        for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
-                            zDiEntryPartial* const entry = &serializedEntries[entryIndex];
-                            const unsigned int indexCount = entry->flagsAndIndexCount & 0xff;
-
-                            if (indexCount != 0 && fwrite(entry->vertexIndices, 4, indexCount, file) != indexCount) {
-                                zError::ReportOld(
-                                    0x200,
-                                    g_zModel_SourceFile_GmodConstC,
-                                    0x21e,
-                                    g_zModel_WriteModel3dBufferErrorMsg
-                                );
-                                result = 0;
-                                entryWriteFailed = true;
-                                break;
-                            }
-
-                            if ((entry->flagsAndIndexCount & 0x0200) != 0 && entry->normalIndices != 0
-                                && fwrite(entry->normalIndices, 4, indexCount, file) != indexCount) {
-                                zError::ReportOld(
-                                    0x200,
-                                    g_zModel_SourceFile_GmodConstC,
-                                    0x22e,
-                                    g_zModel_WriteModel3dBufferErrorMsg
-                                );
-                                result = 0;
-                                entryWriteFailed = true;
-                                break;
-                            }
-
-                            const zDiEntryPartial* const liveEntry = &di->entries[entryIndex];
-                            if ((liveEntry->material->flags & 0x0100) != 0
-                                && fwrite(entry->uvPairs, 8, indexCount, file) != indexCount) {
-                                zError::ReportOld(
-                                    0x200,
-                                    g_zModel_SourceFile_GmodConstC,
-                                    0x240,
-                                    g_zModel_WriteModel3dBufferErrorMsg
-                                );
-                                result = 0;
-                                entryWriteFailed = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    free(serializedEntries);
-                    if (entryWriteFailed) {
-                        di->nextFreeIndex = (int)(dynamicOffset);
-                        break;
-                    }
                 }
 
-                if (wroteDynamicData) {
-                    di->nextFreeIndex = (int)(dynamicOffset);
-                }
+                free(serializedEntries);
+            }
+
+            if (wroteDynamicData != 0) {
+                g_zModel_DiPoolBase[diIndex].nextFreeIndex = (int)(dynamicOffset);
             }
         }
 
         const long endOffset = ftell(file);
         fseek(file, tableOffset, SEEK_SET);
-        if (fwrite(g_zModel_DiPoolBase, tableBytes, 1, file) != 1) {
+        if (fwrite(g_zModel_DiPoolBase, g_zModel_DiPoolCapacity * sizeof(zDiPartial), 1, file) != 1) {
             zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x263, g_zModel_WriteModel3dBufferErrorMsg);
             result = 0;
         }
@@ -2172,12 +2157,17 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.clonetoinstance
      * @recoil-artifact defines .text recoil:function:0x482270: zDi::CloneToInstance
-     *
+     * @recoil-match byte
      *
      * Purpose: clone a display instance, optionally cloning or sharing its material references.
      */
     zDiPartial* __fastcall CloneToInstance(zDiPartial * self, int cloneMaterials, int cloneAuxOnly)
     {
+        MaterialClonePair* materialPairs = 0;
+        int materialPairCount = 0;
+        int i;
+        int entryIndex;
+
         if (self == 0) {
             return 0;
         }
@@ -2190,7 +2180,7 @@ namespace zDi
         clone->mode = self->mode;
         clone->refCount = 0;
         SetFlagBit0(clone, self->flags & 1);
-        SetClonedFlag(clone, (self->flags >> 1) & 1);
+        SetClonedFlag(clone, ((unsigned int)(self->flags) >> 1) & 1);
         clone->flags = (clone->flags & ~0x04) | (self->flags & 0x04);
         clone->flags = (clone->flags & ~0x08) | (self->flags & 0x08);
         clone->flags = (clone->flags & ~0x10) | (self->flags & 0x10);
@@ -2201,98 +2191,99 @@ namespace zDi
         clone->field2c = self->field2c;
 
         clone->pointCount = self->pointCount;
-        if (self->pointCount > 0) {
+        if (clone->pointCount != 0) {
             clone->pointEntries
                 = (zModel_PointEntryPartial*)(malloc((size_t)(self->pointCount) * sizeof(zModel_PointEntryPartial)));
-            for (int i = 0; i < self->pointCount; ++i) {
+            for (i = 0; i < clone->pointCount; ++i) {
                 clone->pointEntries[i] = self->pointEntries[i];
-                if (self->pointEntries[i].pointCamCount > 0) {
-                    const size_t pointCamBytes = (size_t)(self->pointEntries[i].pointCamCount) * sizeof(zVec3);
-                    clone->pointEntries[i].pointCamList = (zVec3*)(malloc(pointCamBytes));
-                    memcpy(clone->pointEntries[i].pointCamList, self->pointEntries[i].pointCamList, pointCamBytes);
+                clone->pointEntries[i].pointCamList
+                    = (zVec3*)(malloc((size_t)(clone->pointEntries[i].pointCamCount) * sizeof(zVec3)));
+                for (int j = 0; j < clone->pointEntries[i].pointCamCount; ++j) {
+                    clone->pointEntries[i].pointCamList[j] = self->pointEntries[i].pointCamList[j];
                 }
             }
         }
 
-        clone->blendVertCount = self->blendVertCount;
         if (self->blendVertCount > 0) {
             const size_t blendVertBytes = (size_t)(self->blendVertCount) * sizeof(zVec3);
             clone->blendVerts = (zVec3*)(malloc(blendVertBytes));
             memcpy(clone->blendVerts, self->blendVerts, blendVertBytes);
         }
+        clone->blendVertCount = self->blendVertCount;
 
-        clone->vertCount = self->vertCount;
         if (self->vertCount > 0) {
             const size_t vertBytes = (size_t)(self->vertCount) * sizeof(zVec3);
             clone->verts = (zVec3*)(malloc(vertBytes));
             memcpy(clone->verts, self->verts, vertBytes);
         }
+        clone->vertCount = self->vertCount;
 
-        clone->normalCount = self->normalCount;
         if (self->normalCount > 0) {
             const size_t normalBytes = (size_t)(self->normalCount) * sizeof(zVec3);
             clone->normals = (zVec3*)(malloc(normalBytes));
             memcpy(clone->normals, self->normals, normalBytes);
         }
+        clone->normalCount = self->normalCount;
 
-        clone->entryCount = self->entryCount;
         if (self->entryCount > 0) {
             clone->entries = (zDiEntryPartial*)(calloc((size_t)(self->entryCount), sizeof(zDiEntryPartial)));
         }
+        clone->entryCount = self->entryCount;
 
-        MaterialClonePair* materialPairs = 0;
-        int materialPairCount = 0;
-        for (int i = 0; i < self->entryCount; ++i) {
-            const zDiEntryPartial& sourceEntry = self->entries[i];
-            zDiEntryPartial& destEntry = clone->entries[i];
+        zDiEntryPartial* destEntry;
+        zDiEntryPartial* sourceEntry;
+        for (entryIndex = 0, destEntry = clone->entries, sourceEntry = self->entries; entryIndex < clone->entryCount;
+            ++entryIndex, ++destEntry, ++sourceEntry) {
+            destEntry->drawFlags = sourceEntry->drawFlags;
+            destEntry->flagsAndIndexCount
+                = (destEntry->flagsAndIndexCount & ~0x100u) | (sourceEntry->flagsAndIndexCount & 0x100u);
+            destEntry->flagsAndIndexCount
+                = (destEntry->flagsAndIndexCount & ~0x200u) | (sourceEntry->flagsAndIndexCount & 0x200u);
+            memcpy(&destEntry->variantTagInitialized, &sourceEntry->variantTagInitialized, 4);
 
-            destEntry.drawFlags = sourceEntry.drawFlags;
-            destEntry.flagsAndIndexCount = sourceEntry.flagsAndIndexCount & 0x00000300;
-            memcpy(&destEntry.variantTagInitialized, &sourceEntry.variantTagInitialized, 4);
-
-            zModel_MaterialPartial* material = sourceEntry.material;
-            if (cloneMaterials != 0) {
-                if (cloneAuxOnly == 0 || zModel_Material::HasAuxData(sourceEntry.material) != 0) {
-                    material = 0;
-                    {
-                        for (int pairIndex = 0; pairIndex < materialPairCount; ++pairIndex) {
-                            if (materialPairs[pairIndex].source == sourceEntry.material) {
-                                material = materialPairs[pairIndex].clone;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (material == 0) {
-                        material = zModel_Material::Clone(sourceEntry.material);
-                        materialPairs = (MaterialClonePair*)(realloc(
-                            materialPairs,
-                            (size_t)(materialPairCount + 1) * sizeof(MaterialClonePair)
-                        ));
-                        materialPairs[materialPairCount].source = sourceEntry.material;
-                        materialPairs[materialPairCount].clone = material;
-                        ++materialPairCount;
+            if (cloneMaterials == 0) {
+                destEntry->material = sourceEntry->material;
+            } else if (cloneAuxOnly != 0 && zModel_Material::HasAuxData(sourceEntry->material) == 0) {
+                destEntry->material = sourceEntry->material;
+            } else {
+                zModel_MaterialPartial* material = 0;
+                for (int pairIndex = 0; pairIndex < materialPairCount; ++pairIndex) {
+                    if (materialPairs[pairIndex].source == sourceEntry->material) {
+                        material = materialPairs[pairIndex].clone;
+                        break;
                     }
                 }
-            }
-            destEntry.material = material;
 
-            const unsigned int indexCount = sourceEntry.flagsAndIndexCount & 0xff;
-            const size_t indexBytes = (size_t)(indexCount) * sizeof(unsigned int);
-            if (indexBytes != 0) {
-                destEntry.vertexIndices = malloc(indexBytes);
-                memcpy(destEntry.vertexIndices, sourceEntry.vertexIndices, indexBytes);
-            }
-            if ((sourceEntry.flagsAndIndexCount & 0x00000200) != 0 && sourceEntry.normalIndices != 0) {
-                destEntry.normalIndices = malloc(indexBytes);
-                memcpy(destEntry.normalIndices, sourceEntry.normalIndices, indexBytes);
+                if (material == 0) {
+                    material = zModel_Material::Clone(sourceEntry->material);
+                    materialPairs = (MaterialClonePair*)(realloc(
+                        materialPairs,
+                        (size_t)(materialPairCount + 1) * sizeof(MaterialClonePair)
+                    ));
+                    materialPairs[materialPairCount].source = sourceEntry->material;
+                    materialPairs[materialPairCount].clone = material;
+                    ++materialPairCount;
+                }
+                destEntry->material = material;
             }
 
-            destEntry.flagsAndIndexCount = (destEntry.flagsAndIndexCount & ~0xffu) | indexCount;
-            if ((destEntry.material->flags & 0x0100) != 0) {
-                const size_t uvBytes = (size_t)(indexCount) * 8u;
-                destEntry.uvPairs = malloc(uvBytes);
-                memcpy(destEntry.uvPairs, sourceEntry.uvPairs, uvBytes);
+            if ((sourceEntry->flagsAndIndexCount & 0xff) > 0) {
+                size_t indexBytes = (size_t)(sourceEntry->flagsAndIndexCount & 0xff) * sizeof(int);
+                destEntry->vertexIndices = malloc(indexBytes);
+                memcpy(destEntry->vertexIndices, sourceEntry->vertexIndices, indexBytes);
+                if ((sourceEntry->flagsAndIndexCount & 0x200) != 0 && sourceEntry->normalIndices != 0) {
+                    indexBytes = (size_t)(sourceEntry->flagsAndIndexCount & 0xff) * sizeof(int);
+                    destEntry->normalIndices = malloc(indexBytes);
+                    memcpy(destEntry->normalIndices, sourceEntry->normalIndices, indexBytes);
+                }
+            }
+
+            destEntry->flagsAndIndexCount
+                = (destEntry->flagsAndIndexCount & ~0xffu) | (sourceEntry->flagsAndIndexCount & 0xffu);
+            if ((destEntry->material->flags & 0x0100) != 0) {
+                const size_t uvBytes = (size_t)(destEntry->flagsAndIndexCount & 0xff) * sizeof(zClipUV);
+                destEntry->uvPairs = malloc(uvBytes);
+                memcpy(destEntry->uvPairs, sourceEntry->uvPairs, uvBytes);
             }
         }
 
@@ -3034,6 +3025,7 @@ namespace zDi
         const int* userTag
     )
     {
+        int remainingVertexCount = vertexCount;
         if (vertexCount < 3) {
             zError::ReportOld(
                 0x200,
@@ -3045,7 +3037,7 @@ namespace zDi
             return 1;
         }
 
-        if (vertexCount >= 58) {
+        if (vertexCount > 0x40 * 0.9) {
             zError::ReportOld(
                 0x200,
                 "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
@@ -3057,31 +3049,30 @@ namespace zDi
             return 1;
         }
 
-        const int originalVertexCount = vertexCount;
-        if (zModel_Const::check_colinearity(&vertexCount, points, uvPairsA, normalsB, uvPairsB) != 0
-            && vertexCount < 3) {
+        if (zModel_Const::check_colinearity(&remainingVertexCount, points, uvPairsA, normalsB, uvPairsB) != 0
+            && remainingVertexCount < 3) {
             zError::ReportOld(
                 0x100,
                 "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
                 0xb0d,
                 "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'",
-                vertexCount,
-                originalVertexCount
+                remainingVertexCount,
+                vertexCount
             );
             return 1;
         }
 
-        if (vertexCount > 3 && zModel_Const::IsPolygonCoplanar(vertexCount, points) == 0) {
+        if (remainingVertexCount > 3 && zModel_Const::IsPolygonCoplanar(remainingVertexCount, points) == 0) {
             zError::ReportOld(
                 0x100,
                 "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
                 0xb19,
                 "Attempting to add non-planar polygon (%d verts), triangulating...",
-                vertexCount
+                remainingVertexCount
             );
             zModel_Const::SplitPolygonChunkedByVertexLimit(
                 self,
-                originalVertexCount,
+                vertexCount,
                 points,
                 entryNormals,
                 uvPairsA,
@@ -3096,10 +3087,10 @@ namespace zDi
             return 2;
         }
 
-        if (vertexCount > g_zModel_MaxPolygonVertexCountBeforeSplit) {
+        if (remainingVertexCount > g_zModel_MaxPolygonVertexCountBeforeSplit) {
             AddPolygonSplitByVertexLimit(
                 self,
-                originalVertexCount,
+                vertexCount,
                 points,
                 entryNormals,
                 uvPairsA,
@@ -3115,52 +3106,60 @@ namespace zDi
             return 2;
         }
 
-        zDiEntryPartial* entries
+        self->entries
             = (zDiEntryPartial*)(realloc(self->entries, (size_t)(self->entryCount + 1) * sizeof(zDiEntryPartial)));
-        self->entries = entries;
-
-        zDiEntryPartial* const entry = &entries[self->entryCount];
+        zDiEntryPartial* const entry = &self->entries[self->entryCount];
+        int i;
         memset(entry, 0, sizeof(zDiEntryPartial));
-        entry->flagsAndIndexCount = (unsigned int)(vertexCount & 0xff) | ((unsigned int)(flagBit8 & 1) << 8);
+        entry->flagsAndIndexCount
+            = (entry->flagsAndIndexCount & ~0xffu) | ((unsigned int)(remainingVertexCount) & 0xff);
+        entry->drawFlags = drawFlags;
+        entry->flagsAndIndexCount = (entry->flagsAndIndexCount & ~0x100u) | ((unsigned int)(flagBit8 & 1) << 8);
         if (entryNormals != 0) {
             entry->flagsAndIndexCount |= 0x200;
+        } else {
+            entry->flagsAndIndexCount &= ~0x200u;
         }
-        entry->drawFlags = drawFlags;
-        entry->vertexIndices = malloc((size_t)(vertexCount) * sizeof(int));
+        entry->vertexIndices = malloc((size_t)(remainingVertexCount) * sizeof(int));
         if (entryNormals != 0) {
-            entry->normalIndices = malloc((size_t)(vertexCount) * sizeof(int));
+            entry->normalIndices = malloc((size_t)(remainingVertexCount) * sizeof(int));
         }
 
-        int* vertexIndices = (int*)(entry->vertexIndices);
-        int* normalIndices = (int*)(entry->normalIndices);
-        zVec3* pointCursor = points;
         zVec3* normalBCursor = normalsB;
         zVec3* entryNormalCursor = entryNormals;
-        for (int i = 0; i < vertexCount; ++i) {
+        for (i = 0; i < remainingVertexCount; ++i) {
             if (normalsA != 0) {
-                vertexIndices[i] = zModel_Const::AddOrMergeVertexAndNormal(self, pointCursor, normalBCursor);
+                ((int*)(entry->vertexIndices))[i]
+                    = zModel_Const::AddOrMergeVertexAndNormal(self, points, normalBCursor);
+                if (((int*)(entry->vertexIndices))[i] < 0) {
+                    return 1;
+                }
                 ++normalBCursor;
             } else {
-                vertexIndices[i] = zModel_Const::AddOrMergeVertex(self, pointCursor);
-            }
-            if (vertexIndices[i] < 0) {
-                return 1;
+                ((int*)(entry->vertexIndices))[i] = zModel_Const::AddOrMergeVertex(self, points);
+                if (((int*)(entry->vertexIndices))[i] < 0) {
+                    return 1;
+                }
             }
 
-            if (entryNormals != 0) {
-                normalIndices[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
+            if (entryNormalCursor != 0) {
+                ((int*)(entry->normalIndices))[i] = zModel_Const::FindOrAppendNormalIndex(self, entryNormalCursor);
                 ++entryNormalCursor;
             }
-            ++pointCursor;
+            ++points;
         }
 
         if ((material->flags & 0x0100) != 0) {
-            entry->uvPairs = malloc((size_t)(vertexCount) * sizeof(zClipUV));
-            memcpy(entry->uvPairs, uvPairsA, (size_t)(vertexCount) * sizeof(zClipUV));
+            entry->uvPairs = malloc((size_t)(remainingVertexCount) * sizeof(zClipUV));
+            for (i = 0; i < remainingVertexCount; ++i) {
+                ((zClipUV*)(entry->uvPairs))[i].u = uvPairsA[i].u;
+                ((zClipUV*)(entry->uvPairs))[i].v = uvPairsA[i].v;
+            }
+
             zClipUV* const entryUvPairs = (zClipUV*)(entry->uvPairs);
             float minU = entryUvPairs[0].u;
             float minV = entryUvPairs[0].v;
-            for (int i = 1; i < vertexCount; ++i) {
+            for (i = 1; i < remainingVertexCount; ++i) {
                 if (entryUvPairs[i].u < minU) {
                     minU = entryUvPairs[i].u;
                 }
@@ -3171,16 +3170,16 @@ namespace zDi
 
             const float baseU = (float)(floor(minU));
             const float baseV = (float)(floor(minV));
-            for (int i_107 = 0; i_107 < vertexCount; ++i_107) {
-                entryUvPairs[i_107].u -= baseU;
-                entryUvPairs[i_107].v -= baseV;
+            for (i = 0; i < remainingVertexCount; ++i) {
+                ((zClipUV*)(entry->uvPairs))[i].u -= baseU;
+                ((zClipUV*)(entry->uvPairs))[i].v -= baseV;
             }
         }
 
         entry->material = material;
         RebuildGeneratedUvPairsForEntry(self, self->entryCount);
         if ((material->flags & 0x0100) != 0) {
-            zModel_Const::QuantizeAndNormalizeUvPairs(vertexCount, (zClipUV*)(entry->uvPairs));
+            zModel_Const::QuantizeAndNormalizeUvPairs(remainingVertexCount, (zClipUV*)(entry->uvPairs));
         }
         memcpy(&entry->variantTagInitialized, userTag, sizeof(*userTag));
 
@@ -4027,6 +4026,7 @@ namespace zModelConst
     {
         int anyActive = 1;
         int slopesPending = 1;
+        float invNormalY;
         zVec3 normal;
         zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
         if (normal.y <= 0.0f) {
@@ -4048,9 +4048,8 @@ namespace zModelConst
             anyActive = 0;
             for (int sampleIndex = 0; sampleIndex < samplePointCount; ++sampleIndex) {
                 if (activeFlags[sampleIndex] != 0) {
-                    const zVec3* point = &samplePoints[sampleIndex];
-                    activeFlags[sampleIndex] = (point->x - polygonVertices[edgeEnd].x) * edgeNormal.x
-                                + (point->z - polygonVertices[edgeEnd].z) * edgeNormal.z
+                    activeFlags[sampleIndex] = (samplePoints[sampleIndex].x - polygonVertices[edgeEnd].x) * edgeNormal.x
+                                + (samplePoints[sampleIndex].z - polygonVertices[edgeEnd].z) * edgeNormal.z
                             > -0.0001
                         ? 1
                         : 0;
@@ -4076,10 +4075,10 @@ namespace zModelConst
                         = normal;
                     if (slopesPending != 0) {
                         // Retail derives the plane slopes lazily from the first accepted sample.
-                        const float invNormalY = 1.0f / normal.y;
+                        invNormalY = 1.0f / normal.y;
                         slopesPending = 0;
                         xSlope = -normal.x * invNormalY;
-                        zSlope = -(normal.z * invNormalY);
+                        zSlope = -normal.z * invNormalY;
                     }
 
                     outputBuckets[sampleIndex].entries[outputBuckets[sampleIndex].candidateCount].hitPos.y

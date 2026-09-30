@@ -34,12 +34,19 @@ struct CHudUiNetExitPanelResumeWidget : HudUiZrdWidget {
 RECOIL_STATIC_ASSERT(sizeof(CHudUiNetExitPanelResumeWidget) == 0x150);
 RECOIL_STATIC_ASSERT(offsetof(CHudUiNetExitPanelResumeWidget, previewInputCaptureActive) == 0x14c);
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud-ui-net-exit-panel.type
+ * @recoil-artifact emits .text recoil:function:0x41beb0: HudUiNetExitPanel::~HudUiNetExitPanel (compiler-emitted implicit destructor).
+ * Retail 0x41beb0 has no derived vptr store, which VC5 emits only for the
+ * implicit destructor.
+ * Purpose: define the network-exit panel whose ordinary virtual lifetime
+ * destroys its two embedded widgets before the background base.
+ */
 struct HudUiNetExitPanel : HudUiBackground {
     CHudUiNetExitPanelResumeWidget resumeWidget;
     HudUiNetExitPanel_ExitButton exitWidget;
 
     HudUiNetExitPanel();
-    virtual ~HudUiNetExitPanel();
     virtual void SetEnabled(int enabled);
     static HudUiNetExitPanel* __cdecl CreateGlobal();
     static void __cdecl Show();

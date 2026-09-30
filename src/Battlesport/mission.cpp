@@ -1833,12 +1833,6 @@ void CHudUiMpExitDialogExitButton::OnActivate()
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
- * Purpose: destroy the exit and new-game child widgets before tearing down the background base.
- */
-HudUiMpExitDialog::~HudUiMpExitDialog() { }
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: configure render, sound, and input state before entering the multiplayer exit dialog.
  */
 int RecoilApp_MpExitDialogState::OnTryBecomeCurrent()
@@ -2200,11 +2194,6 @@ void HudUiClampedIntStepButton::OnActivate()
 
     HudUiZrdWidget::OnActivate();
 }
-
-/**
- * Purpose: Tear down the panel-owned controls before destroying the background base.
- */
-HudUiNetGameSetupPanel::~HudUiNetGameSetupPanel() { }
 
 /**
  * Purpose: Commit setup values and start or reconfigure the network game session.
@@ -3669,13 +3658,6 @@ void HudUiNetExitPanel_ExitButton::OnActivate()
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
- * Purpose: let VC5 emit the panel's virtual derived-to-base destruction path
- * after the two embedded network-exit widgets.
- */
-HudUiNetExitPanel::~HudUiNetExitPanel() { }
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: close the preview, hide the network exit panel, and dispatch normal ZRD activation.
  */
 void CHudUiNetExitPanelResumeWidget::OnActivate()
@@ -3986,12 +3968,6 @@ void HudUiNewGamePanel_NameInput::OnActivate()
     HudUiNumericTextInput::OnActivate();
     HudUiNumericTextInput::SetRawKeyboardCapture(1);
 }
-
-/**
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
- * Purpose: Tear down the panel through ordinary reverse C++ member/base cleanup.
- */
-HudUiNewGamePanel::~HudUiNewGamePanel() { }
 
 /**
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
