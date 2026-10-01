@@ -56,7 +56,7 @@ static const float g_Time_MillisecondsToSecondsScale = 0.00100000005f;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-reset
  * @recoil-artifact defines .text recoil:function:0x4a5670: Time::Reset.
- *
+ * @recoil-match byte
  *
  * Purpose: Clears accumulated frame timing state and seeds the current time from GetTickCount.
  */

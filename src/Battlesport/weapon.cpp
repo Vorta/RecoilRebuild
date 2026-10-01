@@ -1275,7 +1275,7 @@ void __fastcall ResetDamageStateAndTimedHitStatus(zUtil_SaveGameState* saveState
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetdamagevisualsandtimedstatus
  * @recoil-artifact defines .text recoil:function:0x4399c0: Player::ResetDamageVisualsAndTimedStatus
- *
+ * @recoil-match byte
  *
  * Purpose: Clears damage flash state and timed hit status before damage processing.
  */
@@ -2358,7 +2358,7 @@ void __fastcall ApplyAimPitchToDirection(zVec3* direction, float pitchY)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applystatusmeterchange
  * @recoil-artifact defines .text recoil:function:0x43b5d0: Player::ApplyStatusMeterChange.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\Player\player_status.cpp.
  * Purpose: apply an absolute or relative status-meter change, clamp it to the
@@ -2470,7 +2470,7 @@ void __fastcall RecordRecentHitFeedback(zUtil_SaveGameState* saveState, OptCatal
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatetimedhitstatusfromhitsource
  * @recoil-artifact defines .text recoil:function:0x43b790: Player::UpdateTimedHitStatusFromHitSource
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: update the player's timed-hit status contribution from a hit source
@@ -3280,7 +3280,7 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-autoswitchtonextusablealtweapon
  * @recoil-artifact defines .text recoil:function:0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered

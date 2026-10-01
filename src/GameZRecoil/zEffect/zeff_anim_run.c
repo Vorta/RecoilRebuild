@@ -4236,7 +4236,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.activateruntime
      * @recoil-artifact defines .text recoil:function:0x45d930: zEffectAnim::ActivateRuntime.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_anim.c.
      * Purpose: bind or clone an animation entry, reset its runtime node state, and
