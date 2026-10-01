@@ -2202,6 +2202,14 @@ void HudUiNumericTextInput::OnActivate()
     HudUiZrdWidget::OnActivate();
 }
 
+/**
+ * Purpose: Store the packed RGB565 line color.
+ */
+inline void HudUiPolyline::SetColor(int color)
+{
+    color565 = color;
+}
+
 RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
 {
     if ((~flags & 0x10) == 0) {
@@ -2228,8 +2236,8 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
 
         if (labelPanels[0]->MeasureTextPrefixRect((int)(textInput.cursor), &textRect) != 0) {
             const unsigned int textColor = labelPanels[0]->textColor0;
-            sliderBorder.color565
-                = (int)(zVidPackColorRGB(GetRValue(textColor), GetGValue(textColor), textColor >> 16) & 0xffffu);
+            sliderBorder.SetColor((int)(zVidPackColorRGB(GetRValue(textColor), GetGValue(textColor), textColor >> 16)
+                & 0xffffu));
             sliderBorder
                 .SetBounds(textRect.right, textRect.top, sliderBorder.caretHalfWidth, textRect.bottom - textRect.top);
             sliderBorder.SetVisible(1);

@@ -43,30 +43,30 @@ int g_zImage_NextFontSlotIndex = 0;
  */
 zArchiveList* g_zImage_MissionSearchPathList = 0;
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-g-zimage-texdirentrycount
- * @recoil-artifact defines .data recoil:data:0x53d798: g_zImage_TexDirEntryCount.
- * Data owner: engine.zimage.texture_directory_state_data.
- * Purpose: track the active prefix of the fixed texture-directory table.
- *
- * Retail 0x53d798: active count for the fixed texture-directory table at
- * 0x53d79c. BN xrefs show this count is reset, serialized, scanned, and
- * appended by the zimg_texture.cpp texture-directory routines and shared with
- * zVid_TexDir shutdown/palette-remap cleanup.
+ * The texture directory keeps its active count directly in front of its fixed
+ * table; retail code addresses both through the one object.
  */
-int g_zImage_TexDirEntryCount = 0;
+struct zImage_TexDirBank {
+    int count;
+    zImage_TexDirEntryPartial entries[0x1000];
+};
+
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-g-zimage-texdirentries
- * @recoil-artifact defines .data recoil:data:0x53d79c: g_zImage_TexDirEntries.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-g-zimage-texdir
+ * @recoil-artifact defines .data recoil:data:0x53d798: g_zImage_TexDir.count.
+ * @recoil-artifact defines .data recoil:data:0x53d79c: g_zImage_TexDir.entries.
  * Data owner: engine.zimage.texture_directory_state_data.
- * Purpose: store the fixed texture-directory records used by image loading,
- * serialization, and mip/variant chaining.
+ * Purpose: hold the texture directory: the active prefix count and the fixed
+ * table of records used by image loading, serialization, and mip/variant
+ * chaining.
  *
- * Retail 0x53d79c: fixed 0x1000-entry zImage_TexDirEntry table, zero-filled
- * in BSS. Each record is 0x24 bytes and stores the image, texture record,
- * basename, load state, and mip/variant link used by directory serialization
- * and runtime loading.
+ * Retail 0x53d798 is the count and 0x53d79c the zero-filled 0x1000-entry table
+ * of 0x24-byte records. zImage::InitTextureDirectory addresses both through
+ * one object (count and entries are not reloaded as separate globals), and BN
+ * xrefs show the texture-directory routines, serialization and zVid_TexDir
+ * shutdown/palette-remap cleanup sharing it.
  */
-zImage_TexDirEntryPartial g_zImage_TexDirEntries[0x1000] = { 0 };
+zImage_TexDirBank g_zImage_TexDir = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-g-zimage-fonttable
  * @recoil-artifact defines .data recoil:data:0x56179c: g_zImage_FontTable.
@@ -214,7 +214,7 @@ int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial* texDirEntry)
         return -1;
     }
 
-    return (int)(texDirEntry - g_zImage_TexDirEntries);
+    return (int)(texDirEntry - g_zImage_TexDir.entries);
 }
 
 /**
@@ -235,7 +235,7 @@ zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index)
         return 0;
     }
 
-    return &g_zImage_TexDirEntries[index];
+    return &g_zImage_TexDir.entries[index];
 }
 
 /**
@@ -255,14 +255,14 @@ zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index)
  */
 int __fastcall WriteTextureDirectory(void* stream)
 {
-    int count = g_zImage_TexDirEntryCount;
+    int count = g_zImage_TexDir.count;
     if (count == 0) {
         return 0;
     }
 
     const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
     zImage_TexDirEntryPartial* serializedEntries = (zImage_TexDirEntryPartial*)(malloc(byteCount));
-    memcpy(serializedEntries, g_zImage_TexDirEntries, byteCount);
+    memcpy(serializedEntries, g_zImage_TexDir.entries, byteCount);
 
     for (int i = 0; i < count; ++i) {
         serializedEntries[i].nextVariant
@@ -307,7 +307,7 @@ int __fastcall ReadTextureDirectory(int entryCount, void* stream)
     }
 
     const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
-    if (fread(g_zImage_TexDirEntries, byteCount, 1, (FILE*)(stream)) != 1) {
+    if (fread(g_zImage_TexDir.entries, byteCount, 1, (FILE*)(stream)) != 1) {
         zError::ReportOld(
             0x200,
             g_zImage_SourceFile_ZimgTextureCpp,
@@ -317,12 +317,13 @@ int __fastcall ReadTextureDirectory(int entryCount, void* stream)
         return -1;
     }
 
-    g_zImage_TexDirEntryCount = count;
+    g_zImage_TexDir.count = count;
     for (int i = 0; i < count; ++i) {
-        g_zImage_TexDirEntries[i].nextVariant = TexIndexToDirEntry((int)((int)(g_zImage_TexDirEntries[i].nextVariant)));
+        g_zImage_TexDir.entries[i].nextVariant
+            = TexIndexToDirEntry((int)((int)(g_zImage_TexDir.entries[i].nextVariant)));
     }
 
-    return g_zImage_TexDirEntryCount;
+    return g_zImage_TexDir.count;
 }
 
 /**
@@ -357,9 +358,9 @@ zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr()
  */
 zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName)
 {
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        if (g_zImage_TexDirEntries[i].loadState != 0 && strcmp(g_zImage_TexDirEntries[i].baseName, baseName) == 0) {
-            return &g_zImage_TexDirEntries[i];
+    for (int i = 0; i < g_zImage_TexDir.count; ++i) {
+        if (g_zImage_TexDir.entries[i].loadState != 0 && strcmp(g_zImage_TexDir.entries[i].baseName, baseName) == 0) {
+            return &g_zImage_TexDir.entries[i];
         }
     }
 
@@ -369,7 +370,7 @@ zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-inittexturedirectory
  * @recoil-artifact defines .text recoil:function:0x46d550: zImage::InitTextureDirectory.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -382,8 +383,8 @@ zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName
  */
 int __cdecl InitTextureDirectory()
 {
-    g_zImage_TexDirEntryCount = 0;
-    memset(g_zImage_TexDirEntries, 0, sizeof(g_zImage_TexDirEntries));
+    g_zImage_TexDir.count = 0;
+    memset(g_zImage_TexDir.entries, 0, sizeof(g_zImage_TexDir.entries));
 
     if (g_zVideo_ActiveRendererPath != 0) {
         g_zImage_DefaultTexDirEntry.texture = g_zVideo_pfnCreateTextureRecord(
@@ -472,8 +473,8 @@ namespace zVid_TexDir {
  */
 int __fastcall Shutdown()
 {
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zImage_TexDirEntryPartial& entry = g_zImage_TexDirEntries[i];
+    for (int i = 0; i < g_zImage_TexDir.count; ++i) {
+        zImage_TexDirEntryPartial& entry = g_zImage_TexDir.entries[i];
         switch (entry.loadState) {
         case 0:
             break;
@@ -496,7 +497,7 @@ int __fastcall Shutdown()
         }
     }
 
-    g_zImage_TexDirEntryCount = 0;
+    g_zImage_TexDir.count = 0;
 
     g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces();
 
@@ -647,7 +648,7 @@ zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path)
         return entry;
     }
 
-    entry = &g_zImage_TexDirEntries[g_zImage_TexDirEntryCount++];
+    entry = &g_zImage_TexDir.entries[g_zImage_TexDir.count++];
     TexDirSetBaseNameFromPath(path, entry->baseName);
     entry->loadState = 2;
     return entry;
@@ -945,8 +946,8 @@ int __cdecl TexDirLoadPendingEntries()
 {
     zVidTexturePackEnsureBuiltinTexturePacksLoaded();
 
-    for (int i = 0; i < g_zImage_TexDirEntryCount; ++i) {
-        zImage_TexDirEntryPartial* const entry = &g_zImage_TexDirEntries[i];
+    for (int i = 0; i < g_zImage_TexDir.count; ++i) {
+        zImage_TexDirEntryPartial* const entry = &g_zImage_TexDir.entries[i];
         if (entry->loadState != 2 && entry->loadState != 3) {
             continue;
         }
@@ -1274,7 +1275,7 @@ RECOIL_NO_GS void __fastcall zImage_TexDirEntryPartial::BuildMipChain()
             }
 
             if (variantEntry == 0) {
-                variantEntry = &g_zImage_TexDirEntries[g_zImage_TexDirEntryCount++];
+                variantEntry = &g_zImage_TexDir.entries[g_zImage_TexDir.count++];
                 zImage::TexDirSetBaseNameFromPath(variantPath, variantEntry->baseName);
             }
 
@@ -1402,8 +1403,8 @@ extern "C" int __fastcall zVidPaletteRemapBuildPaletteVariant(zVidPaletteRemapRe
     g_zVid_PaletteRemapRecipes[g_zVid_PaletteRemapRecipeCount - 1] = *recipe;
 
     int i = 0;
-    zImage_TexDirEntryPartial* texDirEntry = g_zImage_TexDirEntries;
-    for (; i < g_zImage_TexDirEntryCount; ++i, ++texDirEntry) {
+    zImage_TexDirEntryPartial* texDirEntry = g_zImage_TexDir.entries;
+    for (; i < g_zImage_TexDir.count; ++i, ++texDirEntry) {
         zVidImagePartial* image = texDirEntry->image;
         if (image->paletteMetaPacked == 0 || (image->formatFlagsPacked & 0x10) != 0) {
             continue;
@@ -1454,8 +1455,8 @@ extern "C" int __fastcall zVidPaletteRemapBuildPaletteVariant(zVidPaletteRemapRe
         }
 
         {
-            zImage_TexDirEntryPartial* texDirEntry = g_zImage_TexDirEntries;
-            for (int i = 0; i < g_zImage_TexDirEntryCount; ++i, ++texDirEntry) {
+            zImage_TexDirEntryPartial* texDirEntry = g_zImage_TexDir.entries;
+            for (int i = 0; i < g_zImage_TexDir.count; ++i, ++texDirEntry) {
                 zVidImagePartial* image = texDirEntry->image;
                 if (image->palette == oldTable) {
                     image->palette = g_zVid_PaletteRemapVariantTables[tableIndex];

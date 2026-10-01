@@ -696,7 +696,7 @@ extern char g_zVideo_DDErrorName_NotInitialized[0x15];
 extern char g_zVideo_DDErrorName_Generic[0x0e];
 extern char g_zVideo_DDErrorName_Unsupported[0x12];
 
-unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue);
+unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned char blue);
 unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB);
 unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color);
 void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16);

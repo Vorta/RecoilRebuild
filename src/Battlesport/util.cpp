@@ -78,28 +78,27 @@ int __fastcall ShowMessageBox(const char* messageText, const char* titleText, vo
 
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-init
- * @recoil-artifact defines .text recoil:function:0x4383e0: zUtilSaveGameStateListInit.
+ * @recoil-artifact defines .text recoil:function:0x4383e0: zUtil_SaveGameState::zUtil_SaveGameState.
  *
  *
  * Purpose: initialize a save-state list sentinel and allocate zeroed player
  * state storage for the owning save-game state.
  */
-zUtil_SaveGameState* __fastcall zUtilSaveGameStateListInit(zUtil_SaveGameState* self)
+zUtil_SaveGameState::zUtil_SaveGameState()
 {
-    self->unknown_10 = 0;
-    self->saveStateListTail = 0;
-    self->saveStateListHead = 0;
-    self->saveStateCount = 0;
-    self->next = 0;
-    self->firstSaveState = 0;
+    unknown_10 = 0;
+    saveStateListTail = 0;
+    saveStateListHead = 0;
+    saveStateCount = 0;
+    next = 0;
+    firstSaveState = 0;
 
-    self->playerState = (zUtil_PlayerStateStorage*)(malloc(sizeof(zUtil_PlayerStateStorage)));
-    memset(self->playerState, 0, sizeof(zUtil_PlayerStateStorage));
+    playerState = (zUtil_PlayerStateStorage*)(malloc(sizeof(zUtil_PlayerStateStorage)));
+    memset(playerState, 0, sizeof(zUtil_PlayerStateStorage));
 
-    self->unknown_0c = 0;
-    self->unknown_24 = 0;
-    self->modeLoopBlend = 0.0f;
-    return self;
+    unknown_0c = 0;
+    unknown_24 = 0;
+    modeLoopBlend = 0.0f;
 }
 
 /**
@@ -163,8 +162,8 @@ void zUtil_SaveGameState::FreeOwnedResources()
  */
 zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGameState* self)
 {
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(malloc(sizeof(zUtil_SaveGameState)));
-    memset(saveState, 0, sizeof(zUtil_SaveGameState));
+    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(malloc(sizeof(PlayerModalState)));
+    memset(saveState, 0, sizeof(PlayerModalState));
 
     if (self->firstSaveState == 0) {
         self->firstSaveState = saveState;

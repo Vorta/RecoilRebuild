@@ -145,9 +145,14 @@ struct zUtil_PlayerStateStorage {
             float subVerticalInputCopy;
             float subPitchInputCopy;
             int underwaterStatusActive;
-            float angVelPitch;
-            float angVelYaw;
-            float angVelRoll;
+            union {
+                zVec3 angVel;
+                struct {
+                    float angVelPitch;
+                    float angVelYaw;
+                    float angVelRoll;
+                };
+            };
             unsigned char unknown_009c[0x08];
             zVec3 projectileSpawnVel;
             zVec3 localVel;
@@ -182,9 +187,7 @@ struct zUtil_PlayerStateStorage {
             zVec3 steerBasisRaw;
             zVec3 steerBasisRef;
             zVec3 bankBasis;
-            float pitchPoseCache;
-            float yawPoseCache;
-            float rollPoseCache;
+            zVec3 poseCache;
             union {
                 zVec3 vehicleRotationAngles;
                 zVec3 cameraState6BasePos;
@@ -253,12 +256,8 @@ struct zUtil_PlayerStateStorage {
             zVec3 cameraState2TargetOffset;
             union {
                 struct {
-                    float cameraConfigParam0;
-                    float cameraConfigParam1;
-                    float cameraConfigParam2;
-                    float cameraConfigParam3;
-                    float cameraConfigParam4;
-                    float cameraConfigParam5;
+                    zVec3 cameraBack1;
+                    zVec3 cameraBack2;
                 };
                 struct {
                     float unknownCameraConfigParam0;
@@ -450,8 +449,8 @@ struct zUtil_SaveGameState {
         int unknown_24;
         GameNetPlayerRow* netPlayerRow;
     };
-    unsigned char unknown_28[0x9c];
 
+    zUtil_SaveGameState();
     void FreeOwnedResources();
     zSndPlayHandle* StartMasterTypeLoopSfxHandle(int modeIndex, float sfxVolume);
     void EnsureMasterTypeLoopSfxHandle(int modeIndex, float sfxVolume);
@@ -501,7 +500,7 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerPendingContactQueue, head) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(PlayerPendingContactQueue, tail) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(PlayerPendingContactQueue, count) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zUtil_PlayerStateStorage) == 0x10c4);
-RECOIL_STATIC_ASSERT(sizeof(zUtil_SaveGameState) == 0xc4);
+RECOIL_STATIC_ASSERT(sizeof(zUtil_SaveGameState) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, playerOrdinal) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, masterCommonData) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, currentMasterType) == 0x08);
@@ -559,9 +558,7 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisNorm) == 0x380
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisRaw) == 0x38c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, steerBasisRef) == 0x398);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, bankBasis) == 0x3a4);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, pitchPoseCache) == 0x3b0);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, yawPoseCache) == 0x3b4);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, rollPoseCache) == 0x3b8);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, poseCache) == 0x3b0);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, vehicleRotationAngles) == 0x3bc);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraState6BasePos) == 0x3bc);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, restartYawRad) == 0x3c0);
@@ -606,8 +603,8 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraBackOffset.x) == 0
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraBackOffset.y) == 0x530);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraBackOffset.z) == 0x534);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraState2TargetOffset) == 0x538);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraConfigParam0) == 0x544);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraConfigParam5) == 0x558);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraBack1) == 0x544);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraBack2) == 0x550);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraState6LocalOffset) == 0x550);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraLerpStart) == 0x55c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, cameraLerpEnd) == 0x568);
@@ -731,5 +728,4 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateListTail) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateCount) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, netPlayerRow) == 0x24);
 
-zUtil_SaveGameState* __fastcall zUtilSaveGameStateListInit(zUtil_SaveGameState* self);
 zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGameState* self);

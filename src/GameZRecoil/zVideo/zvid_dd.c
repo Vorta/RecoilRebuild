@@ -1847,7 +1847,8 @@ namespace zVideo_dd
             return FALSE;
         }
 
-        if ((g_zVideo_DDrawCapsHal.dwCaps & 0x200) != 0 || (g_zVideo_DDrawCapsHel.dwCaps & 0x200) != 0) {
+        if ((g_zVideo_DDrawCapsHal.dwCaps2 & DDCAPS2_NONLOCALVIDMEM) != 0
+            || (g_zVideo_DDrawCapsHel.dwCaps2 & DDCAPS2_NONLOCALVIDMEM) != 0) {
             entry->m_deviceFeatureFlags = 1;
             strcat(entry->m_driverName, g_zVideo_DDrawEnumAgpSuffix);
         }

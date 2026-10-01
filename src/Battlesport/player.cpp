@@ -1465,6 +1465,13 @@ char g_Player_VehicleArchiveName_Hard[17] = "vehicle_hard.zrd";
 char g_Player_VehicleArchiveName_Default[12] = "vehicle.zrd";
 }
 
+// Shared zero vector in player.cpp's read-only data; retail pickup and
+// opt-catalog code read the same object.
+extern const zVec3 g_Player_ConstZeroVec3 = { 0.0f, 0.0f, 0.0f };
+// Default alternate-gun aim origin; weapon.cpp's aim-pitch helper reads the
+// same retail object.
+extern const zVec3 kPlayerDefaultAltGunAimOrigin = { 0.0f, 0.0f, -1.0f };
+
 namespace {
 /**
  * Original inline helper; no standalone retail function exists. Observed in address-backed caller 0x4386c0 as the
@@ -1621,7 +1628,7 @@ const float kPlayerAiSyntheticPathRebuildDelaySec = 1.0f;
 const float kPlayerAiAttackLosTargetYOffset = 1.5f;
 const float kPlayerAiDynamicOffsetBackUpDistance = 10.0f;
 const float kPlayerCameraState2TargetYOffset = 150.0f;
-const zVec3 kPlayerDefaultAltGunAimOrigin = { 0.0f, 0.0f, -1.0f };
+const float kPlayerProbeNoHitHeight = -300.0f;
 const double kPlayerRadiansToDegrees = 57.29577951308;
 
 struct HitOwnerSaveStateLinkPartial {
@@ -3599,8 +3606,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
         }
     }
 
-    zUtil_SaveGameState* stealthSaveState = (zUtil_SaveGameState*)(::operator new(sizeof(zUtil_SaveGameState)));
-    stealthSaveState = zUtilSaveGameStateListInit(stealthSaveState);
+    zUtil_SaveGameState* const stealthSaveState = new zUtil_SaveGameState;
     stealthSaveState->next = 0;
     if (g_PlayerSaveStateList.count == 0) {
         g_PlayerSaveStateList.head = stealthSaveState;
@@ -3840,12 +3846,8 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         &playerState->restartYawRad,
         &playerState->vehicleRollRad
     );
-    playerState->pitchPoseCache = playerState->vehiclePitchRad;
-    playerState->yawPoseCache = playerState->restartYawRad;
-    playerState->rollPoseCache = playerState->vehicleRollRad;
-    playerState->angVelPitch = 0.0f;
-    playerState->angVelYaw = 0.0f;
-    playerState->angVelRoll = 0.0f;
+    playerState->poseCache = playerState->vehicleRotationAngles;
+    playerState->angVel = g_Player_ConstZeroVec3;
 
     zMath::MatBuildEulerRotation3x3(
         &playerState->motionBasis,
@@ -3949,25 +3951,16 @@ void __fastcall InitStateFromNameAndMasterCommonData(
         );
     }
     if (commonData->startAnimsName != 0) {
-        zEffectAnim::SetVelocityThunk(
-            zEffectAnim::FindEntryByName(commonData->startAnimsName),
-            playerState->rootNode,
-            0.0f,
-            0.0f,
-            0.0f
-        );
+        zEffectAnimEntry* const startAnims = zEffectAnim::FindEntryByName(commonData->startAnimsName);
+        zEffectAnim::SetVelocityThunk(startAnims, playerState->rootNode, 0.0f, 0.0f, 0.0f);
     }
 
     playerState->cameraState = zOpt::GetCameraModePlayerState();
     playerState->cameraLerpActive = 0;
     playerState->thirdPersonYawOffset = 0.0f;
     playerState->cameraBackOffset = commonData->cameraBackOffset;
-    playerState->cameraConfigParam0 = commonData->cambackSide1;
-    playerState->cameraConfigParam1 = commonData->cambackBase1;
-    playerState->cameraConfigParam2 = commonData->cambackDist1;
-    playerState->cameraConfigParam3 = commonData->cambackSide2;
-    playerState->cameraConfigParam4 = commonData->cambackBase2;
-    playerState->cameraConfigParam5 = commonData->cambackDist2;
+    playerState->cameraBack1 = commonData->camback1;
+    playerState->cameraBack2 = commonData->camback2;
     playerState->cameraYOffset = commonData->aimYawRate;
     playerState->cameraYOffset = commonData->aimYawMax;
     playerState->cameraState2TargetOffset.x = 0.0f;
@@ -4285,43 +4278,41 @@ int __fastcall CreateFromNamesAtPose(
 )
 {
     const int objectIsBft00 = strcmp(objectName, g_Player_NodeName_Bft00) == 0;
-    CZNodePartial* rootNode = 0;
+    CZNodePartial* rootNode;
 
     if (zOpt::GetNetworkEnabled() != 0 && objectIsBft00 != 0) {
         rootNode = CZClass::FindByTypeAndName(6, g_Player_NodeName_Bft00);
-        if (rootNode == 0) {
-            return 0;
+        if (rootNode != 0) {
+            CZNodePartial* const networkClone = CZUtil::CopyNodeWithCloneOptions(rootNode, 1, 1);
+            if (networkClone != 0) {
+                CZClass::gwNodeSetName(networkClone, "bft_99");
+            }
+
+            rootNode->flags |= kPlayerNodeFlagNetworkBftCloneSource;
         }
-
-        CZNodePartial* const networkClone = CZUtil::CopyNodeWithCloneOptions(rootNode, 1, 1);
-        if (networkClone != 0) {
-            CZClass::gwNodeSetName(networkClone, "bft_99");
-        }
-
-        rootNode->flags |= kPlayerNodeFlagNetworkBftCloneSource;
-    }
-
-    if (rootNode == 0) {
+    } else {
         rootNode = CZClass::FindByTypeAndName(6, objectName);
         if (rootNode == 0) {
             rootNode = CloneType6NodeFromTemplateAndRename(templateName, objectName);
         }
-        if (rootNode == 0) {
-            return 0;
-        }
     }
 
-    zUtil_SaveGameState* saveState = (zUtil_SaveGameState*)(::operator new(sizeof(zUtil_SaveGameState)));
-    saveState = zUtilSaveGameStateListInit(saveState);
-    saveState->next = 0;
-    if (g_PlayerSaveStateList.count == 0) {
-        g_PlayerSaveStateList.head = saveState;
-    } else {
-        g_PlayerSaveStateList.tail->next = saveState;
+    if (rootNode == 0) {
+        return 0;
     }
-    g_PlayerSaveStateList.tail = saveState;
-    saveState->next = 0;
-    ++g_PlayerSaveStateList.count;
+
+    zUtil_SaveGameState* const saveState = new zUtil_SaveGameState;
+    if (saveState != 0) {
+        saveState->next = 0;
+        if (g_PlayerSaveStateList.count == 0) {
+            g_PlayerSaveStateList.head = saveState;
+        } else {
+            g_PlayerSaveStateList.tail->next = saveState;
+        }
+        g_PlayerSaveStateList.tail = saveState;
+        saveState->next = 0;
+        ++g_PlayerSaveStateList.count;
+    }
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (spawnPos != 0) {
@@ -4347,17 +4338,30 @@ int __fastcall CreateFromNamesAtPose(
             CZNode::SetMaterialFlagBit9ForFlagBit0EntriesRecursive(playerState->rootNode, 1);
         }
     } else {
-        void* callback = (void*)(&HitCallbackRecordContextAndTimedStatus);
         if (strstr(objectName, "net") != 0) {
-            callback = (void*)(&HitCallbackRecordNetContextAndTimedStatus);
+            CZNode::SetDamageHitCallback(
+                saveState,
+                playerState->rootNode,
+                (void*)(&HitCallbackRecordNetContextAndTimedStatus)
+            );
+        } else {
+            CZNode::SetDamageHitCallback(
+                saveState,
+                playerState->rootNode,
+                (void*)(&HitCallbackRecordContextAndTimedStatus)
+            );
         }
-        CZNode::SetDamageHitCallback(saveState, playerState->rootNode, callback);
     }
 
-    PlayerMasterCommonData* const commonData = playerState->masterCommonData;
-    for (int i = 0; i < commonData->modalCount; ++i) {
+    const int modalCount = saveState->playerState->masterCommonData->modalCount;
+    for (int i = 0; i < modalCount; ++i) {
         PlayerModalState* const modalState = (PlayerModalState*)zUtilSaveGameStateListAllocAppend(saveState);
-        BindModalStateFromMasterModalData(saveState, modalState, objectName, commonData->modalNames[i]);
+        BindModalStateFromMasterModalData(
+            saveState,
+            modalState,
+            objectName,
+            saveState->playerState->masterCommonData->modalNames[i]
+        );
     }
 
     if (playerState->destroyedRespawnFxEntry == 0) {
@@ -4552,7 +4556,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastercommondatafromnode
  * @recoil-artifact defines .text recoil:function:0x422170: Player::LoadMasterCommonDataFromNode.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.
@@ -4619,22 +4623,22 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->cameraBackOffset.x = PlayerZrdArrayBase(node)[1].value.nodes[1].value.f32;
         commonData->cameraBackOffset.y = PlayerZrdArrayBase(node)[1].value.nodes[2].value.f32;
         commonData->cameraBackOffset.z = PlayerZrdArrayBase(node)[1].value.nodes[3].value.f32;
-        commonData->cambackSide1 = PlayerZrdArrayBase(node)[2].value.nodes[1].value.f32;
-        commonData->cambackBase1 = PlayerZrdArrayBase(node)[2].value.nodes[2].value.f32;
-        commonData->cambackDist1 = PlayerZrdArrayBase(node)[2].value.nodes[3].value.f32;
-        commonData->cambackSide2 = PlayerZrdArrayBase(node)[3].value.nodes[1].value.f32;
-        commonData->cambackBase2 = PlayerZrdArrayBase(node)[3].value.nodes[2].value.f32;
-        commonData->cambackDist2 = PlayerZrdArrayBase(node)[3].value.nodes[3].value.f32;
+        commonData->camback1.x = PlayerZrdArrayBase(node)[2].value.nodes[1].value.f32;
+        commonData->camback1.y = PlayerZrdArrayBase(node)[2].value.nodes[2].value.f32;
+        commonData->camback1.z = PlayerZrdArrayBase(node)[2].value.nodes[3].value.f32;
+        commonData->camback2.x = PlayerZrdArrayBase(node)[3].value.nodes[1].value.f32;
+        commonData->camback2.y = PlayerZrdArrayBase(node)[3].value.nodes[2].value.f32;
+        commonData->camback2.z = PlayerZrdArrayBase(node)[3].value.nodes[3].value.f32;
     } else {
         commonData->cameraBackOffset.x = 0.0f;
         commonData->cameraBackOffset.y = 4.0f;
         commonData->cameraBackOffset.z = 9.0f;
-        commonData->cambackSide1 = 0.0f;
-        commonData->cambackBase1 = 3.5f;
-        commonData->cambackDist1 = 2.25f;
-        commonData->cambackSide2 = 0.0f;
-        commonData->cambackBase2 = 2.25f;
-        commonData->cambackDist2 = 2.25f;
+        commonData->camback1.x = 0.0f;
+        commonData->camback1.y = 3.5f;
+        commonData->camback1.z = 2.25f;
+        commonData->camback2.x = 0.0f;
+        commonData->camback2.y = 2.25f;
+        commonData->camback2.z = 2.25f;
     }
 
     node = zRdrGetNode(commonModeNode, g_Player_NodeName_AimY);
@@ -4995,7 +4999,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-refreshhudfromstate
  * @recoil-artifact defines .text recoil:function:0x4231b0: Player::RefreshHudFromState.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh the HUD weapon, health, mode, damage, and status displays
@@ -6740,21 +6744,21 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
 
     const float yawDelta = g_Player_DeltaTime * playerState->angVelYaw;
     if (playerState->environmentAttachmentActive != 0) {
-        playerState->yawPoseCache += yawDelta;
-        PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
+        playerState->poseCache.y += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->poseCache.y);
         zMath::MatStackPushPtr((float*)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad
             = (float)(atan2(playerState->environmentAttachmentMatrix.zx, playerState->environmentAttachmentMatrix.zz))
-            + playerState->yawPoseCache;
+            + playerState->poseCache.y;
     } else {
         playerState->restartYawRad += yawDelta;
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
-        playerState->pitchPoseCache = playerState->vehiclePitchRad;
-        playerState->yawPoseCache = playerState->restartYawRad;
-        playerState->rollPoseCache = playerState->vehicleRollRad;
+        playerState->poseCache.x = playerState->vehiclePitchRad;
+        playerState->poseCache.y = playerState->restartYawRad;
+        playerState->poseCache.z = playerState->vehicleRollRad;
     }
 
     zMath::MatBuildEulerRotation3x3(
@@ -6769,7 +6773,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     }
 
     if (playerState->environmentAttachmentActive != 0) {
-        zMath::Vec3RotateY(playerState->yawPoseCache, &playerState->yawRotatedLocalVel, &playerState->localVel);
+        zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
         playerState->fxOffsetLocal.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
         playerState->fxOffsetLocal.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
 
@@ -7212,21 +7216,21 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
 
     const float yawDelta = playerState->angVelYaw * g_Player_DeltaTime;
     if (playerState->environmentAttachmentActive != 0) {
-        playerState->yawPoseCache += yawDelta;
-        PLAYER_WRAP_SIGNED_TWO_PI(playerState->yawPoseCache);
+        playerState->poseCache.y += yawDelta;
+        PLAYER_WRAP_SIGNED_TWO_PI(playerState->poseCache.y);
         zMath::MatStackPushPtr((float*)&playerState->environmentAttachmentMatrix);
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(playerState->environmentAttachmentNode, 3);
         zMath::MatStackPopPtr();
         playerState->restartYawRad
             = (float)(atan2(playerState->environmentAttachmentMatrix.zx, playerState->environmentAttachmentMatrix.zz))
-            + playerState->yawPoseCache;
+            + playerState->poseCache.y;
     } else {
         playerState->restartYawRad += yawDelta;
         PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
-        playerState->pitchPoseCache = playerState->vehiclePitchRad;
-        playerState->yawPoseCache = playerState->restartYawRad;
-        playerState->rollPoseCache = playerState->vehicleRollRad;
+        playerState->poseCache.x = playerState->vehiclePitchRad;
+        playerState->poseCache.y = playerState->restartYawRad;
+        playerState->poseCache.z = playerState->vehicleRollRad;
     }
 
     zMath::MatBuildEulerRotation3x3(
@@ -7241,7 +7245,7 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
     UpdateYawVelocityFromSteerInput(saveState);
 
     if (playerState->environmentAttachmentActive != 0) {
-        zMath::Vec3RotateY(playerState->yawPoseCache, &playerState->yawRotatedLocalVel, &playerState->localVel);
+        zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
         playerState->fxOffsetLocal.x += playerState->yawRotatedLocalVel.x * g_Player_DeltaTime;
         playerState->fxOffsetLocal.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
         playerState->fxOffsetLocal.y = 0.0f;
@@ -7989,7 +7993,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-selectprobesampleheightfromcandidates
  * @recoil-artifact defines .text recoil:function:0x4290f0: Player::SelectProbeSampleHeightFromCandidates.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectProbeSampleHeightFromCandidates from the recovered
@@ -8006,12 +8010,12 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
 )
 {
     float selectedHeight = -250.0f;
-    float nearestFallbackHeight = -300.0f;
-    int selectedImpactSlot = 0;
+    float nearestFallbackHeight = kPlayerProbeNoHitHeight;
+    int selectedImpactSlot;
 
     *outBestCandidateIndex = 0;
-    *outSelectedImpactSlot = 0;
-    *outTaggedHeight = -300.0f;
+    *outSelectedImpactSlot = selectedImpactSlot = 0;
+    *outTaggedHeight = kPlayerProbeNoHitHeight;
 
     float bestAbsDelta = 10000.9f;
     const int candidateCount = candidateBuffer->candidateCount;
@@ -8030,8 +8034,7 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
                 }
             }
 
-            const float heightDelta = candidateHeight - sampleHeight;
-            const float absDelta = (float)(fabs(heightDelta));
+            const float absDelta = (float)(fabs(candidateHeight - sampleHeight));
             if (absDelta < bestAbsDelta) {
                 bestAbsDelta = absDelta;
                 nearestFallbackHeight = candidateHeight;
@@ -8043,11 +8046,12 @@ float __fastcall SelectProbeSampleHeightFromCandidates(
             }
         }
 
-        if (*outTaggedHeight + maxRiseWindow >= sampleHeight) {
+        const float taggedHeight = *outTaggedHeight;
+        if (taggedHeight + maxRiseWindow >= sampleHeight) {
             *outSelectedImpactSlot = selectedImpactSlot;
         }
 
-        if (selectedHeight == -250.0f && nearestFallbackHeight != -300.0f) {
+        if (selectedHeight == -250.0f && nearestFallbackHeight != kPlayerProbeNoHitHeight) {
             return nearestFallbackHeight;
         }
         if (selectedHeight <= -250.0f) {
@@ -8820,7 +8824,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatedebugoverlayhud
  * @recoil-artifact defines .text recoil:function:0x42aa50: Player::UpdateDebugOverlayHud.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh weapon HUD values, objective counter text, and the debug
@@ -9592,7 +9596,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- *
+ * @recoil-match byte
  *
  * Purpose: normalize the steering direction projected onto the reference plane.
  */
@@ -10114,7 +10118,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-accumulateslopeforces
  * @recoil-artifact defines .text recoil:function:0x42c420: Player::AccumulateSlopeForces.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- *
+ * @recoil-match byte
  *
  * Purpose: add downhill force from up to three selected terrain-contact normals.
  */
@@ -10331,7 +10335,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resetterraincontactimpulsesandplayimpactsfx
  * @recoil-artifact defines .text recoil:function:0x42cb50: Player::ResetTerrainContactImpulsesAndPlayImpactSfx.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ResetTerrainContactImpulsesAndPlayImpactSfx from the recovered
@@ -10480,7 +10484,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-solveheightonsurface
  * @recoil-artifact defines .text recoil:function:0x42cde0: Player::SolveHeightOnSurface.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SolveHeightOnSurface from the recovered
@@ -10805,7 +10809,7 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
                 objectData->cachedWorldMatrix,
                 sizeof(playerState->environmentAttachmentMatrix)
             );
-            playerState->yawPoseCache = playerState->restartYawRad
+            playerState->poseCache.y = playerState->restartYawRad
                 - (float)(atan2(
                     playerState->environmentAttachmentMatrix.zx,
                     playerState->environmentAttachmentMatrix.zz
@@ -10822,10 +10826,10 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
         );
         playerState->restartYawRad
             = (float)(atan2(playerState->environmentAttachmentMatrix.zx, playerState->environmentAttachmentMatrix.zz))
-            + playerState->yawPoseCache;
-        playerState->pitchPoseCache = playerState->vehiclePitchRad;
-        playerState->yawPoseCache = playerState->restartYawRad;
-        playerState->rollPoseCache = playerState->vehicleRollRad;
+            + playerState->poseCache.y;
+        playerState->poseCache.x = playerState->vehiclePitchRad;
+        playerState->poseCache.y = playerState->restartYawRad;
+        playerState->poseCache.z = playerState->vehicleRollRad;
         playerState->environmentAttachmentActive = 0;
         playerState->environmentAttachmentNode = 0;
     }

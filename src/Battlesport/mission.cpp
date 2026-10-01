@@ -138,6 +138,7 @@ extern "C" char g_HudUiWeaponFeaturesLabel[0x0a];
 extern "C" char g_HudWeatherFx_AlphaGradientNodeName[0x0f];
 extern "C" char g_HudWeatherFx_WindVelocityNodeName[0x09];
 extern "C" char g_HudWeatherFx_WindDirectionNodeName[0x09];
+extern char g_HudUiResumeButtonNodeName[];
 extern "C" char g_HudWeatherFx_TypeValue_Rain[0x05];
 extern "C" char g_HudWeatherFx_TypeValue_Snow[0x05];
 extern "C" char g_HudWeatherFx_TypeNodeName[0x05];
@@ -3613,7 +3614,7 @@ HudUiElement* g_HudUiNetExitPanel_SavedInputFocus = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-huduinetexitpanel-constructor
  * @recoil-artifact defines .text recoil:function:0x41bd80: HudUiNetExitPanel constructor.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: initialize the network exit panel, bind its exit and resume widgets, and capture input focus state.
@@ -3623,7 +3624,7 @@ HudUiNetExitPanel::HudUiNetExitPanel()
     zReader::Node* const loadedSection = LoadFromZrd("dialog.zrd", "NETEXIT", 1);
     if (loadedSection != 0) {
         BindWidgetByName(loadedSection, &exitWidget, "EXIT");
-        BindWidgetByName(loadedSection, &resumeWidget, "RESUME");
+        BindWidgetByName(loadedSection, &resumeWidget, g_HudUiResumeButtonNodeName);
         FreeLoadedTreeRoots((int)((unsigned int)(loadedSection)));
     }
 

@@ -135,6 +135,8 @@ struct PlayerModalState {
     CZNodePartial* nodeDustL;
     CZNodePartial* nodeDustR;
     zSndPlayHandle* modalSfxHandle[4];
+    int unknown_bc;
+    int unknown_c0;
 };
 
 RECOIL_STATIC_ASSERT(offsetof(PlayerModalState, chassisPitchAngleRad) == 0x6c);

@@ -152,12 +152,8 @@ struct PlayerMasterCommonData {
     // Retail copies this side/height/distance vector as one aggregate.
     zVec3 cameraBackOffset;
 
-    float cambackSide1;
-    float cambackBase1;
-    float cambackDist1;
-    float cambackSide2;
-    float cambackBase2;
-    float cambackDist2;
+    zVec3 camback1;
+    zVec3 camback2;
     float aimYawRate;
     float aimYawMax;
     float cameraUdSwing[4];
@@ -760,12 +756,8 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, startAnimsName) == 0x300);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.x) == 0x350);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.y) == 0x354);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraBackOffset.z) == 0x358);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide1) == 0x35c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase1) == 0x360);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist1) == 0x364);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackSide2) == 0x368);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackBase2) == 0x36c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cambackDist2) == 0x370);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, camback1) == 0x35c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, camback2) == 0x368);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawRate) == 0x374);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, aimYawMax) == 0x378);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, cameraUdSwing) == 0x37c);

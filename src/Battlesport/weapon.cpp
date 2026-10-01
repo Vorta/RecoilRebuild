@@ -35,6 +35,7 @@
 #include <string.h>
 
 extern "C" char g_Player_KillVerbToken[0x0a];
+extern const zVec3 kPlayerDefaultAltGunAimOrigin;
 
 namespace {
 
@@ -64,7 +65,6 @@ const unsigned int kOptCatalogFlagBlockedInSub = 0x1000;
 const unsigned int kOptCatalogFlagNoSubUse = 0x02;
 const int kPlayerTickCameraStateProjectileAttached = 7;
 const int kPlayerTickCameraStateRestorePrevious = 8;
-const zVec3 kPlayerDefaultAltGunAimOrigin = { 0.0f, 0.0f, -1.0f };
 
 struct HitOwnerSaveStateLinkPartial {
     unsigned char unknown_00[0x04];

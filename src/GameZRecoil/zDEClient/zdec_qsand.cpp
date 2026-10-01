@@ -68,7 +68,7 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-copyqsandeventtemplatedefaults
  * @recoil-artifact defines .text recoil:function:0x455ed0: zDEClient::CopyQSandEventTemplateDefaults
- *
+ * @recoil-match byte
  *
  * Purpose: copy the configured quicksand event template defaults into a
  * caller-owned event template.

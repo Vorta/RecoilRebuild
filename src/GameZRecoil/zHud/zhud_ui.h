@@ -1446,6 +1446,7 @@ struct HudUiPolyline : HudUiElement {
     HudUiPolyline* Constructor();
     void Draw();
     void SetPoint(int index, int x, int y);
+    inline void SetColor(int color);
 };
 
 struct HudUiSliderBorder : HudUiPolyline {

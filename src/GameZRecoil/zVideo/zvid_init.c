@@ -191,7 +191,7 @@ unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
  * BN passes red and green as low-byte fastcall registers and consumes the low
  * byte of the stack blue argument.
  */
-unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned int blue)
+unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned char blue)
 {
     unsigned short packed = (unsigned short)((g_zVideo_PixelPack.gMaskShifted & green) << g_zVideo_PixelPack.sumMinus8);
     packed |= (g_zVideo_PixelPack.rMaskShifted & red) << g_zVideo_PixelPack.packedBase;
