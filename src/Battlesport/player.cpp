@@ -3825,7 +3825,7 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     if (playerState->masterCommonData == 0) {
         char errorText[0x80];
         sprintf(errorText, g_Player_MasterCommonDataMissingFmt, objectName);
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x46d, errorText);
+        zError::ReportOld(0x800, g_Player_SourceFile_PlayerCpp, 0x46d, errorText);
     }
 
     playerState->playerOrdinal = g_Player_NextOrdinal;
@@ -4317,7 +4317,7 @@ int __fastcall CreateFromNamesAtPose(
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (spawnPos != 0) {
         CZObject3D::gwObject3DSetPosition(rootNode, spawnPos->x, spawnPos->y, spawnPos->z);
-        CZObject3D::gwObject3DSetRotation(rootNode, 0.0f, (float)(yawDeg * 0.017453292519943295), 0.0f);
+        CZObject3D::gwObject3DSetRotation(rootNode, 0.0f, (float)(yawDeg * 0.01745329251994), 0.0f);
         playerState->aiNetId = aiNetId;
     }
 
