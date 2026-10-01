@@ -162,7 +162,7 @@ namespace
     do {                                                                                                               \
         if ((di)->verts != 0 && (di)->vertCount > 0) {                                                                 \
             if (((di)->flags & 8) != 0 && (di)->blendVerts != 0 && (di)->blendVertCount > 0                            \
-                && (di)->blendScale != 0.0f) {                                                                         \
+                && (di)->blendScale != 0.0) {                                                                          \
                 zMathVec3ArrayAddScaled(                                                                               \
                     g_zModel_TransformedVerts,                                                                         \
                     (di)->verts,                                                                                       \

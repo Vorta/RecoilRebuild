@@ -1319,9 +1319,9 @@ namespace zEffect
                     + animEvent->positionOrTargetRate.x;
 
                 zVec3 dir = { 0 };
-                zMathVec3DirFromYaw(&dir, spinMagnitude * 0.01745329252f);
+                zMathVec3DirFromYaw(&dir, spinMagnitude * 0.01745329251994);
                 const float vertical = yaw * 0.0111111114f;
-                const float horizontal = vertical < 0.0f ? vertical + 1.0f : 1.0f - vertical;
+                const float horizontal = vertical < 0.0 ? vertical + 1.0f : 1.0f - vertical;
                 const float vx = horizontal * dir.x;
                 const float vz = horizontal * dir.z;
 
@@ -1421,7 +1421,7 @@ namespace zEffect
                 const int found = FindNearestPickCandidateBelowPoint(&worldPos, &candidate);
                 CZClass::gwNodeSetCellPickable(self->boundNode, 1);
 
-                if (dy < 0.0f && found != 0 && worldPos.y + dy < candidate.hitPos.y) {
+                if (dy < 0.0 && found != 0 && worldPos.y + dy < candidate.hitPos.y) {
                     movementClamped = 1;
                     if (fabs(animEvent->rotationOrCameraPosEnd.z) < 0.100000001f
                         && fabs(animEvent->rotationOrCameraPosRate.y) < 0.100000001f) {

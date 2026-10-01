@@ -3511,7 +3511,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
 
         node = zRdrGetNode(root, g_Player_ConfigKey_MaxCamTetherAngle);
         if (node != 0) {
-            g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(node, 1) * 0.01745329251994f;
+            g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(node, 1) * 0.01745329251994;
         }
 
         node = zRdrGetNode(root, g_Player_ConfigKey_NormalGravity);
@@ -5518,7 +5518,7 @@ namespace PlayerPickupContact {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-playerpickupcontact-passescollectiontest
  * @recoil-artifact defines .text recoil:function:0x424150: PlayerPickupContact::PassesCollectionTest.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement PlayerPickupContact::PassesCollectionTest from the recovered
@@ -5539,10 +5539,10 @@ int __fastcall PassesCollectionTest(zUtil_SaveGameState* saveState, PlayerPendin
     const int raycastResult = CZDisplayInstance::RaycastFindClosest(
         g_Player_RuntimeDiScene,
         contact->hit.hitPos.x,
-        contact->hit.hitPos.y - 1.0f,
+        contact->hit.hitPos.y + 1.0f,
         contact->hit.hitPos.z,
         contact->hit.node->cachedSphereCenter[0],
-        contact->hit.node->cachedSphereCenter[1] - 1.0f,
+        contact->hit.node->cachedSphereCenter[1] + 1.0f,
         contact->hit.node->cachedSphereCenter[2],
         &rayData
     );

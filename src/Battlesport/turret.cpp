@@ -168,7 +168,7 @@ zTurret_Runtime* zTurret_Runtime::InitDefaults()
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-initfromreadernode
  * @recoil-artifact defines .text recoil:function:0x4367a0: zTurret_Runtime::InitFromReaderNode.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Parses a turret definition node and binds its scene parts, weapon, effects, and callbacks.
@@ -376,7 +376,7 @@ void zTurret_Runtime::InitFromReaderNode(
         CZClass::RemoveChild(partBarrelNode, firePointNode1);
         CZUtil::DestroyNodeRecursive(firePointNode1);
         firePointNode1 = 0;
-        firePos.y -= (firePointLocal[1].y - firePointLocal[0].y) * 0.5f;
+        firePos.y += (firePointLocal[1].y - firePointLocal[0].y) * 0.5f;
     }
 
     if (fireEffectNode != 0) {
@@ -695,7 +695,7 @@ void zTurret_Runtime::Tick(const zVec3* playerFxOffsetWorld)
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updatefirepositionfromparts
  * @recoil-artifact defines .text recoil:function:0x437430: zTurret_Runtime::UpdateFirePositionFromParts.
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Recomputes the turret fire origin from the active base, barrel, and fire-point parts.

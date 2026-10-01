@@ -3946,7 +3946,7 @@ namespace zDi
         }
 
         const zVec3* vertices = self->verts;
-        if ((self->flags & 0x08) != 0 && self->blendScale != 0.0f && self->blendVertCount != 0) {
+        if ((self->flags & 0x08) != 0 && self->blendScale != 0.0 && self->blendVertCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 self->verts,
@@ -4125,7 +4125,7 @@ namespace CZDisplayInstance
         }
 
         const zVec3* vertices = faceData->baseVertices;
-        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
@@ -4196,7 +4196,7 @@ namespace CZDisplayInstance
         }
 
         const zVec3* vertices = faceData->baseVertices;
-        if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
+        if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,
@@ -4432,7 +4432,7 @@ namespace CZDisplayInstance
                 const zVec3* current = &polygonVertices[currentIndex];
                 const float edge = (queryX - previous->x) * (current->z - previous->z)
                     + (queryZ - previous->z) * (previous->x - current->x);
-                if (edge <= -0.0001f) {
+                if (edge <= -0.0001) {
                     return 0;
                 }
             }
@@ -4445,7 +4445,7 @@ namespace CZDisplayInstance
             &candidate->surfaceNormal
         );
 
-        if (candidate->surfaceNormal.y == 0.0f) {
+        if (candidate->surfaceNormal.y == 0.0) {
             candidate->hitPos.y = polygonVertices[0].y;
             return 1;
         }
@@ -4490,7 +4490,7 @@ namespace CZDisplayInstance
             segmentEnd->z - polygonVertices[0].z };
         const float endSide = endDelta.x * candidate->surfaceNormal.x + endDelta.y * candidate->surfaceNormal.y
             + endDelta.z * candidate->surfaceNormal.z;
-        if (cullBackface == 0 && endSide >= 0.0f) {
+        if (cullBackface == 0 && endSide >= 0.0) {
             return 0;
         }
 
@@ -4552,7 +4552,7 @@ namespace CZDisplayInstance
                 edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
                     - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
             }
-            if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+            if ((double)(windingSign)*edgeCross <= -0.0001) {
                 return 0;
             }
         }
@@ -4657,7 +4657,7 @@ namespace CZDisplayInstance
                 edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
                     - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
             }
-            if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+            if ((double)(windingSign)*edgeCross <= -0.0001) {
                 return 0;
             }
         }
@@ -4814,7 +4814,7 @@ namespace CZDisplayInstance
                 segment->end.y - polygonVertices[0].y,
                 segment->end.z - polygonVertices[0].z };
             const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
-            if (cullBackface == 0 && endSide >= 0.0f) {
+            if (cullBackface == 0 && endSide >= 0.0) {
                 localActive[planeIndex] = 0;
                 continue;
             }
@@ -4886,7 +4886,7 @@ namespace CZDisplayInstance
                     edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
                         - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
                 }
-                if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                if ((double)(windingSign)*edgeCross <= -0.0001) {
                     localActive[polygonIndex] = 0;
                     break;
                 }
@@ -4960,7 +4960,7 @@ namespace CZDisplayInstance
                 segment->end.y - polygonVertices[0].y,
                 segment->end.z - polygonVertices[0].z };
             const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
-            if (cullBackface == 0 && endSide >= 0.0f) {
+            if (cullBackface == 0 && endSide >= 0.0) {
                 localActive[planeIndex] = 0;
                 continue;
             }
@@ -5030,7 +5030,7 @@ namespace CZDisplayInstance
                     edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
                         - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
                 }
-                if ((double)(windingSign)*edgeCross <= kPickEdgeInsideEpsilon) {
+                if ((double)(windingSign)*edgeCross <= -0.0001) {
                     localActive[polygonIndex] = 0;
                     break;
                 }
@@ -5232,7 +5232,7 @@ namespace CZDisplayInstance
         }
 
         const zVec3* vertices = faceData->baseVertices;
-        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0f && faceData->morphVertexCount != 0) {
+        if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 faceData->baseVertices,

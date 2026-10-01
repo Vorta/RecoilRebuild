@@ -2792,7 +2792,7 @@ int __fastcall EnterDestroyedState(
         }
 
         ApplyStatusMeterChange(saveState, -damage, 1);
-        if (g_PlayerStatusMeterRatio <= 0.0f) {
+        if (g_PlayerStatusMeterRatio <= 0.0) {
             const int nanitePanelLevel = playerState->nanitePanelLevel;
             if (nanitePanelLevel != 0 && nanitePanelLevel != kPlayerNanitePanelDisabledSentinel) {
                 playerState->nanitePanelLevel = nanitePanelLevel - 1;

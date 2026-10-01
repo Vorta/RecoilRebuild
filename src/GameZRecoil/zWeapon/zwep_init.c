@@ -404,7 +404,7 @@ namespace
      */
     const float kOptCatalogAimPitchRangeScale = -0.239999995f;
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
-    const double kOptCatalogPi = 3.14159265358979323846;
+    const double kOptCatalogPi = 3.14159265359;
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-beamreflectnamefmt
      * @recoil-artifact defines .data recoil:data:0x4e4600: g_zWeapon_BeamReflectNameFmt.

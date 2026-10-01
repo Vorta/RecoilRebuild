@@ -70,10 +70,10 @@ namespace zVideo_dd3d
 
 #define PackColorAttrConstant(baseColor, attr1Scale, alphaBits)                                                        \
     ((alphaBits)                                                                                                       \
-        | ((((((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5f)) << 8)                                               \
-                 | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5f)))                                                \
+        | ((((((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5)) << 8)                                                \
+                 | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5)))                                                 \
                 << 8)                                                                                                  \
-            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5f)))))
+            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5)))))
 
 #define FillColorAttrSpecularReverse(attr2, vertexCount)                                                               \
     {                                                                                                                  \
@@ -104,10 +104,10 @@ namespace zVideo_dd3d
                 if (!(_attr0Value > (1.0f / 255.0f))) {                                                                \
                     _packed                                                                                            \
                         = (((                                                                                          \
-                                ((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5f)) << 8)                             \
-                                | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5f))                                  \
+                                ((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5)) << 8)                              \
+                                | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5))                                   \
                             ) << 8)                                                                                    \
-                            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5f)));                                    \
+                            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5)));                                     \
                     _packedTail = (alphaBits);                                                                         \
                 } else {                                                                                               \
                     float _red = (baseColor).r * (attr1Scale) + _attr0Value * g_zVideo_D3DColorAttrBiasR;              \
