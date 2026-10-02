@@ -6516,7 +6516,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-floatsign
  * @recoil-artifact defines .text recoil:function:0x426350: Player::FloatSign.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::FloatSign from the recovered
@@ -7542,7 +7542,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatebankvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x4283f0: Player::UpdateBankVelocityFromSteerInput.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\player.cpp.
  * Purpose: reimplement Player::UpdateBankVelocityFromSteerInput from the recovered

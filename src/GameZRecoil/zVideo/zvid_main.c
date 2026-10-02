@@ -1293,17 +1293,6 @@ zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
  * software-present adjustment code.
  */
 zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3configlocal
- * @recoil-artifact defines .data recoil:data:0x56bd58: g_zVideo_FxPass3ConfigLocal.
- * Data owner evidence: retail 0x56bd58 is the authored zero-initialized
- * zVideoFxPass3Config singleton, complete size 0x1f0. Sibling pass-3 scratch,
- * clip, and surface globals are separate zVideo data owners.
- * Purpose: store the local pass-3 UI config used by the zVideo namespace
- * wrapper functions.
- */
-zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
-RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
 }
 
 RECOIL_STATIC_ASSERT(sizeof(zVidHwApiDeviceRecordPartial) == 0x6ec);

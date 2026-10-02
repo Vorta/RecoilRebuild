@@ -41,7 +41,7 @@ namespace zSndFadeDispatchList {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.pushback
  * @recoil-artifact defines .text recoil:function:0x4a3a80: zSndFadeDispatchList::PushBack.
- *
+ * @recoil-match byte
  *
  * Purpose: append a completed fade entry to the dispatch list for completion
  * handling.
