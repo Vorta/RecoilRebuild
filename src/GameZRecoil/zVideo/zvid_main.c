@@ -283,13 +283,6 @@ int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
 int g_zVideo_UseHalfResBackbuffer = 0;
 int g_zVideo_HalfResAdjustMode = 0;
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-softwaremodehotkeyenabled
- * @recoil-artifact defines .data recoil:data:0x4dd1c0: g_zVideo_SoftwareModeHotkeyEnabled.
- * Retail initializes the authored zVideo debug/software-mode hotkey gate enabled.
- * Purpose: gate the software-mode hotkey command.
- */
-int g_zVideo_SoftwareModeHotkeyEnabled = 1;
-/**
  * D3D fog/color-attribute bias owner data. Current BN models the channel index
  * at 0x632140 separately from the adjacent RGB bias floats at 0x6321dc-0x6321e4;
  * 0x4a7250 writes them and the submitters at 0x4ab320, 0x4abb20, and 0x4ac370
@@ -1462,70 +1455,6 @@ namespace zVideo_buff { } // namespace zVideo_buff
 
 namespace zVideo
 {
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-handlesoftwaremodehotkeycommand
-     * @recoil-artifact defines .text recoil:function:0x437ef0: zVideo::HandleSoftwareModeHotkeyCommand.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Purpose: cycle the software-mode hotkey presets while preserving HUD state.
-     *
-     * Evidence: BN dispatches on GetVideoModeIndexFromOptions() - 2 and cycles
-     * modes 2->4, 3->5, 4->2, and 5->3; only the downscale paths request
-     * half-resolution adjustment disablement.
-     * The saved HUD type is restored on every path through the switch,
-     * including modes outside these presets. Case order follows the retail
-     * dispatch bodies.
-     */
-    void __fastcall HandleSoftwareModeHotkeyCommand(int)
-    {
-        if (g_zVideo_SoftwareModeHotkeyEnabled == 0) {
-            return;
-        }
-
-        const int previousHudType = zOpt::SetHudTypeForCurrentHwMode(1);
-        const int currentModeIndex = zVid::GetVideoModeIndexFromOptions();
-
-        switch (currentModeIndex) {
-        case 2:
-            if (InitApplyModeIndex(4) == 0) {
-                zVid::SetVideoModeIndex(4);
-                if (zVid::GetAccelerationOption() == 0) {
-                    SetHalfResAdjustMode(1);
-                }
-            }
-            break;
-
-        case 4:
-            if (InitApplyModeIndex(2) == 0) {
-                zVid::SetVideoModeIndex(2);
-                if (zVid::GetAccelerationOption() == 0) {
-                    SetHalfResAdjustMode(0);
-                }
-            }
-            break;
-
-        case 3:
-            if (InitApplyModeIndex(5) == 0) {
-                zVid::SetVideoModeIndex(5);
-                if (zVid::GetAccelerationOption() == 0) {
-                    SetHalfResAdjustMode(1);
-                }
-            }
-            break;
-
-        case 5:
-            if (InitApplyModeIndex(3) == 0) {
-                zVid::SetVideoModeIndex(3);
-                if (zVid::GetAccelerationOption() == 0) {
-                    SetHalfResAdjustMode(0);
-                }
-            }
-            break;
-        }
-        zOpt::SetHudTypeForCurrentHwMode(previousHudType);
-    }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getdisplaymodebpp

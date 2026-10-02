@@ -413,8 +413,10 @@ namespace
      * OptCatalog::CreateTrailRuntimeState at 0x4b1ec0.
      * Purpose: format the inactive BeamReflect segment node names created
      * for OptCatalog trail runtime state.
+     * Retail keeps it in writable .data, where VC5 places only non-const
+     * arrays, so it is not declared const.
      */
-    const char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
+    char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
 
     typedef void(__fastcall * OptCatalogRuntimeUpdateCallback)(OptCatalogRuntimeInstanceStorage * runtimeInstance);
 
@@ -819,8 +821,10 @@ namespace
      * @recoil-artifact defines .data recoil:data:0x4e4658: g_zWeapon_ThermalGlowLabel.
      * Purpose: stores the fixed node name assigned to pooled thermal glow
      * lights during initialization.
+     * Retail keeps it in writable .data, where VC5 places only non-const
+     * arrays, so it is not declared const.
      */
-    const char g_zWeapon_ThermalGlowLabel[] = "Thermal glow";
+    char g_zWeapon_ThermalGlowLabel[] = "Thermal glow";
 } // namespace
 
 namespace OptCatalog
@@ -3743,7 +3747,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailruntimestate
      * @recoil-artifact defines .text recoil:function:0x4b1ec0: OptCatalog::CreateTrailRuntimeState
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate trail runtime state, create inactive BeamReflect
      * segment nodes, and attach them to the OptCatalog runtime world.
@@ -3898,7 +3902,7 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-initthermalglowpool
      * @recoil-artifact defines .text recoil:function:0x4b2160: CZLight::InitThermalGlowPool
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate the fixed eight-node thermal glow light pool, initialize
      * names, positions, and ranges, then link every node onto the free list.

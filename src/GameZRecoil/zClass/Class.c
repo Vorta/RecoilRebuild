@@ -2271,53 +2271,6 @@ namespace CZClass
 namespace CZNode
 {
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setcontextrecursive
-     * @recoil-artifact defines .text recoil:function:0x437e60: CZNode::SetContextRecursive
-     * @recoil-match byte
-     *
-     * BN evidence: fastcall self/context, stack flagMask, callbackContext at
-     * 0x40, flags at 0x24, signed listCountB at 0x5c, listB at 0x60,
-     * recursive self-call only, and no global data references.
-     * Purpose: assign a callback context and OR flag bits through a node
-     * subtree using the zClass child-list links.
-     */
-    void __fastcall SetContextRecursive(CZNodePartial * self, CZNodePartial * context, int flagMask)
-    {
-        self->callbackContext = context;
-        self->flags |= flagMask;
-
-        for (int i = 0; i < self->listCountB; ++i) {
-            SetContextRecursive(self->listB[i], context, flagMask);
-        }
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.setdiflagbit0recursive
-     * @recoil-artifact defines .text recoil:function:0x437ea0: CZNode::SetDiFlagBit0Recursive
-     * @recoil-match byte
-     *
-     * BN evidence: fastcall node/enabled, gwNodeGetUserData for the typed
-     * userDataOrDiRef display-instance reference, zDi::SetFlagBit0 when
-     * non-null, signed listCountB at 0x5c, listB at 0x60, recursive self-call
-     * only, and no global data references.
-     * Purpose: set display-instance flag bit 0 for each display instance
-     * reachable through a node's child-list subtree.
-     */
-    void __fastcall SetDiFlagBit0Recursive(CZNodePartial * node, int enabled)
-    {
-        unsigned int userData;
-        CZClass::gwNodeGetUserData(node, &userData);
-        zDiPartial* di = (zDiPartial*)(userData);
-        if (di != 0) {
-            zDi::SetFlagBit0(di, enabled);
-        }
-
-        for (int i = 0; i < node->listCountB; ++i) {
-            SetDiFlagBit0Recursive(node->listB[i], enabled);
-        }
-    }
-
     /*
      * Source-shape routing markers: these definitions are emitted by
      * cls_util.c while Class.c retains related callers.

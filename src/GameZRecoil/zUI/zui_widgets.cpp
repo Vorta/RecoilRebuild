@@ -4142,7 +4142,7 @@ HudUiBackground::HudUiBackground()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-huduibackground-0x4b9760
  * @recoil-artifact defines .text recoil:function:0x4b9760: HudUiBackground::~HudUiBackground.
- *
+ * @recoil-match byte
  *
  * Purpose: Releases owned background clip images before compiler-generated member and base cleanup.
  */
