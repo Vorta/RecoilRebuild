@@ -176,7 +176,7 @@ namespace CZObject3DModelRefLerpQueue {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.add
  * @recoil-artifact defines .text recoil:function:0x438020: CZObject3DModelRefLerpQueue::Add
- *
+ * @recoil-match byte
  *
  * Purpose: allocate and append a model-reference lerp task, normalize fade
  * direction/rate, and enable the node's lit/model-reference flag.
@@ -257,7 +257,7 @@ void __cdecl Reset()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.update
  * @recoil-artifact defines .text recoil:function:0x4381d0: CZObject3DModelRefLerpQueue::Update
- *
+ * @recoil-match byte
  *
  * Purpose: advance queued model-reference fades by frame time, apply alpha
  * scale, invoke completion callbacks, and unlink finished tasks.
