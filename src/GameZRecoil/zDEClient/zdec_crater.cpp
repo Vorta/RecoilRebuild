@@ -610,7 +610,7 @@ void __cdecl ClearFeatureDisplayNodes()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-appendfeatureentry
  * @recoil-artifact defines .text recoil:function:0x457840: zDEClient::AppendFeatureEntry
- *
+ * @recoil-match byte
  *
  * Purpose: append a crater or quicksand event snapshot to the feature-entry
  * list, growing the VC-era vector storage when needed.
