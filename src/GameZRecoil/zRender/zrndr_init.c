@@ -34,6 +34,11 @@ extern "C" {
 zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary = 0;
 }
 
+// Option names hud.cpp defines; retail reads these globals (0x4da834,
+// 0x4da888), not literals.
+extern "C" char g_zOpt_OptionName_GfxFlagsHw[];
+extern "C" char g_zOpt_OptionName_GfxFlagsSw[];
+
 namespace zSys
 {
     int __cdecl CheckCpuSignatureMask();
@@ -474,7 +479,7 @@ namespace zRndr
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-initglobals
      * @recoil-artifact defines .text recoil:function:0x48fd80: zRndr::InitGlobals
-     *
+     * @recoil-match byte
      *
      * Purpose: Initialize renderer span, queue, fog, and dispatch globals to their startup state.
      */
@@ -540,8 +545,9 @@ namespace zRndr
 
         g_zVideo_pfnBltSourceToPrimary = zVid_Image::BlitToFramebufferClipped;
         g_defaultGraphicsFlags = -1;
-        zOptionEntryPartial* option
-            = zGame::OptionsFindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
+        zOptionEntryPartial* option = zGame::OptionsFindOption(
+            g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_GfxFlagsHw : g_zOpt_OptionName_GfxFlagsSw
+        );
         g_graphicsFlags = option != 0 ? &option->payloadOrBuffer : &g_defaultGraphicsFlags;
         g_perspectiveTextureDeltaXBytes = g_perspectiveTextureDeltaXPow2 * g_bytesPerPixel;
         return 0;

@@ -124,13 +124,13 @@ const int kDiInputLost = (int)(0x8007001e);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zin-joystick.di-initjoystickdevice
  * @recoil-artifact defines .text recoil:function:0x471e40: zInput::DIInitJoystickDevice.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_joystick.cpp.
  * Purpose: Enumerate and configure the DirectInput joystick device, cache
  * capabilities, apply startup axis ranges, acquire the device, and mark it initialized.
  *
- * Evidence: BN enumerates attached game controllers, queries c_dfDIJoystick,
+ * Evidence: BN enumerates attached game controllers, queries c_dfDIJoystick2,
  * stores axis count and force-feedback capability bits in the accepted
  * zInput_GlobalState aggregate, chooses cooperative flags from force-feedback
  * support, applies four-axis startup ranges/deadzones, and returns 1 on success.
@@ -151,7 +151,7 @@ int __fastcall DIInitJoystickDevice(HWND hwnd)
 
     DIDeviceCaps caps;
     caps.dwSize = 0x2c;
-    joystickDevice->SetDataFormat(&c_dfDIJoystick);
+    joystickDevice->SetDataFormat(&c_dfDIJoystick2);
     joystickDevice->GetCapabilities((LPDIDEVCAPS)(&caps));
 
     g_zInput_JoystickAxisCount = caps.dwAxes;

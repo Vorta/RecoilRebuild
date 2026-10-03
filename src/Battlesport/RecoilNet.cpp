@@ -1843,6 +1843,10 @@ int __fastcall AltGunDispatchNoOpCallback(OptCatalogEntryDef*, void**)
 }
 } // namespace GameNet
 
+// Shared zero vector in player_move.cpp's read-only data; retail reads it at
+// 0x4d0788 for the removal relay's absent point.
+extern const zVec3 g_Player_ConstZeroVec3;
+
 namespace OptCatalog {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-sendpkt0a-removeruntimerelay
@@ -1863,9 +1867,8 @@ void __fastcall SendPkt0ARemoveRuntimeRelay(OptCatalogEntryDef* self, zVec3* poi
     zUtil_SaveGameState* const ownerSaveState = (zUtil_SaveGameState*)(ownerTrackContext->payload);
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.header.payloadDword0 = zNetworkGetLocalPlayerKey();
     g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.optCatalogEntryId = (short)(self->ordinalIndex);
-    static const zVec3 kRelayZeroPoint = { 0.0f, 0.0f, 0.0f };
     if (pointOrVec3 == 0) {
-        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = kRelayZeroPoint;
+        g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = g_Player_ConstZeroVec3;
     } else {
         g_NetPkt0A_OptCatalogProcessRuntimeRelayBuf.pointOrVec3 = *pointOrVec3;
     }

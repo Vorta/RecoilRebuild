@@ -1104,7 +1104,7 @@ namespace
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-setactiveviewcontext
  * @recoil-artifact defines .text recoil:function:0x479ce0: zVideoSetActiveViewContext.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Data evidence: BN stores the supplied camera context into the projection
