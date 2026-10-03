@@ -206,7 +206,7 @@ struct zUtil_PlayerStateStorage {
                     float cachedRollRad;
                 };
             };
-            unsigned char unknown_03e0[0x0c];
+            zVec3 environmentAttachmentLocalOffset;
             zVec3 worldPos;
             zVec3 netReceivedPos;
             zVec3 fxOffsetLocal;

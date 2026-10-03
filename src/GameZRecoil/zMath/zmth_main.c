@@ -1755,36 +1755,24 @@ void __fastcall zMathUnprojectPointBatch(const zProjectedPoint* projectedPoints,
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-unprojectpointbatchzbuf
  * @recoil-artifact defines .text recoil:function:0x474c20: zMathUnprojectPointBatchZBuf
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * Purpose: unprojects projected points and transforms them through the staged camera inverse matrix.
+ * Contract note: the transform batch writes count entries into the one-element
+ * viewPoints scratch, so count == 1 is the only contract the recovered storage
+ * supports; larger counts are an unresolved caller contract or preserved retail
+ * defect, not a validated general batch routine.
  */
 void __fastcall zMathUnprojectPointBatchZBuf(const zProjectedPoint* projectedPoints, zVec3* outPoints, int count)
 {
     zVec3 viewPoints[1];
     zMathUnprojectPointBatch(projectedPoints, viewPoints, count);
 
-    zMat4x3 slotBuffer = { 0 };
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadCameraScratchA();
-
-    if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(outPoints, viewPoints, count * sizeof(zVec3));
-        zMath::MatStackPopPtr();
-        return;
-    } else {
-        const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-        for (int i = 0; i < count; ++i) {
-            const zVec3 viewPoint = viewPoints[i];
-            outPoints[i].x
-                = viewPoint.x * matrix->xx + viewPoint.y * matrix->yx + viewPoint.z * matrix->zx + matrix->posX;
-            outPoints[i].z
-                = viewPoint.x * matrix->xz + viewPoint.y * matrix->yz + viewPoint.z * matrix->zz + matrix->posZ;
-            outPoints[i].y
-                = viewPoint.x * matrix->xy + viewPoint.y * matrix->yy + viewPoint.z * matrix->zy + matrix->posY;
-        }
-    }
-
+    ZMTH_MAT_TRANSFORM_POINT_BATCH(viewPoints, outPoints, count);
     zMath::MatStackPopPtr();
 }
 

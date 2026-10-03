@@ -449,3 +449,366 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
         crossDest->x = crossX;                                                                                         \
     } while (0)
 #endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+ *
+ * Purpose: Replace a binary32 vector with its dot products against the three
+ * zMat4x3 rows (xx/xy/xz, yx/yy/yz, zx/zy/zz), translation ignored; all reads
+ * precede the z/y/x stores. This is the rows product, not a general inverse.
+ *
+ * Reconstruction: repeated retail x87 core (74 bytes after two pointer-home
+ * reloads) with consumer-specific home operands. An original inline-assembly
+ * helper is inferred; original spelling and header ownership are not recovered.
+ *
+ * Raw assembly: the recorded source-faithful VC5SP3 C/C++ controls did not
+ * reproduce the approved consumer bodies. Permission covers only the
+ * allowlisted consumer/range pairs.
+ *
+ * Contract: C++ captures the matrix, then the vector, once; arguments must be
+ * side-effect-free pointer expressions that do not collide with the
+ * expansion's identifiers. Clobbers EAX and EBX; integer flags and the x87
+ * control word unchanged; x87 entry/peak/exit depth 0/6/0 on normal
+ * completion; x87 status and exceptions are not preserved. The compiler owns
+ * captures, homes, frame and register saves.
+ *
+ * Fallback: mathematical reference only; identical rounding, NaN handling,
+ * exception behaviour and store scheduling are not promised.
+ */
+#define ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(matrix, vector)                                                               \
+    do {                                                                                                               \
+        const zMat4x3* const rotateMatrix = (matrix);                                                                  \
+        zVec3* const rotateVector = (vector);                                                                          \
+        __asm { \
+            __asm mov eax, rotateVector \
+            __asm mov ebx, rotateMatrix \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xx \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.yx \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.zx \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.xy \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yy \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.zy \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.xz \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.yz \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zz \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fstp dword ptr [eax]zVec3.z \
+            __asm fstp dword ptr [eax]zVec3.y \
+            __asm fstp dword ptr [eax]zVec3.x }                \
+    } while (0)
+#else
+#define ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(matrix, vector)                                                               \
+    do {                                                                                                               \
+        const zMat4x3* const rotateMatrix = (matrix);                                                                  \
+        zVec3* const rotateVector = (vector);                                                                          \
+        const float rotateX = (rotateVector->x * rotateMatrix->xx + rotateVector->y * rotateMatrix->xy)                \
+            + rotateVector->z * rotateMatrix->xz;                                                                      \
+        const float rotateY = (rotateVector->x * rotateMatrix->yx + rotateVector->y * rotateMatrix->yy)                \
+            + rotateVector->z * rotateMatrix->yz;                                                                      \
+        const float rotateZ = (rotateVector->x * rotateMatrix->zx + rotateVector->y * rotateMatrix->zy)                \
+            + rotateVector->z * rotateMatrix->zz;                                                                      \
+        rotateVector->z = rotateZ;                                                                                     \
+        rotateVector->y = rotateY;                                                                                     \
+        rotateVector->x = rotateX;                                                                                     \
+    } while (0)
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ *
+ * Purpose: Transform one binary32 point by the zMat4x3 linear part and
+ * translation, adding translation last and storing the results x/z/y.
+ * Intermediates remain in x87 registers until the final binary32 stores.
+ *
+ * Reconstruction: repeated retail x87 core (91 bytes after three pointer-home
+ * reloads) with consumer-specific home operands; it shares the grouped 3x3
+ * multiply/add kernel of ZMTH_VECTOR_TRANSFORM_DIRECTION with a distinct
+ * translation and store tail. An original inline-assembly helper is inferred;
+ * original spelling and declaration/header ownership are not recovered.
+ *
+ * Raw assembly: the recorded source-faithful VC5SP3 C/C++ controls did not
+ * reproduce the approved consumer bodies. Permission covers only the
+ * allowlisted consumer/range pairs.
+ *
+ * Contract: three initialized named pointer homes (simple identifiers, not
+ * pointer expressions); readable source/matrix and writable destination. All
+ * source and matrix reads precede stores. Clobbers EAX, EBX and EDX. Integer
+ * flags and the x87 control word unchanged; x87 entry/peak/exit depth 0/6/0
+ * on normal
+ * completion; x87 status and exceptions are not preserved. The compiler owns
+ * captures, homes, frame and register saves.
+ *
+ * Fallback: mathematical reference only; identical rounding, NaN handling,
+ * exception behaviour and store scheduling are not promised.
+ */
+#define ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(matrixHome, destHome, sourceHome)                                           \
+    __asm { \
+            __asm mov eax, sourceHome \
+            __asm mov ebx, matrixHome \
+            __asm mov edx, destHome \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xx \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xy \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xz \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yx \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yy \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yz \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zx \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zy \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zz \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fxch st(2) \
+            __asm fadd dword ptr [ebx]zMat4x3.posX \
+            __asm fxch st(1) \
+            __asm fadd dword ptr [ebx]zMat4x3.posY \
+            __asm fxch st(2) \
+            __asm fadd dword ptr [ebx]zMat4x3.posZ \
+            __asm fxch st(1) \
+            __asm fstp dword ptr [edx]zVec3.x \
+            __asm fstp dword ptr [edx]zVec3.z \
+            __asm fstp dword ptr [edx]zVec3.y }
+#else
+// Mathematical fallback; exact x87 rounding and exception order are not implied.
+#define ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(matrixHome, destHome, sourceHome)                                           \
+    {                                                                                                                  \
+        const float transformX = (sourceHome->x * matrixHome->xx + sourceHome->y * matrixHome->yx)                     \
+            + sourceHome->z * matrixHome->zx + matrixHome->posX;                                                       \
+        const float transformY = (sourceHome->x * matrixHome->xy + sourceHome->y * matrixHome->yy)                     \
+            + sourceHome->z * matrixHome->zy + matrixHome->posY;                                                       \
+        const float transformZ = (sourceHome->x * matrixHome->xz + sourceHome->y * matrixHome->yz)                     \
+            + sourceHome->z * matrixHome->zz + matrixHome->posZ;                                                       \
+        destHome->x = transformX;                                                                                      \
+        destHome->z = transformZ;                                                                                      \
+        destHome->y = transformY;                                                                                      \
+    }
+#endif
+
+/**
+ * Purpose: Transform one point. C++ captures matrix, destination and source
+ * once into the transform-point island's homes; inputs must be
+ * side-effect-free pointer expressions that do not collide with the
+ * expansion's identifiers.
+ */
+#define ZMTH_VECTOR_TRANSFORM_POINT(matrix, destination, vector)                                                       \
+    do {                                                                                                               \
+        const zMat4x3* const transformMatrix = (matrix);                                                               \
+        zVec3* const transformDest = (destination);                                                                    \
+        const zVec3* const transformSource = (vector);                                                                 \
+        ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(transformMatrix, transformDest, transformSource)                            \
+    } while (0)
+
+/**
+ * Purpose: Transform points by the current matrix-stack slot, or copy them
+ * unchanged while that slot is flagged identity. Requires <string.h>.
+ * Each pass assigns the matrix, destination and source homes, then advances
+ * the source and destination cursors before the transform-point island,
+ * matching the retail schedule of its batch consumers. Inferred original
+ * batch idiom; spelling and header ownership are not recovered.
+ * Contract: the transform loop counts down without an entry test, so count
+ * must be positive with a representable byte count; points and outPoints
+ * must each address count valid elements and must not overlap (the identity
+ * branch uses memcpy); the current matrix-stack slots must be valid. Every
+ * expansion is a transform-point island consumer for allowlist purposes.
+ */
+#define ZMTH_MAT_TRANSFORM_POINT_BATCH(points, outPoints, count)                                                       \
+    do {                                                                                                               \
+        int batchCount = (count);                                                                                      \
+        zVec3* batchOutPoints = (outPoints);                                                                           \
+        const zVec3* batchPoints = (points);                                                                           \
+        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {                                                            \
+            memcpy(batchOutPoints, batchPoints, batchCount * sizeof(zVec3));                                           \
+        } else {                                                                                                       \
+            do {                                                                                                       \
+                const zMat4x3* const transformMatrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);               \
+                zVec3* const transformDest = batchOutPoints;                                                           \
+                const zVec3* const transformSource = batchPoints;                                                      \
+                batchPoints++;                                                                                         \
+                batchOutPoints++;                                                                                      \
+                ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(transformMatrix, transformDest, transformSource)                    \
+            } while (--batchCount);                                                                                    \
+        }                                                                                                              \
+    } while (0)
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ *
+ * Purpose: Calculate the full XYZ dot product, rounded to a binary32 float.
+ *
+ * Reconstruction: repeated retail ECX/EDX x87 core at about fifty sites with
+ * consumer-specific home operands. An original inline-assembly helper is
+ * inferred; original spelling and header ownership are not recovered.
+ *
+ * Raw assembly: the recorded source-faithful VC5SP3 C/C++ controls did not
+ * reproduce the approved consumer bodies. Permission covers only the
+ * allowlisted consumer/range pairs.
+ *
+ * Contract: C++ captures right, then left, once; arguments must be
+ * side-effect-free pointer expressions, and result must name a writable
+ * binary32 float object. Clobbers ECX and EDX; integer flags and the x87
+ * control word unchanged; x87 entry/peak/exit depth 0/3/0 on normal
+ * completion; x87 status and exceptions are not preserved. The compiler owns
+ * captures, homes, frame and register saves.
+ *
+ * Fallback: mathematical reference only; identical rounding, NaN handling,
+ * exception behaviour and store scheduling are not promised.
+ */
+#define ZMTH_VECTOR_DOT(result, left, right)                                                                           \
+    do {                                                                                                               \
+        const zVec3* const dotRight = (right);                                                                         \
+        const zVec3* const dotLeft = (left);                                                                           \
+        __asm { \
+            __asm mov ecx, dotLeft \
+            __asm mov edx, dotRight \
+            __asm fld dword ptr [ecx]zVec3.x \
+            __asm fmul dword ptr [edx]zVec3.x \
+            __asm fld dword ptr [ecx]zVec3.y \
+            __asm fmul dword ptr [edx]zVec3.y \
+            __asm fld dword ptr [ecx]zVec3.z \
+            __asm fmul dword ptr [edx]zVec3.z \
+            __asm fxch st(1) \
+            __asm faddp st(2), st \
+            __asm faddp st(1), st \
+            __asm fstp result }                                                                                        \
+    } while (0)
+#else
+#define ZMTH_VECTOR_DOT(result, left, right)                                                                           \
+    do {                                                                                                               \
+        const zVec3* const dotRight = (right);                                                                         \
+        const zVec3* const dotLeft = (left);                                                                           \
+        (result) = dotLeft->x * dotRight->x + dotLeft->y * dotRight->y + dotLeft->z * dotRight->z;                     \
+    } while (0)
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-negate
+ *
+ * Purpose: Negate all three components by flipping their binary32 sign bits.
+ *
+ * Reconstruction: repeated retail EBX/ECX integer core with consumer-specific
+ * home operands. An original inline-assembly helper is inferred; original
+ * spelling and header ownership are not recovered.
+ *
+ * Raw assembly: the recorded source-faithful VC5SP3 C/C++ controls did not
+ * reproduce the approved consumer bodies. Permission covers only the
+ * allowlisted consumer/range pairs.
+ *
+ * Contract: C++ captures source, then destination, once; arguments must be
+ * side-effect-free pointer expressions. All three component loads precede
+ * the stores. Clobbers EAX, EBX, ECX and EDX; arithmetic flags are the result
+ * of the final XOR. No x87 instructions. The compiler owns captures, homes,
+ * frame and register saves.
+ *
+ * Fallback: reference only; it negates values rather than flipping
+ * representation bits, so NaN payload and signed-zero handling may differ.
+ */
+#define ZMTH_VECTOR_NEGATE(source, destination)                                                                        \
+    do {                                                                                                               \
+        const zVec3* const negateSource = (source);                                                                    \
+        zVec3* const negateDest = (destination);                                                                       \
+        __asm { \
+            __asm mov ebx, negateSource \
+            __asm mov ecx, negateDest \
+            __asm mov eax, dword ptr [ebx]zVec3.x \
+            __asm mov edx, dword ptr [ebx]zVec3.y \
+            __asm mov ebx, dword ptr [ebx]zVec3.z \
+            __asm xor eax, 080000000h \
+            __asm xor edx, 080000000h \
+            __asm xor ebx, 080000000h \
+            __asm mov dword ptr [ecx]zVec3.x, eax \
+            __asm mov dword ptr [ecx]zVec3.y, edx \
+            __asm mov dword ptr [ecx]zVec3.z, ebx }                                                                                                      \
+    } while (0)
+
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+ *
+ * Purpose: Calculate the grouped (x*x + y*y) + z*z square sum, rounded to a
+ * binary32 float.
+ *
+ * Reconstruction: repeated retail ECX x87 core with consumer-specific home
+ * operands. An original inline-assembly helper is inferred; original
+ * spelling and header ownership are not recovered.
+ *
+ * Raw assembly: the recorded source-faithful VC5SP3 C/C++ controls did not
+ * reproduce the approved consumer bodies. Permission covers only the
+ * allowlisted consumer/range pairs.
+ *
+ * Contract: C++ captures the vector once; result must name a writable
+ * binary32 float object. Clobbers ECX; integer flags and the x87 control
+ * word unchanged; x87 entry/peak/exit depth 0/3/0 on normal
+ * completion; x87 status and exceptions are not preserved. The compiler owns
+ * captures, homes, frame and register saves.
+ *
+ * Fallback: mathematical reference only; identical rounding, NaN handling,
+ * exception behaviour and store scheduling are not promised.
+ */
+#define ZMTH_VECTOR_LENGTH_SQ(result, vector)                                                                          \
+    do {                                                                                                               \
+        const zVec3* const lengthVector = (vector);                                                                    \
+        __asm { \
+            __asm mov ecx, lengthVector \
+            __asm fld dword ptr [ecx]zVec3.x \
+            __asm fmul dword ptr [ecx]zVec3.x \
+            __asm fld dword ptr [ecx]zVec3.y \
+            __asm fmul dword ptr [ecx]zVec3.y \
+            __asm fld dword ptr [ecx]zVec3.z \
+            __asm fmul dword ptr [ecx]zVec3.z \
+            __asm fxch st(1) \
+            __asm faddp st(2), st \
+            __asm faddp st(1), st \
+            __asm fstp result }                                                                                        \
+    } while (0)
+#else
+#define ZMTH_VECTOR_NEGATE(source, destination)                                                                        \
+    do {                                                                                                               \
+        const zVec3* const negateSource = (source);                                                                    \
+        zVec3* const negateDest = (destination);                                                                       \
+        const float negateX = -negateSource->x;                                                                        \
+        const float negateY = -negateSource->y;                                                                        \
+        const float negateZ = -negateSource->z;                                                                        \
+        negateDest->x = negateX;                                                                                       \
+        negateDest->y = negateY;                                                                                       \
+        negateDest->z = negateZ;                                                                                       \
+    } while (0)
+#define ZMTH_VECTOR_LENGTH_SQ(result, vector)                                                                          \
+    do {                                                                                                               \
+        const zVec3* const lengthVector = (vector);                                                                    \
+        (result) = (lengthVector->x * lengthVector->x + lengthVector->y * lengthVector->y)                             \
+            + lengthVector->z * lengthVector->z;                                                                       \
+    } while (0)
+#endif

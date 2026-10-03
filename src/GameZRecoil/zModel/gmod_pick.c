@@ -26,6 +26,143 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace zMath
+{
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-point-in-place
+     *
+     * Purpose: Transform a point in place by the matrix's 3x3 part plus
+     * translation; all reads precede the x/z/y binary32 stores.
+     * Reconstruction: recurring inline-helper family (retail 0x4747ff and
+     * 0x4852a9); original spelling and declaration location unproved.
+     * gmod_pick.c-resident inline definition.
+     * Raw assembly: the parameter-home reloads and grouped x87 schedule strongly
+     * support an inferred inline-assembly helper; the documented VC5SP3 C/C++
+     * candidates (and a capture-macro form) did not reproduce the consumer body.
+     * Island contract: EAX/EBX hold vector/matrix from compiler-owned parameter
+     * homes and are clobbered; integer flags and the x87 control word unchanged;
+     * x87 entry/peak/exit depth 0/6/0 on normal completion; x87 status and
+     * exceptions are not preserved. The vector must not overlap the matrix: the
+     * non-target fallback interleaves result stores with later matrix reads.
+     * Consumers are scoped by the raw-assembly allowlist.
+     */
+    inline void Vec3TransformPointInPlace(const zMat4x3* matrix, zVec3* vector)
+    {
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov eax, vector
+        mov ebx, matrix
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xx
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xy
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xz
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yx
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yy
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yz
+        fxch st(2)
+        faddp st(5), st
+        faddp st(3), st
+        faddp st(1), st
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zx
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zy
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zz
+        fxch st(2)
+        faddp st(5), st
+        faddp st(3), st
+        faddp st(1), st
+        fxch st(2)
+        fadd dword ptr [ebx]zMat4x3.posX
+        fxch st(1)
+        fadd dword ptr [ebx]zMat4x3.posY
+        fxch st(2)
+        fadd dword ptr [ebx]zMat4x3.posZ
+        fxch st(1)
+        fstp dword ptr [eax]zVec3.x
+        fstp dword ptr [eax]zVec3.z
+        fstp dword ptr [eax]zVec3.y
+        }
+#else
+        const zVec3 source = *vector;
+        vector->x = source.x * matrix->xx + source.y * matrix->yx + source.z * matrix->zx + matrix->posX;
+        vector->y = source.x * matrix->xy + source.y * matrix->yy + source.z * matrix->zy + matrix->posY;
+        vector->z = source.x * matrix->xz + source.y * matrix->yz + source.z * matrix->zz + matrix->posZ;
+#endif
+    }
+} // namespace zMath
+
+namespace zMath
+{
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-direction-in-place
+     *
+     * Purpose: Transform a direction in place by the matrix's 3x3 part, without
+     * translation; all reads precede the z/y/x binary32 stores.
+     * Reconstruction: recurring inline-helper family (retail 0x4293da, 0x473f6d,
+     * 0x47460f and 0x485315); original spelling and declaration location
+     * unproved. gmod_pick.c-resident inline definition.
+     * Raw assembly: the parameter-home reloads and grouped x87 schedule strongly
+     * support an inferred inline-assembly helper; the documented VC5SP3 C/C++
+     * candidates (and a capture-macro form) did not reproduce the consumer body.
+     * Island contract: EAX/EBX hold vector/matrix from compiler-owned parameter
+     * homes and are clobbered; integer flags and the x87 control word unchanged;
+     * x87 entry/peak/exit depth 0/6/0 on normal completion; x87 status and
+     * exceptions are not preserved. The vector must not overlap the matrix: the
+     * non-target fallback interleaves result stores with later matrix reads.
+     * Consumers are scoped by the raw-assembly allowlist.
+     */
+    inline void Vec3TransformDirectionInPlace(const zMat4x3* matrix, zVec3* vector)
+    {
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov eax, vector
+        mov ebx, matrix
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xx
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xy
+        fld dword ptr [eax]zVec3.x
+        fmul dword ptr [ebx]zMat4x3.xz
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yx
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yy
+        fld dword ptr [eax]zVec3.y
+        fmul dword ptr [ebx]zMat4x3.yz
+        fxch st(2)
+        faddp st(5), st
+        faddp st(3), st
+        faddp st(1), st
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zx
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zy
+        fld dword ptr [eax]zVec3.z
+        fmul dword ptr [ebx]zMat4x3.zz
+        fxch st(2)
+        faddp st(5), st
+        faddp st(3), st
+        faddp st(1), st
+        fstp dword ptr [eax]zVec3.z
+        fstp dword ptr [eax]zVec3.y
+        fstp dword ptr [eax]zVec3.x
+        }
+#else
+        const zVec3 source = *vector;
+        vector->x = source.x * matrix->xx + source.y * matrix->yx + source.z * matrix->zx;
+        vector->y = source.x * matrix->xy + source.y * matrix->yy + source.z * matrix->zy;
+        vector->z = source.x * matrix->xz + source.y * matrix->yz + source.z * matrix->zz;
+#endif
+    }
+} // namespace zMath
+
 /*
  * Address-backed gmod_const.c function contribution in natural retail order.
  */
@@ -1451,11 +1588,17 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.appendpickcandidatesforface
      * @recoil-artifact defines .text recoil:function:0x484fc0: CZDisplayInstance::AppendPickCandidatesForFace.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-point-in-place
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-direction-in-place
      *
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     * Contract note: the bottom-tested face-vertex copy requires a positive vertex
+     * count bounded by the shared scratch capacity.
      */
     int __fastcall AppendPickCandidatesForFace(
         const zModel_PickFaceData* faceData,
@@ -1468,7 +1611,7 @@ namespace CZDisplayInstance
             return 0;
         }
 
-        const zVec3* vertices = faceData->baseVertices;
+        const zVec3* vertices;
         if ((faceData->flags & 8) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
@@ -1478,86 +1621,74 @@ namespace CZDisplayInstance
                 faceData->morphWeight
             );
             vertices = g_zModel_SharedVec3ScratchA;
-        }
-
-        zVec3 queryPoint = { 0 };
-        zVec3 localSegmentEnd = { 0 };
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            queryPoint = *segmentStart;
-            localSegmentEnd = *segmentEnd;
         } else {
-            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            const float startX = segmentStart->x - matrix->posX;
-            const float startY = segmentStart->y - matrix->posY;
-            const float startZ = segmentStart->z - matrix->posZ;
-            queryPoint.x = startX * matrix->xx + startY * matrix->xy + startZ * matrix->xz;
-            queryPoint.y = startX * matrix->yx + startY * matrix->yy + startZ * matrix->yz;
-            queryPoint.z = startX * matrix->zx + startY * matrix->zy + startZ * matrix->zz;
-
-            const float endX = segmentEnd->x - matrix->posX;
-            const float endY = segmentEnd->y - matrix->posY;
-            const float endZ = segmentEnd->z - matrix->posZ;
-            localSegmentEnd.x = endX * matrix->xx + endY * matrix->xy + endZ * matrix->xz;
-            localSegmentEnd.y = endX * matrix->yx + endY * matrix->yy + endZ * matrix->yz;
-            localSegmentEnd.z = endX * matrix->zx + endY * matrix->zy + endZ * matrix->zz;
+            vertices = faceData->baseVertices;
         }
 
-        {
-            for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-                const zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
-                const unsigned int flagsAndVertexCount = face->flagsAndVertexCount;
-                const unsigned int vertexCount = flagsAndVertexCount & 0xffu;
-                for (unsigned int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                    g_CZClass_DiFaceVertexScratch4[vertexIndex] = vertices[face->vertexIndices[vertexIndex]];
-                }
+        zVec3 segmentStartLocal;
+        zVec3 segmentEndLocal;
+        zVec2 outUv;
+        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
+            zMath::Vec3Subtract(
+                segmentStart,
+                (const zVec3*)(&((const zMat4x3*)(*zMath::g_currentMatrixPtrSlot))->posX),
+                &segmentStartLocal
+            );
+            ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE((const zMat4x3*)(*zMath::g_currentMatrixPtrSlot), &segmentStartLocal);
+            zMath::Vec3Subtract(
+                segmentEnd,
+                (const zVec3*)(&((const zMat4x3*)(*zMath::g_currentMatrixPtrSlot))->posX),
+                &segmentEndLocal
+            );
+            ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE((const zMat4x3*)(*zMath::g_currentMatrixPtrSlot), &segmentEndLocal);
+        } else {
+            segmentStartLocal = *segmentStart;
+            segmentEndLocal = *segmentEnd;
+        }
 
-                const int cullBackface = (int)((flagsAndVertexCount >> 8) & 1u);
-                int hit = 0;
-                if ((face->scenePayload->flags & kPickFaceTexturedDamageMaskFlag) != 0) {
-                    zVec2 outUv = { 0 };
-                    hit = BuildPickCandidateForSegmentVsPolygonWithUv(
-                        candidate,
-                        &queryPoint,
-                        &localSegmentEnd,
-                        g_CZClass_DiFaceVertexScratch4,
-                        face->faceUvData,
-                        &outUv,
-                        (int)(vertexCount),
-                        cullBackface
-                    );
-                } else {
-                    hit = BuildPickCandidateForSegmentVsPolygon(
-                        candidate,
-                        &queryPoint,
-                        &localSegmentEnd,
-                        g_CZClass_DiFaceVertexScratch4,
-                        (int)(vertexCount),
-                        cullBackface
-                    );
-                }
+        for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
+            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
+            zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
+            do {
+                *faceVertex++ = vertices[*vertexIndices++];
+            } while (--vertexCount != 0);
 
-                if (hit == 0) {
-                    continue;
-                }
+            const unsigned int flagsAndVertexCount = faceData->faces[faceIndex].flagsAndVertexCount;
+            int hit;
+            if ((faceData->faces[faceIndex].scenePayload->flags & kPickFaceTexturedDamageMaskFlag) != 0) {
+                hit = BuildPickCandidateForSegmentVsPolygonWithUv(
+                    candidate,
+                    &segmentStartLocal,
+                    &segmentEndLocal,
+                    g_CZClass_DiFaceVertexScratch4,
+                    faceData->faces[faceIndex].faceUvData,
+                    &outUv,
+                    (int)(flagsAndVertexCount & 0xffu),
+                    (int)((flagsAndVertexCount >> 8) & 1u)
+                );
+            } else {
+                hit = BuildPickCandidateForSegmentVsPolygon(
+                    candidate,
+                    &segmentStartLocal,
+                    &segmentEndLocal,
+                    g_CZClass_DiFaceVertexScratch4,
+                    (int)(flagsAndVertexCount & 0xffu),
+                    (int)((flagsAndVertexCount >> 8) & 1u)
+                );
+            }
 
-                candidate->scenePayload = face->scenePayload;
+            if (hit != 0) {
+                candidate->scenePayload = faceData->faces[faceIndex].scenePayload;
                 if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-                    const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-                    const zVec3 modelHitPos = candidate->hitPos;
-                    candidate->hitPos.x = modelHitPos.x * matrix->xx + modelHitPos.y * matrix->yx
-                        + modelHitPos.z * matrix->zx + matrix->posX;
-                    candidate->hitPos.y = modelHitPos.x * matrix->xy + modelHitPos.y * matrix->yy
-                        + modelHitPos.z * matrix->zy + matrix->posY;
-                    candidate->hitPos.z = modelHitPos.x * matrix->xz + modelHitPos.y * matrix->yz
-                        + modelHitPos.z * matrix->zz + matrix->posZ;
-
-                    const zVec3 modelNormal = candidate->surfaceNormal;
-                    candidate->surfaceNormal.x
-                        = modelNormal.x * matrix->xx + modelNormal.y * matrix->yx + modelNormal.z * matrix->zx;
-                    candidate->surfaceNormal.y
-                        = modelNormal.x * matrix->xy + modelNormal.y * matrix->yy + modelNormal.z * matrix->zy;
-                    candidate->surfaceNormal.z
-                        = modelNormal.x * matrix->xz + modelNormal.y * matrix->yz + modelNormal.z * matrix->zz;
+                    zMath::Vec3TransformPointInPlace(
+                        (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot),
+                        &candidate->hitPos
+                    );
+                    zMath::Vec3TransformDirectionInPlace(
+                        (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot),
+                        &candidate->surfaceNormal
+                    );
                 }
 
                 return 1;

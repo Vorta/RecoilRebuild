@@ -191,7 +191,7 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
     int uvCount
 );
 void __fastcall
-zModelRenderPointQueueEntry(const zVec3* pointPos, int packedColor16, zModel_PointEntryPartial* pointEntry);
+zModelRenderPointQueueEntry(const zVec3* pointPos, unsigned short packedColor16, zModel_PointEntryPartial* pointEntry);
 int __fastcall
 zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPackedFogColor, float fogBlendScale);
 void __fastcall

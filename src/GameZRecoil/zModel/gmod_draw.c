@@ -26,8 +26,6 @@
 
 namespace
 {
-    const double kVisibleContributionThreshold = 1.0 / 255.0;
-
 /**
  * Original source helper expression observed in zModel render point/lighting paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
@@ -44,12 +42,15 @@ namespace
             + currentMatrix->posZ;                                                                                     \
     } while (0)
 
+// Retail literal-pool double 0x3F70101029AA03B0, not the exact 1.0 / 255.0.
+#define kVisibleContributionThreshold 0.003921569
+
 /**
  * Original source helper expression observed in zModel render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
  * Purpose: test whether graphics option flag bit 0 is enabled.
  */
-#define ModelGraphicsFlagBit0Enabled() (gModel_pGraphicsFlags != 0 && ((*gModel_pGraphicsFlags & 1) != 0))
+#define ModelGraphicsFlagBit0Enabled() ((*gModel_pGraphicsFlags & 1) != 0)
 
 /**
  * Original inline expression observed in zModel point and software render
@@ -623,16 +624,6 @@ namespace
  */
 #define TruncateToInt(value) ((int)(value))
 
-/**
- * Original source helper expression observed in zModel_Display projected-sphere callers
- * (D:\Proj\GameZRecoil\zModel\zModel_Display.cpp).
- * Purpose: query whether the span occlusion buffer leaves a projected column visible.
- */
-#define TestSpanColumnVisible(columnIndex, isVisible)                                                                  \
-    do {                                                                                                               \
-        (isVisible) = 0;                                                                                               \
-        zRndrSpanOcclusionTestColumnVisibility((columnIndex), &(isVisible));                                           \
-    } while (0)
 } // namespace
 
 /**
@@ -714,67 +705,61 @@ namespace zModel
 namespace zMath
 {
     /**
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-draw-zmath-projectpointandclamptoscreenclip
+     * @recoil-artifact defines .text recoil:function:0x476480: zMath::ProjectPointAndClampToScreenClip.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+     *
+     *
      * Purpose: transforms one point through camera scratch B, projects it, and
      * clamps it to the active screen clip rectangle.
+     * Placement: retail places it between gmod_draw.c's 0x476470 and 0x4766a0.
      */
     int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* dstPoint)
     {
-        zMat4x3 slotBuffer = { 0 };
+        int result;
+        zMat4x3 slotBuffer;
         MatStackPushPtr((float*)(&slotBuffer));
         MatLoadCameraScratchB();
-
-        if (*g_currentMatrixIdentityFlagSlot != 0) {
-            *dstPoint = *srcPoint;
-        } else {
-            const zMat4x3* const matrix = (const zMat4x3*)(*g_currentMatrixPtrSlot);
-            dstPoint->x = srcPoint->x * matrix->xx + srcPoint->y * matrix->yx + srcPoint->z * matrix->zx + matrix->posX;
-            dstPoint->z = srcPoint->x * matrix->xz + srcPoint->y * matrix->yz + srcPoint->z * matrix->zz + matrix->posZ;
-            dstPoint->y = srcPoint->x * matrix->xy + srcPoint->y * matrix->yy + srcPoint->z * matrix->zy + matrix->posY;
-        }
-
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(srcPoint, dstPoint, 1);
         MatStackPopPtr();
 
-        if (dstPoint->z <= gClipRect_Primary.zMin) {
-            int result = 8;
-            if (-gClipRect_Primary.zMin <= dstPoint->z) {
-                dstPoint->z = gClipRect_Primary.zMin;
+        if (dstPoint->z > gClipRect_Primary.zMin) {
+            ProjectPointBatch(dstPoint, (zProjectedPoint*)(dstPoint), 1);
+
+            result = 0;
+            if (dstPoint->x < g_zVideo_ProjectClipLeft) {
+                dstPoint->x = g_zVideo_ProjectClipLeft;
+                result = 1;
+            } else if (dstPoint->x > g_zVideo_ProjectClipRight) {
+                dstPoint->x = g_zVideo_ProjectClipRight;
+                result = 2;
+            }
+
+            if (dstPoint->y < g_zVideo_ProjectClipTop) {
+                dstPoint->y = g_zVideo_ProjectClipTop;
+                result = 4;
+            } else if (dstPoint->y >= g_zVideo_ProjectClipBottom) {
+                dstPoint->y = g_zVideo_ProjectClipBottom - 1.0f;
+                result = 8;
+            }
+        } else {
+            result = 8;
+            if (-gClipRect_Primary.zMin > dstPoint->z) {
+                dstPoint->z *= -1.0f;
             } else {
-                dstPoint->z = -dstPoint->z;
+                dstPoint->z = gClipRect_Primary.zMin;
             }
 
             ProjectPointBatch(dstPoint, (zProjectedPoint*)(dstPoint), 1);
+            dstPoint->y = g_zVideo_ProjectClipBottom;
             if (dstPoint->x < -5000.0f) {
                 dstPoint->x = -5000.0f;
-            } else if (dstPoint->x > 5000.0f) {
+            } else if (dstPoint->x >= 5000.0f) {
                 dstPoint->x = 5000.0f;
             }
-
-            dstPoint->y = g_zVideo_ProjectClipBottom;
-            dstPoint->x = (dstPoint->x + g_zVideo_ProjectClipLeft + 5000.0f)
-                / (10000.0f / (gClipRect_Primary.xMaxAlt - g_zVideo_ProjectClipLeft));
-            return result;
+            dstPoint->x = (dstPoint->x + g_zVideo_ProjectClipLeft - -5000.0f)
+                / ((5000.0f - -5000.0f) / (gClipRect_Primary.xMaxAlt - g_zVideo_ProjectClipLeft));
         }
-
-        ProjectPointBatch(dstPoint, (zProjectedPoint*)(dstPoint), 1);
-
-        int result = 0;
-        if (dstPoint->x < g_zVideo_ProjectClipLeft) {
-            dstPoint->x = g_zVideo_ProjectClipLeft;
-            result = 1;
-        } else if (dstPoint->x > g_zVideo_ProjectClipRight) {
-            dstPoint->x = g_zVideo_ProjectClipRight;
-            result = 2;
-        }
-
-        if (dstPoint->y < g_zVideo_ProjectClipTop) {
-            dstPoint->y = g_zVideo_ProjectClipTop;
-            return 4;
-        }
-        if (dstPoint->y >= g_zVideo_ProjectClipBottom) {
-            dstPoint->y = g_zVideo_ProjectClipBottom - 1.0f;
-            return 8;
-        }
-
         return result;
     }
 } // namespace zMath
@@ -808,23 +793,19 @@ namespace zScene
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zscene-testprojectedspherevisible
      * @recoil-artifact defines .text recoil:function:0x476700: zScene::TestProjectedSphereVisible
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
      * Purpose: project a bounding sphere and test representative span-buffer columns for visibility.
      */
     int __fastcall TestProjectedSphereVisible(zVec3 * center, float radius)
     {
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
 
-        zVec3 viewPoint = *center;
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            viewPoint.x = center->x * matrix->xx + center->y * matrix->yx + center->z * matrix->zx + matrix->posX;
-            viewPoint.y = center->x * matrix->xy + center->y * matrix->yy + center->z * matrix->zy + matrix->posY;
-            viewPoint.z = center->x * matrix->xz + center->y * matrix->yz + center->z * matrix->zz + matrix->posZ;
-        }
+        zVec3 viewPoint;
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(center, &viewPoint, 1);
         zMath::MatStackPopPtr();
 
         const float depthMinusRadius = viewPoint.z - radius;
@@ -832,7 +813,7 @@ namespace zScene
             return 1;
         }
 
-        zProjectedPoint projectedPoint = { 0 };
+        zProjectedPoint projectedPoint;
         zMath::ProjectPointBatch(&viewPoint, &projectedPoint, 1);
         const zVec2 screenScale = zMathProjectGetLastScreenScaleXY();
         const int projectedRadius = TruncateToInt((screenScale.x * radius) / depthMinusRadius);
@@ -851,27 +832,26 @@ namespace zScene
             return 0;
         }
 
-        const int centerY = TruncateToInt(projectedPoint.y);
-        int columnMin = centerY - projectedRadius;
-        if (gClipRect_Primary.yMax - 2.0f < (float)(columnMin)) {
+        // The center row is reused as the middle sample row below.
+        int midColumn = TruncateToInt(projectedPoint.y);
+        int columnMin = midColumn - projectedRadius;
+        if ((float)(columnMin) > gClipRect_Primary.yMax - 2.0f) {
             return 0;
         }
 
-        int columnMax = centerY + projectedRadius;
+        int columnMax = midColumn + projectedRadius;
         if ((float)(columnMax) <= gClipRect_Primary.yMin) {
             return 0;
         }
 
         const int clipXMin = TruncateToInt(gClipRect_Primary.xMin);
-        if (clipXMin > zRndr::g_spanAllocCursor->sampleXMin) {
-            zRndr::g_spanAllocCursor->sampleXMin = clipXMin;
-        }
+        zRndr::g_spanAllocCursor->sampleXMin
+            = clipXMin > zRndr::g_spanAllocCursor->sampleXMin ? clipXMin : zRndr::g_spanAllocCursor->sampleXMin;
 
         const int savedSampleXMin = zRndr::g_spanAllocCursor->sampleXMin;
         const int clipXMax = TruncateToInt(gClipRect_Primary.xMax - 2.0f);
-        if (clipXMax < zRndr::g_spanAllocCursor->sampleXMax) {
-            zRndr::g_spanAllocCursor->sampleXMax = clipXMax;
-        }
+        zRndr::g_spanAllocCursor->sampleXMax
+            = clipXMax < zRndr::g_spanAllocCursor->sampleXMax ? clipXMax : zRndr::g_spanAllocCursor->sampleXMax;
 
         zRndr::g_spanAllocCursor->invDepth = 1.0f / depthMinusRadius;
         zRndr::g_spanAllocCursor->invDepthStep = zRndr::g_spanAllocCursor->invDepth;
@@ -883,7 +863,7 @@ namespace zScene
         }
 
         int isVisible;
-        TestSpanColumnVisible(columnMin, isVisible);
+        zRndrSpanOcclusionTestColumnVisibility(columnMin, &isVisible);
         if (isVisible > 0) {
             return 1;
         }
@@ -894,27 +874,27 @@ namespace zScene
         }
 
         zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-        TestSpanColumnVisible(columnMax, isVisible);
+        zRndrSpanOcclusionTestColumnVisibility(columnMax, &isVisible);
         if (isVisible > 0) {
             return 1;
         }
 
         const int columnDelta = columnMax - columnMin;
-        if (columnDelta <= 1) {
+        if (columnDelta > 1) {
+            midColumn = (columnDelta >> 1) + columnMin;
+            zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
+            zRndrSpanOcclusionTestColumnVisibility(midColumn, &isVisible);
+            if (isVisible > 0) {
+                return 1;
+            }
+        } else if (columnDelta < 16) {
             return 0;
-        }
-
-        int midColumn = (columnDelta >> 1) + columnMin;
-        zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-        TestSpanColumnVisible(midColumn, isVisible);
-        if (isVisible > 0) {
-            return 1;
         }
 
         int columnIndex;
         for (columnIndex = midColumn - 8; columnIndex > columnMin; columnIndex -= 8) {
             zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-            TestSpanColumnVisible(columnIndex, isVisible);
+            zRndrSpanOcclusionTestColumnVisibility(columnIndex, &isVisible);
             if (isVisible > 0) {
                 return 1;
             }
@@ -922,7 +902,7 @@ namespace zScene
 
         for (columnIndex = midColumn + 8; columnIndex < columnMax; columnIndex += 8) {
             zRndr::g_spanAllocCursor->sampleXMin = savedSampleXMin;
-            TestSpanColumnVisible(columnIndex, isVisible);
+            zRndrSpanOcclusionTestColumnVisibility(columnIndex, &isVisible);
             if (isVisible > 0) {
                 return 1;
             }
@@ -937,6 +917,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zdi-evalboundingspherelightingflags
      * @recoil-artifact defines .text recoil:function:0x476a50: zDi::EvalBoundingSphereLightingFlags
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
      * Purpose: evaluate fog, active-light, and lens-flare visibility flags for a display instance.
@@ -948,10 +929,8 @@ namespace zDi
         int* outLensFlareVisible
     )
     {
-        zVec3 mappedPoint = self->bboxCenter;
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            TransformPointByCurrentMatrix(&self->bboxCenter, mappedPoint);
-        }
+        zVec3 mappedPoint;
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(&self->bboxCenter, &mappedPoint, 1);
 
         if (gModel_FogEnabled != 0 && (self->flags & 2) != 0
             && zModel_Light::EvalSphereFogFade(&mappedPoint, self->bboxRadius) > kVisibleContributionThreshold) {
@@ -960,13 +939,14 @@ namespace zDi
             *outDepthFade = 0;
         }
 
-        int activeLightContributionCount = 0;
+        int activeLightContributionCount;
         if (ModelGraphicsFlagBit0Enabled()) {
             if (gModel_HasActiveLights != 0 && (self->flags & 1) != 0) {
                 activeLightContributionCount = zModel_Light::PointInPolygonTestRadiusXZ(&mappedPoint, self->bboxRadius);
                 *outActiveLightState = activeLightContributionCount > 0 ? 1 : 0;
             } else {
-                *outActiveLightState = 0;
+                activeLightContributionCount = 0;
+                *outActiveLightState = activeLightContributionCount;
             }
 
             if (g_zModel_FogTargetColorOverride.weight > kVisibleContributionThreshold) {
@@ -974,54 +954,57 @@ namespace zDi
                 *outActiveLightState = 1;
             }
         } else {
-            *outActiveLightState = 0;
+            activeLightContributionCount = 0;
+            *outActiveLightState = activeLightContributionCount;
         }
 
-        if (activeLightContributionCount <= 1) {
+        if (activeLightContributionCount > 1) {
+            float invTotalWeight;
+            zColorRgb fogColorRgb01;
+            fogColorRgb01.blue = 0.0f;
+            fogColorRgb01.green = 0.0f;
+            fogColorRgb01.red = 0.0f;
+            float totalWeight = 0.0f;
+            float maxWeight = 0.0f;
+
+            zModel_ActiveLightEntryLive* entry = gModel_ActiveLights;
+            for (int i = 0; i < gModel_ActiveLightCount; ++i, ++entry) {
+                if (entry->contributesToLighting == 0) {
+                    continue;
+                }
+
+                if (g_zModel_SoftwarePathActive != 0 && entry->light->isDirectedSource != 0) {
+                    continue;
+                }
+
+                CZLightDataPartial* light = entry->light;
+                fogColorRgb01.red += light->specularColor.red * g_Clip_PolyAttr0[i];
+                fogColorRgb01.green += light->specularColor.green * g_Clip_PolyAttr0[i];
+                fogColorRgb01.blue += light->specularColor.blue * g_Clip_PolyAttr0[i];
+                totalWeight += g_Clip_PolyAttr0[i];
+                if (maxWeight < g_Clip_PolyAttr0[i]) {
+                    maxWeight = g_Clip_PolyAttr0[i];
+                }
+            }
+
+            (void)maxWeight;
+
+            if (g_zModel_FogTargetColorOverride.weight > kVisibleContributionThreshold) {
+                fogColorRgb01.red += g_zModel_FogTargetColorOverride.colorRgb01.red;
+                fogColorRgb01.green += g_zModel_FogTargetColorOverride.colorRgb01.green;
+                fogColorRgb01.blue += g_zModel_FogTargetColorOverride.colorRgb01.blue;
+                totalWeight += g_zModel_FogTargetColorOverride.weight;
+            }
+
+            invTotalWeight = 1.0f / totalWeight;
+            fogColorRgb01.red *= invTotalWeight;
+            fogColorRgb01.green *= invTotalWeight;
+            fogColorRgb01.blue *= invTotalWeight;
+            zRndr::SetFogTargetColorRgb01Clamped(&fogColorRgb01);
+            *outLensFlareVisible = 1;
+        } else {
             *outLensFlareVisible = 0;
-            return;
         }
-
-        zColorRgb fogColorRgb01 = { 0 };
-        float totalWeight = 0.0f;
-        float maxWeight = 0.0f;
-
-        for (int i = 0; i < gModel_ActiveLightCount; ++i) {
-            zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[i];
-            if (entry.contributesToLighting == 0) {
-                continue;
-            }
-
-            CZLightDataPartial* light = entry.light;
-            if (g_zModel_SoftwarePathActive != 0 && light->isDirectedSource != 0) {
-                continue;
-            }
-
-            const float weight = g_Clip_PolyAttr0[i];
-            fogColorRgb01.red += light->specularColor.red * weight;
-            fogColorRgb01.green += light->specularColor.green * weight;
-            fogColorRgb01.blue += light->specularColor.blue * weight;
-            totalWeight += weight;
-            if (maxWeight < weight) {
-                maxWeight = weight;
-            }
-        }
-
-        (void)maxWeight;
-
-        if (g_zModel_FogTargetColorOverride.weight > kVisibleContributionThreshold) {
-            fogColorRgb01.red += g_zModel_FogTargetColorOverride.colorRgb01.red;
-            fogColorRgb01.green += g_zModel_FogTargetColorOverride.colorRgb01.green;
-            fogColorRgb01.blue += g_zModel_FogTargetColorOverride.colorRgb01.blue;
-            totalWeight += g_zModel_FogTargetColorOverride.weight;
-        }
-
-        const float invTotalWeight = 1.0f / totalWeight;
-        fogColorRgb01.red *= invTotalWeight;
-        fogColorRgb01.green *= invTotalWeight;
-        fogColorRgb01.blue *= invTotalWeight;
-        zRndr::SetFogTargetColorRgb01Clamped(&fogColorRgb01);
-        *outLensFlareVisible = 1;
     }
 } // namespace zDi
 
@@ -2060,23 +2043,24 @@ int __fastcall zModelInstanceUpdateScrollingTexturesIfNeeded(zModel_InstancePart
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-renderpointqueueentry
  * @recoil-artifact defines .text recoil:function:0x479020: zModelRenderPointQueueEntry
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  *
  *
  * Purpose: project and submit one display-instance point/lens-flare queue entry.
+ * Retail note: the lens-flare test takes the address of lensFlareEnabled
+ * (lea/test), not its value; it is preserved as recovered, not cleaned up.
  */
 void __fastcall
-zModelRenderPointQueueEntry(const zVec3* pointPos, int packedColor16, zModel_PointEntryPartial* pointEntry)
+zModelRenderPointQueueEntry(const zVec3* pointPos, unsigned short packedColor16, zModel_PointEntryPartial* pointEntry)
 {
-    zVec3 transformedPoint = *pointPos;
-    if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-        TransformPointByCurrentMatrix(pointPos, transformedPoint);
-    }
+    zVec3 transformedPoint;
+    ZMTH_MAT_TRANSFORM_POINT_BATCH(pointPos, &transformedPoint, 1);
 
     if (transformedPoint.z <= gClipRect_Primary.zMin) {
         return;
     }
 
-    zProjectedPoint projectedPoint = { 0 };
+    zProjectedPoint projectedPoint;
     if (g_zVideo_ActiveRendererPath != 0) {
         zMathProjectSphereBatch(&transformedPoint, (zProjectedSphere*)(&projectedPoint), 1);
     } else {
@@ -2087,18 +2071,17 @@ zModelRenderPointQueueEntry(const zVec3* pointPos, int packedColor16, zModel_Poi
         return;
     }
 
-    const int color16 = packedColor16 & 0xffff;
-    const int source = (int)((int)(&pointEntry->lensFlareSource[0]));
-    if (g_zVideo_ActiveRendererPath == 0) {
-        zRndrLensFlareQueueProjectedSample(&projectedPoint, color16, source);
-        return;
+    if (g_zVideo_ActiveRendererPath != 0) {
+        const int depthBias = (short)(pointEntry->depthBiasWord & 0xffff);
+        projectedPoint.reciprocalZ
+            = (((float)(depthBias)*g_zRndr_InverseZTolerance) + 1.0f) * projectedPoint.reciprocalZ;
+        g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), packedColor16, 1);
+        if (&((zRndr_LensFlareSource*)pointEntry->lensFlareSource)->lensFlareEnabled != 0) {
+            zRndrLensFlareQueueProjectedSample(&projectedPoint, packedColor16, (int)(&pointEntry->lensFlareSource[0]));
+        }
+    } else {
+        zRndrLensFlareQueueProjectedSample(&projectedPoint, packedColor16, (int)(&pointEntry->lensFlareSource[0]));
     }
-
-    const int depthBias = (short)(pointEntry->depthBiasWord & 0xffff);
-    projectedPoint.reciprocalZ = (((float)(depthBias)*g_zRndr_InverseZTolerance) + 1.0f) * projectedPoint.reciprocalZ;
-
-    g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), (unsigned int)(color16), 1);
-    zRndrLensFlareQueueProjectedSample(&projectedPoint, color16, source);
 }
 
 /**

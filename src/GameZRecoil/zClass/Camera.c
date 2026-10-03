@@ -1101,7 +1101,7 @@ namespace CZCamera
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-negate
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-length
-     *
+     * @recoil-match byte
      *
      * Purpose: build the camera world transform and update the zSound
      * listener bridge previous-position state.
@@ -1951,7 +1951,7 @@ namespace CZLod
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-length-sq
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.fast-sqrt-estimate
-     *
+     * @recoil-match byte
      *
      * Purpose: cull and render an LOD node, applying range, scale, alpha, and
      * vertex-alpha fades while maintaining the render traversal stacks.

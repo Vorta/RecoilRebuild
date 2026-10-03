@@ -318,7 +318,8 @@ namespace CZSound
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.sound.zclass-sound-computeworldtransform
      * @recoil-artifact defines .text recoil:function:0x452ec0: CZSound::ComputeWorldTransform
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+     * @recoil-match byte
      *
      * Purpose: build the node-to-world matrix and cache the sound emitter's
      * world position in sound runtime data.
@@ -327,22 +328,13 @@ namespace CZSound
     int __fastcall ComputeWorldTransform(CZNodePartial * node, CZSoundDataPartial * soundData)
     {
         zVec3 localPoint = { 0.0f, 0.0f, 0.0f };
-        zMat4x3 slotBuffer = { 0 };
+        zVec3 worldPoint;
+        zMat4x3 slotBuffer;
 
         zMath::MatStackPushPtr((float*)(&slotBuffer));
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
-
-        zVec3 worldPoint = localPoint;
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            worldPoint.x
-                = localPoint.x * matrix->xx + localPoint.y * matrix->yx + localPoint.z * matrix->zx + matrix->posX;
-            worldPoint.z
-                = localPoint.x * matrix->xz + localPoint.y * matrix->yz + localPoint.z * matrix->zz + matrix->posZ;
-            worldPoint.y
-                = localPoint.x * matrix->xy + localPoint.y * matrix->yy + localPoint.z * matrix->zy + matrix->posY;
-        }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(&localPoint, &worldPoint, 1);
 
         soundData->worldPos = worldPoint;
         zMath::MatStackPopPtr();

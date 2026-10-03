@@ -2114,54 +2114,46 @@ namespace CZNode
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.getworldposandorientation
      * @recoil-artifact defines .text recoil:function:0x4498e0: CZNode::GetWorldPosAndOrientation.
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+     * @recoil-match byte
      *
      * Purpose: compute a node world position and derive orientation angles
      * from transformed basis points.
      */
     int __fastcall GetWorldPosAndOrientation(CZNodePartial * node, zVec3 * inOutPosition, zVec3 * outOrientation)
     {
-        zVec3 localOrientationBasis[2] = { { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } };
+        // Retail zero-fills a third point after the two basis directions; only the first two are transformed.
+        zVec3 localPoints[3] = { { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f, 0.0f } };
+        zVec3 worldPoints[3]; // world position, then the two transformed basis points
+        zMat4x3 matrix;
 
-        if (node == 0) {
-            return 1;
-        }
+        if (node != 0) {
+            zMath::MatStackPushPtr((float*)(&matrix));
+            zMath::MatLoadIdentity();
+            gwNodeBuildNodeToAncestorMatrix(node, 1);
 
-        zMat4x3 matrix = { 0 };
-        zMath::MatStackPushPtr((float*)(&matrix));
-        zMath::MatLoadIdentity();
-        gwNodeBuildNodeToAncestorMatrix(node, 1);
-
-        if (inOutPosition->x == 0.0f && inOutPosition->y == 0.0f && inOutPosition->z == 0.0f) {
-            inOutPosition->x = matrix.posX;
-            inOutPosition->y = matrix.posY;
-            inOutPosition->z = matrix.posZ;
-        } else {
-            zMath::MatTransformPointBatchInPlace(inOutPosition, 1);
-        }
-
-        zVec3 worldPosition = { matrix.posX, matrix.posY, matrix.posZ };
-        zVec3 worldOrientationBasis[2];
-        memcpy(worldOrientationBasis, localOrientationBasis, sizeof(worldOrientationBasis));
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3* currentMatrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int i = 0; i < 2; ++i) {
-                const zVec3 point = localOrientationBasis[i];
-                worldOrientationBasis[i].x = point.x * currentMatrix->xx + point.y * currentMatrix->yx
-                    + point.z * currentMatrix->zx + currentMatrix->posX;
-                worldOrientationBasis[i].y = point.x * currentMatrix->xy + point.y * currentMatrix->yy
-                    + point.z * currentMatrix->zy + currentMatrix->posY;
-                worldOrientationBasis[i].z = point.x * currentMatrix->xz + point.y * currentMatrix->yz
-                    + point.z * currentMatrix->zz + currentMatrix->posZ;
+            if (inOutPosition->x == 0.0f && inOutPosition->y == 0.0f && inOutPosition->z == 0.0f) {
+                inOutPosition->x = matrix.posX;
+                inOutPosition->y = matrix.posY;
+                inOutPosition->z = matrix.posZ;
+            } else {
+                zMath::MatTransformPointBatchInPlace(inOutPosition, 1);
             }
+
+            worldPoints[0].x = matrix.posX;
+            worldPoints[0].y = matrix.posY;
+            worldPoints[0].z = matrix.posZ;
+            ZMTH_MAT_TRANSFORM_POINT_BATCH(localPoints, &worldPoints[1], 2);
+
+            zMath::MatLoadIdentity();
+            *outOrientation = zMath::Vec3DirectionAnglesBetweenPoints(&worldPoints[0], &worldPoints[1]);
+            outOrientation->z = zMathVec3ElevationAngleBetweenPoints(&worldPoints[0], &worldPoints[2]);
+
+            zMath::MatStackPopPtr();
+            return 0;
         }
 
-        zMath::MatLoadIdentity();
-        *outOrientation = zMath::Vec3DirectionAnglesBetweenPoints(&worldPosition, &worldOrientationBasis[0]);
-        outOrientation->z = zMathVec3ElevationAngleBetweenPoints(&worldPosition, &worldOrientationBasis[1]);
-
-        zMath::MatStackPopPtr();
-        return 0;
+        return 1;
     }
 }
 

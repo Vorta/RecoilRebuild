@@ -352,25 +352,33 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildpendingcontactqueues
  * @recoil-artifact defines .text recoil:function:0x4236b0: Player::BuildPendingContactQueues.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement Player::BuildPendingContactQueues from the recovered
- * Battlesport gameplay source file.
+ * Purpose: enable probe segments from the local velocity and yaw rate,
+ * transform the modal probe points by the motion basis and previous
+ * transform, and queue contacts for the enabled root/modal segments.
+ * Data: segment endpoints are stored as a flat point list counted per
+ * endpoint (retail advances the point and .y induction pointers by 12 per
+ * endpoint and passes the endpoint count directly); tags stay per segment.
  */
 void __fastcall BuildPendingContactQueues(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
     int enabledSegmentFlags[15];
+    zVec3 segmentPoints[30];
+    int segmentTags[15];
 
-    const float localVelLengthSq = playerState->localVel.x * playerState->localVel.x
-        + playerState->localVel.y * playerState->localVel.y + playerState->localVel.z * playerState->localVel.z;
+    float localVelLengthSq;
+    ZMTH_VECTOR_LENGTH_SQ(localVelLengthSq, &playerState->localVel);
     playerState->noPendingContactsQueued = 1;
     memset(enabledSegmentFlags, 0, sizeof(enabledSegmentFlags));
 
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-        if (fabs(playerState->angVelYaw) > 0.0f) {
+        if ((float)fabs(playerState->angVelYaw) > 0.0f) {
             EnableContactSegment(enabledSegmentFlags, 0);
             EnableContactSegment(enabledSegmentFlags, 1);
             EnableContactSegment(enabledSegmentFlags, 2);
@@ -378,7 +386,7 @@ void __fastcall BuildPendingContactQueues(zUtil_SaveGameState* saveState)
             EnableContactSegment(enabledSegmentFlags, 4);
             EnableContactSegment(enabledSegmentFlags, 5);
         }
-    } else if (fabs(playerState->localVel.z) < fabs(playerState->angVelYaw * 3.29999995f)) {
+    } else if ((float)fabs(playerState->angVelYaw * 3.29999995f) > (float)fabs(playerState->localVel.z)) {
         EnableContactSegment(enabledSegmentFlags, 0);
         EnableContactSegment(enabledSegmentFlags, 1);
         EnableContactSegment(enabledSegmentFlags, 2);
@@ -420,64 +428,68 @@ void __fastcall BuildPendingContactQueues(zUtil_SaveGameState* saveState)
         }
     }
 
+    int pointCount = 0;
     for (int probeIndex = 0; probeIndex < masterModalData->probePointCount; ++probeIndex) {
-        PLAYER_TRANSFORM_POINT_BY_MATRIX(
-            playerState->modalProbeWorldByIndex[probeIndex],
-            masterModalData->probePoints[probeIndex],
-            playerState->motionBasis
+        ZMTH_VECTOR_TRANSFORM_POINT(
+            &playerState->motionBasis,
+            &playerState->modalProbeWorldByIndex[probeIndex],
+            &masterModalData->probePoints[probeIndex]
         );
-        PLAYER_TRANSFORM_POINT_BY_MATRIX(
-            playerState->rootProbeWorldByIndex[probeIndex],
-            masterModalData->probePoints[probeIndex],
-            playerState->previousTransform
+        ZMTH_VECTOR_TRANSFORM_POINT(
+            &playerState->previousTransform,
+            &playerState->rootProbeWorldByIndex[probeIndex],
+            &masterModalData->probePoints[probeIndex]
         );
     }
 
-    CZDisplayInstanceSegmentEndpoints segmentPairs[15];
-    int segmentTags[15];
     int segmentCount = 0;
-    const float probeYAdvance = playerState->projectileSpawnVel.y * g_Player_DeltaTime;
-
     for (int i = 0; i < 15; ++i) {
         if (enabledSegmentFlags[i] == 0) {
             continue;
         }
 
-        segmentTags[segmentCount] = i;
-        zVec3* const modalPoint = &playerState->modalProbeWorldByIndex[i];
+        segmentTags[segmentCount++] = i;
         zVec3* const rootPoint = &playerState->rootProbeWorldByIndex[i];
+        zVec3* const modalPoint = &playerState->modalProbeWorldByIndex[i];
         ConstrainToUnitDistanceFrom(rootPoint, modalPoint);
-        segmentPairs[segmentCount].start = *rootPoint;
-        segmentPairs[segmentCount].end = *modalPoint;
-        segmentPairs[segmentCount].end.y += probeYAdvance;
-        ++segmentCount;
+        segmentPoints[pointCount++] = *rootPoint;
+        segmentPoints[pointCount] = *modalPoint;
+        segmentPoints[pointCount].y += playerState->projectileSpawnVel.y * g_Player_DeltaTime;
+        pointCount++;
     }
 
-    if (segmentCount != 0) {
-        playerState->noPendingContactsQueued
-            = CollectPendingContactsForSegments(saveState, segmentPairs, segmentCount * 2, segmentTags);
+    if (pointCount != 0) {
+        playerState->noPendingContactsQueued = CollectPendingContactsForSegments(
+            saveState,
+            (CZDisplayInstanceSegmentEndpoints*)segmentPoints,
+            pointCount,
+            segmentTags
+        );
     }
 
     if (masterModalData->masterType != kPlayerMasterTypeSub) {
         return;
     }
 
-    segmentCount = 0;
+    pointCount = 0;
     for (int subSegmentIndex = 0; subSegmentIndex < 15; ++subSegmentIndex) {
         if (enabledSegmentFlags[subSegmentIndex] == 0) {
             continue;
         }
 
-        segmentPairs[segmentCount].start = playerState->rootProbeWorldByIndex[subSegmentIndex];
-        segmentPairs[segmentCount].start.y -= -3.0f;
-        segmentPairs[segmentCount].end = playerState->modalProbeWorldByIndex[subSegmentIndex];
-        segmentPairs[segmentCount].end.y += probeYAdvance - -3.0f;
-        ++segmentCount;
+        segmentPoints[pointCount] = playerState->rootProbeWorldByIndex[subSegmentIndex];
+        segmentPoints[pointCount++].y -= -3.0f;
+        segmentPoints[pointCount] = playerState->modalProbeWorldByIndex[subSegmentIndex];
+        segmentPoints[pointCount++].y += playerState->projectileSpawnVel.y * g_Player_DeltaTime - -3.0f;
     }
 
-    if (segmentCount != 0) {
-        playerState->noPendingContactsQueued
-            = CollectPendingContactsForSegments(saveState, segmentPairs, segmentCount * 2, segmentTags);
+    if (pointCount != 0) {
+        playerState->noPendingContactsQueued = CollectPendingContactsForSegments(
+            saveState,
+            (CZDisplayInstanceSegmentEndpoints*)segmentPoints,
+            pointCount,
+            segmentTags
+        );
     }
 }
 } // namespace Player
@@ -1224,52 +1236,75 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcollisioncontactsforquadprobe
  * @recoil-artifact defines .text recoil:function:0x4251f0: Player::CollectPendingCollisionContactsForQuadProbe.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
- * Purpose: reimplement Player::CollectPendingCollisionContactsForQuadProbe from the recovered
- * Battlesport gameplay source file.
+ * Purpose: raise the four quad probe points, transform them by the motion
+ * basis and collect contacts along the quad edges.
+ * Data: retail builds eight segments but passes twelve endpoints, so only
+ * the first six are probed; the 0x140-byte frame holds sixteen tag slots
+ * below the eight segment pairs, and the zero result flag is stored and
+ * reloaded on the empty-queue return.
  */
 int __fastcall CollectPendingCollisionContactsForQuadProbe(zUtil_SaveGameState* saveState, float expandRadius)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     const PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
+    int hasContacts = 0;
+    zVec3 probePoints[4];
+    CZDisplayInstanceSegmentEndpoints segmentPairs[8];
+    int segmentTags[16];
 
     ClearPendingContactQueues(saveState);
 
-    enum { kQuadProbePointCount = 4, kQuadProbeSegmentCount = 6 };
+    probePoints[0] = masterModalData->probePoints[0];
+    probePoints[0].y += expandRadius;
+    probePoints[1] = masterModalData->probePoints[2];
+    probePoints[1].y += expandRadius;
+    probePoints[2] = masterModalData->probePoints[3];
+    probePoints[2].y += expandRadius;
+    probePoints[3] = masterModalData->probePoints[5];
+    probePoints[3].y += expandRadius;
 
-    const int probeIndices[kQuadProbePointCount] = { 0, 2, 3, 5 };
-    for (int i = 0; i < kQuadProbePointCount; ++i) {
-        zVec3 probePoint = masterModalData->probePoints[probeIndices[i]];
-        probePoint.y += expandRadius;
-        PLAYER_TRANSFORM_POINT_BY_MATRIX(
-            playerState->modalProbeWorldByIndex[probeIndices[i]],
-            probePoint,
-            playerState->motionBasis
-        );
-    }
+    ZMTH_VECTOR_TRANSFORM_POINT(&playerState->motionBasis, &playerState->modalProbeWorldByIndex[0], &probePoints[0]);
+    ZMTH_VECTOR_TRANSFORM_POINT(&playerState->motionBasis, &playerState->modalProbeWorldByIndex[2], &probePoints[1]);
+    ZMTH_VECTOR_TRANSFORM_POINT(&playerState->motionBasis, &playerState->modalProbeWorldByIndex[3], &probePoints[2]);
+    ZMTH_VECTOR_TRANSFORM_POINT(&playerState->motionBasis, &playerState->modalProbeWorldByIndex[5], &probePoints[3]);
 
-    CZDisplayInstanceSegmentEndpoints segmentPairs[kQuadProbeSegmentCount];
-    int segmentTags[kQuadProbeSegmentCount] = { 0, 1, 2, 3, 4, 5 };
     segmentPairs[0].start = playerState->modalProbeWorldByIndex[0];
     segmentPairs[0].end = playerState->modalProbeWorldByIndex[2];
+    segmentTags[0] = 0;
     segmentPairs[1].start = playerState->modalProbeWorldByIndex[2];
     segmentPairs[1].end = playerState->modalProbeWorldByIndex[0];
+    segmentTags[1] = 1;
     segmentPairs[2].start = playerState->modalProbeWorldByIndex[2];
     segmentPairs[2].end = playerState->modalProbeWorldByIndex[3];
+    segmentTags[2] = 2;
     segmentPairs[3].start = playerState->modalProbeWorldByIndex[3];
     segmentPairs[3].end = playerState->modalProbeWorldByIndex[2];
+    segmentTags[3] = 3;
     segmentPairs[4].start = playerState->modalProbeWorldByIndex[3];
     segmentPairs[4].end = playerState->modalProbeWorldByIndex[5];
+    segmentTags[4] = 4;
     segmentPairs[5].start = playerState->modalProbeWorldByIndex[5];
     segmentPairs[5].end = playerState->modalProbeWorldByIndex[3];
+    segmentTags[5] = 5;
+    segmentPairs[6].start = playerState->modalProbeWorldByIndex[5];
+    segmentPairs[6].end = playerState->modalProbeWorldByIndex[0];
+    segmentTags[6] = 6;
+    segmentPairs[7].start = playerState->modalProbeWorldByIndex[0];
+    segmentPairs[7].end = playerState->modalProbeWorldByIndex[5];
+    segmentTags[7] = 7;
 
-    CollectPendingContactsForSegments(saveState, segmentPairs, kQuadProbeSegmentCount * 2, segmentTags);
+    CollectPendingContactsForSegments(saveState, segmentPairs, 12, segmentTags);
 
     PLAYER_MOVE_TRANSFER_CONTACTS_TO_PREFERRED_COLLISION(playerState);
 
-    return playerState->preferredCollisionQueue.count != 0 || playerState->playerCollisionQueue.count != 0 ? 1 : 0;
+    if (playerState->preferredCollisionQueue.count != 0 || playerState->playerCollisionQueue.count != 0) {
+        hasContacts = 1;
+    }
+    return hasContacts;
 }
 } // namespace Player
 namespace Player {

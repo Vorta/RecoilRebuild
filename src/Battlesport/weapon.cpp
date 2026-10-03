@@ -1900,10 +1900,20 @@ void __fastcall UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePart
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimdirection
  * @recoil-artifact defines .text recoil:function:0x43a600: Player::UpdateAltGunAimDirection
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.update-alt-gun-aim.fast-exp-bits recoil:function:0x43a600
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.update-alt-gun-aim.fast-exp-bits
  *
  *
  * Purpose: update the smoothed alternate gun aim direction and final gun-fire
  * vector from the current target and aim basis.
+ * Raw assembly: one in-body 11-byte FastExp bit-construction island at retail
+ * [0x43a845,0x43a850); VC5SP3 /Ob0 cannot expand the inline zMath::FastExp
+ * here and the recorded C formulations failed. Address-specific exception
+ * reviewed 2026-10-03; fresh governed proof remains mandatory.
  */
 void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
 {
@@ -1917,18 +1927,8 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
     BuildGunFireTransform(saveState);
     UpdateAltGunAimBasisOrigin(saveState, &playerState->aimBasisOrigin);
 
-    zVec3 aimDirection = { 0 };
-    aimDirection.x = playerState->storedTargetPos.x - playerState->aimBasisOrigin.x;
-    aimDirection.y = playerState->storedTargetPos.y - playerState->aimBasisOrigin.y;
-    aimDirection.z = playerState->storedTargetPos.z - playerState->aimBasisOrigin.z;
-
-    const float aimLength = (float)(sqrt(
-        aimDirection.x * aimDirection.x + aimDirection.y * aimDirection.y + aimDirection.z * aimDirection.z
-    ));
-    const float invAimLength = 1.0f / aimLength;
-    aimDirection.x *= invAimLength;
-    aimDirection.y *= invAimLength;
-    aimDirection.z *= invAimLength;
+    zVec3 aimDirection;
+    ZMTH_VECTOR_DIRECTION(&aimDirection, &playerState->aimBasisOrigin, &playerState->storedTargetPos);
 
     const float pitchY = OptCatalog::ComputeAimPitchForTarget(
         playerState->activeAltGunController->optCatalogEntry,
@@ -1945,8 +1945,8 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
     if (playerState->cameraTickEnabled != 0
         && (playerState->cameraState == kPlayerCameraStateThirdPerson
             || playerState->cameraState == kPlayerCameraStateFirstPerson)) {
-        const float cameraDot = aimDirection.x * playerState->cameraDirNext.x
-            + aimDirection.y * playerState->cameraDirNext.y + aimDirection.z * playerState->cameraDirNext.z;
+        float cameraDot;
+        ZMTH_VECTOR_DOT(cameraDot, &aimDirection, &playerState->cameraDirNext);
         const float targetDistanceSq = zMath::Vec3DeltaLengthSq(&playerState->storedTargetPos, &playerState->worldPos);
         if (cameraDot < 0.0f || targetDistanceSq < 9.0f) {
             aimDirection = playerState->gunFireDir;
@@ -1954,34 +1954,46 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
         }
     }
 
-    const zVec3 worldAimDirection = aimDirection;
-    const zMat4x3& gunFireTransform = playerState->gunFireTransform;
-    aimDirection.x = worldAimDirection.x * gunFireTransform.xx + worldAimDirection.y * gunFireTransform.xy
-        + worldAimDirection.z * gunFireTransform.xz;
-    aimDirection.y = worldAimDirection.x * gunFireTransform.yx + worldAimDirection.y * gunFireTransform.yy
-        + worldAimDirection.z * gunFireTransform.yz;
-    aimDirection.z = worldAimDirection.x * gunFireTransform.zx + worldAimDirection.y * gunFireTransform.zy
-        + worldAimDirection.z * gunFireTransform.zz;
-    if (aimDirection.y > masterModalData->gunPitchRate) {
-        ApplyAimPitchToDirection(&aimDirection, masterModalData->gunPitchRate);
+    ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->gunFireTransform, &aimDirection);
+    const float gunPitchMax = masterModalData->gunPitchRate;
+    if (aimDirection.y > gunPitchMax) {
+        ApplyAimPitchToDirection(&aimDirection, gunPitchMax);
     }
-    if (aimDirection.y < masterModalData->gunPitchMin) {
-        ApplyAimPitchToDirection(&aimDirection, masterModalData->gunPitchMin);
+    const float gunPitchMin = masterModalData->gunPitchMin;
+    if (aimDirection.y < gunPitchMin) {
+        ApplyAimPitchToDirection(&aimDirection, gunPitchMin);
     }
 
-    const int smoothingBits = (int)(g_FrameDeltaTimeSec * -8.0f * 12102200.0f) + 0x3f800000;
-    float smoothingFactor = 0.0f;
-    memcpy(&smoothingFactor, &smoothingBits, sizeof(smoothingFactor));
+    const float smoothingRate = g_FrameDeltaTimeSec * -8.0f;
+    const int smoothingBits = (int)(smoothingRate * 12102200.0f);
+    float smoothingFactor;
+    /*
+     * Purpose: construct the FastExp approximation's binary32 representation
+     * from the already-converted smoothingBits, adding 0x3f800000 modulo 2^32.
+     * Scope: retail [0x43a845,0x43a850) under weapon.cpp's VC5SP3 /Ob0 profile,
+     * where the inline zMath::FastExp cannot expand; the recorded memcpy and
+     * pointer-cast C formulations failed. Contract: initialized 32-bit
+     * smoothingBits and writable binary32 smoothingFactor. Clobbers EAX;
+     * arithmetic flags follow ADD. No x87 instructions. The compiler owns both
+     * homes and the preceding floating-point multiplication and conversion.
+     */
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        mov eax, smoothingBits
+        add eax, 03f800000h
+        mov smoothingFactor, eax
+    }
+#else
+    {
+        const unsigned int smoothingFloatBits = (unsigned int)smoothingBits + 0x3f800000u;
+        memcpy(&smoothingFactor, &smoothingFloatBits, sizeof smoothingFactor);
+    }
+#endif
     zMath::Vec3LerpNormalize(&playerState->altGunAimOrigin, &aimDirection, smoothingFactor);
     aimDirection = playerState->altGunAimOrigin;
 
     UpdateGunAndTurretAimNodes(&aimDirection, playerState->gunNode, playerState->turretNode);
-    playerState->gunFireDir.x = aimDirection.x * gunFireTransform.xx + aimDirection.y * gunFireTransform.yx
-        + aimDirection.z * gunFireTransform.zx;
-    playerState->gunFireDir.y = aimDirection.x * gunFireTransform.xy + aimDirection.y * gunFireTransform.yy
-        + aimDirection.z * gunFireTransform.zy;
-    playerState->gunFireDir.z = aimDirection.x * gunFireTransform.xz + aimDirection.y * gunFireTransform.yz
-        + aimDirection.z * gunFireTransform.zz;
+    ZMTH_VECTOR_TRANSFORM_DIRECTION(&playerState->gunFireTransform, &playerState->gunFireDir, &aimDirection);
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-decayandapplyaltfireslotoffsettonode
@@ -2057,7 +2069,8 @@ void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-selectaltgunfirepointandslot
  * @recoil-artifact defines .text recoil:function:0x43aa30: Player::SelectAltGunFirePointAndSlot
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: choose the alternate-gun fire origin and slot for the active
@@ -2069,18 +2082,15 @@ void __fastcall SelectAltGunFirePointAndSlot(zUtil_SaveGameState* saveState, Pla
     PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
 
     if (playerState->gunNode == 0 || playerState->turretNode == 0) {
-        const float y = playerState->worldPos.y + 1.0f;
-        playerState->altFireOrigin.x = playerState->worldPos.x;
-        playerState->altFireOrigin.y = y;
-        playerState->altFireOrigin.z = playerState->worldPos.z;
-        playerState->aimBasisOrigin.x = playerState->worldPos.x;
-        playerState->aimBasisOrigin.y = y;
-        playerState->aimBasisOrigin.z = playerState->worldPos.z;
+        zVec3 fireOrigin = playerState->worldPos;
+        fireOrigin.y += 1.0f;
+        playerState->altFireOrigin = fireOrigin;
+        playerState->aimBasisOrigin = fireOrigin;
         playerState->gunFireDir = playerState->steerBasisRaw;
         return;
     }
 
-    zMat4x3 aimBasisWorldMatrix = { 0 };
+    zMat4x3 aimBasisWorldMatrix;
     ComposeAimBasisWorldMatrix(saveState, &aimBasisWorldMatrix);
 
     switch (playerState->altHardpointSelectState) {
@@ -2090,45 +2100,25 @@ void __fastcall SelectAltGunFirePointAndSlot(zUtil_SaveGameState* saveState, Pla
             playerState->altFireOrigin.y = aimBasisWorldMatrix.posY;
             playerState->altFireOrigin.z = aimBasisWorldMatrix.posZ;
         } else {
-            playerState->altFireOrigin.x = playerState->firePointCenter.x * aimBasisWorldMatrix.xx
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yx
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-            playerState->altFireOrigin.y = playerState->firePointCenter.x * aimBasisWorldMatrix.xy
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yy
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-            playerState->altFireOrigin.z = playerState->firePointCenter.x * aimBasisWorldMatrix.xz
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yz
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+            ZMTH_VECTOR_TRANSFORM_POINT(
+                &aimBasisWorldMatrix,
+                &playerState->altFireOrigin,
+                &playerState->firePointCenter
+            );
         }
         playerState->altFireSlotCenter.attachNode = activeAltGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotCenter;
         return;
 
     case 1:
-        playerState->altFireOrigin.x = playerState->firePointRight.x * aimBasisWorldMatrix.xx
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yx
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-        playerState->altFireOrigin.y = playerState->firePointRight.x * aimBasisWorldMatrix.xy
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yy
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-        playerState->altFireOrigin.z = playerState->firePointRight.x * aimBasisWorldMatrix.xz
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yz
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+        ZMTH_VECTOR_TRANSFORM_POINT(&aimBasisWorldMatrix, &playerState->altFireOrigin, &playerState->firePointRight);
         playerState->altFireSlotRight.attachNode = activeAltGunController->attachNodeSecondary;
         *outActiveFireSlotPtr = &playerState->altFireSlotRight;
         playerState->altHardpointSelectState = 2;
         return;
 
     case 2:
-        playerState->altFireOrigin.x = playerState->firePointLeft.x * aimBasisWorldMatrix.xx
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yx
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-        playerState->altFireOrigin.y = playerState->firePointLeft.x * aimBasisWorldMatrix.xy
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yy
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-        playerState->altFireOrigin.z = playerState->firePointLeft.x * aimBasisWorldMatrix.xz
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yz
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+        ZMTH_VECTOR_TRANSFORM_POINT(&aimBasisWorldMatrix, &playerState->altFireOrigin, &playerState->firePointLeft);
         playerState->altFireSlotLeft.attachNode = activeAltGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotLeft;
         playerState->altHardpointSelectState = 1;
@@ -2138,7 +2128,8 @@ void __fastcall SelectAltGunFirePointAndSlot(zUtil_SaveGameState* saveState, Pla
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-selectprimarygunfirepointandslot
  * @recoil-artifact defines .text recoil:function:0x43acf0: Player::SelectPrimaryGunFirePointAndSlot.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SelectPrimaryGunFirePointAndSlot from the recovered
@@ -2151,13 +2142,10 @@ SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSl
     PlayerGunFireController* const activePrimaryGunController = playerState->activePrimaryGunController;
 
     if (playerState->gunNode == 0 || playerState->turretNode == 0) {
-        const float y = playerState->worldPos.y + 1.0f;
-        playerState->primaryFireOrigin.x = playerState->worldPos.x;
-        playerState->primaryFireOrigin.y = y;
-        playerState->primaryFireOrigin.z = playerState->worldPos.z;
-        playerState->aimBasisOrigin.x = playerState->worldPos.x;
-        playerState->aimBasisOrigin.y = y;
-        playerState->aimBasisOrigin.z = playerState->worldPos.z;
+        zVec3 fireOrigin = playerState->worldPos;
+        fireOrigin.y += 1.0f;
+        playerState->primaryFireOrigin = fireOrigin;
+        playerState->aimBasisOrigin = fireOrigin;
         playerState->gunFireDir = playerState->steerBasisRaw;
         return;
     }
@@ -2167,7 +2155,7 @@ SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSl
         playerState->damageVisualFlag = 0;
     }
 
-    zMat4x3 aimBasisWorldMatrix = { 0 };
+    zMat4x3 aimBasisWorldMatrix;
     ComposeAimBasisWorldMatrix(saveState, &aimBasisWorldMatrix);
 
     switch (playerState->primaryHardpointSelectState) {
@@ -2177,45 +2165,29 @@ SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSl
             playerState->primaryFireOrigin.y = aimBasisWorldMatrix.posY;
             playerState->primaryFireOrigin.z = aimBasisWorldMatrix.posZ;
         } else {
-            playerState->primaryFireOrigin.x = playerState->firePointCenter.x * aimBasisWorldMatrix.xx
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yx
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-            playerState->primaryFireOrigin.y = playerState->firePointCenter.x * aimBasisWorldMatrix.xy
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yy
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-            playerState->primaryFireOrigin.z = playerState->firePointCenter.x * aimBasisWorldMatrix.xz
-                + playerState->firePointCenter.y * aimBasisWorldMatrix.yz
-                + playerState->firePointCenter.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+            ZMTH_VECTOR_TRANSFORM_POINT(
+                &aimBasisWorldMatrix,
+                &playerState->primaryFireOrigin,
+                &playerState->firePointCenter
+            );
         }
         playerState->altFireSlotCenter.attachNode = activePrimaryGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotCenter;
         return;
 
     case 1:
-        playerState->primaryFireOrigin.x = playerState->firePointRight.x * aimBasisWorldMatrix.xx
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yx
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-        playerState->primaryFireOrigin.y = playerState->firePointRight.x * aimBasisWorldMatrix.xy
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yy
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-        playerState->primaryFireOrigin.z = playerState->firePointRight.x * aimBasisWorldMatrix.xz
-            + playerState->firePointRight.y * aimBasisWorldMatrix.yz
-            + playerState->firePointRight.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+        ZMTH_VECTOR_TRANSFORM_POINT(
+            &aimBasisWorldMatrix,
+            &playerState->primaryFireOrigin,
+            &playerState->firePointRight
+        );
         playerState->altFireSlotRight.attachNode = activePrimaryGunController->attachNodeSecondary;
         *outActiveFireSlotPtr = &playerState->altFireSlotRight;
         playerState->primaryHardpointSelectState = 2;
         return;
 
     case 2:
-        playerState->primaryFireOrigin.x = playerState->firePointLeft.x * aimBasisWorldMatrix.xx
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yx
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zx + aimBasisWorldMatrix.posX;
-        playerState->primaryFireOrigin.y = playerState->firePointLeft.x * aimBasisWorldMatrix.xy
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yy
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zy + aimBasisWorldMatrix.posY;
-        playerState->primaryFireOrigin.z = playerState->firePointLeft.x * aimBasisWorldMatrix.xz
-            + playerState->firePointLeft.y * aimBasisWorldMatrix.yz
-            + playerState->firePointLeft.z * aimBasisWorldMatrix.zz + aimBasisWorldMatrix.posZ;
+        ZMTH_VECTOR_TRANSFORM_POINT(&aimBasisWorldMatrix, &playerState->primaryFireOrigin, &playerState->firePointLeft);
         playerState->altFireSlotLeft.attachNode = activePrimaryGunController->attachNodePrimary;
         *outActiveFireSlotPtr = &playerState->altFireSlotLeft;
         playerState->primaryHardpointSelectState = 1;

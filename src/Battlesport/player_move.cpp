@@ -143,11 +143,11 @@ const float kPlayerProbeNoHitHeight = -300.0f;
         const float playerAttachmentDy = (playerState)->worldPos.y - (playerState)->environmentAttachmentMatrix.posY;  \
         const float playerAttachmentDz = (playerState)->worldPos.z - (playerState)->environmentAttachmentMatrix.posZ;  \
         const zMat4x3* const playerAttachmentMatrix = &(playerState)->environmentAttachmentMatrix;                     \
-        (playerState)->fxOffsetLocal.x = playerAttachmentDx * playerAttachmentMatrix->xx                               \
+        (playerState)->environmentAttachmentLocalOffset.x = playerAttachmentDx * playerAttachmentMatrix->xx            \
             + playerAttachmentDy * playerAttachmentMatrix->xy + playerAttachmentDz * playerAttachmentMatrix->xz;       \
-        (playerState)->fxOffsetLocal.y = playerAttachmentDx * playerAttachmentMatrix->yx                               \
+        (playerState)->environmentAttachmentLocalOffset.y = playerAttachmentDx * playerAttachmentMatrix->yx            \
             + playerAttachmentDy * playerAttachmentMatrix->yy + playerAttachmentDz * playerAttachmentMatrix->yz;       \
-        (playerState)->fxOffsetLocal.z = playerAttachmentDx * playerAttachmentMatrix->zx                               \
+        (playerState)->environmentAttachmentLocalOffset.z = playerAttachmentDx * playerAttachmentMatrix->zx            \
             + playerAttachmentDy * playerAttachmentMatrix->zy + playerAttachmentDz * playerAttachmentMatrix->zz;       \
     } while (0)
 } // namespace
@@ -429,13 +429,13 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
-        playerState->fxOffsetLocal.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
-        playerState->fxOffsetLocal.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
+        playerState->environmentAttachmentLocalOffset.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
+        playerState->environmentAttachmentLocalOffset.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
 
         zVec3 attachedWorld;
         PLAYER_TRANSFORM_POINT_BY_MATRIX(
             attachedWorld,
-            playerState->fxOffsetLocal,
+            playerState->environmentAttachmentLocalOffset,
             playerState->environmentAttachmentMatrix
         );
         playerState->projectileSpawnVel.x = (attachedWorld.x - playerState->worldPos.x) * g_Player_InvDeltaTime;
@@ -451,7 +451,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
             playerState->localVel = playerState->projectileSpawnVel;
             PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(
                 playerState->localVel,
-                playerState->localVel,
+                playerState->projectileSpawnVel,
                 playerState->motionBasis
             );
         } else {
@@ -476,19 +476,18 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
 
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
     const int masterType = masterModalData->masterType;
-    if (masterType == kPlayerMasterTypeTrack) {
+    switch (masterType) {
+    case kPlayerMasterTypeTrack:
         if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
             UpdatePostMoveEnvironment(saveState, 7);
-        }
-        if (saveState != (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+        } else {
             UpdatePostMoveEnvironment(saveState, 4);
         }
-    }
-    if (masterType == 0 || masterType == kPlayerMasterTypeTrack) {
+        break;
+    case 0:
         UpdateMasterTypeBasicOrTrackFromModalProbe(saveState);
-        if (masterType == 0) {
-            playerState->airborneFlag = 0;
-        }
+        playerState->airborneFlag = 0;
+        break;
     }
 
     PlayerModalState* const primaryModalState = saveState->primaryModalState;
@@ -578,12 +577,12 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
         CZClass::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
         zDi::SetCurrentVariant((zDiPartial*)displayInstanceValue, variantIndex);
         CZClass::gwNodeGetUserData(primaryModalState->nodeRTracks, &displayInstanceValue);
-        zModel::SetDiTextureWorldPerMeter((zDiPartial*)displayInstanceValue, 1, rightTrackSpeed * 1.72000003f, 0);
+        zModel::SetDiTextureWorldPerMeter((zDiPartial*)displayInstanceValue, 1, 0.0f, rightTrackSpeed * 1.72000003f);
         zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial*)displayInstanceValue);
 
         const float leftTrackSpeed = -playerState->localVel.z - playerState->angVelYaw * 2.25f;
         CZClass::gwNodeGetUserData(primaryModalState->nodeLTracks, &displayInstanceValue);
-        zModel::SetDiTextureWorldPerMeter((zDiPartial*)displayInstanceValue, 1, leftTrackSpeed * 1.72000003f, 0);
+        zModel::SetDiTextureWorldPerMeter((zDiPartial*)displayInstanceValue, 1, 0.0f, leftTrackSpeed * 1.72000003f);
         zModelInstanceUpdateScrollingTexturesIfNeeded((zModel_InstancePartial*)displayInstanceValue);
     }
 
@@ -774,7 +773,11 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     playerState->projectileSpawnVel.z += slopeImpulse.z;
 
     playerState->localVel = playerState->projectileSpawnVel;
-    PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(playerState->localVel, playerState->localVel, playerState->motionBasis);
+    PLAYER_TRANSFORM_WORLD_VECTOR_TO_LOCAL(
+        playerState->localVel,
+        playerState->projectileSpawnVel,
+        playerState->motionBasis
+    );
 
     const int normalLerpBits
         = (int)(masterModalData->hoverNormalLerpRate * g_FrameDeltaTimeSec * 12102200.0f) + 0x3f800000;
@@ -901,14 +904,14 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
-        playerState->fxOffsetLocal.x += playerState->yawRotatedLocalVel.x * g_Player_DeltaTime;
-        playerState->fxOffsetLocal.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
-        playerState->fxOffsetLocal.y = 0.0f;
+        playerState->environmentAttachmentLocalOffset.x += playerState->yawRotatedLocalVel.x * g_Player_DeltaTime;
+        playerState->environmentAttachmentLocalOffset.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
+        playerState->environmentAttachmentLocalOffset.y = 0.0f;
 
         zVec3 attachedWorld;
         PLAYER_TRANSFORM_POINT_BY_MATRIX(
             attachedWorld,
-            playerState->fxOffsetLocal,
+            playerState->environmentAttachmentLocalOffset,
             playerState->environmentAttachmentMatrix
         );
         playerState->projectileSpawnVel.x = (attachedWorld.x - playerState->worldPos.x) * g_Player_InvDeltaTime;
@@ -2120,7 +2123,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computeturnslipdelta
  * @recoil-artifact defines .text recoil:function:0x429d30: Player::ComputeTurnSlipDelta.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered
@@ -2132,18 +2136,15 @@ void __fastcall ComputeTurnSlipDelta(zUtil_SaveGameState* saveState)
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
 
     playerState->localVel = playerState->projectileSpawnVel;
+    ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->motionBasis, &playerState->localVel);
 
-    const zVec3 localVel = playerState->localVel;
-    const zMat4x3& motionBasis = playerState->motionBasis;
-    playerState->localVel.x = localVel.x * motionBasis.xx + localVel.y * motionBasis.xy + localVel.z * motionBasis.xz;
-    playerState->localVel.y = localVel.x * motionBasis.yx + localVel.y * motionBasis.yy + localVel.z * motionBasis.yz;
-    playerState->localVel.z = localVel.x * motionBasis.zx + localVel.y * motionBasis.zy + localVel.z * motionBasis.zz;
-
+    const float localZ
+        = playerState->localVel.z - masterModalData->accelRate * playerState->throttleInputCopy * g_Player_DeltaTime;
     const float axisClampRuntime = playerState->axisClampRuntime;
-    playerState->localVel.z -= masterModalData->accelRate * playerState->throttleInputCopy * g_Player_DeltaTime;
-    if (playerState->localVel.z > axisClampRuntime) {
+    playerState->localVel.z = localZ;
+    if (localZ > axisClampRuntime) {
         playerState->localVel.z = axisClampRuntime;
-    } else if (playerState->localVel.z < -axisClampRuntime) {
+    } else if (localZ < -axisClampRuntime) {
         playerState->localVel.z = -axisClampRuntime;
     }
 
@@ -2157,8 +2158,7 @@ void __fastcall ComputeTurnSlipDelta(zUtil_SaveGameState* saveState)
         }
     }
 
-    playerState->localVel.x = localX;
-    if (localX > axisClampRuntime) {
+    if ((playerState->localVel.x = localX) > axisClampRuntime) {
         playerState->localVel.x = axisClampRuntime;
     } else if (localX < -axisClampRuntime) {
         playerState->localVel.x = -axisClampRuntime;

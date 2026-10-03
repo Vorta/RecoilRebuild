@@ -85,16 +85,15 @@ enum PlayerMasterTypeId {
  */
 #define PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState)                                                              \
     do {                                                                                                               \
-        const float playerAttachmentDx = (playerState)->worldPos.x - (playerState)->environmentAttachmentMatrix.posX;  \
-        const float playerAttachmentDy = (playerState)->worldPos.y - (playerState)->environmentAttachmentMatrix.posY;  \
-        const float playerAttachmentDz = (playerState)->worldPos.z - (playerState)->environmentAttachmentMatrix.posZ;  \
-        const zMat4x3* const playerAttachmentMatrix = &(playerState)->environmentAttachmentMatrix;                     \
-        (playerState)->fxOffsetLocal.x = playerAttachmentDx * playerAttachmentMatrix->xx                               \
-            + playerAttachmentDy * playerAttachmentMatrix->xy + playerAttachmentDz * playerAttachmentMatrix->xz;       \
-        (playerState)->fxOffsetLocal.y = playerAttachmentDx * playerAttachmentMatrix->yx                               \
-            + playerAttachmentDy * playerAttachmentMatrix->yy + playerAttachmentDz * playerAttachmentMatrix->yz;       \
-        (playerState)->fxOffsetLocal.z = playerAttachmentDx * playerAttachmentMatrix->zx                               \
-            + playerAttachmentDy * playerAttachmentMatrix->zy + playerAttachmentDz * playerAttachmentMatrix->zz;       \
+        zMath::Vec3Subtract(                                                                                           \
+            &(playerState)->worldPos,                                                                                  \
+            (const zVec3*)(&(playerState)->environmentAttachmentMatrix.posX),                                          \
+            &(playerState)->environmentAttachmentLocalOffset                                                           \
+        );                                                                                                             \
+        ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(                                                                              \
+            &(playerState)->environmentAttachmentMatrix,                                                               \
+            &(playerState)->environmentAttachmentLocalOffset                                                           \
+        );                                                                                                             \
     } while (0)
 } // namespace
 namespace Player {
@@ -258,7 +257,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateverticalvelocityandtransform
  * @recoil-artifact defines .text recoil:function:0x42c2e0: Player::UpdateVerticalVelocityAndTransform.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateVerticalVelocityAndTransform from the recovered
@@ -269,13 +270,12 @@ void __fastcall UpdateVerticalVelocityAndTransform(zUtil_SaveGameState* saveStat
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     const float measuredFrameDeltaY
         = (playerState->worldPos.y - playerState->previousTransform.posY) * g_Player_InvDeltaTime;
-    if (g_PlayerEnvProbe_AboveGroundCount >= 3) {
-        playerState->projectileSpawnVel.y = measuredFrameDeltaY;
-    } else {
-        const int verticalVelocityBlendBits = (int)(g_Player_DeltaTime * -5.0f * 12102200.0f) + 0x3f800000;
-        const float previousVerticalVelocityBlendWeight = PLAYER_FLOAT_FROM_BITS(verticalVelocityBlendBits);
+    if (g_PlayerEnvProbe_AboveGroundCount < 3) {
+        const float previousVerticalVelocityBlendWeight = zMath::FastExp(g_Player_DeltaTime * -5.0f);
         playerState->projectileSpawnVel.y = previousVerticalVelocityBlendWeight * playerState->projectileSpawnVel.y
             + (1.0f - previousVerticalVelocityBlendWeight) * measuredFrameDeltaY;
+    } else {
+        playerState->projectileSpawnVel.y = measuredFrameDeltaY;
     }
 
     AccumulateSlopeForces(saveState, probeResult);
@@ -287,13 +287,8 @@ void __fastcall UpdateVerticalVelocityAndTransform(zUtil_SaveGameState* saveStat
         return;
     }
 
-    const zVec3 worldVelocity = playerState->projectileSpawnVel;
-    playerState->localVel.x = worldVelocity.x * playerState->motionBasis.xx
-        + worldVelocity.y * playerState->motionBasis.xy + worldVelocity.z * playerState->motionBasis.xz;
-    playerState->localVel.y = worldVelocity.x * playerState->motionBasis.yx
-        + worldVelocity.y * playerState->motionBasis.yy + worldVelocity.z * playerState->motionBasis.yz;
-    playerState->localVel.z = worldVelocity.x * playerState->motionBasis.zx
-        + worldVelocity.y * playerState->motionBasis.zy + worldVelocity.z * playerState->motionBasis.zz;
+    playerState->localVel = playerState->projectileSpawnVel;
+    ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->motionBasis, &playerState->localVel);
     if (g_PlayerEnvProbe_AboveGroundCount >= 3) {
         playerState->localVel.y = 0.0f;
     }
@@ -337,7 +332,10 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom1probe
  * @recoil-artifact defines .text recoil:function:0x42c520: Player::ComputeSurfaceFrom1Probe.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom1Probe from the recovered
@@ -346,27 +344,17 @@ namespace Player {
 void __fastcall ComputeSurfaceFrom1Probe(zUtil_SaveGameState* saveState, PlayerEnvProbeResult* probeResult)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    const int sampleIndex = g_PlayerEnvProbe_AboveGroundIndices[0];
-    zVec3 samplePoint = g_PlayerEnvProbeWorldPoints[sampleIndex];
-    samplePoint.y = probeResult->candidateScoreBySample[sampleIndex];
+    zVec3 samplePoint = g_PlayerEnvProbeWorldPoints[g_PlayerEnvProbe_AboveGroundIndices[0]];
+    samplePoint.y = probeResult->candidateScoreBySample[g_PlayerEnvProbe_AboveGroundIndices[0]];
 
-    const float supportPlaneDot = playerState->steerBasisRef.x * samplePoint.x
-        + playerState->steerBasisRef.y * samplePoint.y + playerState->steerBasisRef.z * samplePoint.z;
+    float supportPlaneDot;
+    ZMTH_VECTOR_DOT(supportPlaneDot, &playerState->steerBasisRef, &samplePoint);
     playerState->worldPos.y = SolveHeightOnSurface(saveState, supportPlaneDot);
 
-    const zVec3 sampleOffsetFromPlayer = {
-        samplePoint.x - playerState->worldPos.x,
-        samplePoint.y - playerState->worldPos.y,
-        samplePoint.z - playerState->worldPos.z,
-    };
-    const zVec3 tiltVector = {
-        sampleOffsetFromPlayer.y * playerState->steerBasisRef.z
-            - sampleOffsetFromPlayer.z * playerState->steerBasisRef.y,
-        sampleOffsetFromPlayer.z * playerState->steerBasisRef.x
-            - sampleOffsetFromPlayer.x * playerState->steerBasisRef.z,
-        sampleOffsetFromPlayer.x * playerState->steerBasisRef.y
-            - sampleOffsetFromPlayer.y * playerState->steerBasisRef.x,
-    };
+    zVec3 sampleOffsetFromPlayer;
+    zMath::Vec3Subtract(&samplePoint, &playerState->worldPos, &sampleOffsetFromPlayer);
+    zVec3 tiltVector;
+    ZMTH_VECTOR_CROSS(&sampleOffsetFromPlayer, &playerState->steerBasisRef, &tiltVector);
     ApplyTerrainTilt(saveState, &tiltVector, 1.0f);
 }
 } // namespace Player
@@ -374,7 +362,11 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom2probes
  * @recoil-artifact defines .text recoil:function:0x42c640: Player::ComputeSurfaceFrom2Probes.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom2Probes from the recovered
@@ -388,48 +380,31 @@ void __fastcall ComputeSurfaceFrom2Probes(zUtil_SaveGameState* saveState, Player
 
     zVec3 pointA = g_PlayerEnvProbeWorldPoints[sampleIndexA];
     pointA.y = probeResult->candidateScoreBySample[sampleIndexA];
+    float pointASupportDot;
+    ZMTH_VECTOR_DOT(pointASupportDot, &playerState->steerBasisRef, &pointA);
 
     zVec3 pointB = g_PlayerEnvProbeWorldPoints[sampleIndexB];
-    const float pointASupportDot = playerState->steerBasisRef.x * pointA.x + playerState->steerBasisRef.y * pointA.y
-        + playerState->steerBasisRef.z * pointA.z;
     pointB.y = SolveHeightOnSurface(saveState, pointASupportDot);
 
-    zVec3 supportEdge = {
-        pointB.x - pointA.x,
-        pointB.y - pointA.y,
-        pointB.z - pointA.z,
-    };
-    const zVec3 perpOffset = {
-        playerState->steerBasisRef.y * supportEdge.z - playerState->steerBasisRef.z * supportEdge.y,
-        playerState->steerBasisRef.z * supportEdge.x - playerState->steerBasisRef.x * supportEdge.z,
-        playerState->steerBasisRef.x * supportEdge.y - playerState->steerBasisRef.y * supportEdge.x,
-    };
-    const zVec3 pointC = {
-        pointA.x + perpOffset.x,
-        pointA.y + perpOffset.y,
-        pointA.z + perpOffset.z,
-    };
+    zVec3 supportEdge;
+    zMath::Vec3Subtract(&pointB, &pointA, &supportEdge);
+    zVec3 perpOffset;
+    ZMTH_VECTOR_CROSS(&playerState->steerBasisRef, &supportEdge, &perpOffset);
+    zVec3 pointC;
+    zMath::Vec3Add(&pointA, &perpOffset, &pointC);
 
     pointB.y = probeResult->candidateScoreBySample[sampleIndexB];
     ComputeTriangleNormal(saveState, &pointA, &pointB, &pointC);
 
-    const float surfaceDot = playerState->steerBasisRef.x * pointA.x + playerState->steerBasisRef.y * pointA.y
-        + playerState->steerBasisRef.z * pointA.z;
+    float surfaceDot;
+    ZMTH_VECTOR_DOT(surfaceDot, &playerState->steerBasisRef, &pointA);
     playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
 
     zMath::Vec3Normalize(&supportEdge);
-    const zVec3 pointOffsetFromPlayer = {
-        pointA.x - playerState->worldPos.x,
-        pointA.y - playerState->worldPos.y,
-        pointA.z - playerState->worldPos.z,
-    };
-    const zVec3 tiltPerp = {
-        playerState->steerBasisRef.y * supportEdge.z - playerState->steerBasisRef.z * supportEdge.y,
-        playerState->steerBasisRef.z * supportEdge.x - playerState->steerBasisRef.x * supportEdge.z,
-        playerState->steerBasisRef.x * supportEdge.y - playerState->steerBasisRef.y * supportEdge.x,
-    };
-    const float tiltScale = pointOffsetFromPlayer.x * tiltPerp.x + pointOffsetFromPlayer.y * tiltPerp.y
-        + pointOffsetFromPlayer.z * tiltPerp.z;
+    zMath::Vec3Subtract(&pointA, &playerState->worldPos, &pointA);
+    ZMTH_VECTOR_CROSS(&playerState->steerBasisRef, &supportEdge, &pointC);
+    float tiltScale;
+    ZMTH_VECTOR_DOT(tiltScale, &pointA, &pointC);
     ApplyTerrainTilt(saveState, &supportEdge, tiltScale);
 }
 } // namespace Player
@@ -437,6 +412,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyterraintilt
  * @recoil-artifact defines .text recoil:function:0x42c8d0: Player::ApplyTerrainTilt.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
@@ -447,11 +423,10 @@ void __fastcall ApplyTerrainTilt(zUtil_SaveGameState* saveState, const zVec3* ti
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     const float tiltFactor = (g_Player_NominalGravity / playerState->gravityAccel) * tiltScale;
-    zVec3 rotatedTilt = {
-        tiltVector->x * tiltFactor,
-        tiltVector->y * tiltFactor,
-        tiltVector->z * tiltFactor,
-    };
+    zVec3 rotatedTilt;
+    rotatedTilt.x = tiltVector->x * tiltFactor;
+    rotatedTilt.y = tiltVector->y * tiltFactor;
+    rotatedTilt.z = tiltVector->z * tiltFactor;
     zMath::Vec3RotateY(-playerState->restartYawRad, &rotatedTilt, &rotatedTilt);
 
     if (playerState->airborneFlag != 0) {
@@ -471,22 +446,22 @@ void __fastcall ApplyTerrainTilt(zUtil_SaveGameState* saveState, const zVec3* ti
         playerState->angVelRoll = -1.20000005f;
     }
 
+    // The rotated tilt's storage is reused for the downhill velocity impulse.
+    rotatedTilt = playerState->steerBasisRef;
+    rotatedTilt.y = 0.0f;
     const float velocityScale = g_Player_DeltaTime * playerState->gravityAccel * 5.0f;
-    zVec3 impulse = {
-        playerState->steerBasisRef.x * velocityScale,
-        0.0f,
-        playerState->steerBasisRef.z * velocityScale,
-    };
-    playerState->projectileSpawnVel.x += impulse.x;
-    playerState->projectileSpawnVel.y += impulse.y;
-    playerState->projectileSpawnVel.z += impulse.z;
+    rotatedTilt.x *= velocityScale;
+    rotatedTilt.y *= velocityScale;
+    rotatedTilt.z *= velocityScale;
+    zMath::Vec3Add(&playerState->projectileSpawnVel, &rotatedTilt, &playerState->projectileSpawnVel);
 }
 } // namespace Player
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computesurfacefrom3probes
  * @recoil-artifact defines .text recoil:function:0x42ca40: Player::ComputeSurfaceFrom3Probes.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeSurfaceFrom3Probes from the recovered
@@ -502,16 +477,16 @@ void __fastcall ComputeSurfaceFrom3Probes(zUtil_SaveGameState* saveState, Player
     const int sampleIndexA = g_PlayerEnvProbe_AboveGroundIndices[0];
     const int sampleIndexB = g_PlayerEnvProbe_AboveGroundIndices[1];
     const int sampleIndexC = g_PlayerEnvProbe_AboveGroundIndices[2];
-    zVec3 pointA = g_PlayerEnvProbeWorldPoints[sampleIndexA];
-    zVec3 pointB = g_PlayerEnvProbeWorldPoints[sampleIndexB];
-    zVec3 pointC = g_PlayerEnvProbeWorldPoints[sampleIndexC];
-    pointA.y = probeResult->candidateScoreBySample[sampleIndexA];
-    pointB.y = probeResult->candidateScoreBySample[sampleIndexB];
-    pointC.y = probeResult->candidateScoreBySample[sampleIndexC];
+    zVec3 probePointA = g_PlayerEnvProbeWorldPoints[sampleIndexA];
+    probePointA.y = probeResult->candidateScoreBySample[sampleIndexA];
+    zVec3 probePointB = g_PlayerEnvProbeWorldPoints[sampleIndexB];
+    probePointB.y = probeResult->candidateScoreBySample[sampleIndexB];
+    zVec3 probePointC = g_PlayerEnvProbeWorldPoints[sampleIndexC];
+    probePointC.y = probeResult->candidateScoreBySample[sampleIndexC];
 
-    ComputeTriangleNormal(saveState, &pointA, &pointB, &pointC);
-    const float surfaceDot = playerState->steerBasisRef.x * pointA.x + playerState->steerBasisRef.y * pointA.y
-        + playerState->steerBasisRef.z * pointA.z;
+    ComputeTriangleNormal(saveState, &probePointA, &probePointB, &probePointC);
+    float surfaceDot;
+    ZMTH_VECTOR_DOT(surfaceDot, &playerState->steerBasisRef, &probePointA);
     playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
     playerState->angVelPitch = 0.0f;
     playerState->angVelRoll = 0.0f;
@@ -692,7 +667,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-computetrianglenormal
  * @recoil-artifact defines .text recoil:function:0x42ce50: Player::ComputeTriangleNormal.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ComputeTriangleNormal from the recovered
@@ -702,26 +679,17 @@ void __fastcall
 ComputeTriangleNormal(zUtil_SaveGameState* saveState, const zVec3* pointA, const zVec3* pointB, const zVec3* pointC)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    const zVec3 edgeAB = {
-        pointB->x - pointA->x,
-        pointB->y - pointA->y,
-        pointB->z - pointA->z,
-    };
-    const zVec3 edgeAC = {
-        pointC->x - pointA->x,
-        pointC->y - pointA->y,
-        pointC->z - pointA->z,
-    };
-    zVec3 normal = {
-        edgeAB.y * edgeAC.z - edgeAB.z * edgeAC.y,
-        edgeAB.z * edgeAC.x - edgeAB.x * edgeAC.z,
-        edgeAB.x * edgeAC.y - edgeAB.y * edgeAC.x,
-    };
+    zVec3 sideAB;
+    zMath::Vec3Subtract(pointB, pointA, &sideAB);
+    zVec3 sideAC;
+    zMath::Vec3Subtract(pointC, pointA, &sideAC);
+    zVec3 normal;
+    ZMTH_VECTOR_CROSS(&sideAB, &sideAC, &normal);
     zMath::Vec3Normalize(&normal);
-    if (normal.y <= 0.0f) {
-        normal.x = -normal.x;
-        normal.y = -normal.y;
-        normal.z = -normal.z;
+    if (normal.y < 0.0f) {
+        normal.x *= -1.0f;
+        normal.y *= -1.0f;
+        normal.z *= -1.0f;
     }
     playerState->steerBasisRef = normal;
 }
@@ -973,7 +941,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyenvironmentproberesult
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered
@@ -983,10 +953,8 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
-    const int wasAttached = playerState->environmentAttachmentActive;
-
     if (envProbe->attachmentCandidateCount > 3) {
-        if (wasAttached == 0) {
+        if (playerState->environmentAttachmentActive == 0) {
             playerState->environmentAttachmentActive = 1;
             playerState->environmentAttachmentNode = envProbe->attachmentNode;
             CZObject3DDataPartial* const objectData = (CZObject3DDataPartial*)(envProbe->attachmentNode->classData);
@@ -1002,7 +970,7 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
                 ));
             PLAYER_CACHE_ATTACHMENT_LOCAL_OFFSET(playerState);
         }
-    } else if (wasAttached != 0) {
+    } else if (playerState->environmentAttachmentActive != 0) {
         CZObject3DDataPartial* const objectData
             = (CZObject3DDataPartial*)(playerState->environmentAttachmentNode->classData);
         memcpy(
@@ -1013,9 +981,7 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
         playerState->restartYawRad
             = (float)(atan2(playerState->environmentAttachmentMatrix.zx, playerState->environmentAttachmentMatrix.zz))
             + playerState->poseCache.y;
-        playerState->poseCache.x = playerState->vehiclePitchRad;
-        playerState->poseCache.y = playerState->restartYawRad;
-        playerState->poseCache.z = playerState->vehicleRollRad;
+        playerState->poseCache = playerState->vehicleRotationAngles;
         playerState->environmentAttachmentActive = 0;
         playerState->environmentAttachmentNode = 0;
     }
@@ -1039,18 +1005,17 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
             );
             playerState->projectileSpawnVel.z = 0.0f;
             playerState->projectileSpawnVel.x = 0.0f;
-            return 0;
         }
+        return 0;
     }
 
     playerState->gravityAccel = g_Player_NominalGravity;
-    zUtil_SaveGameState* const originalSaveState = saveState;
-    const int waterHitCount = envProbe->hitHistogram.countByImpactSlot[1];
-    if (envProbe->highestSelectedHitY - playerState->worldPos.y > 1.0f && waterHitCount > 1) {
-        const int wasUnderwater = playerState->underwaterStatusActive;
+    if (envProbe->highestSelectedHitY - playerState->worldPos.y > 1.0f
+        && envProbe->hitHistogram.countByImpactSlot[1] > 1) {
+        const int wasUnderwater = playerState->aiMode;
         playerState->gravityAccel = g_Player_WaterGravity;
         if (wasUnderwater == 0) {
-            playerState->underwaterStatusActive = 1;
+            playerState->aiMode = 1;
             if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
                 HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x909), 5.0f);
                 HudLowMeterLoopSound::SetLoopActive(1);
@@ -1069,9 +1034,9 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
             HitCallbackRecordContextAndTimedStatus(saveState, 0, 0, damage);
         }
     } else {
-        if (playerState->underwaterStatusActive != 0) {
-            playerState->underwaterStatusActive = 0;
-            if (originalSaveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+        if (playerState->aiMode != 0) {
+            playerState->aiMode = 0;
+            if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
                 ((HudUiElement*)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(0);
                 HudLowMeterLoopSound::SetLoopActive(0);
             }
@@ -1092,10 +1057,10 @@ int __fastcall ApplyEnvironmentProbeResult(zUtil_SaveGameState* saveState, Playe
 
         if (playerState->motionInput == 0) {
             playerState->motionInput = 1;
-        }
-        if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x910), 5.0f);
-            HudLowMeterLoopSound::SetLoopActive(1);
+            if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+                HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x910), 5.0f);
+                HudLowMeterLoopSound::SetLoopActive(1);
+            }
         }
 
         playerState->axisClampRuntime = masterModalData->maxSpeed * masterModalData->lavaSlowdown;

@@ -403,7 +403,9 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.computeworldtransform
      * @recoil-artifact defines .text recoil:function:0x453620: CZLight::ComputeWorldTransform
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-negate
+     * @recoil-match byte
      *
      * Purpose: build the node-to-world transform, update world position,
      * direction, and rotation caches, then restore the zMath matrix stack.
@@ -417,39 +419,15 @@ namespace CZLight
         zMath::MatLoadIdentity();
         CZNode::gwNodeBuildNodeToAncestorMatrix(node, 1);
         if (data->isDirectedSource == 0 && data->isDirectional == 0) {
-            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-                worldPoints[0] = localPoints[0];
-            } else {
-                for (int i = 0; i < 1; ++i) {
-                    const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-                    const zVec3* point = &localPoints[i];
-                    zVec3* out = &worldPoints[i];
-                    out->x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
-                    out->y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
-                    out->z = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
-                }
-            }
+            ZMTH_MAT_TRANSFORM_POINT_BATCH(localPoints, worldPoints, 1);
         } else {
-            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-                memcpy(worldPoints, localPoints, sizeof(localPoints));
-            } else {
-                for (int i = 0; i < 2; ++i) {
-                    const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-                    const zVec3* point = &localPoints[i];
-                    zVec3* out = &worldPoints[i];
-                    out->x = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
-                    out->y = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
-                    out->z = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
-                }
-            }
+            ZMTH_MAT_TRANSFORM_POINT_BATCH(localPoints, worldPoints, 2);
             zVec3 outAngles = zMath::Vec3DirectionAnglesBetweenPoints(&worldPoints[0], &worldPoints[1]);
             outAngles.z = 0.0f;
             data->worldRotation = outAngles;
         }
         data->worldPosition = worldPoints[0];
-        data->worldDir.x = -slotBuffer.zx;
-        data->worldDir.y = -slotBuffer.zy;
-        data->worldDir.z = -slotBuffer.zz;
+        ZMTH_VECTOR_NEGATE((const zVec3*)&slotBuffer.zx, &data->worldDir);
         zMath::MatStackPopPtr();
         return 0;
     }
@@ -457,7 +435,8 @@ namespace CZLight
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.light.gwlightupdate
      * @recoil-artifact defines .text recoil:function:0x453880: CZLight::gwLightUpdate
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+     * @recoil-match byte
      *
      * Purpose: validate dirty light nodes, refresh world/view transform caches
      * for point, cone, and directional modes, and clear the dirty flag.
@@ -479,7 +458,7 @@ namespace CZLight
             return 5;
         }
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         ComputeWorldTransform(node, data);
         zMath::MatStackPushAndCloneParent((float*)(&slotBuffer));
         zMath::MatLoadCameraScratchB();
@@ -493,20 +472,7 @@ namespace CZLight
 
         if (data->isPointSource != 0) {
             data->worldPosScratch = data->worldPosition;
-            if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-                data->viewPos = data->worldPosScratch;
-                zMath::MatStackPopPtr();
-                data->dirty = 0;
-                return 0;
-            } else {
-                const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-                data->viewPos.x = data->worldPosScratch.x * matrix->xx + data->worldPosScratch.y * matrix->yx
-                    + data->worldPosScratch.z * matrix->zx + matrix->posX;
-                data->viewPos.y = data->worldPosScratch.x * matrix->xy + data->worldPosScratch.y * matrix->yy
-                    + data->worldPosScratch.z * matrix->zy + matrix->posY;
-                data->viewPos.z = data->worldPosScratch.x * matrix->xz + data->worldPosScratch.y * matrix->yz
-                    + data->worldPosScratch.z * matrix->zz + matrix->posZ;
-            }
+            ZMTH_MAT_TRANSFORM_POINT_BATCH(&data->worldPosScratch, &data->viewPos, 1);
         }
 
         zMath::MatStackPopPtr();

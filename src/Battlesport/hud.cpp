@@ -8677,7 +8677,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
                     itemIndex4 < (int)(sizeof(g_HudUiMgrStringMenu->items) / sizeof(g_HudUiMgrStringMenu->items[0]));
                     ++itemIndex4) {
                     HudUiPanelSimple& item = g_HudUiMgrStringMenu->items[itemIndex4];
-                    item.SetFont(fontArgs->faceName, fontArgs->height, fontArgs->weight, fontArgs->width, 0, 0, 2);
+                    item.SetFont(fontArgs->faceName, fontArgs->weight, fontArgs->width, fontArgs->height, 0, 0, 2);
                 }
             }
         }

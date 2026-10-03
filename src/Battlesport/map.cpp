@@ -1076,9 +1076,13 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-drawprojectedpath
  * @recoil-artifact defines .text recoil:function:0x416480: HudSensorMapNode::DrawProjectedPath
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-match byte
  *
  * Purpose: Draw the camera-projected sensor-map path with clipped immediate line strips.
+ * Contract note: pointCount must be positive and g_HudSensor_ProjectScratch must
+ * hold pointCount + 1 points (the closing point is written at index pointCount);
+ * the zero test alone does not establish nonnegative count or capacity.
  */
 int HudSensorMapNode::DrawProjectedPath(HudSensorTracker* tracker)
 {
@@ -1090,22 +1094,7 @@ int HudSensorMapNode::DrawProjectedPath(HudSensorTracker* tracker)
     zMath::MatStackPushPtr((float*)(&cameraScratchMatrix));
     zMath::MatLoadCameraScratchB();
 
-    if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(g_HudSensor_ProjectScratch, points, (size_t)(pointCount) * sizeof(zVec3));
-    } else {
-        const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-        for (int i = 0; i < pointCount; ++i) {
-            const HudSensorMapPoint* const sourcePoint = &points[i];
-            zVec3* const projectedPoint = &g_HudSensor_ProjectScratch[i];
-
-            projectedPoint->x = sourcePoint->x * matrix->xx + sourcePoint->y * matrix->yx + sourcePoint->z * matrix->zx
-                + matrix->posX;
-            projectedPoint->z = sourcePoint->x * matrix->xz + sourcePoint->y * matrix->yz + sourcePoint->z * matrix->zz
-                + matrix->posZ;
-            projectedPoint->y = sourcePoint->x * matrix->xy + sourcePoint->y * matrix->yy + sourcePoint->z * matrix->zy
-                + matrix->posY;
-        }
-    }
+    ZMTH_MAT_TRANSFORM_POINT_BATCH((const zVec3*)(points), g_HudSensor_ProjectScratch, pointCount);
 
     zMath::MatStackPopPtr();
 
