@@ -13,12 +13,12 @@
 #include <string.h>
 
 namespace {
-// Defined ahead of the triangulation state: this arrangement keeps VC5's
-// x87 operand order in ProjectInnerRingOntoCachedPlane (0x46c570).
 /**
  * Original-source helper evidence: no standalone retail function is present.
  * Observed in caller 0x46c3a0.
  * Purpose: Produce the VC-era fast square-root estimate used for plane scale.
+ * Placement: defined ahead of the triangulation state; this arrangement keeps
+ * VC5's x87 operand order in ProjectInnerRingOntoCachedPlane (0x46c570).
  */
 float EstimateMagnitudeFromSquaredLength(float squaredLength)
 {

@@ -15,6 +15,182 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace zMath
+{
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.camera.vector-negate
+     *
+     * Purpose: negate all three components by flipping their binary32 sign bits.
+     *
+     * Reconstruction: recurring inline-helper family (the same island recurs at
+     * retail 0x453848, 0x4730b9, 0x4730f0, 0x473e82, 0x473eb4 and 0x473f3b);
+     * original spelling and declaration location unproved. Camera.c-resident
+     * inline definition.
+     *
+     * Raw assembly: the repeated home materialization/reload and scheduling
+     * strongly support an inferred inline-assembly helper; the documented VC5SP3
+     * C/C++ candidates did not reproduce the complete consumer body.
+     *
+     * Island contract: reads the named src/dest pointers; clobbers EAX, EBX, ECX
+     * and EDX; arithmetic flags follow the final XOR. No x87 instructions. All
+     * three component representations are loaded before any result is stored.
+     *
+     * Authorized consumer: 0x44abf0, range [0x44ac5e,0x44ac85). Fresh governed
+     * complete-body, relocation and linked-identity proof remains required.
+     */
+    inline void Vec3Negate(const zVec3* src, zVec3* dest)
+    {
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ebx, src
+        mov ecx, dest
+        mov eax, dword ptr [ebx]zVec3.x
+        mov edx, dword ptr [ebx]zVec3.y
+        mov ebx, dword ptr [ebx]zVec3.z
+        xor eax, 080000000h
+        xor edx, 080000000h
+        xor ebx, 080000000h
+        mov dword ptr [ecx]zVec3.x, eax
+        mov dword ptr [ecx]zVec3.y, edx
+        mov dword ptr [ecx]zVec3.z, ebx
+        }
+#else
+        const unsigned int* const srcBits = (const unsigned int*)src;
+        unsigned int* const destBits = (unsigned int*)dest;
+        const unsigned int x = srcBits[0] ^ 0x80000000u;
+        const unsigned int y = srcBits[1] ^ 0x80000000u;
+        const unsigned int z = srcBits[2] ^ 0x80000000u;
+        destBits[0] = x;
+        destBits[1] = y;
+        destBits[2] = z;
+#endif
+    }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.camera.vector-length-sq
+     *
+     * Purpose: return the grouped (x*x + y*y) + z*z square sum as binary32.
+     *
+     * Reconstruction: recurring inline-helper family (the same ECX island recurs
+     * in about fifteen retail functions); original spelling and declaration
+     * location unproved. Camera.c-resident inline definition.
+     *
+     * Raw assembly: the documented VC5SP3 C/C++ candidates did not reproduce the
+     * home, schedule and result-store shape of the complete consumer body.
+     *
+     * Island contract: reads the named vector pointer; clobbers ECX; integer flags
+     * unchanged. x87 depth 0/3/0: grouped square sum followed by one binary32
+     * result store.
+     *
+     * Authorized consumer: 0x44b8c0, range [0x44ba25,0x44ba41). Fresh governed
+     * complete-body, relocation and linked-identity proof remains required.
+     */
+    inline float Vec3LengthSq(const zVec3* vec)
+    {
+        float lengthSq;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fstp lengthSq
+        }
+#else
+        lengthSq = (vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z;
+#endif
+        return lengthSq;
+    }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.camera.vector-length
+     *
+     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+     *
+     * Reconstruction: recurring inline-helper family (the same ECX island recurs
+     * in about fifteen retail functions); original spelling and declaration
+     * location unproved. Camera.c-resident inline definition.
+     *
+     * Raw assembly: the documented VC5SP3 C/C++ candidates did not reproduce the
+     * home, schedule and result-store shape of the complete consumer body.
+     *
+     * Island contract: reads the named vector pointer; clobbers ECX; integer flags
+     * unchanged. x87 depth 0/3/0: grouped square sum, then FSQRT, then one
+     * binary32 result store; no intervening rounded squared-length store.
+     *
+     * Authorized consumer: 0x44abf0, range [0x44ad28,0x44ad46). Fresh governed
+     * complete-body, relocation and linked-identity proof remains required.
+     */
+    inline float Vec3Length(const zVec3* vec)
+    {
+        float vecLength;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fsqrt
+        fstp vecLength
+        }
+#else
+        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+        return vecLength;
+    }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.camera.fast-sqrt-estimate
+     *
+     * Purpose: reproduce the legacy binary32 square-root estimate by reading
+     * the input representation, arithmetic-shifting it right by one, adding
+     * 0x1fc00000, and writing the resulting representation to the named result.
+     *
+     * Reconstruction: recurring inline-helper family; original spelling and
+     * declaration location unproved. Camera.c-resident inline definition.
+     *
+     * Raw assembly: documented VC5SP3 C/C++ candidates did not reproduce the
+     * argument/result homes and instruction shape at the authorized sites.
+     * Compiler owns argument setup, homes, frame, register saves and return.
+     *
+     * Island contract: named 32-bit input/output; clobbers EAX and arithmetic
+     * flags, with final flags from ADD. No x87 instructions; depth 0/0/0 here.
+     * No special-value correction or zero-input special case is performed.
+     *
+     * Authorized consumer: 0x44b8c0.
+     * Ranges: [0x44baab,0x44bab8), [0x44bc39,0x44bc46).
+     * Fresh governed complete-body, relocation and linked-identity proof
+     * remains required.
+     */
+    inline float FastSqrt(float value)
+    {
+        float result;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov eax, value
+        sar eax, 1
+        add eax, 01fc00000h
+        mov result, eax
+        }
+#else
+        *(int*)&result = (*(int*)&value >> 1) + 0x1fc00000;
+#endif
+        return result;
+    }
+} // namespace zMath
+
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.g-zclass-cameraautoclipdistanceadjustenabled
@@ -210,7 +386,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.setviewdistance
      * @recoil-artifact defines .text recoil:function:0x449ba0: CZCamera::SetViewDistance.
-     *
+     * @recoil-match byte
      *
      * Purpose: configure adaptive camera clip-distance scaling from view distance.
      */
@@ -661,7 +837,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetviewport
      * @recoil-artifact defines .text recoil:function:0x44a410: CZCamera::gwCameraSetViewport.
-     *
+     * @recoil-match byte
      *
      * Purpose: update viewport dimensions and derived frustum scale values.
      */
@@ -718,7 +894,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetfov
      * @recoil-artifact defines .text recoil:function:0x44a610: CZCamera::gwCameraSetFOV.
-     *
+     * @recoil-match byte
      *
      * Purpose: set camera frustum dimensions and derived projection scale values.
      */
@@ -789,7 +965,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetclipdistance
      * @recoil-artifact defines .text recoil:function:0x44a870: CZCamera::gwCameraSetClipDistance.
-     *
+     * @recoil-match byte
      *
      * Purpose: store the camera clip distance and inverse squared distance.
      */
@@ -922,6 +1098,9 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildworldtransform
      * @recoil-artifact defines .text recoil:function:0x44abf0: CZCamera::BuildWorldTransform.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-negate
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-length
      *
      *
      * Purpose: build the camera world transform and update the zSound
@@ -939,12 +1118,8 @@ namespace CZCamera
             matrix->posZ += posOffset->z;
         }
 
-        data->cameraPos.x = matrix->posX;
-        data->cameraPos.y = matrix->posY;
-        data->cameraPos.z = matrix->posZ;
-        data->forwardDir.x = -matrix->zx;
-        data->forwardDir.y = -matrix->zy;
-        data->forwardDir.z = -matrix->zz;
+        data->cameraPos = *(zVec3*)&matrix->posX;
+        zMath::Vec3Negate((zVec3*)&matrix->zx, &data->forwardDir);
 
         memcpy(data->worldTransform, matrix, sizeof(zMat4x3));
         zMathMatExtractEulerAngles(matrix, &data->eulerAngles);
@@ -953,30 +1128,33 @@ namespace CZCamera
 
         if ((data->cameraFlags & 0x01) != 0) {
             /*
-             * g_zSnd_PreviousListenerPos is the camera/listener bridge state
-             * for the previous camera position, consumed here before pushing
-             * the current listener state into zSound.
+             * Purpose: compute a candidate listener velocity from
+             * g_zSnd_PreviousListenerPos and retain it only when it passes
+             * the strict subsonic test. Both failure paths share one
+             * velocity-clearing block; listener position/state updates
+             * follow either outcome.
              */
-            zVec3 listenerVelocity = { 0 };
-            if (g_FrameDeltaTimeSec != 0.0f) {
-                listenerVelocity.x = (data->worldTransform[9] - g_zSnd_PreviousListenerPos.x) / g_FrameDeltaTimeSec;
-                listenerVelocity.y = (data->worldTransform[10] - g_zSnd_PreviousListenerPos.y) / g_FrameDeltaTimeSec;
-                listenerVelocity.z = (data->worldTransform[11] - g_zSnd_PreviousListenerPos.z) / g_FrameDeltaTimeSec;
-
-                const float listenerSpeed = sqrt(
-                    listenerVelocity.x * listenerVelocity.x + listenerVelocity.y * listenerVelocity.y
-                    + listenerVelocity.z * listenerVelocity.z
-                );
-                if (zSndGetSpeedOfSoundMps() <= listenerSpeed) {
-                    listenerVelocity.x = 0.0f;
-                    listenerVelocity.y = 0.0f;
-                    listenerVelocity.z = 0.0f;
+            zVec3 listenerVelocity;
+            do {
+                if (g_FrameDeltaTimeSec != 0.0f) {
+                    zMath::Vec3Subtract(
+                        (zVec3*)&data->worldTransform[9],
+                        &g_zSnd_PreviousListenerPos,
+                        &listenerVelocity
+                    );
+                    const float inverseDeltaTime = 1.0f / g_FrameDeltaTimeSec;
+                    listenerVelocity.x *= inverseDeltaTime;
+                    listenerVelocity.y *= inverseDeltaTime;
+                    listenerVelocity.z *= inverseDeltaTime;
+                    const float listenerSpeed = zMath::Vec3Length(&listenerVelocity);
+                    if (zSndGetSpeedOfSoundMps() > listenerSpeed) {
+                        break;
+                    }
                 }
-            }
+                listenerVelocity.x = listenerVelocity.y = listenerVelocity.z = 0.0f;
+            } while (0);
 
-            g_zSnd_PreviousListenerPos.x = data->worldTransform[9];
-            g_zSnd_PreviousListenerPos.y = data->worldTransform[10];
-            g_zSnd_PreviousListenerPos.z = data->worldTransform[11];
+            g_zSnd_PreviousListenerPos = *(zVec3*)&data->worldTransform[9];
             zSndUpdateListenerState((zSndListenerState*)(data->worldTransform), &listenerVelocity);
         }
 
@@ -1770,6 +1948,9 @@ namespace CZLod
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.rendertraverse-44b8c0
      * @recoil-artifact defines .text recoil:function:0x44b8c0: CZLod::RenderTraverse
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-length-sq
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.fast-sqrt-estimate
      *
      *
      * Purpose: cull and render an LOD node, applying range, scale, alpha, and
@@ -1777,28 +1958,36 @@ namespace CZLod
      */
     RenderTraverse(CZNodePartial * node, int siblingCountHint)
     {
-        const int flags = node->flags;
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
+        float scaleZ = 1.0f;
+        int pushScaleMatrix = 0;
+        int pushAlphaScale = 0;
         int boundsContextPushed = 0;
+        zBBoxCorners corners;
+        zVec3 delta;
+        const int flags = node->flags;
         if ((flags & 0x04) == 0) {
             return 0;
         }
 
         CZLodDataPartial* data = (CZLodDataPartial*)(node->classData);
-        zVec3* viewSphereCenter = (zVec3*)node->cachedSphereCenter;
-        float* viewSphereRadius = &node->cachedSphereCenter[3];
-
         node->flags = flags & ~0x02000000;
-        CZLodDistanceState& state = g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
         if (data->computeOwnDistance == 0
-            && (state.distanceSq < data->nearRangeSq || state.distanceSq >= data->farRangeSq)) {
+            && (g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq < data->nearRangeSq
+                || g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq
+                    >= data->farRangeSq)) {
             return 0;
         }
 
         if ((node->boundsFlags & 0x04) != 0 || g_CZClass_RenderBoundsContextActive != 0
             || (node->flags & 0x00080000) == 0) {
-            zBBoxCorners corners = { 0 };
             CZClass::gwNodeGetViewBBoxCorners(node, &corners);
-            CZBBox::CornersToBoundingSphere(&corners, viewSphereCenter, viewSphereRadius);
+            CZBBox::CornersToBoundingSphere(
+                &corners,
+                zClassNodeViewSphereCenter(node),
+                zClassNodeViewSphereRadius(node)
+            );
             if ((node->flags & 0x00080000) != 0) {
                 node->boundsFlags &= ~0x04;
             }
@@ -1808,42 +1997,39 @@ namespace CZLod
             }
         }
         if (data->computeOwnDistance != 0) {
-            state.center = *viewSphereCenter;
-            zVec3 delta = { 0 };
-            delta.x = g_zVideo_pActiveViewContext->cameraPos.x - state.center.x;
-            delta.y = g_zVideo_pActiveViewContext->cameraPos.y - state.center.y;
-            delta.z = g_zVideo_pActiveViewContext->cameraPos.z - state.center.z;
-            state.distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-            state.distanceSq *= g_zVideo_pActiveViewContext->invClipDistanceSq;
-        }
-        if (state.distanceSq < data->nearRangeSq || state.distanceSq >= data->farRangeSq) {
-            if (boundsContextPushed != 0) {
-                g_CZClass_RenderBoundsContextActive = 0;
+            g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].center
+                = *zClassNodeViewSphereCenter(node);
+            zMath::Vec3Subtract(
+                &g_zVideo_pActiveViewContext->cameraPos,
+                &g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].center,
+                &delta
+            );
+            g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq
+                = zMath::Vec3LengthSq(&delta);
+            g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq
+                *= g_zVideo_pActiveViewContext->invClipDistanceSq;
+            if (g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq < data->nearRangeSq
+                || g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq >= data->farRangeSq) {
+                if (boundsContextPushed != 0) {
+                    g_CZClass_RenderBoundsContextActive = 0;
+                }
+                return 0;
             }
-            return 0;
         }
 
-        float scaleX = 1.0f;
-        float scaleY = 1.0f;
-        float scaleZ = 1.0f;
-        int pushScaleMatrix = 0;
-        int pushAlphaScale = 0;
-        float alphaScale = 1.0f;
-        int distanceBits = 0;
-        memcpy(&distanceBits, &state.distanceSq, sizeof(distanceBits));
-        distanceBits = (distanceBits >> 1) + 0x1fc00000;
-        float distance = 0.0f;
-        memcpy(&distance, &distanceBits, sizeof(distance));
-        if (distance > data->nearRange) {
-            distance = data->nearRange;
+        float distance
+            = zMath::FastSqrt(g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq);
+        const float nearRange = data->nearRange;
+        if (distance > nearRange) {
+            distance = nearRange;
         }
 
         if (data->fadeAmount.x > 0.01f) {
-            const float fadeBegin = data->nearRange - data->fadeWidth.x;
+            const float fadeWidth = data->fadeWidth.x;
+            const float fadeBegin = nearRange - fadeWidth;
             pushScaleMatrix = 1;
-            scaleX = distance <= fadeBegin
-                ? 1.0f
-                : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.x - 1.0f) / data->fadeWidth.x;
+            scaleX = distance > fadeBegin ? 1.0f - (fadeBegin - distance) * (data->fadeEndScale.x - 1.0f) / fadeWidth
+                                          : 1.0f;
             if (data->active != 0) {
                 scaleY = scaleX;
                 scaleZ = scaleX;
@@ -1851,36 +2037,39 @@ namespace CZLod
         }
         if (data->active == 0) {
             if (data->fadeAmount.y > 0.01f) {
-                const float fadeBegin = data->nearRange - data->fadeWidth.y;
+                const float fadeWidth = data->fadeWidth.y;
+                const float fadeBegin = nearRange - fadeWidth;
                 pushScaleMatrix = 1;
-                scaleY = distance <= fadeBegin
-                    ? 1.0f
-                    : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.y - 1.0f) / data->fadeWidth.y;
+                scaleY = distance > fadeBegin
+                    ? 1.0f - (fadeBegin - distance) * (data->fadeEndScale.y - 1.0f) / fadeWidth
+                    : 1.0f;
             }
             if (data->fadeAmount.z > 0.01f) {
-                const float fadeBegin = data->nearRange - data->fadeWidth.z;
+                const float fadeWidth = data->fadeWidth.z;
+                const float fadeBegin = nearRange - fadeWidth;
                 pushScaleMatrix = 1;
-                scaleZ = distance <= fadeBegin
-                    ? 1.0f
-                    : 1.0f - (fadeBegin - distance) * (data->fadeEndScale.z - 1.0f) / data->fadeWidth.z;
+                scaleZ = distance > fadeBegin
+                    ? 1.0f - (fadeBegin - distance) * (data->fadeEndScale.z - 1.0f) / fadeWidth
+                    : 1.0f;
             }
         }
 
-        if (data->vertexShadingAmount > 0.01f && distance > data->nearRange - data->fogStartDist) {
-            pushAlphaScale = 1;
-            alphaScale = (data->nearRange - distance) / data->fogStartDist;
+        float alphaScale = 1.0f;
+        if (data->vertexShadingAmount > 0.01f) {
+            const float fogStartDist = data->fogStartDist;
+            if (distance > nearRange - fogStartDist) {
+                alphaScale = (nearRange - distance) / fogStartDist;
+                pushAlphaScale = 1;
+            }
         }
         if (data->fogFadeAmount > 0.01f) {
-            int nearDistanceBits = 0;
-            memcpy(&nearDistanceBits, &data->nearRangeSq, sizeof(nearDistanceBits));
-            nearDistanceBits = (nearDistanceBits >> 1) + 0x1fc00000;
-            float nearDistance = 0.0f;
-            memcpy(&nearDistance, &nearDistanceBits, sizeof(nearDistance));
+            const float fogFadeWidth = data->fogFadeWidth;
+            const float nearDistance = zMath::FastSqrt(data->nearRangeSq);
             if (distance < nearDistance) {
                 distance = nearDistance;
             }
-            if (distance < nearDistance + data->fogFadeWidth) {
-                const float fogScale = (distance - nearDistance) / data->fogFadeWidth;
+            if (distance < nearDistance + fogFadeWidth) {
+                const float fogScale = (distance - nearDistance) / fogFadeWidth;
                 if (fogScale < alphaScale) {
                     alphaScale = fogScale;
                     pushAlphaScale = 1;
@@ -1891,7 +2080,11 @@ namespace CZLod
         int clipMask = *gModel_ClipMaskStackTop;
         int result = 0;
         if (clipMask != 0 && siblingCountHint > 1) {
-            result = zVideoFrustumTestSphereClipMask(viewSphereCenter, *viewSphereRadius, &clipMask);
+            result = zVideoFrustumTestSphereClipMask(
+                zClassNodeViewSphereCenter(node),
+                *zClassNodeViewSphereRadius(node),
+                &clipMask
+            );
             if ((node->flags & 0x80) != 0) {
                 if (result == 0x20) {
                     result = 0;
@@ -1907,56 +2100,65 @@ namespace CZLod
 
             if (data->rangeNode != 0) {
                 const float fadeBegin = data->farRangeSq - data->rangeSq;
-                g_CZClass_RenderRangeFadeActive = 1;
-                if (fadeBegin < state.distanceSq) {
-                    g_CZClass_RenderRangeFadeScale = (state.distanceSq - fadeBegin) / (data->farRangeSq - fadeBegin);
+                if (fadeBegin < g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq) {
+                    g_CZClass_RenderRangeFadeActive = 1;
+                    g_CZClass_RenderRangeFadeScale
+                        = (g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop].distanceSq - fadeBegin)
+                        / (data->farRangeSq - fadeBegin);
                 } else {
+                    g_CZClass_RenderRangeFadeActive = 1;
                     g_CZClass_RenderRangeFadeScale = 0.0f;
                 }
             }
 
-            const int nextLodStack = g_CZClass_LodDistanceStateStackTop + 1;
-            g_CZClass_LodDistanceStateStack[nextLodStack]
-                = g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop];
-            g_CZClass_LodDistanceStateStackTop = nextLodStack;
+            if (node->listCountB > 0) {
+                zMat4x3 slotBuffer;
+                ++g_CZClass_LodDistanceStateStackTop;
+                g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop]
+                    = g_CZClass_LodDistanceStateStack[g_CZClass_LodDistanceStateStackTop - 1];
 
-            zMat4x3 slotBuffer;
-            if (pushScaleMatrix != 0) {
-                zMath::MatStackPushAndCloneParent((float*)&slotBuffer);
-                zMath_Mat_Scale(scaleX, scaleY, scaleZ);
-            }
-            if (pushAlphaScale != 0) {
-                ++g_CZClass_RenderAlphaScaleStackTop;
-                g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] = alphaScale;
-                zModelRenderAlphaScaleSetCurrent(alphaScale);
-            }
+                if (pushScaleMatrix != 0) {
+                    zMath::MatStackPushAndCloneParent((float*)&slotBuffer);
+                    zMath_Mat_Scale(scaleX, scaleY, scaleZ);
+                }
+                if (pushAlphaScale != 0) {
+                    ++g_CZClass_RenderAlphaScaleStackTop;
+                    g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop] = alphaScale;
+                    zModelRenderAlphaScaleSetCurrent(alphaScale);
+                }
 
-            int pushedVertexAlpha = 0;
-            if ((node->flags & 0x00800000) != 0 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
-                pushedVertexAlpha = 1;
-                g_CZClass_RenderVertexAlphaOverrideActive = 1;
-                zModelRenderVertexAlphaEnabledSetCurrent(1);
-            }
+                int pushedVertexAlpha;
+                if ((node->flags & 0x00800000) != 0 && g_CZClass_RenderVertexAlphaOverrideActive == 0) {
+                    pushedVertexAlpha = 1;
+                    g_CZClass_RenderVertexAlphaOverrideActive = 1;
+                    zModelRenderVertexAlphaEnabledSetCurrent(1);
+                } else {
+                    pushedVertexAlpha = 0;
+                }
 
-            for (int i = 0; i < node->listCountB; ++i) {
-                CZClass::gwNodeRenderDispatch(node->listB[i], node->listCountB);
-            }
+                for (int i = 0; i < node->listCountB; ++i) {
+                    CZClass::gwNodeRenderDispatch(node->listB[i], node->listCountB);
+                }
 
-            if (pushScaleMatrix != 0) {
-                zMath::MatStackPopPtr();
+                if (pushScaleMatrix != 0) {
+                    zMath::MatStackPopPtr();
+                }
+                if (pushAlphaScale != 0) {
+                    --g_CZClass_RenderAlphaScaleStackTop;
+                    if (g_CZClass_RenderAlphaScaleStackTop < 0) {
+                        zModelRenderAlphaScaleSetCurrent(1.0f);
+                    } else {
+                        zModelRenderAlphaScaleSetCurrent(
+                            g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
+                        );
+                    }
+                }
+                if (pushedVertexAlpha != 0) {
+                    g_CZClass_RenderVertexAlphaOverrideActive = 0;
+                    zModelRenderVertexAlphaEnabledSetCurrent(0);
+                }
+                --g_CZClass_LodDistanceStateStackTop;
             }
-            if (pushAlphaScale != 0) {
-                --g_CZClass_RenderAlphaScaleStackTop;
-                const float previousAlphaScale = g_CZClass_RenderAlphaScaleStackTop >= 0
-                    ? g_CZClass_RenderAlphaScaleStack[g_CZClass_RenderAlphaScaleStackTop]
-                    : 1.0f;
-                zModelRenderAlphaScaleSetCurrent(previousAlphaScale);
-            }
-            if (pushedVertexAlpha != 0) {
-                g_CZClass_RenderVertexAlphaOverrideActive = 0;
-                zModelRenderVertexAlphaEnabledSetCurrent(0);
-            }
-            --g_CZClass_LodDistanceStateStackTop;
             g_CZClass_RenderRangeFadeActive = 0;
             --gModel_ClipMaskStackTop;
         }

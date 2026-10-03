@@ -102,13 +102,6 @@ inline CSpinButtonCtrl::CSpinButtonCtrl() { }
 
 extern "C" HWND g_RecoilApp_hWndMain;
 
-static const float kGameNetPkt06SendIntervalSec = 0.100000001f;
-static const float kGameNetHudTimerWarningDurationSec = 5.0f;
-static const float kGameNetHudTimerTenSecondThreshold = 10.0f;
-static const float kGameNetHudTimerOneMinuteLeadSec = 60.0f;
-static const unsigned int kGameNetPkt06InputBit16Flag = 0x10000u;
-static const unsigned int kGameNetPkt06InputBit17Flag = 0x20000u;
-static const unsigned int kGameNetPkt06ProgressTargetsFlag = 0x40000u;
 static const unsigned int kGameNetRemoteAltGunDispatchFlag = 0x2000000u;
 static const unsigned int kGameNetRemoteCloneNodeFlag = 0x400000u;
 static const float kGameNetRemoteUnlimitedAmmo = 123456792.0f;
@@ -426,29 +419,19 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
         return 1;
     }
 
-    g_GameNetPkt06NextSendTimeSec = g_Time_AccumulatedTimeSec + ::kGameNetPkt06SendIntervalSec;
+    g_GameNetPkt06NextSendTimeSec = g_Time_AccumulatedTimeSec + 0.1f;
 
     NetPkt06_PlayerStateSnapshot* const packet = &g_NetPkt06_PlayerStateSnapshotBuf;
-    packet->header.packetType = 0x06;
     packet->header.packetSizeBytes = 0x44;
+    packet->header.packetType = 0x06;
     packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
     packet->cachedAltSelectionCode = (short)(playerState->cachedAltSelectionCode);
     packet->cachedPrimarySelectionCode = (short)(playerState->cachedPrimarySelectionCode);
-
-    unsigned int packedFlags = packet->packedMasterTypeColorFlags;
-    packedFlags = (packedFlags & ~0xffu) | ((unsigned int)(primaryModalState->masterModalData->masterType) & 0xffu);
-    packedFlags = (packedFlags & ~0xff00u) | (((unsigned int)(GetLocalPlayerColorIndexOrZero()) & 0xffu) << 8);
-    if ((g_GameNetPkt06InputBit16Latch & 1) != 0) {
-        packedFlags |= 0x10000u;
-    } else {
-        packedFlags &= ~0x10000u;
-    }
+    packet->masterType = primaryModalState->masterModalData->masterType;
+    packet->colorIndex = GetLocalPlayerColorIndexOrZero();
+    packet->inputBit16 = g_GameNetPkt06InputBit16Latch;
     g_GameNetPkt06InputBit16Latch = 0;
-    if ((g_GameNetPkt06InputBit17Latch & 1) != 0) {
-        packedFlags |= 0x20000u;
-    } else {
-        packedFlags &= ~0x20000u;
-    }
+    packet->inputBit17 = g_GameNetPkt06InputBit17Latch;
     g_GameNetPkt06InputBit17Latch = 0;
 
     packet->altGunAimOrigin = playerState->altGunAimOrigin;
@@ -458,29 +441,26 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
     packet->statusMeterValue = playerState->statusMeterValue;
 
     if (playerState->progressTargetCount > 0) {
-        packedFlags |= 0x40000u;
-        packet->header.packetSizeBytes = (short)(0x44 + 4 + playerState->progressTargetCount * sizeof(zVec3));
+        packet->hasProgressTargets = 1;
+        packet->header.packetSizeBytes += (short)(sizeof(int) + playerState->progressTargetCount * sizeof(zVec3));
         packet->progressTargetCount = playerState->progressTargetCount;
         for (int progressIndex = 0; progressIndex < playerState->progressTargetCount; ++progressIndex) {
             const zVec3* const targetPos = playerState->progressTargetSlots[progressIndex].targetPos;
             packet->progressTargetPoints[progressIndex] = *targetPos;
         }
     } else {
-        packedFlags &= ~0x40000u;
+        packet->hasProgressTargets = 0;
     }
-    packet->packedMasterTypeColorFlags = packedFlags;
 
     const int sendResult = zNetworkSendPacketUnreliable(&packet->header);
-    const int raceCheckpointMode = g_HudSensorTracker.raceCheckpointMode;
     if (zNetwork::IsHost() != 0) {
-        if (raceCheckpointMode != 0) {
+        if (g_HudSensorTracker.raceCheckpointMode != 0) {
             HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
-            const float timerSeconds = HudUiTimerPanel::GetSeconds();
+            timerState.timerSeconds = HudUiTimerPanel::GetSeconds();
             timerState.startCountdownTriggered = 0;
-            timerState.timerSeconds = timerSeconds;
 
             if (timerState.startGateTriggered == 0) {
-                if (timerSeconds <= 0.0f) {
+                if (timerState.timerSeconds <= g_FrameDeltaTimeSec) {
                     timerState.startGateTriggered = 1;
                     timerState.timerDirectionNeg = 0;
                     timerState.timerSeconds = 0.0f;
@@ -492,19 +472,19 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
                      * Purpose: name the replicated start-gate effect animation
                      * stopped when the host race countdown reaches zero.
                      */
-                    zEffectAnim::SetVelocityThunk(zEffectAnim::FindEntryByName("startgate"), 0, 0.0f, 0.0f, 0.0f);
+                    zEffectAnimEntry* const startGateEntry = zEffectAnim::FindEntryByName("startgate");
+                    zEffectAnim::SetVelocityThunk(startGateEntry, 0, 0.0f, 0.0f, 0.0f);
                     SendPkt0DHudTimerPanelState(&timerState);
                 } else if (g_HudTimerPanelNetState.startCountdownTriggered == 0
-                    && g_HudTimerPanelNetState.tenSecondWarningsEnabled != 0
-                    && timerSeconds <= ::kGameNetHudTimerTenSecondThreshold) {
-                    timerState.timerSeconds = ::kGameNetHudTimerTenSecondThreshold;
-                    HudUiTimerPanel::SetSeconds(g_FrameDeltaTimeSec + ::kGameNetHudTimerTenSecondThreshold, -1.0f);
+                    && g_HudTimerPanelNetState.tenSecondWarningsEnabled != 0) {
+                    timerState.timerSeconds = 10.0f;
+                    HudUiTimerPanel::SetSeconds(g_FrameDeltaTimeSec + 10.0f, -1.0f);
                     timerState.startCountdownTriggered = 1;
                     SendPkt0DHudTimerPanelState(&timerState);
-                } else if (timerSeconds > ::kGameNetHudTimerTenSecondThreshold && (int)(timerSeconds) % 10 == 0) {
+                } else if (timerState.timerSeconds > 10.0f && (int)(timerState.timerSeconds) % 10 == 0) {
                     if (g_GameNetHudTimerTenSecondWarningArmed != 0) {
-                        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x32), ::kGameNetHudTimerWarningDurationSec);
-                        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x31), ::kGameNetHudTimerWarningDurationSec);
+                        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x32), 5.0f);
+                        HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x31), 5.0f);
                         g_GameNetHudTimerTenSecondWarningArmed = 0;
                     }
                 } else {
@@ -515,15 +495,12 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
             if (timerState.raceFinishCountdownTriggered != 0 && timerState.timeWarningShown == 0) {
                 timerState.timeWarningShown = 1;
                 SendPkt0DHudTimerPanelState(&timerState);
-                return sendResult;
             }
         } else {
-            const float timerSeconds = HudUiTimerPanel::GetSeconds();
-            g_HudTimerPanelNetState.timerSeconds = timerSeconds;
+            const float timerSeconds = g_HudTimerPanelNetState.timerSeconds = HudUiTimerPanel::GetSeconds();
             HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
 
-            if (timerState.oneMinuteWarningShown == 0
-                && timerSeconds < g_FrameDeltaTimeSec + ::kGameNetHudTimerOneMinuteLeadSec) {
+            if (timerState.oneMinuteWarningShown == 0 && timerSeconds < g_FrameDeltaTimeSec + 60.0f) {
                 timerState.oneMinuteWarningShown = 1;
                 SendPkt0CHudTimerStatusBits(&timerState);
             }
@@ -535,24 +512,18 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
 
             if (g_Time_AccumulatedTimeSec > g_HudTimerPanelNetState.statusBitsResendDeadline) {
                 SendPkt0CHudTimerStatusBits(&timerState);
-                return sendResult;
             }
         }
-
-        return sendResult;
-    }
-
-    if (raceCheckpointMode != 0) {
+    } else if (g_HudSensorTracker.raceCheckpointMode != 0) {
         HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
         if (timerState.startGateTriggered != 0 || timerState.startCountdownTriggered != 0) {
             g_GameNetHudTimerPendingSaveReminderArmed = 1;
         } else if ((int)(HudUiTimerPanel::GetSeconds()) % 10 != 0) {
             g_GameNetHudTimerPendingSaveReminderArmed = 1;
         } else if (g_GameNetHudTimerPendingSaveReminderArmed != 0) {
-            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x34), ::kGameNetHudTimerWarningDurationSec);
-            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x33), ::kGameNetHudTimerWarningDurationSec);
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x34), 5.0f);
+            HudUi::ShowTopMessageLine(zLoc::GetMessageString(0x33), 5.0f);
             g_GameNetHudTimerPendingSaveReminderArmed = 0;
-            return sendResult;
         }
     }
 
@@ -652,7 +623,7 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     GameNetPlayerRowListState* const rowList = &g_GameNetPlayerRowList;
     GameNetPlayerRow* const row = rowList->AppendNewRow(0);
     row->playerKey = packet->header.payloadDword0;
-    row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
+    row->playerColorIndex = packet->colorIndex;
     row->playerNode = clonedNode;
     row->score = 0;
     row->lapCount = 0;
@@ -718,8 +689,8 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
 
     playerState->netUpdateReceived = 1;
 
-    if (row->playerColorIndex != (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu)) {
-        row->playerColorIndex = (int)((packet->packedMasterTypeColorFlags >> 8) & 0xffu);
+    if (row->playerColorIndex != packet->colorIndex) {
+        row->playerColorIndex = packet->colorIndex;
         const unsigned int packedColor = g_GameNetPlayerRowStyleColors_00RRGGBB[row->playerColorIndex];
         row->playerColorPackedRgb = packedColor;
         row->hudWidget.SetTextColorsAndMarkDirty(packedColor, packedColor);
@@ -727,7 +698,7 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
         row->ApplyPlayerColorTint();
     }
 
-    const int masterType = (int)(packet->packedMasterTypeColorFlags & 0xffu);
+    const int masterType = packet->masterType;
     if (masterType != masterModalData->masterType) {
         Player::ApplyMasterTypeTransition(saveState, masterType, 0);
     }
@@ -736,15 +707,11 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
     playerState->netReceivedAngles = packet->vehicleRotationAngles;
 
     if (playerState->netLastUpdateFrameTick == g_zVideo_FrameTick) {
-        playerState->netInputBit16Latch
-            |= (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
-        playerState->netInputBit17Latch
-            |= (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
+        playerState->netInputBit16Latch |= packet->inputBit16;
+        playerState->netInputBit17Latch |= packet->inputBit17;
     } else {
-        playerState->netInputBit16Latch
-            = (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit16Flag) != 0 ? 1 : 0;
-        playerState->netInputBit17Latch
-            = (packet->packedMasterTypeColorFlags & ::kGameNetPkt06InputBit17Flag) != 0 ? 1 : 0;
+        playerState->netInputBit16Latch = packet->inputBit16;
+        playerState->netInputBit17Latch = packet->inputBit17;
         playerState->netLastUpdateFrameTick = g_zVideo_FrameTick;
     }
 
@@ -773,7 +740,7 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
         playerState->progressTargetRuntimeSlots[index].targetPos = 0;
     }
 
-    if ((packet->packedMasterTypeColorFlags & ::kGameNetPkt06ProgressTargetsFlag) == 0) {
+    if (packet->hasProgressTargets == 0) {
         playerState->progressTargetCount = 0;
         return 1;
     }
@@ -1879,7 +1846,7 @@ void __fastcall SendPkt0ARemoveRuntimeRelay(OptCatalogEntryDef* self, zVec3* poi
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handlepkt0a-removeruntimerelay
  * @recoil-artifact defines .text recoil:function:0x4342d0: OptCatalog::HandlePkt0ARemoveRuntimeRelay
- *
+ * @recoil-match byte
  *
  * Purpose: Resolves and applies an incoming runtime-object removal relay.
  */

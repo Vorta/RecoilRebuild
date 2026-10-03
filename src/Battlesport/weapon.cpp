@@ -1828,10 +1828,13 @@ void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updategunandturretaimnodes
  * @recoil-artifact defines .text recoil:function:0x43a4f0: Player::UpdateGunAndTurretAimNodes
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.gun-turret-aim-nodes.fast-sqrt-estimate recoil:function:0x43a4f0
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.gun-turret-aim-nodes.fast-sqrt-estimate
  *
  *
  * Purpose: apply the alternate gun aim vector to the gun pitch and turret yaw
- * node matrices.
+ * node matrices; reviewed inline asm reproduces the retail horizontal-length
+ * estimate after failed VC5 C++ bit-conversion variants.
  */
 void __fastcall UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePartial* gunNode, CZNodePartial* turretNode)
 {
@@ -1839,11 +1842,26 @@ void __fastcall UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePart
         return;
     }
 
-    float horizontalLength = aimDirection->x * aimDirection->x + aimDirection->z * aimDirection->z;
-    int horizontalLengthBits = 0;
-    memcpy(&horizontalLengthBits, &horizontalLength, sizeof(horizontalLengthBits));
-    horizontalLengthBits = (horizontalLengthBits >> 1) + 0x1fc00000;
-    memcpy(&horizontalLength, &horizontalLengthBits, sizeof(horizontalLength));
+    const float horizontalLengthSq = aimDirection->x * aimDirection->x + aimDirection->z * aimDirection->z;
+    float horizontalLength;
+    /**
+     * Purpose: reproduce the retail bit-pattern square-root estimate from
+     * horizontalLengthSq to horizontalLength at [0x43a52e,0x43a53b), after the documented VC5SP3
+     * native-C controls failed.
+     *
+     * Reads horizontalLengthSq; writes horizontalLength; clobbers EAX and arithmetic condition
+     * flags. x87 entry/peak/exit depth at this site: 0/0/0. No frame
+     * manipulation or surrounding floating-point work is authored in assembly.
+     *
+     * Address-specific exception reviewed 2026-10-03. Fresh governed body,
+     * relocation and linked-identity proof remains mandatory.
+     */
+    __asm {
+        mov eax, horizontalLengthSq
+        sar eax, 1
+        add eax, 01fc00000h
+        mov horizontalLength, eax
+    }
 
     zMat4x3* const gunMatrix = (zMat4x3*)CZObject3D::gwObject3DGetMatrixPtr(gunNode);
     gunMatrix->xx = 1.0f;
@@ -1857,12 +1875,14 @@ void __fastcall UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePart
     gunMatrix->zz = horizontalLength;
     CZObject3D::gwObject3DSetMatrix(gunNode, (float*)gunMatrix);
 
-    float yawForward = 1.0f;
-    float yawSide = 0.0f;
-    if (horizontalLength != 0.0f) {
-        const float invHorizontalLength = 1.0f / horizontalLength;
-        yawForward = -(aimDirection->z * invHorizontalLength);
-        yawSide = -(aimDirection->x * invHorizontalLength);
+    float yawForward;
+    float yawSide;
+    if (horizontalLength == 0.0f) {
+        yawForward = 1.0f;
+        yawSide = 0.0f;
+    } else {
+        yawForward = -(aimDirection->z * (1.0f / horizontalLength));
+        yawSide = -(aimDirection->x * (1.0f / horizontalLength));
     }
 
     zMat4x3* const turretMatrix = (zMat4x3*)CZObject3D::gwObject3DGetMatrixPtr(turretNode);
@@ -2321,10 +2341,13 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyaimpitchtodirection
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
  *
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
- * horizontal heading when possible.
+ * horizontal heading when possible; reviewed inline asm reproduces the retail
+ * scale estimates after failed VC5 C++ bit-conversion variants.
  */
 void __fastcall ApplyAimPitchToDirection(zVec3* direction, float pitchY)
 {
@@ -2335,22 +2358,51 @@ void __fastcall ApplyAimPitchToDirection(zVec3* direction, float pitchY)
             return;
         }
 
-        float diagonal = (1.0f - pitchY * pitchY) * 0.5f;
-        int diagonalBits = 0;
-        memcpy(&diagonalBits, &diagonal, sizeof(diagonalBits));
-        diagonalBits = (diagonalBits >> 1) + 0x1fc00000;
-        memcpy(&diagonal, &diagonalBits, sizeof(diagonal));
-        direction->x = diagonal;
+        const float diagonalSq = (1.0f - pitchY * pitchY) * 0.5f;
+        float diagonal;
+        /**
+         * Purpose: reproduce the retail bit-pattern square-root estimate from
+         * diagonalSq to diagonal at [0x43b569,0x43b576), after the documented VC5SP3
+         * native-C controls failed.
+         *
+         * Reads diagonalSq; writes diagonal; clobbers EAX and arithmetic condition
+         * flags. x87 entry/peak/exit depth at this site: 0/0/0. No frame
+         * manipulation or surrounding floating-point work is authored in assembly.
+         *
+         * Address-specific exception reviewed 2026-10-03. Fresh governed body,
+         * relocation and linked-identity proof remains mandatory.
+         */
+        __asm {
+            mov eax, diagonalSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov diagonal, eax
+        }
+        direction->x = direction->z = diagonal;
         direction->y = pitchY;
-        direction->z = diagonal;
         return;
     }
 
-    float scale = (1.0f - pitchY * pitchY) / horizontalLenSq;
-    int scaleBits = 0;
-    memcpy(&scaleBits, &scale, sizeof(scaleBits));
-    scaleBits = (scaleBits >> 1) + 0x1fc00000;
-    memcpy(&scale, &scaleBits, sizeof(scale));
+    const float scaleSq = (1.0f - pitchY * pitchY) / horizontalLenSq;
+    float scale;
+    /**
+     * Purpose: reproduce the retail bit-pattern square-root estimate from
+     * scaleSq to scale at [0x43b59f,0x43b5ac), after the documented VC5SP3
+     * native-C controls failed.
+     *
+     * Reads scaleSq; writes scale; clobbers EAX and arithmetic condition
+     * flags. x87 entry/peak/exit depth at this site: 0/0/0. No frame
+     * manipulation or surrounding floating-point work is authored in assembly.
+     *
+     * Address-specific exception reviewed 2026-10-03. Fresh governed body,
+     * relocation and linked-identity proof remains mandatory.
+     */
+    __asm {
+        mov eax, scaleSq
+        sar eax, 1
+        add eax, 01fc00000h
+        mov scale, eax
+    }
     direction->x *= scale;
     direction->y = pitchY;
     direction->z *= scale;

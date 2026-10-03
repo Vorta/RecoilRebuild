@@ -735,7 +735,7 @@ inline const CZNodeFreeListSlot* zClassNodeSlotFromNode(const CZNodePartial* nod
 }
 
 /**
- * Source inline helper; retail sphere access is observed in the render
+ * Inferred original-source inline helper; retail sphere access is observed in the render
  * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
  * center occupies node bytes 0x64..0x6f, separately from the primary bounds.
  * Purpose: return the cached view-sphere center without aliasing the model
@@ -747,7 +747,7 @@ inline zVec3* zClassNodeViewSphereCenter(CZNodePartial* node)
 }
 
 /**
- * Source inline helper; retail sphere access is observed in the render
+ * Inferred original-source inline helper; retail sphere access is observed in the render
  * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
  * center occupies node bytes 0x64..0x6f, separately from the primary bounds.
  * This overload preserves const access to that same cached sphere.
@@ -760,7 +760,7 @@ inline const zVec3* zClassNodeViewSphereCenter(const CZNodePartial* node)
 }
 
 /**
- * Source inline helper; retail sphere access is observed in the render
+ * Inferred original-source inline helper; retail sphere access is observed in the render
  * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
  * radius occupies node bytes 0x70..0x73, separately from the primary bounds.
  * Purpose: return the cached view-sphere radius without aliasing the model
@@ -772,7 +772,7 @@ inline float* zClassNodeViewSphereRadius(CZNodePartial* node)
 }
 
 /**
- * Source inline helper; retail sphere access is observed in the render
+ * Inferred original-source inline helper; retail sphere access is observed in the render
  * traversal callers at 0x44ada0, 0x44b300, and 0x44b8c0. The cached sphere
  * radius occupies node bytes 0x70..0x73, separately from the primary bounds.
  * This overload preserves const access to that same cached sphere.

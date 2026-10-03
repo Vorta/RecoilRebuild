@@ -240,7 +240,11 @@ struct NetPkt06_PlayerStateSnapshot {
     zNetworkPacketHeader header;
     short cachedAltSelectionCode;
     short cachedPrimarySelectionCode;
-    unsigned int packedMasterTypeColorFlags;
+    unsigned int masterType : 8;
+    unsigned int colorIndex : 8;
+    unsigned int inputBit16 : 1;
+    unsigned int inputBit17 : 1;
+    unsigned int hasProgressTargets : 1;
     zVec3 altGunAimOrigin;
     zVec3 storedTargetPos;
     zVec3 worldPos;
@@ -467,7 +471,7 @@ RECOIL_STATIC_ASSERT(offsetof(NetPkt0C_HudTimerStatusBits, statusBitsPackedHiWor
 RECOIL_STATIC_ASSERT(sizeof(NetPkt0C_HudTimerStatusBits) == 0x14);
 RECOIL_STATIC_ASSERT(offsetof(NetPkt0D_HudTimerPanelState, hudTimerFlagsPacked) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, cachedAltSelectionCode) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, packedMasterTypeColorFlags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, cachedPrimarySelectionCode) == 0x0a);
 RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, altGunAimOrigin) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, storedTargetPos) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(NetPkt06_PlayerStateSnapshot, worldPos) == 0x28);
