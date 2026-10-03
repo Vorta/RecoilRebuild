@@ -3594,7 +3594,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregions-tryappendnode
      * @recoil-artifact defines .text recoil:function:0x446f60: CZDisplayInstance::FilterRegionsTryAppendNode.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.

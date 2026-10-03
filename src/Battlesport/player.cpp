@@ -3529,7 +3529,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatpose
  * @recoil-artifact defines .text recoil:function:0x421ab0: Player::CreateFromNamesAtPose
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: create and link a player save state from template/object names at

@@ -304,7 +304,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatedebugoverlayhud
  * @recoil-artifact defines .text recoil:function:0x42aa50: Player::UpdateDebugOverlayHud.
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: refresh weapon HUD values, objective counter text, and the debug

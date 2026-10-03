@@ -55,7 +55,7 @@ void __fastcall PushBack(zSndFadeEntry* fadeEntry)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeentry-tickandmaybedispatch
  * @recoil-artifact defines .text recoil:function:0x4a3ad0: zSndFadeEntry::UpdateAndQueueCompletion.
- *
+ * @recoil-match byte
  *
  * Purpose: advance one fade entry toward its target, apply the backend
  * volume/gain value, and queue completed entries for dispatch.
