@@ -6,6 +6,7 @@
 #include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -203,6 +204,45 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_Matl_ErrCycleNullStr) == 0x2d);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetCycleTextureLoopTextureNotCycledMsg) == 0x29);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetCycleTextureSpeedTextureNotCycledMsg) == 0x2a);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_CopyMaterialBufferFullUsingDefaultMsg) == 0x3e);
+
+namespace zReader
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zreader-findglobalstringprefixindex
+     * @recoil-artifact defines .text recoil:function:0x4804e0: zReader::FindGlobalStringPrefixIndex
+     * @recoil-match byte
+     *
+     * Purpose: find the global string-table prefix that matches the start of a
+     * reader token and is followed by the token end or whitespace.
+     */
+    int __fastcall FindGlobalStringPrefixIndex(const char* text)
+    {
+        if (text == 0) {
+            return -1;
+        }
+
+        for (int index = 0; index < g_zRndr_GlobalStringCount; ++index) {
+            const size_t prefixLength = strlen(g_zRndr_GlobalStringTable[index]);
+            if (strlen(text) < prefixLength) {
+                continue;
+            }
+
+            const char nextChar = text[prefixLength];
+            /* Original zrdr_global.c used the VC5 C ctype macro shape; the C++
+               header would call imported isspace instead of touching these CRT
+               globals. */
+            if (nextChar != '\0' && (MB_CUR_MAX > 1 ? _isctype(nextChar, _SPACE) : (_pctype[nextChar] & _SPACE)) == 0) {
+                continue;
+            }
+
+            if (_strnicmp(text, g_zRndr_GlobalStringTable[index], prefixLength) == 0) {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+} // namespace zReader
 
 namespace zModel_MatlSlot
 {

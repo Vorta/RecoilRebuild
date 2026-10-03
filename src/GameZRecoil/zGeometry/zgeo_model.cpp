@@ -52,6 +52,72 @@ RECOIL_STATIC_ASSERT(offsetof(zGeometry_ClipPatchModelNodeBoundsView, boundsNegM
 zModel_MaterialPartial* g_zGeometry_Model_LastRandomDebugMaterial = 0;
 } // namespace
 
+namespace zGeometry_Vec3Array {
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-rotateneg90aroundx
+ * @recoil-artifact defines .text recoil:function:0x46a5e0: zGeometry_Vec3Array::RotateNeg90AroundX
+ * @recoil-match byte
+ *
+ * Purpose: Rotate an array of vectors negative ninety degrees around X.
+ */
+void __fastcall RotateNeg90AroundX(int pointCount, zVec3* points)
+{
+    while (pointCount--) {
+        const float y = points->y;
+        points->y = points->z;
+        points->z = -y;
+        ++points;
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-rotatepos90aroundx
+ * @recoil-artifact defines .text recoil:function:0x46a600: zGeometry_Vec3Array::RotatePos90AroundX
+ * @recoil-match byte
+ *
+ * Purpose: Rotate an array of vectors positive ninety degrees around X.
+ */
+void __fastcall RotatePos90AroundX(int pointCount, zVec3* points)
+{
+    while (pointCount--) {
+        const float z = points->z;
+        points->z = points->y;
+        points->y = -z;
+        ++points;
+    }
+}
+
+} // namespace zGeometry_Vec3Array
+
+namespace zGeometry_Bounds2D {
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-overlapswithunitmargin
+ * @recoil-artifact defines .text recoil:function:0x46a620: zGeometry_Bounds2D::OverlapsWithUnitMargin
+ * @recoil-match byte
+ *
+ * Purpose: Test XY bounds overlap with the retail one-unit margin.
+ */
+int __fastcall OverlapsWithUnitMargin(zGeometry_BoundsXY* boundsA, zGeometry_BoundsXY* boundsB)
+{
+    // Unused comparison snapshots reproduce the retail VC5 x87 operand order.
+    float savedX, savedY, savedOtherY;
+    if (boundsB->maxX - -1.0f < boundsA->minX) {
+        return 0;
+    }
+    if (boundsA->maxX < (savedX = boundsB->minX - 1.0f)) {
+        return 0;
+    }
+    if (boundsA->maxY > (savedY = boundsB->minY - -1.0f)) {
+        return 0;
+    }
+    if (boundsA->minY < (savedOtherY = boundsB->maxY - 1.0f)) {
+        return 0;
+    }
+    return 1;
+}
+
+} // namespace zGeometry_Bounds2D
+
 namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findorcreaterandomdebugmaterial
