@@ -1538,7 +1538,7 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawtrackedsavestatemarker
  * @recoil-artifact defines .text recoil:function:0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
- *
+ * @recoil-match byte
  *
  * Purpose: Draw the cross marker for the currently tracked save-state at its projected map position.
  */

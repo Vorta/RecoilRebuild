@@ -3751,7 +3751,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(REFI
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-destructor
  * @recoil-artifact defines .text recoil:function:0x441680: WestwoodOnlineUpgradeApiEventSink::~WestwoodOnlineUpgradeApiEventSink.
- *
+ * @recoil-match byte
  *
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
@@ -4490,7 +4490,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedownloadeventsink-destructor-westwoodonlineupgradedownloadeventsink
  * @recoil-artifact defines .text recoil:function:0x4427f0: WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink.
- *
+ * @recoil-match byte
  *
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */

@@ -665,7 +665,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-removeruntimeinstance
      * @recoil-artifact defines .text recoil:function:0x4aebf0: OptCatalog::RemoveRuntimeInstance
-     *
+     * @recoil-match byte
      *
      * Purpose: process and recycle matching active runtime instances, or probe
      * a supplied point, then notify the remove-runtime relay callback.
