@@ -1343,7 +1343,7 @@ namespace zDi
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforquerypoint
      * @recoil-artifact defines .text recoil:function:0x484960: zDi::BuildPickCandidateForQueryPoint.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
@@ -1520,7 +1520,7 @@ namespace CZDisplayInstance
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.picktestmeshatqueryxz
      * @recoil-artifact defines .text recoil:function:0x484e00: CZDisplayInstance::PickTestMeshAtQueryXZ.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1596,7 +1596,7 @@ namespace CZDisplayInstance
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-point-in-place
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-direction-in-place
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1979,6 +1979,19 @@ namespace CZDisplayInstance
         int cullBackface
     )
     {
+        float maxAbs;
+        int inside = 1;
+        int dominantAxis;
+        float startSide;
+        int nextIndex;
+        zVec2 vGrad;
+        zVec3 scratch;
+        float endSide;
+        int edgeIndex;
+        float absZ;
+        zVec2 uGrad;
+        float t;
+
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -1986,179 +1999,197 @@ namespace CZDisplayInstance
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = { segmentEnd->x - polygonVertices[0].x,
-            segmentEnd->y - polygonVertices[0].y,
-            segmentEnd->z - polygonVertices[0].z };
-        const float endSide = endDelta.x * candidate->surfaceNormal.x + endDelta.y * candidate->surfaceNormal.y
-            + endDelta.z * candidate->surfaceNormal.z;
-        if (cullBackface == 0 && endSide >= 0.0f) {
-            return 0;
-        }
+        scratch.x = segmentEnd->x - polygonVertices[0].x;
 
-        const zVec3 startDelta = { segmentStart->x - polygonVertices[0].x,
-            segmentStart->y - polygonVertices[0].y,
-            segmentStart->z - polygonVertices[0].z };
-        const float startSide = startDelta.x * candidate->surfaceNormal.x + startDelta.y * candidate->surfaceNormal.y
-            + startDelta.z * candidate->surfaceNormal.z;
-        union {
-            float f;
-            unsigned int u;
-        } startBits, endBits;
-        startBits.f = startSide;
-        endBits.f = endSide;
-        if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
-            return 0;
-        }
+        scratch.y = segmentEnd->y - polygonVertices[0].y;
 
-        const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta
-            = { segmentEnd->x - segmentStart->x, segmentEnd->y - segmentStart->y, segmentEnd->z - segmentStart->z };
-        candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
-        candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
-        candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
+        scratch.z = segmentEnd->z - polygonVertices[0].z;
+        endSide = scratch.x * candidate->surfaceNormal.x + scratch.y * candidate->surfaceNormal.y
+            + scratch.z * candidate->surfaceNormal.z;
+        if (cullBackface != 0 || endSide < 0.0) {
+            scratch.x = segmentStart->x - polygonVertices[0].x;
+            scratch.y = segmentStart->y - polygonVertices[0].y;
+            scratch.z = segmentStart->z - polygonVertices[0].z;
+            startSide = scratch.x * candidate->surfaceNormal.x + scratch.y * candidate->surfaceNormal.y
+                + scratch.z * candidate->surfaceNormal.z;
+            if ((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) {
+                t = startSide / (startSide - endSide);
+                scratch.x = segmentEnd->x - segmentStart->x;
+                scratch.y = segmentEnd->y - segmentStart->y;
+                scratch.z = segmentEnd->z - segmentStart->z;
+                scratch.x = t * scratch.x;
+                scratch.y = t * scratch.y;
+                scratch.z = t * scratch.z;
+                candidate->hitPos.x = segmentStart->x + scratch.x;
+                candidate->hitPos.y = segmentStart->y + scratch.y;
+                candidate->hitPos.z = segmentStart->z + scratch.z;
 
-        int dominantAxis = 0;
-        float maxAbs = candidate->surfaceNormal.x < 0.0f ? -candidate->surfaceNormal.x : candidate->surfaceNormal.x;
-        const float absY = candidate->surfaceNormal.y < 0.0f ? -candidate->surfaceNormal.y : candidate->surfaceNormal.y;
-        if (absY > maxAbs) {
-            maxAbs = absY;
-            dominantAxis = 1;
-        }
-        const float absZ = candidate->surfaceNormal.z < 0.0f ? -candidate->surfaceNormal.z : candidate->surfaceNormal.z;
-        if (absZ > maxAbs) {
-            dominantAxis = 2;
-        }
+                // endSide is dead here; retail reuses its stack home for |normal.y|.
+                dominantAxis = 0;
+                maxAbs = (float)fabs(candidate->surfaceNormal.x);
+                endSide = (float)fabs(candidate->surfaceNormal.y);
+                if (endSide > maxAbs) {
+                    maxAbs = endSide;
+                    dominantAxis = 1;
+                }
+                absZ = (float)fabs(candidate->surfaceNormal.z);
+                if (absZ > maxAbs) {
+                    dominantAxis = 2;
+                }
 
-        const float dominantComponent = dominantAxis == 0
-            ? candidate->surfaceNormal.x
-            : (dominantAxis == 1 ? candidate->surfaceNormal.y : candidate->surfaceNormal.z);
-        int windingSign;
-        if (dominantAxis == 1) {
-            windingSign = dominantComponent < 0.0f ? 1 : -1;
-        } else {
-            windingSign = dominantComponent < 0.0f ? -1 : 1;
-        }
+                edgeIndex = vertexCount - 1;
+                switch (dominantAxis) {
+                case 0:
+                    for (nextIndex = 0; edgeIndex >= 0 && inside; nextIndex = edgeIndex--) {
+                        if (candidate->surfaceNormal.x < 0.0) {
+                            scratch.z = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                            scratch.y = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
+                        } else {
+                            scratch.z = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                            scratch.y = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
+                        }
+                        inside = (candidate->hitPos.y - polygonVertices[edgeIndex].y) * scratch.y
+                                + (candidate->hitPos.z - polygonVertices[edgeIndex].z) * scratch.z
+                            > -0.0001;
+                    }
+                    if (!inside) {
+                        return 0;
+                    }
+                    zMathSolveLinearGradient2D(
+                        &uGrad.x,
+                        &uGrad.y,
+                        polygonVertices[0].y,
+                        polygonVertices[0].z,
+                        polygonVertices[1].y,
+                        polygonVertices[1].z,
+                        polygonVertices[2].y,
+                        polygonVertices[2].z,
+                        faceUvData->uvs[0].x,
+                        faceUvData->uvs[1].x,
+                        faceUvData->uvs[2].x
+                    );
+                    zMathSolveLinearGradient2D(
+                        &vGrad.x,
+                        &vGrad.y,
+                        polygonVertices[0].y,
+                        polygonVertices[0].z,
+                        polygonVertices[1].y,
+                        polygonVertices[1].z,
+                        polygonVertices[2].y,
+                        polygonVertices[2].z,
+                        faceUvData->uvs[0].y,
+                        faceUvData->uvs[1].y,
+                        faceUvData->uvs[2].y
+                    );
+                    outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad.x
+                        + (candidate->hitPos.z - polygonVertices[0].z) * uGrad.y + faceUvData->uvs[0].x;
+                    outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad.x
+                        + (candidate->hitPos.z - polygonVertices[0].z) * vGrad.y + faceUvData->uvs[0].y;
+                    break;
+                case 1:
+                    for (nextIndex = 0; edgeIndex >= 0 && inside; nextIndex = edgeIndex--) {
+                        if (candidate->surfaceNormal.y > 0.0) {
+                            scratch.z = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                            scratch.x = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
+                        } else {
+                            scratch.z = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                            scratch.x = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
+                        }
+                        inside = (candidate->hitPos.x - polygonVertices[edgeIndex].x) * scratch.x
+                                + (candidate->hitPos.z - polygonVertices[edgeIndex].z) * scratch.z
+                            > -0.0001;
+                    }
+                    if (!inside) {
+                        return 0;
+                    }
+                    zMathSolveLinearGradient2D(
+                        &uGrad.x,
+                        &uGrad.y,
+                        polygonVertices[0].x,
+                        polygonVertices[0].z,
+                        polygonVertices[1].x,
+                        polygonVertices[1].z,
+                        polygonVertices[2].x,
+                        polygonVertices[2].z,
+                        faceUvData->uvs[0].x,
+                        faceUvData->uvs[1].x,
+                        faceUvData->uvs[2].x
+                    );
+                    zMathSolveLinearGradient2D(
+                        &vGrad.x,
+                        &vGrad.y,
+                        polygonVertices[0].x,
+                        polygonVertices[0].z,
+                        polygonVertices[1].x,
+                        polygonVertices[1].z,
+                        polygonVertices[2].x,
+                        polygonVertices[2].z,
+                        faceUvData->uvs[0].y,
+                        faceUvData->uvs[1].y,
+                        faceUvData->uvs[2].y
+                    );
+                    outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad.y
+                        + (candidate->hitPos.x - polygonVertices[0].x) * uGrad.x + faceUvData->uvs[0].x;
+                    outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad.y
+                        + (candidate->hitPos.x - polygonVertices[0].x) * vGrad.x + faceUvData->uvs[0].y;
+                    break;
+                case 2:
+                    for (nextIndex = 0; edgeIndex >= 0 && inside; nextIndex = edgeIndex--) {
+                        if (candidate->surfaceNormal.z > 0.0) {
+                            scratch.x = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                            scratch.y = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                        } else {
+                            scratch.x = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                            scratch.y = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                        }
+                        inside = (candidate->hitPos.x - polygonVertices[edgeIndex].x) * scratch.x
+                                + (candidate->hitPos.y - polygonVertices[edgeIndex].y) * scratch.y
+                            > -0.0001;
+                    }
+                    if (!inside) {
+                        return 0;
+                    }
+                    zMathSolveLinearGradient2D(
+                        &uGrad.x,
+                        &uGrad.y,
+                        polygonVertices[0].x,
+                        polygonVertices[0].y,
+                        polygonVertices[1].x,
+                        polygonVertices[1].y,
+                        polygonVertices[2].x,
+                        polygonVertices[2].y,
+                        faceUvData->uvs[0].x,
+                        faceUvData->uvs[1].x,
+                        faceUvData->uvs[2].x
+                    );
+                    zMathSolveLinearGradient2D(
+                        &vGrad.x,
+                        &vGrad.y,
+                        polygonVertices[0].x,
+                        polygonVertices[0].y,
+                        polygonVertices[1].x,
+                        polygonVertices[1].y,
+                        polygonVertices[2].x,
+                        polygonVertices[2].y,
+                        faceUvData->uvs[0].y,
+                        faceUvData->uvs[1].y,
+                        faceUvData->uvs[2].y
+                    );
+                    outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad.y
+                        + (candidate->hitPos.x - polygonVertices[0].x) * uGrad.x + faceUvData->uvs[0].x;
+                    outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad.y
+                        + (candidate->hitPos.x - polygonVertices[0].x) * vGrad.x + faceUvData->uvs[0].y;
+                    break;
+                default:
+                    return 0;
+                }
 
-        for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-            const zVec3* edgeStart = &polygonVertices[edgeIndex];
-            const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-            double edgeCross;
-            if (dominantAxis == 0) {
-                edgeCross = (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z)
-                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
-            } else if (dominantAxis == 1) {
-                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z)
-                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
-            } else {
-                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
-                    - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
+                OptCatalogSetDamageMaskUv(outUv->x, outUv->y);
+                return 1;
             }
-            if ((double)(windingSign)*edgeCross <= -0.0001) {
-                return 0;
-            }
         }
 
-        float uGrad0;
-        float uGrad1;
-        float vGrad0;
-        float vGrad1;
-        if (dominantAxis == 0) {
-            zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
-                polygonVertices[0].y,
-                polygonVertices[0].z,
-                polygonVertices[1].y,
-                polygonVertices[1].z,
-                polygonVertices[2].y,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].x,
-                faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
-            );
-            zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
-                polygonVertices[0].y,
-                polygonVertices[0].z,
-                polygonVertices[1].y,
-                polygonVertices[1].z,
-                polygonVertices[2].y,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].y,
-                faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
-            );
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0
-                + (candidate->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad0
-                + (candidate->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
-        } else if (dominantAxis == 1) {
-            zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
-                polygonVertices[0].x,
-                polygonVertices[0].z,
-                polygonVertices[1].x,
-                polygonVertices[1].z,
-                polygonVertices[2].x,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].x,
-                faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
-            );
-            zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
-                polygonVertices[0].x,
-                polygonVertices[0].z,
-                polygonVertices[1].x,
-                polygonVertices[1].z,
-                polygonVertices[2].x,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].y,
-                faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
-            );
-            outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1
-                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.z - polygonVertices[0].z) * vGrad1
-                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
-        } else {
-            zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
-                polygonVertices[0].x,
-                polygonVertices[0].y,
-                polygonVertices[1].x,
-                polygonVertices[1].y,
-                polygonVertices[2].x,
-                polygonVertices[2].y,
-                faceUvData->uvs[0].x,
-                faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
-            );
-            zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
-                polygonVertices[0].x,
-                polygonVertices[0].y,
-                polygonVertices[1].x,
-                polygonVertices[1].y,
-                polygonVertices[2].x,
-                polygonVertices[2].y,
-                faceUvData->uvs[0].y,
-                faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
-            );
-            outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1
-                + (candidate->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-            outUv->y = (candidate->hitPos.y - polygonVertices[0].y) * vGrad1
-                + (candidate->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
-        }
-
-        OptCatalogSetDamageMaskUv(outUv->x, outUv->y);
-        return 1;
+        return 0;
     }
 
     /**
@@ -2180,128 +2211,234 @@ namespace CZDisplayInstance
         zModel_PickFaceEntry* faceEntry
     )
     {
+        zVec3 scratch;
+        int segmentIndex;
+        int edgeIndex;
+        CZDisplayInstanceSegmentEndpoints* segment;
+        int dominantAxis;
         int localActive[24];
-        for (int i = 0; i < segmentCount; ++i) {
-            localActive[i] = activeMask[i];
+        float absZ;
+        float startSide;
+        float maxAbs;
+        const zVec3* segmentEnd;
+        float t;
+        float endSide;
+        int anyActive;
+        int nextIndex;
+        zVec3 normal;
+        zVec3* hitPos;
+
+        for (segmentIndex = segmentCount - 1; segmentIndex >= 0; --segmentIndex) {
+            localActive[segmentIndex] = activeMask[segmentIndex];
         }
 
-        zVec3 normal;
         zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
 
-        const int cullBackface = (int)((faceEntry->flagsAndVertexCount >> 8) & 1u);
-        int anyActive = 0;
-        for (int planeIndex = 0; planeIndex < segmentCount; ++planeIndex) {
-            if (localActive[planeIndex] == 0) {
-                continue;
+        anyActive = 0;
+        segment = segmentEndpointsByBatch;
+        for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex, ++segment) {
+            segmentEnd = &segment->end;
+            if (localActive[segmentIndex] != 0) {
+                scratch.x = segmentEnd->x - polygonVertices[0].x;
+                scratch.y = segmentEnd->y - polygonVertices[0].y;
+                scratch.z = segmentEnd->z - polygonVertices[0].z;
+                endSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                if ((faceEntry->flagsAndVertexCount & 0x100) == 0 && endSide >= 0.0) {
+                    localActive[segmentIndex] = 0;
+                } else {
+                    scratch.x = segment->start.x - polygonVertices[0].x;
+                    scratch.y = segment->start.y - polygonVertices[0].y;
+                    scratch.z = segment->start.z - polygonVertices[0].z;
+                    startSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                    if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
+                        localActive[segmentIndex] = 0;
+                    } else {
+                        anyActive = 1;
+                        t = startSide / (startSide - endSide);
+                        scratch.x = segmentEnd->x - segment->start.x;
+                        scratch.y = segmentEnd->y - segment->start.y;
+                        scratch.z = segmentEnd->z - segment->start.z;
+                        scratch.x = t * scratch.x;
+                        scratch.y = t * scratch.y;
+                        scratch.z = t * scratch.z;
+                        hitPos = &outCandidateBuffersBySegment[segmentIndex]
+                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                      .hitPos;
+                        hitPos->x = segment->start.x + scratch.x;
+                        hitPos->y = segment->start.y + scratch.y;
+                        hitPos->z = segment->start.z + scratch.z;
+                    }
+                }
             }
-
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[planeIndex];
-            if (buffer->candidateCount >= kMaxPickCandidates) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-
-            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpointsByBatch[planeIndex];
-            const zVec3 endDelta = { segment->end.x - polygonVertices[0].x,
-                segment->end.y - polygonVertices[0].y,
-                segment->end.z - polygonVertices[0].z };
-            const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
-            if (cullBackface == 0 && endSide >= 0.0) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-
-            const zVec3 startDelta = { segment->start.x - polygonVertices[0].x,
-                segment->start.y - polygonVertices[0].y,
-                segment->start.z - polygonVertices[0].z };
-            const float startSide = startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
-            union {
-                float f;
-                unsigned int u;
-            } startBits, endBits;
-            startBits.f = startSide;
-            endBits.f = endSide;
-            if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-
-            const float t = startSide / (startSide - endSide);
-            entry->hitPos.x = segment->start.x + t * (segment->end.x - segment->start.x);
-            entry->hitPos.y = segment->start.y + t * (segment->end.y - segment->start.y);
-            entry->hitPos.z = segment->start.z + t * (segment->end.z - segment->start.z);
-            anyActive = 1;
         }
 
         if (anyActive == 0) {
             return 0;
         }
 
-        int dominantAxis = 0;
-        float maxAbs = normal.x < 0.0f ? -normal.x : normal.x;
-        const float absY = normal.y < 0.0f ? -normal.y : normal.y;
-        if (absY > maxAbs) {
-            maxAbs = absY;
+        // endSide is dead here; retail reuses its stack home for |normal.y|.
+        dominantAxis = 0;
+        maxAbs = (float)fabs(normal.x);
+        endSide = (float)fabs(normal.y);
+        if (endSide > maxAbs) {
+            maxAbs = endSide;
             dominantAxis = 1;
         }
-        const float absZ = normal.z < 0.0f ? -normal.z : normal.z;
+        absZ = (float)fabs(normal.z);
         if (absZ > maxAbs) {
             dominantAxis = 2;
         }
-        const float dominantComponent = dominantAxis == 0 ? normal.x : (dominantAxis == 1 ? normal.y : normal.z);
-        int windingSign;
-        if (dominantAxis == 1) {
-            windingSign = dominantComponent < 0.0f ? 1 : -1;
-        } else {
-            windingSign = dominantComponent < 0.0f ? -1 : 1;
-        }
 
-        const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
-        for (int polygonIndex = 0; polygonIndex < segmentCount; ++polygonIndex) {
-            if (localActive[polygonIndex] == 0) {
-                continue;
-            }
-
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[polygonIndex];
-            const zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-            for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3* edgeStart = &polygonVertices[edgeIndex];
-                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-                double edgeCross;
-                if (dominantAxis == 0) {
-                    edgeCross = (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z)
-                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
-                } else if (dominantAxis == 1) {
-                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z)
-                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
+        anyActive = 1;
+        edgeIndex = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1;
+        switch (dominantAxis) {
+        case 0:
+            for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                if (normal.x < 0.0) {
+                    scratch.z = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                    scratch.y = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
                 } else {
-                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
-                        - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
+                    scratch.z = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                    scratch.y = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
                 }
-                if ((double)(windingSign)*edgeCross <= -0.0001) {
-                    localActive[polygonIndex] = 0;
-                    break;
+                anyActive = 0;
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0) {
+                        localActive[segmentIndex]
+                            = (outCandidateBuffersBySegment[segmentIndex]
+                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                      .hitPos.y
+                                  - polygonVertices[edgeIndex].y)
+                                    * scratch.y
+                                + (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.z
+                                      - polygonVertices[edgeIndex].z)
+                                    * scratch.z
+                            > -0.0001;
+                        if (localActive[segmentIndex] != 0) {
+                            anyActive = 1;
+                        }
+                    }
                 }
             }
-        }
-
-        anyActive = 0;
-        for (int appendIndex = 0; appendIndex < segmentCount; ++appendIndex) {
-            if (localActive[appendIndex] != 0) {
-                anyActive = 1;
-                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[appendIndex];
-                if (buffer->candidateCount < kMaxPickCandidates) {
-                    zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-                    entry->surfaceNormal = normal;
-                    entry->node = candidateOwner;
-                    entry->scenePayload = faceEntry->scenePayload;
-                    ++buffer->candidateCount;
+            if (anyActive != 0) {
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0
+                        && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .surfaceNormal = normal;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .node = candidateOwner;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .scenePayload = faceEntry->scenePayload;
+                        ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                    }
                 }
             }
+            return anyActive;
+        case 1:
+            for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                if (normal.y > 0.0) {
+                    scratch.z = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                    scratch.x = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
+                } else {
+                    scratch.z = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                    scratch.x = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
+                }
+                anyActive = 0;
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0) {
+                        localActive[segmentIndex]
+                            = (outCandidateBuffersBySegment[segmentIndex]
+                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                      .hitPos.x
+                                  - polygonVertices[edgeIndex].x)
+                                    * scratch.x
+                                + (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.z
+                                      - polygonVertices[edgeIndex].z)
+                                    * scratch.z
+                            > -0.0001;
+                        if (localActive[segmentIndex] != 0) {
+                            anyActive = 1;
+                        }
+                    }
+                }
+            }
+            if (anyActive != 0) {
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0
+                        && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .surfaceNormal = normal;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .node = candidateOwner;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .scenePayload = faceEntry->scenePayload;
+                        ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                    }
+                }
+            }
+            return anyActive;
+        case 2:
+            for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                if (normal.z > 0.0) {
+                    scratch.x = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                    scratch.y = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                } else {
+                    scratch.x = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                    scratch.y = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                }
+                anyActive = 0;
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0) {
+                        localActive[segmentIndex]
+                            = (outCandidateBuffersBySegment[segmentIndex]
+                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                      .hitPos.x
+                                  - polygonVertices[edgeIndex].x)
+                                    * scratch.x
+                                + (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.y
+                                      - polygonVertices[edgeIndex].y)
+                                    * scratch.y
+                            > -0.0001;
+                        if (localActive[segmentIndex] != 0) {
+                            anyActive = 1;
+                        }
+                    }
+                }
+            }
+            if (anyActive != 0) {
+                for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                    if (localActive[segmentIndex] != 0
+                        && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .surfaceNormal = normal;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .node = candidateOwner;
+                        outCandidateBuffersBySegment[segmentIndex]
+                            .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                            .scenePayload = faceEntry->scenePayload;
+                        ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                    }
+                }
+            }
+            return anyActive;
+        default:
+            return 0;
         }
-
-        return anyActive;
     }
 
     /**
@@ -2323,276 +2460,398 @@ namespace CZDisplayInstance
         zModel_PickFaceEntry* faceEntry
     )
     {
+        float absZ;
+        int dominantAxis;
+        float endSide;
+        float startSide;
+        const zVec3* segmentEnd;
+        int anyActive;
+        zVec2 uGrad;
+        CZDisplayInstanceSegmentEndpoints* segment;
+        int edgeIndex;
+        int nextIndex;
+        int segmentIndex;
+        float maxAbs;
+        zVec3 scratch;
+        zVec3 normal;
+        float t;
+        zVec2 vGrad;
         int localActive[24];
-        for (int i = 0; i < segmentCount; ++i) {
-            localActive[i] = activeMask[i];
+        zVec3* hitPos;
+
+        for (segmentIndex = segmentCount - 1; segmentIndex >= 0; --segmentIndex) {
+            localActive[segmentIndex] = activeMask[segmentIndex];
         }
 
-        zVec3 normal;
         zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &normal);
 
-        const int cullBackface = (int)((faceEntry->flagsAndVertexCount >> 8) & 1u);
-        int anyActive = 0;
-        for (int planeIndex = 0; planeIndex < segmentCount; ++planeIndex) {
-            if (localActive[planeIndex] == 0) {
-                continue;
-            }
-
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[planeIndex];
-            if (buffer->candidateCount >= kMaxPickCandidates) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-
-            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-            const CZDisplayInstanceSegmentEndpoints* segment = &segmentEndpointsByBatch[planeIndex];
-            const zVec3 endDelta = { segment->end.x - polygonVertices[0].x,
-                segment->end.y - polygonVertices[0].y,
-                segment->end.z - polygonVertices[0].z };
-            const float endSide = endDelta.x * normal.x + endDelta.y * normal.y + endDelta.z * normal.z;
-            if (cullBackface == 0 && endSide >= 0.0) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-            const zVec3 startDelta = { segment->start.x - polygonVertices[0].x,
-                segment->start.y - polygonVertices[0].y,
-                segment->start.z - polygonVertices[0].z };
-            const float startSide = startDelta.x * normal.x + startDelta.y * normal.y + startDelta.z * normal.z;
-            union {
-                float f;
-                unsigned int u;
-            } startBits, endBits;
-            startBits.f = startSide;
-            endBits.f = endSide;
-            if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
-                localActive[planeIndex] = 0;
-                continue;
-            }
-            const float t = startSide / (startSide - endSide);
-            entry->hitPos.x = segment->start.x + t * (segment->end.x - segment->start.x);
-            entry->hitPos.y = segment->start.y + t * (segment->end.y - segment->start.y);
-            entry->hitPos.z = segment->start.z + t * (segment->end.z - segment->start.z);
-            anyActive = 1;
-        }
-
-        if (anyActive == 0) {
-            return 0;
-        }
-
-        int dominantAxis = 0;
-        float maxAbs = normal.x < 0.0f ? -normal.x : normal.x;
-        const float absY = normal.y < 0.0f ? -normal.y : normal.y;
-        if (absY > maxAbs) {
-            maxAbs = absY;
-            dominantAxis = 1;
-        }
-        const float absZ = normal.z < 0.0f ? -normal.z : normal.z;
-        if (absZ > maxAbs) {
-            dominantAxis = 2;
-        }
-        const float dominantComponent = dominantAxis == 0 ? normal.x : (dominantAxis == 1 ? normal.y : normal.z);
-        int windingSign;
-        if (dominantAxis == 1) {
-            windingSign = dominantComponent < 0.0f ? 1 : -1;
-        } else {
-            windingSign = dominantComponent < 0.0f ? -1 : 1;
-        }
-
-        const int vertexCount = (int)(faceEntry->flagsAndVertexCount & 0xffu);
-        for (int polygonIndex = 0; polygonIndex < segmentCount; ++polygonIndex) {
-            if (localActive[polygonIndex] == 0) {
-                continue;
-            }
-
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[polygonIndex];
-            const zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-            for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-                const zVec3* edgeStart = &polygonVertices[edgeIndex];
-                const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-                double edgeCross;
-                if (dominantAxis == 0) {
-                    edgeCross = (edgeEnd->y - edgeStart->y) * (entry->hitPos.z - edgeStart->z)
-                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.y - edgeStart->y);
-                } else if (dominantAxis == 1) {
-                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.z - edgeStart->z)
-                        - (edgeEnd->z - edgeStart->z) * (entry->hitPos.x - edgeStart->x);
-                } else {
-                    edgeCross = (edgeEnd->x - edgeStart->x) * (entry->hitPos.y - edgeStart->y)
-                        - (edgeEnd->y - edgeStart->y) * (entry->hitPos.x - edgeStart->x);
-                }
-                if ((double)(windingSign)*edgeCross <= -0.0001) {
-                    localActive[polygonIndex] = 0;
-                    break;
-                }
-            }
-        }
-
-        float uGrad0;
-        float uGrad1;
-        float vGrad0;
-        float vGrad1;
-
-        if (dominantAxis == 2) {
-            if (OptCatalogIsDamageMaskEnabled() != 0) {
-                zMathSolveLinearGradient2D(
-                    &uGrad0,
-                    &uGrad1,
-                    polygonVertices[0].x,
-                    polygonVertices[0].y,
-                    polygonVertices[1].x,
-                    polygonVertices[1].y,
-                    polygonVertices[2].x,
-                    polygonVertices[2].y,
-                    faceUvData->uvs[0].x,
-                    faceUvData->uvs[1].x,
-                    faceUvData->uvs[2].x
-                );
-                zMathSolveLinearGradient2D(
-                    &vGrad0,
-                    &vGrad1,
-                    polygonVertices[0].x,
-                    polygonVertices[0].y,
-                    polygonVertices[1].x,
-                    polygonVertices[1].y,
-                    polygonVertices[2].x,
-                    polygonVertices[2].y,
-                    faceUvData->uvs[0].y,
-                    faceUvData->uvs[1].y,
-                    faceUvData->uvs[2].y
-                );
-            }
-            anyActive = 0;
-            for (int damageMaskIndex = 0; damageMaskIndex < segmentCount; ++damageMaskIndex) {
-                if (localActive[damageMaskIndex] == 0) {
-                    continue;
-                }
-                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex];
-                if (buffer->candidateCount >= kMaxPickCandidates) {
-                    continue;
-                }
-                zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-                if (OptCatalogIsDamageMaskEnabled() != 0) {
-                    scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad1
-                        + (entry->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-                    scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad1
-                        + (entry->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
-                    OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
-                }
-                entry->surfaceNormal = normal;
-                entry->node = candidateOwner;
-                entry->scenePayload = faceEntry->scenePayload;
-                ++buffer->candidateCount;
-                anyActive = 1;
-            }
-            return anyActive;
-        }
-
-        if (dominantAxis == 1) {
-            if (OptCatalogIsDamageMaskEnabled() != 0) {
-                zMathSolveLinearGradient2D(
-                    &uGrad0,
-                    &uGrad1,
-                    polygonVertices[0].x,
-                    polygonVertices[0].z,
-                    polygonVertices[1].x,
-                    polygonVertices[1].z,
-                    polygonVertices[2].x,
-                    polygonVertices[2].z,
-                    faceUvData->uvs[0].x,
-                    faceUvData->uvs[1].x,
-                    faceUvData->uvs[2].x
-                );
-                zMathSolveLinearGradient2D(
-                    &vGrad0,
-                    &vGrad1,
-                    polygonVertices[0].x,
-                    polygonVertices[0].z,
-                    polygonVertices[1].x,
-                    polygonVertices[1].z,
-                    polygonVertices[2].x,
-                    polygonVertices[2].z,
-                    faceUvData->uvs[0].y,
-                    faceUvData->uvs[1].y,
-                    faceUvData->uvs[2].y
-                );
-            }
-            anyActive = 0;
-            for (int damageMaskIndex_1 = 0; damageMaskIndex_1 < segmentCount; ++damageMaskIndex_1) {
-                if (localActive[damageMaskIndex_1] == 0) {
-                    continue;
-                }
-                PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex_1];
-                if (buffer->candidateCount >= kMaxPickCandidates) {
-                    continue;
-                }
-                zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-                if (OptCatalogIsDamageMaskEnabled() != 0) {
-                    scratchUv->x = (entry->hitPos.z - polygonVertices[0].z) * uGrad1
-                        + (entry->hitPos.x - polygonVertices[0].x) * uGrad0 + faceUvData->uvs[0].x;
-                    scratchUv->y = (entry->hitPos.z - polygonVertices[0].z) * vGrad1
-                        + (entry->hitPos.x - polygonVertices[0].x) * vGrad0 + faceUvData->uvs[0].y;
-                    OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
-                }
-                entry->surfaceNormal = normal;
-                entry->node = candidateOwner;
-                entry->scenePayload = faceEntry->scenePayload;
-                ++buffer->candidateCount;
-                anyActive = 1;
-            }
-            return anyActive;
-        }
-
-        if (OptCatalogIsDamageMaskEnabled() != 0) {
-            zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
-                polygonVertices[0].y,
-                polygonVertices[0].z,
-                polygonVertices[1].y,
-                polygonVertices[1].z,
-                polygonVertices[2].y,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].x,
-                faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
-            );
-            zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
-                polygonVertices[0].y,
-                polygonVertices[0].z,
-                polygonVertices[1].y,
-                polygonVertices[1].z,
-                polygonVertices[2].y,
-                polygonVertices[2].z,
-                faceUvData->uvs[0].y,
-                faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
-            );
-        }
         anyActive = 0;
-        for (int damageMaskIndex_2 = 0; damageMaskIndex_2 < segmentCount; ++damageMaskIndex_2) {
-            if (localActive[damageMaskIndex_2] == 0) {
-                continue;
+        segment = segmentEndpointsByBatch;
+        for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex, ++segment) {
+            segmentEnd = &segment->end;
+            if (localActive[segmentIndex] != 0) {
+                scratch.x = segmentEnd->x - polygonVertices[0].x;
+                scratch.y = segmentEnd->y - polygonVertices[0].y;
+                scratch.z = segmentEnd->z - polygonVertices[0].z;
+                endSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                if ((faceEntry->flagsAndVertexCount & 0x100) == 0 && endSide >= 0.0) {
+                    localActive[segmentIndex] = 0;
+                } else {
+                    scratch.x = segment->start.x - polygonVertices[0].x;
+                    scratch.y = segment->start.y - polygonVertices[0].y;
+                    scratch.z = segment->start.z - polygonVertices[0].z;
+                    startSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                    if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
+                        localActive[segmentIndex] = 0;
+                    } else {
+                        anyActive = 1;
+                        t = startSide / (startSide - endSide);
+                        scratch.x = segmentEnd->x - segment->start.x;
+                        scratch.y = segmentEnd->y - segment->start.y;
+                        scratch.z = segmentEnd->z - segment->start.z;
+                        scratch.x = t * scratch.x;
+                        scratch.y = t * scratch.y;
+                        scratch.z = t * scratch.z;
+                        hitPos = &outCandidateBuffersBySegment[segmentIndex]
+                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                      .hitPos;
+                        hitPos->x = segment->start.x + scratch.x;
+                        hitPos->y = segment->start.y + scratch.y;
+                        hitPos->z = segment->start.z + scratch.z;
+                    }
+                }
             }
-            PlayerProbeSampleCandidateBuffer* buffer = &outCandidateBuffersBySegment[damageMaskIndex_2];
-            if (buffer->candidateCount >= kMaxPickCandidates) {
-                continue;
-            }
-            zClassDiPickCandidateEntry* entry = &buffer->entries[buffer->candidateCount];
-            if (OptCatalogIsDamageMaskEnabled() != 0) {
-                scratchUv->x = (entry->hitPos.y - polygonVertices[0].y) * uGrad0
-                    + (entry->hitPos.z - polygonVertices[0].z) * uGrad1 + faceUvData->uvs[0].x;
-                scratchUv->y = (entry->hitPos.y - polygonVertices[0].y) * vGrad0
-                    + (entry->hitPos.z - polygonVertices[0].z) * vGrad1 + faceUvData->uvs[0].y;
-                OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
-            }
-            entry->surfaceNormal = normal;
-            entry->node = candidateOwner;
-            entry->scenePayload = faceEntry->scenePayload;
-            ++buffer->candidateCount;
-            anyActive = 1;
         }
+
+        if (anyActive != 0) {
+            // endSide is dead here; retail reuses its stack home for |normal.y|.
+            dominantAxis = 0;
+            maxAbs = (float)fabs(normal.x);
+            endSide = (float)fabs(normal.y);
+            if (endSide > maxAbs) {
+                maxAbs = endSide;
+                dominantAxis = 1;
+            }
+            absZ = (float)fabs(normal.z);
+            if (absZ > maxAbs) {
+                dominantAxis = 2;
+            }
+
+            anyActive = 1;
+            edgeIndex = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1;
+            switch (dominantAxis) {
+            case 0:
+                for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                    if (normal.x < 0.0) {
+                        scratch.z = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                        scratch.y = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
+                    } else {
+                        scratch.z = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                        scratch.y = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
+                    }
+                    anyActive = 0;
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0) {
+                            localActive[segmentIndex]
+                                = (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.y
+                                      - polygonVertices[edgeIndex].y)
+                                        * scratch.y
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[edgeIndex].z)
+                                        * scratch.z
+                                > -0.0001;
+                            if (localActive[segmentIndex] != 0) {
+                                anyActive = 1;
+                            }
+                        }
+                    }
+                }
+                if (anyActive != 0) {
+                    if (OptCatalogIsDamageMaskEnabled() != 0) {
+                        zMathSolveLinearGradient2D(
+                            &uGrad.x,
+                            &uGrad.y,
+                            polygonVertices[0].y,
+                            polygonVertices[0].z,
+                            polygonVertices[1].y,
+                            polygonVertices[1].z,
+                            polygonVertices[2].y,
+                            polygonVertices[2].z,
+                            faceUvData->uvs[0].x,
+                            faceUvData->uvs[1].x,
+                            faceUvData->uvs[2].x
+                        );
+                        zMathSolveLinearGradient2D(
+                            &vGrad.x,
+                            &vGrad.y,
+                            polygonVertices[0].y,
+                            polygonVertices[0].z,
+                            polygonVertices[1].y,
+                            polygonVertices[1].z,
+                            polygonVertices[2].y,
+                            polygonVertices[2].z,
+                            faceUvData->uvs[0].y,
+                            faceUvData->uvs[1].y,
+                            faceUvData->uvs[2].y
+                        );
+                    }
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0
+                            && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                            if (OptCatalogIsDamageMaskEnabled() != 0) {
+                                scratchUv->x
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.y
+                                          - polygonVertices[0].y)
+                                        * uGrad.x
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[0].z)
+                                        * uGrad.y
+                                    + faceUvData->uvs[0].x;
+                                scratchUv->y
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.y
+                                          - polygonVertices[0].y)
+                                        * vGrad.x
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[0].z)
+                                        * vGrad.y
+                                    + faceUvData->uvs[0].y;
+                                OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            }
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .surfaceNormal = normal;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .node = candidateOwner;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .scenePayload = faceEntry->scenePayload;
+                            ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                        }
+                    }
+                }
+                break;
+            case 1:
+                for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                    if (normal.y > 0.0) {
+                        scratch.z = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                        scratch.x = polygonVertices[nextIndex].z - polygonVertices[edgeIndex].z;
+                    } else {
+                        scratch.z = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                        scratch.x = polygonVertices[edgeIndex].z - polygonVertices[nextIndex].z;
+                    }
+                    anyActive = 0;
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0) {
+                            localActive[segmentIndex]
+                                = (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.x
+                                      - polygonVertices[edgeIndex].x)
+                                        * scratch.x
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[edgeIndex].z)
+                                        * scratch.z
+                                > -0.0001;
+                            if (localActive[segmentIndex] != 0) {
+                                anyActive = 1;
+                            }
+                        }
+                    }
+                }
+                if (anyActive != 0) {
+                    if (OptCatalogIsDamageMaskEnabled() != 0) {
+                        zMathSolveLinearGradient2D(
+                            &uGrad.x,
+                            &uGrad.y,
+                            polygonVertices[0].x,
+                            polygonVertices[0].z,
+                            polygonVertices[1].x,
+                            polygonVertices[1].z,
+                            polygonVertices[2].x,
+                            polygonVertices[2].z,
+                            faceUvData->uvs[0].x,
+                            faceUvData->uvs[1].x,
+                            faceUvData->uvs[2].x
+                        );
+                        zMathSolveLinearGradient2D(
+                            &vGrad.x,
+                            &vGrad.y,
+                            polygonVertices[0].x,
+                            polygonVertices[0].z,
+                            polygonVertices[1].x,
+                            polygonVertices[1].z,
+                            polygonVertices[2].x,
+                            polygonVertices[2].z,
+                            faceUvData->uvs[0].y,
+                            faceUvData->uvs[1].y,
+                            faceUvData->uvs[2].y
+                        );
+                    }
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0
+                            && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                            if (OptCatalogIsDamageMaskEnabled() != 0) {
+                                scratchUv->x
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[0].z)
+                                        * uGrad.y
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.x
+                                          - polygonVertices[0].x)
+                                        * uGrad.x
+                                    + faceUvData->uvs[0].x;
+                                scratchUv->y
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.z
+                                          - polygonVertices[0].z)
+                                        * vGrad.y
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.x
+                                          - polygonVertices[0].x)
+                                        * vGrad.x
+                                    + faceUvData->uvs[0].y;
+                                OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            }
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .surfaceNormal = normal;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .node = candidateOwner;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .scenePayload = faceEntry->scenePayload;
+                            ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                        }
+                    }
+                }
+                break;
+            case 2:
+                for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
+                    if (normal.z > 0.0) {
+                        scratch.x = polygonVertices[edgeIndex].y - polygonVertices[nextIndex].y;
+                        scratch.y = polygonVertices[nextIndex].x - polygonVertices[edgeIndex].x;
+                    } else {
+                        scratch.x = polygonVertices[nextIndex].y - polygonVertices[edgeIndex].y;
+                        scratch.y = polygonVertices[edgeIndex].x - polygonVertices[nextIndex].x;
+                    }
+                    anyActive = 0;
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0) {
+                            localActive[segmentIndex]
+                                = (outCandidateBuffersBySegment[segmentIndex]
+                                          .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                          .hitPos.x
+                                      - polygonVertices[edgeIndex].x)
+                                        * scratch.x
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.y
+                                          - polygonVertices[edgeIndex].y)
+                                        * scratch.y
+                                > -0.0001;
+                            if (localActive[segmentIndex] != 0) {
+                                anyActive = 1;
+                            }
+                        }
+                    }
+                }
+                if (anyActive != 0) {
+                    if (OptCatalogIsDamageMaskEnabled() != 0) {
+                        zMathSolveLinearGradient2D(
+                            &uGrad.x,
+                            &uGrad.y,
+                            polygonVertices[0].x,
+                            polygonVertices[0].y,
+                            polygonVertices[1].x,
+                            polygonVertices[1].y,
+                            polygonVertices[2].x,
+                            polygonVertices[2].y,
+                            faceUvData->uvs[0].x,
+                            faceUvData->uvs[1].x,
+                            faceUvData->uvs[2].x
+                        );
+                        zMathSolveLinearGradient2D(
+                            &vGrad.x,
+                            &vGrad.y,
+                            polygonVertices[0].x,
+                            polygonVertices[0].y,
+                            polygonVertices[1].x,
+                            polygonVertices[1].y,
+                            polygonVertices[2].x,
+                            polygonVertices[2].y,
+                            faceUvData->uvs[0].y,
+                            faceUvData->uvs[1].y,
+                            faceUvData->uvs[2].y
+                        );
+                    }
+                    for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
+                        if (localActive[segmentIndex] != 0
+                            && outCandidateBuffersBySegment[segmentIndex].candidateCount < kMaxPickCandidates) {
+                            if (OptCatalogIsDamageMaskEnabled() != 0) {
+                                scratchUv->x
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.y
+                                          - polygonVertices[0].y)
+                                        * uGrad.y
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.x
+                                          - polygonVertices[0].x)
+                                        * uGrad.x
+                                    + faceUvData->uvs[0].x;
+                                scratchUv->y
+                                    = (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.y
+                                          - polygonVertices[0].y)
+                                        * vGrad.y
+                                    + (outCandidateBuffersBySegment[segmentIndex]
+                                              .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                              .hitPos.x
+                                          - polygonVertices[0].x)
+                                        * vGrad.x
+                                    + faceUvData->uvs[0].y;
+                                OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            }
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .surfaceNormal = normal;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .node = candidateOwner;
+                            outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .scenePayload = faceEntry->scenePayload;
+                            ++outCandidateBuffersBySegment[segmentIndex].candidateCount;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
         return anyActive;
     }
 
@@ -2600,7 +2859,7 @@ namespace CZDisplayInstance
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygon
      * @recoil-artifact defines .text recoil:function:0x487350: CZDisplayInstance::FilterRegionsAgainstPolygon.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
