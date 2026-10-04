@@ -233,7 +233,7 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-solveuvaxiscoefficientsxz
  * @recoil-artifact defines .text recoil:function:0x46a8e0: zGeometry_Polygon::SolveUvAxisCoefficientsXZ
- *
+ * @recoil-match byte
  *
  * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
  * Retail forms (x, z, value) edge vectors from point1 and divides the X and Y

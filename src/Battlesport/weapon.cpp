@@ -2716,7 +2716,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
             zVec3 direction = { sourcePos->x - hitPos->x, sourcePos->y - hitPos->y, sourcePos->z - hitPos->z };
             const float length
                 = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-            const float invLength = 1.0f / length;
+            const float invLength = 1.0 / length;
             direction.x *= invLength;
             direction.y *= invLength;
             direction.z *= invLength;
@@ -2888,7 +2888,7 @@ int __fastcall EnterDestroyedState(
                 zVec3 direction = { sourcePos->x - hitPos->x, sourcePos->y - hitPos->y, sourcePos->z - hitPos->z };
                 const float length
                     = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-                const float invLength = 1.0f / length;
+                const float invLength = 1.0 / length;
                 direction.x *= invLength;
                 direction.y *= invLength;
                 direction.z *= invLength;
@@ -3145,7 +3145,7 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
         spawnDir.z = playerState->storedTargetPos.z - effectPos->z;
 
         const float length = (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y + spawnDir.z * spawnDir.z));
-        const float invLength = 1.0f / length;
+        const float invLength = 1.0 / length;
         spawnDir.x *= invLength;
         spawnDir.y *= invLength;
         spawnDir.z *= invLength;
@@ -3175,7 +3175,7 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunlaunchprojectile
  * @recoil-artifact defines .text recoil:function:0x43c430: Player::AltGunLaunchProjectile
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: launch an attached alternate-gun projectile from the active
@@ -3259,7 +3259,7 @@ int __fastcall AltGunFireSimpleProjectile(zUtil_SaveGameState* saveState)
         spawnDir.z = playerState->storedTargetPos.z - playerState->altFireOrigin.z;
 
         const float length = (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y + spawnDir.z * spawnDir.z));
-        const float invLength = 1.0f / length;
+        const float invLength = 1.0 / length;
         spawnDir.x *= invLength;
         spawnDir.y *= invLength;
         spawnDir.z *= invLength;

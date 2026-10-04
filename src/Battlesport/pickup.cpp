@@ -1277,7 +1277,7 @@ void __fastcall PickupSpawnList::RemoveAndFreeNode(PickupSpawnDef* node, PickupS
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-createspawndefandlink
  * @recoil-artifact defines .text recoil:function:0x41d920: Pickup::CreateSpawnDefAndLink (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: allocate a spawn definition, attach it to the primary list, and bind node context.
  */
