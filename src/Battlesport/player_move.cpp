@@ -2124,7 +2124,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-computeturnslipdelta
  * @recoil-artifact defines .text recoil:function:0x429d30: Player::ComputeTurnSlipDelta.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered

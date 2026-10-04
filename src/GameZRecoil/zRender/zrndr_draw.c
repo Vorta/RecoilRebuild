@@ -17,14 +17,6 @@
 #include <string.h>
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-f-0x57d978
- * @recoil-artifact defines .data recoil:data:0x57d978: g_zRndr_InverseZTolerance.
- * BN xrefs: inverse-depth span and polygon setup paths compare against this
- * tolerance when preparing software rasterization state.
- * Purpose: runtime inverse-Z comparison tolerance for zRndr draw paths.
- */
-float g_zRndr_InverseZTolerance = 0.0f;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zrndr-activepaletteremapkey
  * @recoil-artifact defines .data recoil:data:0x4e21fc: g_zRndr_ActivePaletteRemapKey.
  * BN xrefs: zRndr palette setter and remap selection paths read/write this

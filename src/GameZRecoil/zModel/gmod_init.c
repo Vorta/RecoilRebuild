@@ -18,12 +18,120 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Option names hud.cpp defines; retail reads these globals (0x4da834,
+// 0x4da888), not literals.
+extern "C" char g_zOpt_OptionName_GfxFlagsHw[];
+extern "C" char g_zOpt_OptionName_GfxFlagsSw[];
+
+extern "C" {
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-vertexshadingenabled
- * @recoil-artifact defines .data recoil:data:0x57d40c: g_zModel_VertexShadingEnabled.
- * Purpose: gate vertex-shading behavior for zModel render paths.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-globalstatestorage
+ * @recoil-artifact defines .data recoil:data:0x576200: g_zModel_GlobalStateStorage.diPoolCapacity.
+ * @recoil-artifact defines .data recoil:data:0x576204: g_zModel_GlobalStateStorage.diPoolBase.
+ * @recoil-artifact defines .data recoil:data:0x576208: g_zModel_GlobalStateStorage.diPoolInUseCount.
+ * @recoil-artifact defines .data recoil:data:0x57620c: g_zModel_GlobalStateStorage.diPoolFreeHeadIndex.
+ * @recoil-artifact defines .data recoil:data:0x576210: g_zModel_GlobalStateStorage.renderMode.
+ * @recoil-artifact defines .data recoil:data:0x576214: g_zModel_GlobalStateStorage.projectionViewContext.
+ * @recoil-artifact defines .data recoil:data:0x576218: g_zModel_GlobalStateStorage.clipRectPrimary.
+ * @recoil-artifact defines .data recoil:data:0x57623c: g_zModel_GlobalStateStorage.projectClipLeft.
+ * @recoil-artifact defines .data recoil:data:0x576240: g_zModel_GlobalStateStorage.projectClipTop.
+ * @recoil-artifact defines .data recoil:data:0x576244: g_zModel_GlobalStateStorage.projectClipRight.
+ * @recoil-artifact defines .data recoil:data:0x576248: g_zModel_GlobalStateStorage.projectClipBottom.
+ * @recoil-artifact defines .data recoil:data:0x57624c: g_zModel_GlobalStateStorage.smallPolyRejectArea2x.
+ * @recoil-artifact defines .data recoil:data:0x576250: g_zModel_GlobalStateStorage.smallPolyRejectArea20x.
+ * @recoil-artifact defines .data recoil:data:0x576254: g_zModel_GlobalStateStorage.altClipSourceRectValid.
+ * @recoil-artifact defines .data recoil:data:0x576258: g_zModel_GlobalStateStorage.clipRectAlt.
+ * @recoil-artifact defines .data recoil:data:0x57628c: g_zModel_GlobalStateStorage.altSourceLeft.
+ * @recoil-artifact defines .data recoil:data:0x576290: g_zModel_GlobalStateStorage.altSourceTop.
+ * @recoil-artifact defines .data recoil:data:0x576294: g_zModel_GlobalStateStorage.altSourceRight.
+ * @recoil-artifact defines .data recoil:data:0x576298: g_zModel_GlobalStateStorage.altSourceBottom.
+ * @recoil-artifact defines .data recoil:data:0x57629c: g_zModel_GlobalStateStorage.altSourceWidth.
+ * @recoil-artifact defines .data recoil:data:0x5762a0: g_zModel_GlobalStateStorage.altSourceHeight.
+ * @recoil-artifact defines .data recoil:data:0x5762a4: g_zModel_GlobalStateStorage.altRemapOffsetX.
+ * @recoil-artifact defines .data recoil:data:0x5762a8: g_zModel_GlobalStateStorage.altRemapOffsetY.
+ * @recoil-artifact defines .data recoil:data:0x5762ac: g_zModel_GlobalStateStorage.altRemapScaleX.
+ * @recoil-artifact defines .data recoil:data:0x5762b0: g_zModel_GlobalStateStorage.altRemapScaleY.
+ * @recoil-artifact defines .data recoil:data:0x5762b4: g_zModel_GlobalStateStorage.altRemapBiasX.
+ * @recoil-artifact defines .data recoil:data:0x5762b8: g_zModel_GlobalStateStorage.altRemapBiasY.
+ * @recoil-artifact defines .data recoil:data:0x5762bc: g_zModel_GlobalStateStorage.sharedVec3ScratchAStorage.
+ * @recoil-artifact defines .data recoil:data:0x5792bc: g_zModel_GlobalStateStorage.sharedVec3ScratchBStorage.
+ * @recoil-artifact defines .data recoil:data:0x57c2bc: g_zModel_GlobalStateStorage.transformedVerts.
+ * @recoil-artifact defines .data recoil:data:0x57c2c0: g_zModel_GlobalStateStorage.transformedNormals.
+ * @recoil-artifact defines .data recoil:data:0x57c2c4: g_zModel_GlobalStateStorage.diFaceVertexScratch.
+ * @recoil-artifact defines .data recoil:data:0x57c5c4: g_zModel_GlobalStateStorage.clipPolyVertsScratch.
+ * @recoil-artifact defines .data recoil:data:0x57c8c4: g_zModel_GlobalStateStorage.clipPolyVerts.
+ * @recoil-artifact defines .data recoil:data:0x57cbc4: g_zModel_GlobalStateStorage.clipPolyUvsStorage.
+ * @recoil-artifact defines .data recoil:data:0x57cdc4: g_zModel_GlobalStateStorage.clipPolyUvs.
+ * @recoil-artifact defines .data recoil:data:0x57cdc8: g_zModel_GlobalStateStorage.currentPolyNormalsStorage.
+ * @recoil-artifact defines .data recoil:data:0x57d0c8: g_zModel_GlobalStateStorage.currentPolyNormals.
+ * @recoil-artifact defines .data recoil:data:0x57d0cc: g_zModel_GlobalStateStorage.clipPolyAttr0.
+ * @recoil-artifact defines .data recoil:data:0x57d1cc: g_zModel_GlobalStateStorage.clipPolyAttr1.
+ * @recoil-artifact defines .data recoil:data:0x57d2cc: g_zModel_GlobalStateStorage.clipPolyAttr2.
+ * @recoil-artifact defines .data recoil:data:0x57d3cc: g_zModel_GlobalStateStorage.ambientColorRgb01.
+ * @recoil-artifact defines .data recoil:data:0x57d3d8: g_zModel_GlobalStateStorage.fogBaseColorRgb01.
+ * @recoil-artifact defines .data recoil:data:0x57d3e4: g_zModel_GlobalStateStorage.ambientIntensityFactor.
+ * @recoil-artifact defines .data recoil:data:0x57d3e8: g_zModel_GlobalStateStorage.ambientScale.
+ * @recoil-artifact defines .data recoil:data:0x57d3ec: g_zModel_GlobalStateStorage.specialLightPaletteRemapRecipe.
+ * @recoil-artifact defines .data recoil:data:0x57d40c: g_zModel_GlobalStateStorage.vertexShadingEnabled.
+ * @recoil-artifact defines .data recoil:data:0x57d410: g_zModel_GlobalStateStorage.lightInputNodeStates.
+ * @recoil-artifact defines .data recoil:data:0x57d414: g_zModel_GlobalStateStorage.lightInputDataList.
+ * @recoil-artifact defines .data recoil:data:0x57d418: g_zModel_GlobalStateStorage.hasActiveLights.
+ * @recoil-artifact defines .data recoil:data:0x57d41c: g_zModel_GlobalStateStorage.lightInputCount.
+ * @recoil-artifact defines .data recoil:data:0x57d420: g_zModel_GlobalStateStorage.activeLightCount.
+ * @recoil-artifact defines .data recoil:data:0x57d424: g_zModel_GlobalStateStorage.activeLightSpecialIndex.
+ * @recoil-artifact defines .data recoil:data:0x57d428: g_zModel_GlobalStateStorage.activeLights.
+ * @recoil-artifact defines .data recoil:data:0x57d928: g_zModel_GlobalStateStorage.displayClearedWriteOnlyFlag.
+ * @recoil-artifact defines .data recoil:data:0x57d92c: g_zModel_GlobalStateStorage.displayInitWriteOnlyFlag.
+ * @recoil-artifact defines .data recoil:data:0x57d930: g_zModel_GlobalStateStorage.fogEnabled.
+ * @recoil-artifact defines .data recoil:data:0x57d934: g_zModel_GlobalStateStorage.fogLinearModeEnabled.
+ * @recoil-artifact defines .data recoil:data:0x57d938: g_zModel_GlobalStateStorage.fogColorRgb01.
+ * @recoil-artifact defines .data recoil:data:0x57d944: g_zModel_GlobalStateStorage.fogDistanceStart.
+ * @recoil-artifact defines .data recoil:data:0x57d948: g_zModel_GlobalStateStorage.fogDistanceEnd.
+ * @recoil-artifact defines .data recoil:data:0x57d94c: g_zModel_GlobalStateStorage.fogDistanceInvRange.
+ * @recoil-artifact defines .data recoil:data:0x57d950: g_zModel_GlobalStateStorage.fogHeightHigh.
+ * @recoil-artifact defines .data recoil:data:0x57d954: g_zModel_GlobalStateStorage.fogHeightLow.
+ * @recoil-artifact defines .data recoil:data:0x57d958: g_zModel_GlobalStateStorage.fogHeightInvRange.
+ * @recoil-artifact defines .data recoil:data:0x57d95c: g_zModel_GlobalStateStorage.fogDensity.
+ * @recoil-artifact defines .data recoil:data:0x57d960: g_zModel_GlobalStateStorage.renderVertexAlphaEnabled.
+ * @recoil-artifact defines .data recoil:data:0x57d964: g_zModel_GlobalStateStorage.renderAlphaScaleCurrent.
+ * @recoil-artifact defines .data recoil:data:0x57d968: g_zModel_GlobalStateStorage.fogTargetColorOverride.
+ * @recoil-artifact defines .data recoil:data:0x57d978: g_zModel_GlobalStateStorage.inverseZTolerance.
+ * @recoil-artifact defines .data recoil:data:0x57d97c: g_zModel_GlobalStateStorage.sharedVec3ScratchA.
+ * @recoil-artifact defines .data recoil:data:0x57d980: g_zModel_GlobalStateStorage.sharedVec3ScratchB.
+ * @recoil-artifact defines .data recoil:data:0x57d984: g_zModel_GlobalStateStorage.pointInPolygonVertices.
+ * @recoil-artifact defines .data recoil:data:0x57d988: g_zModel_GlobalStateStorage.pointInPolygonEdgeNormals.
+ * @recoil-artifact defines .data recoil:data:0x57d98c: g_zModel_GlobalStateStorage.pointInPolygonVertexCount.
+ * @recoil-artifact defines .data recoil:data:0x57d990: g_zModel_GlobalStateStorage.textureWorldBaseU.
+ * @recoil-artifact defines .data recoil:data:0x57d994: g_zModel_GlobalStateStorage.textureWorldBaseV.
+ * @recoil-artifact defines .data recoil:data:0x57d998: g_zModel_GlobalStateStorage.textureWorldPerMeterU.
+ * @recoil-artifact defines .data recoil:data:0x57d99c: g_zModel_GlobalStateStorage.textureWorldPerMeterV.
+ * @recoil-artifact defines .data recoil:data:0x57d9a0: g_zModel_GlobalStateStorage.damageMaskEnabled.
+ * @recoil-artifact defines .data recoil:data:0x57d9a4: g_zModel_GlobalStateStorage.damageMaskSlotIndex.
+ * @recoil-artifact defines .data recoil:data:0x57d9a8: g_zModel_GlobalStateStorage.damageMaskHandles.
+ * @recoil-artifact defines .data recoil:data:0x57d9b4: g_zModel_GlobalStateStorage.damageMaskPhaseU.
+ * @recoil-artifact defines .data recoil:data:0x57d9b8: g_zModel_GlobalStateStorage.damageMaskPhaseV.
+ * @recoil-artifact defines .data recoil:data:0x57d9bc: g_zModel_GlobalStateStorage.defaultGraphicsFlags.
+ * @recoil-artifact defines .data recoil:data:0x57d9c0: g_zModel_GlobalStateStorage.pGraphicsFlags.
+ * @recoil-artifact defines .data recoil:data:0x57d9c8: g_zModel_GlobalStateStorage.softwarePathActive.
+ * @recoil-artifact defines .data recoil:data:0x57d9e0: g_zModel_GlobalStateStorage.renderFn.
+ * @recoil-artifact defines .data recoil:data:0x57d9e4: g_zModel_GlobalStateStorage.clipMaskStack.
+ * @recoil-artifact defines .data recoil:data:0x57da24: g_zModel_GlobalStateStorage.clipMaskStackTop.
+ * @recoil-artifact defines .data recoil:data:0x57da28: g_zModel_GlobalStateStorage.variantCurrentTag.
+ * @recoil-artifact defines .data recoil:data:0x57da2c: g_zModel_GlobalStateStorage.altClipPassEnabled.
+ * Storage group: g_zModel_GlobalStateStorage.
+ * Reconstructed zModel storage root over the adopted retail extent
+ * [0x576200, 0x57da30). Shared-core containment [0x5762b8, 0x57d984) is high
+ * confidence; the outer boundaries remain provisional. Retail addresses the
+ * display-instance pool, clip rectangles and alternate-clip remap state, shared
+ * Vec3 scratch, clip polygon scratch, lighting, fog, texture-world, damage-mask,
+ * graphics-flag, render-dispatch and variant-tag state through this one root;
+ * the compatibility field macros in gmod.h keep the recovered retail names.
+ * The three unknown_* members are unrecovered byte spans.
+ * Purpose: Owns the zero-filled zModel module state.
  */
-int g_zModel_VertexShadingEnabled = 0;
+zModel_GlobalState g_zModel_GlobalStateStorage = { 0 };
+}
+
 /*
  * BN identifies the gmod_init.c diagnostics as three initialized .data char
  * arrays in this order, including the VC alignment padding between rows.
@@ -51,207 +159,12 @@ RECOIL_STATIC_ASSERT(sizeof(g_zModel_SetModel3dArraySizeAlreadySetFmt) == 0x3a);
 RECOIL_STATIC_ASSERT(sizeof(g_zModel_TextureScrollNullPtrErrorMsg) == 0x33);
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-displayinitwriteonlyflag
- * @recoil-artifact defines .data recoil:data:0x57d92c: gModel_DisplayInitWriteOnlyFlag.
- * Authored zModel display-init lifecycle global.
- * Purpose: record that display initialization has run.
- */
-int gModel_DisplayInitWriteOnlyFlag = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-rendermode
- * @recoil-artifact defines .data recoil:data:0x576210: gModel_RenderMode.
- * Authored zModel display-init lifecycle global.
- * Purpose: select the default model render mode during display initialization.
- */
-int gModel_RenderMode = 0;
-int g_zModel_DisplayClipMode = 0;
-int g_zModel_DisplayClipX = 0;
-int g_zModel_DisplayClipY = 0;
-float g_zModel_DisplayClipWidth = 0.0f;
-float g_zModel_DisplayClipHeight = 0.0f;
-float g_zModel_DisplayClipMaxX = 0.0f;
-float g_zModel_DisplayClipMaxY = 0.0f;
-int g_zModel_DisplayClipReserved = 0;
-void* g_zModel_SpanOcclusionProc = 0;
-float g_zModel_ViewScaleX = 0.0f;
-int g_zModel_ViewScaleYRaw = 0;
-float g_zModel_ViewScaleZ = 0.0f;
-float g_zModel_FogStart = 0.0f;
-float g_zModel_FogEnd = 0.0f;
-float g_zModel_FogHeightHigh = 0.0f;
-float g_zModel_FogHeightLow = 0.0f;
-float g_zModel_FogDistanceInvRange = 0.0f;
-float g_zModel_FogHeightInvRange = 0.0f;
-float g_zModel_FogDensity = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-displayclearedwriteonlyflag
- * @recoil-artifact defines .data recoil:data:0x57d928: gModel_DisplayClearedWriteOnlyFlag.
- * Authored zModel display-init lifecycle global.
- * Purpose: clear the display lifecycle write-only state before fog defaults are installed.
- */
-int gModel_DisplayClearedWriteOnlyFlag = 0;
-int g_zModel_FogReserved = 0;
-float g_zModel_FogScale = 0.0f;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-bfetolerance
  * @recoil-artifact defines .data recoil:data:0x4e0fc0: Symbol.
  * Authored zModel display global.
  * Purpose: store the backface-elimination tolerance scalar used by display passes.
  */
 float g_zModel_BFETolerance = 0.005f;
-zVec3 g_zModel_SharedVec3ScratchAStorage[0x400] = { 0 };
-zVec3 g_zModel_SharedVec3ScratchBStorage[0x400] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-transformedverts
- * @recoil-artifact defines .data recoil:data:0x57c2bc: g_zModel_TransformedVerts.
- * Authored zModel display scratch pointer global.
- * Purpose: point transformed-vertex passes at the primary shared Vec3 scratch buffer.
- */
-zVec3* g_zModel_TransformedVerts = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-transformednormals
- * @recoil-artifact defines .data recoil:data:0x57c2c0: g_zModel_TransformedNormals.
- * Authored zModel display scratch pointer global.
- * Purpose: point transformed-normal passes at the secondary shared Vec3 scratch buffer.
- */
-zVec3* g_zModel_TransformedNormals = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-sharedvec3scratcha
- * @recoil-artifact defines .data recoil:data:0x57d97c: Symbol.
- * Authored zModel display global.
- * Purpose: point scratch users at the primary shared transformed-vector buffer.
- */
-zVec3* g_zModel_SharedVec3ScratchA = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-sharedvec3scratchb
- * @recoil-artifact defines .data recoil:data:0x57d980: Symbol.
- * Authored zModel display global.
- * Purpose: point scratch users at the secondary shared transformed-vector buffer.
- */
-zVec3* g_zModel_SharedVec3ScratchB = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-pointinpolygonvertices
- * @recoil-artifact defines .data recoil:data:0x57d984: Symbol.
- * Authored zModel display global.
- * Purpose: alias point-in-polygon vertices to the current primary scratch buffer.
- */
-zVec3* g_zModel_PointInPolygonVertices = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-pointinpolygonedgenormals
- * @recoil-artifact defines .data recoil:data:0x57d988: Symbol.
- * Authored zModel display global.
- * Purpose: alias point-in-polygon edge normals to the current secondary scratch buffer.
- */
-zVec3* g_zModel_PointInPolygonEdgeNormals = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-pointinpolygonvertexcount
- * @recoil-artifact defines .data recoil:data:0x57d98c: Symbol.
- * Authored zModel display global.
- * Purpose: track the number of points in the current point-in-polygon scratch set.
- */
-int g_zModel_PointInPolygonVertexCount = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-textureworldbaseu
- * @recoil-artifact defines .data recoil:data:0x57d990: Symbol.
- * Authored zModel display global.
- * Purpose: store the world-space texture U origin used by model display setup.
- */
-float g_zModel_TextureWorldBaseU = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-textureworldbasev
- * @recoil-artifact defines .data recoil:data:0x57d994: Symbol.
- * Authored zModel display global.
- * Purpose: store the world-space texture V origin used by model display setup.
- */
-float g_zModel_TextureWorldBaseV = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-textureworldpermeteru
- * @recoil-artifact defines .data recoil:data:0x57d998: Symbol.
- * Authored zModel display global.
- * Purpose: store the world-space texture U scale used by model display setup.
- */
-float g_zModel_TextureWorldPerMeterU = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-textureworldpermeterv
- * @recoil-artifact defines .data recoil:data:0x57d99c: Symbol.
- * Authored zModel display global.
- * Purpose: store the world-space texture V scale used by model display setup.
- */
-float g_zModel_TextureWorldPerMeterV = 0.0f;
-int g_zModel_ScratchCounters[8] = { 0 };
-float g_zModel_PointInPolyTolX = 0.0f;
-float g_zModel_PointInPolyTolY = 0.0f;
-unsigned char g_zModel_DamageMaskStorage[0x200] = { 0 };
-void* g_zModel_DamageMaskCurrent = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-optcatalogdamagemaskenabled
- * @recoil-artifact defines .data recoil:data:0x57d9a0: Symbol.
- * Authored OptCatalog damage-mask global.
- * Purpose: gate whether damage-mask stamping is active for hit surfaces.
- */
-int g_OptCatalogDamageMaskEnabled = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-optcatalogdamagemaskslotindex
- * @recoil-artifact defines .data recoil:data:0x57d9a4: Symbol.
- * Authored OptCatalog damage-mask global.
- * Purpose: select which registered damage-mask handle slot is active.
- */
-int g_OptCatalogDamageMaskSlotIndex = 0;
-void* g_OptCatalogDamageMaskHandles[3] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-optcatalogdamagemaskphaseu
- * @recoil-artifact defines .data recoil:data:0x57d9b4: Symbol.
- * Authored OptCatalog damage-mask global.
- * Purpose: store the current damage-mask U phase before stamp wrapping.
- */
-float g_OptCatalogDamageMaskPhaseU = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-optcatalogdamagemaskphasev
- * @recoil-artifact defines .data recoil:data:0x57d9b8: Symbol.
- * Authored OptCatalog damage-mask global.
- * Purpose: store the current damage-mask V phase before stamp wrapping.
- */
-float g_OptCatalogDamageMaskPhaseV = 0.0f;
-int g_zModel_OptCatalogAux0 = 0;
-int g_zModel_OptCatalogAux1 = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-defaultgraphicsflags
- * @recoil-artifact defines .data recoil:data:0x57d9bc: Symbol.
- * Authored zModel display global.
- * Purpose: provide the fallback graphics-flags storage when the options catalog has no entry.
- */
-int gModel_DefaultGraphicsFlags = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-pgraphicsflags
- * @recoil-artifact defines .data recoil:data:0x57d9c0: gModel_pGraphicsFlags.
- * Authored zModel display global.
- * Purpose: point model display code at the active graphics-flags integer value.
- */
-int* gModel_pGraphicsFlags = 0;
-
-extern "C" {
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-renderfn
- * @recoil-artifact defines .data recoil:data:0x57d9e0: gModel_RenderFn.
- * Authored zModel display global.
- * Purpose: dispatch visible model nodes to the active renderer path.
- */
-CZRenderFn gModel_RenderFn = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-clipmaskstack
- * @recoil-artifact defines .data recoil:data:0x57d9e4: gModel_ClipMaskStack.
- * Authored zModel display global.
- * Purpose: store nested model clip masks for zClass render traversal.
- */
-int gModel_ClipMaskStack[0x10] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-clipmaskstacktop
- * @recoil-artifact defines .data recoil:data:0x57da24: gModel_ClipMaskStackTop.
- * Authored zModel display global.
- * Purpose: track the current entry in the model clip-mask stack.
- */
-int* gModel_ClipMaskStackTop = 0;
-}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-variant-filterenabled
@@ -261,20 +174,6 @@ int* gModel_ClipMaskStackTop = 0;
  */
 int g_Variant_FilterEnabled = 1;
 zTag4Partial g_VariantTag_Current = { 0 };
-zTag4Partial g_Variant_CurrentTag = { 0 };
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-smallpolyrejectarea2x
- * @recoil-artifact defines .data recoil:data:0x57624c: gModel_SmallPolyRejectArea2x.
- * Purpose: cache the doubled small-polygon reject-area threshold.
- */
-float gModel_SmallPolyRejectArea2x = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-gmodel-smallpolyrejectarea20x
- * @recoil-artifact defines .data recoil:data:0x576250: gModel_SmallPolyRejectArea20x.
- * Purpose: cache the twenty-times small-polygon reject-area threshold.
- */
-float gModel_SmallPolyRejectArea20x = 0.0f;
 
 extern "C" {
 /**
@@ -283,111 +182,9 @@ extern "C" {
  * Evidence: BN facts for 0x476120, 0x479f90, 0x4766a0, and 0x47a1d0 show no constructor,
  * destructor, table write, or class-instance field access; the functions operate on file-scope
  * rectangle/remap state and passed camera/rect records.
- * Purpose: Keep the recovered alternate-clip state as typed source-level globals rather than a
- * class/table scaffold.
+ * Purpose: Keep the recovered alternate-clip state as typed source-level state rather than a
+ * class/table scaffold; its rectangle and remap fields are zModel_GlobalState members.
  */
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourceleft
- * @recoil-artifact defines .data recoil:data:0x57628c: g_zClipAlt_SourceLeft.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Hold the source rectangle left edge for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceLeft = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourcetop
- * @recoil-artifact defines .data recoil:data:0x576290: g_zClipAlt_SourceTop.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Hold the source rectangle top edge for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceTop = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourceright
- * @recoil-artifact defines .data recoil:data:0x576294: g_zClipAlt_SourceRight.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Hold the source rectangle right edge for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceRight = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourcebottom
- * @recoil-artifact defines .data recoil:data:0x576298: g_zClipAlt_SourceBottom.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Hold the source rectangle bottom edge for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceBottom = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourcewidth
- * @recoil-artifact defines .data recoil:data:0x57629c: g_zClipAlt_SourceWidth.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Cache the source rectangle width for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceWidth = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-sourceheight
- * @recoil-artifact defines .data recoil:data:0x5762a0: g_zClipAlt_SourceHeight.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Cache the source rectangle height for alternate-clip coordinate remapping.
- */
-float g_zClipAlt_SourceHeight = 0.0f;
-
-/**
- * Data owner: zClipAlt target clipping rectangle.
- * Purpose: Hold the alternate clipping bounds used by zClipRect rejection and clipping routines.
- */
-zClipRectPartial gClipRect_Alt = { 0 };
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapoffsetx
- * @recoil-artifact defines .data recoil:data:0x5762a4: g_zClipAlt_RemapOffsetX.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the source-to-target X offset for alternate clipped points.
- */
-float g_zClipAlt_RemapOffsetX = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapoffsety
- * @recoil-artifact defines .data recoil:data:0x5762a8: g_zClipAlt_RemapOffsetY.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the source-to-target Y offset for alternate clipped points.
- */
-float g_zClipAlt_RemapOffsetY = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapscalex
- * @recoil-artifact defines .data recoil:data:0x5762ac: g_zClipAlt_RemapScaleX.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the X scale used to remap alternate clipped points.
- */
-float g_zClipAlt_RemapScaleX = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapscaley
- * @recoil-artifact defines .data recoil:data:0x5762b0: g_zClipAlt_RemapScaleY.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the Y scale used to remap alternate clipped points.
- */
-float g_zClipAlt_RemapScaleY = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapbiasx
- * @recoil-artifact defines .data recoil:data:0x5762b4: g_zClipAlt_RemapBiasX.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the X bias used to remap alternate clipped points.
- */
-float g_zClipAlt_RemapBiasX = 0.0f;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-remapbiasy
- * @recoil-artifact defines .data recoil:data:0x5762b8: g_zClipAlt_RemapBiasY.
- * Data owner: zClipAlt remap state.
- * Purpose: Cache the Y bias used to remap alternate clipped points.
- */
-float g_zClipAlt_RemapBiasY = 0.0f;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zclipalt-biasincludesprimaryorigin
@@ -396,61 +193,7 @@ float g_zClipAlt_RemapBiasY = 0.0f;
  * Purpose: Select whether remap bias includes the primary clip origin.
  */
 int g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-galtclipsourcerectvalid
- * @recoil-artifact defines .data recoil:data:0x576254: gAltClipSourceRectValid.
- * Data owner: zClipAlt source rectangle state.
- * Purpose: Record whether the alternate clipping source rectangle has been configured.
- */
-int gAltClipSourceRectValid = 0;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-galtclippassenabled
- * @recoil-artifact defines .data recoil:data:0x57da2c: gAltClipPassEnabled.
- * Data owner: zClipAlt pass state.
- * Purpose: Record whether the alternate clipping pass is enabled.
- */
-int gAltClipPassEnabled = 0;
 }
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-clip-polyverts
- * @recoil-artifact defines .data recoil:data:0x57c8c4: g_Clip_PolyVerts.
- * Data owner: zClipRect polygon clipping scratch vertices.
- * Purpose: Hold the active polygon vertex stream for XY clipping and rejection.
- */
-zClipVert g_Clip_PolyVerts[0x40] = { 0 };
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-clip-polyvertsscratch
- * @recoil-artifact defines .data recoil:data:0x57c5c4: g_Clip_PolyVertsScratch.
- * Data owner: zClipRect polygon clipping scratch vertices.
- * Purpose: Hold the alternate polygon vertex stream for Z-range clipping passes.
- */
-zClipVert g_Clip_PolyVertsScratch[0x40] = { 0 };
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-clip-polyuvsstorage
- * @recoil-artifact defines .data recoil:data:0x57cbc4: g_Clip_PolyUvsStorage.
- * Data owner: zClipRect polygon clipping scratch UV storage.
- * Purpose: Provide default UV storage for clipping passes that preserve texture coordinates.
- */
-zClipUV g_Clip_PolyUvsStorage[0x40] = { 0 };
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-clip-polyuvs
- * @recoil-artifact defines .data recoil:data:0x57cdc4: g_Clip_PolyUvs.
- * Data owner: zClipRect polygon clipping scratch UV cursor.
- * Purpose: Select the active UV stream used by polygon clipping passes.
- */
-zClipUV* g_Clip_PolyUvs = 0;
-
-/**
- * Data owner: zClipRect primary clipping rectangle.
- * Purpose: Hold the primary screen clip bounds used by model and alternate clipping callers.
- */
-zClipRectPartial gClipRect_Primary = { 0 };
 
 /**
  * Original source helper expression observed in callers 0x476190 and 0x4761e0
@@ -480,52 +223,50 @@ zClipRectPartial gClipRect_Primary = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-init
  * @recoil-artifact defines .text recoil:function:0x475c40: zModelDisplayInit
- *
+ * @recoil-match byte
  *
  * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
  */
 int __cdecl zModelDisplayInit()
 {
     gModel_DisplayInitWriteOnlyFlag = 1;
+    gModel_FogEnabled = 1;
+    gModel_FogLinearModeEnabled = 1;
 
     gModel_RenderMode = 2;
-    g_zModel_DisplayClipMode = 2;
-    g_zModel_SpanOcclusionProc = (void*)(&zModel::RenderNodeSoftware);
     gModel_RenderFn = zModel::RenderNodeSoftware;
     gAltClipPassEnabled = 0;
     gModel_ClipMaskStackTop = gModel_ClipMaskStack;
-    g_zModel_DisplayClipX = 0;
-    g_zModel_DisplayClipY = 0;
-    g_zModel_DisplayClipWidth = 320.0f;
-    g_zModel_DisplayClipHeight = 200.0f;
-    g_zModel_DisplayClipMaxX = 319.0f;
-    g_zModel_DisplayClipMaxY = 199.0f;
+    g_zVideo_pActiveProjectionViewContext = 0;
+    gClipRect_Primary.xMin = 0;
+    gClipRect_Primary.xMax = 320.0f;
+    gClipRect_Primary.yMin = 0;
+    gClipRect_Primary.yMax = 200.0f;
+    gClipRect_Primary.xMaxAlt = 319.0f;
+    gClipRect_Primary.yMaxAlt = 199.0f;
     gModel_SmallPolyRejectArea2x = 4.0f;
     gModel_SmallPolyRejectArea20x = 40.0f;
-    g_zModel_DisplayClipReserved = 0;
+    gAltClipSourceRectValid = 0;
+    g_zModel_VertexShadingEnabled = 0;
+    gModel_LightInputNodeStates = 0;
+    gModel_LightInputDataList = 0;
+    gModel_HasActiveLights = 0;
+    gModel_LightInputCount = 0;
+    gModel_ActiveLightCount = 0;
     gModel_DisplayClearedWriteOnlyFlag = 0;
 
-    gModel_FogEnabled = 1;
-    gModel_FogLinearModeEnabled = 1;
+    gModel_FogColorRgb01.red = 1.0f;
+    gModel_FogColorRgb01.green = 0;
+    gModel_FogColorRgb01.blue = 1.0f;
     gModel_FogDistanceStart = 500.0f;
     gModel_FogDistanceEnd = 700.0f;
-    gModel_FogDistanceInvRange = 0.005f;
     gModel_FogHeightHigh = 300.0f;
     gModel_FogHeightLow = 200.0f;
+    gModel_FogDistanceInvRange = 0.005f;
     gModel_FogHeightInvRange = 0.01f;
     gModel_FogDensity = 2.0f;
     gModel_RenderVertexAlphaEnabled = 0;
     gModel_RenderAlphaScaleCurrent = 1.0f;
-
-    g_zModel_FogStart = 500.0f;
-    g_zModel_FogEnd = 700.0f;
-    g_zModel_FogHeightHigh = 300.0f;
-    g_zModel_FogHeightLow = 200.0f;
-    g_zModel_FogDistanceInvRange = 0.005f;
-    g_zModel_FogHeightInvRange = 0.01f;
-    g_zModel_FogDensity = 2.0f;
-    g_zModel_FogReserved = 0;
-    g_zModel_FogScale = 1.0f;
 
     if (g_zVideo_ActiveRendererPath != 0) {
         g_zRndr_InverseZTolerance = 0.02f;
@@ -535,29 +276,30 @@ int __cdecl zModelDisplayInit()
     }
 
     g_zModel_TransformedVerts = g_zModel_SharedVec3ScratchAStorage;
-    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
-    g_zModel_PointInPolygonVertices = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_TransformedNormals = g_zModel_SharedVec3ScratchBStorage;
+    g_zModel_SharedVec3ScratchA = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_SharedVec3ScratchB = g_zModel_SharedVec3ScratchBStorage;
+    g_zModel_PointInPolygonVertices = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_PointInPolygonEdgeNormals = g_zModel_SharedVec3ScratchBStorage;
-    g_zModel_PointInPolygonVertexCount = 0;
     {
-        for (int counterIndex = 0; counterIndex < 8; ++counterIndex) {
-            g_zModel_ScratchCounters[counterIndex] = 0;
+        for (int handleIndex = 0; handleIndex < 3; ++handleIndex) {
+            g_OptCatalogDamageMaskHandles[handleIndex] = 0;
         }
     }
-    g_zModel_PointInPolyTolX = 0.2f;
-    g_zModel_PointInPolyTolY = 0.2f;
+    g_OptCatalogDamageMaskPhaseU = 0;
+    g_OptCatalogDamageMaskPhaseV = 0;
+    g_zModel_PointInPolygonVertexCount = 0;
+    g_zModel_TextureWorldPerMeterU = 0.2f;
+    g_zModel_TextureWorldPerMeterV = 0.2f;
     g_Clip_PolyUvs = g_Clip_PolyUvsStorage;
-
-    g_zModel_DamageMaskCurrent = g_zModel_DamageMaskStorage;
+    g_zModel_CurrentPolyNormals = 0;
+    g_OptCatalogDamageMaskEnabled = 0;
     g_OptCatalogDamageMaskSlotIndex = 0;
-    g_zModel_OptCatalogAux0 = 0;
-    g_zModel_OptCatalogAux1 = 0;
     gModel_DefaultGraphicsFlags = -1;
 
-    zOptionEntryPartial* graphicsFlagsOption
-        = zGame::OptionsFindOption(g_zVideo_ActiveRendererPath != 0 ? "GfxFlags_HW" : "GfxFlags_SW");
+    zOptionEntryPartial* graphicsFlagsOption = zGame::OptionsFindOption(
+        g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_GfxFlagsHw : g_zOpt_OptionName_GfxFlagsSw
+    );
     gModel_pGraphicsFlags
         = graphicsFlagsOption != 0 ? &graphicsFlagsOption->payloadOrBuffer : &gModel_DefaultGraphicsFlags;
 
@@ -939,3 +681,360 @@ namespace zRndr
         }
     }
 } // namespace zRndr
+
+/*
+ * Layout check for zModel_GlobalState: every member offset and extent, including the
+ * unrecovered byte spans, against the retail layout.
+ */
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, diPoolCapacity) == 0x0 && sizeof(g_zModel_GlobalStateStorage.diPoolCapacity) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, diPoolBase) == 0x4 && sizeof(g_zModel_GlobalStateStorage.diPoolBase) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, diPoolInUseCount) == 0x8 && sizeof(g_zModel_GlobalStateStorage.diPoolInUseCount) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, diPoolFreeHeadIndex) == 0xc
+    && sizeof(g_zModel_GlobalStateStorage.diPoolFreeHeadIndex) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, renderMode) == 0x10 && sizeof(g_zModel_GlobalStateStorage.renderMode) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, projectionViewContext) == 0x14
+    && sizeof(g_zModel_GlobalStateStorage.projectionViewContext) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipRectPrimary) == 0x18 && sizeof(g_zModel_GlobalStateStorage.clipRectPrimary) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, projectClipLeft) == 0x3c && sizeof(g_zModel_GlobalStateStorage.projectClipLeft) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, projectClipTop) == 0x40 && sizeof(g_zModel_GlobalStateStorage.projectClipTop) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, projectClipRight) == 0x44
+    && sizeof(g_zModel_GlobalStateStorage.projectClipRight) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, projectClipBottom) == 0x48
+    && sizeof(g_zModel_GlobalStateStorage.projectClipBottom) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, smallPolyRejectArea2x) == 0x4c
+    && sizeof(g_zModel_GlobalStateStorage.smallPolyRejectArea2x) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, smallPolyRejectArea20x) == 0x50
+    && sizeof(g_zModel_GlobalStateStorage.smallPolyRejectArea20x) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altClipSourceRectValid) == 0x54
+    && sizeof(g_zModel_GlobalStateStorage.altClipSourceRectValid) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipRectAlt) == 0x58 && sizeof(g_zModel_GlobalStateStorage.clipRectAlt) == 0x24
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, unknown_007c) == 0x7c && sizeof(g_zModel_GlobalStateStorage.unknown_007c) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceLeft) == 0x8c && sizeof(g_zModel_GlobalStateStorage.altSourceLeft) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceTop) == 0x90 && sizeof(g_zModel_GlobalStateStorage.altSourceTop) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceRight) == 0x94 && sizeof(g_zModel_GlobalStateStorage.altSourceRight) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceBottom) == 0x98 && sizeof(g_zModel_GlobalStateStorage.altSourceBottom) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceWidth) == 0x9c && sizeof(g_zModel_GlobalStateStorage.altSourceWidth) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altSourceHeight) == 0xa0 && sizeof(g_zModel_GlobalStateStorage.altSourceHeight) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapOffsetX) == 0xa4 && sizeof(g_zModel_GlobalStateStorage.altRemapOffsetX) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapOffsetY) == 0xa8 && sizeof(g_zModel_GlobalStateStorage.altRemapOffsetY) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapScaleX) == 0xac && sizeof(g_zModel_GlobalStateStorage.altRemapScaleX) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapScaleY) == 0xb0 && sizeof(g_zModel_GlobalStateStorage.altRemapScaleY) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapBiasX) == 0xb4 && sizeof(g_zModel_GlobalStateStorage.altRemapBiasX) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altRemapBiasY) == 0xb8 && sizeof(g_zModel_GlobalStateStorage.altRemapBiasY) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, sharedVec3ScratchAStorage) == 0xbc
+    && sizeof(g_zModel_GlobalStateStorage.sharedVec3ScratchAStorage) == 0x3000
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, sharedVec3ScratchBStorage) == 0x30bc
+    && sizeof(g_zModel_GlobalStateStorage.sharedVec3ScratchBStorage) == 0x3000
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, transformedVerts) == 0x60bc
+    && sizeof(g_zModel_GlobalStateStorage.transformedVerts) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, transformedNormals) == 0x60c0
+    && sizeof(g_zModel_GlobalStateStorage.transformedNormals) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, diFaceVertexScratch) == 0x60c4
+    && sizeof(g_zModel_GlobalStateStorage.diFaceVertexScratch) == 0x300
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyVertsScratch) == 0x63c4
+    && sizeof(g_zModel_GlobalStateStorage.clipPolyVertsScratch) == 0x300
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyVerts) == 0x66c4 && sizeof(g_zModel_GlobalStateStorage.clipPolyVerts) == 0x300
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyUvsStorage) == 0x69c4
+    && sizeof(g_zModel_GlobalStateStorage.clipPolyUvsStorage) == 0x200
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyUvs) == 0x6bc4 && sizeof(g_zModel_GlobalStateStorage.clipPolyUvs) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, currentPolyNormalsStorage) == 0x6bc8
+    && sizeof(g_zModel_GlobalStateStorage.currentPolyNormalsStorage) == 0x300
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, currentPolyNormals) == 0x6ec8
+    && sizeof(g_zModel_GlobalStateStorage.currentPolyNormals) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyAttr0) == 0x6ecc && sizeof(g_zModel_GlobalStateStorage.clipPolyAttr0) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyAttr1) == 0x6fcc && sizeof(g_zModel_GlobalStateStorage.clipPolyAttr1) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipPolyAttr2) == 0x70cc && sizeof(g_zModel_GlobalStateStorage.clipPolyAttr2) == 0x100
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, ambientColorRgb01) == 0x71cc
+    && sizeof(g_zModel_GlobalStateStorage.ambientColorRgb01) == 0xc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogBaseColorRgb01) == 0x71d8
+    && sizeof(g_zModel_GlobalStateStorage.fogBaseColorRgb01) == 0xc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, ambientIntensityFactor) == 0x71e4
+    && sizeof(g_zModel_GlobalStateStorage.ambientIntensityFactor) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, ambientScale) == 0x71e8 && sizeof(g_zModel_GlobalStateStorage.ambientScale) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, specialLightPaletteRemapRecipe) == 0x71ec
+    && sizeof(g_zModel_GlobalStateStorage.specialLightPaletteRemapRecipe) == 0x20
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, vertexShadingEnabled) == 0x720c
+    && sizeof(g_zModel_GlobalStateStorage.vertexShadingEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, lightInputNodeStates) == 0x7210
+    && sizeof(g_zModel_GlobalStateStorage.lightInputNodeStates) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, lightInputDataList) == 0x7214
+    && sizeof(g_zModel_GlobalStateStorage.lightInputDataList) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, hasActiveLights) == 0x7218
+    && sizeof(g_zModel_GlobalStateStorage.hasActiveLights) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, lightInputCount) == 0x721c
+    && sizeof(g_zModel_GlobalStateStorage.lightInputCount) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, activeLightCount) == 0x7220
+    && sizeof(g_zModel_GlobalStateStorage.activeLightCount) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, activeLightSpecialIndex) == 0x7224
+    && sizeof(g_zModel_GlobalStateStorage.activeLightSpecialIndex) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, activeLights) == 0x7228 && sizeof(g_zModel_GlobalStateStorage.activeLights) == 0x500
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, displayClearedWriteOnlyFlag) == 0x7728
+    && sizeof(g_zModel_GlobalStateStorage.displayClearedWriteOnlyFlag) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, displayInitWriteOnlyFlag) == 0x772c
+    && sizeof(g_zModel_GlobalStateStorage.displayInitWriteOnlyFlag) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogEnabled) == 0x7730 && sizeof(g_zModel_GlobalStateStorage.fogEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogLinearModeEnabled) == 0x7734
+    && sizeof(g_zModel_GlobalStateStorage.fogLinearModeEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogColorRgb01) == 0x7738 && sizeof(g_zModel_GlobalStateStorage.fogColorRgb01) == 0xc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogDistanceStart) == 0x7744
+    && sizeof(g_zModel_GlobalStateStorage.fogDistanceStart) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogDistanceEnd) == 0x7748 && sizeof(g_zModel_GlobalStateStorage.fogDistanceEnd) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogDistanceInvRange) == 0x774c
+    && sizeof(g_zModel_GlobalStateStorage.fogDistanceInvRange) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogHeightHigh) == 0x7750 && sizeof(g_zModel_GlobalStateStorage.fogHeightHigh) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogHeightLow) == 0x7754 && sizeof(g_zModel_GlobalStateStorage.fogHeightLow) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogHeightInvRange) == 0x7758
+    && sizeof(g_zModel_GlobalStateStorage.fogHeightInvRange) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogDensity) == 0x775c && sizeof(g_zModel_GlobalStateStorage.fogDensity) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, renderVertexAlphaEnabled) == 0x7760
+    && sizeof(g_zModel_GlobalStateStorage.renderVertexAlphaEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, renderAlphaScaleCurrent) == 0x7764
+    && sizeof(g_zModel_GlobalStateStorage.renderAlphaScaleCurrent) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, fogTargetColorOverride) == 0x7768
+    && sizeof(g_zModel_GlobalStateStorage.fogTargetColorOverride) == 0x10
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, inverseZTolerance) == 0x7778
+    && sizeof(g_zModel_GlobalStateStorage.inverseZTolerance) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, sharedVec3ScratchA) == 0x777c
+    && sizeof(g_zModel_GlobalStateStorage.sharedVec3ScratchA) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, sharedVec3ScratchB) == 0x7780
+    && sizeof(g_zModel_GlobalStateStorage.sharedVec3ScratchB) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, pointInPolygonVertices) == 0x7784
+    && sizeof(g_zModel_GlobalStateStorage.pointInPolygonVertices) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, pointInPolygonEdgeNormals) == 0x7788
+    && sizeof(g_zModel_GlobalStateStorage.pointInPolygonEdgeNormals) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, pointInPolygonVertexCount) == 0x778c
+    && sizeof(g_zModel_GlobalStateStorage.pointInPolygonVertexCount) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, textureWorldBaseU) == 0x7790
+    && sizeof(g_zModel_GlobalStateStorage.textureWorldBaseU) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, textureWorldBaseV) == 0x7794
+    && sizeof(g_zModel_GlobalStateStorage.textureWorldBaseV) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, textureWorldPerMeterU) == 0x7798
+    && sizeof(g_zModel_GlobalStateStorage.textureWorldPerMeterU) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, textureWorldPerMeterV) == 0x779c
+    && sizeof(g_zModel_GlobalStateStorage.textureWorldPerMeterV) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, damageMaskEnabled) == 0x77a0
+    && sizeof(g_zModel_GlobalStateStorage.damageMaskEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, damageMaskSlotIndex) == 0x77a4
+    && sizeof(g_zModel_GlobalStateStorage.damageMaskSlotIndex) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, damageMaskHandles) == 0x77a8
+    && sizeof(g_zModel_GlobalStateStorage.damageMaskHandles) == 0xc
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, damageMaskPhaseU) == 0x77b4
+    && sizeof(g_zModel_GlobalStateStorage.damageMaskPhaseU) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, damageMaskPhaseV) == 0x77b8
+    && sizeof(g_zModel_GlobalStateStorage.damageMaskPhaseV) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, defaultGraphicsFlags) == 0x77bc
+    && sizeof(g_zModel_GlobalStateStorage.defaultGraphicsFlags) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, pGraphicsFlags) == 0x77c0 && sizeof(g_zModel_GlobalStateStorage.pGraphicsFlags) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, unknown_77c4) == 0x77c4 && sizeof(g_zModel_GlobalStateStorage.unknown_77c4) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, softwarePathActive) == 0x77c8
+    && sizeof(g_zModel_GlobalStateStorage.softwarePathActive) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, unknown_77cc) == 0x77cc && sizeof(g_zModel_GlobalStateStorage.unknown_77cc) == 0x14
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, renderFn) == 0x77e0 && sizeof(g_zModel_GlobalStateStorage.renderFn) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipMaskStack) == 0x77e4 && sizeof(g_zModel_GlobalStateStorage.clipMaskStack) == 0x40
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, clipMaskStackTop) == 0x7824
+    && sizeof(g_zModel_GlobalStateStorage.clipMaskStackTop) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, variantCurrentTag) == 0x7828
+    && sizeof(g_zModel_GlobalStateStorage.variantCurrentTag) == 0x4
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_GlobalState, altClipPassEnabled) == 0x782c
+    && sizeof(g_zModel_GlobalStateStorage.altClipPassEnabled) == 0x4
+);
+RECOIL_STATIC_ASSERT(sizeof(zModel_GlobalState) == 0x7830);
+RECOIL_STATIC_ASSERT(sizeof(zVec3) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zClipVert) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
+RECOIL_STATIC_ASSERT(sizeof(zClipRectPartial) == 0x24);
+RECOIL_STATIC_ASSERT(sizeof(zColorRgb) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zVidPaletteRemapRecipe) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(zModel_ActiveLightEntryLive) == 0x14);
+RECOIL_STATIC_ASSERT(sizeof(zModel_FogTargetColorOverride) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(zTag4Partial) == 0x04);
+RECOIL_STATIC_ASSERT(sizeof(CZRenderFn) == 0x04);

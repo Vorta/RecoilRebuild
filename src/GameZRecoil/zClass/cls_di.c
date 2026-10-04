@@ -11,14 +11,6 @@
 #include <string.h>
 
 CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime = { 0 };
-/*
- * Purpose: retain whole polygon faces without overwriting adjacent globals.
- * Mission-one runtime captures prove writes through vertex 13; four entries
- * corrupt the node capacity and neighboring state. This provisional capacity
- * follows the 64-vertex retail scratch family and available 0x300-byte span.
- * The original allocation extent remains unresolved; this is no data proof.
- */
-zVec3 g_CZClass_DiFaceVertexScratch4[64] = { 0 };
 
 namespace
 {

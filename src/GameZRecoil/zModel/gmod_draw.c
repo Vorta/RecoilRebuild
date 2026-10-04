@@ -1775,7 +1775,9 @@ namespace zModel
                             (zVideo_XyzVertex*)g_Clip_PolyVerts,
                             (zVideo_TexCoord*)perspectiveUvs,
                             clippedCount,
-                            renderClass,
+                            material->currentTextureDirectoryEntry != 0
+                                ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
+                                : 0,
                             entry->drawFlags,
                             gModel_RenderAlphaScaleCurrent,
                             gModel_RenderVertexAlphaEnabled

@@ -20,35 +20,6 @@
 #include <string.h>
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576200
- * @recoil-artifact defines .data recoil:data:0x576200: Symbol.
- * Authored zModel display-instance pool global.
- * Purpose: record the configured display-instance pool capacity.
- */
-int g_zModel_DiPoolCapacity = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576204
- * @recoil-artifact defines .data recoil:data:0x576204: Symbol.
- * Authored zModel display-instance pool global.
- * Purpose: point at the allocated display-instance pool storage.
- */
-zDiPartial* g_zModel_DiPoolBase = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x576208
- * @recoil-artifact defines .data recoil:data:0x576208: Symbol.
- * Authored zModel display-instance pool global.
- * Purpose: count display-instance pool entries currently allocated.
- */
-int g_zModel_DiPoolInUseCount = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.symbol-0x57620c
- * @recoil-artifact defines .data recoil:data:0x57620c: Symbol.
- * Authored zModel display-instance pool global.
- * Purpose: hold the head index of the display-instance free list.
- */
-int g_zModel_DiPoolFreeHeadIndex = 0;
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-sourcefile-gmodconstc
  * @recoil-artifact defines .data recoil:data:0x4e13a0: g_zModel_SourceFile_GmodConstC.
  * Data owner: geometry_model_assets.zmodel_gmod_const_literals.
@@ -1578,7 +1549,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-match byte
+     * @recoil-source previously-byte-matched
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */

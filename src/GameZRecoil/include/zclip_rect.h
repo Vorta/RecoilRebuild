@@ -43,12 +43,6 @@ RECOIL_STATIC_ASSERT(sizeof(zClipRectPartial) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zClipVert) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
 
-extern zClipVert g_Clip_PolyVerts[0x40];
-extern zClipVert g_Clip_PolyVertsScratch[0x40];
-extern zClipUV g_Clip_PolyUvsStorage[0x40];
-extern zClipUV* g_Clip_PolyUvs;
-extern zClipRectPartial gClipRect_Primary;
-
 namespace zClipRect {
 int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount);
 int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCount);

@@ -1199,7 +1199,7 @@ namespace zClipAlt
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-settargetrect
      * @recoil-artifact defines .text recoil:function:0x479f90: zClipAlt::SetTargetRect
-     *
+     * @recoil-match byte
      *
      * Purpose: configure the alternate clipping rectangle and source-to-target
      * coordinate remap scale and bias.

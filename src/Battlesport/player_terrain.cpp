@@ -943,7 +943,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered

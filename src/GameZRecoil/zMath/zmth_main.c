@@ -1297,7 +1297,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matapplylocaltrs
      * @recoil-artifact defines .text recoil:function:0x474010: zMath::MatApplyLocalTRS.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     * @recoil-match byte
+     * @recoil-source previously-byte-matched
      *
      * Purpose: builds a local transform from Euler angles, position, and scale,
      * then composes it into the current matrix stack slot.

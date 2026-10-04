@@ -13,25 +13,6 @@
 #include <string.h>
 
 namespace {
-/**
- * Original-source helper evidence: no standalone retail function is present.
- * Observed in caller 0x46c3a0.
- * Purpose: Produce the VC-era fast square-root estimate used for plane scale.
- * Placement: defined ahead of the triangulation state; this arrangement keeps
- * VC5's x87 operand order in ProjectInnerRingOntoCachedPlane (0x46c570).
- */
-float EstimateMagnitudeFromSquaredLength(float squaredLength)
-{
-    union {
-        float value;
-        int bits;
-    } estimate;
-
-    estimate.value = squaredLength;
-    estimate.bits = (estimate.bits >> 1) + 0x1fc00000;
-    return estimate.value;
-}
-
 /*
  * Purpose: retain the current candidate allocation. Retail proves 12-byte
  * triangle-index records at 0x53a750, but the gap to 0x53d750 does not prove
@@ -69,6 +50,27 @@ zGeometry_TriangleIndexTriple g_zGeometry_TriangulateHole_TriangleIndices[kTrian
  * Purpose: Cache the combined ring plane while projecting inner-ring points.
  */
 zGeometry_PlaneEquationPartial g_zGeometry_TriangulateHole_CachedPlane;
+
+/**
+ * Original-source helper evidence: no standalone retail function is present.
+ * Observed in caller 0x46c3a0.
+ * Purpose: Produce the VC-era fast square-root estimate used for plane scale.
+ * Placement: defined after the triangulation state; this counter-neutral
+ * arrangement keeps VC5's x87 operand order in ProjectInnerRingOntoCachedPlane
+ * (0x46c570) after the zModel module-state declarations left the shared
+ * zClass/zVideo headers.
+ */
+float EstimateMagnitudeFromSquaredLength(float squaredLength)
+{
+    union {
+        float value;
+        int bits;
+    } estimate;
+
+    estimate.value = squaredLength;
+    estimate.bits = (estimate.bits >> 1) + 0x1fc00000;
+    return estimate.value;
+}
 } // namespace
 
 namespace zGeometry_TriangulateHole {

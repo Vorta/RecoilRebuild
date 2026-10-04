@@ -18,22 +18,7 @@ struct zClipAltFloatRect {
 };
 
 extern "C" {
-extern float g_zClipAlt_SourceLeft;
-extern float g_zClipAlt_SourceTop;
-extern float g_zClipAlt_SourceRight;
-extern float g_zClipAlt_SourceBottom;
-extern float g_zClipAlt_SourceWidth;
-extern float g_zClipAlt_SourceHeight;
-extern zClipRectPartial gClipRect_Alt;
-extern float g_zClipAlt_RemapOffsetX;
-extern float g_zClipAlt_RemapOffsetY;
-extern float g_zClipAlt_RemapScaleX;
-extern float g_zClipAlt_RemapScaleY;
-extern float g_zClipAlt_RemapBiasX;
-extern float g_zClipAlt_RemapBiasY;
 extern int g_zClipAlt_BiasIncludesPrimaryOrigin;
-extern int gAltClipSourceRectValid;
-extern int gAltClipPassEnabled;
 }
 
 void __fastcall zClipAltBuildFrustumPlanes(CZCameraDataPartial* cameraData);

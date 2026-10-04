@@ -182,15 +182,6 @@ int g_zVideo_FrameTick = 0;
  */
 CZCameraDataPartial* g_zVideo_pActiveViewContext = 0;
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-pactiveprojectionviewcontext
- * @recoil-artifact defines .data recoil:data:0x576214: g_zVideo_pActiveProjectionViewContext.
- * Projection/frustum active view owner data. BN types this separate 4-byte
- * .data slot as a zVideo_ViewContext pointer, zero-initialized; SetActiveViewContext
- * writes it before projection, model, and frustum users read it.
- * Purpose: cache the camera data record used by projection, clip, and frustum state.
- */
-CZCameraDataPartial* g_zVideo_pActiveProjectionViewContext = 0;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-activeviewvarianttag
  * @recoil-artifact defines .data recoil:data:0x5398f8: g_zVideo_ActiveViewVariantTag.
  * Render-frame variant owner data. BN xrefs show zVideo_sw::RenderFrame and
@@ -199,38 +190,6 @@ CZCameraDataPartial* g_zVideo_pActiveProjectionViewContext = 0;
  * Purpose: cache the currently selected variant tag for render traversal.
  */
 zTag4Partial g_zVideo_ActiveViewVariantTag = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x57623c
- * @recoil-artifact defines .data recoil:data:0x57623c: g_zVideo_ProjectClipLeft.
- * BN places this zero-initialized float in the project-clip quartet at
- * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
- * Purpose: cache the active view's left project-clip edge for projection users.
- */
-float g_zVideo_ProjectClipLeft = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x576240
- * @recoil-artifact defines .data recoil:data:0x576240: g_zVideo_ProjectClipTop.
- * BN places this zero-initialized float in the project-clip quartet at
- * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
- * Purpose: cache the active view's top project-clip edge for projection users.
- */
-float g_zVideo_ProjectClipTop = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x576244
- * @recoil-artifact defines .data recoil:data:0x576244: g_zVideo_ProjectClipRight.
- * BN places this zero-initialized float in the project-clip quartet at
- * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
- * Purpose: cache the active view's right project-clip edge for projection users.
- */
-float g_zVideo_ProjectClipRight = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x576248
- * @recoil-artifact defines .data recoil:data:0x576248: g_zVideo_ProjectClipBottom.
- * BN places this zero-initialized float in the project-clip quartet at
- * 0x57623c..0x576248; SetActiveViewContext writes it for projection users.
- * Purpose: cache the active view's bottom project-clip edge for projection users.
- */
-float g_zVideo_ProjectClipBottom = 0.0f;
 /**
  * Purpose: cache global video initialization and clear-screen options.
  */

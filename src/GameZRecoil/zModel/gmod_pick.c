@@ -1342,11 +1342,23 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforquerypoint
      * @recoil-artifact defines .text recoil:function:0x484960: zDi::BuildPickCandidateForQueryPoint.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
      * Purpose: preserve the recovered pick-face helper behavior used by cls_di.
+     * Contract note: when execution reaches the vertex batch, its count N
+     * (self->vertCount) must satisfy 1 <= N <= 0x400. The selected source must
+     * contain N initialized zVec3 elements (including when the blend/morph
+     * branch prepares g_zModel_SharedVec3ScratchA), and the shared transform
+     * destination must provide N writable elements. The source and destination
+     * ranges must not overlap; the batch identity path uses memcpy. Current
+     * matrix-stack slots must satisfy the shared batch helper's contract.
+     * For every processed entry, its low-byte vertex count K must satisfy
+     * 1 <= K <= 0x40. Its index array must contain K readable indices, each in
+     * [0, N), and the face scratch must provide K writable zVec3 elements.
+     * These are caller/data preconditions, not checks performed here.
      */
     int __fastcall BuildPickCandidateForQueryPoint(
         zDiPartial * self,
@@ -1358,7 +1370,7 @@ namespace zDi
             return 0;
         }
 
-        const zVec3* vertices = self->verts;
+        const zVec3* vertices;
         if ((self->flags & 0x08) != 0 && self->blendScale != 0.0 && self->blendVertCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
@@ -1368,46 +1380,36 @@ namespace zDi
                 self->blendScale
             );
             vertices = g_zModel_SharedVec3ScratchA;
-        }
-
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(self->vertCount) * sizeof(zVec3));
         } else {
-            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-                const zVec3* const vertex = &vertices[vertexIndex];
-                zVec3* const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
-                transformed->x
-                    = vertex->x * matrix->xx + vertex->y * matrix->yx + vertex->z * matrix->zx + matrix->posX;
-                transformed->y
-                    = vertex->x * matrix->xy + vertex->y * matrix->yy + vertex->z * matrix->zy + matrix->posY;
-                transformed->z
-                    = vertex->x * matrix->xz + vertex->y * matrix->yz + vertex->z * matrix->zz + matrix->posZ;
-            }
+            vertices = self->verts;
         }
 
-        {
-            for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
-                zDiEntryPartial* entry = &self->entries[entryIndex];
-                const int vertexCount = (int)(entry->flagsAndIndexCount & 0xffu);
-                const int* vertexIndices = (const int*)(entry->vertexIndices);
-                for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                    g_CZClass_DiFaceVertexScratch4[vertexIndex]
-                        = g_zModel_SharedVec3ScratchB[vertexIndices[vertexIndex]];
-                }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(vertices, g_zModel_SharedVec3ScratchB, self->vertCount);
 
-                if (CZDisplayInstance::TryGetPolygonHitAtQueryXZ(
-                        outCandidate,
-                        g_CZClass_DiFaceVertexScratch4,
-                        queryPoint->x,
-                        queryPoint->z,
-                        vertexCount
-                    ) != 0
-                    && outCandidate->hitPos.y <= queryPoint->y) {
-                    memcpy(&outCandidate->variantTag, &entry->variantTagInitialized, sizeof(outCandidate->variantTag));
-                    outCandidate->scenePayload = entry->material;
-                    return 1;
-                }
+        for (int entryIndex = 0; entryIndex < self->entryCount; ++entryIndex) {
+            int vertexCount = (int)(self->entries[entryIndex].flagsAndIndexCount & 0xffu);
+            const int* vertexIndices = (const int*)(self->entries[entryIndex].vertexIndices);
+            zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
+            const zVec3* transformed = g_zModel_SharedVec3ScratchB;
+            do {
+                *faceVertex++ = transformed[*vertexIndices++];
+            } while (--vertexCount != 0);
+
+            if (CZDisplayInstance::TryGetPolygonHitAtQueryXZ(
+                    outCandidate,
+                    g_CZClass_DiFaceVertexScratch4,
+                    queryPoint->x,
+                    queryPoint->z,
+                    (int)(self->entries[entryIndex].flagsAndIndexCount & 0xffu)
+                ) != 0
+                && outCandidate->hitPos.y <= queryPoint->y) {
+                memcpy(
+                    &outCandidate->variantTag,
+                    &self->entries[entryIndex].variantTagInitialized,
+                    sizeof(outCandidate->variantTag)
+                );
+                outCandidate->scenePayload = self->entries[entryIndex].material;
+                return 1;
             }
         }
 
@@ -1517,11 +1519,23 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.picktestmeshatqueryxz
      * @recoil-artifact defines .text recoil:function:0x484e00: CZDisplayInstance::PickTestMeshAtQueryXZ.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     * Contract note: when execution reaches the vertex batch, its count N
+     * (faceData->vertexCount) must satisfy 1 <= N <= 0x400. The selected source must
+     * contain N initialized zVec3 elements (including when the blend/morph
+     * branch prepares g_zModel_SharedVec3ScratchA), and the shared transform
+     * destination must provide N writable elements. The source and destination
+     * ranges must not overlap; the batch identity path uses memcpy. Current
+     * matrix-stack slots must satisfy the shared batch helper's contract.
+     * For every processed face, its low-byte vertex count K must satisfy
+     * 1 <= K <= 0x40. Its index array must contain K readable indices, each in
+     * [0, N), and the face scratch must provide K writable zVec3 elements.
+     * These are caller/data preconditions, not checks performed here.
      */
     void __fastcall PickTestMeshAtQueryXZ(
         CZNodePartial * node,
@@ -1537,7 +1551,7 @@ namespace CZDisplayInstance
             return;
         }
 
-        const zVec3* vertices = faceData->baseVertices;
+        const zVec3* vertices;
         if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
@@ -1547,31 +1561,21 @@ namespace CZDisplayInstance
                 faceData->morphWeight
             );
             vertices = g_zModel_SharedVec3ScratchA;
+        } else {
+            vertices = faceData->baseVertices;
         }
 
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(faceData->vertexCount) * sizeof(zVec3));
-        } else {
-            const zMat4x3* const matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int vertexIndex = 0; vertexIndex < faceData->vertexCount; ++vertexIndex) {
-                const zVec3* const vertex = &vertices[vertexIndex];
-                zVec3* const transformed = &g_zModel_SharedVec3ScratchB[vertexIndex];
-                transformed->x
-                    = vertex->x * matrix->xx + vertex->y * matrix->yx + vertex->z * matrix->zx + matrix->posX;
-                transformed->y
-                    = vertex->x * matrix->xy + vertex->y * matrix->yy + vertex->z * matrix->zy + matrix->posY;
-                transformed->z
-                    = vertex->x * matrix->xz + vertex->y * matrix->yz + vertex->z * matrix->zz + matrix->posZ;
-            }
-        }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(vertices, g_zModel_SharedVec3ScratchB, faceData->vertexCount);
 
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            const zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
-            const int vertexCount = (int)(face->flagsAndVertexCount & 0xffu);
-            for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                g_CZClass_DiFaceVertexScratch4[vertexIndex]
-                    = g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex]];
-            }
+            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
+            zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
+            const zVec3* transformed = g_zModel_SharedVec3ScratchB;
+            do {
+                *faceVertex++ = transformed[*vertexIndices++];
+            } while (--vertexCount != 0);
+
             zModelConst::AddFaceToPlayerProbeSampleBuckets(
                 node,
                 outputBuckets,
@@ -1580,7 +1584,7 @@ namespace CZDisplayInstance
                 samplePointCount,
                 maxProjectedY,
                 g_CZClass_DiFaceVertexScratch4,
-                face
+                &faceData->faces[faceIndex]
             );
         }
     }
@@ -2595,11 +2599,23 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygon
      * @recoil-artifact defines .text recoil:function:0x487350: CZDisplayInstance::FilterRegionsAgainstPolygon.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     * Contract note: when execution reaches the vertex batch, its count N
+     * (faceData->vertexCount) must satisfy 1 <= N <= 0x400. The selected source must
+     * contain N initialized zVec3 elements (including when the blend/morph
+     * branch prepares g_zModel_SharedVec3ScratchA), and the shared transform
+     * destination must provide N writable elements. The source and destination
+     * ranges must not overlap; the batch identity path uses memcpy. Current
+     * matrix-stack slots must satisfy the shared batch helper's contract.
+     * For every processed face, its low-byte vertex count K must satisfy
+     * 1 <= K <= 0x40. Its index array must contain K readable indices, each in
+     * [0, N), and the face scratch must provide K writable zVec3 elements.
+     * These are caller/data preconditions, not checks performed here.
      */
     void __fastcall FilterRegionsAgainstPolygon(
         CZNodePartial * candidateOwner,
@@ -2614,7 +2630,7 @@ namespace CZDisplayInstance
             return;
         }
 
-        const zVec3* vertices = faceData->baseVertices;
+        const zVec3* vertices;
         if ((faceData->flags & 0x08) != 0 && faceData->morphWeight != 0.0 && faceData->morphVertexCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
@@ -2624,33 +2640,23 @@ namespace CZDisplayInstance
                 faceData->morphWeight
             );
             vertices = g_zModel_SharedVec3ScratchA;
-        }
-
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
-            memcpy(g_zModel_SharedVec3ScratchB, vertices, (size_t)(faceData->vertexCount) * sizeof(zVec3));
         } else {
-            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int vertexIndex = 0; vertexIndex < faceData->vertexCount; ++vertexIndex) {
-                const zVec3* point = &vertices[vertexIndex];
-                g_zModel_SharedVec3ScratchB[vertexIndex].x
-                    = point->x * matrix->xx + point->y * matrix->yx + point->z * matrix->zx + matrix->posX;
-                g_zModel_SharedVec3ScratchB[vertexIndex].y
-                    = point->x * matrix->xy + point->y * matrix->yy + point->z * matrix->zy + matrix->posY;
-                g_zModel_SharedVec3ScratchB[vertexIndex].z
-                    = point->x * matrix->xz + point->y * matrix->yz + point->z * matrix->zz + matrix->posZ;
-            }
+            vertices = faceData->baseVertices;
         }
 
-        zVec2 scratchUv = { 0.0f, 0.0f };
-        for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            zModel_PickFaceEntry* face = &faceData->faces[faceIndex];
-            const unsigned int vertexCount = face->flagsAndVertexCount & 0xffu;
-            for (unsigned int vertexIndex_1 = 0; vertexIndex_1 < vertexCount; ++vertexIndex_1) {
-                g_CZClass_DiFaceVertexScratch4[vertexIndex_1]
-                    = g_zModel_SharedVec3ScratchB[face->vertexIndices[vertexIndex_1]];
-            }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(vertices, g_zModel_SharedVec3ScratchB, faceData->vertexCount);
 
-            if ((face->scenePayload->flags & kPickFaceBatchDamageMaskUvFlag) != 0) {
+        zVec2 scratchUv;
+        for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
+            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
+            zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
+            const zVec3* transformed = g_zModel_SharedVec3ScratchB;
+            do {
+                *faceVertex++ = transformed[*vertexIndices++];
+            } while (--vertexCount != 0);
+
+            if ((faceData->faces[faceIndex].scenePayload->flags & kPickFaceBatchDamageMaskUvFlag) != 0) {
                 BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
                     candidateOwner,
                     outCandidateBuffersBySegment,
@@ -2658,9 +2664,9 @@ namespace CZDisplayInstance
                     activeMask,
                     segmentCount,
                     g_CZClass_DiFaceVertexScratch4,
-                    face->faceUvData,
+                    faceData->faces[faceIndex].faceUvData,
                     &scratchUv,
-                    face
+                    &faceData->faces[faceIndex]
                 );
             } else {
                 BuildPickCandidatesForSegmentBatchVsPolygon(
@@ -2670,7 +2676,7 @@ namespace CZDisplayInstance
                     activeMask,
                     segmentCount,
                     g_CZClass_DiFaceVertexScratch4,
-                    face
+                    &faceData->faces[faceIndex]
                 );
             }
         }

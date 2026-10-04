@@ -1836,7 +1836,7 @@ void __fastcall Destroy(zGeometry_WeilerBufferPartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-getappendspace
  * @recoil-artifact defines .text recoil:function:0x467660: zGeometry_WeilerBuffer::GetAppendSpace
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Purpose: Reserve contiguous append slots, growing backing storage when needed.
  */
@@ -2676,7 +2676,7 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-buildpointsidetablesforcontourpair
  * @recoil-artifact defines .text recoil:function:0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
  */

@@ -71,7 +71,6 @@ typedef void(__fastcall* zVideo_BltSourceToPrimaryProc)(
 extern zVideo_BltSourceToPrimaryProc g_zVideo_pfnBltSourceToPrimary;
 }
 
-extern float g_zRndr_InverseZTolerance;
 extern int g_zRndr_ActivePaletteRemapKey;
 extern int g_zRndr_ActivePaletteShadeRecipeIndex;
 extern float gRndr_PerspTexScaledUOverZ0;

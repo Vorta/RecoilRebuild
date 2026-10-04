@@ -694,9 +694,6 @@ extern "C" {
 extern zVec3 g_zCamera_FrustumFootprintPoints[5];
 extern int g_zCamera_FrustumFootprintPointCount;
 extern zCamera_FrustumGridTileRingPartial g_zCamera_FrustumGridTileRings[50];
-extern int gModel_ClipMaskStack[0x10];
-extern int* gModel_ClipMaskStackTop;
-extern CZRenderFn gModel_RenderFn;
 extern int g_CZClass_RenderBoundsContextActive;
 extern int g_CZClass_RenderFrustumGridTileIndex;
 extern int g_CZClass_RenderRangeFadeActive;

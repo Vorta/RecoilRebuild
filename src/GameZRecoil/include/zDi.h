@@ -273,7 +273,6 @@ int __fastcall AddCycleTexture(zDiPartial* instance, zImage_TexDirEntryPartial* 
 } // namespace zModel_Instance
 
 extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime;
-extern zVec3 g_CZClass_DiFaceVertexScratch4[64];
 
 #define g_CZDisplayInstance_FilterRegions_NodeNamePrefix                                                               \
     (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsNodeNamePrefix)
