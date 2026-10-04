@@ -1609,7 +1609,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatenodeovertime
      * @recoil-artifact defines .text recoil:function:0x45a9d0: zEffect::AnimateNodeOverTime.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: interpolate a node's position, rotation, scale, and DI blend state
@@ -3271,7 +3271,8 @@ namespace zEffect
                 event->maxRadiusFarPixels = radiusCap;
             }
 
-            event->maxRadiusPixelsSlope = (event->maxRadiusFarPixels - event->maxRadiusNearPixels) / event->endTimeSec;
+            event->maxRadiusPixelsSlope
+                = (1.0f / event->endTimeSec) * (event->maxRadiusFarPixels - event->maxRadiusNearPixels);
         }
 
         const float timeSlice = sequenceRuntime->eventElapsedSec <= event->endTimeSec

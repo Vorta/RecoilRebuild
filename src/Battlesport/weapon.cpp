@@ -1762,7 +1762,7 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-processprimarygundispatchtick
  * @recoil-artifact defines .text recoil:function:0x43a400: Player::ProcessPrimaryGunDispatchTick.
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Source model: Player source-file runtime tick helper for the active primary
@@ -1829,7 +1829,7 @@ void __fastcall ProcessPrimaryGunDispatchTick(zUtil_SaveGameState* saveState)
  * @recoil-artifact defines .text recoil:function:0x43a4f0: Player::UpdateGunAndTurretAimNodes
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.gun-turret-aim-nodes.fast-sqrt-estimate recoil:function:0x43a4f0
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.gun-turret-aim-nodes.fast-sqrt-estimate
- *
+ * @recoil-match byte
  *
  * Purpose: apply the alternate gun aim vector to the gun pitch and turret yaw
  * node matrices; reviewed inline asm reproduces the retail horizontal-length
@@ -3023,7 +3023,7 @@ void __fastcall StartDestroyedStateVehicleEffect(zUtil_SaveGameState* saveState,
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-processaltgundispatchrequest
  * @recoil-artifact defines .text recoil:function:0x43c190: Player::ProcessAltGunDispatchRequest
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: dispatch an alternate-gun fire request through effect, trail, or
