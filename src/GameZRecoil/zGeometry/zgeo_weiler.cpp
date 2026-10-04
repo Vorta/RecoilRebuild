@@ -705,7 +705,7 @@ int __fastcall ClassifyInputContourPairBounds(zGeometry_WeilerStatePartial* self
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-outputpreclassifiedcontourpairresult
  * @recoil-artifact defines .text recoil:function:0x464ea0: zGeometry_Weiler::OutputPreclassifiedContourPairResult
- *
+ * @recoil-match byte
  *
  * Purpose: Resolve a preclassified containment result by rejecting unmatched outside points.
  */

@@ -1989,15 +1989,6 @@ void __fastcall UpdateYawVelocityFromSteerInput(zUtil_SaveGameState* saveState)
     }
 
     if (playerState->throttleInput != 0.0f) {
-        float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
-        dampingScale = -dampingScale;
-        int dampingBits = (int)(dampingScale * 12102200.0f);
-        const int dampingFloatBits = dampingBits + 0x3f800000;
-
-        float dampingFactor = 0.0f;
-        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
-        playerState->localVel.z *= dampingFactor;
-    } else {
         if (playerState->throttleInputCopy > 0.0f && playerState->localVel.z > 0.0f) {
             float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
             dampingScale = -dampingScale;
@@ -2025,6 +2016,15 @@ void __fastcall UpdateYawVelocityFromSteerInput(zUtil_SaveGameState* saveState)
         } else if (playerState->localVel.z < -velocityLimit) {
             playerState->localVel.z = -velocityLimit;
         }
+    } else {
+        float dampingScale = masterModalData->rateDampingDecel * g_Player_DeltaTime;
+        dampingScale = -dampingScale;
+        int dampingBits = (int)(dampingScale * 12102200.0f);
+        const int dampingFloatBits = dampingBits + 0x3f800000;
+
+        float dampingFactor = 0.0f;
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
+        playerState->localVel.z *= dampingFactor;
     }
 
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
