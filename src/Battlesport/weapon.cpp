@@ -1997,21 +1997,47 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-decayandapplyaltfireslotoffsettonode
  * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits recoil:function:0x43a900
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits
  *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
  * Battlesport gameplay source file.
+ * Raw assembly: one in-body 11-byte FastExp bit-construction island at retail
+ * [0x43a926,0x43a931); VC5SP3 /Ob0 cannot expand the inline zMath::FastExp
+ * here (same construct as the reviewed 0x43a600 island).
  */
 void __fastcall
 DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, CZNodePartial* slotNode, float slotAimY, int applyMatrix)
 {
     const float dampingRate = g_FrameDeltaTimeSec * -8.09f;
     const int dampingBits = (int)(dampingRate * 12102200.0f);
-    const int dampingFactorBits = dampingBits + 0x3f800000;
-    float dampingFactor = 0.0f;
-    memcpy(&dampingFactor, &dampingFactorBits, sizeof(dampingFactor));
-    slot->offset *= dampingFactor;
+    float dampingFactor;
+    /*
+     * Purpose: construct the FastExp approximation's binary32 representation
+     * from the already-converted dampingBits, adding 0x3f800000 modulo 2^32.
+     * Scope: retail [0x43a926,0x43a931) under weapon.cpp's VC5SP3 /Ob0 profile,
+     * where the inline zMath::FastExp cannot expand (same construct as the
+     * reviewed 0x43a600 island). Contract: initialized 32-bit dampingBits and
+     * writable binary32 dampingFactor. Clobbers EAX; arithmetic flags follow
+     * ADD. No x87 instructions. The compiler owns both homes and the preceding
+     * floating-point multiplication and conversion.
+     */
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        mov eax, dampingBits
+        add eax, 03f800000h
+        mov dampingFactor, eax
+    }
+#else
+    {
+        const unsigned int dampingFloatBits = (unsigned int)dampingBits + 0x3f800000u;
+        memcpy(&dampingFactor, &dampingFloatBits, sizeof dampingFactor);
+    }
+#endif
+    const float decayedOffset = slot->offset * dampingFactor;
+    slot->offset = decayedOffset;
     if (fabs(slot->offset) < 0.01f) {
         slot->offset = 0.0f;
     }

@@ -17,6 +17,16 @@
 #include <string.h>
 #include <sys/stat.h>
 
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and 0x463570 and 0x463b00 order(s) code by that counter's
+ * parity at parse time. These declarations are never referenced and emit no code,
+ * data or symbols. User-authorized exception: match-proofs.md "Per-TU VC5
+ * ID-counter parity exception".
+ * Purpose: keep this file's ID-counter parity after shared-header changes.
+ */
+extern int g_FmvScriptIdCounterAlignment0;
+
 extern "C" HWND g_RecoilApp_hWndMain;
 
 struct zFMV_ActionTagStringSet {

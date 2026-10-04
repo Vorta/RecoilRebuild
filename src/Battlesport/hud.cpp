@@ -13216,4 +13216,3 @@ void zFMV_Action::RunBlockingTimed()
  */
 extern int g_HudSortRangeIdCounterAlignment0;
 extern int g_HudSortRangeIdCounterAlignment1;
-extern int g_HudSortRangeIdCounterAlignment2;

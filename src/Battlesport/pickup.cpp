@@ -2558,7 +2558,7 @@ void __fastcall SendPkt11CreateDelta(PickupSpawnDef* spawn)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.handlepkt11-spawndelta
  * @recoil-artifact defines .text recoil:function:0x433f40: Pickup::HandlePkt11SpawnDelta (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: apply a network pkt11 pickup spawn delta by creating, deleting, or
  * hiding the addressed spawn.

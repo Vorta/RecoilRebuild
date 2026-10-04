@@ -34,7 +34,7 @@ struct zInput_BindMapContext {
     int m_joystickToCommand[0x10];
     int m_mouseToCommand[4];
 
-    zInput_BindMapContext* InitFromTemplate(const zInput_BindMapContext* tmpl);
+    zInput_BindMapContext(const zInput_BindMapContext* tmpl);
     void FreeAllBuffers();
     void RebuildLookupIndices();
     void InitCommandMap(int commandCount);
@@ -193,8 +193,8 @@ RECOIL_STATIC_ASSERT(sizeof(DIJOYSTATE2) == 0x110);
 struct JoystickAxisConfigEntry {
     int lMin;
     int lMax;
-    float midpoint;
     float normScale;
+    float midpoint;
     int deadzone;
 };
 RECOIL_STATIC_ASSERT(sizeof(JoystickAxisConfigEntry) == 0x14);

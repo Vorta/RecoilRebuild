@@ -31,6 +31,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and ClassifyPointAgainstSegment (0x416390) order(s) code by that counter's
+ * parity at parse time. These declarations are never referenced and emit no code,
+ * data or symbols. User-authorized exception: match-proofs.md "Per-TU VC5
+ * ID-counter parity exception".
+ * Purpose: keep this file's ID-counter parity after shared-header changes.
+ */
+extern int g_MapIdCounterAlignment0;
+extern int g_MapIdCounterAlignment1;
+
 extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
 extern "C" const unsigned char g_HudSensorTracker_ObjectiveBlinkColorRedRgb24[4];

@@ -45,6 +45,12 @@ struct zZbdManager {
     unsigned int unknown_2c;
     int stopRequested;
 
+    zZbdManager()
+    {
+        tempBufferSize = 0;
+        tempBuffer = 0;
+    }
+    ~zZbdManager();
     void RegisterSectionHandler(
         const char* sectionName,
         zZbdSectionCallback onPreLoad,
@@ -65,7 +71,6 @@ struct zZbdManager {
     FlushTempStreamToSectionRecord(FILE* tempStream, zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken);
     FILE* CreateTempReadStreamFromBuffer(void* buffer, unsigned int size);
     void RemoveTempFiles(FILE* tempStream);
-    void Destroy();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(zZbdSectionHandler) == 0x14);

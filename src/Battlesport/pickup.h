@@ -70,6 +70,7 @@ struct PickupParsedZrdEntry {
     int param;
     int unknown_2c;
     float respawnDelay;
+    int unknown_34[8];
 };
 RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, typeDesc) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, amount) == 0x08);
@@ -79,7 +80,7 @@ RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, unknown_24) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, param) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, unknown_2c) == 0x2c);
 RECOIL_STATIC_ASSERT(offsetof(PickupParsedZrdEntry, respawnDelay) == 0x30);
-RECOIL_STATIC_ASSERT(sizeof(PickupParsedZrdEntry) == 0x34);
+RECOIL_STATIC_ASSERT(sizeof(PickupParsedZrdEntry) == 0x54);
 
 struct PickupPkt11Delta {
     zNetworkPacketHeader header;

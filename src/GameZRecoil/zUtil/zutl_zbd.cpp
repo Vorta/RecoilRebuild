@@ -205,22 +205,13 @@ namespace zUtil {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zbd-init
  * @recoil-artifact defines .text recoil:function:0x4c0100: zUtil::ZBDInit
- *
+ * @recoil-match byte
  *
  * Purpose: allocate and initialize the global ZBD manager and handler sentinel.
  */
 int __cdecl ZBDInit()
 {
-    zZbdManager* manager = new zZbdManager;
-    if (manager != 0) {
-
-        manager->tempBufferSize = 0;
-        manager->tempBuffer = 0;
-        manager->unknown_2c = 0;
-        manager->stopRequested = 0;
-    }
-
-    g_zUtil_ZbdManager = manager;
+    g_zUtil_ZbdManager = new zZbdManager;
     return 0;
 }
 
@@ -238,28 +229,24 @@ void __cdecl ZBDDestroyGlobalManager()
         return;
     }
 
-    manager->Destroy();
-    ::operator delete(manager);
+    delete manager;
     g_zUtil_ZbdManager = 0;
 }
 } // namespace zUtil
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-destroy
- * @recoil-artifact defines .text recoil:function:0x4c01b0: zZbdManager::Destroy
- *
+ * @recoil-artifact defines .text recoil:function:0x4c01b0: zZbdManager::~zZbdManager
+ * @recoil-match byte
  *
  * Purpose: release manager buffers, archive records, handler nodes, and sentinel.
  */
-void zZbdManager::Destroy()
+zZbdManager::~zZbdManager()
 {
     if (tempBuffer != 0) {
         ::operator delete(tempBuffer);
         tempBuffer = 0;
     }
-
-    indexArchive.~zIndexArchive();
-    sectionHandlers.~zZbdSectionHandlerList();
 }
 
 /**

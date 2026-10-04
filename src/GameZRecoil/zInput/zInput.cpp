@@ -855,12 +855,12 @@ const int kZInputCommandLabelBytes = 0x50;
 } // namespace zInput
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.zinput-bindmapcontext-initfromtemplate
- * @recoil-artifact defines .text recoil:function:0x4706c0: zInput_BindMapContext::InitFromTemplate.
+ * @recoil-artifact defines .text recoil:function:0x4706c0: zInput_BindMapContext::zInput_BindMapContext.
  * @recoil-match byte
  *
  * Purpose: deep-copy an optional bind-map template and rebuild reverse lookup tables.
  */
-zInput_BindMapContext* zInput_BindMapContext::InitFromTemplate(const zInput_BindMapContext* tmpl)
+zInput_BindMapContext::zInput_BindMapContext(const zInput_BindMapContext* tmpl)
 {
     m_isOverlay = 0;
     if (tmpl != 0) {
@@ -883,7 +883,6 @@ zInput_BindMapContext* zInput_BindMapContext::InitFromTemplate(const zInput_Bind
 
         RebuildLookupIndices();
     }
-    return this;
 }
 
 /**
@@ -1509,10 +1508,7 @@ namespace zInput {
  */
 void __fastcall BindMapSystemInit(int commandCount)
 {
-    zInput_BindMapContext* context = new zInput_BindMapContext;
-    if (context != 0) {
-        context = context->InitFromTemplate(0);
-    }
+    zInput_BindMapContext* context = new zInput_BindMapContext(0);
 
     g_zInput_BindMap_Current = context;
     context->InitCommandMap(commandCount);
@@ -2024,7 +2020,7 @@ char* __fastcall BindMapCurrentCopyMouseButtonName(int mouseSlot, char* outBuf, 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapcontext-push
  * @recoil-artifact defines .text recoil:function:0x471860: zInput::BindMapContextPush.
- *
+ * @recoil-match byte
  *
  * Purpose: push a bind-map overlay context and rebuild the active command lookup tables.
  */
@@ -2032,10 +2028,7 @@ void __fastcall BindMapContextPush(zInput_BindMapContext* bindMapOrNull)
 {
     zInput_BindMapContext* bindMap = bindMapOrNull;
     if (bindMap == 0) {
-        bindMap = new zInput_BindMapContext;
-        if (bindMap != 0) {
-            bindMap = bindMap->InitFromTemplate(g_zInput_BindMap_Current);
-        }
+        bindMap = new zInput_BindMapContext(g_zInput_BindMap_Current);
         bindMap->m_isOverlay = 1;
     }
 

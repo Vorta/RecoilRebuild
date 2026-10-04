@@ -1549,7 +1549,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-source previously-byte-matched
+     * @recoil-match byte
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
