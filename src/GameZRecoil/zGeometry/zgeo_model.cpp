@@ -236,6 +236,9 @@ namespace zGeometry_Polygon {
  *
  *
  * Purpose: Solve XZ-plane linear coefficients for one polygon UV axis.
+ * Retail forms (x, z, value) edge vectors from point1 and divides the X and Y
+ * components of their cross product by its Z component, testing that Z
+ * against the double 0.0 literal.
  */
 void __fastcall SolveUvAxisCoefficientsXZ(
     zVec3* point0,
@@ -247,23 +250,24 @@ void __fastcall SolveUvAxisCoefficientsXZ(
     zVec2* outCoefficients
 )
 {
-    const float x01 = point0->x - point1->x;
-    const float z01 = point0->z - point1->z;
-    const float x21 = point2->x - point1->x;
-    const float z21 = point2->z - point1->z;
-    const float determinant = z21 * x01 - x21 * z01;
+    zVec3 edge01;
+    zVec3 edge21;
+    edge01.x = point0->x - point1->x;
+    edge01.y = point0->z - point1->z;
+    edge01.z = value0 - value1;
+    edge21.x = point2->x - point1->x;
+    edge21.y = point2->z - point1->z;
+    edge21.z = value2 - value1;
 
-    if (determinant == 0.0f) {
+    const float normalZ = edge01.x * edge21.y - edge01.y * edge21.x;
+    if (normalZ != 0.0) {
+        const float invNormalZ = 1.0f / normalZ;
+        outCoefficients->x = -(edge01.y * edge21.z - edge01.z * edge21.y) * invNormalZ;
+        outCoefficients->y = -(edge01.z * edge21.x - edge01.x * edge21.z) * invNormalZ;
+    } else {
         outCoefficients->x = 0.0f;
         outCoefficients->y = 0.0f;
-        return;
     }
-
-    const float value01 = value0 - value1;
-    const float value21 = value2 - value1;
-    const float invDeterminant = 1.0f / determinant;
-    outCoefficients->x = (z21 * value01 - value21 * z01) * invDeterminant;
-    outCoefficients->y = (value21 * x01 - x21 * value01) * invDeterminant;
 }
 
 } // namespace zGeometry_Polygon
@@ -428,7 +432,7 @@ int __fastcall UpsertPointListXY(zGeometry_ClipPolygonPartial* clipPolygon, int 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findpointinsertionedgexyindex
  * @recoil-artifact defines .text recoil:function:0x46ac80: zGeometry_ClipPolygon::FindPointInsertionEdgeXYIndex
- *
+ * @recoil-match byte
  *
  * Purpose: Find the clip-polygon edge that contains a candidate point in XY.
  */

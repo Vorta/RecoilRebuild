@@ -88,10 +88,6 @@ const IID g_WestwoodOnlineUpgradeApiEventSink_IID = {
     { 0xb1, 0xc6, 0x00, 0x60, 0x97, 0x17, 0x65, 0x56 },
 };
 
-// BN 0x4d1ba0 owns the event-sink zCom interface map; 0x43d130 reads the
-// first entry's offset field rather than a standalone source global.
-extern const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2];
-
 namespace {
 const unsigned int kWestwoodOnlineUpgradeInitStateSize = sizeof(WestwoodOnlineUpgradeApiInitState);
 const unsigned int kFailureMessageBufferSize = 128;
@@ -359,6 +355,8 @@ __inline IWestwoodOnlineUpgradeProviderApiCallbacks* GetCallbackApiComObject()
 
 /**
  * Purpose: Describes the single direct COM interface exposed by the API event sink.
+ * BN 0x4d1ba0 owns the event-sink zCom interface map; 0x43d130 reads the first entry's offset field
+ * rather than a standalone source global.
  */
 extern const zCom::InterfaceMapEntry g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[2] = {
     { &g_WestwoodOnlineUpgradeApiEventSink_IID, 0, zCom::ZCOM_INTERFACE_MAP_DIRECT },
@@ -1113,7 +1111,7 @@ int WestwoodOnlineUpgradeDialog::AppendStatusTextFmt(const char* format, ...)
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapi-createinstanceandloadconfig
  * @recoil-artifact defines .text recoil:function:0x43d130: WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig
- *
+ * @recoil-match byte
  *
  * Purpose: initialize COM/MFC control hosting, create the WOL ActiveX API,
  * advise the event sink, and apply the selected upgrade profile.
@@ -1149,10 +1147,10 @@ int WestwoodOnlineUpgradeApi::CreateInstanceAndLoadConfig(HINSTANCE moduleHandle
     WestwoodOnlineUpgradeApiEventSink::CreateInstance(
         (WestwoodOnlineUpgradeApiEventSink**)&g_pWestwoodOnlineUpgradeApiEventSink
     );
+    const DWORD sinkBase = (DWORD)g_pWestwoodOnlineUpgradeApiEventSink;
     zCom::ConnectionPointContainerAdvise(
         g_pWestwoodOnlineUpgradeApi,
-        (IUnknown*)((unsigned char*)g_pWestwoodOnlineUpgradeApiEventSink
-            + g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[0].interfaceOffset),
+        (IUnknown*)(sinkBase + g_WestwoodOnlineUpgradeApiEventSink_InterfaceMap[0].interfaceOffset),
         g_WestwoodOnlineUpgradeApiEventSink_IID,
         &g_WestwoodOnlineUpgradeApiAdviseCookie
     );

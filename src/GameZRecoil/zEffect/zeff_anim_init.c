@@ -28,8 +28,6 @@ namespace
     const unsigned int kRandUnitScaleBits = 0x38000100u;
     const unsigned int kEffectAnimNeedsCopiedRootFlag = 0x00008000u;
 
-    const char kAnimationNodeNotFoundMessage[] = "Animation node not found.\n  Animation: %s; Node: %s\n";
-
     struct zEffectAnimZbdFilePrefix {
         int signature;
         int formatMarker;
@@ -45,7 +43,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.init
      * @recoil-artifact defines .text recoil:function:0x45e100: zEffect_Anim::Init.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: reset animation globals, seed runtime random values, and register
@@ -490,7 +488,7 @@ namespace zEffectAnim
                 0x400,
                 "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                 0x26e7,
-                kAnimationNodeNotFoundMessage,
+                "Animation node not found.\n  Animation: %s; Node: %s\n",
                 clonedEntry,
                 self->attachNodeName
             );
@@ -625,7 +623,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.rebindentrytonode
      * @recoil-artifact defines .text recoil:function:0x45ed80: zEffectAnim::RebindEntryToNode
-     *
+     * @recoil-match byte
      *
      * Purpose: Rebind an animation entry to a new root and resolve dependent node references.
      */
@@ -649,7 +647,7 @@ namespace zEffectAnim
                     0x400,
                     "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                     0x27f9,
-                    kAnimationNodeNotFoundMessage,
+                    "Animation node not found.\n  Animation: %s; Node: %s\n",
                     self,
                     self->attachNodeName
                 );
@@ -669,7 +667,7 @@ namespace zEffectAnim
                             0x400,
                             "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                             0x2811,
-                            kAnimationNodeNotFoundMessage,
+                            "Animation node not found.\n  Animation: %s; Node: %s\n",
                             self,
                             self->trackedNodeList[i].trackedNodeName
                         );
@@ -690,7 +688,7 @@ namespace zEffectAnim
                             0x400,
                             "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
                             0x282c,
-                            kAnimationNodeNotFoundMessage,
+                            "Animation node not found.\n  Animation: %s; Node: %s\n",
                             self,
                             self->nodeRefList[i_1669].name.text
                         );

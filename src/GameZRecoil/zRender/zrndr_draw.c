@@ -315,7 +315,7 @@ void __fastcall zRndrSubmitPolyWithSpanList(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submittexturedpolyuniformalphaorshade
  * @recoil-artifact defines .text recoil:function:0x499c40: zRndrSubmitTexturedPolyUniformAlphaOrShade
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
@@ -638,7 +638,7 @@ void __cdecl zRndrFlushTransparentQueue()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushoverwritequeue
  * @recoil-artifact defines .text recoil:function:0x49a490: zRndrFlushOverwriteQueue
- *
+ * @recoil-match byte
  *
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
@@ -857,7 +857,7 @@ namespace zRndr
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawqueuedsamples16-andbuildvisiblelist
  * @recoil-artifact defines .text recoil:function:0x49a920: zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList
- *
+ * @recoil-match byte
  *
  * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Cull queued lens-flare samples and build the visible-sample list for 16-bit drawing.
@@ -979,94 +979,127 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
         return;
     }
 
-    float left = sampleCenter->x - sampleRadius;
-    float top = sampleCenter->y - sampleRadius;
-    float right = sampleRadius + sampleCenter->x;
-    float bottom = sampleRadius + sampleCenter->y;
+    // Retail keeps the corners in two 12-byte vector records; only x and y are used.
+    zVec3 minCorner;
+    zVec3 maxCorner;
+    minCorner.x = sampleCenter->x - sampleRadius;
+    minCorner.y = sampleCenter->y - sampleRadius;
+    maxCorner.x = sampleRadius + sampleCenter->x;
+    maxCorner.y = sampleRadius + sampleCenter->y;
 
-    float clipLeft;
-    float clipTop;
-    float clipRight;
-    float clipBottom;
+    float uvScale;
+    float uLeft;
+    float uRight;
+    float vTop;
+    float vBottom;
     if (clipRect != 0) {
-        clipRight = (float)(clipRect->right);
-        if (left > clipRight - 2.0f) {
+        const float clipRight = (float)(clipRect->right);
+        if (minCorner.x > clipRight - 2.0f) {
             return;
         }
 
-        clipBottom = (float)(clipRect->bottom);
-        if (top > clipBottom - 2.0f) {
+        const float clipBottom = (float)(clipRect->bottom);
+        if (minCorner.y > clipBottom - 2.0f) {
             return;
         }
 
-        clipLeft = (float)(clipRect->left);
-        if (right < clipLeft + 1.0f) {
+        const float clipLeft = (float)(clipRect->left);
+        if (maxCorner.x < clipLeft + 1.0f) {
             return;
         }
 
-        clipTop = (float)(clipRect->top);
-        if (bottom < clipTop + 1.0f) {
+        const float clipTop = (float)(clipRect->top);
+        if (maxCorner.y < clipTop + 1.0f) {
             return;
+        }
+
+        uvScale = 0.5f / sampleRadius;
+        if (minCorner.x < clipLeft) {
+            uLeft = (clipLeft - minCorner.x) * uvScale;
+            minCorner.x = clipLeft;
+        } else {
+            uLeft = 0.0f;
+        }
+
+        if (minCorner.y < clipTop) {
+            vTop = 1.0f - (clipTop - minCorner.y) * uvScale;
+            minCorner.y = clipTop;
+        } else {
+            vTop = 1.0f;
+        }
+
+        if (maxCorner.x > clipRight - 1.0f) {
+            uRight = 1.0f - ((maxCorner.x + 1.0f) - clipRight) * uvScale;
+            maxCorner.x = clipRight - 1.0f;
+        } else {
+            uRight = 1.0f;
+        }
+
+        if (maxCorner.y > clipBottom - 1.0f) {
+            vBottom = ((maxCorner.y + 1.0f) - clipBottom) * uvScale;
+            maxCorner.y = clipBottom - 1.0f;
+        } else {
+            vBottom = 0.0f;
         }
     } else {
-        clipLeft = 0.0f;
-        clipTop = 0.0f;
-        clipRight = (float)((unsigned int)(zRndr::g_activeRegionWidth));
-        clipBottom = (float)((unsigned int)(zRndr::g_activeRegionHeight));
-        if (left > clipRight - 2.0f) {
+        // The active-region branch repeats the clamp with its zero origin folded in.
+        const float clipRight = (float)((unsigned int)(zRndr::g_activeRegionWidth));
+        if (minCorner.x > clipRight - 2.0f) {
             return;
         }
 
-        if (top > clipBottom - 2.0f) {
+        const float clipBottom = (float)((unsigned int)(zRndr::g_activeRegionHeight));
+        if (minCorner.y > clipBottom - 2.0f) {
             return;
         }
 
-        if (right < 1.0f) {
+        if (maxCorner.x < 1.0f) {
             return;
         }
 
-        if (bottom < 1.0f) {
+        if (maxCorner.y < 1.0f) {
             return;
         }
-    }
 
-    const float uvScale = 0.5f / sampleRadius;
-    float uLeft = 0.0f;
-    float uRight = 1.0f;
-    float vTop = 1.0f;
-    float vBottom = 0.0f;
+        uvScale = 0.5f / sampleRadius;
+        if (minCorner.x < 0.0f) {
+            uLeft = -minCorner.x * uvScale;
+            minCorner.x = 0.0f;
+        } else {
+            uLeft = 0.0f;
+        }
 
-    if (left < clipLeft) {
-        uLeft = (clipLeft - left) * uvScale;
-        left = clipLeft;
-    }
+        if (minCorner.y < 0.0f) {
+            vTop = minCorner.y * uvScale + 1.0f;
+            minCorner.y = 0.0f;
+        } else {
+            vTop = 1.0f;
+        }
 
-    if (top < clipTop) {
-        vTop = 1.0f - (clipTop - top) * uvScale;
-        top = clipTop;
-    }
+        if (maxCorner.x > clipRight - 1.0f) {
+            uRight = 1.0f - ((maxCorner.x + 1.0f) - clipRight) * uvScale;
+            maxCorner.x = clipRight - 1.0f;
+        } else {
+            uRight = 1.0f;
+        }
 
-    const float rightMax = clipRight - 1.0f;
-    if (right > rightMax) {
-        uRight = 1.0f - ((right + 1.0f) - clipRight) * uvScale;
-        right = rightMax;
-    }
-
-    const float bottomMax = clipBottom - 1.0f;
-    if (bottom > bottomMax) {
-        vBottom = ((bottom + 1.0f) - clipBottom) * uvScale;
-        bottom = bottomMax;
+        if (maxCorner.y > clipBottom - 1.0f) {
+            vBottom = ((maxCorner.y + 1.0f) - clipBottom) * uvScale;
+            maxCorner.y = clipBottom - 1.0f;
+        } else {
+            vBottom = 0.0f;
+        }
     }
 
     zVec3 projectedVerts[4];
-    projectedVerts[0].x = right;
-    projectedVerts[0].y = bottom;
-    projectedVerts[1].x = right;
-    projectedVerts[1].y = top;
-    projectedVerts[2].x = left;
-    projectedVerts[2].y = top;
-    projectedVerts[3].x = left;
-    projectedVerts[3].y = bottom;
+    projectedVerts[0].x = maxCorner.x;
+    projectedVerts[0].y = maxCorner.y;
+    projectedVerts[1].x = maxCorner.x;
+    projectedVerts[1].y = minCorner.y;
+    projectedVerts[2].x = minCorner.x;
+    projectedVerts[2].y = minCorner.y;
+    projectedVerts[3].x = minCorner.x;
+    projectedVerts[3].y = maxCorner.y;
 
     zVec2 triUVs[4];
     triUVs[0].x = uRight;
@@ -1079,10 +1112,7 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
     triUVs[3].y = vBottom;
 
     if (g_zVideo_ActiveRendererPath != 0) {
-        projectedVerts[0].z = 0.5f;
-        projectedVerts[1].z = 0.5f;
-        projectedVerts[2].z = 0.5f;
-        projectedVerts[3].z = 0.5f;
+        projectedVerts[0].z = projectedVerts[1].z = projectedVerts[2].z = projectedVerts[3].z = 0.5f;
 
         zVideo_RenderClass* renderClass = stageTexDirEntry != 0 ? (zVideo_RenderClass*)(stageTexDirEntry->texture) : 0;
         g_zVideo_pfnSubmitPolyRenderClass(
@@ -1097,21 +1127,14 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
         return;
     }
 
+    projectedVerts[0].z = projectedVerts[1].z = projectedVerts[2].z = projectedVerts[3].z = 10.0f;
     const float kSoftwareScale = 0.100000001f;
     zVec3 clippedTriVerts[4] = {
-        { right * kSoftwareScale, bottom * kSoftwareScale, kSoftwareScale },
-        { right * kSoftwareScale, top * kSoftwareScale, kSoftwareScale },
-        { left * kSoftwareScale, top * kSoftwareScale, kSoftwareScale },
-        { left * kSoftwareScale, bottom * kSoftwareScale, kSoftwareScale },
+        { maxCorner.x * kSoftwareScale, maxCorner.y * kSoftwareScale, kSoftwareScale },
+        { maxCorner.x * kSoftwareScale, minCorner.y * kSoftwareScale, kSoftwareScale },
+        { minCorner.x * kSoftwareScale, minCorner.y * kSoftwareScale, kSoftwareScale },
+        { minCorner.x * kSoftwareScale, maxCorner.y * kSoftwareScale, kSoftwareScale },
     };
-    {
-        int vertexIndex1;
-        for (vertexIndex1 = 0; vertexIndex1 < (int)(sizeof(projectedVerts) / sizeof((projectedVerts)[0]));
-            ++vertexIndex1) {
-            zVec3& vertex = (projectedVerts)[vertexIndex1];
-            vertex.z = 10.0f;
-        }
-    }
 
     zRndrSubmitTexturedPolyUniformAlphaOrShade(
         projectedVerts,
@@ -1128,7 +1151,7 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesample
  * @recoil-artifact defines .text recoil:function:0x49afb0: zRndrLensFlareDrawVisibleSample
- *
+ * @recoil-match byte
  *
  * Purpose: Draw one visible lens-flare sample after applying near/far fade.
  */

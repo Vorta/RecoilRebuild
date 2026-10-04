@@ -1735,7 +1735,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
      * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
-     *
+     * @recoil-match byte
      *
      * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
      */
@@ -1758,9 +1758,9 @@ namespace zDi
         if (vertexCount < 3) {
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                g_zModel_SourceFile_GmodConstC,
                 0xae4,
-                "ERROR: You're trying to add a Polygon with only (%d) verts",
+                g_zModel_AddPolygonOnlyVertsErrorFmt,
                 vertexCount
             );
             return 1;
@@ -1769,9 +1769,9 @@ namespace zDi
         if (vertexCount > 0x40 * 0.9) {
             zError::ReportOld(
                 0x200,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                g_zModel_SourceFile_GmodConstC,
                 0xaed,
-                "Poly vertex count approaching limit (%d / %d)",
+                g_zModel_PolyVertexCountApproachingLimitFmt,
                 vertexCount,
                 0x40
             );
@@ -1782,9 +1782,9 @@ namespace zDi
             && remainingVertexCount < 3) {
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                g_zModel_SourceFile_GmodConstC,
                 0xb0d,
-                "Discarding Polygon: (%d of %d) verts after 'check_colinearity()'",
+                g_zModel_DiscardPolygonAfterCheckColinearityFmt,
                 remainingVertexCount,
                 vertexCount
             );
@@ -1794,9 +1794,9 @@ namespace zDi
         if (remainingVertexCount > 3 && zModel_Const::IsPolygonCoplanar(remainingVertexCount, points) == 0) {
             zError::ReportOld(
                 0x100,
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
+                g_zModel_SourceFile_GmodConstC,
                 0xb19,
-                "Attempting to add non-planar polygon (%d verts), triangulating...",
+                g_zModel_AddNonPlanarPolygonTriangulatingFmt,
                 remainingVertexCount
             );
             zModel_Const::SplitPolygonChunkedByVertexLimit(

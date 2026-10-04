@@ -619,7 +619,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -1696,8 +1696,7 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
     }
 
     OptCatalogEntryDef* const activeEntry = activeAltGunController->optCatalogEntry;
-    if (playerState->altGunFireHeldFlag != 0
-        && activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel) {
+    if (playerState->altGunFireHeldFlag != 0 && activeAltGunController->ammoOrCharge != 123456792.0f) {
         activeAltGunController->ammoOrCharge -= g_FrameDeltaTimeSec / activeEntry->fireRateInterval;
         if (activeAltGunController->ammoOrCharge < 0.0f) {
             activeAltGunController->ammoOrCharge = 0.0f;

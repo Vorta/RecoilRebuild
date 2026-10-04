@@ -412,7 +412,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayontimer
      * @recoil-artifact defines .text recoil:function:0x458b50: zEffect::TickResetDelayOnTimer.
-     *
+     * @recoil-match byte
      *
      * Purpose: Advance timer-gated reset delay and clear transform/velocity when it expires.
      */
@@ -431,7 +431,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.tickresetdelayonhit
      * @recoil-artifact defines .text recoil:function:0x458bb0: zEffect::TickResetDelayOnHit.
-     *
+     * @recoil-match byte
      *
      * Purpose: Advance hit-gated reset delay and clear transform/velocity when it expires.
      */
@@ -509,7 +509,7 @@ namespace zEffect
         const zVec3 angles = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
         CZObject3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
 
-        zVec3 scale = { 0 };
+        zVec3 scale;
         CZObject3D::gwObject3DGetScale(obj3d, &scale.x, &scale.y, &scale.z);
 
         const float dx = end.x - start.x;
@@ -1528,23 +1528,18 @@ namespace zEffect
         }
 
         if ((animEvent->flags & 0x0100) != 0) {
-            zVec3 scale = { 0 };
+            zVec3 scale;
             CZObject3D::gwObject3DGetScale(node, &scale.x, &scale.y, &scale.z);
-            scale.x += animEvent->runtimeVecE.x * frameStepSec;
-            scale.y += animEvent->runtimeVecE.y * frameStepSec;
-            scale.z += animEvent->runtimeVecE.z * frameStepSec;
-            if (scale.x < 0.001f) {
-                scale.x = 0.001f;
+            float* const scaleValues = &scale.x;
+            float* const scaleRates = &animEvent->runtimeVecE.x;
+            const float* const scaleAccels = &animEvent->runtimeVecD.x;
+            for (int i = 0; i < 3; ++i) {
+                scaleValues[i] += scaleRates[i] * frameStepSec;
+                if (scaleValues[i] < 0.001f) {
+                    scaleValues[i] = 0.001f;
+                }
+                scaleRates[i] += scaleAccels[i] * frameStepSec;
             }
-            if (scale.y < 0.001f) {
-                scale.y = 0.001f;
-            }
-            if (scale.z < 0.001f) {
-                scale.z = 0.001f;
-            }
-            animEvent->runtimeVecD.x += animEvent->runtimeVecD.x * frameStepSec;
-            animEvent->runtimeVecD.y += animEvent->runtimeVecD.y * frameStepSec;
-            animEvent->runtimeVecD.z += animEvent->runtimeVecD.z * frameStepSec;
             CZObject3D::gwObject3DSetScale(node, scale.x, scale.y, scale.z);
         }
 
@@ -1626,6 +1621,7 @@ namespace zEffect
         zEffectNodeAnimEvent * nodeAnimEvent
     )
     {
+        int result = 1;
         if (self == 0 || sequenceRuntime == 0 || nodeAnimEvent == 0 || nodeAnimEvent->targetNodeRefIndex < 0) {
             return 2;
         }
@@ -1641,96 +1637,108 @@ namespace zEffect
                 );
             }
             if ((nodeAnimEvent->flags & 0x02) != 0) {
-                if (node->classId == 5) {
+                switch (node->classId) {
+                case 5:
                     CZObject3D::gwObject3DSetRotation(
                         node,
                         nodeAnimEvent->rotationOrCameraPosStart.x,
                         nodeAnimEvent->rotationOrCameraPosStart.y,
                         nodeAnimEvent->rotationOrCameraPosStart.z
                     );
-                } else if (node->classId == 1) {
+                    break;
+                case 1:
                     CZCamera::gwCameraSetPosition(
                         node,
                         nodeAnimEvent->rotationOrCameraPosStart.x,
                         nodeAnimEvent->rotationOrCameraPosStart.y,
                         nodeAnimEvent->rotationOrCameraPosStart.z
                     );
+                    break;
                 }
             }
             if ((nodeAnimEvent->flags & 0x01) != 0) {
-                if (node->classId == 5) {
+                switch (node->classId) {
+                case 5:
                     CZObject3D::gwObject3DSetPosition(
                         node,
                         nodeAnimEvent->positionOrTargetStart.x,
                         nodeAnimEvent->positionOrTargetStart.y,
                         nodeAnimEvent->positionOrTargetStart.z
                     );
-                } else if (node->classId == 1) {
+                    break;
+                case 1:
                     CZCamera::gwCameraSetTarget(
                         node,
                         nodeAnimEvent->positionOrTargetStart.x,
                         nodeAnimEvent->positionOrTargetStart.y,
                         nodeAnimEvent->positionOrTargetStart.z
                     );
+                    break;
                 }
             }
-            if ((nodeAnimEvent->flags & 0x08) != 0) {
-                if (node != 0 && node->userDataOrDiRef != 0) {
-                    zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
-                    di->flags |= 0x08;
-                    di->blendScale = nodeAnimEvent->nodeAlphaStart;
-                    if (di->blendScale > 1.0f) {
-                        di->blendScale = 1.0f;
-                    } else if (di->blendScale < 0.00001f) {
-                        di->flags &= ~0x08;
-                    }
+            if ((nodeAnimEvent->flags & 0x08) != 0 && node->userDataOrDiRef != 0) {
+                ((zDiPartial*)(node->userDataOrDiRef))->flags |= 0x08;
+                ((zDiPartial*)(node->userDataOrDiRef))->blendScale = nodeAnimEvent->nodeAlphaStart;
+                if (((zDiPartial*)(node->userDataOrDiRef))->blendScale > 1.0f) {
+                    ((zDiPartial*)(node->userDataOrDiRef))->blendScale = 1.0f;
+                } else if (((zDiPartial*)(node->userDataOrDiRef))->blendScale < 0.00001f) {
+                    ((zDiPartial*)(node->userDataOrDiRef))->flags &= ~0x08;
                 }
             }
         }
 
-        const float deltaTimeSec = sequenceRuntime->eventElapsedSec <= nodeAnimEvent->endTimeSec
-            ? g_zEffectAnim_State.frameDeltaRemainingSec
-            : g_zEffectAnim_State.frameDeltaRemainingSec
+        float deltaTimeSec;
+        if (sequenceRuntime->eventElapsedSec > nodeAnimEvent->endTimeSec) {
+            deltaTimeSec = g_zEffectAnim_State.frameDeltaRemainingSec
                 - (sequenceRuntime->eventElapsedSec - nodeAnimEvent->endTimeSec);
+        } else {
+            deltaTimeSec = g_zEffectAnim_State.frameDeltaRemainingSec;
+        }
 
         if ((nodeAnimEvent->flags & 0x01) != 0) {
-            if (node->classId == 5) {
+            switch (node->classId) {
+            case 5:
                 CZObject3D::gwObject3DTranslatePosition(
                     node,
                     nodeAnimEvent->positionOrTargetRate.x * deltaTimeSec,
                     nodeAnimEvent->positionOrTargetRate.y * deltaTimeSec,
                     nodeAnimEvent->positionOrTargetRate.z * deltaTimeSec
                 );
-            } else if (node->classId == 1) {
+                break;
+            case 1:
                 CZCamera::gwCameraTranslateTarget(
                     node,
                     nodeAnimEvent->positionOrTargetRate.x * deltaTimeSec,
                     nodeAnimEvent->positionOrTargetRate.y * deltaTimeSec,
                     nodeAnimEvent->positionOrTargetRate.z * deltaTimeSec
                 );
+                break;
             }
         }
 
         if ((nodeAnimEvent->flags & 0x02) != 0) {
-            if (node->classId == 5) {
+            switch (node->classId) {
+            case 5:
                 CZObject3D::gwObject3DTranslateRotation(
                     node,
                     nodeAnimEvent->rotationOrCameraPosRate.x * deltaTimeSec,
                     nodeAnimEvent->rotationOrCameraPosRate.y * deltaTimeSec,
                     nodeAnimEvent->rotationOrCameraPosRate.z * deltaTimeSec
                 );
-            } else if (node->classId == 1) {
+                break;
+            case 1:
                 CZCamera::gwCameraTranslate(
                     node,
                     nodeAnimEvent->rotationOrCameraPosRate.x * deltaTimeSec,
                     nodeAnimEvent->rotationOrCameraPosRate.y * deltaTimeSec,
                     nodeAnimEvent->rotationOrCameraPosRate.z * deltaTimeSec
                 );
+                break;
             }
         }
 
         if ((nodeAnimEvent->flags & 0x04) != 0) {
-            zVec3 scale = { 0 };
+            zVec3 scale;
             CZObject3D::gwObject3DGetScale(node, &scale.x, &scale.y, &scale.z);
             scale.x += nodeAnimEvent->scaleRate.x * deltaTimeSec;
             scale.y += nodeAnimEvent->scaleRate.y * deltaTimeSec;
@@ -1747,71 +1755,67 @@ namespace zEffect
             CZObject3D::gwObject3DSetScale(node, scale.x, scale.y, scale.z);
         }
 
-        if ((nodeAnimEvent->flags & 0x08) != 0) {
-            if (node != 0 && node->userDataOrDiRef != 0) {
-                zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
-                di->flags |= 0x08;
-                di->blendScale += nodeAnimEvent->nodeAlphaRate * deltaTimeSec;
-                if (di->blendScale > 1.0f) {
-                    di->blendScale = 1.0f;
-                } else if (di->blendScale < 0.00001f) {
-                    di->flags &= ~0x08;
-                }
+        if ((nodeAnimEvent->flags & 0x08) != 0 && node->userDataOrDiRef != 0) {
+            ((zDiPartial*)(node->userDataOrDiRef))->flags |= 0x08;
+            ((zDiPartial*)(node->userDataOrDiRef))->blendScale += nodeAnimEvent->nodeAlphaRate * deltaTimeSec;
+            if (((zDiPartial*)(node->userDataOrDiRef))->blendScale > 1.0f) {
+                ((zDiPartial*)(node->userDataOrDiRef))->blendScale = 1.0f;
+            } else if (((zDiPartial*)(node->userDataOrDiRef))->blendScale < 0.00001f) {
+                ((zDiPartial*)(node->userDataOrDiRef))->flags &= ~0x08;
             }
         }
 
         g_zEffectAnim_State.frameDeltaRemainingSec -= deltaTimeSec;
-        if (sequenceRuntime->eventElapsedSec <= nodeAnimEvent->endTimeSec) {
-            return 1;
-        }
-
-        if ((nodeAnimEvent->flags & 0x04) != 0) {
-            CZObject3D::gwObject3DSetScale(
-                node,
-                nodeAnimEvent->scaleEnd.x,
-                nodeAnimEvent->scaleEnd.y,
-                nodeAnimEvent->scaleEnd.z
-            );
-        }
-        if ((nodeAnimEvent->flags & 0x02) != 0) {
-            CZObject3D::gwObject3DSetRotation(
-                node,
-                nodeAnimEvent->rotationOrCameraPosEnd.x,
-                nodeAnimEvent->rotationOrCameraPosEnd.y,
-                nodeAnimEvent->rotationOrCameraPosEnd.z
-            );
-        }
-        if ((nodeAnimEvent->flags & 0x01) != 0) {
-            if (node->classId == 5) {
-                CZObject3D::gwObject3DSetPosition(
+        if (sequenceRuntime->eventElapsedSec > nodeAnimEvent->endTimeSec) {
+            if ((nodeAnimEvent->flags & 0x04) != 0) {
+                CZObject3D::gwObject3DSetScale(
                     node,
-                    nodeAnimEvent->positionOrTargetEnd.x,
-                    nodeAnimEvent->positionOrTargetEnd.y,
-                    nodeAnimEvent->positionOrTargetEnd.z
-                );
-            } else if (node->classId == 1) {
-                CZCamera::gwCameraSetTarget(
-                    node,
-                    nodeAnimEvent->positionOrTargetEnd.x,
-                    nodeAnimEvent->positionOrTargetEnd.y,
-                    nodeAnimEvent->positionOrTargetEnd.z
+                    nodeAnimEvent->scaleEnd.x,
+                    nodeAnimEvent->scaleEnd.y,
+                    nodeAnimEvent->scaleEnd.z
                 );
             }
-        }
-        if ((nodeAnimEvent->flags & 0x08) != 0) {
-            if (node != 0 && node->userDataOrDiRef != 0) {
-                zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
-                di->flags |= 0x08;
-                di->blendScale = nodeAnimEvent->nodeAlphaEnd;
-                if (di->blendScale > 1.0f) {
-                    di->blendScale = 1.0f;
-                } else if (di->blendScale < 0.00001f) {
-                    di->flags &= ~0x08;
+            if ((nodeAnimEvent->flags & 0x02) != 0) {
+                CZObject3D::gwObject3DSetRotation(
+                    node,
+                    nodeAnimEvent->rotationOrCameraPosEnd.x,
+                    nodeAnimEvent->rotationOrCameraPosEnd.y,
+                    nodeAnimEvent->rotationOrCameraPosEnd.z
+                );
+            }
+            if ((nodeAnimEvent->flags & 0x01) != 0) {
+                switch (node->classId) {
+                case 5:
+                    CZObject3D::gwObject3DSetPosition(
+                        node,
+                        nodeAnimEvent->positionOrTargetEnd.x,
+                        nodeAnimEvent->positionOrTargetEnd.y,
+                        nodeAnimEvent->positionOrTargetEnd.z
+                    );
+                    break;
+                case 1:
+                    CZCamera::gwCameraSetTarget(
+                        node,
+                        nodeAnimEvent->positionOrTargetEnd.x,
+                        nodeAnimEvent->positionOrTargetEnd.y,
+                        nodeAnimEvent->positionOrTargetEnd.z
+                    );
+                    break;
                 }
             }
+            if ((nodeAnimEvent->flags & 0x08) != 0 && node->userDataOrDiRef != 0) {
+                ((zDiPartial*)(node->userDataOrDiRef))->flags |= 0x08;
+                ((zDiPartial*)(node->userDataOrDiRef))->blendScale = nodeAnimEvent->nodeAlphaEnd;
+                if (((zDiPartial*)(node->userDataOrDiRef))->blendScale > 1.0f) {
+                    ((zDiPartial*)(node->userDataOrDiRef))->blendScale = 1.0f;
+                } else if (((zDiPartial*)(node->userDataOrDiRef))->blendScale < 0.00001f) {
+                    ((zDiPartial*)(node->userDataOrDiRef))->flags &= ~0x08;
+                }
+            }
+            result = 2;
         }
 
-        return 2;
+        return result;
     }
 
 } // namespace zEffect
@@ -2725,7 +2729,7 @@ namespace zEffectAnim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.stop
      * @recoil-artifact defines .text recoil:function:0x45c040: zEffectAnim::Stop.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: initiate stop-delay processing or finalize an active animation entry.
@@ -2887,7 +2891,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleemitterloopevent
      * @recoil-artifact defines .text recoil:function:0x45c310: zEffect::HandleEmitterLoopEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: test loop stop limits, reset the emitter runtime, and continue or
@@ -3065,7 +3069,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.getconditionalrefposdistancesq
      * @recoil-artifact defines .text recoil:function:0x45c640: zEffect::GetConditionalRefPosDistanceSq.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: compute squared distance from a node's world position to the
