@@ -3068,7 +3068,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-initstatefromnameandmastercommondata
  * @recoil-artifact defines .text recoil:function:0x420d10: Player::InitStateFromNameAndMasterCommonData
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: bind a save-state record to master common data by name and

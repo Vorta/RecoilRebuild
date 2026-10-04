@@ -209,7 +209,7 @@ namespace zMath {
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
  * Inferred original inline helper: four expansions in 0x405040 and one in 0x4059a0.
- * Raw assembly: Five separately scoped, reviewed MOV/ADD/MOV bridges only.
+ * Raw assembly: MOV/ADD/MOV bridge only; every expansion requires address-scoped approval.
  * Purpose: Form the approximate exponential's float representation from its
  * scaled integer exponent. C++ retains both arithmetic and float conversion.
  * The spelling and historical header ownership remain inferred.

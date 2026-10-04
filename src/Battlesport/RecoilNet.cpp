@@ -1818,7 +1818,7 @@ namespace OptCatalog {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-sendpkt0a-removeruntimerelay
  * @recoil-artifact defines .text recoil:function:0x434240: OptCatalog::SendPkt0ARemoveRuntimeRelay
- *
+ * @recoil-match byte
  *
  * Purpose: Sends a network relay describing removal of a runtime catalog object.
  */

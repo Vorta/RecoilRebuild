@@ -708,7 +708,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstance
      * @recoil-artifact defines .text recoil:function:0x4aed00: OptCatalog::ProcessRuntimeInstance
-     *
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef* and EDX is
@@ -1430,10 +1430,8 @@ namespace OptCatalog
 
                                 const float jitter = targetProjectionScratch[targetCount - 1] * 0.1f;
                                 for (targetIndex = 1; targetIndex < targetCount; ++targetIndex) {
-                                    segments[targetIndex].pos.x
-                                        += ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
-                                    segments[targetIndex].pos.z
-                                        += ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                    segments[targetIndex].pos.x += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                                    segments[targetIndex].pos.z += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
                                 }
 
                                 int stopped = 0;
@@ -1491,8 +1489,8 @@ namespace OptCatalog
                                     &segments[1].pos
                                 );
                                 const float jitter = segments[0].scale * 0.2f;
-                                segments[1].pos.x += ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
-                                segments[1].pos.z += ((float)(rand()) * 0.000030517578125f - 0.5f) * jitter;
+                                segments[1].pos.x += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                                segments[1].pos.z += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
                                 segments[0].scale
                                     = zMath::Vec3DirectionTo(&segments[0].pos, &segments[1].pos, &segments[0].dir);
                                 const int stopped
@@ -1517,7 +1515,7 @@ namespace OptCatalog
                         } else {
                             if (trailRuntime->trailDistance != entry->range) {
                                 const float remainingDistance = entry->range - trailRuntime->trailDistance;
-                                if (remainingDistance >= 0.1f) {
+                                if (remainingDistance > 0.1) {
                                     trailRuntime->trailDistance
                                         += entry->velocity * remainingDistance * g_OptCatalogRuntimeDeltaTime;
                                 } else {

@@ -1905,7 +1905,7 @@ void __fastcall UpdateGunAndTurretAimNodes(const zVec3* aimDirection, CZNodePart
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.update-alt-gun-aim.fast-exp-bits recoil:function:0x43a600
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.update-alt-gun-aim.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Purpose: update the smoothed alternate gun aim direction and final gun-fire
  * vector from the current target and aim basis.
@@ -2006,11 +2006,13 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
 void __fastcall
 DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, CZNodePartial* slotNode, float slotAimY, int applyMatrix)
 {
-    const int dampingBits = (int)(g_FrameDeltaTimeSec * -8.09f * 12102200.0f) + 0x3f800000;
+    const float dampingRate = g_FrameDeltaTimeSec * -8.09f;
+    const int dampingBits = (int)(dampingRate * 12102200.0f);
+    const int dampingFactorBits = dampingBits + 0x3f800000;
     float dampingFactor = 0.0f;
-    memcpy(&dampingFactor, &dampingBits, sizeof(dampingFactor));
+    memcpy(&dampingFactor, &dampingFactorBits, sizeof(dampingFactor));
     slot->offset *= dampingFactor;
-    if (slot->offset > -0.01f && slot->offset < 0.01f) {
+    if (fabs(slot->offset) < 0.01f) {
         slot->offset = 0.0f;
     }
 
@@ -2314,7 +2316,7 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
- *
+ * @recoil-match byte
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible; reviewed inline asm reproduces the retail

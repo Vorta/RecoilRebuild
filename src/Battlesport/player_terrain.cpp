@@ -171,6 +171,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processenvproberesults
  * @recoil-artifact defines .text recoil:function:0x42c0d0: Player::ProcessEnvProbeResults.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
@@ -187,13 +188,13 @@ void __fastcall ProcessEnvProbeResults(zUtil_SaveGameState* saveState, PlayerEnv
         const int impactSlot = probeResult->impactSlotBySample[sampleIndex];
         if (impactSlot == 3) {
             probeResult->candidateScoreBySample[sampleIndex] -= g_Player_QuicksandSinkRate;
-        }
-        if (impactSlot == 4) {
+        } else if (impactSlot == 4) {
             probeResult->candidateScoreBySample[sampleIndex] -= g_Player_LavaSinkRate;
         }
 
+        // A sample supports the vehicle when its ground height reaches the probe's support depth.
         if (g_PlayerEnvProbeWorldPoints[sampleIndex].y - supportDepthThreshold
-            > probeResult->candidateScoreBySample[sampleIndex]) {
+            <= probeResult->candidateScoreBySample[sampleIndex]) {
             g_PlayerEnvProbe_AboveGroundFlags[sampleIndex] = 1;
             g_PlayerEnvProbe_AboveGroundIndices[g_PlayerEnvProbe_AboveGroundCount] = sampleIndex;
             ++g_PlayerEnvProbe_AboveGroundCount;
@@ -202,17 +203,14 @@ void __fastcall ProcessEnvProbeResults(zUtil_SaveGameState* saveState, PlayerEnv
         }
     }
 
-    const int aboveGroundSampleCount = g_PlayerEnvProbe_AboveGroundCount;
-    if (aboveGroundSampleCount == 0) {
+    if (g_PlayerEnvProbe_AboveGroundCount == 0) {
         playerState->airborneFlag = 1;
         const float unclampedPitchRecoveryVel = (playerState->vehiclePitchRad - -0.523599982f) * -0.699999988f;
         const float targetPitchRecoveryVel
-            = unclampedPitchRecoveryVel <= -0.699999988f ? -0.699999988f : unclampedPitchRecoveryVel;
+            = unclampedPitchRecoveryVel > -0.699999988f ? unclampedPitchRecoveryVel : -0.699999988f;
         const float targetRollRecoveryVel = playerState->vehicleRollRad * -0.699999988f;
-        const int angularVelocityBlendBits
-            = (int)(-saveState->primaryModalState->masterModalData->aDamping * g_Player_DeltaTime * 12102200.0f)
-            + 0x3f800000;
-        const float previousAngularVelocityBlendWeight = PLAYER_FLOAT_FROM_BITS(angularVelocityBlendBits);
+        const float previousAngularVelocityBlendWeight
+            = zMath::FastExp(-(saveState->primaryModalState->masterModalData->aDamping * g_Player_DeltaTime));
         const float newAngularVelocityBlendWeight = 1.0f - previousAngularVelocityBlendWeight;
         playerState->angVelPitch = previousAngularVelocityBlendWeight * playerState->angVelPitch
             + newAngularVelocityBlendWeight * targetPitchRecoveryVel;
@@ -221,33 +219,23 @@ void __fastcall ProcessEnvProbeResults(zUtil_SaveGameState* saveState, PlayerEnv
         return;
     }
 
-    if (aboveGroundSampleCount == 1) {
+    if (g_PlayerEnvProbe_AboveGroundCount == 1) {
         ComputeSurfaceFrom1Probe(saveState, probeResult);
-        playerState->airborneFlag = 0;
-        return;
-    }
-
-    if (aboveGroundSampleCount == 2) {
+    } else if (g_PlayerEnvProbe_AboveGroundCount == 2) {
         ComputeSurfaceFrom2Probes(saveState, probeResult);
-        playerState->airborneFlag = 0;
-        return;
-    }
-
-    const int sampleMaskOverlap = CheckProbeSampleMaskOverlap(
-        g_PlayerEnvProbe_AboveGroundIndices[0],
-        g_PlayerEnvProbe_AboveGroundIndices[1],
-        g_PlayerEnvProbe_AboveGroundIndices[2]
-    );
-
-    if (sampleMaskOverlap != 0) {
-        ComputeSurfaceFrom2Probes(saveState, probeResult);
-    }
-
-    if (aboveGroundSampleCount != 3) {
+    } else if (g_PlayerEnvProbe_AboveGroundCount == 3) {
+        if (CheckProbeSampleMaskOverlap(
+                g_PlayerEnvProbe_AboveGroundIndices[0],
+                g_PlayerEnvProbe_AboveGroundIndices[1],
+                g_PlayerEnvProbe_AboveGroundIndices[2]
+            )
+            != 0) {
+            ComputeSurfaceFrom2Probes(saveState, probeResult);
+        } else {
+            ComputeSurfaceFrom3Probes(saveState, probeResult);
+        }
+    } else {
         SelectBestProbesByDotProduct(&playerState->steerBasisRef, probeResult);
-    }
-
-    if (sampleMaskOverlap == 0) {
         ComputeSurfaceFrom3Probes(saveState, probeResult);
     }
     playerState->airborneFlag = 0;
@@ -808,34 +796,37 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
             outProbe->highestSelectedHitY = taggedHeight;
         }
 
-        if (sampleIndex < 4 && sampleIndex == 0) {
-            if (outProbe->candidateBuffers[0].candidateCount > 0) {
-                const zClassDiPickCandidateEntry* const selectedCandidate
-                    = &outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]];
-                playerState->selectedProbeSample = *selectedCandidate;
-                playerState->selectedProbeSample.hitPos.x = primaryModalState->transformedProbePointWorldByIndex[0].x;
-                playerState->selectedProbeSample.hitPos.z = primaryModalState->transformedProbePointWorldByIndex[0].z;
-                playerState->variantTag = selectedCandidate->variantTag;
+        if (sampleIndex < 4) {
+            if (sampleIndex == 0) {
+                if (outProbe->candidateBuffers[0].candidateCount > 0) {
+                    const zClassDiPickCandidateEntry* const selectedCandidate
+                        = &outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]];
+                    playerState->selectedProbeSample = *selectedCandidate;
+                    playerState->selectedProbeSample.hitPos.x
+                        = primaryModalState->transformedProbePointWorldByIndex[0].x;
+                    playerState->selectedProbeSample.hitPos.z
+                        = primaryModalState->transformedProbePointWorldByIndex[0].z;
+                    playerState->variantTag = selectedCandidate->variantTag;
 
-                CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(selectedCandidate->node);
-                const int nodeType = worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-                CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
-            } else {
-                CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
+                    CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(selectedCandidate->node);
+                    const int nodeType = worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
+                    CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
+                } else {
+                    CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
+                }
             }
-        }
 
-        outProbe->hitHistogram.countByImpactSlot[selectedImpactSlot] += 1;
+            // Only the four primary samples feed the surface histogram and attachment vote.
+            outProbe->hitHistogram.countByImpactSlot[selectedImpactSlot] += 1;
 
-        if (candidateBuffer->candidateCount != 0) {
-            CZNodePartial* const candidateNode = candidateBuffer->entries[bestCandidateIndex].node;
-            if (candidateNode != 0 && candidateNode->auxFlags != 0) {
-                outProbe->attachmentCandidateCount += 1;
-                outProbe->attachmentNode = (CZNodePartial*)(candidateNode->callbackContext);
+            if (candidateBuffer->candidateCount != 0) {
+                CZNodePartial* const candidateNode = candidateBuffer->entries[bestCandidateIndex].node;
+                if (candidateNode != 0 && candidateNode->auxFlags != 0) {
+                    outProbe->attachmentCandidateCount += 1;
+                    outProbe->attachmentNode = (CZNodePartial*)(candidateNode->callbackContext);
+                }
             }
-        }
-
-        if (sampleIndex >= 4 && (g_PlayerEnvProbeSampleMaskTable[sampleIndex] & 0x0a) == 0) {
+        } else if ((g_PlayerEnvProbeSampleMaskTable[sampleIndex] & 0x0a) == 0) {
             outProbe->candidateScoreBySample[sampleIndex] -= 0.2f;
         }
     }

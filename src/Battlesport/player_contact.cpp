@@ -59,6 +59,8 @@ enum PlayerMasterTypeId {
     kPlayerMasterTypeAmphib = 5
 };
 const float kPlayerWorldCollisionStackDrop = 0.200000003f;
+// Unused since 0x4248e0 reads the pooled -1.0f literal (retail 0x4d0728); kept so the
+// TU's C1 ID counter layout, which 0x425060's codegen depends on, stays unchanged.
 const float kPlayerWorldCollisionSubRestoreYOffset = -1.0f;
 const float kPlayerWorldCollisionUpwardBounceDamping = -0.800000012f;
 const float kPlayerTransferDamageScale = 5.0f;
@@ -692,7 +694,7 @@ namespace PlayerPickupContact {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-playerpickupcontact-passescollectiontest
  * @recoil-artifact defines .text recoil:function:0x424150: PlayerPickupContact::PassesCollectionTest.
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement PlayerPickupContact::PassesCollectionTest from the recovered
@@ -923,8 +925,7 @@ PreparePendingWorldCollisionResponse(zUtil_SaveGameState* saveState, PlayerPendi
         return;
     }
 
-    const float restoreYOffset
-        = masterModalData->masterType == kPlayerMasterTypeSub ? kPlayerWorldCollisionSubRestoreYOffset : 0.0f;
+    const float restoreYOffset = masterModalData->masterType == kPlayerMasterTypeSub ? -1.0f : 0.0f;
     playerState->worldPos.x = playerState->previousTransform.posX;
     playerState->worldPos.y = playerState->previousTransform.posY + restoreYOffset;
     playerState->worldPos.z = playerState->previousTransform.posZ;
