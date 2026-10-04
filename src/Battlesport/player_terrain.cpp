@@ -172,7 +172,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-processenvproberesults
  * @recoil-artifact defines .text recoil:function:0x42c0d0: Player::ProcessEnvProbeResults.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ProcessEnvProbeResults from the recovered

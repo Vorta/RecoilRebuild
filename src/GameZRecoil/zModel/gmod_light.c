@@ -51,7 +51,7 @@ RECOIL_STATIC_ASSERT(sizeof(gModel_LightVertexDistanceSqScratch) == 0x4000);
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygoninitxz
  * @recoil-artifact defines .text recoil:function:0x487a30: zModelLightPointInPolygonInitXZ
- *
+ * @recoil-match byte
  *
  * Purpose: select active lights and initialize ambient colour and palette remapping.
  */
@@ -164,9 +164,8 @@ namespace zModel_Light
                     light->viewPos.y - sphereCenter->y,
                     light->viewPos.z - sphereCenter->z };
                 const float distSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-                if (distSq == 0.0f) {
-                    distance = 0.0f;
-                } else {
+                distance = distSq;
+                if (distSq != 0.0f) {
                     int distanceBits = *(const int*)&distSq;
                     distanceBits = (distanceBits >> 1) + 0x1fc00000;
                     distance = *(float*)&distanceBits;
@@ -245,101 +244,101 @@ namespace zModel_Light
         const double kMinPointNormalWeight = kVisibleWeight + 0.0001f;
         const float kMinIntensity = 9.99999975e-6f;
 
+        const int hardwarePath = g_zVideo_ActiveRendererPath;
         const int initialLightingMode = *lightingMode;
+        int pointAttrsVarying = 0;
+        int hasAnyCandidate = 0;
+        int resultFlags = 0;
+        int hasAttr2Contribution = 0;
         *lightingMode = 0;
 
-        float scale255 = 0.0f;
+        float scale255;
         zFloat::Set255f(&scale255);
 
-        bool hasAnyCandidate = false;
-        bool valid[0x40][0x40] = { 0 };
-        float distances[0x40][0x40] = { 0 };
-        zVec3 lightToVertex[0x40][0x40] = { 0 };
+        // Retail leaves these uninitialized: pass 2 reads stale entries for lights skipped above
+        // and for lightToVertex[l][0] of full-weight directional lights.
+        int valid[0x40][0x40];
+        float distances[0x40][0x40];
+        zVec3 lightToVertex[0x40][0x40];
 
         for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-            const zVec3 vertex = { g_Clip_PolyVertsScratch[vertexIndex].x,
-                g_Clip_PolyVertsScratch[vertexIndex].y,
-                g_Clip_PolyVertsScratch[vertexIndex].z };
-
+            const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
             for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
                 zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
-                CZLightDataPartial* light = entry.light;
-
+                CZLightDataPartial* const light = entry.light;
                 if (*lightFlags == 1 && light->lightParam != 0 && light->isDirectedSource == 0) {
                     continue;
                 }
 
+                valid[lightIndex][vertexIndex] = 0;
                 if (entry.contributesToLighting == 0) {
                     continue;
                 }
 
                 if (entry.useFullWeight != 0) {
-                    valid[lightIndex][vertexIndex] = true;
-                    hasAnyCandidate = true;
+                    valid[lightIndex][vertexIndex] = 1;
+                    hasAnyCandidate = 1;
                     continue;
                 }
 
                 if (light->isDirectedSource != 0) {
-                    distances[lightIndex][vertexIndex] = vertex.z;
-                    if (vertex.z < light->range2) {
-                        lightToVertex[lightIndex][vertexIndex] = vertex;
-                        if (vertex.z != 0.0f) {
-                            zMathVec3DivScalar(
-                                &lightToVertex[lightIndex][vertexIndex],
-                                &lightToVertex[lightIndex][vertexIndex],
-                                vertex.z
-                            );
-                        }
-                        valid[lightIndex][vertexIndex] = true;
-                        hasAnyCandidate = true;
+                    const float depth = vertex->z;
+                    distances[lightIndex][vertexIndex] = depth;
+                    if (depth < light->range2) {
+                        // zClipVert shares zVec3's x/y/z layout; retail passes the scratch vertex directly.
+                        zMathVec3DivScalar((const zVec3*)vertex, &lightToVertex[lightIndex][vertexIndex], depth);
                     }
+                    valid[lightIndex][vertexIndex] = 1;
+                    hasAnyCandidate = 1;
                     continue;
                 }
 
-                zVec3 difference;
-                difference.x = light->viewPos.x - vertex.x;
-                difference.y = light->viewPos.y - vertex.y;
-                difference.z = light->viewPos.z - vertex.z;
-                zVec3 delta = difference;
-                float distanceSq = delta.x * difference.x + delta.y * difference.y + delta.z * difference.z;
+                zVec3* const delta = &lightToVertex[lightIndex][vertexIndex];
+                delta->x = light->viewPos.x - vertex->x;
+                delta->y = light->viewPos.y - vertex->y;
+                delta->z = light->viewPos.z - vertex->z;
+                const float distanceSq = delta->x * delta->x + delta->y * delta->y + delta->z * delta->z;
                 distances[lightIndex][vertexIndex] = distanceSq;
                 if (distanceSq >= light->range2Sq) {
                     continue;
                 }
 
                 if (distanceSq != 0.0f) {
-                    int distanceBits = 0;
-                    memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
+                    int distanceBits = *(const int*)&distanceSq;
                     distanceBits = (distanceBits >> 1) + 0x1fc00000;
-                    float distance = 0.0f;
-                    memcpy(&distance, &distanceBits, sizeof(distance));
-                    distances[lightIndex][vertexIndex] = distance;
-                    zMathVec3DivScalar(&delta, &delta, distance);
+                    distances[lightIndex][vertexIndex] = *(float*)&distanceBits;
                 }
-
-                lightToVertex[lightIndex][vertexIndex] = delta;
-                valid[lightIndex][vertexIndex] = true;
-                hasAnyCandidate = true;
+                zMathVec3DivScalar(delta, delta, distances[lightIndex][vertexIndex]);
+                valid[lightIndex][vertexIndex] = 1;
+                hasAnyCandidate = 1;
             }
         }
 
-        if (!hasAnyCandidate && !(g_zModel_FogTargetColorOverride.weight > kVisibleWeight)) {
+        if (g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
+            hasAnyCandidate = 1;
+        }
+        if (hasAnyCandidate == 0) {
             return 0;
         }
 
         zMath::Vec3Normalize(surfaceNormal);
 
-        float fogWeights[0x40] = { 0 };
-        memset(g_Clip_PolyAttr1, 0, (size_t)(vertexCount) * sizeof(float));
-        if (g_zVideo_ActiveRendererPath != 0 && (*lightFlags & 1) == 0) {
-            memset(g_Clip_PolyAttr2, 0, (size_t)(vertexCount) * sizeof(float));
+        float fogWeights[0x40];
+        int i;
+        for (i = 0; i < vertexCount; ++i) {
+            fogWeights[i] = 0.0f;
+            g_Clip_PolyAttr1[i] = 0.0f;
+        }
+        if (hardwarePath != 0 && (*lightFlags & 1) == 0) {
+            for (i = 0; i < vertexCount; ++i) {
+                g_Clip_PolyAttr2[i] = 0.0f;
+            }
         }
 
         int fogContributorCount = 0;
         int pointContributorCount = 0;
         int selectedFogLightIndex = -1;
-        int selectedPointLightIndex = -1;
-        int hasAttr2Contribution = 0;
+        int selectedPointLightIndex;
 
         for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
             zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
@@ -348,115 +347,151 @@ namespace zModel_Light
             }
 
             CZLightDataPartial* light = entry.light;
-            float pointSum = 0.0f;
             float attr2Sum = 0.0f;
             float fogSum = 0.0f;
+            float pointSum = 0.0f;
+            float surfaceWeight;
+            if (light->isDirectional == 0 && light->isDirectedSource == 0) {
+                surfaceWeight = 1.0f;
+            } else {
+                const float surfaceDot = surfaceNormal->x * light->viewDir.x + surfaceNormal->y * light->viewDir.y
+                    + surfaceNormal->z * light->viewDir.z;
+                surfaceWeight = surfaceDot;
+                if (light->isDirectedSource != 0 && surfaceDot < kMinPointNormalWeight) {
+                    surfaceWeight = (float)kMinPointNormalWeight;
+                }
+            }
 
-            for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+            // The first vertex also establishes the light base intensity.
+            float angularWeight = surfaceWeight;
+            if (surfaceWeight > kVisibleWeight) {
+                if (light->isDirectional != 0) {
+                    const zVec3& direction = lightToVertex[lightIndex][0];
+                    const float coneDot = direction.x * light->viewDir.x + direction.y * light->viewDir.y
+                        + direction.z * light->viewDir.z;
+                    angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
+                } else if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
+                    const zVec3& polyNormal = g_zModel_CurrentPolyNormals[0];
+                    const float normalDot = polyNormal.x * light->viewDir.x + polyNormal.y * light->viewDir.y
+                        + polyNormal.z * light->viewDir.z;
+                    angularWeight = normalDot < kMinPointNormalWeight ? (float)kMinPointNormalWeight : normalDot;
+                }
+            } else {
+                surfaceWeight = 0.0f;
+                angularWeight = 0.0f;
+            }
+
+            if (surfaceWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
+                continue;
+            }
+
+            float intensity = light->falloff * angularWeight + light->intensityScale;
+            if (intensity > 1.0f) {
+                intensity = 1.0f;
+            } else if (light->intensityScale > intensity) {
+                intensity = light->intensityScale;
+            }
+
+            if (valid[lightIndex][0]) {
+                float weight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
+                if (entry.useFullWeight == 0) {
+                    if (light->isDirectedSource != 0) {
+                        const float farWeight = 1.0f - light->intensityScale;
+                        const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][0]);
+                        weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
+                        if (weight > farWeight) {
+                            weight = farWeight;
+                        }
+                    } else {
+                        weight *= EvalDistanceWeight(light, distances[lightIndex][0]);
+                    }
+                }
+
+                if (light->isDirectedSource != 0) {
+                    g_Clip_PolyAttr1[0] += weight;
+                    pointSum += weight;
+                } else if (hardwarePath != 0 && light->lightParam != 0) {
+                    g_Clip_PolyAttr2[0] += weight;
+                    hasAttr2Contribution = 1;
+                    attr2Sum += weight;
+                } else {
+                    fogWeights[0] += weight;
+                    fogSum += weight;
+                }
+            }
+
+            for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
                 if (!valid[lightIndex][vertexIndex]) {
                     continue;
                 }
 
-                float angularWeight = 1.0f;
-                if (light->isDirectional != 0 || light->isDirectedSource != 0) {
-                    float dotProduct = 0.0f;
-                    if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
-                        const zVec3& polyNormal = g_zModel_CurrentPolyNormals[vertexIndex];
-                        dotProduct = polyNormal.x * light->viewDir.x + polyNormal.y * light->viewDir.y
-                            + polyNormal.z * light->viewDir.z;
-                    } else if (light->isDirectedSource != 0) {
-                        const zVec3& direction = lightToVertex[lightIndex][vertexIndex];
-                        dotProduct = surfaceNormal->x * direction.x + surfaceNormal->y * direction.y
-                            + surfaceNormal->z * direction.z;
-                    } else {
-                        dotProduct = surfaceNormal->x * light->viewDir.x + surfaceNormal->y * light->viewDir.y
-                            + surfaceNormal->z * light->viewDir.z;
-                    }
-                    angularWeight = dotProduct;
-
-                    if (light->isDirectedSource != 0 && angularWeight < kMinPointNormalWeight) {
-                        angularWeight = kMinPointNormalWeight;
-                    }
-
+                angularWeight = surfaceWeight;
+                if (surfaceWeight > kVisibleWeight) {
                     if (light->isDirectional != 0) {
-                        const zVec3& direction = lightToVertex[lightIndex][vertexIndex];
-                        float coneWeight = direction.x * light->viewDir.x + direction.y * light->viewDir.y
-                            + direction.z * light->viewDir.z;
-                        if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
-                            const zVec3& polyNormal = g_zModel_CurrentPolyNormals[vertexIndex];
-                            coneWeight = polyNormal.x * light->viewDir.x + polyNormal.y * light->viewDir.y
-                                + polyNormal.z * light->viewDir.z;
-                            if (coneWeight < kMinPointNormalWeight) {
-                                coneWeight = kMinPointNormalWeight;
-                            }
+                        zVec3* const direction = &lightToVertex[lightIndex][vertexIndex];
+                        if (entry.useFullWeight != 0) {
+                            const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+                            direction->x = light->viewPos.x - vertex->x;
+                            direction->y = light->viewPos.y - vertex->y;
+                            direction->z = light->viewPos.z - vertex->z;
                         }
-                        angularWeight = coneWeight < kVisibleWeight ? 0.0f : coneWeight;
+                        const float coneDot = direction->x * light->viewDir.x + direction->y * light->viewDir.y
+                            + direction->z * light->viewDir.z;
+                        angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
+                    } else if (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0) {
+                        const zVec3& polyNormal = g_zModel_CurrentPolyNormals[vertexIndex];
+                        const float normalDot = polyNormal.x * light->viewDir.x + polyNormal.y * light->viewDir.y
+                            + polyNormal.z * light->viewDir.z;
+                        angularWeight = normalDot < kMinPointNormalWeight ? (float)kMinPointNormalWeight : normalDot;
                     }
+                } else {
+                    angularWeight = 0.0f;
                 }
 
                 if (angularWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
                     continue;
                 }
 
-                float intensity = light->falloff * angularWeight + light->intensityScale;
-                if (intensity > 1.0f) {
-                    intensity = 1.0f;
-                } else if (intensity < light->intensityScale) {
-                    intensity = light->intensityScale;
+                if (light->isDirectional != 0 || (light->isDirectedSource != 0 && g_zModel_CurrentPolyNormals != 0)) {
+                    intensity = light->falloff * angularWeight + light->intensityScale;
+                    if (intensity > 1.0f) {
+                        intensity = 1.0f;
+                    } else if (light->intensityScale > intensity) {
+                        intensity = light->intensityScale;
+                    }
                 }
 
                 float weight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
-                if (g_zVideo_ActiveRendererPath == 0) {
+                if (entry.useFullWeight == 0) {
                     if (light->isDirectedSource != 0) {
-                        if (entry.useFullWeight == 0) {
-                            const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
-                            const float farWeight = 1.0f - light->intensityScale;
-                            weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
-                            if (weight > farWeight) {
-                                weight = farWeight;
-                            }
-                        }
-                        g_Clip_PolyAttr1[vertexIndex] += weight;
-                        pointSum += weight;
-                    } else {
-                        if (entry.useFullWeight == 0) {
-                            weight *= EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
-                        }
-                        fogWeights[vertexIndex] += weight;
-                        fogSum += weight;
-                    }
-                } else if (light->isDirectedSource != 0) {
-                    if (entry.useFullWeight == 0) {
-                        const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
                         const float farWeight = 1.0f - light->intensityScale;
+                        const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
                         weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                         if (weight > farWeight) {
                             weight = farWeight;
                         }
-                    }
-                    g_Clip_PolyAttr1[vertexIndex] += weight;
-                    pointSum += weight;
-                } else {
-                    if (entry.useFullWeight == 0) {
+                    } else {
                         weight *= EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
                     }
-                    if (light->lightParam != 0) {
-                        g_Clip_PolyAttr2[vertexIndex] += weight;
-                        attr2Sum += weight;
-                        hasAttr2Contribution = 1;
-                    } else {
-                        fogWeights[vertexIndex] += weight;
-                        fogSum += weight;
-                    }
+                }
+
+                if (light->isDirectedSource != 0) {
+                    g_Clip_PolyAttr1[vertexIndex] += weight;
+                    pointSum += weight;
+                } else if (hardwarePath != 0 && light->lightParam != 0) {
+                    g_Clip_PolyAttr2[vertexIndex] += weight;
+                    hasAttr2Contribution = 1;
+                    attr2Sum += weight;
+                } else {
+                    fogWeights[vertexIndex] += weight;
+                    fogSum += weight;
                 }
             }
 
-            if (attr2Sum + fogSum > kVisibleWeight) {
+            if (fogSum + attr2Sum > kVisibleWeight) {
                 selectedFogLightIndex = lightIndex;
                 ++fogContributorCount;
-            }
-
-            if (pointSum > kVisibleWeight) {
+            } else if (pointSum > kVisibleWeight) {
                 selectedPointLightIndex = lightIndex;
                 ++pointContributorCount;
             }
@@ -464,16 +499,15 @@ namespace zModel_Light
 
         if (g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
             ++fogContributorCount;
-            selectedFogLightIndex = -1;
-            if (g_zVideo_ActiveRendererPath == 0) {
-                for (int i = 0; i < vertexCount; ++i) {
-                    fogWeights[i] += g_zModel_FogTargetColorOverride.weight;
-                }
-            } else {
-                for (int i = 0; i < vertexCount; ++i) {
+            if (hardwarePath != 0) {
+                for (i = 0; i < vertexCount; ++i) {
                     g_Clip_PolyAttr2[i] += g_zModel_FogTargetColorOverride.weight;
                 }
                 hasAttr2Contribution = 1;
+            } else {
+                for (i = 0; i < vertexCount; ++i) {
+                    fogWeights[i] += g_zModel_FogTargetColorOverride.weight;
+                }
             }
         }
 
@@ -481,65 +515,73 @@ namespace zModel_Light
             return 0;
         }
 
-        int pointAttrsVisible = 0;
-        if (pointContributorCount > 0 || selectedPointLightIndex >= 0) {
+        if (pointContributorCount > 0) {
             if (g_Clip_PolyAttr1[0] > 1.0f) {
                 g_Clip_PolyAttr1[0] = 1.0f;
             } else if (g_Clip_PolyAttr1[0] < 0.0f) {
                 g_Clip_PolyAttr1[0] = 0.0f;
             }
-            pointAttrsVisible = g_Clip_PolyAttr1[0] > kVisibleWeight ? 1 : 0;
-            int attr1Varies = 0;
-            for (int i = 1; i < vertexCount; ++i) {
-                if (g_Clip_PolyAttr1[i] > 1.0f) {
-                    g_Clip_PolyAttr1[i] = 1.0f;
-                } else if (g_Clip_PolyAttr1[i] < 0.0f) {
-                    g_Clip_PolyAttr1[i] = 0.0f;
-                }
-                if (fabs(g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[0]) >= kVisibleWeight) {
-                    attr1Varies = 1;
-                }
-                if (g_Clip_PolyAttr1[i] > kVisibleWeight) {
-                    pointAttrsVisible = 1;
-                }
-            }
 
-            if (g_zVideo_ActiveRendererPath == 0 && g_zModel_SoftwarePathActive != 0 && usePaletteRemap != 0) {
-                if (attr1Varies != 0 && initialLightingMode != 0) {
-                    for (int i = 0; i < vertexCount; ++i) {
-                        g_Clip_PolyAttr0[i] = g_Clip_PolyAttr1[i] * scale255;
+            if (hardwarePath == 0) {
+                for (i = 1; i < vertexCount; ++i) {
+                    if (g_Clip_PolyAttr1[i] > 1.0f) {
+                        g_Clip_PolyAttr1[i] = 1.0f;
+                    } else if (g_Clip_PolyAttr1[i] < 0.0f) {
+                        g_Clip_PolyAttr1[i] = 0.0f;
                     }
-                    zRndrSetPaletteShadeRecipeIndex(&gModel_SpecialLightPaletteRemapRecipe);
-                    *lightingMode |= 1;
-                    return 1;
+                    if (fabs(g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[0]) > kVisibleWeight) {
+                        pointAttrsVarying = 1;
+                    }
                 }
 
-                if (pointAttrsVisible != 0) {
+                if (g_zModel_SoftwarePathActive != 0 && usePaletteRemap != 0) {
+                    if (pointAttrsVarying != 0 && initialLightingMode != 0) {
+                        for (i = 0; i < vertexCount; ++i) {
+                            g_Clip_PolyAttr0[i] = g_Clip_PolyAttr1[i] * scale255;
+                        }
+                        zRndrSetPaletteShadeRecipeIndex(&gModel_SpecialLightPaletteRemapRecipe);
+                        *lightingMode |= 1;
+                        return 1;
+                    }
+
                     g_Clip_PolyAttr1[0] *= scale255;
                     zRndrSetPaletteRemapKey(&gModel_SpecialLightPaletteRemapRecipe, g_Clip_PolyAttr1[0]);
-                }
-                if (pointAttrsVisible == 0 && g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
+                } else if (g_zModel_FogTargetColorOverride.weight == 0.0f) {
+                    ++fogContributorCount;
+                    for (i = 0; i < vertexCount; ++i) {
+                        fogWeights[i] += g_Clip_PolyAttr1[i];
+                    }
                     zRndrSetPaletteRemapKeyFromRgb01(0, 0.0f);
+                    if (selectedFogLightIndex < 0) {
+                        selectedFogLightIndex = selectedPointLightIndex;
+                    }
                 }
-            } else if (pointAttrsVisible != 0) {
-                *lightingMode |= 1;
             }
         }
 
-        int resultFlags = 0;
-        for (int i = 0; i < vertexCount; ++i) {
-            if (fogWeights[i] > 1.0f) {
-                fogWeights[i] = 1.0f;
-            } else if (fogWeights[i] < 0.0f) {
-                fogWeights[i] = 0.0f;
+        if (fogContributorCount > 0) {
+            for (i = 1; i < vertexCount && *lightingMode == 0; ++i) {
+                if (fabs(fogWeights[i] - fogWeights[0]) > kVisibleWeight) {
+                    *lightingMode = 1;
+                }
             }
-            if (fogWeights[i] > kVisibleWeight) {
-                resultFlags = 1;
-                g_Clip_PolyAttr0[i] += g_zVideo_ActiveRendererPath == 0 ? fogWeights[i] * scale255 : fogWeights[i];
-            }
+        } else if (pointContributorCount == 0) {
+            return 0;
         }
 
-        if (g_zVideo_ActiveRendererPath == 0) {
+        if (hardwarePath == 0) {
+            for (i = 0; i < vertexCount; ++i) {
+                if (fogWeights[i] > 1.0f) {
+                    fogWeights[i] = 1.0f;
+                } else if (fogWeights[i] < 0.0f) {
+                    fogWeights[i] = 0.0f;
+                }
+                if (fogWeights[i] > kVisibleWeight) {
+                    resultFlags = 1;
+                    g_Clip_PolyAttr0[i] += scale255 * fogWeights[i];
+                }
+            }
+
             if (resultFlags != 0) {
                 if ((*lightFlags & 1) != 0 && fogContributorCount > 0) {
                     zRndr::CommitDirectFogParamsIfChanged();
@@ -556,9 +598,36 @@ namespace zModel_Light
             return resultFlags;
         }
 
+        int pointAttrsVisible = 0;
+        for (i = 0; i < vertexCount; ++i) {
+            if (g_Clip_PolyAttr1[i] > 1.0f) {
+                g_Clip_PolyAttr1[i] = 1.0f;
+            } else if (g_Clip_PolyAttr1[i] < 0.0f) {
+                g_Clip_PolyAttr1[i] = 0.0f;
+            }
+            if (g_Clip_PolyAttr1[i] > kVisibleWeight) {
+                pointAttrsVisible = 1;
+            }
+        }
+        if (pointAttrsVisible != 0) {
+            *lightingMode |= 1;
+        }
+
+        for (i = 0; i < vertexCount; ++i) {
+            if (fogWeights[i] > 1.0f) {
+                fogWeights[i] = 1.0f;
+            } else if (fogWeights[i] < 0.0f) {
+                fogWeights[i] = 0.0f;
+            }
+            if (fogWeights[i] > kVisibleWeight) {
+                g_Clip_PolyAttr0[i] += fogWeights[i];
+                resultFlags = 1;
+            }
+        }
+
         if (hasAttr2Contribution != 0) {
             int attr2Visible = 0;
-            for (int i = 0; i < vertexCount; ++i) {
+            for (i = 0; i < vertexCount; ++i) {
                 if (g_Clip_PolyAttr2[i] > 1.0f) {
                     g_Clip_PolyAttr2[i] = 1.0f;
                 } else if (g_Clip_PolyAttr2[i] < 0.0f) {
@@ -569,17 +638,15 @@ namespace zModel_Light
                 }
             }
 
-            if (vertexCount > 1) {
-                for (int i = 1; i < vertexCount && *lightingMode == 0; ++i) {
-                    if (fabs(g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[0]) >= kVisibleWeight) {
-                        *lightingMode = 2;
-                    }
+            for (i = 1; i < vertexCount && *lightingMode == 0; ++i) {
+                if (fabs(g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[0]) > kVisibleWeight) {
+                    *lightingMode = 2;
                 }
             }
 
             if (attr2Visible != 0) {
-                const int previousFlags = *lightFlags;
                 resultFlags |= 8;
+                const int previousFlags = *lightFlags;
                 *lightFlags |= 9;
                 zColorRgb* color = selectedFogLightIndex < 0
                     ? &g_zModel_FogTargetColorOverride.colorRgb01
@@ -620,185 +687,194 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
     const double kMinPointNormalWeight = kVisibleWeight + 0.0001f;
     const float kMinIntensity = 9.99999975e-6f;
 
-    bool hasAnyCandidate = false;
-    bool valid[0x40][0x40] = { 0 };
-    zVec3 lightToVertex[0x40][0x40] = { 0 };
+    int hasAnyCandidate = 0;
+    // Retail leaves these uninitialized: pass 2 reads a stale lightToVertex[l][0] for
+    // full-weight directional lights.
+    int valid[0x40][0x40];
+    zVec3 lightToVertex[0x40][0x40];
 
-    {
-        for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-            const zVec3 vertex = { g_Clip_PolyVertsScratch[vertexIndex].x,
-                g_Clip_PolyVertsScratch[vertexIndex].y,
-                g_Clip_PolyVertsScratch[vertexIndex].z };
-
-            {
-                for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
-                    zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
-                    if (entry.contributesToLighting == 0) {
-                        continue;
-                    }
-
-                    if (entry.useFullWeight != 0) {
-                        valid[lightIndex][vertexIndex] = true;
-                        hasAnyCandidate = true;
-                        continue;
-                    }
-
-                    CZLightDataPartial* light = entry.light;
-                    zVec3 difference;
-                    difference.x = light->viewPos.x - vertex.x;
-                    difference.y = light->viewPos.y - vertex.y;
-                    difference.z = light->viewPos.z - vertex.z;
-                    zVec3 delta = difference;
-                    float distanceSq = delta.x * difference.x + delta.y * difference.y + delta.z * difference.z;
-                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distanceSq;
-                    if (distanceSq >= light->range2Sq) {
-                        continue;
-                    }
-
-                    if (distanceSq != 0.0f) {
-                        int distanceBits = 0;
-                        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
-                        distanceBits = (distanceBits >> 1) + 0x1fc00000;
-                        float distance = 0.0f;
-                        memcpy(&distance, &distanceBits, sizeof(distance));
-                        zMathVec3DivScalar(&delta, &delta, distance);
-                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distance;
-                    }
-
-                    lightToVertex[lightIndex][vertexIndex] = delta;
-                    valid[lightIndex][vertexIndex] = true;
-                    hasAnyCandidate = true;
-                }
+    for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
+        const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+        for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
+            zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
+            valid[lightIndex][vertexIndex] = 0;
+            if (entry.contributesToLighting == 0) {
+                continue;
             }
+
+            if (entry.useFullWeight == 0) {
+                CZLightDataPartial* const light = entry.light;
+                zVec3* const delta = &lightToVertex[lightIndex][vertexIndex];
+                delta->x = light->viewPos.x - vertex->x;
+                delta->y = light->viewPos.y - vertex->y;
+                delta->z = light->viewPos.z - vertex->z;
+                const float distanceSq = delta->x * delta->x + delta->y * delta->y + delta->z * delta->z;
+                gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = distanceSq;
+                if (distanceSq >= light->range2Sq) {
+                    continue;
+                }
+
+                if (distanceSq != 0.0f) {
+                    int distanceBits = *(const int*)&distanceSq;
+                    distanceBits = (distanceBits >> 1) + 0x1fc00000;
+                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex] = *(float*)&distanceBits;
+                }
+                zMathVec3DivScalar(delta, delta, gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]);
+            }
+
+            valid[lightIndex][vertexIndex] = 1;
+            hasAnyCandidate = 1;
         }
     }
 
-    if (!hasAnyCandidate && !(g_zModel_FogTargetColorOverride.weight > kVisibleWeight)) {
+    if (g_zModel_FogTargetColorOverride.weight > kVisibleWeight) {
+        hasAnyCandidate = 1;
+    }
+    if (hasAnyCandidate == 0) {
         return 0;
     }
 
     zMath::Vec3Normalize(surfaceNormal);
 
-    float vertexWeights[0x40] = { 0 };
+    float vertexWeights[0x40];
+    for (int i = 0; i < vertexCount; ++i) {
+        vertexWeights[i] = 0.0f;
+    }
+
     float maxVertexWeight = 0.0f;
     int nonZeroLightCount = 0;
     int singleLightIndex = -1;
 
-    {
-        for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
-            zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
-            if (entry.contributesToLighting == 0) {
+    for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
+        zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
+        if (entry.contributesToLighting == 0) {
+            continue;
+        }
+
+        CZLightDataPartial* light = entry.light;
+        float lightWeightSum = 0.0f;
+        float surfaceWeight;
+        if (light->isDirectional == 0 && light->isDirectedSource == 0) {
+            surfaceWeight = 1.0f;
+        } else {
+            const float surfaceDot = surfaceNormal->x * light->viewDir.x + surfaceNormal->y * light->viewDir.y
+                + surfaceNormal->z * light->viewDir.z;
+            surfaceWeight = surfaceDot;
+            if (light->isDirectedSource != 0 && surfaceDot < kMinPointNormalWeight) {
+                surfaceWeight = (float)kMinPointNormalWeight;
+            }
+        }
+
+        // The first vertex also establishes the light base intensity.
+        float angularWeight = surfaceWeight;
+        if (surfaceWeight > kVisibleWeight) {
+            if (light->isDirectional != 0) {
+                const zVec3& direction = lightToVertex[lightIndex][0];
+                const float coneDot
+                    = direction.x * light->viewDir.x + direction.y * light->viewDir.y + direction.z * light->viewDir.z;
+                angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
+            }
+        } else {
+            surfaceWeight = 0.0f;
+            angularWeight = 0.0f;
+        }
+
+        if (surfaceWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
+            continue;
+        }
+
+        float intensity = light->falloff * angularWeight + light->intensityScale;
+        if (intensity > 1.0f) {
+            intensity = 1.0f;
+        } else if (light->intensityScale > intensity) {
+            intensity = light->intensityScale;
+        }
+
+        if (valid[lightIndex][0]) {
+            float weight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
+            if (entry.useFullWeight == 0) {
+                if (light->isDirectedSource != 0) {
+                    const float farWeight = 1.0f - light->intensityScale;
+                    const float distanceWeight
+                        = zModel_Light::EvalDistanceWeight(light, gModel_LightVertexDistanceSqScratch[lightIndex][0]);
+                    weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
+                    if (weight > farWeight) {
+                        weight = farWeight;
+                    }
+                } else {
+                    weight
+                        *= zModel_Light::EvalDistanceWeight(light, gModel_LightVertexDistanceSqScratch[lightIndex][0]);
+                }
+            }
+            vertexWeights[0] += weight;
+            lightWeightSum += vertexWeights[0];
+        }
+
+        for (int vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
+            if (!valid[lightIndex][vertexIndex]) {
                 continue;
             }
 
-            CZLightDataPartial* light = entry.light;
-            float lightWeightSum = 0.0f;
-            {
-                for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-                    if (!valid[lightIndex][vertexIndex]) {
-                        continue;
+            angularWeight = surfaceWeight;
+            if (surfaceWeight > kVisibleWeight) {
+                if (light->isDirectional != 0) {
+                    zVec3* const direction = &lightToVertex[lightIndex][vertexIndex];
+                    if (entry.useFullWeight != 0) {
+                        const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+                        direction->x = light->viewPos.x - vertex->x;
+                        direction->y = light->viewPos.y - vertex->y;
+                        direction->z = light->viewPos.z - vertex->z;
                     }
+                    const float coneDot = direction->x * light->viewDir.x + direction->y * light->viewDir.y
+                        + direction->z * light->viewDir.z;
+                    angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
+                }
+            } else {
+                angularWeight = 0.0f;
+            }
 
-                    float angularWeight = 1.0f;
-                    if (light->isDirectional != 0 || light->isDirectedSource != 0) {
-                        const zVec3& direction
-                            = light->isDirectedSource != 0 ? lightToVertex[lightIndex][vertexIndex] : light->viewDir;
-                        angularWeight = surfaceNormal->x * direction.x + surfaceNormal->y * direction.y
-                            + surfaceNormal->z * direction.z;
-                        if (light->isDirectedSource != 0 && angularWeight < kMinPointNormalWeight) {
-                            angularWeight = kMinPointNormalWeight;
-                        }
-                        if (light->isDirectional != 0) {
-                            const float coneDot = direction.x * light->viewDir.x + direction.y * light->viewDir.y
-                                + direction.z * light->viewDir.z;
-                            angularWeight = coneDot < kVisibleWeight ? 0.0f : coneDot;
-                        }
-                    }
+            if (angularWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
+                continue;
+            }
 
-                    if (angularWeight <= kVisibleWeight && light->intensityScale <= kMinIntensity) {
-                        continue;
-                    }
-
-                    float intensity = light->falloff * angularWeight + light->intensityScale;
-                    if (intensity > 1.0f) {
-                        intensity = 1.0f;
-                    } else if (intensity < light->intensityScale) {
-                        intensity = light->intensityScale;
-                    }
-
-                    float baseWeight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
-                    if (entry.useFullWeight == 0) {
-                        if (g_zVideo_ActiveRendererPath == 0) {
-                            if (light->isDirectedSource != 0) {
-                                const float distanceWeight = zModel_Light::EvalDistanceWeight(
-                                    light,
-                                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
-                                );
-                                const float farWeight = 1.0f - light->intensityScale;
-                                baseWeight = (1.0f - distanceWeight) * (farWeight - baseWeight) + baseWeight;
-                                if (baseWeight > farWeight) {
-                                    baseWeight = farWeight;
-                                }
-                                vertexWeights[vertexIndex] += baseWeight;
-                                lightWeightSum += baseWeight;
-                                if (baseWeight > maxVertexWeight) {
-                                    maxVertexWeight = baseWeight;
-                                }
-                                continue;
-                            } else {
-                                baseWeight *= zModel_Light::EvalDistanceWeight(
-                                    light,
-                                    gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
-                                );
-                                lightWeightSum += baseWeight;
-                                vertexWeights[vertexIndex] += baseWeight;
-                                if (baseWeight > maxVertexWeight) {
-                                    maxVertexWeight = baseWeight;
-                                }
-                                continue;
-                            }
-                        } else if (light->isDirectedSource != 0) {
-                            const float distanceWeight = zModel_Light::EvalDistanceWeight(
-                                light,
-                                gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
-                            );
-                            const float farWeight = 1.0f - light->intensityScale;
-                            baseWeight = (1.0f - distanceWeight) * (farWeight - baseWeight) + baseWeight;
-                            if (baseWeight > farWeight) {
-                                baseWeight = farWeight;
-                            }
-                            vertexWeights[vertexIndex] += baseWeight;
-                            lightWeightSum += baseWeight;
-                            if (baseWeight > maxVertexWeight) {
-                                maxVertexWeight = baseWeight;
-                            }
-                            continue;
-                        } else {
-                            baseWeight *= zModel_Light::EvalDistanceWeight(
-                                light,
-                                gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
-                            );
-                            vertexWeights[vertexIndex] += baseWeight;
-                            lightWeightSum += baseWeight;
-                            if (baseWeight > maxVertexWeight) {
-                                maxVertexWeight = baseWeight;
-                            }
-                            continue;
-                        }
-                    }
-
-                    vertexWeights[vertexIndex] += baseWeight;
-                    lightWeightSum += baseWeight;
-                    if (baseWeight > maxVertexWeight) {
-                        maxVertexWeight = baseWeight;
-                    }
+            if (light->isDirectional != 0) {
+                intensity = light->falloff * angularWeight + light->intensityScale;
+                if (intensity > 1.0f) {
+                    intensity = 1.0f;
+                } else if (light->intensityScale > intensity) {
+                    intensity = light->intensityScale;
                 }
             }
 
-            if (lightWeightSum > kVisibleWeight) {
-                singleLightIndex = lightIndex;
-                ++nonZeroLightCount;
+            float weight = light->isDirectedSource != 0 ? 1.0f - intensity : intensity;
+            if (entry.useFullWeight == 0) {
+                if (light->isDirectedSource != 0) {
+                    const float farWeight = 1.0f - light->intensityScale;
+                    const float distanceWeight = zModel_Light::EvalDistanceWeight(
+                        light,
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                    );
+                    weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
+                    if (weight > farWeight) {
+                        weight = farWeight;
+                    }
+                } else {
+                    weight *= zModel_Light::EvalDistanceWeight(
+                        light,
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                    );
+                }
             }
+            vertexWeights[vertexIndex] += weight;
+            lightWeightSum += vertexWeights[vertexIndex];
+            if (vertexWeights[vertexIndex] > maxVertexWeight) {
+                maxVertexWeight = vertexWeights[vertexIndex];
+            }
+        }
+
+        if (lightWeightSum > kVisibleWeight) {
+            singleLightIndex = lightIndex;
+            ++nonZeroLightCount;
         }
     }
 
@@ -813,8 +889,10 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
         return 0;
     }
 
-    if (fogBlendScale > 0.0f && fogBlendScale >= maxVertexWeight && nonZeroLightCount > 0) {
-        maxVertexWeight = fogBlendScale;
+    if (fogBlendScale > 0.0f && nonZeroLightCount > 0) {
+        if (fogBlendScale > maxVertexWeight) {
+            maxVertexWeight = fogBlendScale;
+        }
         zRndr::CommitDirectFogParamsIfChanged();
     } else if (nonZeroLightCount > 1) {
         zRndr::CommitDirectFogParamsIfChanged();
@@ -843,7 +921,7 @@ namespace zModel_Light
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-evaldistanceweight
      * @recoil-artifact defines .text recoil:function:0x4894f0: zModel_Light::EvalDistanceWeight
-     *
+     * @recoil-match byte
      *
      * Purpose: compute a light's range falloff as full, zero, or a linear blend
      * between the inner and outer range.
