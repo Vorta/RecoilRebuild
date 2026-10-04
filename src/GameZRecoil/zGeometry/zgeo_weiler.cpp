@@ -743,9 +743,8 @@ int __fastcall OutputPreclassifiedContourPairResult(
     }
 
     while (contourAPointCount-- != 0) {
-        const int pointClass
-            = zGeometry_Weiler::ClassifyPointInContourPointListXY(contourAPoints, contourBPointCount, contourBPoints);
-        if (pointClass < 0) {
+        if (zGeometry_Weiler::ClassifyPointInContourPointListXY(contourAPoints, contourBPointCount, contourBPoints)
+            < 0) {
             return 0;
         }
 
@@ -2977,7 +2976,7 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
  *
  * Purpose: Classify a test point as outside, on, or inside an XY contour by crossing parity.
  */
-int __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints)
+char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints)
 {
     if (contourPointCount <= 0) {
         return -1;

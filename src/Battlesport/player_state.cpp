@@ -1163,7 +1163,8 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-setautoturntargetdirfromworldpoint
  * @recoil-artifact defines .text recoil:function:0x42bab0: Player::SetAutoTurnTargetDirFromWorldPoint.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::SetAutoTurnTargetDirFromWorldPoint from the recovered
@@ -1173,9 +1174,7 @@ void __fastcall SetAutoTurnTargetDirFromWorldPoint(zUtil_SaveGameState* saveStat
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     zVec3 targetDir;
-    targetDir.x = worldPoint->x - playerState->worldPos.x;
-    targetDir.y = worldPoint->y - playerState->worldPos.y;
-    targetDir.z = worldPoint->z - playerState->worldPos.z;
+    zMath::Vec3Subtract(worldPoint, &playerState->worldPos, &targetDir);
     targetDir.y = 0.0f;
 
     // Retail leaves the output Y slot untouched, then copies the whole vector.

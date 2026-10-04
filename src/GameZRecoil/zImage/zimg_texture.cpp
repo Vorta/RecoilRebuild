@@ -241,7 +241,7 @@ zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-writetexturedirectory
  * @recoil-artifact defines .text recoil:function:0x46d360: zImage::WriteTextureDirectory.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -255,10 +255,11 @@ zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index)
  */
 int __fastcall WriteTextureDirectory(void* stream)
 {
-    int count = g_zImage_TexDir.count;
-    if (count == 0) {
+    if (g_zImage_TexDir.count == 0) {
         return 0;
     }
+
+    int count = g_zImage_TexDir.count;
 
     const int byteCount = count * (int)(sizeof(zImage_TexDirEntryPartial));
     zImage_TexDirEntryPartial* serializedEntries = (zImage_TexDirEntryPartial*)(malloc(byteCount));

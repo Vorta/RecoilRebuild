@@ -11,7 +11,11 @@ struct WestwoodOnlineUpgradeRefCountAndLock {
     long refCount;
     CRITICAL_SECTION lock;
 
-    WestwoodOnlineUpgradeRefCountAndLock* Init();
+    WestwoodOnlineUpgradeRefCountAndLock();
+    ~WestwoodOnlineUpgradeRefCountAndLock()
+    {
+        DeleteCriticalSection(&lock);
+    }
 };
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeRefCountAndLock) == 0x1c);

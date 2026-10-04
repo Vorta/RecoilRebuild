@@ -1130,7 +1130,7 @@ int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_S
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-grantammoorweapon
  * @recoil-artifact defines .text recoil:function:0x41d650: Pickup::GrantAmmoOrWeapon (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: grant ammo or weapon ownership for a pickup and prepare HUD feedback.
  */
@@ -1169,7 +1169,7 @@ int __fastcall Pickup::GrantAmmoOrWeapon(
     if (pickupType->weaponKeyName != 0) {
         if ((controller->flags & 4) == 0) {
             controller->flags |= 4;
-            ++g_HudSensorTracker.primaryGunDispatchCount;
+            ++g_HudSensorTracker.missionStat3;
             if ((pairedController->flags & 4) != 0 && pairedController->ammoOrCharge != 0.0f) {
                 if ((unsigned char)((unsigned int)(pairedController->flags) >> 2) & 1) {
                     HudUiMessage::ApplySideImageSwap(weaponBankIndex, weaponSideIndex);

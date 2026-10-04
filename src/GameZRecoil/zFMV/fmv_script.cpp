@@ -825,7 +825,9 @@ void CZFMVActionFade::End()
  */
 CZFMVActionPlayAvi::CZFMVActionPlayAvi(const char* mediaRootPath, const char* mediaFileName, int flags)
 {
-    mediaPath = (char*)(calloc(strlen(mediaRootPath) + strlen(mediaFileName) + 0x1b, 1));
+    const size_t rootLength = strlen(mediaRootPath);
+    const size_t fileLength = strlen(mediaFileName);
+    mediaPath = (char*)(calloc(rootLength + fileLength + 0x1b, 1));
     sprintf(mediaPath, "%s\\%s", mediaRootPath, mediaFileName);
     modeFlags = flags;
 

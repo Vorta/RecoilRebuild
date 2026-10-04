@@ -523,7 +523,8 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3directionto-gamezrecoil-zmath-zmath-vec3-cpp
      * @recoil-artifact defines .text recoil:function:0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-match byte
      *
      * Purpose: Writes the normalized direction from one point to another and returns the original distance.
      * Data: writes only the caller-supplied output vector before delegating
@@ -531,12 +532,7 @@ namespace zMath
      */
     float __fastcall Vec3DirectionTo(const zVec3* from, const zVec3* to, zVec3* outDir)
     {
-        const float dx = to->x - from->x;
-        const float dy = to->y - from->y;
-        const float dz = to->z - from->z;
-        outDir->x = dx;
-        outDir->y = dy;
-        outDir->z = dz;
+        Vec3Subtract(to, from, outDir);
         return Vec3Normalize(outDir);
     }
 
@@ -1297,7 +1293,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matapplylocaltrs
      * @recoil-artifact defines .text recoil:function:0x474010: zMath::MatApplyLocalTRS.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     * @recoil-source previously-byte-matched
+     * @recoil-match byte
      *
      * Purpose: builds a local transform from Euler angles, position, and scale,
      * then composes it into the current matrix stack slot.
@@ -1445,7 +1441,8 @@ void __stdcall zMathSetupProjection(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3array-addscaled
  * @recoil-artifact defines .text recoil:function:0x4744f0: zMathVec3ArrayAddScaled.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
  *
  * Purpose: writes bias plus scaled source vectors across a caller-provided
  * vector array.
@@ -1453,10 +1450,13 @@ void __stdcall zMathSetupProjection(
 void __fastcall
 zMathVec3ArrayAddScaled(zVec3* outArray, const zVec3* biasArray, const zVec3* srcArray, int count, float scale)
 {
-    for (int i = 0; i < count; ++i) {
-        outArray[i].x = biasArray[i].x + srcArray[i].x * scale;
-        outArray[i].y = biasArray[i].y + srcArray[i].y * scale;
-        outArray[i].z = biasArray[i].z + srcArray[i].z * scale;
+    zVec3 scaled;
+    while (count--) {
+        const zVec3* const src = srcArray++;
+        scaled.x = src->x * scale;
+        scaled.y = src->y * scale;
+        scaled.z = src->z * scale;
+        zMath::Vec3Add(biasArray++, &scaled, outArray++);
     }
 }
 
@@ -1781,7 +1781,8 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3directionanglesbetweenpoints
      * @recoil-artifact defines .text recoil:function:0x474d10: zMath::Vec3DirectionAnglesBetweenPoints.
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-xz
+     * @recoil-match byte
      *
      * Purpose: computes pitch and yaw angles from one point toward another and
      * clears roll in the output vector.
@@ -1789,11 +1790,14 @@ namespace zMath
     zVec3 __fastcall Vec3DirectionAnglesBetweenPoints(const zVec3* pointA, const zVec3* pointB)
     {
         zVec3 result;
-        const float dx = pointA->x - pointB->x;
-        const float dy = pointB->y - pointA->y;
-        const float dz = pointA->z - pointB->z;
-        result.x = atan2(dy, sqrt(dx * dx + dz * dz));
-        result.y = atan2(dx, dz);
+        zVec3 delta;
+        delta.x = pointA->x - pointB->x;
+        delta.y = pointB->y - pointA->y;
+        delta.z = pointA->z - pointB->z;
+        result.y = atan2(delta.x, delta.z);
+        float horizontalLength;
+        ZMTH_VECTOR_LENGTH_XZ(horizontalLength, &delta);
+        result.x = atan2(delta.y, horizontalLength);
         result.z = 0.0f;
         return result;
     }
@@ -1802,17 +1806,21 @@ namespace zMath
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-elevationanglebetweenpoints
  * @recoil-artifact defines .text recoil:function:0x474d90: zMathVec3ElevationAngleBetweenPoints.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-xz
+ * @recoil-match byte
  *
  * Purpose: computes the elevation angle between two points from horizontal
  * distance and vertical delta.
  */
 float __fastcall zMathVec3ElevationAngleBetweenPoints(const zVec3* pointA, const zVec3* pointB)
 {
-    const float dx = pointA->x - pointB->x;
-    const float dy = pointB->y - pointA->y;
-    const float dz = pointA->z - pointB->z;
-    return atan2(sqrt(dx * dx + dz * dz), dy);
+    zVec3 delta;
+    delta.x = pointA->x - pointB->x;
+    delta.y = pointB->y - pointA->y;
+    delta.z = pointA->z - pointB->z;
+    float horizontalLength;
+    ZMTH_VECTOR_LENGTH_XZ(horizontalLength, &delta);
+    return atan2(delta.y, horizontalLength);
 }
 
 /**

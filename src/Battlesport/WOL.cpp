@@ -2334,14 +2334,21 @@ void __fastcall WestwoodOnlineUpgrade::TruncateStringAtFirstSpace(char* text)
  *
  * Purpose: Allocates and initializes the Westwood API event sink for COM callbacks.
  */
+inline WestwoodOnlineUpgradeApiEventSink::WestwoodOnlineUpgradeApiEventSink()
+{
+    InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
+}
+
 HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(WestwoodOnlineUpgradeApiEventSink** outSink)
 {
     HRESULT result = E_OUTOFMEMORY;
-    WestwoodOnlineUpgradeApiEventSink* eventSink = new WestwoodOnlineUpgradeApiEventSink;
+    WestwoodOnlineUpgradeApiEventSink* eventSink = 0;
+    try {
+        eventSink = new WestwoodOnlineUpgradeApiEventSink;
+    } catch (...) {
+    }
 
     if (eventSink != 0) {
-        eventSink->m_refCountAndLock.Init();
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
         result = S_OK;
     }
 
@@ -3688,16 +3695,16 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionLaunchResult(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgraderefcountandlock-init
- * @recoil-artifact defines .text recoil:function:0x441600: WestwoodOnlineUpgradeRefCountAndLock::Init.
+ * @recoil-artifact defines .text recoil:function:0x441600: WestwoodOnlineUpgradeRefCountAndLock::WestwoodOnlineUpgradeRefCountAndLock.
  * @recoil-match byte
  *
- * Purpose: Resets the embedded reference count and initializes its critical section.
+ * Purpose: Resets the embedded reference count and initializes its critical section; the
+ * event sinks construct it as their base.
  */
-WestwoodOnlineUpgradeRefCountAndLock* WestwoodOnlineUpgradeRefCountAndLock::Init()
+WestwoodOnlineUpgradeRefCountAndLock::WestwoodOnlineUpgradeRefCountAndLock()
 {
     refCount = 0;
     InitializeCriticalSection(&lock);
-    return this;
 }
 
 /**
@@ -3711,9 +3718,8 @@ __inline ULONG __stdcall WestwoodOnlineUpgradeApiEventSink::Release(WestwoodOnli
 {
     ULONG refCount;
 
-    refCount = (ULONG)InterlockedDecrement(&self->m_refCountAndLock.refCount);
-    if (refCount == 0 && self != 0) {
-        self->Destructor();
+    refCount = (ULONG)InterlockedDecrement(&self->refCount);
+    if (refCount == 0) {
         delete self;
     }
 
@@ -3744,16 +3750,15 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(REFI
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-destructor
- * @recoil-artifact defines .text recoil:function:0x441680: WestwoodOnlineUpgradeApiEventSink::Destructor.
+ * @recoil-artifact defines .text recoil:function:0x441680: WestwoodOnlineUpgradeApiEventSink::~WestwoodOnlineUpgradeApiEventSink.
  *
  *
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
-void WestwoodOnlineUpgradeApiEventSink::Destructor()
+WestwoodOnlineUpgradeApiEventSink::~WestwoodOnlineUpgradeApiEventSink()
 {
-    m_refCountAndLock.refCount = 1;
+    refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
-    DeleteCriticalSection(&m_refCountAndLock.lock);
 }
 
 /**
@@ -4310,16 +4315,23 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
  *
  * Purpose: Allocates and initializes a download event sink for connection-point advising.
  */
+inline WestwoodOnlineUpgradeDownloadEventSink::WestwoodOnlineUpgradeDownloadEventSink()
+{
+    InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
+}
+
 HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
     WestwoodOnlineUpgradeDownloadEventSink** outSink
 )
 {
     HRESULT result = E_OUTOFMEMORY;
-    WestwoodOnlineUpgradeDownloadEventSink* eventSink = new WestwoodOnlineUpgradeDownloadEventSink;
+    WestwoodOnlineUpgradeDownloadEventSink* eventSink = 0;
+    try {
+        eventSink = new WestwoodOnlineUpgradeDownloadEventSink;
+    } catch (...) {
+    }
 
     if (eventSink != 0) {
-        eventSink->m_refCountAndLock.Init();
-        InterlockedIncrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
         result = S_OK;
     }
 
@@ -4425,7 +4437,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::OnStateChanged
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef()
 {
-    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
+    return (ULONG)InterlockedIncrement(&refCount);
 }
 
 /**
@@ -4436,7 +4448,7 @@ ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::AddRef()
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef()
 {
-    return (ULONG)InterlockedIncrement(&m_refCountAndLock.refCount);
+    return (ULONG)InterlockedIncrement(&refCount);
 }
 
 /**
@@ -4448,14 +4460,14 @@ ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AddRef()
  */
 ULONG STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::Release()
 {
-    ULONG refCount;
+    ULONG newRefCount;
 
-    refCount = (ULONG)InterlockedDecrement(&m_refCountAndLock.refCount);
-    if (refCount == 0) {
+    newRefCount = (ULONG)InterlockedDecrement(&refCount);
+    if (newRefCount == 0) {
         delete this;
     }
 
-    return refCount;
+    return newRefCount;
 }
 
 /**
@@ -4484,7 +4496,6 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface
  */
 WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink()
 {
-    m_refCountAndLock.refCount = 1;
+    refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
-    DeleteCriticalSection(&m_refCountAndLock.lock);
 }

@@ -14,12 +14,11 @@ struct WestwoodOnlineUpgradeBrowseRecord;
 struct WestwoodOnlineUpgradeBootstrapServerRecord;
 struct WestwoodOnlineUpgradeSessionRequest;
 
-struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
-    WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
-
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
-    ULONG STDMETHODCALLTYPE AddRef();
-    ULONG STDMETHODCALLTYPE Release();
+struct WestwoodOnlineUpgradeApiEventSink : WestwoodOnlineUpgradeRefCountAndLock, IUnknown {
+    WestwoodOnlineUpgradeApiEventSink();
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
+    virtual ULONG STDMETHODCALLTYPE AddRef();
+    virtual ULONG STDMETHODCALLTYPE Release();
 
     virtual int STDMETHODCALLTYPE
     OnBootstrapServerList(int resultCode, WestwoodOnlineUpgradeBootstrapServerRecord* serverList);
@@ -102,7 +101,7 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
     static __inline HRESULT __stdcall
     QueryInterface(WestwoodOnlineUpgradeApiEventSink* self, REFIID iid, void** outInterface);
     static __inline ULONG __stdcall Release(WestwoodOnlineUpgradeApiEventSink* self);
-    void Destructor();
+    ~WestwoodOnlineUpgradeApiEventSink();
     static int __stdcall OnDownloadReadyResult(
         void* callbackContext,
         int resultCode,
@@ -210,4 +209,3 @@ struct WestwoodOnlineUpgradeApiEventSink : IUnknown {
 };
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeApiEventSink) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeApiEventSink, m_refCountAndLock) == 0x04);

@@ -317,13 +317,6 @@ namespace
      */
     char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
 
-    struct OptCatalogRuntimeInstancePoolSlot {
-        OptCatalogRuntimeInstanceStorage runtime;
-        unsigned char padding[4];
-    };
-
-    RECOIL_STATIC_ASSERT(sizeof(OptCatalogRuntimeInstancePoolSlot) == 0x90);
-
     /**
      * Original inline helper evidence: no standalone retail function.
      * Observed in zWeapon::LoadOptCatalogFromPath and its local loader
@@ -513,9 +506,9 @@ namespace
             return;
         }
 
-        OptCatalogRuntimeInstancePoolSlot* const slots = (OptCatalogRuntimeInstancePoolSlot*)(calloc(
+        OptCatalogRuntimeInstanceStorage* const slots = (OptCatalogRuntimeInstanceStorage*)(calloc(
             g_OptCatalogRuntimeInstanceCount,
-            sizeof(OptCatalogRuntimeInstancePoolSlot)
+            sizeof(OptCatalogRuntimeInstanceStorage)
         ));
         g_OptCatalogRuntimeInstancePool = slots;
         if (slots == 0) {
@@ -523,7 +516,7 @@ namespace
         }
 
         for (int i = 0; i < g_OptCatalogRuntimeInstanceCount; ++i) {
-            OptCatalogRuntimeInstanceStorage* const runtime = &slots[i].runtime;
+            OptCatalogRuntimeInstanceStorage* const runtime = &slots[i];
             runtime->projectileNode = CZObject3D::gwObject3DInit();
             if (runtime->projectileNode != 0) {
                 char name[40];
@@ -1112,15 +1105,15 @@ namespace zWeapon
                 }
             }
 
-            OptCatalogRuntimeInstancePoolSlot* const runtimeSlots = (OptCatalogRuntimeInstancePoolSlot*)(calloc(
+            OptCatalogRuntimeInstanceStorage* const runtimeSlots = (OptCatalogRuntimeInstanceStorage*)(calloc(
                 g_OptCatalogRuntimeInstanceCount,
-                sizeof(OptCatalogRuntimeInstancePoolSlot)
+                sizeof(OptCatalogRuntimeInstanceStorage)
             ));
             g_OptCatalogRuntimeInstancePool = runtimeSlots;
             g_OptCatalogFreeRuntimeInstanceList = 0;
             for (unsigned int runtimeIndex = 0; runtimeIndex < (unsigned int)(g_OptCatalogRuntimeInstanceCount);
                 ++runtimeIndex) {
-                OptCatalogRuntimeInstanceStorage* const runtime = &runtimeSlots[runtimeIndex].runtime;
+                OptCatalogRuntimeInstanceStorage* const runtime = &runtimeSlots[runtimeIndex];
                 runtime->projectileNode = CZObject3D::gwObject3DInit();
 
                 char projectileName[40];

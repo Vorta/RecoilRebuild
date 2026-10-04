@@ -46,18 +46,17 @@ enum WestwoodOnlineUpgradeDownloadState {
 
 ULONG __stdcall WestwoodOnlineUpgradeSharedComAddRef(void* self);
 
-struct WestwoodOnlineUpgradeDownloadEventSink : IUnknown {
-    WestwoodOnlineUpgradeRefCountAndLock m_refCountAndLock;
-
+struct WestwoodOnlineUpgradeDownloadEventSink : WestwoodOnlineUpgradeRefCountAndLock, IUnknown {
+    WestwoodOnlineUpgradeDownloadEventSink();
+    virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
+    virtual ULONG STDMETHODCALLTYPE AddRef();
+    virtual ULONG STDMETHODCALLTYPE Release();
     virtual HRESULT STDMETHODCALLTYPE OnDownloadFinished();
     virtual HRESULT STDMETHODCALLTYPE OnDownloadError(HRESULT result);
     virtual HRESULT STDMETHODCALLTYPE
     OnDownloadProgress(unsigned int bytesRead, unsigned int totalBytes, int unusedArg4, int secondsLeft);
     virtual int CallbackNoOp(void* arg);
     virtual HRESULT STDMETHODCALLTYPE OnStateChanged(WestwoodOnlineUpgradeDownloadState stateCode);
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
-    ULONG STDMETHODCALLTYPE AddRef();
-    ULONG STDMETHODCALLTYPE Release();
     ~WestwoodOnlineUpgradeDownloadEventSink();
     static HRESULT __stdcall CreateInstance(WestwoodOnlineUpgradeDownloadEventSink** outSink);
 };
@@ -81,5 +80,5 @@ RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadReadyEntry, m_fileNam
 RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadReadyEntry, m_descriptor1) == 0x172);
 RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadReadyEntry, m_descriptor2) == 0x193);
 RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadReadyEntry, m_downloadDirectory) == 0x1d4);
+RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadEventSink, refCount) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeDownloadEventSink) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(WestwoodOnlineUpgradeDownloadEventSink, m_refCountAndLock) == 0x04);

@@ -242,15 +242,15 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk()
  */
 void HudUiSaveLoadDialog::InitializeFileEntries()
 {
-    entryWidgets[0].layoutY = 0x2666;
-    entryWidgets[1].layoutY = 0x3fff;
-    entryWidgets[2].layoutY = 0x7fff;
-    entryWidgets[3].layoutY = 0x7fff;
-    entryWidgets[4].layoutY = 0x7fff;
-    entryWidgets[5].layoutY = 29490;
-    entryWidgets[6].layoutY = 22936;
-    entryWidgets[7].layoutY = 0x3fff;
-    entryWidgets[8].layoutY = 0x2666;
+    entryWidgets[0].layoutY = (int)(0.3 * 0x7fff);
+    entryWidgets[1].layoutY = (int)(0.5 * 0x7fff);
+    entryWidgets[2].layoutY = (int)(1.0 * 0x7fff);
+    entryWidgets[3].layoutY = (int)(1.0 * 0x7fff);
+    entryWidgets[4].layoutY = (int)(1.0 * 0x7fff);
+    entryWidgets[5].layoutY = (int)(0.9 * 0x7fff);
+    entryWidgets[6].layoutY = (int)(0.7 * 0x7fff);
+    entryWidgets[7].layoutY = (int)(0.5 * 0x7fff);
+    entryWidgets[8].layoutY = (int)(0.3 * 0x7fff);
 
     RefreshSaveFileList();
 

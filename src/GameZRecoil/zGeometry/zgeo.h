@@ -495,7 +495,7 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     zGeometry_WeilerStatePartial* self
 );
 int __fastcall ValidateXings(int xingCount, zGeometry_WeilerXingPartial* xingArray, int* failedXingIndex);
-int __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints);
+char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints);
 void __fastcall TogglePointAxesForContourSource(zGeometry_WeilerStatePartial* self);
 void __fastcall RecenterPointSetsIfOutOfRange(zGeometry_WeilerStatePartial* self);
 void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial* self);

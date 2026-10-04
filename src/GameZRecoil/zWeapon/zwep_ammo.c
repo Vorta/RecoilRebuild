@@ -692,8 +692,8 @@ namespace OptCatalog
             }
         } else {
             OptCatalogRuntimeInstanceStorage runtimeInstance = { 0 };
-            runtimeInstance.ownerNode = ownerNode;
             runtimeInstance.pos = *pointOrVec3;
+            runtimeInstance.ownerNode = ownerNode;
             runtimeInstance.spawnScale = 1.0f;
             result = ProcessRuntimeInstance(self, &runtimeInstance);
         }
@@ -1979,7 +1979,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpacteventfromruntimestate
      * @recoil-artifact defines .text recoil:function:0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
-     *
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef* and EDX is

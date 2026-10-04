@@ -653,7 +653,7 @@ int HudSensorMapNode::InitDefaults()
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-setcolorrgb
  * @recoil-artifact defines .text recoil:function:0x415b70: HudSensorMapNode::SetColorRgb
- *
+ * @recoil-match byte
  *
  * Purpose: Optionally copy RGB bytes and rebuild the full/half-intensity packed color pair.
  */
@@ -663,16 +663,13 @@ int HudSensorMapNode::SetColorRgb(const unsigned char* rgbOrNull)
         memcpy(colorRgb, rgbOrNull, 3);
     }
 
-    const unsigned short fullColor = (unsigned short)(zVidPackColorRGB(
-        (unsigned char)(colorRgb[0]),
-        (unsigned char)(colorRgb[2]),
-        (unsigned char)(colorRgb[1])
-    ));
-    const unsigned short halfColor = (unsigned short)(zVidPackColorRGB(
+    const int fullColor
+        = zVidPackColorRGB((unsigned char)(colorRgb[0]), (unsigned char)(colorRgb[2]), (unsigned char)(colorRgb[1]));
+    const int halfColor = zVidPackColorRGB(
         (unsigned char)((unsigned char)(colorRgb[0]) >> 1),
         (unsigned char)((unsigned char)(colorRgb[1]) >> 1),
         (unsigned char)((unsigned char)(colorRgb[2]) >> 1)
-    ));
+    );
     packedColor565Pair = ((int)(halfColor) << 16) | fullColor;
     return 1;
 }
@@ -1547,12 +1544,13 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
  */
 int HudSensorTracker::DrawTrackedSaveStateMarker()
 {
-    unsigned short markerColor;
+    int markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
-        zUtil_SaveGameState* const gameState = (zUtil_SaveGameState*)(g_GameStateOrMapTable);
-        markerColor = (unsigned short)(zVidPackColor00RRGGBB(gameState->netPlayerRow->playerColorPackedRgb));
+        markerColor = zVidPackColor00RRGGBB(
+            ((zUtil_SaveGameState*)(g_GameStateOrMapTable))->netPlayerRow->playerColorPackedRgb
+        );
     } else {
-        markerColor = (unsigned short)(zVidPackColorRGB(0, 0xff, 0));
+        markerColor = zVidPackColorRGB(0, 0xff, 0);
     }
 
     zVec3 projectedScreenPoint;

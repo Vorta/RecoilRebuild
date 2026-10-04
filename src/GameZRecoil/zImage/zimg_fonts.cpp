@@ -186,7 +186,7 @@ int __fastcall zImage_Font::IsImageColumnTransparent(zVidImagePartial* image, in
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zimage.zimg-fonts.zimage-font-measurestring
  * @recoil-artifact defines .text recoil:function:0x46f260: zImage_Font::MeasureString.
- * @recoil-match instruction
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zImage\zimg_fonts.cpp.
  * Purpose: measure multiline font text width and total line advance.
@@ -202,8 +202,8 @@ void __fastcall zImage_Font::MeasureString(const char* text, int fontIndex, int*
         return;
     }
 
-    const int lineAdvance = font->image->height;
-    int totalLineAdvance = lineAdvance;
+    zVidImagePartial* const image = font->image;
+    int totalLineAdvance = image->height;
 
     signed char ch;
     while ((ch = *text++) != '\0') {
@@ -216,7 +216,7 @@ void __fastcall zImage_Font::MeasureString(const char* text, int fontIndex, int*
             }
 
             currentLineWidth = 0;
-            totalLineAdvance += lineAdvance;
+            totalLineAdvance += image->height;
         } else {
             int glyphIndex = (int)(ch)-0x21;
             if (glyphIndex < 0 || glyphIndex >= 0x5f) {

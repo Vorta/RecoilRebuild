@@ -12025,7 +12025,7 @@ namespace HudUiListMenuEntry {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.sortrange
  * @recoil-artifact defines .text recoil:function:0x414710: HudUiListMenuEntry::SortRange.
- * @recoil-match byte
+ * @recoil-source previously-byte-matched
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.
@@ -13204,15 +13204,3 @@ void zFMV_Action::RunBlockingTimed()
     while (Update((GetTickCount() * 0.001f) - startSec) != 0) { }
     End();
 }
-
-/**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and HudUiListMenuEntry::SortRange (0x414710) orders its
- * partition-length evaluation by that counter. These declarations are never
- * referenced and emit no code, data or symbols. User-authorized exception:
- * match-proofs.md "0x414710 VC5 ID-counter alignment exception"; evidence in
- * build/diagnostics/sortrange-id-counter-20260926.
- * Purpose: align the ID counter so SortRange's unchanged source emits the retail order.
- */
-extern int g_HudSortRangeIdCounterAlignment0;
-extern int g_HudSortRangeIdCounterAlignment1;

@@ -1105,13 +1105,13 @@ int __fastcall TraceUpwardHitFromNodeOrPos(
     int* outHit
 );
 void* __fastcall FindNodeUserDataRecursive(CZNodePartial* node);
-int __fastcall SpawnRuntimeInstanceAt(int effectIndex, const zVec3* worldPos);
+void __fastcall SpawnRuntimeInstanceAt(int effectIndex, const zVec3* worldPos);
 int __fastcall ActivateRuntimeEntryAtPosition(zEffect_RuntimeEntry* runtimeEntry, const zVec3* worldPos);
 float __fastcall ComputeDistanceSqToListener(const zVec3* worldPos);
 zEffect_RuntimeEntry* __fastcall AcquireRuntimeEntryByIndex(int effectIndex);
 zEffect_RuntimeEntry* __fastcall CloneRuntimeEntryFromTemplate(int effectIndex);
 int __fastcall FindTemplateIndexByName(const char* name);
-int __fastcall RuntimeNodeActionCallback(CZNodePartial* node);
+void __fastcall RuntimeNodeActionCallback(CZNodePartial* node);
 int __fastcall HandleEffectTemplateOffsetEvent(zEffectAnimEntry* self, zEffectAnimRefOffsetEvent* event);
 float __fastcall UpdateBeamNodeBetweenPoints(CZNodePartial* obj3d, const zVec3* srcPos, const zVec3* destPos);
 float __fastcall

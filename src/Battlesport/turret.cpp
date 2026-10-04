@@ -102,7 +102,7 @@ namespace zTurret_System {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-initdefaults
  * @recoil-artifact defines .text recoil:function:0x436630: zTurret_Runtime::InitDefaults.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Applies the recovered default runtime state before turret field parsing.
@@ -159,7 +159,9 @@ zTurret_Runtime* zTurret_Runtime::InitDefaults()
     for (int i = 0; i < 8; ++i) {
         targetTypes[i] = 0;
     }
-    memset(unknown_174, 0, sizeof(unknown_174));
+    unknown_174[0] = 0;
+    unknown_174[1] = 0;
+    unknown_174[2] = 0;
     weaponCatalogEntry = 0;
     isFiring = 0;
     return this;

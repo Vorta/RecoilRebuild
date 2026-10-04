@@ -1048,7 +1048,9 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-constraintounitdistancefrom
  * @recoil-artifact defines .text recoil:function:0x424c90: Player::ConstrainToUnitDistanceFrom
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: constrain a nearby position to the contact resolve distance around
@@ -1062,16 +1064,12 @@ namespace Player {
 void __fastcall ConstrainToUnitDistanceFrom(zVec3* pos, const zVec3* center)
 {
     zVec3 delta;
-    delta.x = pos->x - center->x;
-    delta.y = pos->y - center->y;
-    delta.z = pos->z - center->z;
+    zMath::Vec3Subtract(pos, center, &delta);
     if (Vec3FastNormalize(&delta) == 0) {
         return;
     }
 
-    pos->x = center->x + delta.x;
-    pos->y = center->y + delta.y;
-    pos->z = center->z + delta.z;
+    zMath::Vec3Add(center, &delta, pos);
 }
 } // namespace Player
 namespace Player {

@@ -1442,16 +1442,15 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.spawnruntimeinstanceat
      * @recoil-artifact defines .text recoil:function:0x461f00: zEffect::SpawnRuntimeInstanceAt.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: acquire and activate a runtime effect entry at a world position,
      * then install its node action callback.
      */
-    int __fastcall SpawnRuntimeInstanceAt(int effectIndex, const zVec3* worldPos)
+    void __fastcall SpawnRuntimeInstanceAt(int effectIndex, const zVec3* worldPos)
     {
-        const int initialized = g_zEffect_RuntimeManager.initialized;
-        if (initialized != 0 && effectIndex != -1) {
+        if (g_zEffect_RuntimeManager.initialized != 0 && effectIndex != -1) {
             zEffect_RuntimeEntry* const entry = AcquireRuntimeEntryByIndex(effectIndex);
             if (entry != 0) {
                 ActivateRuntimeEntryAtPosition(entry, worldPos);
@@ -1460,8 +1459,6 @@ namespace zEffect
                 CZClass::gwNodeSetActionCallback(entry->effectNode, (void*)(&RuntimeNodeActionCallback));
             }
         }
-
-        return initialized;
     }
 
     /**
@@ -1601,47 +1598,46 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.runtimenodeactioncallback
      * @recoil-artifact defines .text recoil:function:0x4621b0: zEffect::RuntimeNodeActionCallback.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: advance runtime effect fade timing and recycle the effect entry
      * after the instance has completed.
      */
-    int __fastcall RuntimeNodeActionCallback(CZNodePartial * node)
+    void __fastcall RuntimeNodeActionCallback(CZNodePartial * node)
     {
         if ((node->flags & 0x04) == 0) {
-            return 0;
+            return;
         }
 
         zEffect_RuntimeEntry* const runtimeEntry = (zEffect_RuntimeEntry*)(node->callbackContext);
         runtimeEntry->elapsedSec += g_FrameDeltaTimeSec;
 
         if (runtimeEntry->elapsedSec < runtimeEntry->fadeInTimeSec) {
-            runtimeEntry->currentScale += runtimeEntry->fadeInScaleRate * g_FrameDeltaTimeSec;
-            const float currentScale = runtimeEntry->currentScale;
-            return CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+            const float currentScale = runtimeEntry->currentScale + runtimeEntry->fadeInScaleRate * g_FrameDeltaTimeSec;
+            runtimeEntry->currentScale = currentScale;
+            CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+            return;
         }
 
         if (runtimeEntry->elapsedSec < runtimeEntry->fadeOutStartTimeSec) {
             runtimeEntry->currentScale -= runtimeEntry->fadeOutScaleRate * g_FrameDeltaTimeSec;
-            if (runtimeEntry->currentScale < 0.01f) {
+            if (runtimeEntry->currentScale < 0.01) {
                 runtimeEntry->currentScale = 0.01f;
             }
 
             const float currentScale = runtimeEntry->currentScale;
-            return CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+            CZObject3D::gwObject3DSetScale(node, currentScale, currentScale, currentScale);
+            return;
         }
 
         node->callbackContext = 0;
         zArchiveListAddTail(g_zEffect_RuntimeManager.freeList, runtimeEntry);
         CZClass::gwNodeSetActionCallback(node, 0);
         CZClass::gwNodeSetActive(node, 0);
-        const int parentCount = node->listCountA;
-        if (parentCount != 0) {
-            return CZClass::RemoveChild(g_zEffect_RuntimeManager.parentNode, node);
+        if (node->listCountA != 0) {
+            CZClass::RemoveChild(g_zEffect_RuntimeManager.parentNode, node);
         }
-
-        return parentCount;
     }
 
     /**

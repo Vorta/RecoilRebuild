@@ -96,6 +96,7 @@ struct OptCatalogRuntimeInstanceStorage {
     float spawnScale;
     void* saveState;
     void* updateCallback;
+    unsigned char unknown_8c[0x04];
 };
 
 struct OptCatalogDamageMaskSurface {
@@ -122,6 +123,7 @@ struct OptCatalogSurfaceMaterialRef {
         int impactSlot;
         CZNodePartial* impactOwnerNode;
     };
+    unsigned char unknown_24[0x04];
 };
 
 struct OptCatalogHitEventPartial {
@@ -458,7 +460,7 @@ RECOIL_STATIC_ASSERT(offsetof(OptCatalogFxSpec, soundSamples) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogFxSpec, bounceSoundCount) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogFxSpec, bounceSoundSamples) == 0x34);
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogDamageFeedbackVariant) == 0x08);
-RECOIL_STATIC_ASSERT(sizeof(OptCatalogRuntimeInstanceStorage) == 0x8c);
+RECOIL_STATIC_ASSERT(sizeof(OptCatalogRuntimeInstanceStorage) == 0x90);
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogTrailNodeSlot) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogTrailNodeSlot, pos) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogTrailNodeSlot, dir) == 0x10);

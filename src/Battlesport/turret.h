@@ -73,7 +73,7 @@ struct zTurret_Runtime {
     float activateOnHitDamage;
     float activateOnHitTimeout;
     int intersectBvolEnabled;
-    unsigned char unknown_174[0x0c];
+    int unknown_174[3];
 
     zTurret_Runtime* InitDefaults();
     void InitFromReaderNode(
