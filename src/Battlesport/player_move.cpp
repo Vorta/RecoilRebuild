@@ -1479,6 +1479,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
  *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
@@ -1507,15 +1508,9 @@ void __fastcall UpdateSubVerticalDamping(zUtil_SaveGameState* saveState)
     }
 
     if (playerState->throttleInputCopy == 0.0f) {
-        const float dampingRate = g_Time_AccumulatedTimeSec < playerState->primaryGunGateUntilTime ? 2.0f : 10.0f;
-        float dampingScale = dampingRate * g_Player_DeltaTime;
-        dampingScale = -dampingScale;
-        int dampingBits = (int)(dampingScale * 12102200.0f);
-        const int dampingFloatBits = dampingBits + 0x3f800000;
-
-        float dampingFactor = 0.0f;
-        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
-        playerState->localVel.y *= dampingFactor;
+        playerState->localVel.y *= zMath::FastExp(
+            -(g_Player_DeltaTime * (g_Time_AccumulatedTimeSec < playerState->primaryGunGateUntilTime ? 2.0f : 10.0f))
+        );
     }
 }
 } // namespace Player
@@ -1918,6 +1913,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
@@ -1934,31 +1930,24 @@ void __fastcall UpdateAutoTurnAndSteerFromTarget(zUtil_SaveGameState* saveState)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
 
-    if (playerState->steeringInput == 0.0f) {
-        float dampingScale = masterModalData->yawDamping * g_Player_DeltaTime;
-        dampingScale = -dampingScale;
-        int dampingBits = (int)(dampingScale * 12102200.0f);
-        const int dampingFloatBits = dampingBits + 0x3f800000;
+    if (playerState->steeringInput != 0.0f) {
+        if ((playerState->steeringInputCopy > 0.0f && playerState->angVelYaw < 0.0f)
+            || (playerState->steeringInputCopy < 0.0f && playerState->angVelYaw > 0.0f)) {
+            playerState->angVelYaw = 0.0f;
+        }
 
-        float dampingFactor = 0.0f;
-        memcpy(&dampingFactor, &dampingFloatBits, sizeof(dampingFactor));
-        playerState->angVelYaw *= dampingFactor;
-        return;
-    }
+        const float newYawVelocity
+            = masterModalData->yawAccel * g_Player_DeltaTime * playerState->steeringInputCopy + playerState->angVelYaw;
+        playerState->angVelYaw = newYawVelocity;
 
-    if ((playerState->steeringInputCopy > 0.0f && playerState->angVelYaw < 0.0f)
-        || (playerState->steeringInputCopy < 0.0f && playerState->angVelYaw > 0.0f)) {
-        playerState->angVelYaw = 0.0f;
-    }
-
-    const float newYawVelocity
-        = masterModalData->yawAccel * g_Player_DeltaTime * playerState->steeringInputCopy + playerState->angVelYaw;
-    playerState->angVelYaw = newYawVelocity;
-
-    if (newYawVelocity > playerState->yawVelocityLimit) {
-        playerState->angVelYaw = playerState->yawVelocityLimit;
-    } else if (newYawVelocity < -playerState->yawVelocityLimit) {
-        playerState->angVelYaw = -playerState->yawVelocityLimit;
+        const float yawVelocityLimit = playerState->yawVelocityLimit;
+        if (newYawVelocity > yawVelocityLimit) {
+            playerState->angVelYaw = yawVelocityLimit;
+        } else if (newYawVelocity < -yawVelocityLimit) {
+            playerState->angVelYaw = -yawVelocityLimit;
+        }
+    } else {
+        playerState->angVelYaw *= zMath::FastExp(-(masterModalData->yawDamping * g_Player_DeltaTime));
     }
 }
 } // namespace Player

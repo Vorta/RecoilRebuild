@@ -1554,7 +1554,8 @@ namespace zMath
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformnormalbatch
  * @recoil-artifact defines .text recoil:function:0x474710: zMathMatTransformNormalBatch
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
+ * @recoil-match byte
  *
  * Purpose: transforms normal batches through the current matrix rotation, or
  * copies the input normals unchanged when the current matrix is identity.
@@ -1566,16 +1567,15 @@ void __fastcall zMathMatTransformNormalBatch(const zVec3* normals, zVec3* outNor
         return;
     }
 
-    if (count == 0) {
-        return;
-    }
-
-    const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-    for (int i = 0; i < count; ++i) {
-        const zVec3 normal = normals[i];
-        outNormals[i].x = normal.x * matrix->xx + normal.y * matrix->yx + normal.z * matrix->zx;
-        outNormals[i].z = normal.x * matrix->xz + normal.y * matrix->yz + normal.z * matrix->zz;
-        outNormals[i].y = normal.x * matrix->xy + normal.y * matrix->yy + normal.z * matrix->zy;
+    // Retail uses a post-decrement nonzero test, not a signed-positive test.
+    // This follows the retail loop and does not validate count.
+    while (count--) {
+        const zMat4x3* const transformMatrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
+        zVec3* const transformDest = outNormals;
+        const zVec3* const transformSource = normals;
+        normals++;
+        outNormals++;
+        ZMTH_VECTOR_TRANSFORM_DIRECTION_ISLAND(transformMatrix, transformDest, transformSource);
     }
 }
 
@@ -1941,32 +1941,43 @@ namespace zMath
     }
 } // namespace zMath
 
-#pragma optimize("y", off)
+namespace zMath
+{
+    /**
+     * Purpose: Inline-function spelling of the reviewed vector-cross island for
+     * this unit's consumers. VC5 binds simple variable arguments to their own
+     * homes and address arguments to inline-parameter homes, which the capturing
+     * ZMTH_VECTOR_CROSS cannot express. Original header ownership is unrecovered.
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x475070's cross-product island bound to the caller's homes.
+     */
+    inline void Vec3Cross(const zVec3* left, const zVec3* right, zVec3* dest)
+    {
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        ZMTH_VECTOR_CROSS_BODY(left, right, dest);
+#else
+        ZMTH_VECTOR_CROSS(left, right, dest);
+#endif
+    }
+} // namespace zMath
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-trianglenormal
  * @recoil-artifact defines .text recoil:function:0x475070: zMathVec3TriangleNormal.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-match byte
  *
  * Purpose: Computes a normalized triangle normal from the triangle edge cross product.
  */
 void __fastcall zMathVec3TriangleNormal(const zVec3* p0, const zVec3* p1, const zVec3* p2, zVec3* outNormal)
 {
-    zVec3 edge01;
-    edge01.x = p1->x - p0->x;
-    edge01.y = p1->y - p0->y;
-    edge01.z = p1->z - p0->z;
-
-    zVec3 edge02;
-    edge02.x = p2->x - p0->x;
-    edge02.y = p2->y - p0->y;
-    edge02.z = p2->z - p0->z;
-
-    outNormal->x = edge01.y * edge02.z - edge01.z * edge02.y;
-    outNormal->y = edge01.z * edge02.x - edge01.x * edge02.z;
-    outNormal->z = edge01.x * edge02.y - edge01.y * edge02.x;
+    zVec3 edges[2];
+    zMath::Vec3Subtract(p1, p0, &edges[0]);
+    zMath::Vec3Subtract(p2, p0, &edges[1]);
+    zMath::Vec3Cross(&edges[0], &edges[1], outNormal);
     zMath::Vec3Normalize(outNormal);
 }
-#pragma optimize("", on)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-solvelineargradient2d

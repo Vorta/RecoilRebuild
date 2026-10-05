@@ -124,7 +124,7 @@ namespace zModel_Light
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.point-in-polygon-test-radius-xz.fast-sqrt-estimate recoil:function:0x487c50
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.point-in-polygon-test-radius-xz.fast-sqrt-estimate
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     *
+     * @recoil-match byte
      *
      * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
      * [0x487d4b,0x487d58).

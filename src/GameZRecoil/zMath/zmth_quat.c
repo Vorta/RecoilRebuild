@@ -4,6 +4,7 @@
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromeuler
  * @recoil-artifact defines .text recoil:function:0x4757c0: zMathQuatFromEuler
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  *
  *
  * Purpose: converts three Euler rotation angles into a quaternion.
@@ -12,22 +13,25 @@
  */
 void __fastcall zMathQuatFromEuler(zQuat* outQuat, float angle0, float angle1, float angle2)
 {
-    const float sin0 = sin(angle0 * 0.5f);
-    const float cos0 = cos(angle0 * 0.5f);
-    const float sin1 = sin(angle1 * 0.5f);
-    const float cos1 = cos(angle1 * 0.5f);
-    const float sin2 = sin(angle2 * 0.5f);
-    const float cos2 = cos(angle2 * 0.5f);
+    float sy;
+    float cy;
+    float sp;
+    float cp;
+    float sr;
+    float cr;
+    zMath::SinCos(angle0 * 0.5f, &sy, &cy);
+    zMath::SinCos(angle1 * 0.5f, &sp, &cp);
 
-    const float cos1Cos0 = cos1 * cos0;
-    const float sin1Cos0 = sin1 * cos0;
-    const float cos1Sin0 = cos1 * sin0;
-    const float sin1Sin0 = sin1 * sin0;
+    const float cpcy = cp * cy;
+    const float spcy = sp * cy;
+    const float cpsy = cp * sy;
+    const float spsy = sp * sy;
 
-    outQuat->w = sin1Sin0 * sin2 + cos1Cos0 * cos2;
-    outQuat->x = cos1Sin0 * sin2 + sin1Cos0 * cos2;
-    outQuat->y = cos1Sin0 * cos2 - sin1Cos0 * sin2;
-    outQuat->z = cos1Cos0 * sin2 - sin1Sin0 * cos2;
+    zMath::SinCos(angle2 * 0.5f, &sr, &cr);
+    outQuat->w = spsy * sr + cpcy * cr;
+    outQuat->x = cpsy * sr + spcy * cr;
+    outQuat->y = cpsy * cr - spcy * sr;
+    outQuat->z = cpcy * sr - spsy * cr;
 }
 
 /**

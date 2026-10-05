@@ -861,8 +861,8 @@ AdjustSurfacesIfEnabled(zVidRect32* srcRect, zVidRect32* dstRect, int waitForPre
 void __fastcall BindRendererDispatch(int rendererType, int fullscreenOption);
 void __fastcall CommitHwApiDeviceSelection(int hwApiIndex);
 int __fastcall SelectHwApiDeviceOrFallback(int hwApiIndex);
-int __cdecl ReturnSuccessStub();
-int __cdecl ModuleInit();
+int __cdecl ReturnSuccessStub() throw();
+int __cdecl ModuleInit() throw();
 int __cdecl ShutdownVideoSystem();
 int __fastcall UpdateCachedClientRectScreenCoords();
 void __cdecl AtExitReleaseAllInterfacesAndSurfaces();

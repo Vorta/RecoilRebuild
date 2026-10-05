@@ -1503,7 +1503,9 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.computedistancesqtolistener
      * @recoil-artifact defines .text recoil:function:0x462050: zEffect::ComputeDistanceSqToListener.
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\eff_runtime.c.
      * Purpose: compute squared distance from the runtime listener node to a world
@@ -1511,13 +1513,12 @@ namespace zEffect
      */
     float __fastcall ComputeDistanceSqToListener(const zVec3* worldPos)
     {
-        zVec3 listenerPosition = { 0 };
+        zVec3 listenerPosition;
+        float distanceSq;
         CZNode::GetWorldPosition(g_zEffect_RuntimeManager.listenerNode, &listenerPosition);
-        listenerPosition.x -= worldPos->x;
-        listenerPosition.y -= worldPos->y;
-        listenerPosition.z -= worldPos->z;
-        return listenerPosition.x * listenerPosition.x + listenerPosition.y * listenerPosition.y
-            + listenerPosition.z * listenerPosition.z;
+        zMath::Vec3Subtract(&listenerPosition, worldPos, &listenerPosition);
+        ZMTH_VECTOR_LENGTH_SQ(distanceSq, &listenerPosition);
+        return distanceSq;
     }
 
     /**

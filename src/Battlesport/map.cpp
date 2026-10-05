@@ -992,48 +992,50 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
- *
+ * @recoil-match byte
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */
 int __fastcall HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd)
 {
-    zVec3 edgeEnd, edgeStart;
+    // edge[1] is the edge start and edge[0] its end, as retail lays out the pair.
+    zVec3 edge[2];
 
     switch (edgeCode) {
     case 8:
-        edgeStart.x = (float)(left);
-        edgeStart.y = (float)(top);
-        edgeEnd.x = (float)(right);
-        edgeEnd.y = (float)(top);
+        edge[1].x = (float)(left);
+        edge[1].y = (float)(top);
+        edge[0].x = (float)(right);
+        edge[0].y = (float)(top);
         break;
     case 4:
-        edgeStart.x = (float)(left);
-        edgeStart.y = (float)(bottom);
-        edgeEnd.x = (float)(right);
-        edgeEnd.y = (float)(bottom);
+        edge[1].x = (float)(left);
+        edge[1].y = (float)(bottom);
+        edge[0].x = (float)(right);
+        edge[0].y = (float)(bottom);
         break;
     case 1:
-        edgeStart.x = (float)(left);
-        edgeStart.y = (float)(top);
-        edgeEnd.x = (float)(left);
-        edgeEnd.y = (float)(bottom);
+        edge[1].x = (float)(left);
+        edge[1].y = (float)(top);
+        edge[0].x = (float)(left);
+        edge[0].y = (float)(bottom);
         break;
     case 2:
-        edgeStart.x = (float)(right);
-        edgeStart.y = (float)(top);
-        edgeEnd.x = (float)(right);
-        edgeEnd.y = (float)(bottom);
+        edge[1].x = (float)(right);
+        edge[1].y = (float)(top);
+        edge[0].x = (float)(right);
+        edge[0].y = (float)(bottom);
         break;
     }
 
-    if (HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart)
-                * HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd)
-            <= 0
-        && HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart)
-                * HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd)
+    if (HudGeom2D::ClassifyPointAgainstSegment(&edge[1], &edge[0], segmentStart)
+            * HudGeom2D::ClassifyPointAgainstSegment(&edge[1], &edge[0], segmentEnd)
+        <= 0) {
+        if (HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edge[0])
+                * HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edge[1])
             <= 0) {
-        return edgeCode;
+            return edgeCode;
+        }
     }
 
     return 0;

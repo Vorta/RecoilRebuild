@@ -441,7 +441,7 @@ namespace zGeometry_Vec3Array {
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgeometry.compute-newell-plane.fast-sqrt-estimate recoil:function:0x46c3a0
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgeometry.compute-newell-plane.fast-sqrt-estimate
- *
+ * @recoil-match byte
  *
  * Raw assembly: the reviewed full-XYZ dot island for the plane offset and one
  * in-body 13-byte fast-sqrt estimate island at retail [0x46c4b5,0x46c4c2);
@@ -561,21 +561,43 @@ void __fastcall ReversePoints(int pointCount, zVec3* points)
 }
 } // namespace zGeometry_Vec3Array
 
+namespace zMath {
+/**
+ * Purpose: Inline-function spelling of the reviewed vector-cross island for
+ * this unit's consumers. VC5 binds simple variable arguments to their own
+ * homes and address arguments to inline-parameter homes, which the capturing
+ * ZMTH_VECTOR_CROSS cannot express. Original header ownership is unrecovered.
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x46c620's cross-product island bound to the caller's homes.
+ */
+inline void Vec3Cross(const zVec3* left, const zVec3* right, zVec3* dest)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    ZMTH_VECTOR_CROSS_BODY(left, right, dest);
+#else
+    ZMTH_VECTOR_CROSS(left, right, dest);
+#endif
+}
+} // namespace zMath
+
 namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-ensurepositivecrossz
  * @recoil-artifact defines .text recoil:function:0x46c620: zGeometry_Vec3Array::EnsurePositiveCrossZ
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-match byte
  *
  * Purpose: Ensure the first two polygon edges produce a positive Z cross.
  */
 int __fastcall EnsurePositiveCrossZ(int pointCount, zVec3* points, int allowReverse)
 {
-    const zVec3 edge0 = { points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z };
-    const zVec3 edge1 = { points[2].x - points[1].x, points[2].y - points[1].y, points[2].z - points[1].z };
-    const zVec3 cross = { edge0.y * edge1.z - edge0.z * edge1.y,
-        edge0.z * edge1.x - edge0.x * edge1.z,
-        edge0.x * edge1.y - edge0.y * edge1.x };
+    zVec3 edge0;
+    zVec3 edge1;
+    zVec3 cross;
+    zMath::Vec3Subtract(&points[1], &points[0], &edge0);
+    zMath::Vec3Subtract(&points[2], &points[1], &edge1);
+    zMath::Vec3Cross(&edge0, &edge1, &cross);
 
     if (!(cross.z > 0.0f)) {
         if (allowReverse == 0) {

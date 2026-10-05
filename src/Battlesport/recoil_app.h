@@ -294,7 +294,7 @@ public:
 
     RecoilApp();
     virtual ~RecoilApp();
-    RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char* exePath);
+    RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char* exePath) throw();
     RECOIL_NO_GS static void __fastcall FatalErrorAndExit(int errorCode);
 
     RECOIL_NO_GS virtual int InitInstance();

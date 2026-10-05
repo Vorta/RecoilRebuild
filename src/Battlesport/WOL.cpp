@@ -9,6 +9,7 @@
  * compiler-generated ordinary destructor lifecycle
  * contribution for WestwoodOnlineUpgradeDialog.
  */
+#include "recoil/Mfc42Abi.h"
 #include "Battlesport/wol_api.h"
 
 #include "Battlesport/recoil_app.h"
@@ -2955,12 +2956,10 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     int
 )
 {
-    int launched = 0;
+    int launched;
     int showConnectionFailureMessage = 0;
     char hostAddressText[20];
     zNetworkSessionDescStatusFields statusFields;
-    char failureCaptionText[128];
-    char failureMessageText[128];
     WestwoodOnlineUpgradeSessionRequest* selectedSessionNode;
     IWestwoodOnlineUpgradeProviderApiCallbacks* api;
 
@@ -2969,6 +2968,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
     }
 
     selectedSessionNode = selectedSessionList;
+    launched = 0;
 
     ((CWnd*)g_pWestwoodOnlineUpgradeDialog)->UpdateData(TRUE);
     while (selectedSessionNode != 0 && (selectedSessionNode->m_rowFlags & kSessionRequestSkipDetailsFlag) == 0) {
@@ -3025,19 +3025,21 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession(
         } else {
             showConnectionFailureMessage = 1;
         }
+    }
 
-        if (launched != 0) {
-            union {
-                float value;
-                int raw;
-            } timerSeconds = { (float)(unsigned int)statusFields.valueOrTime * 60.0f };
-            GameNet::SetStatusBitsFromFlags(statusFields.statusFlags);
-            g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(timerSeconds.value, statusFields.auxParam);
-            g_WestwoodOnlineUpgradeSelectedMissionIndex = statusFields.eventCode;
-        }
+    if (launched != 0) {
+        GameNet::SetStatusBitsFromFlags(statusFields.statusFlags);
+        g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(
+            (float)(unsigned int)statusFields.valueOrTime * 60.0f,
+            statusFields.auxParam
+        );
+        g_WestwoodOnlineUpgradeSelectedMissionIndex = statusFields.eventCode;
     }
 
     if (showConnectionFailureMessage != 0) {
+        char failureCaptionText[128];
+        char failureMessageText[128];
+
         strcpy(failureCaptionText, zLoc::GetMessageString(kApiStatusFailureCaptionMessageId));
         strcpy(failureMessageText, zLoc::GetMessageString(kApiStatusFailureDefaultMessageId));
         MessageBeep(MB_ICONHAND);
@@ -3926,7 +3928,7 @@ BOOL WestwoodOnlineUpgradeConfigDialog::OnInitDialog()
     }
     m_selectedProfileIndex = 0;
     m_profileComboEditDirty = 0;
-    ::SendMessageA(m_profileCombo.m_hWnd, CB_SETCURSEL, 0, 0);
+    m_profileCombo.SetCurSel(0);
     ((CWnd*)&m_connectStringEdit)->SetWindowTextA((const char*)m_profileConnectStrings[0]);
     return TRUE;
 }

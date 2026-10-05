@@ -908,7 +908,7 @@ namespace CZWorld
      * @recoil-artifact defines .text recoil:function:0x450c60: CZWorld::gwWorldSetVirtualAreaPartition.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.gw-world-set-virtual-area-partition.fast-sqrt-estimate recoil:function:0x450c60
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.gw-world-set-virtual-area-partition.fast-sqrt-estimate
-     *
+     * @recoil-match byte
      *
      * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
      * [0x450ce0,0x450ced).

@@ -1953,7 +1953,7 @@ namespace zDi
      * @recoil-artifact defines .text recoil:function:0x483ad0: zDi::RebuildBounds
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.rebuild-bounds.fast-sqrt-estimate recoil:function:0x483ad0
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.rebuild-bounds.fast-sqrt-estimate
-     *
+     * @recoil-match byte
      *
      * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
      * [0x483b5b,0x483b68).

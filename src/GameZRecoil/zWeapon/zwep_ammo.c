@@ -30,6 +30,88 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace zMath
+{
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     *
+     * Purpose: Subtract all three components before storing x/y/z as binary32.
+     * Reconstruction: zwep_ammo.c-resident copy of the zmth.h inline helper,
+     * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
+     * at 0x4b0ba0 and 0x4b0ca0 with simple identifier arguments bound
+     * directly and other arguments given homes.
+     * Raw assembly: identical body to the reviewed zmth.h Vec3Subtract island.
+     * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
+     * consumer ranges in 0x4b0ba0 and 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x4b0ba0 and 0x4b0ca0.
+     */
+    inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
+    {
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ebx, left
+        mov ecx, right
+        mov edx, dest
+        fld dword ptr [ebx]zVec3.x
+        fsub dword ptr [ecx]zVec3.x
+        fld dword ptr [ebx]zVec3.y
+        fsub dword ptr [ecx]zVec3.y
+        fld dword ptr [ebx]zVec3.z
+        fsub dword ptr [ecx]zVec3.z
+        fxch st(2)
+        fstp dword ptr [edx]zVec3.x
+        fstp dword ptr [edx]zVec3.y
+        fstp dword ptr [edx]zVec3.z
+        }
+#else
+        const float x = left->x - right->x;
+        const float y = left->y - right->y;
+        const float z = left->z - right->z;
+        dest->x = x;
+        dest->y = y;
+        dest->z = z;
+#endif
+    }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-dot
+     *
+     * Purpose: return the full XYZ dot product as binary32.
+     * Reconstruction: inline-function form of the reviewed ZMTH_VECTOR_DOT
+     * ECX/EDX x87 core; retail 0x4b0ca0 binds the simple left pointer
+     * directly, gives &delta its own home and stores the result to a binary32
+     * home before the integer copy. zwep_ammo.c-resident inline definition.
+     * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
+     * consumer range [0x4b0d5c,0x4b0d7b) in 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x4b0ca0.
+     */
+    inline float Vec3Dot(const zVec3* left, const zVec3* right)
+    {
+        float dot;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, left
+        mov edx, right
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [edx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [edx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [edx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fstp dot
+        }
+#else
+        dot = left->x * right->x + left->y * right->y + left->z * right->z;
+#endif
+        return dot;
+    }
+} // namespace zMath
+
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-allocruntimegatecallback
@@ -2122,6 +2204,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-canspawnthroughray
      * @recoil-artifact defines .text recoil:function:0x4b0ba0: OptCatalog::CanSpawnThroughRay
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
      *
      *
      * Purpose: test whether a trail segment can continue through a ray hit and
@@ -2139,40 +2222,38 @@ namespace OptCatalog
     {
         const float rayLength = zMath::Vec3DeltaLength(&hit->pos, rayStart);
         *rayLengthOut = rayLength;
-        if (rayLength == 0.0f) {
-            return 2;
-        }
+        if (rayLength != 0.0f) {
+            const unsigned int flags = self->flags;
+            if ((flags & (1u << 19)) == 0) {
+                CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
+                if (hitSlot->damageHandler != 0) {
+                    if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
+                        g_OptCatalog_CapturedDamageSourcePos = *rayStart;
+                        g_OptCatalog_CapturedDamageHitPos = *rayEnd;
+                    }
 
-        const unsigned int flags = self->flags;
-        if ((flags & (1u << 19)) == 0) {
-            CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
-            if (hitSlot->damageHandler != 0) {
-                if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
-                    g_OptCatalog_CapturedDamageSourcePos = *rayStart;
-                    g_OptCatalog_CapturedDamageHitPos = *rayEnd;
+                    return 0;
                 }
+            }
 
-                return 0;
+            if ((flags & 1u) != 0) {
+                zVec3 incident;
+                zMath::Vec3Subtract(rayEnd, rayStart, &incident);
+                zMath::Vec3Reflect((zVec3*)(void*)(hit), &incident, reflectedDirOut);
+                *reflectedLengthOut = zMath::Vec3Normalize(reflectedDirOut);
+                return 1;
             }
         }
 
-        if ((flags & 1u) == 0) {
-            return 2;
-        }
-
-        zVec3 incident;
-        incident.x = rayEnd->x - rayStart->x;
-        incident.y = rayEnd->y - rayStart->y;
-        incident.z = rayEnd->z - rayStart->z;
-        zMath::Vec3Reflect((zVec3*)(void*)(hit), &incident, reflectedDirOut);
-        *reflectedLengthOut = zMath::Vec3Normalize(reflectedDirOut);
-        return 1;
+        return 2;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-reflectandsortimpacttracelist
      * @recoil-artifact defines .text recoil:function:0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-dot
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: choose the farthest pending trail target direction and sort
@@ -2187,11 +2268,13 @@ namespace OptCatalog
         zVec3* farthestTarget = directionOut;
         float farthestDistance = 0.0f;
         for (int projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr; ++projectionIndex) {
-            zVec3* const targetPos = runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
-            const float distance = zMath::Vec3DeltaLength(runtime->spawnPos, targetPos);
+            const float distance = zMath::Vec3DeltaLength(
+                runtime->spawnPos,
+                runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos
+            );
             if (distance > farthestDistance) {
                 farthestDistance = distance;
-                farthestTarget = targetPos;
+                farthestTarget = runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
             }
         }
 
@@ -2199,13 +2282,13 @@ namespace OptCatalog
 
         for (int targetProjectionIndex = 0; targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
             ++targetProjectionIndex) {
-            zVec3* const targetPos = runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos;
             zVec3 delta;
-            delta.x = targetPos->x - runtime->spawnPos->x;
-            delta.y = targetPos->y - runtime->spawnPos->y;
-            delta.z = targetPos->z - runtime->spawnPos->z;
-            targetProjectionScratch[targetProjectionIndex]
-                = directionOut->x * delta.x + directionOut->y * delta.y + directionOut->z * delta.z;
+            zMath::Vec3Subtract(
+                runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos,
+                runtime->spawnPos,
+                &delta
+            );
+            targetProjectionScratch[targetProjectionIndex] = zMath::Vec3Dot(directionOut, &delta);
         }
 
         int swapped;

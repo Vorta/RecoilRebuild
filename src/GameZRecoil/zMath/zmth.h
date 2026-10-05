@@ -352,43 +352,69 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * All input reads precede the z/y/x result stores; x87 entry and exit are empty.
  * The spelling, capture order and original header ownership remain inferred.
  */
-#define ZMTH_VECTOR_TRANSFORM_DIRECTION(matrix, destination, vector)                                                   \
-    do {                                                                                                               \
-        const zMat4x3* const transformMatrix = (matrix);                                                               \
-        zVec3* const transformDest = (destination);                                                                    \
-        const zVec3* const transformSource = (vector);                                                                 \
-        __asm mov eax, transformSource __asm mov ebx, transformMatrix __asm mov edx,                                   \
-            transformDest __asm fld dword ptr[eax] zVec3.x __asm fmul dword ptr[ebx] zMat4x3                           \
-                .xx __asm fld dword ptr[eax] zVec3.x __asm fmul dword ptr[ebx] zMat4x3.xy __asm fld dword              \
-                    ptr[eax] zVec3.x __asm fmul dword ptr[ebx] zMat4x3.xz __asm fld dword                              \
-                        ptr[eax] zVec3.y __asm fmul dword ptr[ebx] zMat4x3.yx __asm fld dword                          \
-                            ptr[eax] zVec3.y __asm fmul dword ptr[ebx] zMat4x3.yy __asm fld dword ptr[eax] zVec3       \
-                .y __asm fmul dword ptr[ebx] zMat4x3.yz __asm fxch st(2) __asm faddp st(5),                            \
-            st __asm faddp st(3), st __asm faddp st(1),                                                                \
-            st __asm fld dword ptr[eax] zVec3.z __asm fmul dword ptr[ebx] zMat4x3.zx __asm fld dword                   \
-                ptr[eax] zVec3.z __asm fmul dword ptr[ebx] zMat4x3.zy __asm fld dword                                  \
-                    ptr[eax] zVec3.z __asm fmul dword ptr[ebx] zMat4x3.zz __asm fxch st(2) __asm faddp st(5),          \
-            st __asm faddp st(3), st __asm faddp st(1),                                                                \
-            st __asm fstp dword ptr[edx] zVec3.z __asm fstp dword ptr[edx] zVec3.y __asm fstp dword ptr[edx] zVec3.x   \
-    } while (0)
+#define ZMTH_VECTOR_TRANSFORM_DIRECTION_ISLAND(matrixHome, destHome, sourceHome)                                       \
+    __asm { \
+            __asm mov eax, sourceHome \
+            __asm mov ebx, matrixHome \
+            __asm mov edx, destHome \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xx \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xy \
+            __asm fld dword ptr [eax]zVec3.x \
+            __asm fmul dword ptr [ebx]zMat4x3.xz \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yx \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yy \
+            __asm fld dword ptr [eax]zVec3.y \
+            __asm fmul dword ptr [ebx]zMat4x3.yz \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zx \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zy \
+            __asm fld dword ptr [eax]zVec3.z \
+            __asm fmul dword ptr [ebx]zMat4x3.zz \
+            __asm fxch st(2) \
+            __asm faddp st(5), st \
+            __asm faddp st(3), st \
+            __asm faddp st(1), st \
+            __asm fstp dword ptr [edx]zVec3.z \
+            __asm fstp dword ptr [edx]zVec3.y \
+            __asm fstp dword ptr [edx]zVec3.x }
 #else
 // Mathematical fallback; exact x87 rounding and exception order are not implied.
+#define ZMTH_VECTOR_TRANSFORM_DIRECTION_ISLAND(matrixHome, destHome, sourceHome)                                       \
+    {                                                                                                                  \
+        const float transformX                                                                                         \
+            = (sourceHome->x * matrixHome->xx + sourceHome->y * matrixHome->yx) + sourceHome->z * matrixHome->zx;      \
+        const float transformY                                                                                         \
+            = (sourceHome->x * matrixHome->xy + sourceHome->y * matrixHome->yy) + sourceHome->z * matrixHome->zy;      \
+        const float transformZ                                                                                         \
+            = (sourceHome->x * matrixHome->xz + sourceHome->y * matrixHome->yz) + sourceHome->z * matrixHome->zz;      \
+        destHome->z = transformZ;                                                                                      \
+        destHome->y = transformY;                                                                                      \
+        destHome->x = transformX;                                                                                      \
+    }
+#endif
+
+/**
+ * Purpose: Transform one direction. C++ captures matrix, destination and
+ * source once into the transform-direction island's homes; inputs must be
+ * side-effect-free pointer expressions that do not collide with the
+ * expansion's identifiers.
+ */
 #define ZMTH_VECTOR_TRANSFORM_DIRECTION(matrix, destination, vector)                                                   \
     do {                                                                                                               \
         const zMat4x3* const transformMatrix = (matrix);                                                               \
         zVec3* const transformDest = (destination);                                                                    \
         const zVec3* const transformSource = (vector);                                                                 \
-        const float transformX = (transformSource->x * transformMatrix->xx + transformSource->y * transformMatrix->yx) \
-            + transformSource->z * transformMatrix->zx;                                                                \
-        const float transformY = (transformSource->x * transformMatrix->xy + transformSource->y * transformMatrix->yy) \
-            + transformSource->z * transformMatrix->zy;                                                                \
-        const float transformZ = (transformSource->x * transformMatrix->xz + transformSource->y * transformMatrix->yz) \
-            + transformSource->z * transformMatrix->zz;                                                                \
-        transformDest->z = transformZ;                                                                                 \
-        transformDest->y = transformY;                                                                                 \
-        transformDest->x = transformX;                                                                                 \
+        ZMTH_VECTOR_TRANSFORM_DIRECTION_ISLAND(transformMatrix, transformDest, transformSource)                        \
     } while (0)
-#endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
@@ -401,15 +427,11 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * Integer flags and control word are unchanged; FP status follows retail.
  * All input reads precede stores; arguments must be side-effect-free pointers.
  */
-#define ZMTH_VECTOR_CROSS(left, right, destination)                                                                    \
-    do {                                                                                                               \
-        zVec3* const crossDest = (destination);                                                                        \
-        const zVec3* const crossRight = (right);                                                                       \
-        const zVec3* const crossLeft = (left);                                                                         \
-        __asm { \
-            __asm mov ebx, crossLeft \
-            __asm mov ecx, crossRight \
-            __asm mov edx, crossDest \
+#define ZMTH_VECTOR_CROSS_BODY(leftVar, rightVar, destVar)                                                             \
+    __asm { \
+            __asm mov ebx, leftVar \
+            __asm mov ecx, rightVar \
+            __asm mov edx, destVar \
             __asm fld dword ptr [ebx]zVec3.x \
             __asm fld st(0) \
             __asm fmul dword ptr [ecx]zVec3.y \
@@ -433,7 +455,14 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
             __asm fxch st(2) \
             __asm fstp dword ptr [edx]zVec3.y \
             __asm fstp dword ptr [edx]zVec3.z \
-            __asm fstp dword ptr [edx]zVec3.x }  \
+            __asm fstp dword ptr [edx]zVec3.x }
+// ZMTH_VECTOR_CROSS_BODY is an implementation detail of ZMTH_VECTOR_CROSS and zMath::Vec3Cross.
+#define ZMTH_VECTOR_CROSS(left, right, destination)                                                                    \
+    do {                                                                                                               \
+        zVec3* const crossDest = (destination);                                                                        \
+        const zVec3* const crossRight = (right);                                                                       \
+        const zVec3* const crossLeft = (left);                                                                         \
+        ZMTH_VECTOR_CROSS_BODY(crossLeft, crossRight, crossDest);                                                      \
     } while (0)
 #else
 #define ZMTH_VECTOR_CROSS(left, right, destination)                                                                    \
