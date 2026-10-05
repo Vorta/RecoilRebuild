@@ -141,7 +141,19 @@ void __fastcall MatApplyLocalTRS(const zVec3* angles, const zVec3* position, con
 void __fastcall MatBuildEulerRotation3x3(zMat4x3* outBasis, float angleX, float angleY, float angleZ);
 zVec3 __fastcall Vec3DirectionAnglesBetweenPoints(const zVec3* pointA, const zVec3* pointB);
 void __fastcall Vec3ArrayProjectToCachedY(const zVec3* points, float* outValues, int count);
-void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec3* inVec);
+/*
+ * Reconstruction interface view: ai_net.cpp requires the angle-first
+ * declaration to reproduce its retail calls; every other consumer uses the
+ * angle-last declaration. Both lower to the same VC5 x86 fastcall interface
+ * (outVec in ECX, inVec in EDX, angle on the stack, four-byte callee cleanup)
+ * and reference the single C-linkage Vec3RotateY implementation
+ * (@Vec3RotateY@12). The original header arrangement is not established.
+ */
+#if defined(ZMTH_VEC3ROTATEY_LEGACY_ORDER)
+extern "C" void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec3* inVec);
+#else
+extern "C" void __fastcall Vec3RotateY(zVec3* outVec, const zVec3* inVec, float yawAngle);
+#endif
 void __fastcall Vec3ArrayTransformDirection(zVec3* vectors, int count);
 void __fastcall MatTransformPointBatchInPlace(zVec3* points, int count);
 void __fastcall ProjectPointBatch(const zVec3* viewPoints, zProjectedPoint* projectedPoints, int count);

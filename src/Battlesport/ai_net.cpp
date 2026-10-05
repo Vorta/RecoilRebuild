@@ -1,3 +1,9 @@
+/*
+ * Selects the angle-first Vec3RotateY declaration view of zmth_decls.h (see
+ * the reconstruction interface note there) before ai_net.h reaches it.
+ * Retail 0x4036bd and 0x4036cc load both pointers before pushing the angle.
+ */
+#define ZMTH_VEC3ROTATEY_LEGACY_ORDER 1
 #include "Battlesport/ai_net.h"
 
 extern "C" {

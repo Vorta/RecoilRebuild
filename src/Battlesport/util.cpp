@@ -311,7 +311,7 @@ void zUtil_SaveGameState::StopModalLoopSfxHandle(int modalSfxIndex)
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemodalloopsfx-bn-source-path-d-proj-battlesport-player-cpp-source-model-zutil-savegamestate-modal-loop-sfx-record-method-reads-accepted-g-framedeltatimesec-and-original-inline-helpers-playerfloatfrombits-playerclamp01
  * @recoil-artifact defines .text recoil:function:0x4386c0: Player::UpdateModalLoopSfx. BN source path: D:\Proj\Battlesport\player.cpp. Source model: zUtil_SaveGameState modal loop SFX record method; reads accepted g_FrameDeltaTimeSec, the inline zMath::FastExp helper and explicit clamps.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Purpose: maintain modal and master loop SFX handles, blend pitch and enable scales from movement state, and update 3D
  * dispatch positions.

@@ -103,24 +103,6 @@ inline float PolygonArea2D(const float* pointDwords, const int* pointDwordOffset
 /**
  * Original-source helper evidence: no standalone retail function is present.
  * Observed in caller 0x46ced0.
- * Purpose: Test whether an XY point lies inside a candidate triangle.
- */
-bool PointInTriangle2D(float px, float py, float ax, float ay, float bx, float by, float cx, float cy, bool ccw)
-{
-    const float cross0 = Cross2D(ax, ay, bx, by, px, py);
-    const float cross1 = Cross2D(bx, by, cx, cy, px, py);
-    const float cross2 = Cross2D(cx, cy, ax, ay, px, py);
-
-    if (ccw) {
-        return cross0 >= 0.0f && cross1 >= 0.0f && cross2 >= 0.0f;
-    }
-
-    return cross0 <= 0.0f && cross1 <= 0.0f && cross2 <= 0.0f;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function is present.
- * Observed in caller 0x46ced0.
  * Purpose: Copy one point's dword-offset tuple into triangle output storage.
  */
 void CopyOffsetVertex(int* dest, const int* source, int stride)
@@ -159,34 +141,6 @@ zVec3* CopySpanPoints(
     ++result->polygonCount;
     result->totalPointCount += pointCount;
     return outputPointWriteCursor + pointCount;
-}
-
-/**
- * Original-source helper evidence: no standalone retail function is present.
- * Observed in caller 0x46d140.
- * Purpose: Classify a four-point XY span as convex before preserving it.
- */
-bool IsConvexQuadXY(const zVec3* points)
-{
-    int sign = 0;
-    for (int i = 0; i < 4; ++i) {
-        const zVec3& a = points[i];
-        const zVec3& b = points[(i + 1) & 3];
-        const zVec3& c = points[(i + 2) & 3];
-        const float cross = Cross2D(a.x, a.y, b.x, b.y, c.x, c.y);
-        if (cross == 0.0f) {
-            continue;
-        }
-
-        const int thisSign = cross > 0.0f ? 1 : -1;
-        if (sign != 0 && sign != thisSign) {
-            return false;
-        }
-
-        sign = thisSign;
-    }
-
-    return true;
 }
 
 /**
@@ -267,61 +221,6 @@ void AppendTriangleOffsets(
     CopyOffsetVertex(out + stride, &polygonOffsets[index1 * stride], stride);
     CopyOffsetVertex(out + stride * 2, &polygonOffsets[index2 * stride], stride);
 }
-
-/**
- * Original-source helper evidence: no standalone retail function is present.
- * Observed in caller 0x46ced0.
- * Purpose: Reject non-ears and ears containing another polygon point.
- */
-bool IsEar(
-    const float* pointDwords,
-    const int* pointDwordOffsets,
-    int pointCount,
-    int stride,
-    int prev,
-    int curr,
-    int next,
-    bool ccw
-)
-{
-    const float ax = OffsetX(pointDwords, pointDwordOffsets, prev, stride);
-    const float ay = OffsetY(pointDwords, pointDwordOffsets, prev, stride);
-    const float bx = OffsetX(pointDwords, pointDwordOffsets, curr, stride);
-    const float by = OffsetY(pointDwords, pointDwordOffsets, curr, stride);
-    const float cx = OffsetX(pointDwords, pointDwordOffsets, next, stride);
-    const float cy = OffsetY(pointDwords, pointDwordOffsets, next, stride);
-    const float cross = Cross2D(ax, ay, bx, by, cx, cy);
-
-    if (ccw) {
-        if (cross <= 0.0f) {
-            return false;
-        }
-    } else if (cross >= 0.0f) {
-        return false;
-    }
-
-    for (int i = 0; i < pointCount; ++i) {
-        if (i == prev || i == curr || i == next) {
-            continue;
-        }
-
-        if (PointInTriangle2D(
-                OffsetX(pointDwords, pointDwordOffsets, i, stride),
-                OffsetY(pointDwords, pointDwordOffsets, i, stride),
-                ax,
-                ay,
-                bx,
-                by,
-                cx,
-                cy,
-                ccw
-            )) {
-            return false;
-        }
-    }
-
-    return true;
-}
 } // namespace
 
 namespace zGeometry_ConvexPolygonSet {
@@ -354,7 +253,7 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-convexify
  * @recoil-artifact defines .text recoil:function:0x46c760: zGeometry_Polygon::convexify
- *
+ * @recoil-match byte
  *
  * Purpose: Convert polygon spans into convex polygon output, copying already
  * convex spans and triangulating non-convex spans through the polygon splitter.
@@ -702,96 +601,114 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
     int pointDwordStride
 )
 {
-    float polygonArea = 0.0f;
-    for (int pointIndex = 0; pointIndex < pointCount; ++pointIndex) {
-        const int nextPointIndex = (pointIndex + 1) % pointCount;
-        polygonArea += pointDwords[pointDwordOffsets[pointIndex * pointDwordStride]]
-                * pointDwords[pointDwordOffsets[nextPointIndex * pointDwordStride + 1]]
-            - pointDwords[pointDwordOffsets[pointIndex * pointDwordStride + 1]]
-                * pointDwords[pointDwordOffsets[nextPointIndex * pointDwordStride]];
+    int* minPoint = pointDwordOffsets;
+    float minX = pointDwords[pointDwordOffsets[0]];
+    int* point = pointDwordOffsets + pointDwordStride;
+    int i;
+    for (i = 1; i < pointCount; ++i) {
+        if (pointDwords[point[0]] < minX
+            || (pointDwords[point[0]] == minX && pointDwords[minPoint[1]] > pointDwords[point[1]])) {
+            minX = pointDwords[point[0]];
+            minPoint = point;
+        }
+        point += pointDwordStride;
     }
-    const bool ccw = polygonArea >= 0.0f;
 
-    int earPrev = 0;
-    int earCurr = 1;
-    int earNext = 2;
+    int* prevPoint;
+    if (minPoint == pointDwordOffsets) {
+        prevPoint = minPoint + (pointCount - 1) * pointDwordStride;
+    } else {
+        prevPoint = minPoint - pointDwordStride;
+    }
 
-    bool foundEar = false;
-    {
-        for (int curr = 0; curr < pointCount; ++curr) {
-            const int prev = (curr + pointCount - 1) % pointCount;
-            const int next = (curr + 1) % pointCount;
-            const float ax = pointDwords[pointDwordOffsets[prev * pointDwordStride]];
-            const float ay = pointDwords[pointDwordOffsets[prev * pointDwordStride + 1]];
-            const float bx = pointDwords[pointDwordOffsets[curr * pointDwordStride]];
-            const float by = pointDwords[pointDwordOffsets[curr * pointDwordStride + 1]];
-            const float cx = pointDwords[pointDwordOffsets[next * pointDwordStride]];
-            const float cy = pointDwords[pointDwordOffsets[next * pointDwordStride + 1]];
-            const float cross = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
-            bool isEar = ccw ? cross > 0.0f : cross < 0.0f;
+    int* nextPoint;
+    if (minPoint == pointDwordOffsets + (pointCount - 1) * pointDwordStride) {
+        nextPoint = pointDwordOffsets;
+    } else {
+        nextPoint = minPoint + pointDwordStride;
+    }
 
-            for (int testIndex = 0; isEar && testIndex < pointCount; ++testIndex) {
-                if (testIndex == prev || testIndex == curr || testIndex == next) {
-                    continue;
+    float minY;
+    float maxY;
+    if (pointDwords[prevPoint[1]] > pointDwords[nextPoint[1]]) {
+        minY = pointDwords[nextPoint[1]];
+        maxY = pointDwords[prevPoint[1]];
+    } else {
+        minY = pointDwords[prevPoint[1]];
+        maxY = pointDwords[nextPoint[1]];
+    }
+    if (maxY < pointDwords[minPoint[1]]) {
+        maxY = pointDwords[minPoint[1]];
+    } else if (minY > pointDwords[minPoint[1]]) {
+        minY = pointDwords[minPoint[1]];
+    }
+
+    int* farPoint;
+    if (pointDwords[prevPoint[0]] > pointDwords[nextPoint[0]]) {
+        farPoint = prevPoint;
+    } else {
+        farPoint = nextPoint;
+    }
+
+    bool found = false;
+    float bestDistanceSq = 10000000.0f;
+    int* bestPoint;
+    point = pointDwordOffsets;
+    for (i = 0; i < pointCount; ++i) {
+        if (point != prevPoint && point != minPoint && point != nextPoint && pointDwords[point[1]] <= maxY
+            && pointDwords[point[1]] >= minY && pointDwords[point[0]] < pointDwords[farPoint[0]]) {
+            const int pIndex = point[0];
+            const int mIndex = minPoint[0];
+            const int nIndex = nextPoint[0];
+            const int vIndex = prevPoint[0];
+            const float mdx = pointDwords[mIndex] - pointDwords[pIndex];
+            const float ndx = pointDwords[nIndex] - pointDwords[pIndex];
+            const float ndy = pointDwords[nIndex + 1] - pointDwords[pIndex + 1];
+            const float mdy = pointDwords[mIndex + 1] - pointDwords[pIndex + 1];
+            const float vdx = pointDwords[vIndex] - pointDwords[pIndex];
+            const float vdy = pointDwords[vIndex + 1] - pointDwords[pIndex + 1];
+            if (ndy * mdx > ndx * mdy && vdy * ndx >= vdx * ndy && vdx * mdy > vdy * mdx) {
+                const float dy = pointDwords[minPoint[1]] - pointDwords[point[1]];
+                const float distanceSq = mdx * mdx + dy * dy;
+                if (distanceSq < bestDistanceSq) {
+                    bestDistanceSq = distanceSq;
+                    bestPoint = point;
+                    found = true;
                 }
-
-                const float px = pointDwords[pointDwordOffsets[testIndex * pointDwordStride]];
-                const float py = pointDwords[pointDwordOffsets[testIndex * pointDwordStride + 1]];
-                const float cross0 = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
-                const float cross1 = (cx - bx) * (py - by) - (cy - by) * (px - bx);
-                const float cross2 = (ax - cx) * (py - cy) - (ay - cy) * (px - cx);
-                const bool pointInTriangle = ccw ? cross0 >= 0.0f && cross1 >= 0.0f && cross2 >= 0.0f
-                                                 : cross0 <= 0.0f && cross1 <= 0.0f && cross2 <= 0.0f;
-                if (pointInTriangle) {
-                    isEar = false;
-                }
-            }
-
-            if (isEar) {
-                earPrev = prev;
-                earCurr = curr;
-                earNext = next;
-                foundEar = true;
-                break;
             }
         }
+        point += pointDwordStride;
     }
 
-    if (!foundEar) {
-        earPrev = 0;
-        earCurr = 1;
-        earNext = 2;
+    int* const end = pointDwordOffsets + pointCount * pointDwordStride;
+    if (!found) {
+        minPoint = prevPoint;
+        if (farPoint == minPoint) {
+            minPoint = nextPoint;
+        }
+    } else {
+        farPoint = bestPoint;
     }
-
-    outSplitPointLists->pointCount0 = 3;
-    outSplitPointLists->pointCount1 = pointCount - 1;
 
     int* out = outSplitPointLists->pointDwordOffsets;
-    memcpy(out, &pointDwordOffsets[earPrev * pointDwordStride], (size_t)(pointDwordStride) * sizeof(int));
-    memcpy(
-        out + pointDwordStride,
-        &pointDwordOffsets[earCurr * pointDwordStride],
-        (size_t)(pointDwordStride) * sizeof(int)
-    );
-    memcpy(
-        out + pointDwordStride * 2,
-        &pointDwordOffsets[earNext * pointDwordStride],
-        (size_t)(pointDwordStride) * sizeof(int)
-    );
-
-    out += pointDwordStride * 3;
-    int index = earNext;
-    while (true) {
-        memcpy(out, &pointDwordOffsets[index * pointDwordStride], (size_t)(pointDwordStride) * sizeof(int));
-        out += pointDwordStride;
-
-        if (index == earPrev) {
-            break;
-        }
-
-        index = (index + 1) % pointCount;
+    if (farPoint > minPoint) {
+        outSplitPointLists->pointCount0 = (farPoint - minPoint) / pointDwordStride + 1;
+        outSplitPointLists->pointCount1 = pointCount - outSplitPointLists->pointCount0 + 2;
+        memcpy(out, minPoint, pointDwordStride * outSplitPointLists->pointCount0 * sizeof(int));
+        out += pointDwordStride * outSplitPointLists->pointCount0;
+        memcpy(out, farPoint, (end - farPoint) * sizeof(int));
+        out += end - farPoint;
+        memcpy(out, pointDwordOffsets, (minPoint - pointDwordOffsets + pointDwordStride) * sizeof(int));
+        return 1;
     }
 
+    outSplitPointLists->pointCount0 = (minPoint - farPoint) / pointDwordStride + 1;
+    outSplitPointLists->pointCount1 = pointCount - outSplitPointLists->pointCount0 + 2;
+    memcpy(out, farPoint, pointDwordStride * outSplitPointLists->pointCount0 * sizeof(int));
+    out += pointDwordStride * outSplitPointLists->pointCount0;
+    memcpy(out, minPoint, (end - minPoint) * sizeof(int));
+    out += end - minPoint;
+    memcpy(out, pointDwordOffsets, (farPoint - pointDwordOffsets + pointDwordStride) * sizeof(int));
     return 1;
 }
 } // namespace zGeometry_Polygon

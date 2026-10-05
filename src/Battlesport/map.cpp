@@ -1640,7 +1640,7 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  * @recoil-raw-consumer recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate recoil:function:0x416f10
  * @recoil-raw-asm recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate
- *
+ * @recoil-match byte
  *
  * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
  * [0x416f87,0x416f94) and the inline zMath::Vec3Add expansion

@@ -1416,7 +1416,14 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
      * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
      *
+     *
+     * Raw assembly: the reviewed full-XYZ dot island for the plane offset at
+     * retail [0x482f92,0x482fb1); the
+     * body otherwise mirrors zGeometry_Vec3Array::ComputeNewellPlane (0x46c3a0)
+     * with a true square root instead of the fast estimate. gmod_const.c builds
+     * /Ob0, so an inline helper cannot expand.
      *
      * Purpose: compute a normalized plane equation for a polygon.
      */
@@ -1426,40 +1433,54 @@ namespace zModel_Const
         zGeometry_PlaneEquationPartial* outPlane
     )
     {
-        float normalX = 0.0f;
-        float normalY = 0.0f;
-        float normalZ = 0.0f;
-        float sumX = 0.0f;
-        float sumY = 0.0f;
-        float sumZ = 0.0f;
+        zVec3 normal;
+        zVec3 vertexSum;
+        normal.z = 0.0f;
+        normal.y = 0.0f;
+        normal.x = 0.0f;
+        vertexSum.z = 0.0f;
+        vertexSum.y = 0.0f;
+        vertexSum.x = 0.0f;
 
         for (int i = 0; i < vertexCount; ++i) {
             zVec3* const vertex = &vertices[i];
             zVec3* const next = &vertices[(i + 1) % vertexCount];
 
-            normalX += (vertex->y - next->y) * (vertex->z + next->z);
-            normalY += (vertex->z - next->z) * (vertex->x + next->x);
-            normalZ += (vertex->x - next->x) * (vertex->y + next->y);
+            normal.x += (vertex->y - next->y) * (vertex->z + next->z);
+            normal.y += (vertex->z - next->z) * (vertex->x + next->x);
+            normal.z += (vertex->x - next->x) * (vertex->y + next->y);
 
-            sumX += vertex->x;
-            sumY += vertex->y;
-            sumZ += vertex->z;
+            vertexSum.x += vertex->x;
+            vertexSum.y += vertex->y;
+            vertexSum.z += vertex->z;
         }
 
-        float normalLength = 0.0f;
-        if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
-            normalLength = (float)(sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ));
+        // Retail uses qword comparisons to the pooled double-zero object
+        // at 0x4d2ae0; 0.0 reproduces those operands in this VC5SP3 build.
+        float normalLength;
+        if (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) {
+            normalLength = 0.0f;
+        } else {
+            normalLength = (float)sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
         }
 
-        float inverseNormalLength = 0.0f;
-        if (normalLength != 0.0f) {
+        float inverseNormalLength;
+        if (normalLength != 0.0) {
             inverseNormalLength = 1.0f / normalLength;
+        } else {
+            inverseNormalLength = 0.0f;
         }
 
-        outPlane->a = normalX * inverseNormalLength;
-        outPlane->b = normalY * inverseNormalLength;
-        outPlane->c = normalZ * inverseNormalLength;
-        outPlane->d = -((sumX * normalX + sumY * normalY + sumZ * normalZ) / ((float)(vertexCount)*normalLength));
+        outPlane->a = normal.x * inverseNormalLength;
+        outPlane->b = normal.y * inverseNormalLength;
+        outPlane->c = normal.z * inverseNormalLength;
+
+        float planeDot;
+        ZMTH_VECTOR_DOT(planeDot, &vertexSum, &normal);
+        // As in ComputeNewellPlane, a double-typed numerator temporary reproduces
+        // retail's numerator-first x87 evaluation order under VC5.
+        const double planeOffset = planeDot;
+        outPlane->d = -(planeOffset / ((float)vertexCount * normalLength));
         return outPlane;
     }
 
@@ -2594,7 +2615,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
      * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
-     *
+     * @recoil-match byte
      *
      * Purpose: solve the 2D scalar gradient over a triangle.
      */

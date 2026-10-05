@@ -1475,7 +1475,7 @@ void __fastcall zMathVec3DirFromYaw(zVec3* outDir, float yawAngle)
     outDir->y = 0.0f;
     outDir->z = 0.0f;
 
-    zMath::Vec3RotateY(yawAngle, outDir, &forward);
+    zMath::Vec3RotateY(outDir, &forward, yawAngle);
 }
 
 namespace zMath
@@ -1843,23 +1843,26 @@ float __fastcall zMathMatExtractYaw(const zMat4x3* matrix)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-extracteulerangles
  * @recoil-artifact defines .text recoil:function:0x474e10: zMathMatExtractEulerAngles
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-xz
+ * @recoil-match byte
  *
  * Purpose: extracts pitch, yaw, and roll from a 4x3 rotation matrix.
  */
 void __fastcall zMathMatExtractEulerAngles(const zMat4x3* matrix, zVec3* outEuler)
 {
     const float yaw = zMathMatExtractYaw(matrix);
-    const float horizontalLength = sqrt(matrix->zx * matrix->zx + matrix->zz * matrix->zz);
+    float horizontalLength;
+    ZMTH_VECTOR_LENGTH_XZ(horizontalLength, (const zVec3*)(&matrix->zx));
     const float pitch = atan2(-matrix->zy, horizontalLength);
 
     zVec3 rowX;
-    zMath::Vec3RotateY(-yaw, &rowX, (const zVec3*)(matrix));
+    zMath::Vec3RotateY(&rowX, (const zVec3*)(matrix), -yaw);
 
     zVec3 flattenedRowX;
     zMathVec3RotateX(&flattenedRowX, &rowX, -pitch);
 
-    const float rollHorizontalLength = sqrt(flattenedRowX.x * flattenedRowX.x + flattenedRowX.z * flattenedRowX.z);
+    float rollHorizontalLength;
+    ZMTH_VECTOR_LENGTH_XZ(rollHorizontalLength, &flattenedRowX);
     float roll = atan2(flattenedRowX.y, rollHorizontalLength);
     if (matrix->yy < 0.0f) {
         roll = g_zMath_ElevationPiFloat - roll;
@@ -1893,16 +1896,20 @@ namespace zMath
      * @recoil-artifact defines .text recoil:function:0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
      *
      *
-     * The angle-first parameter model preserves outVec in ECX, inVec in EDX,
-     * and the stack float with four-byte callee cleanup. Under canonical VC5,
-     * this native order reproduces both retail argument sequences at 0x4036bd
-     * and 0x4036cc; the angle-last and angle-middle models do not. All thirteen
-     * indexed callers use this declaration. The original source parameter order
-     * and declaration spelling remain unrecovered; this model is provisional
-     * and does not accept the callee's body.
+     * One C-linkage implementation (VC5 decorated name @Vec3RotateY@12) in
+     * the angle-last parameter order of the sibling zMathVec3RotateX: outVec
+     * in ECX, inVec in EDX and the stack float with four-byte callee cleanup.
+     * Under canonical VC5 the angle-last declaration reproduces the eleven
+     * player.cpp and zmth_main.c retail call sequences. ai_net.cpp selects the
+     * angle-first declaration view in zmth_decls.h, which lowers to the same
+     * fastcall interface and reproduces 0x4036bd and 0x4036cc; the C-linkage
+     * name does not encode parameter order, so both views reference this one
+     * body. Inferred from the retail argument sequences and the retail
+     * zmth_main.c source path; the original declaration arrangement is not
+     * established, and this model does not accept the callee's body.
      * Purpose: Rotates an input vector around the Y axis and copies the original Y component to the output.
      */
-    void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec3* inVec)
+    extern "C" void __fastcall Vec3RotateY(zVec3 * outVec, const zVec3* inVec, float yawAngle)
     {
         const float sinAngle = sin(yawAngle);
         const float cosAngle = cos(yawAngle);

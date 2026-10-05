@@ -414,7 +414,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyterraintilt
  * @recoil-artifact defines .text recoil:function:0x42c8d0: Player::ApplyTerrainTilt.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyTerrainTilt from the recovered
@@ -428,7 +428,7 @@ void __fastcall ApplyTerrainTilt(zUtil_SaveGameState* saveState, const zVec3* ti
     rotatedTilt.x = tiltVector->x * tiltFactor;
     rotatedTilt.y = tiltVector->y * tiltFactor;
     rotatedTilt.z = tiltVector->z * tiltFactor;
-    zMath::Vec3RotateY(-playerState->restartYawRad, &rotatedTilt, &rotatedTilt);
+    zMath::Vec3RotateY(&rotatedTilt, &rotatedTilt, -playerState->restartYawRad);
 
     if (playerState->airborneFlag != 0) {
         ResetTerrainContactImpulsesAndPlayImpactSfx(saveState);
@@ -1116,7 +1116,7 @@ void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState)
     playerState->steerBasisRaw = rawBasis;
 
     zVec3 yawRelativeNormal;
-    zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
+    zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
     playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
     playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
     zMath::MatBuildEulerRotation3x3(

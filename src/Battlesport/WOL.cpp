@@ -1348,7 +1348,7 @@ void WestwoodOnlineUpgradeDialog::EnableConnectButton(int enable)
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-westwoodonlineupgradedialog
  * @recoil-artifact defines .text recoil:function:0x43d740: WestwoodOnlineUpgradeDialog::WestwoodOnlineUpgradeDialog
- *
+ * @recoil-match byte
  *
  * Purpose: construct the CDialog-derived upgrade dialog and its embedded MFC
  * controls.
@@ -2945,7 +2945,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnSessionListEnumerated
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-launchselectedsession
  * @recoil-artifact defines .text recoil:function:0x4404c0: WestwoodOnlineUpgradeApiEventSink::LaunchSelectedSession.
- *
+ * @recoil-match byte
  *
  * Purpose: Applies selected-session connection details and starts the network launch path.
  */
@@ -3853,7 +3853,7 @@ void WestwoodOnlineUpgradeConfigDialog::OnConnectStringEditSetFocusClear()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-oninitdialog
  * @recoil-artifact defines .text recoil:function:0x441a40: WestwoodOnlineUpgradeConfigDialog::OnInitDialog
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\westwoodonline\WolapiConfigDialog.cpp.
  * Purpose: loads both WOL profiles, fills the combo box, seeds connect-string

@@ -876,7 +876,7 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
         }
 
         playerState->projectileSpawnVel.y = projectileVelY;
-        zMath::Vec3RotateY(-playerState->restartYawRad, &playerState->localVel, &playerState->projectileSpawnVel);
+        zMath::Vec3RotateY(&playerState->localVel, &playerState->projectileSpawnVel, -playerState->restartYawRad);
     }
 
     const float yawImpulseCross = reflectedSweepDir.x * contactToSweepEnd.z - reflectedSweepDir.z * contactToSweepEnd.x;
@@ -964,6 +964,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  *
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
@@ -986,24 +987,20 @@ void __fastcall ResolvePendingPlayerCollisionContact(zUtil_SaveGameState* saveSt
     PlayerMasterCommonData* const targetCommonData = targetPlayerState->masterCommonData;
     PlayerMasterModalData* const targetModalData = targetSaveState->primaryModalState->masterModalData;
 
-    const float massScale = masterModalData->mass * targetModalData->invMass;
+    float massScale = masterModalData->mass * targetModalData->invMass;
     transferredLocalVel.x *= massScale;
     transferredLocalVel.y *= massScale;
     transferredLocalVel.z *= massScale;
-    zMath::Vec3RotateY(-targetPlayerState->restartYawRad, &transferredLocalVel, &transferredLocalVel);
+    zMath::Vec3RotateY(&transferredLocalVel, &transferredLocalVel, -targetPlayerState->restartYawRad);
     transferredLocalVel.y = 0.0f;
-
-    targetPlayerState->localVel.x += transferredLocalVel.x;
-    targetPlayerState->localVel.y += transferredLocalVel.y;
-    targetPlayerState->localVel.z += transferredLocalVel.z;
+    zMath::Vec3Add(&transferredLocalVel, &targetPlayerState->localVel, &targetPlayerState->localVel);
 
     ResolvePendingCollisionContact(saveState, playerState->playerCollisionQueue.head);
 
     if (targetPlayerState->lifecycleState == kPlayerLifecycleAi) {
-        const float damage = massScale * 1.10000002f;
-        const float remainingFraction = (targetPlayerState->statusMeterValue - damage) * targetCommonData->invMaxHealth;
-        if (remainingFraction > 0.200000003f) {
-            HitCallbackRecordContextAndTimedStatus(targetSaveState, 0, 0, damage);
+        massScale *= 1.10000002f;
+        if ((targetPlayerState->statusMeterValue - massScale) * targetCommonData->invMaxHealth > 0.200000003f) {
+            HitCallbackRecordContextAndTimedStatus(targetSaveState, 0, 0, massScale);
         }
     }
 }

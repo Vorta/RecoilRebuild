@@ -428,7 +428,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     }
 
     if (playerState->environmentAttachmentActive != 0) {
-        zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
+        zMath::Vec3RotateY(&playerState->yawRotatedLocalVel, &playerState->localVel, playerState->poseCache.y);
         playerState->environmentAttachmentLocalOffset.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
         playerState->environmentAttachmentLocalOffset.z += g_Player_DeltaTime * playerState->yawRotatedLocalVel.z;
 
@@ -834,7 +834,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     }
 
     zVec3 yawRelativeNormal = { 0 };
-    zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
+    zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
     playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
     playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
 
@@ -903,7 +903,7 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
     UpdateYawVelocityFromSteerInput(saveState);
 
     if (playerState->environmentAttachmentActive != 0) {
-        zMath::Vec3RotateY(playerState->poseCache.y, &playerState->yawRotatedLocalVel, &playerState->localVel);
+        zMath::Vec3RotateY(&playerState->yawRotatedLocalVel, &playerState->localVel, playerState->poseCache.y);
         playerState->environmentAttachmentLocalOffset.x += playerState->yawRotatedLocalVel.x * g_Player_DeltaTime;
         playerState->environmentAttachmentLocalOffset.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
         playerState->environmentAttachmentLocalOffset.y = 0.0f;
@@ -984,6 +984,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
@@ -996,11 +997,11 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveSt
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
 
-    float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS] = { 0 };
-    float outBestHeight = 0.0f;
-    PlayerProbeTypeHistogram outTypeHistogram = { 0 };
-    int outAttachmentCandidateCount = 0;
-    CZNodePartial* outAttachmentNode = 0;
+    float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS];
+    float outBestHeight;
+    PlayerProbeTypeHistogram outTypeHistogram;
+    int outAttachmentCandidateCount;
+    CZNodePartial* outAttachmentNode;
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
@@ -1012,24 +1013,25 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveSt
     );
 
     playerState->yawVelocityLimit = masterModalData->yawRateMax;
-    const int probePointCount = primaryModalState->modalStateCode;
-    if (outTypeHistogram.countByImpactSlot[1] >= probePointCount) {
-        playerState->amphibProbeCoverageFailed = 0;
-    } else if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-        playerState->amphibProbeCoverageFailed = 1;
-        TransitionToMasterTypeTrack(saveState, 0);
+    if (outTypeHistogram.countByImpactSlot[1] < primaryModalState->modalStateCode) {
+        if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+            playerState->amphibProbeCoverageFailed = 1;
+            TransitionToMasterTypeTrack(saveState, 0);
+        } else {
+            playerState->projectileSpawnVel.x = 0.0f;
+            playerState->projectileSpawnVel.z = 0.0f;
+            playerState->localVel.x = 0.0f;
+            playerState->localVel.z = 0.0f;
+            playerState->aiTopLevelState = 0;
+            playerState->aiStateUntilTime = g_Time_AccumulatedTimeSec + 8.0f;
+        }
     } else {
-        playerState->projectileSpawnVel.x = 0.0f;
-        playerState->projectileSpawnVel.z = 0.0f;
-        playerState->localVel.x = 0.0f;
-        playerState->localVel.z = 0.0f;
-        playerState->aiTopLevelState = 0;
-        playerState->aiStateUntilTime = g_Time_AccumulatedTimeSec + 8.0f;
+        playerState->amphibProbeCoverageFailed = 0;
     }
 
     float maxSampleHeight = outBestHeight;
-    for (int i = 0; i < probePointCount; ++i) {
-        if (maxSampleHeight < probeHeightByPoint[i]) {
+    for (int i = 0; i < primaryModalState->modalStateCode; ++i) {
+        if (probeHeightByPoint[i] >= (double)maxSampleHeight) {
             maxSampleHeight = probeHeightByPoint[i];
         }
     }
@@ -1043,10 +1045,12 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveSt
     zVec3 amphibUpVector = g_Player_AmphibBasisUpRef;
     ApplyAmphibSpeedOscillation(saveState, &amphibUpVector, 1);
 
-    const int steerLerpBits
-        = (int)(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate) * 12102200.0f) + 0x3f800000;
-    zMath::Vec3LerpNormalize(&playerState->steerBasisRef, &amphibUpVector, PLAYER_FLOAT_FROM_BITS(steerLerpBits));
-    if (playerState->steerBasisRef.y == 0.0f) {
+    zMath::Vec3LerpNormalize(
+        &playerState->steerBasisRef,
+        &amphibUpVector,
+        zMath::FastExp(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate))
+    );
+    if (playerState->steerBasisRef.y == 0.0) {
         playerState->steerBasisRef.y = 0.00100000005f;
     }
 
@@ -1058,7 +1062,7 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveSt
     playerState->steerBasisRaw = rawBasis;
     RebuildMotionBasisFromSteerBasis(saveState);
 
-    zMath::Vec3RotateY(-playerState->restartYawRad, &amphibUpVector, &playerState->steerBasisRef);
+    zMath::Vec3RotateY(&amphibUpVector, &playerState->steerBasisRef, -playerState->restartYawRad);
     playerState->vehiclePitchRad = (float)(asin(amphibUpVector.z));
     playerState->vehicleRollRad = (float)(asin(-amphibUpVector.x));
     PLAYER_CLAMP_SIGNED(playerState->vehiclePitchRad, 0.523599982f);

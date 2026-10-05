@@ -3464,7 +3464,7 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
         playerState->steerBasisRef = *surfaceNormal;
         zVec3 yawRelativeNormal = *surfaceNormal;
         RebuildSteerBasisRawFromRef(saveState);
-        zMath::Vec3RotateY(-playerState->restartYawRad, &yawRelativeNormal, &playerState->steerBasisRef);
+        zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
 
         const float pitchAngleRad = (float)(asin(yawRelativeNormal.z));
         playerState->vehiclePitchRad = pitchAngleRad;
