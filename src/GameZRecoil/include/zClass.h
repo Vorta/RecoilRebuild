@@ -192,7 +192,7 @@ struct CZSoundDataPartial {
     zSndSample* sample;
     zSndPlayHandle* playHandle;
     char sampleSetName[0x24];
-    int runtimeFlags;
+    unsigned int runtimeFlags;
     zVec3 localPosition;
     zVec3 worldPos;
     float savedParentMatrix[12];

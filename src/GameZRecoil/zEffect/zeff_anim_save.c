@@ -87,9 +87,7 @@ namespace
         unsigned char unknown_4d[3];
         float triggerCurrentValue;
         float activationCountdown;
-        float velocityX;
-        float velocityY;
-        float velocityZ;
+        zVec3 velocity;
         unsigned char runtimeSurfaceCount;
         unsigned char lightRefCount;
         unsigned char soundRefCount;
@@ -501,7 +499,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.saverunninganimrecord
      * @recoil-artifact defines .text recoil:function:0x460bc0: zEffect_Anim::SaveRunningAnimRecord.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: write one running animation entry, runtime sequence state, and
@@ -514,27 +512,19 @@ namespace zEffect_Anim
         int includePrimaryEntry
     )
     {
-        zEffectAnimRunningSaveHeader header = { 0 };
+        zEffectAnimRunningSaveHeader header;
         header.entryTableIndex = runningIndex;
         header.matchSavedRootNode = includePrimaryEntry;
         strncpy(header.entryName, entry->name, sizeof(header.entryName));
         header.rootNodeIndex = CZClass::NodePtrToValidatedIndex(entry->boundNode);
-        header.nodeRefAIndex
-            = CZClass::NodePtrToValidatedIndex((CZNodePartial*)((unsigned int)(entry->resetScratch[0])));
-        memcpy(&header.refVecA.x, &entry->resetScratch[1], sizeof(header.refVecA.x));
-        memcpy(&header.refVecA.y, &entry->resetScratch[2], sizeof(header.refVecA.y));
-        memcpy(&header.refVecA.z, &entry->resetScratch[3], sizeof(header.refVecA.z));
-        header.nodeRefBIndex
-            = CZClass::NodePtrToValidatedIndex((CZNodePartial*)((unsigned int)(entry->resetScratch[4])));
-        memcpy(&header.refVecB.x, &entry->resetScratch[5], sizeof(header.refVecB.x));
-        memcpy(&header.refVecB.y, &entry->resetScratch[6], sizeof(header.refVecB.y));
-        memcpy(&header.refVecB.z, &entry->resetScratch[7], sizeof(header.refVecB.z));
+        header.nodeRefAIndex = CZClass::NodePtrToValidatedIndex(entry->refNodeA);
+        header.refVecA = entry->refPointA;
+        header.nodeRefBIndex = CZClass::NodePtrToValidatedIndex(entry->refNodeB);
+        header.refVecB = entry->refPointB;
         header.activationState = entry->activationState;
         header.triggerCurrentValue = entry->triggerCurrentValue;
         header.activationCountdown = entry->activationCountdown;
-        header.velocityX = entry->velocityX;
-        header.velocityY = entry->velocityY;
-        header.velocityZ = entry->velocityZ;
+        header.velocity = entry->velocity;
         header.runtimeSurfaceCount = entry->runtimeSequenceCount;
         header.lightRefCount = entry->lightRefCount;
         header.soundRefCount = entry->soundRefCount;
@@ -542,54 +532,55 @@ namespace zEffect_Anim
         char sectionName[0x14];
         sprintf(sectionName, g_zEffectAnim_RunningSectionNameFmt, runningIndex);
 
+        int result;
         FILE* const tempStream = zUtil_ZBD::OpenTempWriteStream();
-        if (tempStream == 0) {
-            return (int)(callbackCtx);
-        }
-
-        int result = fwrite(&header, sizeof(header), 1, tempStream) == 1 ? 1 : 0;
-        for (int i_2646 = 0; result != 0 && i_2646 < entry->runtimeSequenceCount; ++i_2646) {
-            zEffectAnimSurfaceRuntime runtimeCopy = entry->runtimeList[i_2646];
-            runtimeCopy.currentEvent
-                = (void*)((unsigned char*)(runtimeCopy.currentEvent) - (unsigned char*)(runtimeCopy.eventStream));
-            result = fwrite(&runtimeCopy, sizeof(runtimeCopy), 1, tempStream) == 1 ? 1 : 0;
-
-            const int eventStreamSize = entry->runtimeList[i_2646].eventStreamSize;
-            if (eventStreamSize > 0) {
-                result = fwrite(entry->runtimeList[i_2646].eventStream, eventStreamSize, 1, tempStream) == 1 ? 1 : 0;
+        if (tempStream != 0) {
+            result = fwrite(&header, sizeof(header), 1, tempStream) == 1;
+            for (int i_2646 = 0; i_2646 < entry->runtimeSequenceCount && result != 0; ++i_2646) {
+                zEffectAnimSurfaceRuntime* const runtime = &entry->runtimeList[i_2646];
+                zEffectAnimSurfaceRuntime runtimeCopy = *runtime;
+                runtimeCopy.currentEvent
+                    = (void*)((unsigned char*)(runtime->currentEvent) - (unsigned char*)(runtime->eventStream));
+                result = fwrite(&runtimeCopy, sizeof(runtimeCopy), 1, tempStream) == 1;
+                if (runtime->eventStreamSize > 0) {
+                    result = fwrite(runtime->eventStream, runtime->eventStreamSize, 1, tempStream) == 1;
+                }
             }
-        }
 
-        for (int i_2660 = 0; result != 0 && i_2660 < entry->lightRefCount; ++i_2660) {
-            zEffectAnimRuntimeNodeSaveRecord record = { 0 };
-            zEffectAnimRuntimeNodeRef* const lightRef = &entry->lightRefList[i_2660];
-            strncpy(record.name, lightRef->name.text, sizeof(record.name));
-            record.isAttached = lightRef->isAttached;
-            CZNodePartial* const node = lightRef->runtimeNode;
-            if (node != 0) {
-                // Original 0x460bc0 uses this shared position helper for saved light refs too.
-                CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
-                record.parentNodeIndex = node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+            for (int i_2660 = 0; i_2660 < entry->lightRefCount && result != 0; ++i_2660) {
+                zEffectAnimRuntimeNodeSaveRecord record;
+                zEffectAnimRuntimeNodeRef* const lightRef = &entry->lightRefList[i_2660];
+                CZNodePartial* const node = lightRef->runtimeNode;
+                strncpy(record.name, lightRef->name.text, sizeof(record.name));
+                record.isAttached = lightRef->isAttached;
+                if (node != 0) {
+                    // Original 0x460bc0 uses this shared position helper for saved light refs too.
+                    CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
+                    record.parentNodeIndex
+                        = node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+                }
+                result = fwrite(&record, sizeof(record), 1, tempStream) == 1;
             }
-            result = fwrite(&record, sizeof(record), 1, tempStream) == 1 ? 1 : 0;
-        }
 
-        for (int i_2679 = 0; result != 0 && i_2679 < entry->soundRefCount; ++i_2679) {
-            zEffectAnimSoundNodeSaveRecord record = { 0 };
-            zEffectAnimRuntimeNodeRef* const soundRef = &entry->soundRefList[i_2679];
-            strncpy(record.name, soundRef->name.text, sizeof(record.name));
-            record.isAttached = soundRef->isAttached;
-            CZNodePartial* const node = soundRef->runtimeNode;
-            if (node != 0) {
-                CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
-                record.hasPosition = (soundData->runtimeFlags >> 1) & 1;
-                CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
-                record.parentNodeIndex = node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+            for (int i_2679 = 0; i_2679 < entry->soundRefCount && result != 0; ++i_2679) {
+                zEffectAnimSoundNodeSaveRecord record;
+                zEffectAnimRuntimeNodeRef* const soundRef = &entry->soundRefList[i_2679];
+                CZNodePartial* const node = soundRef->runtimeNode;
+                strncpy(record.name, soundRef->name.text, sizeof(record.name));
+                record.isAttached = soundRef->isAttached;
+                if (node != 0) {
+                    CZSoundDataPartial* const soundData = (CZSoundDataPartial*)(node->classData);
+                    record.hasPosition = (soundData->runtimeFlags >> 1) & 1;
+                    CZSound::gwSoundGetPosition(node, &record.posX, &record.posY, &record.posZ);
+                    record.parentNodeIndex
+                        = node->listCountA > 0 ? CZClass::NodePtrToValidatedIndex(node->listA[0]) : -1;
+                }
+                result = fwrite(&record, sizeof(record), 1, tempStream) == 1;
             }
-            result = fwrite(&record, sizeof(record), 1, tempStream) == 1 ? 1 : 0;
+
+            zUtil_ZBD::FlushTempWriteStreamToSectionRecord(tempStream, callbackCtx, sectionName);
         }
 
-        zUtil_ZBD::FlushTempWriteStreamToSectionRecord(tempStream, callbackCtx, sectionName);
         return result;
     }
 
@@ -669,14 +660,14 @@ namespace zEffect_Anim
         }
 
         entry->flags |= 0x4000u;
-        entry->resetScratch[0] = (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefAIndex)));
-        *(zVec3*)(&entry->resetScratch[1]) = header.refVecA;
-        entry->resetScratch[4] = (unsigned int)((unsigned int)(CZZbd::NodeIndexToPtr(header.nodeRefBIndex)));
-        *(zVec3*)(&entry->resetScratch[5]) = header.refVecB;
+        entry->refNodeA = CZZbd::NodeIndexToPtr(header.nodeRefAIndex);
+        entry->refPointA = header.refVecA;
+        entry->refNodeB = CZZbd::NodeIndexToPtr(header.nodeRefBIndex);
+        entry->refPointB = header.refVecB;
         entry->activationState = header.activationState;
         entry->triggerCurrentValue = header.triggerCurrentValue;
         entry->activationCountdown = header.activationCountdown;
-        *(zVec3*)(&entry->velocityX) = *(const zVec3*)(&header.velocityX);
+        entry->velocity = header.velocity;
         entry->runtimeSequenceCount = header.runtimeSurfaceCount;
 
         for (int i = 0; i < entry->runtimeSequenceCount; ++i) {

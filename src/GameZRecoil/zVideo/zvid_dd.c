@@ -131,8 +131,7 @@ namespace zVideo_dd
     int __fastcall
     PresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
     {
-        zVidRect32* const presentSrcRect = srcRect;
-        DWORD presentBltFlags = DDBLT_WAIT + (waitForPresent != 0 ? 0 : DDBLT_ASYNC);
+        DWORD presentBltFlags = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
 
         if (g_zVideo_DisplayModeSurfaceState.surf == 0 || g_zVideo_PrimarySurfaceState.surf == 0) {
             return kPresentMissingSurfaceResult;
@@ -142,79 +141,92 @@ namespace zVideo_dd
 
         for (;;) {
             if (g_zVideo_UseHalfResBackbuffer != 0) {
-                hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
-                    (RECT*)(dstRect),
-                    g_zVideo_PrimarySurfaceState.surf,
-                    (RECT*)(presentSrcRect),
-                    presentBltFlags,
-                    0
-                );
+                if (skipSurfaceStateSwap != 0) {
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                        (RECT*)(dstRect),
+                        g_zVideo_PrimarySurfaceState.surf,
+                        (RECT*)(srcRect),
+                        presentBltFlags,
+                        0
+                    );
+                } else {
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                        (RECT*)(dstRect),
+                        g_zVideo_PrimarySurfaceState.surf,
+                        (RECT*)(srcRect),
+                        presentBltFlags,
+                        0
+                    );
+                }
             } else if (g_zVideo_HalfResAdjustMode != 0) {
                 hresult = g_zVideo_PrimarySurfaceState.surf->PageLock(0);
-                if (hresult != DD_OK) {
+                if (hresult == DD_OK) {
+                    g_zVideo_PrimarySurfaceState.pageLockActive = 1;
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                        (RECT*)(dstRect),
+                        g_zVideo_PrimarySurfaceState.surf,
+                        (RECT*)(srcRect),
+                        DDBLT_ASYNC,
+                        0
+                    );
+
+                    if (skipSurfaceStateSwap == 0) {
+                        memcpy(
+                            &g_zVideo_SurfaceStateSwapScratch,
+                            &g_zVideo_PrimarySurfaceState,
+                            sizeof(g_zVideo_SurfaceStateSwapScratch)
+                        );
+                        memcpy(
+                            &g_zVideo_PrimarySurfaceState,
+                            &g_zVideo_SwSurfaceState,
+                            sizeof(g_zVideo_PrimarySurfaceState)
+                        );
+                        memcpy(
+                            &g_zVideo_SwSurfaceState,
+                            &g_zVideo_SurfaceStateSwapScratch,
+                            sizeof(g_zVideo_SwSurfaceState)
+                        );
+
+                        if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
+                            const HRESULT pageUnlockResult = g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
+                            if (pageUnlockResult != DD_OK) {
+                                ReportError(
+                                    (int)(pageUnlockResult),
+                                    g_zVideo_SourceFile_ZvidDdC,
+                                    kPresentLinePageUnlock
+                                );
+                                return 0;
+                            }
+
+                            g_zVideo_PrimarySurfaceState.pageLockActive = 0;
+                        }
+                    }
+                } else {
                     ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, kPresentLinePageLock);
                     return 0;
-                }
-
-                hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
-                    (RECT*)(dstRect),
-                    g_zVideo_PrimarySurfaceState.surf,
-                    (RECT*)(presentSrcRect),
-                    DDBLT_ASYNC,
-                    0
-                );
-                g_zVideo_PrimarySurfaceState.pageLockActive = 1;
-
-                if (skipSurfaceStateSwap == 0) {
-                    memcpy(
-                        &g_zVideo_SurfaceStateSwapScratch,
-                        &g_zVideo_PrimarySurfaceState,
-                        sizeof(g_zVideo_SurfaceStateSwapScratch)
-                    );
-                    memcpy(
-                        &g_zVideo_PrimarySurfaceState,
-                        &g_zVideo_SwSurfaceState,
-                        sizeof(g_zVideo_PrimarySurfaceState)
-                    );
-                    memcpy(
-                        &g_zVideo_SwSurfaceState,
-                        &g_zVideo_SurfaceStateSwapScratch,
-                        sizeof(g_zVideo_SwSurfaceState)
-                    );
-
-                    if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
-                        const HRESULT pageUnlockResult = g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
-                        if (pageUnlockResult != DD_OK) {
-                            ReportError((int)(pageUnlockResult), g_zVideo_SourceFile_ZvidDdC, kPresentLinePageUnlock);
-                            return 0;
-                        }
-
-                        g_zVideo_PrimarySurfaceState.pageLockActive = 0;
-                    }
                 }
             } else {
                 hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
                     (RECT*)(dstRect),
                     g_zVideo_PrimarySurfaceState.surf,
-                    (RECT*)(presentSrcRect),
+                    (RECT*)(srcRect),
                     presentBltFlags,
                     0
                 );
             }
 
-            if (hresult == DD_OK) {
+            if (hresult != DD_OK) {
+                if (hresult == DDERR_SURFACELOST) {
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
+                }
+
+                if (hresult != DD_OK) {
+                    ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, kPresentLineBltOrRestore);
+                    return kPresentFailureResult;
+                }
+            } else {
                 return 0;
             }
-
-            if (hresult == DDERR_SURFACELOST) {
-                hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
-                if (hresult == DD_OK) {
-                    continue;
-                }
-            }
-
-            ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, kPresentLineBltOrRestore);
-            return kPresentFailureResult;
         }
     }
 

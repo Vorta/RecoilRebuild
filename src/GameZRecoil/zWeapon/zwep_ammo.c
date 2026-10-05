@@ -470,14 +470,15 @@ namespace OptCatalog
                     randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * (float)(kOptCatalogPi);
                 }
 
+                // Retail null-checks the selected entry but always animates entry 0.
                 zEffectAnim::SetTransformRotAndVelocityThunk(
-                    fireAnim,
+                    self->fireFxAnimationEntries[0],
                     0,
                     runtimeInstance->pos.x,
                     runtimeInstance->pos.y,
                     runtimeInstance->pos.z,
                     (float)asin((double)spawnDir->y),
-                    (float)(atan2(-spawnDir->z, -spawnDir->x)),
+                    (float)(atan2(-spawnDir->x, -spawnDir->z)),
                     randomRoll,
                     0.0f,
                     0.0f,
@@ -492,7 +493,7 @@ namespace OptCatalog
             CZObject3D::gwObject3DSetRotation(
                 runtimeInstance->projectileNode,
                 (float)asin((double)spawnDir->y),
-                (float)(atan2(-spawnDir->z, -spawnDir->x)),
+                (float)(atan2(-spawnDir->x, -spawnDir->z)),
                 0.0f
             );
         }
@@ -545,7 +546,7 @@ namespace OptCatalog
         runtimeInstance->spawnGateAccum = 0.0f;
         runtimeInstance->pendingTargetA = 0;
         runtimeInstance->pendingTargetB = 0;
-        if ((self->flags & kOptCatalogFlagUsePendingSpawnTarget) != 0 && g_OptCatalogPendingSpawnTargetListPtr != 0) {
+        if ((self->flags & kOptCatalogFlagLockOn) != 0 && g_OptCatalogPendingSpawnTargetListPtr != 0) {
             runtimeInstance->aux = *spawnVelocity;
             int* const pendingTargetCount = g_OptCatalogPendingSpawnTargetCountPtr;
             if (pendingTargetCount != 0 && *pendingTargetCount > 0) {
@@ -780,7 +781,7 @@ namespace OptCatalog
      * pending trail targets are enabled.
      * Purpose: activate a prebuilt trail runtime state for a weapon owner.
      */
-    void __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState * trailRuntimeState, int playerOrdinal)
+    int __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState * trailRuntimeState, int playerOrdinal)
     {
         (void)playerOrdinal;
 
@@ -850,6 +851,7 @@ namespace OptCatalog
         trailRuntimeState->prev = 0;
         trailRuntimeState->next = ownerEntry->activeTrailRuntime;
         ownerEntry->activeTrailRuntime = trailRuntimeState;
+        return 0;
     }
 
     /**

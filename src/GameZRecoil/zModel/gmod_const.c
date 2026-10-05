@@ -346,11 +346,11 @@ namespace zModel_DiPool
             zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x15b, g_zModel_WriteModel3dBufferErrorMsg);
         }
 
-        const int capacity = g_zModel_DiPoolCapacity;
-        if (capacity == 0) {
+        if (g_zModel_DiPoolCapacity == 0) {
             return 0;
         }
 
+        const int capacity = g_zModel_DiPoolCapacity;
         int result = capacity;
         const long tableOffset = ftell(file);
         if (fwrite(g_zModel_DiPoolBase, capacity * sizeof(zDiPartial), 1, file) != 1) {

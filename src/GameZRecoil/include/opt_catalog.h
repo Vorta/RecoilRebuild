@@ -292,7 +292,7 @@ int __cdecl Shutdown();
 int __fastcall ShutdownCore();
 int __fastcall FreeTrailRuntimeStateStorage(void* trailRuntimeState);
 int __fastcall DeactivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState);
-void __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState, int playerOrdinal);
+int __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState, int playerOrdinal);
 void __cdecl PlayTriggerInactiveWarning();
 void __cdecl PlayWeaponInactiveWarning();
 void __cdecl PlayNoAmmoWarning();

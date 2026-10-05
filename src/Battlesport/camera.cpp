@@ -128,7 +128,7 @@ void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState)
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Purpose: Update the player chase camera from controls, motion, and obstructions.
  * Shared camera scalars require the complete camera consumer population.
@@ -218,11 +218,9 @@ void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState* saveState)
     zVec3 cameraDirection;
     if (playerState->thirdPersonYawOffset != 0.0f) {
         float yawSin, yawCos;
-        float unscaledCos, unscaledSin; // Unused saved values; these assignments reproduce the retail bytes.
         zMath::SinCos(playerState->thirdPersonYawOffset, &yawSin, &yawCos);
         cameraDirection.x = yawCos * playerState->cameraDirFlat.x - yawSin * playerState->cameraDirFlat.z;
-        cameraDirection.z = (unscaledCos = yawCos) * playerState->cameraDirFlat.z
-            + (unscaledSin = yawSin) * playerState->cameraDirFlat.x;
+        cameraDirection.z = yawCos * playerState->cameraDirFlat.z + yawSin * playerState->cameraDirFlat.x;
     } else {
         cameraDirection = playerState->cameraDirFlat;
     }

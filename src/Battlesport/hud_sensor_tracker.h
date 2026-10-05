@@ -40,8 +40,8 @@ struct HudRectI {
     int bottom;
 
     int __fastcall CalcOutcode(const zVec3* point);
-    int SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd);
-    int ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd);
+    int __fastcall SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd);
+    int __fastcall ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd);
     static int __fastcall IsCornerOutcode(int outcode);
 };
 

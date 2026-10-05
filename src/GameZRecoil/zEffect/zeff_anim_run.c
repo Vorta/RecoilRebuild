@@ -361,7 +361,6 @@ namespace
     const float kEffectAnimVelocityEpsilon = 0.01f;
     const short kEffectAnimResetScratchRefIndex = -200;
     const short kEffectAnimBoundNodeRefIndex = -100;
-    const char* kZeffAnimRunSourceFile = "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c";
 } // namespace
 
 namespace zEffect
@@ -567,10 +566,10 @@ namespace zEffect
         if (event->nodeRefIndex > 0) {
             node = self->nodeRefList[event->nodeRefIndex].node;
         } else if (event->nodeRefIndex == -200) {
-            node = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
-            memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
-            memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
-            memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
+            node = self->refNodeA;
+            worldPosition.x = self->refPointA.x;
+            worldPosition.y = self->refPointA.y;
+            worldPosition.z = self->refPointA.z;
         } else {
             node = 0;
         }
@@ -685,10 +684,10 @@ namespace zEffect
             if (event->basisNodeRefIndex > 0) {
                 basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
             } else if (event->basisNodeRefIndex == -200) {
-                basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
-                memcpy(&worldPosition.x, &self->resetScratch[1], sizeof(worldPosition.x));
-                memcpy(&worldPosition.y, &self->resetScratch[2], sizeof(worldPosition.y));
-                memcpy(&worldPosition.z, &self->resetScratch[3], sizeof(worldPosition.z));
+                basisNode = self->refNodeA;
+                worldPosition.x = self->refPointA.x;
+                worldPosition.y = self->refPointA.y;
+                worldPosition.z = self->refPointA.z;
             } else {
                 basisNode = 0;
             }
@@ -764,15 +763,15 @@ namespace zEffect
         if (sequenceRuntime->runState == 0) {
             animEvent->currentRangeInner = animEvent->initialRangeInner;
             animEvent->currentRangeOuter = animEvent->initialRangeOuter;
-            animEvent->currentSpecularR = animEvent->initialSpecularR;
-            animEvent->currentSpecularG = animEvent->initialSpecularG;
-            animEvent->currentSpecularB = animEvent->initialSpecularB;
+            animEvent->currentSpecular = animEvent->initialSpecular;
         }
 
-        float stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
+        float stepSec;
         if (sequenceRuntime->eventElapsedSec > animEvent->durationSec) {
             stepSec = g_zEffectAnim_State.frameDeltaRemainingSec
                 - (sequenceRuntime->eventElapsedSec - animEvent->durationSec);
+        } else {
+            stepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
         }
 
         float lightRangeInner;
@@ -794,38 +793,36 @@ namespace zEffect
         animEvent->currentRangeOuter += animEvent->rangeOuterDelta * stepSec;
         CZLight::gwLightSetRange(lightRef->runtimeNode, lightRangeInner, lightRangeOuter);
 
-        float specularR;
-        float specularG;
-        float specularB;
-        CZLight::gwLightGetSpecularColor(lightRef->runtimeNode, &specularR, &specularG, &specularB);
+        zColorRgb specular;
+        CZLight::gwLightGetSpecularColor(lightRef->runtimeNode, &specular.red, &specular.green, &specular.blue);
 
-        specularR += stepSec * animEvent->currentSpecularR;
-        specularG += stepSec * animEvent->currentSpecularG;
-        specularB += stepSec * animEvent->currentSpecularB;
+        specular.red += stepSec * animEvent->currentSpecular.red;
+        specular.green += stepSec * animEvent->currentSpecular.green;
+        specular.blue += stepSec * animEvent->currentSpecular.blue;
 
-        animEvent->currentSpecularR += animEvent->specularRDelta * stepSec;
-        animEvent->currentSpecularG += animEvent->specularGDelta * stepSec;
-        animEvent->currentSpecularB += animEvent->specularBDelta * stepSec;
+        animEvent->currentSpecular.red += animEvent->specularDelta.red * stepSec;
+        animEvent->currentSpecular.green += animEvent->specularDelta.green * stepSec;
+        animEvent->currentSpecular.blue += animEvent->specularDelta.blue * stepSec;
 
-        if (specularR > 1.0f) {
-            specularR = 1.0f;
-        } else if (specularR < 0.0f) {
-            specularR = 0.0f;
+        if (specular.red > 1.0f) {
+            specular.red = 1.0f;
+        } else if (specular.red < 0.0f) {
+            specular.red = 0.0f;
         }
 
-        if (specularG > 1.0f) {
-            specularG = 1.0f;
-        } else if (specularG < 0.0f) {
-            specularG = 0.0f;
+        if (specular.green > 1.0f) {
+            specular.green = 1.0f;
+        } else if (specular.green < 0.0f) {
+            specular.green = 0.0f;
         }
 
-        if (specularB > 1.0f) {
-            specularB = 1.0f;
-        } else if (specularB < 0.0f) {
-            specularB = 0.0f;
+        if (specular.blue > 1.0f) {
+            specular.blue = 1.0f;
+        } else if (specular.blue < 0.0f) {
+            specular.blue = 0.0f;
         }
 
-        CZLight::gwLightSetSpecularColor(lightRef->runtimeNode, specularR, specularG, specularB);
+        CZLight::gwLightSetSpecularColor(lightRef->runtimeNode, specular.red, specular.green, specular.blue);
 
         g_zEffectAnim_State.frameDeltaRemainingSec -= stepSec;
         return sequenceRuntime->eventElapsedSec > animEvent->durationSec ? 2 : 1;
@@ -1103,7 +1100,7 @@ namespace zEffect
                 if (event->basisNodeRefIndex > 0) {
                     basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
                 } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
-                    basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                    basisNode = self->refNodeA;
                 } else {
                     basisNode = 0;
                 }
@@ -1118,7 +1115,7 @@ namespace zEffect
                 if (event->basisNodeRefIndex > 0) {
                     basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
                 } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
-                    basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                    basisNode = self->refNodeA;
                 } else {
                     basisNode = 0;
                 }
@@ -1197,10 +1194,10 @@ namespace zEffect
         if (event->basisNodeRefIndex > 0) {
             basisNode = self->nodeRefList[event->basisNodeRefIndex].node;
         } else if (event->basisNodeRefIndex == kEffectAnimResetScratchRefIndex) {
-            basisNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
-            memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
-            memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
-            memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
+            basisNode = self->refNodeA;
+            point.x = self->refPointA.x;
+            point.y = self->refPointA.y;
+            point.z = self->refPointA.z;
         } else {
             basisNode = 0;
         }
@@ -1377,7 +1374,7 @@ namespace zEffect
                 const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
 
                 if ((animEvent->flags & 0x02) != 0 && (self->flags & 0x80) != 0) {
-                    const zVec3 velocity = { self->velocityX, self->velocityY, self->velocityZ };
+                    const zVec3 velocity = { self->velocity.x, self->velocity.y, self->velocity.z };
                     const zVec3 out = { velocity.x * matrix->xx + velocity.y * matrix->yx + velocity.z * matrix->zx
                             + matrix->posX,
                         velocity.x * matrix->xy + velocity.y * matrix->yy + velocity.z * matrix->zy + matrix->posY,
@@ -2213,7 +2210,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handledetachevent
      * @recoil-artifact defines .text recoil:function:0x45b4a0: zEffect::HandleDetachEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: detach and animate a beam segment between stored or referenced
@@ -2230,146 +2227,154 @@ namespace zEffect
         }
 
         CZNodePartial* const beamNode = self->nodeRefList[event->beamNodeRefIndex].node;
+        zVec3 pointA;
+        zVec3 pointB;
 
         if (runtime->runState == 0) {
-            unsigned int flags = (unsigned int)(event->flags);
-            if ((flags & 0x0800u) != 0) {
+            int flags = event->flags;
+            if ((flags & 0x0800) != 0) {
                 event->segmentStartCurrent = event->segmentStartInitial;
             }
-            if ((flags & 0x2000u) != 0) {
+            if ((flags & 0x2000) != 0) {
                 event->segmentEndCurrent = event->segmentEndInitial;
             }
 
-            if ((flags & 0x04u) != 0) {
-                flags &= ~0x04u;
-                event->flags = (int)(flags);
+            if ((flags & 0x04) != 0) {
+                flags &= ~0x04;
+                event->flags = flags;
 
-                zVec3 point = { 0 };
-                if ((flags & 0x08u) != 0) {
-                    flags &= ~0x08u;
-                    event->flags = (int)(flags);
-                    point = event->pointA;
-                } else if ((flags & 0x10u) != 0) {
-                    flags &= ~0x10u;
-                    event->flags = (int)(flags);
-                    memcpy(&point.x, &self->resetScratch[1], sizeof(point.x));
-                    memcpy(&point.y, &self->resetScratch[2], sizeof(point.y));
-                    memcpy(&point.z, &self->resetScratch[3], sizeof(point.z));
+                CZNodePartial* const refNode = self->refNodeA;
+                if ((flags & 0x08) != 0) {
+                    flags &= ~0x08;
+                    event->flags = flags;
+                    pointA = event->pointA;
+                } else if ((flags & 0x10) != 0) {
+                    flags &= ~0x10;
+                    event->flags = flags;
+                    pointA = self->refPointA;
+                } else {
+                    pointA.x = pointA.y = pointA.z = 0.0f;
                 }
 
-                CZNodePartial* const refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
                 if (refNode != 0) {
-                    CZNode::TransformPoint(refNode, &point);
+                    CZNode::TransformPoint(refNode, &pointA);
                 }
-                event->pointA = point;
-                flags = (unsigned int)(event->flags) | 0x08u;
-                event->flags = (int)(flags);
+                event->pointA = pointA;
+                event->flags |= 0x08;
             }
 
-            flags = (unsigned int)(event->flags);
-            if ((flags & 0x80u) != 0) {
-                flags &= ~0x80u;
-                event->flags = (int)(flags);
+            flags = event->flags;
+            if ((flags & 0x80) != 0) {
+                flags &= ~0x80;
+                event->flags = flags;
 
-                zVec3 point = { 0 };
-                if ((flags & 0x0100u) != 0) {
-                    flags &= ~0x0100u;
-                    event->flags = (int)(flags);
-                    point = event->pointB;
-                } else if ((flags & 0x0200u) != 0) {
-                    flags &= ~0x0200u;
-                    event->flags = (int)(flags);
-                    memcpy(&point.x, &self->resetScratch[5], sizeof(point.x));
-                    memcpy(&point.y, &self->resetScratch[6], sizeof(point.y));
-                    memcpy(&point.z, &self->resetScratch[7], sizeof(point.z));
+                CZNodePartial* const refNode = self->refNodeB;
+                if ((flags & 0x0100) != 0) {
+                    flags &= ~0x0100;
+                    event->flags = flags;
+                    pointB = event->pointB;
+                } else if ((flags & 0x0200) != 0) {
+                    flags &= ~0x0200;
+                    event->flags = flags;
+                    pointB = self->refPointB;
+                } else {
+                    pointB.x = pointB.y = pointB.z = 0.0f;
                 }
 
-                CZNodePartial* const refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[4]));
                 if (refNode != 0) {
-                    CZNode::TransformPoint(refNode, &point);
+                    CZNode::TransformPoint(refNode, &pointB);
                 }
-                event->pointB = point;
-                flags = (unsigned int)(event->flags) | 0x0100u;
-                event->flags = (int)(flags);
+                event->pointB = pointB;
+                event->flags |= 0x0100;
             }
         }
 
-        const float timeSlice = runtime->eventElapsedSec <= event->endTimeSec
-            ? g_zEffectAnim_State.frameDeltaRemainingSec
-            : g_zEffectAnim_State.frameDeltaRemainingSec - (runtime->eventElapsedSec - event->endTimeSec);
+        float timeSlice;
+        if (runtime->eventElapsedSec > event->endTimeSec) {
+            timeSlice = g_zEffectAnim_State.frameDeltaRemainingSec - (runtime->eventElapsedSec - event->endTimeSec);
+        } else {
+            timeSlice = g_zEffectAnim_State.frameDeltaRemainingSec;
+        }
 
-        const unsigned int flags = (unsigned int)(event->flags);
-
-        CZNodePartial* pointANode = 0;
-        if ((flags & 0x01u) != 0) {
+        CZNodePartial* pointANode;
+        if ((event->flags & 0x01) != 0) {
             if (event->pointANodeRefIndex >= 0) {
                 pointANode = self->nodeRefList[event->pointANodeRefIndex].node;
+            } else {
+                pointANode = 0;
             }
-        } else if ((flags & 0x02u) != 0) {
-            pointANode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+        } else if ((event->flags & 0x02) != 0) {
+            pointANode = self->refNodeA;
+        } else {
+            pointANode = 0;
         }
 
-        zVec3 pointA = { 0 };
-        if ((flags & 0x08u) != 0) {
-            pointA = event->pointA;
-        } else if ((flags & 0x10u) != 0) {
-            memcpy(&pointA.x, &self->resetScratch[1], sizeof(pointA.x));
-            memcpy(&pointA.y, &self->resetScratch[2], sizeof(pointA.y));
-            memcpy(&pointA.z, &self->resetScratch[3], sizeof(pointA.z));
+        if ((event->flags & 0x08) != 0) {
+            pointA.x = event->pointA.x;
+            pointA.y = event->pointA.y;
+            pointA.z = event->pointA.z;
+        } else if ((event->flags & 0x10) != 0) {
+            pointA = self->refPointA;
+        } else {
+            pointA.x = pointA.y = pointA.z = 0.0f;
         }
         if (pointANode != 0) {
             CZNode::TransformPoint(pointANode, &pointA);
         }
 
-        CZNodePartial* pointBNode = 0;
-        if ((flags & 0x20u) != 0) {
+        CZNodePartial* pointBNode;
+        if ((event->flags & 0x20) != 0) {
             if (event->pointBNodeRefIndex >= 0) {
                 pointBNode = self->nodeRefList[event->pointBNodeRefIndex].node;
+            } else {
+                pointBNode = 0;
             }
-        } else if ((flags & 0x40u) != 0) {
-            pointBNode = (CZNodePartial*)((unsigned int)(self->resetScratch[4]));
+        } else if ((event->flags & 0x40) != 0) {
+            pointBNode = self->refNodeB;
+        } else {
+            pointBNode = 0;
         }
 
-        zVec3 pointB = { 0 };
-        if ((flags & 0x0100u) != 0) {
-            pointB = event->pointB;
-        } else if ((flags & 0x0200u) != 0) {
-            memcpy(&pointB.x, &self->resetScratch[5], sizeof(pointB.x));
-            memcpy(&pointB.y, &self->resetScratch[6], sizeof(pointB.y));
-            memcpy(&pointB.z, &self->resetScratch[7], sizeof(pointB.z));
+        if ((event->flags & 0x0100) != 0) {
+            pointB.x = event->pointB.x;
+            pointB.y = event->pointB.y;
+            pointB.z = event->pointB.z;
+        } else if ((event->flags & 0x0200) != 0) {
+            pointB = self->refPointB;
+        } else {
+            pointB.x = pointB.y = pointB.z = 0.0f;
         }
         if (pointBNode != 0) {
             CZNode::TransformPoint(pointBNode, &pointB);
         }
 
         int fractionChanged = 0;
-        if ((flags & 0x0400u) != 0) {
+        if ((event->flags & 0x0400) != 0) {
             fractionChanged = 1;
             event->segmentStartCurrent = event->segmentStartInitial;
-        } else if ((flags & 0x0800u) != 0) {
+        } else if ((event->flags & 0x0800) != 0) {
             fractionChanged = 1;
             event->segmentStartCurrent += event->segmentStartRate * timeSlice;
         } else {
             event->segmentStartCurrent = 0.0f;
         }
 
-        if ((flags & 0x1000u) != 0) {
+        if ((event->flags & 0x1000) != 0) {
             fractionChanged = 1;
             event->segmentEndCurrent = event->segmentEndInitial;
-        } else if ((flags & 0x2000u) != 0) {
+        } else if ((event->flags & 0x2000) != 0) {
             fractionChanged = 1;
             event->segmentEndCurrent += event->segmentEndRate * timeSlice;
         } else {
             event->segmentEndCurrent = 1.0f;
         }
 
-        float beamLength = 0.0f;
+        float beamLength;
         if (fractionChanged != 0) {
             if (runtime->eventElapsedSec > event->endTimeSec) {
                 event->segmentStartCurrent = event->segmentStartFinal;
                 event->segmentEndCurrent = event->segmentEndFinal;
             }
-
             beamLength = UpdateBeamNodeBetweenFractions(
                 beamNode,
                 &pointA,
@@ -2382,8 +2387,8 @@ namespace zEffect
         }
 
         int result = 2;
-        if ((flags & 0x8000u) != 0 && beamLength <= event->lengthThreshold) {
-            result = 1;
+        if ((event->flags & 0x8000) != 0) {
+            result = beamLength > event->lengthThreshold ? 2 : 1;
         }
         if (runtime->eventElapsedSec < event->endTimeSec) {
             result = 1;
@@ -2418,7 +2423,7 @@ namespace zEffect
             if ((event->flags & 0x10u) != 0) {
                 refPointA = event->refPointA;
             } else if ((event->flags & 0x20u) != 0) {
-                memcpy(&refPointA, &self->resetScratch[1], sizeof(refPointA));
+                refPointA = self->refPointA;
             } else {
                 refPointA.x = 0.0f;
                 refPointA.y = 0.0f;
@@ -2429,7 +2434,7 @@ namespace zEffect
             if ((event->flags & 0x0400u) != 0) {
                 refPointB = event->refPointB;
             } else if ((event->flags & 0x0800u) != 0) {
-                memcpy(&refPointB, &self->resetScratch[5], sizeof(refPointB));
+                refPointB = self->refPointB;
             } else {
                 refPointB.x = 0.0f;
                 refPointB.y = 0.0f;
@@ -2443,9 +2448,9 @@ namespace zEffect
                 CZNode::TransformPoint(self->nodeRefList[event->refNodeAIndex].node, &refPointA);
                 refNodeA = 0;
             } else if ((event->flags & 0x04u) != 0) {
-                refNodeA = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                refNodeA = self->refNodeA;
             } else if ((event->flags & 0x08u) != 0) {
-                CZNode::TransformPoint((CZNodePartial*)((unsigned int)(self->resetScratch[0])), &refPointA);
+                CZNode::TransformPoint(self->refNodeA, &refPointA);
                 refNodeA = 0;
             } else {
                 refNodeA = (CZNodePartial*)(self);
@@ -2458,9 +2463,9 @@ namespace zEffect
                 CZNode::TransformPoint(self->nodeRefList[event->refNodeBIndex].node, &refPointB);
                 refNodeB = 0;
             } else if ((event->flags & 0x0100u) != 0) {
-                refNodeB = (CZNodePartial*)((unsigned int)(self->resetScratch[4]));
+                refNodeB = self->refNodeB;
             } else if ((event->flags & 0x0200u) != 0) {
-                CZNode::TransformPoint((CZNodePartial*)((unsigned int)(self->resetScratch[4])), &refPointB);
+                CZNode::TransformPoint(self->refNodeB, &refPointB);
                 refNodeB = 0;
             } else {
                 refNodeB = (CZNodePartial*)(self);
@@ -2580,7 +2585,7 @@ namespace zEffect
                     if (event->refNodeIndex > 0) {
                         refNode = self->nodeRefList[event->refNodeIndex].node;
                     } else if (event->refNodeIndex == -200) {
-                        refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                        refNode = self->refNodeA;
                     }
 
                     if (refNode != 0) {
@@ -2605,9 +2610,9 @@ namespace zEffect
                             orientation.x,
                             orientation.y,
                             orientation.z,
-                            self->velocityX,
-                            self->velocityY,
-                            self->velocityZ
+                            self->velocity.x,
+                            self->velocity.y,
+                            self->velocity.z
                         );
                     }
                 } else if ((flags & 0x08u) != 0) {
@@ -2616,7 +2621,7 @@ namespace zEffect
                     if (event->refNodeIndex > 0) {
                         refNode = self->nodeRefList[event->refNodeIndex].node;
                     } else if (event->refNodeIndex == -200) {
-                        refNode = (CZNodePartial*)((unsigned int)(self->resetScratch[0]));
+                        refNode = self->refNodeA;
                     }
 
                     childEntry = zEffectAnim::SetPositionRefAndVelocity(
@@ -2624,15 +2629,15 @@ namespace zEffect
                         boundNode,
                         refNode,
                         &position,
-                        (const zVec3*)(&self->velocityX)
+                        &self->velocity
                     );
                 } else {
                     childEntry = zEffectAnim::SetVelocity(
                         &g_zEffectAnim_State.entryList[event->animEntryIndex],
                         boundNode,
-                        self->velocityX,
-                        self->velocityY,
-                        self->velocityZ
+                        self->velocity.x,
+                        self->velocity.y,
+                        self->velocity.z
                     );
                 }
 
@@ -3015,7 +3020,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.traceupwardhitfromnodeorpos
      * @recoil-artifact defines .text recoil:function:0x45c530: zEffect::TraceUpwardHitFromNodeOrPos.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: cast upward from a node or explicit position and report whether
@@ -3028,18 +3033,16 @@ namespace zEffect
         int* outHit
     )
     {
-        zVec3 startPosition = { 0 };
+        zVec3 startPosition;
         if (nodeOrNull != 0) {
             const int result = CZNode::GetWorldPosition(nodeOrNull, &startPosition);
             if (result != 0) {
                 return result;
             }
-        } else {
-            if (positionOrNull == 0) {
-                return 1;
-            }
-
+        } else if (positionOrNull != 0) {
             startPosition = *positionOrNull;
+        } else {
+            return 1;
         }
 
         const float height = rayHeight != 0 ? *rayHeight : 50.0f;
@@ -3047,7 +3050,7 @@ namespace zEffect
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZDisplayInstance::SetBreakOnFirstCandidate(1);
 
-        PlayerProbeSampleCandidateBuffer rayData = { 0 };
+        PlayerProbeSampleCandidateBuffer rayData;
         const int result = CZDisplayInstance::RaycastFindClosest(
             g_zEffectAnim_State.worldNode,
             startPosition.x,
@@ -3062,7 +3065,11 @@ namespace zEffect
         CZDisplayInstance::SetBreakOnFirstCandidate(0);
         CZClass::gwNodeSetRaycastable(nodeOrNull, 1);
 
-        *outHit = result == 0 && rayData.candidateCount > 0 ? 1 : 0;
+        if (result == 0 && rayData.candidateCount > 0) {
+            *outHit = 1;
+        } else {
+            *outHit = 0;
+        }
         return result;
     }
 
@@ -3092,7 +3099,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-source previously-byte-matched
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
@@ -3642,34 +3649,34 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequence
      * @recoil-artifact defines .text recoil:function:0x45d010: zEffect_Anim::RunSequence.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: run an active animation entry, including conditional/variant gates,
      * sequence stepping, completion callback dispatch, and stop cleanup.
      */
-    int __fastcall RunSequence(CZNodePartial * node)
+    void __fastcall RunSequence(CZNodePartial * node)
     {
         int allSequencesFinished = 1;
         if (node == 0) {
-            return 0;
+            return;
         }
 
         zEffectAnimEntry* const entry = (zEffectAnimEntry*)(node->callbackContext);
         if (entry == 0) {
-            return 0;
+            return;
         }
 
         const unsigned int flags = entry->flags;
-        if ((flags & 0x0eu) != 0) {
+        if ((flags & 0x02u) != 0 || (flags & 0x0cu) != 0) {
             if (entry->variantCycleDelay > 0) {
                 --entry->variantCycleDelay;
-                return entry->variantCycleDelay;
+                return;
             }
 
             if ((flags & 0x02u) != 0) {
                 if (g_zEffectAnim_State.conditionalRefPosEnabled == 0) {
-                    return 0;
+                    return;
                 }
 
                 const float distanceSq = zEffect::GetConditionalRefPosDistanceSq(entry->callbackNode);
@@ -3677,17 +3684,17 @@ namespace zEffect_Anim
                     unsigned char& variantCycleId = *((unsigned char*)(&g_zEffect_VariantCycleId));
                     entry->variantCycleDelay = variantCycleId;
                     ++variantCycleId;
-                    const int maxCycleId = ((int)(entry->priority) * 10) >> 2;
+                    const int maxCycleId = ((int)(entry->priority) * 10) / 4;
                     if ((int)(variantCycleId) > maxCycleId) {
                         variantCycleId = 1;
                     }
-                    return 0;
+                    return;
                 }
             }
 
             if ((entry->flags & 0x08u) != 0) {
                 if (g_zEffectAnim_State.variantOverrideEnabled == 0) {
-                    return 0;
+                    return;
                 }
 
                 memcpy(
@@ -3702,7 +3709,7 @@ namespace zEffect_Anim
                     if (variantCycleId > 10) {
                         variantCycleId = 1;
                     }
-                    return 0;
+                    return;
                 }
             }
 
@@ -3712,11 +3719,11 @@ namespace zEffect_Anim
                     unsigned char& variantCycleId = *((unsigned char*)(&g_zEffect_VariantCycleId));
                     entry->variantCycleDelay = variantCycleId;
                     ++variantCycleId;
-                    const int maxCycleId = ((int)(entry->priority) * 10) >> 2;
+                    const int maxCycleId = ((int)(entry->priority) * 10) / 4;
                     if ((int)(variantCycleId) > maxCycleId) {
                         variantCycleId = 1;
                     }
-                    return 0;
+                    return;
                 }
                 entry->callbackNode->flags = callbackFlags & 0x7fffffffu;
             }
@@ -3732,18 +3739,18 @@ namespace zEffect_Anim
                     entry->activationState = 5;
                     zError::ReportOld(
                         0x400,
-                        kZeffAnimRunSourceFile,
+                        "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_run.c",
                         0x180f,
                         "Corrupt animation:\n  Animation: %s; Sequence: %s\n",
                         entry,
                         sequenceRuntime
                     );
                 }
-            }
 
-            const unsigned char runStateAfterDispatch = sequenceRuntime->runState;
-            if (runStateAfterDispatch == 0 || runStateAfterDispatch == 1) {
-                allSequencesFinished = 0;
+                const unsigned char runStateAfterDispatch = sequenceRuntime->runState;
+                if (runStateAfterDispatch == 0 || runStateAfterDispatch == 1) {
+                    allSequencesFinished = 0;
+                }
             }
         }
 
@@ -3753,8 +3760,6 @@ namespace zEffect_Anim
             }
             zEffectAnim::Stop(entry);
         }
-
-        return 0;
     }
 
     /**
@@ -4214,13 +4219,13 @@ namespace zEffectAnim
             activatedEntry->flags |= 0x80u;
         }
 
-        activatedEntry->velocityX = velocityX;
-        activatedEntry->velocityY = velocityY;
-        activatedEntry->velocityZ = velocityZ;
-        activatedEntry->resetScratch[0] = 0;
-        activatedEntry->resetScratch[1] = activatedEntry->resetScratch[2] = activatedEntry->resetScratch[3] = 0;
-        activatedEntry->resetScratch[4] = 0;
-        activatedEntry->resetScratch[5] = activatedEntry->resetScratch[6] = activatedEntry->resetScratch[7] = 0;
+        activatedEntry->velocity.x = velocityX;
+        activatedEntry->velocity.y = velocityY;
+        activatedEntry->velocity.z = velocityZ;
+        activatedEntry->refNodeA = 0;
+        activatedEntry->refPointA.x = activatedEntry->refPointA.y = activatedEntry->refPointA.z = 0.0f;
+        activatedEntry->refNodeB = 0;
+        activatedEntry->refPointB.x = activatedEntry->refPointB.y = activatedEntry->refPointB.z = 0.0f;
 
         QueueCmdType1TransformRotVelocity(
             self,
@@ -4497,13 +4502,13 @@ namespace zEffectAnim
             activatedEntry->flags |= 0x80u;
         }
 
-        activatedEntry->velocityX = velocityX;
-        activatedEntry->velocityY = velocityY;
-        activatedEntry->velocityZ = velocityZ;
-        activatedEntry->resetScratch[0] = 0;
-        activatedEntry->resetScratch[1] = activatedEntry->resetScratch[2] = activatedEntry->resetScratch[3] = 0;
-        activatedEntry->resetScratch[4] = 0;
-        activatedEntry->resetScratch[5] = activatedEntry->resetScratch[6] = activatedEntry->resetScratch[7] = 0;
+        activatedEntry->velocity.x = velocityX;
+        activatedEntry->velocity.y = velocityY;
+        activatedEntry->velocity.z = velocityZ;
+        activatedEntry->refNodeA = 0;
+        activatedEntry->refPointA.x = activatedEntry->refPointA.y = activatedEntry->refPointA.z = 0.0f;
+        activatedEntry->refNodeB = 0;
+        activatedEntry->refPointB.x = activatedEntry->refPointB.y = activatedEntry->refPointB.z = 0.0f;
 
         QueueCmdType2Velocity(self, boundNode, velocityX, velocityY, velocityZ);
         return activatedEntry;
@@ -4567,30 +4572,30 @@ namespace zEffectAnim
                 break;
             }
         }
-        activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNode));
+        activatedEntry->refNodeA = refNode;
         if (refVec != 0) {
-            *(zVec3*)(&activatedEntry->resetScratch[1]) = *refVec;
+            activatedEntry->refPointA = *refVec;
         } else {
-            activatedEntry->resetScratch[1] = 0;
-            activatedEntry->resetScratch[2] = 0;
-            activatedEntry->resetScratch[3] = 0;
+            activatedEntry->refPointA.x = 0.0f;
+            activatedEntry->refPointA.y = 0.0f;
+            activatedEntry->refPointA.z = 0.0f;
         }
-        activatedEntry->resetScratch[4] = 0;
-        activatedEntry->resetScratch[5] = 0;
-        activatedEntry->resetScratch[6] = 0;
-        activatedEntry->resetScratch[7] = 0;
+        activatedEntry->refNodeB = 0;
+        activatedEntry->refPointB.x = 0.0f;
+        activatedEntry->refPointB.y = 0.0f;
+        activatedEntry->refPointB.z = 0.0f;
 
         if (velocityVec != 0
             && (fabs(velocityVec->x) > 0.01f || fabs(velocityVec->y) > 0.01f || fabs(velocityVec->z) > 0.01f)) {
             activatedEntry->flags |= 0x80u;
-            activatedEntry->velocityX = velocityVec->x;
-            activatedEntry->velocityY = velocityVec->y;
-            activatedEntry->velocityZ = velocityVec->z;
+            activatedEntry->velocity.x = velocityVec->x;
+            activatedEntry->velocity.y = velocityVec->y;
+            activatedEntry->velocity.z = velocityVec->z;
         } else {
             activatedEntry->flags &= ~0x80u;
-            activatedEntry->velocityZ = 0.0f;
-            activatedEntry->velocityY = 0.0f;
-            activatedEntry->velocityX = 0.0f;
+            activatedEntry->velocity.z = 0.0f;
+            activatedEntry->velocity.y = 0.0f;
+            activatedEntry->velocity.x = 0.0f;
         }
 
         QueueCmdType3PositionRefAndVelocity(self, boundNode, refNode, refVec, velocityVec);
@@ -4655,21 +4660,21 @@ namespace zEffectAnim
                 break;
             }
         }
-        activatedEntry->resetScratch[0] = (unsigned int)((unsigned int)(refNodeA));
+        activatedEntry->refNodeA = refNodeA;
         if (refVecA != 0) {
-            *(zVec3*)(&activatedEntry->resetScratch[1]) = *refVecA;
+            activatedEntry->refPointA = *refVecA;
         } else {
-            activatedEntry->resetScratch[1] = 0;
-            activatedEntry->resetScratch[2] = 0;
-            activatedEntry->resetScratch[3] = 0;
+            activatedEntry->refPointA.x = 0.0f;
+            activatedEntry->refPointA.y = 0.0f;
+            activatedEntry->refPointA.z = 0.0f;
         }
-        activatedEntry->resetScratch[4] = (unsigned int)((unsigned int)(refNodeB));
+        activatedEntry->refNodeB = refNodeB;
         if (refVecB != 0) {
-            *(zVec3*)(&activatedEntry->resetScratch[5]) = *refVecB;
+            activatedEntry->refPointB = *refVecB;
         } else {
-            activatedEntry->resetScratch[5] = 0;
-            activatedEntry->resetScratch[6] = 0;
-            activatedEntry->resetScratch[7] = 0;
+            activatedEntry->refPointB.x = 0.0f;
+            activatedEntry->refPointB.y = 0.0f;
+            activatedEntry->refPointB.z = 0.0f;
         }
 
         QueueCmdType4TransformRefs(self, boundNode, refNodeA, refVecA, refNodeB, refVecB);

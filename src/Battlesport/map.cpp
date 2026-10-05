@@ -877,73 +877,75 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
  *
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
-int HudRectI::ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd)
+int __fastcall HudRectI::ClipOrSplitSegment(zVec3* segmentStart, zVec3* segmentEnd)
 {
-    if (left == right) {
+    if (left - right == 0) {
         return 1;
     }
 
-    int startOutcode = CalcOutcode(segmentStart);
-    int endOutcode = CalcOutcode(segmentEnd);
+    int endOutcode, startOutcode;
+    zVec3* swapPoint;
+    startOutcode = CalcOutcode(segmentStart);
+    endOutcode = CalcOutcode(segmentEnd);
     if (startOutcode == 0 && endOutcode == 0) {
         return 0;
     }
-    if ((startOutcode & endOutcode) != 0) {
+    if ((endOutcode & startOutcode) != 0) {
         return 1;
     }
 
-    if ((startOutcode == 0) != (endOutcode == 0)) {
-        if (startOutcode != 0) {
-            zVec3* const oldStart = segmentStart;
-            segmentStart = segmentEnd;
-            segmentEnd = oldStart;
-            endOutcode = startOutcode;
-            startOutcode = 0;
-        }
+    if (endOutcode == 0 && startOutcode != 0) {
+        swapPoint = segmentEnd;
+        endOutcode = startOutcode;
+        segmentEnd = segmentStart;
+        segmentStart = swapPoint;
+        startOutcode = 0;
+    }
 
+    if (startOutcode == 0 && endOutcode != 0) {
         if (SegmentIntersectsEdge(8, segmentStart, segmentEnd) != 0) {
-            HudLineClip::ClipEndpointToY(segmentEnd, segmentStart, (float)(top));
-            return 1;
+            HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(top));
         } else if (SegmentIntersectsEdge(4, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
-            return 1;
         } else if (SegmentIntersectsEdge(1, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
-            return 1;
         } else if (SegmentIntersectsEdge(2, segmentStart, segmentEnd) != 0) {
             HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
-            return 1;
+        } else {
+            return 0;
         }
-        return 0;
+        return 1;
     }
 
     g_HudSensor_ClipSegmentStart = *segmentStart;
     g_HudSensor_ClipSegmentEnd = *segmentEnd;
-    if ((SegmentIntersectsEdge(8, segmentStart, segmentEnd) | SegmentIntersectsEdge(4, segmentStart, segmentEnd)
-            | SegmentIntersectsEdge(1, segmentStart, segmentEnd) | SegmentIntersectsEdge(2, segmentStart, segmentEnd))
-        == 0) {
+    int hitEdges = SegmentIntersectsEdge(8, segmentStart, segmentEnd);
+    hitEdges |= SegmentIntersectsEdge(4, segmentStart, segmentEnd);
+    hitEdges |= SegmentIntersectsEdge(1, segmentStart, segmentEnd);
+    hitEdges |= SegmentIntersectsEdge(2, segmentStart, segmentEnd);
+    if (hitEdges == 0) {
         return 1;
     }
 
     if (IsCornerOutcode(startOutcode) != 0) {
-        zVec3* const oldStart = segmentStart;
-        segmentStart = segmentEnd;
-        segmentEnd = oldStart;
+        swapPoint = segmentStart;
         const int oldStartOutcode = startOutcode;
         startOutcode = endOutcode;
+        segmentStart = segmentEnd;
+        segmentEnd = swapPoint;
         endOutcode = oldStartOutcode;
     }
 
     if ((startOutcode & 1) != 0) {
-        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(left));
+        HudLineClip::ClipEndpointToX(segmentEnd, segmentStart, (float)(left));
     } else if ((startOutcode & 2) != 0) {
-        HudLineClip::ClipEndpointToX(segmentStart, segmentEnd, (float)(right));
+        HudLineClip::ClipEndpointToX(segmentEnd, segmentStart, (float)(right));
     }
 
     if ((startOutcode & 8) != 0) {
-        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(top));
+        HudLineClip::ClipEndpointToY(segmentEnd, segmentStart, (float)(top));
     } else if ((startOutcode & 4) != 0) {
-        HudLineClip::ClipEndpointToY(segmentStart, segmentEnd, (float)(bottom));
+        HudLineClip::ClipEndpointToY(segmentEnd, segmentStart, (float)(bottom));
     }
 
     if ((endOutcode & 1) != 0) {
@@ -1005,12 +1007,23 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */
-int HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd)
+int __fastcall HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, const zVec3* segmentEnd)
 {
-    zVec3 edgeStart = { 0 };
-    zVec3 edgeEnd = { 0 };
+    zVec3 edgeEnd, edgeStart;
 
     switch (edgeCode) {
+    case 8:
+        edgeStart.x = (float)(left);
+        edgeStart.y = (float)(top);
+        edgeEnd.x = (float)(right);
+        edgeEnd.y = (float)(top);
+        break;
+    case 4:
+        edgeStart.x = (float)(left);
+        edgeStart.y = (float)(bottom);
+        edgeEnd.x = (float)(right);
+        edgeEnd.y = (float)(bottom);
+        break;
     case 1:
         edgeStart.x = (float)(left);
         edgeStart.y = (float)(top);
@@ -1023,28 +1036,14 @@ int HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmentStart, con
         edgeEnd.x = (float)(right);
         edgeEnd.y = (float)(bottom);
         break;
-    case 4:
-        edgeStart.x = (float)(left);
-        edgeStart.y = (float)(bottom);
-        edgeEnd.x = (float)(right);
-        edgeEnd.y = (float)(bottom);
-        break;
-    case 8:
-        edgeStart.x = (float)(left);
-        edgeStart.y = (float)(top);
-        edgeEnd.x = (float)(right);
-        edgeEnd.y = (float)(top);
-        break;
-    default:
-        return 0;
     }
 
-    const int edgeStartSide = HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart);
-    const int edgeEndSide = HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd);
-    const int segEdgeStartSide = HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart);
-    const int segEdgeEndSide = HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd);
-
-    if (edgeStartSide * edgeEndSide <= 0 && segEdgeStartSide * segEdgeEndSide <= 0) {
+    if (HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentStart)
+                * HudGeom2D::ClassifyPointAgainstSegment(&edgeStart, &edgeEnd, segmentEnd)
+            <= 0
+        && HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeStart)
+                * HudGeom2D::ClassifyPointAgainstSegment(segmentStart, segmentEnd, &edgeEnd)
+            <= 0) {
         return edgeCode;
     }
 

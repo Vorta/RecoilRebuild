@@ -1999,7 +1999,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
  * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits recoil:function:0x43a900
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
@@ -2845,11 +2845,13 @@ int __fastcall EnterDestroyedState(
         ApplyStatusMeterChange(saveState, -damage, 1);
         if (g_PlayerStatusMeterRatio <= 0.0) {
             const int nanitePanelLevel = playerState->nanitePanelLevel;
-            if (nanitePanelLevel != 0 && nanitePanelLevel != kPlayerNanitePanelDisabledSentinel) {
-                playerState->nanitePanelLevel = nanitePanelLevel - 1;
-                HudUiMgr::SetNanitePanelCount(nanitePanelLevel - 1);
+            if (nanitePanelLevel != 0) {
+                if (nanitePanelLevel != kPlayerNanitePanelDisabledSentinel) {
+                    playerState->nanitePanelLevel = nanitePanelLevel - 1;
+                    HudUiMgr::SetNanitePanelCount(nanitePanelLevel - 1);
+                }
+                UpdateStatusMeter(saveState, 0, 0.0f);
             }
-            UpdateStatusMeter(saveState, 0, 0.0f);
         }
     }
 

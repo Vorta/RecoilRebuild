@@ -714,7 +714,7 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-clippatch
  * @recoil-artifact defines .text recoil:function:0x46b1f0: zGeometry_Model::ClipPatch
- *
+ * @recoil-match byte
  *
  * Purpose: Clip an outline against visible feature-grid nodes and build patch output.
  */
@@ -758,12 +758,13 @@ int __fastcall ClipPatch(
     partitionOutput->nodeDiPairs = nodeDiPair;
 
     CZNodePartial* const cameraNode = zDEClient::GetCameraNode();
-    const size_t candidateBytes
-        = (size_t)(featureGridCell->nodeCount + cameraNode->listCountB) * sizeof(zGeometry_ClipPatchNodeView*);
-    zGeometry_ClipPatchNodeView** const insideNodes = (zGeometry_ClipPatchNodeView**)(malloc(candidateBytes));
-    zGeometry_ClipPatchNodeView** const clipNodes = (zGeometry_ClipPatchNodeView**)(malloc(candidateBytes));
-    int clipNodeCount = 0;
+    const int candidateCount = featureGridCell->nodeCount + cameraNode->listCountB;
+    zGeometry_ClipPatchNodeView** const insideNodes
+        = (zGeometry_ClipPatchNodeView**)(malloc(candidateCount * sizeof(zGeometry_ClipPatchNodeView*)));
     int insideNodeCount = 0;
+    zGeometry_ClipPatchNodeView** const clipNodes
+        = (zGeometry_ClipPatchNodeView**)(malloc(candidateCount * sizeof(zGeometry_ClipPatchNodeView*)));
+    int clipNodeCount = 0;
 
     int nodeIndex;
     for (nodeIndex = 0; nodeIndex < cameraNode->listCountB; ++nodeIndex) {
@@ -803,13 +804,13 @@ int __fastcall ClipPatch(
 
     clipPolygon->weilerState = zGeometry_Weiler::Init(clipPolygon->points, clipPolygon->pointCount, 0);
 
-    for (nodeIndex = 0; nodeIndex < insideNodeCount && result != 0; ++nodeIndex) {
+    for (nodeIndex = 0; result != 0 && nodeIndex < insideNodeCount; ++nodeIndex) {
         result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, insideNodes[nodeIndex], &nodeDiPair->di);
     }
 
     for (nodeIndex = 0; result != 0 && nodeIndex < clipNodeCount; ++nodeIndex) {
         nodeDiPair->node = clipNodes[nodeIndex];
-        result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, clipNodes[nodeIndex], &nodeDiPair->di);
+        result = zGeometry_ClipPolygon::ProcessNodePolygonSetXY(clipPolygon, nodeDiPair->node, &nodeDiPair->di);
         if (nodeDiPair->di != 0) {
             ++nodeDiPairCount;
             ++nodeDiPair;
@@ -1073,13 +1074,13 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 return 0;
             }
 
-            zVec3* inputContourPoints = 0;
+            clipTouched = 1;
+            zVec3* inputContourPoints;
             const int inputContourPointCount
                 = zGeometry_Weiler::GetInputContourAPointList(clipPolygon->weilerState, &inputContourPoints);
-            clipTouched = 1;
 
             zGeometry_TriangleSoup* triangleSoup = zGeometry::TriangulatePolygonWithHole(
-                pointCount,
+                polygon->vertexCountAndFlags & 0xff,
                 polygonPointsBuffer,
                 inputContourPointCount,
                 inputContourPoints
@@ -1090,7 +1091,7 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 clipPolygonDirty = 1;
             }
 
-            if (triangleSoup->triangleCount < pointCount + inputContourPointCount) {
+            if (triangleSoup->triangleCount < (int)(polygon->vertexCountAndFlags & 0xff) + inputContourPointCount) {
                 if (polygonPointsBuffer != 0) {
                     free(polygonPointsBuffer);
                 }

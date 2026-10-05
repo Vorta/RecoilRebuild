@@ -1362,48 +1362,54 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState* s
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     const int localColorIndex = GetLocalPlayerColorIndexOrZero();
     GameNetSpawnPoint* spawnPoint = g_GameNetSpawnPointHead;
+    float bestNearestDistanceSq = 0.0f;
     GameNetSpawnPoint* selectedSpawn = spawnPoint;
 
     if (useColorIndexedSpawn != 0) {
-        if (localColorIndex > 1) {
-            int colorIndex = 1;
-            while (spawnPoint != 0 && colorIndex < localColorIndex) {
-                spawnPoint = spawnPoint->next;
-                ++colorIndex;
+        for (int colorIndex = 1; colorIndex < localColorIndex; ++colorIndex) {
+            if (spawnPoint == 0) {
+                break;
             }
+            spawnPoint = spawnPoint->next;
         }
         selectedSpawn = spawnPoint;
     } else if (g_HudSensorTracker.raceCheckpointMode != 0) {
         selectedSpawn = 0;
     } else {
+        zUtil_PlayerStateStorage* const dropState = saveState->playerState;
         PickupType* const pickupType = Pickup::FindDroppableTypeForPlayerCurrentWeapon(saveState);
-        PickupParsedZrdEntry entry = { 0 };
+        PickupParsedZrdEntry entry;
         entry.typeDesc = pickupType;
         entry.amount = pickupType->defaultAmount;
-        entry.position = playerState->worldPos;
-        entry.rotation = playerState->vehicleRotationAngles;
+        entry.position = dropState->worldPos;
+        entry.rotation = dropState->vehicleRotationAngles;
+        entry.param = 0;
+        entry.unknown_2c = 0;
+        entry.respawnDelay = 0.0f;
         PickupSpawnDef* const pickupSpawn = Pickup::SpawnFromParsedZrdEntry(&entry);
         if (pickupSpawn != 0) {
             Pickup::SendPkt11CreateDelta(pickupSpawn);
         }
 
-        selectedSpawn = 0;
-        float bestNearestDistanceSq = 0.0f;
-        GameNetPlayerSaveState* nearestSaveState = 0;
+        GameNetPlayerSaveState* nearestSaveState;
         while (spawnPoint != 0) {
             const float nearestDistanceSq = GetNearestOtherPlayerDistanceToSpawnPoint(spawnPoint, &nearestSaveState);
             if (nearestDistanceSq > bestNearestDistanceSq) {
                 bestNearestDistanceSq = nearestDistanceSq;
                 selectedSpawn = spawnPoint;
             }
-            spawnPoint = spawnPoint->next;
+            spawnPoint = spawnPoint != 0 ? spawnPoint->next : 0;
         }
     }
 
     if (selectedSpawn != 0) {
         const double kDegreesToRadians = 0.017453292519943295;
-        const float yawRad = (float)(selectedSpawn->yawDegrees * kDegreesToRadians);
-        Player::SetWorldPoseAndRestartAnchor(saveState, &selectedSpawn->position, yawRad);
+        zVec3 position = selectedSpawn->position;
+        Player::SetWorldPoseAndRestartAnchor(
+            saveState,
+            &position,
+            (float)(selectedSpawn->yawDegrees * kDegreesToRadians)
+        );
     }
 
     if (saveState->primaryModalState->masterModalData->masterType != 3 && g_HudSensorTracker.raceCheckpointMode == 0) {
@@ -1413,8 +1419,8 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState* s
     Player::ResetMouseControlStateAndRecenterCursor(saveState);
     Player::ResetMotionTransientState(saveState);
     playerState->amphibUnlocked = Player::IsMissionProbeType1EnabledById(g_HudSensorTracker.GetMissionId());
-    playerState->hoverUnlocked = 0;
     playerState->subUnlocked = 0;
+    playerState->hoverUnlocked = 0;
 }
 
 /**

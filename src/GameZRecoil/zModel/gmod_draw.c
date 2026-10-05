@@ -2100,81 +2100,123 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
     int uvCount
 )
 {
-    if (uvCount <= 0) {
-        return;
-    }
+    const unsigned int wrapExtent = g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800;
+    int i;
 
-    const float rateU = scrollRates[0];
-    const float rateV = scrollRates[1];
-    if (rateU == 0.0f && rateV == 0.0f) {
-        return;
-    }
-
-    const float deltaU = rateU * g_FrameDeltaTimeSec;
-    const float deltaV = rateV * g_FrameDeltaTimeSec;
-
-    float minU = uvs[0].u + deltaU;
-    float maxU = minU;
-    float minV = uvs[0].v + deltaV;
-    float maxV = minV;
-    uvs[0].u = minU;
-    uvs[0].v = minV;
-
-    for (int i = 1; i < uvCount; ++i) {
-        if (rateU != 0.0f) {
-            const float u = uvs[i].u + deltaU;
-            uvs[i].u = u;
-            if (u < minU) {
-                minU = u;
+    if (scrollRates[0] != 0.0f && scrollRates[1] != 0.0f) {
+        const float deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
+        const float deltaV = g_FrameDeltaTimeSec * scrollRates[1];
+        uvs[0].u = deltaU + uvs[0].u;
+        uvs[0].v = deltaV + uvs[0].v;
+        float minU = uvs[0].u;
+        float maxU = uvs[0].u;
+        float minV = uvs[0].v;
+        float maxV = uvs[0].v;
+        for (i = 1; i < uvCount; ++i) {
+            uvs[i].u = deltaU + uvs[i].u;
+            uvs[i].v = deltaV + uvs[i].v;
+            if (uvs[i].u < minU) {
+                minU = uvs[i].u;
+            } else if (uvs[i].u > maxU) {
+                maxU = uvs[i].u;
             }
-            if (u > maxU) {
-                maxU = u;
+            if (uvs[i].v < minV) {
+                minV = uvs[i].v;
+            } else if (uvs[i].v > maxV) {
+                maxV = uvs[i].v;
             }
         }
 
-        if (rateV != 0.0f) {
-            const float v = uvs[i].v + deltaV;
-            uvs[i].v = v;
-            if (v < minV) {
-                minV = v;
+        const int floorMinU = (int)floor(minU);
+        const int floorMinV = (int)floor(minV);
+        const int ceilMaxU = (int)ceil(maxU);
+        const int ceilMaxV = (int)ceil(maxV);
+        const int extentU = wrapExtent >> textureInfo->wrapShiftU;
+        const int extentV = wrapExtent >> textureInfo->wrapShiftV;
+        int correctionU = 0;
+        int correctionV = 0;
+        if (floorMinU <= -extentU) {
+            correctionU = extentU - ceilMaxU;
+        } else if (ceilMaxU >= extentU) {
+            correctionU = -(floorMinU + extentU);
+        }
+        if (floorMinV <= -extentV) {
+            correctionV = extentV - ceilMaxV;
+        } else if (ceilMaxV >= extentV) {
+            correctionV = -(floorMinV + extentV);
+        }
+
+        if (correctionU != 0 && correctionV != 0) {
+            for (i = 0; i < uvCount; ++i) {
+                uvs[i].u += (float)correctionU;
+                uvs[i].v += (float)correctionV;
             }
-            if (v > maxV) {
-                maxV = v;
+        } else if (correctionU != 0) {
+            for (i = 0; i < uvCount; ++i) {
+                uvs[i].u += (float)correctionU;
+            }
+        } else if (correctionV != 0) {
+            for (i = 0; i < uvCount; ++i) {
+                uvs[i].v += (float)correctionV;
             }
         }
-    }
-
-    const int minFloorU = (int)(floor(minU));
-    const int minFloorV = (int)(floor(minV));
-    const int maxCeilU = (int)(ceil(maxU));
-    const int maxCeilV = (int)(ceil(maxV));
-
-    int correctionU = 0;
-    if (rateU != 0.0f) {
-        const int wrapExtentU
-            = (int)((unsigned int)(g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800) >> textureInfo->wrapShiftU);
-        if (minFloorU <= -wrapExtentU) {
-            correctionU = wrapExtentU - (int)(floor(maxU));
-        } else if (maxCeilU >= wrapExtentU) {
-            correctionU = -((int)(ceil(minU)) + wrapExtentU);
+    } else if (scrollRates[0] != 0.0f) {
+        const float deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
+        float minU = deltaU + uvs[0].u;
+        float maxU = minU;
+        uvs[0].u = minU;
+        for (i = 1; i < uvCount; ++i) {
+            uvs[i].u = deltaU + uvs[i].u;
+            if (uvs[i].u < minU) {
+                minU = uvs[i].u;
+            } else if (uvs[i].u > maxU) {
+                maxU = uvs[i].u;
+            }
         }
-    }
 
-    int correctionV = 0;
-    if (rateV != 0.0f) {
-        const int wrapExtentV
-            = (int)((unsigned int)(g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800) >> textureInfo->wrapShiftV);
-        if (minFloorV <= -wrapExtentV) {
-            correctionV = wrapExtentV - (int)(floor(maxV));
-        } else if (maxCeilV >= wrapExtentV) {
-            correctionV = -((int)(ceil(minV)) + wrapExtentV);
+        const int floorMinU = (int)floor(minU);
+        const int ceilMaxU = (int)ceil(maxU);
+        const int extentU = wrapExtent >> textureInfo->wrapShiftU;
+        int correctionU = 0;
+        if (floorMinU <= -extentU) {
+            correctionU = extentU - ceilMaxU;
+        } else if (ceilMaxU >= extentU) {
+            correctionU = -(floorMinU + extentU);
         }
-    }
 
-    if (correctionU != 0 || correctionV != 0) {
-        for (int i = 0; i < uvCount; ++i) {
-            uvs[i].u += (float)(correctionU);
-            uvs[i].v += (float)(correctionV);
+        if (correctionU != 0) {
+            for (i = 0; i < uvCount; ++i) {
+                uvs[i].u += (float)correctionU;
+            }
+        }
+    } else if (scrollRates[1] != 0.0f) {
+        const float deltaV = g_FrameDeltaTimeSec * scrollRates[1];
+        float minV = deltaV + uvs[0].v;
+        float maxV = minV;
+        uvs[0].v = minV;
+        for (i = 1; i < uvCount; ++i) {
+            uvs[i].v = deltaV + uvs[i].v;
+            if (uvs[i].v < minV) {
+                minV = uvs[i].v;
+            } else if (uvs[i].v > maxV) {
+                maxV = uvs[i].v;
+            }
+        }
+
+        const int floorMinV = (int)floor(minV);
+        const int ceilMaxV = (int)ceil(maxV);
+        const int extentV = wrapExtent >> textureInfo->wrapShiftV;
+        int correctionV = 0;
+        if (floorMinV <= -extentV) {
+            correctionV = extentV - ceilMaxV;
+        } else if (ceilMaxV >= extentV) {
+            correctionV = -(floorMinV + extentV);
+        }
+
+        if (correctionV != 0) {
+            for (i = 0; i < uvCount; ++i) {
+                uvs[i].v += (float)correctionV;
+            }
         }
     }
 }

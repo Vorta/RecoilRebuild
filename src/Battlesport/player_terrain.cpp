@@ -50,6 +50,8 @@
  */
 extern int g_PlayerTerrainIdCounterAlignment0;
 extern int g_PlayerTerrainIdCounterAlignment1;
+extern int g_PlayerTerrainIdCounterAlignment2;
+extern int g_PlayerTerrainIdCounterAlignment3;
 extern char g_HudUiCounterText_PlayerLabel[];
 
 extern "C" {

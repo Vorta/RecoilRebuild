@@ -1423,11 +1423,13 @@ void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState* saveState)
     }
 
     if (playerState->worldCollisionResolved != 1) {
+        // Above the surface the sub is pulled down onto it; below it keeps its
+        // depth but never sinks under the deepest submerged sample's base.
         float resolvedY = masterModalData->modeAltTransitionTime + outBestHeight;
-        if (playerState->worldPos.y >= resolvedY) {
+        if (playerState->worldPos.y <= resolvedY) {
             const float submergedProbeBaseHeight
                 = deepestSubmergedSampleHeight - masterModalData->probePoints[15 + deepestSubmergedSampleIndex].y;
-            if (playerState->worldPos.y > submergedProbeBaseHeight) {
+            if (playerState->worldPos.y < submergedProbeBaseHeight) {
                 resolvedY = submergedProbeBaseHeight;
             } else {
                 resolvedY = playerState->worldPos.y;
@@ -1468,7 +1470,7 @@ void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState* saveState)
     }
 
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
-        && playerState->worldPos.y + 2.20000005f >= outBestHeight) {
+        && playerState->worldPos.y + 2.20000005f > outBestHeight) {
         TransitionToMasterTypeAmphib(saveState, 0, 0);
     }
 }
