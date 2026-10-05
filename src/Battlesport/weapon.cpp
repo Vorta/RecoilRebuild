@@ -2605,6 +2605,7 @@ int __fastcall HitCallbackRecordNetContextAndTimedStatus(
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-hitcallback-recordcontextandtimedstatus
  * @recoil-artifact defines .text recoil:function:0x43b870: Player::HitCallbackRecordContextAndTimedStatus
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
  *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
@@ -2624,7 +2625,6 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     float damage
 )
 {
-    OptCatalogEntryDef* killEventContext = hitSource;
     int pickupRewardMultiplier = 1;
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
@@ -2638,8 +2638,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     if (hitSource != 0) {
         ownerOrCtx = HitContext::GetCurrentOwnerOrCtx();
     } else if (playerState->recentHitValid != 0) {
-        killEventContext = playerState->recentHitSource;
-        hitSource = killEventContext;
+        hitSource = playerState->recentHitSource;
         ownerOrCtx = playerState->lastHitOwnerOrCtx;
     }
 
@@ -2652,10 +2651,10 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     }
 
     if (hitSource != 0) {
-        if ((hitSource->flags & kOptCatalogFlagRecordsRecentHit) != 0) {
+        if ((unsigned char)(hitSource->flags >> 12) & 1) {
             RecordRecentHitFeedback(saveState, hitSource, damage);
         }
-        if ((hitSource->flags & kOptCatalogFlagAppliesTimedHitStatus) != 0) {
+        if ((unsigned char)(hitSource->flags >> 21) & 1) {
             damage = UpdateTimedHitStatusFromHitSource(saveState, hitSource, damage);
         }
     }
@@ -2682,17 +2681,16 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
         StartDestroyedStateVehicleEffect(saveState, (void*)ClearDestroyedRespawnEffectHandleCallback);
         ResetAltGunRuntimeState(saveState);
 
-        if (killEventContext != 0 && hitRenderPointEntry != 0) {
+        if (hitSource != 0 && hitRenderPointEntry != 0) {
             OptCatalog::SetDamageContext(1, (OptCatalogHitEventPartial*)(void*)(&playerState->selectedProbeSample));
         }
         AddScaledHudCounterValue(masterCommonData->maxHealth);
 
         int spawnedNaniteReward = 0;
-        zUtil_SaveGameState* const localSaveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
-        if (localSaveState->playerState->nanitePanelLevel != kPlayerNanitePanelDisabledSentinel
+        if (((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->nanitePanelLevel
+                != kPlayerNanitePanelDisabledSentinel
             && masterCommonData->naniteBuildRate != 0) {
-            ++masterCommonData->naniteSpawnCounter;
-            if (masterCommonData->naniteSpawnCounter >= masterCommonData->naniteBuildRate) {
+            if (++masterCommonData->naniteSpawnCounter >= masterCommonData->naniteBuildRate) {
                 zVec3 spawnPos = playerState->worldPos;
                 spawnPos.y -= masterModalData->modeAltTransitionTime;
                 CZDisplayInstance::SnapProbePointYToBestCandidate(&spawnPos);
@@ -2702,7 +2700,8 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
             }
         }
 
-        if (localSaveState->playerState->activeAltGunController->ammoOrCharge != kPlayerAltAmmoDisabledSentinel
+        if (((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->activeAltGunController->ammoOrCharge
+                != kPlayerAltAmmoDisabledSentinel
             && spawnedNaniteReward == 0) {
             zVec3 spawnPos = playerState->worldPos;
             spawnPos.y -= masterModalData->modeAltTransitionTime;
@@ -2728,26 +2727,21 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
         if (playerState->aiRuntime != 0 && playerState->aiRuntime->attackBuddyNetId != 0) {
             AINet::AiAlertAttackBuddies(saveState);
         }
-        playerState->recentHitFlag = 1;
-        playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec + kPlayerRecentHitAlertSec;
+        saveState->playerState->recentHitFlag = 1;
+        saveState->playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec + 5.0f;
     }
 
-    if (killEventContext != 0) {
+    if (hitSource != 0) {
         OptCatalog::SetDamageContext(0, (OptCatalogHitEventPartial*)(void*)(&playerState->selectedProbeSample));
-        if (damage > 5.0f && (killEventContext->flags & kOptCatalogFlagAppliesTimedHitStatus) == 0
-            && (killEventContext->flags & kOptCatalogFlagNoSubUse) == 0) {
-            const float impulseBase = masterModalData->invMass * damage;
-            const float angleScale = impulseBase * 0.0250000004f;
-            const float velocityScale = impulseBase * 1.66700006f;
+        if (damage > 5.0f && (hitSource->flags & kOptCatalogFlagAppliesTimedHitStatus) == 0
+            && (hitSource->flags & kOptCatalogFlagNoSubUse) == 0) {
+            const float angleScale = masterModalData->invMass * damage * 0.0250000004f;
+            const float velocityScale = masterModalData->invMass * damage * 1.66700006f;
             const zVec3* const sourcePos = OptCatalog::GetCapturedHitSourcePtr();
-            const zVec3* const hitPos = &g_OptCatalog_CapturedDamageHitPos;
-            zVec3 direction = { sourcePos->x - hitPos->x, sourcePos->y - hitPos->y, sourcePos->z - hitPos->z };
-            const float length
-                = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-            const float invLength = 1.0 / length;
-            direction.x *= invLength;
-            direction.y *= invLength;
-            direction.z *= invLength;
+            zVec3 direction;
+            zVec3* const directionOut = &direction;
+            const zVec3* const hitPos = sourcePos + 1;
+            ZMTH_VECTOR_DIRECTION_BOUND(directionOut, hitPos, sourcePos);
             ApplyPitchRollVelocityImpulseFromDirection(saveState, &direction, angleScale, velocityScale);
         }
     }
@@ -2796,6 +2790,7 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-enterdestroyedstate
  * @recoil-artifact defines .text recoil:function:0x43bcc0: Player::EnterDestroyedState
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
  *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
@@ -2817,7 +2812,6 @@ int __fastcall EnterDestroyedState(
     float damage
 )
 {
-    OptCatalogEntryDef* killEventContext = hitSource;
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
@@ -2828,10 +2822,10 @@ int __fastcall EnterDestroyedState(
     }
 
     if (hitSource != 0) {
-        if ((hitSource->flags & kOptCatalogFlagRecordsRecentHit) != 0) {
+        if ((unsigned char)(hitSource->flags >> 12) & 1) {
             RecordRecentHitFeedback(saveState, hitSource, damage);
         }
-        if ((hitSource->flags & kOptCatalogFlagAppliesTimedHitStatus) != 0) {
+        if ((unsigned char)(hitSource->flags >> 21) & 1) {
             damage = UpdateTimedHitStatusFromHitSource(saveState, hitSource, damage);
         }
     }
@@ -2878,10 +2872,10 @@ int __fastcall EnterDestroyedState(
             OptCatalog::SetDamageContext(1, (OptCatalogHitEventPartial*)(void*)(&playerState->selectedProbeSample));
         }
 
-        if (playerState->airborneFlag != 0) {
-            playerState->lifecycleState = kPlayerLifecycleDestroyed;
-        } else {
+        if (playerState->airborneFlag == 0) {
             EnterLocalInactiveDestroyedLifecycle(saveState);
+        } else {
+            playerState->lifecycleState = kPlayerLifecycleDestroyed;
         }
 
         if (zOpt::GetNetworkEnabled() != 0) {
@@ -2890,15 +2884,17 @@ int __fastcall EnterDestroyedState(
                 ownerOrCtx = HitContext::GetCurrentOwnerOrCtx();
             } else if (playerState->recentHitValid != 0) {
                 ownerOrCtx = playerState->lastHitOwnerOrCtx;
-                killEventContext = playerState->recentHitSource;
+                hitSource = playerState->recentHitSource;
             }
 
             HitOwnerOrContextPartial* const hitOwner = (HitOwnerOrContextPartial*)(ownerOrCtx);
-            if (hitOwner != 0 && hitOwner->ownerLink != 0 && hitOwner->ownerLink->ownerSaveState != 0) {
-                GameNet::SendPkt08PlayerKillEvent(
-                    hitOwner->ownerLink->ownerSaveState,
-                    (short)(killEventContext->ordinalIndex)
-                );
+            if (hitOwner != 0 && hitOwner->ownerLink != 0) {
+                if (hitOwner->ownerLink->ownerSaveState != 0) {
+                    GameNet::SendPkt08PlayerKillEvent(
+                        hitOwner->ownerLink->ownerSaveState,
+                        (short)(hitSource->ordinalIndex)
+                    );
+                }
             } else {
                 GameNet::SendPkt08PlayerKillEvent(saveState, 0);
             }
@@ -2914,14 +2910,10 @@ int __fastcall EnterDestroyedState(
         if ((flags & kOptCatalogFlagAppliesTimedHitStatus) == 0) {
             if ((flags & kOptCatalogFlagNoSubUse) == 0) {
                 const zVec3* const sourcePos = OptCatalog::GetCapturedHitSourcePtr();
-                const zVec3* const hitPos = &g_OptCatalog_CapturedDamageHitPos;
-                zVec3 direction = { sourcePos->x - hitPos->x, sourcePos->y - hitPos->y, sourcePos->z - hitPos->z };
-                const float length
-                    = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-                const float invLength = 1.0 / length;
-                direction.x *= invLength;
-                direction.y *= invLength;
-                direction.z *= invLength;
+                zVec3 direction;
+                zVec3* const directionOut = &direction;
+                const zVec3* const hitPos = sourcePos + 1;
+                ZMTH_VECTOR_DIRECTION_BOUND(directionOut, hitPos, sourcePos);
 
                 if (damage > 5.0f) {
                     const float impulseBase = masterModalData->invMass * damage;
@@ -3155,7 +3147,8 @@ void __fastcall UpdateContinuousAltGunFireController(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-ensuregunauxeffectactive
  * @recoil-artifact defines .text recoil:function:0x43c330: Player::EnsureGunAuxEffectActive
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: ensure an auxiliary muzzle effect exists and is positioned for
@@ -3166,19 +3159,13 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
-    zVec3 spawnDir = { 0 };
+    zVec3 spawnDir;
     if (playerState->usePresetGunFireDir != 0) {
         spawnDir = playerState->gunFireDir;
     } else {
-        spawnDir.x = playerState->storedTargetPos.x - effectPos->x;
-        spawnDir.y = playerState->storedTargetPos.y - effectPos->y;
-        spawnDir.z = playerState->storedTargetPos.z - effectPos->z;
-
-        const float length = (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y + spawnDir.z * spawnDir.z));
-        const float invLength = 1.0 / length;
-        spawnDir.x *= invLength;
-        spawnDir.y *= invLength;
-        spawnDir.z *= invLength;
+        zVec3* const spawnDirOut = &spawnDir;
+        const zVec3* const targetPos = &playerState->storedTargetPos;
+        ZMTH_VECTOR_DIRECTION_BOUND(spawnDirOut, effectPos, targetPos);
     }
 
     if (OptCatalog::AllocRuntimeInstance(
@@ -3191,16 +3178,16 @@ EnsureGunAuxEffectActive(zUtil_SaveGameState* saveState, PlayerGunFireController
             saveState,
             0
         )
-        == 0) {
-        return 0;
+        != 0) {
+        if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
+            && zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
+            g_zInputFfEffectSet->RestartPrimaryFireEffect();
+        }
+
+        return 1;
     }
 
-    if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
-        && zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
-        g_zInputFfEffectSet->RestartPrimaryFireEffect();
-    }
-
-    return 1;
+    return 0;
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunlaunchprojectile
@@ -3271,6 +3258,7 @@ int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunfiresimpleprojectile
  * @recoil-artifact defines .text recoil:function:0x43c550: Player::AltGunFireSimpleProjectile
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
  *
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
@@ -3282,32 +3270,24 @@ int __fastcall AltGunFireSimpleProjectile(zUtil_SaveGameState* saveState)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
 
-    zVec3 spawnDir = { 0 };
-    if (activeAltGunController->optCatalogEntry->gravity == 0.0f) {
-        spawnDir.x = playerState->storedTargetPos.x - playerState->altFireOrigin.x;
-        spawnDir.y = playerState->storedTargetPos.y - playerState->altFireOrigin.y;
-        spawnDir.z = playerState->storedTargetPos.z - playerState->altFireOrigin.z;
-
-        const float length = (float)(sqrt(spawnDir.x * spawnDir.x + spawnDir.y * spawnDir.y + spawnDir.z * spawnDir.z));
-        const float invLength = 1.0 / length;
-        spawnDir.x *= invLength;
-        spawnDir.y *= invLength;
-        spawnDir.z *= invLength;
-    } else {
+    zVec3 spawnDir;
+    if (activeAltGunController->optCatalogEntry->gravity != 0.0f) {
         spawnDir = playerState->gunFireDir;
+    } else {
+        ZMTH_VECTOR_DIRECTION(&spawnDir, &playerState->altFireOrigin, &playerState->storedTargetPos);
     }
 
-    return OptCatalog::AllocRuntimeInstance(
-               activeAltGunController->optCatalogEntry,
-               playerState->rootNode,
-               &playerState->variantTag,
-               &playerState->altFireOrigin,
-               &spawnDir,
-               &playerState->projectileSpawnVel,
-               saveState,
-               0
-           )
-        != 0;
+    OptCatalogRuntimeInstanceStorage* const instance = OptCatalog::AllocRuntimeInstance(
+        activeAltGunController->optCatalogEntry,
+        playerState->rootNode,
+        &playerState->variantTag,
+        &playerState->altFireOrigin,
+        &spawnDir,
+        &playerState->projectileSpawnVel,
+        saveState,
+        0
+    );
+    return instance != 0;
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-isaltweaponallowedincurrentmastermode

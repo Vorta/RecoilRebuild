@@ -390,7 +390,8 @@ struct zEffectScreenColorFxEvent {
 
 struct zEffectScreenOverlayFxEvent {
     zEffectAnimEventHeader header;
-    int flagsAndAnchorNodePacked;
+    short flags;
+    short anchorNodeRefIndex;
     zVec3 worldAnchor;
     float centerXBase;
     float centerXEnd;
@@ -716,7 +717,8 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, alphaBase) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, blueBase) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, endTimeSec) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectScreenOverlayFxEvent) == 0x70);
-RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, flagsAndAnchorNodePacked) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, flags) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, anchorNodeRefIndex) == 0x0e);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, worldAnchor) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, centerXBase) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, maxRadiusNearWorld) == 0x34);

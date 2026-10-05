@@ -449,6 +449,12 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenpoints
      * @recoil-artifact defines .text recoil:function:0x458c10: zEffect::UpdateBeamNodeBetweenPoints.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zeffect.update-beam-node-between-points.fast-sqrt-estimate recoil:function:0x458c10
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zeffect.update-beam-node-between-points.fast-sqrt-estimate
+     * @recoil-match byte
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x458caa,0x458cb7); zeff_anim_run.c builds /Ob0, so an inline helper cannot expand.
      *
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
@@ -463,29 +469,48 @@ namespace zEffect
 
         CZObject3D::gwObject3DSetPosition(obj3d, srcPos->x, srcPos->y, srcPos->z);
 
-        const zVec3 angles = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
-        CZObject3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
+        zVec3 vec = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
+        CZObject3D::gwObject3DSetRotation(obj3d, vec.x, vec.y, 0.0f);
 
-        zVec3 scale = { 0 };
-        CZObject3D::gwObject3DGetScale(obj3d, &scale.x, &scale.y, &scale.z);
+        CZObject3D::gwObject3DGetScale(obj3d, &vec.x, &vec.y, &vec.z);
 
         const float dx = destPos->x - srcPos->x;
         const float dy = destPos->y - srcPos->y;
         const float dz = destPos->z - srcPos->z;
-        const float lengthSq = dx * dx + dy * dy + dz * dz;
-        int lengthBits = 0;
-        memcpy(&lengthBits, &lengthSq, sizeof(lengthBits));
-        lengthBits = (lengthBits >> 1) + 0x1fc00000;
-        float length = 0.0f;
-        memcpy(&length, &lengthBits, sizeof(length));
+        float lengthSq = dx * dx + dy * dy + dz * dz;
+        float lengthEstimate;
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov lengthEstimate, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&lengthEstimate, &estimateBits, sizeof lengthEstimate);
+        }
+#endif
+        vec.z = lengthEstimate;
 
-        CZObject3D::gwObject3DSetScale(obj3d, scale.x, scale.y, length);
-        return length;
+        CZObject3D::gwObject3DSetScale(obj3d, vec.x, vec.y, vec.z);
+        return vec.z;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.updatebeamnodebetweenfractions
      * @recoil-artifact defines .text recoil:function:0x458ce0: zEffect::UpdateBeamNodeBetweenFractions.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zeffect.update-beam-node-between-fractions.fast-sqrt-estimate recoil:function:0x458ce0
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zeffect.update-beam-node-between-fractions.fast-sqrt-estimate
+     * @recoil-match byte
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x458dd5,0x458de2); zeff_anim_run.c builds /Ob0, so an inline helper cannot expand.
      *
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zEffect\zeff_detach.c.
@@ -505,24 +530,37 @@ namespace zEffect
 
         CZObject3D::gwObject3DSetPosition(obj3d, start.x, start.y, start.z);
 
-        const zVec3 angles = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
-        CZObject3D::gwObject3DSetRotation(obj3d, angles.x, angles.y, 0.0f);
+        zVec3 vec = zMath::Vec3DirectionAnglesBetweenPoints(srcPos, destPos);
+        CZObject3D::gwObject3DSetRotation(obj3d, vec.x, vec.y, 0.0f);
 
-        zVec3 scale;
-        CZObject3D::gwObject3DGetScale(obj3d, &scale.x, &scale.y, &scale.z);
+        CZObject3D::gwObject3DGetScale(obj3d, &vec.x, &vec.y, &vec.z);
 
         const float dx = end.x - start.x;
         const float dy = end.y - start.y;
         const float dz = end.z - start.z;
-        const float lengthSq = dx * dx + dy * dy + dz * dz;
-        int lengthBits = 0;
-        memcpy(&lengthBits, &lengthSq, sizeof(lengthBits));
-        lengthBits = (lengthBits >> 1) + 0x1fc00000;
-        float length = 0.0f;
-        memcpy(&length, &lengthBits, sizeof(length));
+        float lengthSq = dx * dx + dy * dy + dz * dz;
+        float lengthEstimate;
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov lengthEstimate, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&lengthEstimate, &estimateBits, sizeof lengthEstimate);
+        }
+#endif
+        vec.z = lengthEstimate;
 
-        CZObject3D::gwObject3DSetScale(obj3d, scale.x, scale.y, length);
-        return length;
+        CZObject3D::gwObject3DSetScale(obj3d, vec.x, vec.y, vec.z);
+        return vec.z;
     }
 
     /**
@@ -3240,6 +3278,12 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreenoverlayfxevent
      * @recoil-artifact defines .text recoil:function:0x45c920: zEffect::HandleScreenOverlayFxEvent.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zeffect.handle-screen-overlay-fx-event.fast-sqrt-estimate recoil:function:0x45c920
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zeffect.handle-screen-overlay-fx-event.fast-sqrt-estimate
+     *
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x45c970,0x45c97d); zeff_anim_run.c builds /Ob0, so an inline helper cannot expand.
      *
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
@@ -3252,25 +3296,45 @@ namespace zEffect
         zEffectScreenOverlayFxEvent * event
     )
     {
+        int result = 1;
+        // Retail never initializes the queued rectangle origin: with neither flag 0x01 nor 0x02,
+        // or with 0x02 and no anchor node, the queue call reads it unassigned. Preserved retail
+        // defect; the event data is expected to set a placement flag.
+        int rectLeftPixels;
+        int rectTopPixels;
+        zVec3 anchorPoint;
+        zVec3 projectedPoint;
         if (self == 0 || sequenceRuntime == 0 || event == 0) {
             return 2;
         }
 
-        const unsigned char flags = (unsigned char)(event->flagsAndAnchorNodePacked);
-        if (sequenceRuntime->runState == 0 && (flags & 0x08u) != 0) {
-            const float referenceDistanceSq = GetConditionalRefPosDistanceSq(self->callbackNode);
-            int referenceDistanceBits = 0;
-            memcpy(&referenceDistanceBits, &referenceDistanceSq, sizeof(referenceDistanceBits));
-            referenceDistanceBits = (referenceDistanceBits >> 1) + 0x1fc00000;
-            float referenceDistance = 0.0f;
-            memcpy(&referenceDistance, &referenceDistanceBits, sizeof(referenceDistance));
+        if (sequenceRuntime->runState == 0 && (event->flags & 0x08) != 0) {
+            float referenceDistanceSq = GetConditionalRefPosDistanceSq(self->callbackNode);
+            float referenceDistance;
+            // Raw-assembly fast square-root estimate (same transform as the beam helpers).
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+            __asm {
+                mov eax, referenceDistanceSq
+                sar eax, 1
+                add eax, 01fc00000h
+                mov referenceDistance, eax
+            }
+#else
+            {
+                int estimateBits;
+                memcpy(&estimateBits, &referenceDistanceSq, sizeof estimateBits);
+                estimateBits = (estimateBits >> 1) + 0x1fc00000;
+                memcpy(&referenceDistance, &estimateBits, sizeof referenceDistance);
+            }
+#endif
             const zVec2 screenScale = zMathProjectGetLastScreenScaleXY();
             event->maxRadiusNearPixels = event->maxRadiusNearWorld / referenceDistance * screenScale.x;
             event->maxRadiusFarPixels = event->maxRadiusFarWorld / referenceDistance * screenScale.x;
 
-            const int surfaceWidth = zVideo::GetSwSurfaceWidth();
-            const int surfaceHeight = zVideo::GetSwSurfaceHeight();
-            const float radiusCap = (float)(surfaceWidth > surfaceHeight ? surfaceWidth : surfaceHeight) * 0.25f;
+            const unsigned int surfaceWidth = zVideo::GetSwSurfaceWidth();
+            const unsigned int surfaceHeight = zVideo::GetSwSurfaceHeight();
+            const float radiusCap
+                = (surfaceWidth > surfaceHeight ? (float)(surfaceWidth) : (float)(surfaceHeight)) * 0.25f;
             if (radiusCap < event->maxRadiusNearPixels) {
                 event->maxRadiusNearPixels = radiusCap;
             }
@@ -3282,23 +3346,25 @@ namespace zEffect
                 = (1.0f / event->endTimeSec) * (event->maxRadiusFarPixels - event->maxRadiusNearPixels);
         }
 
-        const float timeSlice = sequenceRuntime->eventElapsedSec <= event->endTimeSec
-            ? g_zEffectAnim_State.frameDeltaRemainingSec
-            : g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - event->endTimeSec);
-        const float overlayTime = sequenceRuntime->eventElapsedSec <= event->endTimeSec
-            ? sequenceRuntime->eventElapsedSec
-            : event->endTimeSec;
+        float timeSlice;
+        float overlayTime;
+        if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
+            timeSlice
+                = g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - event->endTimeSec);
+            overlayTime = event->endTimeSec;
+        } else {
+            timeSlice = g_zEffectAnim_State.frameDeltaRemainingSec;
+            overlayTime = sequenceRuntime->eventElapsedSec;
+        }
         g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
 
-        int rectLeftPixels = 0;
-        int rectTopPixels = 0;
-        if ((flags & 0x02u) != 0) {
-            const short anchorNodeRefIndex = (short)((unsigned int)(event->flagsAndAnchorNodePacked) >> 16);
-            if (anchorNodeRefIndex > 0) {
-                zVec3 anchorPoint = event->worldAnchor;
-                CZNode::TransformPoint(self->nodeRefList[anchorNodeRefIndex].node, &anchorPoint);
+        if ((event->flags & 0x02) != 0) {
+            if (event->anchorNodeRefIndex > 0) {
+                anchorPoint.x = event->worldAnchor.x;
+                anchorPoint.y = event->worldAnchor.y;
+                anchorPoint.z = event->worldAnchor.z;
+                CZNode::TransformPoint(self->nodeRefList[event->anchorNodeRefIndex].node, &anchorPoint);
 
-                zVec3 projectedPoint = { 0 };
                 if (zMath::ProjectPointAndClampToScreenClip(&anchorPoint, &projectedPoint) != 0) {
                     return 1;
                 }
@@ -3306,7 +3372,7 @@ namespace zEffect
                 rectLeftPixels = (int)(projectedPoint.x + 0.5f);
                 rectTopPixels = (int)(projectedPoint.y + 0.5f);
             }
-        } else if ((flags & 0x01u) != 0) {
+        } else if ((event->flags & 0x01) != 0) {
             rectLeftPixels = (int)(event->centerXSlope * overlayTime + event->centerXBase);
             rectTopPixels = (int)(event->centerYSlope * overlayTime + event->centerYBase);
         }
@@ -3316,9 +3382,8 @@ namespace zEffect
         int sinFreqInt = (int)(event->sinFreqSlope * overlayTime + event->sinFreqBase);
         int sinPhaseInt = (int)(event->sinPhaseSlope * overlayTime + event->sinPhaseBase);
 
-        int result = 1;
         if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
-            if ((flags & 0x01u) != 0) {
+            if ((event->flags & 0x01) != 0) {
                 rectLeftPixels = (int)(event->centerXEnd);
                 rectTopPixels = (int)(event->centerYEnd);
             }

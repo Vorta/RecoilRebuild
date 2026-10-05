@@ -873,7 +873,7 @@ void __fastcall HudSensorTracker::DrawDiamondMarker(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-cliporsplitsegment
  * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
- *
+ * @recoil-match byte
  *
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
