@@ -467,7 +467,7 @@ namespace OptCatalog
             if (fireAnim != 0) {
                 float randomRoll = 0.0f;
                 if ((self->fireFxFlags & 1u) != 0) {
-                    randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * (float)(kOptCatalogPi);
+                    randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
                 }
 
                 // Retail null-checks the selected entry but always animates entry 0.
@@ -767,7 +767,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-activatetrailruntimestate
      * @recoil-artifact defines .text recoil:function:0x4aee40: OptCatalog::ActivateTrailRuntimeState
-     *
+     * @recoil-match byte
      *
      * BN source path: src/Battlesport/zWeapon.cpp.
      * BN behavior: ECX is OptCatalogTrailRuntimeState*, EDX carries
@@ -1044,7 +1044,7 @@ namespace OptCatalog
                                     if (directionDot >= 1.0f) {
                                         turnAngle = 0.0f;
                                     } else if (directionDot <= -1.0f) {
-                                        turnAngle = (float)(kOptCatalogPi);
+                                        turnAngle = 3.14159265f;
                                     } else {
                                         turnAngle = (float)(acos(directionDot));
                                         while (turnAngle < 0.0f) {
@@ -1053,7 +1053,7 @@ namespace OptCatalog
                                         while (turnAngle >= 6.28318548f) {
                                             turnAngle -= 6.28318548f;
                                         }
-                                        if (turnAngle > (float)(kOptCatalogPi)) {
+                                        if (turnAngle > 3.14159265f) {
                                             turnAngle = 6.28318548f - turnAngle;
                                         }
                                     }

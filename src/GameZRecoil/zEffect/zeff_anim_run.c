@@ -3280,7 +3280,7 @@ namespace zEffect
      * @recoil-artifact defines .text recoil:function:0x45c920: zEffect::HandleScreenOverlayFxEvent.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zeffect.handle-screen-overlay-fx-event.fast-sqrt-estimate recoil:function:0x45c920
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zeffect.handle-screen-overlay-fx-event.fast-sqrt-estimate
-     *
+     * @recoil-match byte
      *
      * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
      * [0x45c970,0x45c97d); zeff_anim_run.c builds /Ob0, so an inline helper cannot expand.
