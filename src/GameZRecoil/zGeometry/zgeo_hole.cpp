@@ -9,8 +9,20 @@
 
 #include "zgeo.h"
 
+#include "GameZRecoil/zMath/zmth.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and ProjectInnerRingOntoCachedPlane (0x46c570) orders its x87 loads
+ * by that counter's parity at parse time. These declarations are never referenced
+ * and emit no code, data or symbols. User-authorized exception: match-proofs.md
+ * "Per-TU VC5 ID-counter parity exception".
+ * Purpose: keep this file's ID-counter parity after including zmth.h.
+ */
+extern int g_ZgeoHoleIdCounterAlignment0;
 
 namespace {
 /*
@@ -121,7 +133,7 @@ namespace zGeometry_Segment {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-intersectssegmentxy
  * @recoil-artifact defines .text recoil:function:0x46be20: zGeometry_Segment::IntersectsSegmentXY
- *
+ * @recoil-match byte
  *
  * Purpose: Test whether two XY segments intersect with both parametric coordinates strictly inside the unit range.
  */
@@ -426,53 +438,84 @@ namespace zGeometry_Vec3Array {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-computenewellplane
  * @recoil-artifact defines .text recoil:function:0x46c3a0: zGeometry_Vec3Array::ComputeNewellPlane
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgeometry.compute-newell-plane.fast-sqrt-estimate recoil:function:0x46c3a0
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgeometry.compute-newell-plane.fast-sqrt-estimate
  *
+ *
+ * Raw assembly: the reviewed full-XYZ dot island for the plane offset and one
+ * in-body 13-byte fast-sqrt estimate island at retail [0x46c4b5,0x46c4c2);
+ * zgeo_hole.cpp builds /Ob0, so an inline helper cannot expand.
  *
  * Purpose: Compute a normalized Newell plane equation from a point ring.
  */
 void __fastcall ComputeNewellPlane(int pointCount, zVec3* points, zGeometry_PlaneEquationPartial* outPlane)
 {
-    float normalX = 0.0f;
-    float normalY = 0.0f;
-    float normalZ = 0.0f;
-    float sumX = 0.0f;
-    float sumY = 0.0f;
-    float sumZ = 0.0f;
+    zVec3 normal;
+    zVec3 sum;
+    normal.z = 0.0f;
+    normal.y = 0.0f;
+    normal.x = 0.0f;
+    sum.z = 0.0f;
+    sum.y = 0.0f;
+    sum.x = 0.0f;
 
     for (int i = 0; i < pointCount; ++i) {
         zVec3* const point = &points[i];
         zVec3* const next = &points[(i + 1) % pointCount];
 
-        normalX += (point->y - next->y) * (point->z + next->z);
-        normalY += (point->z - next->z) * (point->x + next->x);
-        normalZ += (point->x - next->x) * (point->y + next->y);
+        normal.x += (point->y - next->y) * (point->z + next->z);
+        normal.y += (point->z - next->z) * (point->x + next->x);
+        normal.z += (point->x - next->x) * (point->y + next->y);
 
-        sumX += point->x;
-        sumY += point->y;
-        sumZ += point->z;
+        sum.x += point->x;
+        sum.y += point->y;
+        sum.z += point->z;
     }
 
-    float estimatedMagnitude = 0.0f;
-    if (normalX != 0.0f || normalY != 0.0f || normalZ != 0.0f) {
-        union {
-            float value;
-            int bits;
-        } estimate;
-
-        estimate.value = normalX * normalX + normalY * normalY + normalZ * normalZ;
-        estimate.bits = (estimate.bits >> 1) + 0x1fc00000;
-        estimatedMagnitude = estimate.value;
+    float magnitude;
+    if (normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0) {
+        magnitude = 0.0f;
+    } else {
+        float lengthSq = normal.x * normal.x + normal.y * normal.y + normal.z * normal.z;
+        float estimate;
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named estimate local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov estimate, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&estimate, &estimateBits, sizeof estimate);
+        }
+#endif
+        magnitude = estimate;
     }
 
-    float normalScale = 0.0f;
-    if (estimatedMagnitude != 0.0f) {
-        normalScale = 1.0f / estimatedMagnitude;
+    float normalScale;
+    if (magnitude != 0.0) {
+        normalScale = 1.0f / magnitude;
+    } else {
+        normalScale = 0.0f;
     }
 
-    outPlane->a = normalX * normalScale;
-    outPlane->b = normalY * normalScale;
-    outPlane->c = normalZ * normalScale;
-    outPlane->d = -((sumX * normalX + sumY * normalY + sumZ * normalZ) / ((float)(pointCount)*estimatedMagnitude));
+    outPlane->a = normal.x * normalScale;
+    outPlane->b = normal.y * normalScale;
+    outPlane->c = normal.z * normalScale;
+
+    float planeDot;
+    ZMTH_VECTOR_DOT(planeDot, &sum, &normal);
+    // A double-typed numerator temporary reproduces retail's numerator-first
+    // x87 evaluation order under VC5; the original source type is not unique.
+    const double planeOffset = planeDot;
+    outPlane->d = -(planeOffset / ((float)pointCount * magnitude));
 }
 } // namespace zGeometry_Vec3Array
 

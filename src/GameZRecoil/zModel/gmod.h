@@ -166,7 +166,7 @@ void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01);
 void __cdecl zModelFogApplyCurrentColor();
 
 namespace zModel_Light {
-float __fastcall EvalDistanceWeight(const CZLightDataPartial* light, float distance);
+float __fastcall EvalDistanceWeight(float distance, const CZLightDataPartial* light);
 float __fastcall EvalSphereFogFade(const zVec3* point, float radius);
 int __fastcall BuildAttr0DepthFade(int vertexCount, int* outHasVariation);
 int __fastcall BuildAttr1Falloff(int vertexCount, int* pLightingFlags);

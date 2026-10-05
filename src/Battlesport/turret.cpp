@@ -727,7 +727,17 @@ void zTurret_Runtime::UpdateFirePositionFromParts()
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-updateaimandpartmatrices
  * @recoil-artifact defines .text recoil:function:0x4374a0: zTurret_Runtime::UpdateAimAndPartMatrices.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate recoil:function:0x4374a0
+ * @recoil-raw-asm recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate
  *
+ *
+ * Raw assembly: inline zMath::Vec3Subtract [0x4374f3,0x437516) and
+ * zMath::FastExp [0x4375ba,0x4375c5) expansions (requires turret.cpp /Ob1),
+ * the reviewed full-XYZ dot island [0x437548,0x437567) and one in-body
+ * 13-byte fast-sqrt estimate island at retail [0x43762b,0x437638).
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Blends the turret aim direction and writes the recovered base/barrel matrices.
@@ -736,21 +746,21 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3* targetPos)
 {
     zVec3 localAimDir = { partBarrelMatrix->posX, partBarrelMatrix->posY, partBarrelMatrix->posZ };
 
-    zMat4x3 slotBuffer = { 0 };
+    // Retail pushes the scratch matrix slot without clearing it.
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     CZNode::gwNodeBuildNodeToAncestorMatrix(turretNode, 3);
     zMath::MatTransformPointBatchInPlace(&localAimDir, 1);
 
-    localAimDir.x = targetPos->x - localAimDir.x;
-    localAimDir.y = targetPos->y - localAimDir.y;
-    localAimDir.z = targetPos->z - localAimDir.z;
+    zMath::Vec3Subtract(targetPos, &localAimDir, &localAimDir);
     zMath::Vec3Normalize(&localAimDir);
     zMath::Vec3ArrayTransformDirection(&localAimDir, 1);
     zMath::MatStackPopPtr();
 
     if (alwaysLookAtTarget == 0) {
-        const float alignment = localAimDir.x * forward.x + localAimDir.y * forward.y + localAimDir.z * forward.z;
+        float alignment;
+        ZMTH_VECTOR_DOT(alignment, &localAimDir, &forward);
         if (alignment > 0.89) {
             isFiring = 1;
         } else if (fireDwellTime == 0.0f) {
@@ -758,8 +768,7 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3* targetPos)
         }
     }
 
-    const int forwardBlendBits = (int)(g_FrameDeltaTimeSec * -3.0f * 12102200.0f) + 0x3f800000;
-    const float oldForwardWeight = *(const float*)(&forwardBlendBits);
+    const float oldForwardWeight = zMath::FastExp(g_FrameDeltaTimeSec * -3.0f);
     const float newForwardWeight = 1.0f - oldForwardWeight;
     forward.x = oldForwardWeight * forward.x + newForwardWeight * localAimDir.x;
     forward.y = oldForwardWeight * forward.y + newForwardWeight * localAimDir.y;
@@ -767,16 +776,34 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3* targetPos)
     zMath::Vec3Normalize(&forward);
 
     localAimDir = forward;
-    float horizontalLen = localAimDir.x * localAimDir.x + localAimDir.z * localAimDir.z;
-    unsigned int horizontalLenBits = *(unsigned int*)(&horizontalLen);
-    horizontalLenBits = (horizontalLenBits >> 1) + 0x1fc00000u;
-    horizontalLen = *(float*)(&horizontalLenBits);
+    float horizontalLenSq = localAimDir.x * localAimDir.x + localAimDir.z * localAimDir.z;
+    float horizontalLen;
+    // Raw-assembly fast square-root estimate: retail transforms the named horizontalLenSq
+    // bits through EAX ((bits >> 1) + 0x1fc00000) into the named horizontalLen local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        mov eax, horizontalLenSq
+        sar eax, 1
+        add eax, 01fc00000h
+        mov horizontalLen, eax
+    }
+#else
+    {
+        int estimateBits;
+        memcpy(&estimateBits, &horizontalLenSq, sizeof estimateBits);
+        estimateBits = (estimateBits >> 1) + 0x1fc00000;
+        memcpy(&horizontalLen, &estimateBits, sizeof horizontalLen);
+    }
+#endif
 
-    float yawX = 0.0f;
-    float yawZ = 1.0f;
-    if (horizontalLen != 0.0f) {
-        yawX = -(localAimDir.x / horizontalLen);
+    float yawX;
+    float yawZ;
+    if (horizontalLen == 0.0f) {
+        yawZ = 1.0f;
+        yawX = 0.0f;
+    } else {
         yawZ = -(localAimDir.z / horizontalLen);
+        yawX = -(localAimDir.x / horizontalLen);
     }
 
     if (partBaseNode != 0) {

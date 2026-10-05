@@ -1012,7 +1012,14 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-vec3-fastnormalize
  * @recoil-artifact defines .text recoil:function:0x424bf0: Player::Vec3FastNormalize
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate recoil:function:0x424bf0
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate
+ * @recoil-match byte
  *
+ * Raw assembly: the reviewed full-XYZ dot island bound directly to the vec
+ * parameter (retail loads ECX and EDX from the one home [ebp-8]) and one
+ * in-body 13-byte fast-sqrt estimate island at retail [0x424c4a,0x424c57).
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: scale short nonzero contact deltas with the fast approximate
@@ -1025,23 +1032,40 @@ namespace Player {
  */
 int __fastcall Vec3FastNormalize(zVec3* vec)
 {
-    const float lengthSq = vec->x * vec->x + vec->y * vec->y + vec->z * vec->z;
-    if (lengthSq >= 0.01f || lengthSq == 0.0f) {
-        return 0;
+    // vecLength holds the squared length until the fast estimate replaces it.
+    float vecLength;
+    ZMTH_VECTOR_DOT_BOUND(vecLength, vec, vec);
+    float lengthSq = vecLength;
+    int scaled = 0;
+    if (vecLength < 0.01f) {
+        if (vecLength == 0.0f) {
+            return 0;
+        }
+
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named vecLength local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov vecLength, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&vecLength, &estimateBits, sizeof vecLength);
+        }
+#endif
+        const float scale = g_Player_CollisionContactResolveScale / (vecLength + 0.00000001f);
+        scaled = 1;
+        vec->x *= scale;
+        vec->y *= scale;
+        vec->z *= scale;
     }
-
-    int lengthSqBits = 0;
-    memcpy(&lengthSqBits, &lengthSq, sizeof(lengthSqBits));
-    lengthSqBits = (lengthSqBits >> 1) + 532676608;
-
-    float approxLength = 0.0f;
-    memcpy(&approxLength, &lengthSqBits, sizeof(approxLength));
-    const float scale = g_Player_CollisionContactResolveScale / (approxLength + 0.00000001f);
-
-    vec->x *= scale;
-    vec->y *= scale;
-    vec->z *= scale;
-    return 1;
+    return scaled;
 }
 } // namespace Player
 namespace Player {

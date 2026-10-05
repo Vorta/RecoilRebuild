@@ -118,98 +118,121 @@ zModelLightPointInPolygonInitXZ(CZNodePartial** lightNodes, CZLightDataPartial**
 
 namespace zModel_Light
 {
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-light-zmodel-light-pointinpolygontestradiusxz
      * @recoil-artifact defines .text recoil:function:0x487c50: zModel_Light::PointInPolygonTestRadiusXZ
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.point-in-polygon-test-radius-xz.fast-sqrt-estimate recoil:function:0x487c50
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.point-in-polygon-test-radius-xz.fast-sqrt-estimate
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     *
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x487d4b,0x487d58).
      *
      *
      * Purpose: evaluate active light contribution flags and per-light weights
      * for a bounding sphere in view-space XZ/radius terms.
      */
-    PointInPolygonTestRadiusXZ(const zVec3* sphereCenter, float radius)
+    int __fastcall PointInPolygonTestRadiusXZ(const zVec3* sphereCenter, float radius)
     {
-        float lightDistances[0x40] = { 0 };
-        int result = 0;
+        zVec3 lightDeltas[0x40];
+        float lightDistances[0x40];
         int hasSoftwarePointLight = 0;
+        int result = 0;
 
-        for (int i = 0; i < gModel_ActiveLightCount; ++i) {
-            zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[i];
-            CZLightDataPartial* light = entry.light;
-            entry.useFullWeight = 0;
-            entry.contributesToLighting = 0;
+        zModel_ActiveLightEntryLive* entry;
+        int i;
+        for (i = 0, entry = &gModel_ActiveLights[0]; i < gModel_ActiveLightCount; ++i, ++entry) {
+            entry->useFullWeight = 0;
+            entry->contributesToLighting = 0;
 
-            if ((entry.lightNode->flags & 4) == 0) {
-                zError::ReportOld(0x200, g_zModel_SourceFile_GmodLightC, 0xfa, g_zModel_NeverGetHereMsg);
-                continue;
-            }
+            if ((entry->lightNode->flags & 4) != 0) {
+                if ((g_zVideo_ActiveRendererPath == 0 || entry->light->isDirectedSource == 0)
+                    && entry->light->enabled != 0) {
+                    if (entry->light->lightSubMode == 0) {
+                        continue;
+                    }
 
-            if ((g_zVideo_ActiveRendererPath != 0 && light->isDirectedSource != 0) || light->enabled == 0) {
-                entry.useFullWeight = 1;
-                entry.contributesToLighting = 1;
-                ++result;
-                continue;
-            }
+                    if (entry->light->isDirectedSource != 0) {
+                        gModel_ActiveLightSpecialIndex = i;
+                        lightDistances[i] = sphereCenter->z;
+                    } else {
+                        zMath::Vec3Subtract(&entry->light->viewPos, sphereCenter, &lightDeltas[i]);
+                        lightDistances[i] = lightDeltas[i].y * lightDeltas[i].y + lightDeltas[i].z * lightDeltas[i].z
+                            + lightDeltas[i].x * lightDeltas[i].x;
+                        if (lightDistances[i] != 0.0f) {
+                            float distanceSq = lightDistances[i];
+                            float distance;
+                            // Raw-assembly fast square-root estimate: retail transforms the named distanceSq
+                            // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                            __asm {
+                                mov eax, distanceSq
+                                sar eax, 1
+                                add eax, 01fc00000h
+                                mov distance, eax
+                            }
+#else
+                            {
+                                int estimateBits;
+                                memcpy(&estimateBits, &distanceSq, sizeof estimateBits);
+                                estimateBits = (estimateBits >> 1) + 0x1fc00000;
+                                memcpy(&distance, &estimateBits, sizeof distance);
+                            }
+#endif
+                            lightDistances[i] = distance;
+                        }
+                    }
 
-            if (light->lightSubMode == 0) {
-                continue;
-            }
+                    const float farEdge = radius + lightDistances[i];
+                    lightDistances[i] -= radius;
+                    if (lightDistances[i] >= entry->light->range2 && entry->light->isDirectedSource == 0) {
+                        continue;
+                    }
 
-            float distance = 0.0f;
-            if (light->isDirectedSource != 0) {
-                gModel_ActiveLightSpecialIndex = i;
-                distance = sphereCenter->z;
-            } else {
-                const zVec3 delta = { light->viewPos.x - sphereCenter->x,
-                    light->viewPos.y - sphereCenter->y,
-                    light->viewPos.z - sphereCenter->z };
-                const float distSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-                distance = distSq;
-                if (distSq != 0.0f) {
-                    int distanceBits = *(const int*)&distSq;
-                    distanceBits = (distanceBits >> 1) + 0x1fc00000;
-                    distance = *(float*)&distanceBits;
+                    entry->contributesToLighting = 1;
+                    if (farEdge < entry->light->range1) {
+                        entry->useFullWeight = 1;
+                        ++result;
+                        continue;
+                    }
+
+                    if (entry->light->isDirectedSource != 0) {
+                        hasSoftwarePointLight = 1;
+                    }
+                    ++result;
+                } else {
+                    entry->useFullWeight = 1;
+                    entry->contributesToLighting = 1;
+                    ++result;
                 }
+            } else {
+                zError::ReportOld(0x200, g_zModel_SourceFile_GmodLightC, 0xfa, g_zModel_NeverGetHereMsg);
             }
-
-            lightDistances[i] = distance - radius;
-            const float farEdge = distance + radius;
-            if (lightDistances[i] >= light->range2 && light->isDirectedSource == 0) {
-                continue;
-            }
-
-            entry.contributesToLighting = 1;
-            if (farEdge < light->range1) {
-                entry.useFullWeight = 1;
-                ++result;
-                continue;
-            }
-
-            if (light->isDirectedSource != 0) {
-                hasSoftwarePointLight = 1;
-            }
-            ++result;
         }
 
         if (result == 0) {
             return 0;
         }
 
-        for (int i_647 = 0; i_647 < gModel_ActiveLightCount; ++i_647) {
-            zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[i_647];
-            if (entry.contributesToLighting == 0) {
+        for (i = 0, entry = &gModel_ActiveLights[0]; i < gModel_ActiveLightCount; ++i, ++entry) {
+            if (entry->contributesToLighting == 0) {
                 continue;
             }
 
-            CZLightDataPartial* light = entry.light;
-            if (hasSoftwarePointLight != 0 && g_zModel_SoftwarePathActive != 0 && light->isDirectedSource == 0) {
-                entry.contributesToLighting = 0;
+            if (hasSoftwarePointLight != 0 && g_zModel_SoftwarePathActive != 0 && entry->light->isDirectedSource == 0) {
+                entry->contributesToLighting = 0;
                 --result;
                 continue;
             }
 
-            float weight = entry.useFullWeight != 0 ? 1.0f : EvalDistanceWeight(light, lightDistances[i_647]);
-            const float cap = light->falloff + light->intensityScale;
+            float weight;
+            if (entry->useFullWeight != 0) {
+                weight = 1.0f;
+            } else {
+                weight = EvalDistanceWeight(lightDistances[i], entry->light);
+            }
+            const float cap = entry->light->falloff + entry->light->intensityScale;
             if (cap < weight) {
                 weight = cap;
             }
@@ -219,10 +242,10 @@ namespace zModel_Light
                 weight = 0.0f;
             }
 
-            if (light->isDirectedSource != 0) {
-                g_Clip_PolyAttr1[i_647] = weight;
+            if (entry->light->isDirectedSource != 0) {
+                g_Clip_PolyAttr1[i] = weight;
             } else {
-                g_Clip_PolyAttr0[i_647] = weight;
+                g_Clip_PolyAttr0[i] = weight;
             }
         }
 
@@ -397,13 +420,13 @@ namespace zModel_Light
                 if (entry.useFullWeight == 0) {
                     if (light->isDirectedSource != 0) {
                         const float farWeight = 1.0f - light->intensityScale;
-                        const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][0]);
+                        const float distanceWeight = EvalDistanceWeight(distances[lightIndex][0], light);
                         weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                         if (weight > farWeight) {
                             weight = farWeight;
                         }
                     } else {
-                        weight *= EvalDistanceWeight(light, distances[lightIndex][0]);
+                        weight *= EvalDistanceWeight(distances[lightIndex][0], light);
                     }
                 }
 
@@ -465,13 +488,13 @@ namespace zModel_Light
                 if (entry.useFullWeight == 0) {
                     if (light->isDirectedSource != 0) {
                         const float farWeight = 1.0f - light->intensityScale;
-                        const float distanceWeight = EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
+                        const float distanceWeight = EvalDistanceWeight(distances[lightIndex][vertexIndex], light);
                         weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                         if (weight > farWeight) {
                             weight = farWeight;
                         }
                     } else {
-                        weight *= EvalDistanceWeight(light, distances[lightIndex][vertexIndex]);
+                        weight *= EvalDistanceWeight(distances[lightIndex][vertexIndex], light);
                     }
                 }
 
@@ -796,14 +819,14 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
                 if (light->isDirectedSource != 0) {
                     const float farWeight = 1.0f - light->intensityScale;
                     const float distanceWeight
-                        = zModel_Light::EvalDistanceWeight(light, gModel_LightVertexDistanceSqScratch[lightIndex][0]);
+                        = zModel_Light::EvalDistanceWeight(gModel_LightVertexDistanceSqScratch[lightIndex][0], light);
                     weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                     if (weight > farWeight) {
                         weight = farWeight;
                     }
                 } else {
                     weight
-                        *= zModel_Light::EvalDistanceWeight(light, gModel_LightVertexDistanceSqScratch[lightIndex][0]);
+                        *= zModel_Light::EvalDistanceWeight(gModel_LightVertexDistanceSqScratch[lightIndex][0], light);
                 }
             }
             vertexWeights[0] += weight;
@@ -851,8 +874,8 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
                 if (light->isDirectedSource != 0) {
                     const float farWeight = 1.0f - light->intensityScale;
                     const float distanceWeight = zModel_Light::EvalDistanceWeight(
-                        light,
-                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex],
+                        light
                     );
                     weight = (1.0f - distanceWeight) * (farWeight - weight) + weight;
                     if (weight > farWeight) {
@@ -860,8 +883,8 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
                     }
                 } else {
                     weight *= zModel_Light::EvalDistanceWeight(
-                        light,
-                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex]
+                        gModel_LightVertexDistanceSqScratch[lightIndex][vertexIndex],
+                        light
                     );
                 }
             }
@@ -925,8 +948,10 @@ namespace zModel_Light
      *
      * Purpose: compute a light's range falloff as full, zero, or a linear blend
      * between the inner and outer range.
+     * Distance-first parameter order reproduces the retail callers' preparation
+     * order (distance loaded before ECX = light, then pushed); not uniquely proved.
      */
-    EvalDistanceWeight(const CZLightDataPartial* light, float distance)
+    EvalDistanceWeight(float distance, const CZLightDataPartial* light)
     {
         if (distance >= light->range2) {
             return 0.0f;

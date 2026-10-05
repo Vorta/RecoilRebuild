@@ -1951,6 +1951,12 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildbounds
      * @recoil-artifact defines .text recoil:function:0x483ad0: zDi::RebuildBounds
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.rebuild-bounds.fast-sqrt-estimate recoil:function:0x483ad0
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.rebuild-bounds.fast-sqrt-estimate
+     *
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x483b5b,0x483b68).
      *
      *
      * Purpose: rebuild display-instance bounds, center, and approximate bounding radius.
@@ -1967,19 +1973,36 @@ namespace zDi
             BuildOriginSymmetricAabb(self, outBoundsMinMax);
         }
 
-        const float halfX = (outBoundsMinMax->max.x - outBoundsMinMax->min.x) * 0.5f;
-        const float halfY = (outBoundsMinMax->max.y - outBoundsMinMax->min.y) * 0.5f;
-        const float halfZ = (outBoundsMinMax->max.z - outBoundsMinMax->min.z) * 0.5f;
-        self->bboxCenter.x = halfX + outBoundsMinMax->min.x;
-        self->bboxCenter.y = halfY + outBoundsMinMax->min.y;
-        self->bboxCenter.z = halfZ + outBoundsMinMax->min.z;
-        union {
-            float radius;
-            int bits;
-        } radiusEstimate;
-        radiusEstimate.radius = halfX * halfX + halfY * halfY + halfZ * halfZ;
-        radiusEstimate.bits = (radiusEstimate.bits >> 1) + 0x1fc00000;
-        self->bboxRadius = radiusEstimate.radius;
+        float halfX;
+        float halfY;
+        float halfZ;
+        self->bboxCenter.x
+            = (halfX = (outBoundsMinMax->max.x - outBoundsMinMax->min.x) * 0.5f) + outBoundsMinMax->min.x;
+        self->bboxCenter.y
+            = (halfY = (outBoundsMinMax->max.y - outBoundsMinMax->min.y) * 0.5f) + outBoundsMinMax->min.y;
+        self->bboxCenter.z
+            = (halfZ = (outBoundsMinMax->max.z - outBoundsMinMax->min.z) * 0.5f) + outBoundsMinMax->min.z;
+        self->bboxRadius = halfX * halfX + halfY * halfY + halfZ * halfZ;
+        float lengthSq = self->bboxRadius;
+        float radiusEstimate;
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov radiusEstimate, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&radiusEstimate, &estimateBits, sizeof radiusEstimate);
+        }
+#endif
+        self->bboxRadius = radiusEstimate;
     }
 
     /**

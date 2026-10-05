@@ -686,13 +686,10 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * Fallback: mathematical reference only; identical rounding, NaN handling,
  * exception behaviour and store scheduling are not promised.
  */
-#define ZMTH_VECTOR_DOT(result, left, right)                                                                           \
-    do {                                                                                                               \
-        const zVec3* const dotRight = (right);                                                                         \
-        const zVec3* const dotLeft = (left);                                                                           \
-        __asm { \
-            __asm mov ecx, dotLeft \
-            __asm mov edx, dotRight \
+#define ZMTH_VECTOR_DOT_BODY(result, leftVar, rightVar)                                                                \
+    __asm { \
+            __asm mov ecx, leftVar \
+            __asm mov edx, rightVar \
             __asm fld dword ptr [ecx]zVec3.x \
             __asm fmul dword ptr [edx]zVec3.x \
             __asm fld dword ptr [ecx]zVec3.y \
@@ -702,7 +699,20 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
             __asm fxch st(1) \
             __asm faddp st(2), st \
             __asm faddp st(1), st \
-            __asm fstp result }                                                                                        \
+            __asm fstp result }
+#define ZMTH_VECTOR_DOT(result, left, right)                                                                           \
+    do {                                                                                                               \
+        const zVec3* const dotRight = (right);                                                                         \
+        const zVec3* const dotLeft = (left);                                                                           \
+        ZMTH_VECTOR_DOT_BODY(result, dotLeft, dotRight);                                                               \
+    } while (0)
+// ZMTH_VECTOR_DOT_BOUND accepts existing named, non-volatile pointer objects and a named
+// float result; its VC5/x86 expansion introduces no pointer captures, while its reference
+// fallback inherits ZMTH_VECTOR_DOT's internal-name restrictions (dotLeft, dotRight).
+// ZMTH_VECTOR_DOT_BODY is an implementation detail, not a consumer entry point.
+#define ZMTH_VECTOR_DOT_BOUND(result, leftVar, rightVar)                                                               \
+    do {                                                                                                               \
+        ZMTH_VECTOR_DOT_BODY(result, leftVar, rightVar);                                                               \
     } while (0)
 #else
 #define ZMTH_VECTOR_DOT(result, left, right)                                                                           \
@@ -711,6 +721,7 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
         const zVec3* const dotLeft = (left);                                                                           \
         (result) = dotLeft->x * dotRight->x + dotLeft->y * dotRight->y + dotLeft->z * dotRight->z;                     \
     } while (0)
+#define ZMTH_VECTOR_DOT_BOUND(result, leftVar, rightVar) ZMTH_VECTOR_DOT(result, leftVar, rightVar)
 #endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100

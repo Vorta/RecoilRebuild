@@ -562,17 +562,6 @@ static inline float ApproxSqrtScaleFromBits(float value)
     return approxValue;
 }
 
-/**
- * Original-source helper; no standalone retail function exists.
- * Evidence: caller recoil:function:0x416f10 inlines this rectangle test.
- * Purpose: preserve the recovered HUD behavior for IsPointStrictlyInsideRect.
- */
-static inline bool IsPointStrictlyInsideRect(const HudUiRect& rect, const zVec3& point)
-{
-    return (float)(rect.left) < point.x && (float)(rect.right) > point.x && (float)(rect.top) < point.y
-        && (float)(rect.bottom) > point.y;
-}
-
 } // namespace
 
 /**
@@ -1646,7 +1635,14 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawsavestatemarker
  * @recoil-artifact defines .text recoil:function:0x416f10: HudSensorTracker::DrawSaveStateMarker
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate recoil:function:0x416f10
+ * @recoil-raw-asm recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate
  *
+ *
+ * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+ * [0x416f87,0x416f94) and the inline zMath::Vec3Add expansion
+ * [0x416fcc,0x416fef) (requires map.cpp /Ob1).
  *
  * Purpose: Draw one non-tracked save-state marker or its edge-clamped network marker.
  */
@@ -1661,29 +1657,44 @@ int HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
     const float distanceSq = GetSaveStateRelativeVectorLen(saveState, &relativeDelta, 0);
 
     zVec3 markerPoint;
-    if (saveStateMarkerMaxDistSq != 0.0f && distanceSq > saveStateMarkerMaxDistSq) {
+    if (saveStateMarkerMaxDistSq != 0.0 && distanceSq > saveStateMarkerMaxDistSq) {
         if (zOpt::GetNetworkEnabled() == 0) {
             return 0;
         }
 
-        float edgeScale = saveStateMarkerMaxDistSq / distanceSq;
-        int edgeScaleBits;
-        memcpy(&edgeScaleBits, &edgeScale, sizeof(edgeScaleBits));
-        edgeScaleBits = (edgeScaleBits >> 1) + 0x1fc00000;
-        memcpy(&edgeScale, &edgeScaleBits, sizeof(edgeScale));
+        float edgeRatio = saveStateMarkerMaxDistSq / distanceSq;
+        float edgeScale;
+        // Raw-assembly fast square-root estimate: retail transforms the named edgeRatio
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named edgeScale local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, edgeRatio
+            sar eax, 1
+            add eax, 01fc00000h
+            mov edgeScale, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &edgeRatio, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&edgeScale, &estimateBits, sizeof edgeScale);
+        }
+#endif
         relativeDelta.x *= edgeScale;
         relativeDelta.y *= edgeScale;
         relativeDelta.z *= edgeScale;
 
-        const zVec3* const localWorldPos = &((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->worldPos;
-        markerPoint.x = localWorldPos->x + relativeDelta.x;
-        markerPoint.y = localWorldPos->y + relativeDelta.y;
-        markerPoint.z = localWorldPos->z + relativeDelta.z;
+        zMath::Vec3Add(
+            &((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->worldPos,
+            &relativeDelta,
+            &markerPoint
+        );
         ProjectWorldPointsToOverlay(&markerPoint, &markerPoint, 1);
 
-        const unsigned short markerColor
-            = (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
-        if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
+        const int markerColor = zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb);
+        if ((float)(outerRect.left) < markerPoint.x && (float)(outerRect.right) > markerPoint.x
+            && (float)(outerRect.top) < markerPoint.y && (float)(outerRect.bottom) > markerPoint.y) {
             DrawMarkerCross((int)(markerPoint.x), (int)(markerPoint.y), 3, 3, markerColor, this);
         }
 
@@ -1692,14 +1703,15 @@ int HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
 
     ProjectWorldPointsToOverlay(&playerState->worldPos, &markerPoint, 1);
 
-    unsigned short markerColor;
+    int markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
-        markerColor = (unsigned short)(zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb));
+        markerColor = zVidPackColor00RRGGBB(saveState->netPlayerRow->playerColorPackedRgb);
     } else {
-        markerColor = (unsigned short)(zVidPackColorRGB(0xff, 0, 0));
+        markerColor = zVidPackColorRGB(0xff, 0, 0);
     }
 
-    if (IsPointStrictlyInsideRect(outerRect, markerPoint)) {
+    if ((float)(outerRect.left) < markerPoint.x && (float)(outerRect.right) > markerPoint.x
+        && (float)(outerRect.top) < markerPoint.y && (float)(outerRect.bottom) > markerPoint.y) {
         zRndrSpanOcclusionTestSample((int)(markerPoint.x), (int)(markerPoint.y), markerColor);
     }
 

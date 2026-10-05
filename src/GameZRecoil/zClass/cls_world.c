@@ -903,17 +903,22 @@ namespace CZWorld
         return 0;
     }
 
-    int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.gwworldsetvirtualareapartition
      * @recoil-artifact defines .text recoil:function:0x450c60: CZWorld::gwWorldSetVirtualAreaPartition.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.gw-world-set-virtual-area-partition.fast-sqrt-estimate recoil:function:0x450c60
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zclass.gw-world-set-virtual-area-partition.fast-sqrt-estimate
+     *
+     *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x450ce0,0x450ced).
      *
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: allocate and initialize the virtual area partition grid and
      * its cell metrics from the configured world bounds.
      */
-    gwWorldSetVirtualAreaPartition(CZNodePartial * world, float cellSizeX, float cellSizeZ)
+    int __fastcall gwWorldSetVirtualAreaPartition(CZNodePartial * world, float cellSizeX, float cellSizeZ)
     {
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
         if (data->areaGridRows != 0) {
@@ -929,9 +934,25 @@ namespace CZWorld
         data->areaInvSizeX = 1.0f / cellSizeX;
         data->areaInvSizeZ = 1.0f / cellSizeZ;
         float areaCellRangeSq = cellSizeX * cellSizeX + cellSizeZ * cellSizeZ;
-        int areaCellRangeBits = *(int*)(&areaCellRangeSq);
-        areaCellRangeBits = (areaCellRangeBits >> 1) + 0x1fc00000;
-        data->areaCellRadiusBias = *(float*)(&areaCellRangeBits) * -0.5f;
+        float areaCellRange;
+        // Raw-assembly fast square-root estimate: retail transforms the named areaCellRangeSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, areaCellRangeSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov areaCellRange, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &areaCellRangeSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&areaCellRange, &estimateBits, sizeof areaCellRange);
+        }
+#endif
+        data->areaCellRadiusBias = areaCellRange * -0.5f;
 
         int gridColCount = (int)(data->worldSizeX / data->areaCellSizeX);
         data->areaGridColCount = gridColCount;
@@ -948,24 +969,27 @@ namespace CZWorld
         }
 
         data->areaGridRows = (zWorldAreaPartial**)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial*)));
+        zWorldAreaPartial** rows = data->areaGridRows;
         for (int row = 0; row < data->areaGridRowCount; ++row) {
-            data->areaGridRows[row] = (zWorldAreaPartial*)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
+            *rows++ = (zWorldAreaPartial*)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
         }
 
+        rows = data->areaGridRows;
         for (int initRow = 0; initRow < data->areaGridRowCount; ++initRow) {
-            const float rowAsFloat = (float)(initRow);
+            zWorldAreaPartial* area = *rows;
             for (int col = 0; col < data->areaGridColCount; ++col) {
-                zWorldAreaPartial* area = &data->areaGridRows[initRow][col];
-                area->areaFlags |= 0x100;
                 area->cellMinX = (float)(col)*data->areaCellSizeX + data->originX;
-                area->cellMinZ = rowAsFloat * data->areaCellSizeZ + data->originZ;
+                area->cellMinZ = (float)(initRow)*data->areaCellSizeZ + data->originZ;
+                area->areaFlags |= 0x100;
                 area->bbox[0] = area->cellMinX;
                 area->bbox[3] = area->cellMinX + data->areaCellSizeX;
                 area->bbox[5] = area->cellMinZ;
                 area->bbox[2] = area->cellMinZ + data->areaCellSizeZ;
                 CZBBox::MinMaxToBoundingSphere((const zBBox3f*)(area->bbox), &area->bboxCenter, &area->bboxRadius);
                 area->areaIndex = -1;
+                ++area;
             }
+            ++rows;
         }
 
         return 0;
