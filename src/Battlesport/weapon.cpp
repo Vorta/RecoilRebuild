@@ -2606,7 +2606,7 @@ int __fastcall HitCallbackRecordNetContextAndTimedStatus(
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-hitcallback-recordcontextandtimedstatus
  * @recoil-artifact defines .text recoil:function:0x43b870: Player::HitCallbackRecordContextAndTimedStatus
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: gameplay hit callback that records hit context, applies damage,
@@ -2791,7 +2791,7 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState* saveSt
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-enterdestroyedstate
  * @recoil-artifact defines .text recoil:function:0x43bcc0: Player::EnterDestroyedState
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: apply local damage, transition the local player into destroyed or
@@ -3259,7 +3259,7 @@ int __fastcall AltGunLaunchProjectile(zUtil_SaveGameState* saveState)
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-altgunfiresimpleprojectile
  * @recoil-artifact defines .text recoil:function:0x43c550: Player::AltGunFireSimpleProjectile
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-direction
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon.cpp.
  * Purpose: fire a simple alternate-gun projectile from the active fire
