@@ -70,35 +70,45 @@ void __fastcall zMathQuatMultiplyInverse(const zQuat* quatA, const zQuat* quatB,
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-tomatrix
  * @recoil-artifact defines .text recoil:function:0x475a80: zMathQuatToMatrix
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-match byte
  *
+ * Raw assembly: the inline zMath::Vec3Add expansion [0x475a9c,0x475abf)
+ * (requires zmth_quat.c /Ob1).
  *
  * Purpose: expands a quaternion into the rotational part of a 4x3 matrix.
  */
 void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
 {
-    const float x2 = quat->x + quat->x;
-    const float y2 = quat->y + quat->y;
-    const float z2 = quat->z + quat->z;
+    zVec3 twice;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    zMath::Vec3Add((const zVec3*)&quat->x, (const zVec3*)&quat->x, &twice);
+#else
+    twice.x = quat->x + quat->x;
+    twice.y = quat->y + quat->y;
+    twice.z = quat->z + quat->z;
+#endif
 
-    const float xx2 = x2 * quat->x;
-    const float yy2 = y2 * quat->y;
-    const float zz2 = z2 * quat->z;
-    const float xy2 = y2 * quat->x;
-    const float yz2 = z2 * quat->y;
-    const float xz2 = x2 * quat->z;
-    const float xw2 = x2 * quat->w;
-    const float yw2 = y2 * quat->w;
-    const float zw2 = z2 * quat->w;
+    const float xx2 = twice.x * quat->x;
+    const float yy2 = twice.y * quat->y;
+    const float zz2 = twice.z * quat->z;
+    const float xy2 = twice.y * quat->x;
+    const float yz2 = twice.z * quat->y;
+    const float xz2 = twice.x * quat->z;
+    const float xw2 = twice.x * quat->w;
+    const float yw2 = twice.y * quat->w;
+    const float zw2 = twice.z * quat->w;
 
-    outMatrix3x3->xx = 1.0f - yy2 - zz2;
-    outMatrix3x3->xy = zw2 + xy2;
-    outMatrix3x3->xz = xz2 - yw2;
-    outMatrix3x3->yx = xy2 - zw2;
-    outMatrix3x3->yy = 1.0f - zz2 - xx2;
-    outMatrix3x3->yz = xw2 + yz2;
-    outMatrix3x3->zx = yw2 + xz2;
-    outMatrix3x3->zy = yz2 - xw2;
-    outMatrix3x3->zz = 1.0f - xx2 - yy2;
+    float* out = &outMatrix3x3->xx;
+    *out++ = 1.0f - yy2 - zz2;
+    *out++ = zw2 + xy2;
+    *out++ = xz2 - yw2;
+    *out++ = xy2 - zw2;
+    *out++ = 1.0f - zz2 - xx2;
+    *out++ = xw2 + yz2;
+    *out++ = yw2 + xz2;
+    *out++ = yz2 - xw2;
+    *out = 1.0f - xx2 - yy2;
 }
 
 /**

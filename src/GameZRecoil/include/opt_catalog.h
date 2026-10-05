@@ -73,7 +73,7 @@ struct OptCatalogDamageFeedbackVariant {
 struct OptCatalogRuntimeInstanceStorage {
     OptCatalogRuntimeInstanceStorage* next;
     CZNodePartial* ownerNode;
-    unsigned int variantTag;
+    zTag4Partial variantTag;
     CZNodePartial* projectileNode;
     zEffectAnimEntry* flyoutAnimPrimary;
     zEffectAnimEntry* flyoutAnimSecondary;

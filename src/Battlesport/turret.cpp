@@ -835,7 +835,11 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3* targetPos)
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-runtime-selectfirepointandaimattarget
  * @recoil-artifact defines .text recoil:function:0x437730: zTurret_Runtime::SelectFirePointAndAimAtTarget.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-match byte
  *
+ * Raw assembly: the inline zMath::Vec3Subtract expansion [0x4377d9,0x4377fc)
+ * (requires turret.cpp /Ob1).
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Selects the next muzzle point and computes the projectile direction toward the target.
@@ -852,15 +856,14 @@ void zTurret_Runtime::SelectFirePointAndAimAtTarget(const zVec3* targetPos)
         spawnPos = firePointLocal[0];
     }
 
-    zMat4x3 slotBuffer = { 0 };
+    // Retail leaves the matrix-stack slot uninitialized before pushing it.
+    zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadIdentity();
     CZNode::gwNodeBuildNodeToAncestorMatrix(partBarrelNode, 3);
     zMath::MatTransformPointBatchInPlace(&spawnPos, 1);
 
-    fireDir.x = targetPos->x - spawnPos.x;
-    fireDir.y = targetPos->y - spawnPos.y;
-    fireDir.z = targetPos->z - spawnPos.z;
+    zMath::Vec3Subtract(targetPos, &spawnPos, &fireDir);
     zMath::Vec3Normalize(&fireDir);
     zMath::MatStackPopPtr();
 }

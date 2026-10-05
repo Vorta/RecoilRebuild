@@ -110,6 +110,45 @@ namespace zMath
 #endif
         return dot;
     }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-length
+     *
+     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+     * Reconstruction: zwep_ammo.c-resident copy of the Camera.c inline helper,
+     * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
+     * at 0x4ae660 with the simple parameter argument bound directly and the
+     * result home packed into a dead parameter slot.
+     * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
+     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+     * sequence and result store without a call at that site; the original inline helper's header
+     * ownership and declaration placement are not established (TU-resident reconstruction model).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x4ae660.
+     */
+    inline float Vec3Length(const zVec3* vec)
+    {
+        float vecLength;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fsqrt
+        fstp vecLength
+        }
+#else
+        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+        return vecLength;
+    }
 } // namespace zMath
 
 extern "C" {
@@ -470,7 +509,13 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocruntimeinstance
      * @recoil-artifact defines .text recoil:function:0x4ae660: OptCatalog::AllocRuntimeInstance
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
      *
+     *
+     * Raw assembly: the zwep_ammo.c-resident zMath::Vec3Length expansion
+     * [0x4ae7aa,0x4ae7c8) and zMath::Vec3Subtract expansion [0x4ae803,0x4ae826)
+     * (requires zwep_ammo.c /Ob1).
      *
      * Purpose: allocate or reuse a projectile runtime instance, link it active,
      * initialize motion, FX, target, and collision state for the spawn.
@@ -511,9 +556,10 @@ namespace OptCatalog
         runtimeInstance->scaleFade = 0.0f;
         runtimeInstance->saveState = saveState;
         if (variantTagOrNull != 0) {
-            memcpy(&runtimeInstance->variantTag, variantTagOrNull, sizeof(runtimeInstance->variantTag));
+            runtimeInstance->variantTag = *variantTagOrNull;
         } else {
-            runtimeInstance->variantTag = 4;
+            // Retail stores only the tag count byte (mov byte ptr [esi+8], 4).
+            runtimeInstance->variantTag.count = 4;
         }
         runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
         g_OptCatalogNextSpawnScale = 1.0f;
@@ -526,15 +572,14 @@ namespace OptCatalog
             runtimeInstance->lifetime = 0.0000999999975f;
             runtimeInstance->velocity = *spawnVelocity;
             if ((self->flags & kOptCatalogFlagRelativeSpeed) != 0) {
-                const float relativeSpeed = (float)(sqrt(
-                    (spawnVelocity->x * spawnVelocity->x) + (spawnVelocity->y * spawnVelocity->y)
-                    + (spawnVelocity->z * spawnVelocity->z)
-                ));
+                const float relativeSpeed = zMath::Vec3Length(spawnVelocity);
                 runtimeInstance->speed += relativeSpeed;
                 runtimeInstance->lifetime += relativeSpeed;
-                runtimeInstance->velocity.x -= spawnDir->x * relativeSpeed;
-                runtimeInstance->velocity.y -= spawnDir->y * relativeSpeed;
-                runtimeInstance->velocity.z -= spawnDir->z * relativeSpeed;
+                zVec3 relativeVelocity;
+                relativeVelocity.x = spawnDir->x * relativeSpeed;
+                relativeVelocity.y = spawnDir->y * relativeSpeed;
+                relativeVelocity.z = spawnDir->z * relativeSpeed;
+                zMath::Vec3Subtract(&runtimeInstance->velocity, &relativeVelocity, &runtimeInstance->velocity);
             }
         }
 
@@ -547,9 +592,11 @@ namespace OptCatalog
         } else if (self->fireFxSelectedEffectIndex != -1) {
             zEffectAnimEntry* const fireAnim = self->fireFxAnimationEntries[self->fireFxSelectedEffectIndex];
             if (fireAnim != 0) {
-                float randomRoll = 0.0f;
+                float randomRoll;
                 if ((self->fireFxFlags & 1u) != 0) {
                     randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
+                } else {
+                    randomRoll = 0.0f;
                 }
 
                 // Retail null-checks the selected entry but always animates entry 0.
@@ -587,41 +634,40 @@ namespace OptCatalog
             runtimeInstance->pos.z
         );
 
-        if (self->flyoutSelectedEffectIndex != -1) {
-            if (self->flyoutAnimationEntry != 0) {
-                runtimeInstance->flyoutAnimPrimary = zEffectAnim::SetTransformRefsThunk(
-                    self->flyoutAnimationEntry,
-                    0,
-                    runtimeInstance->projectileNode,
-                    0,
-                    runtimeInstance->projectileNode,
-                    0
-                );
-            }
-            if (self->flyoutAttachedAnimationEntry != 0) {
-                runtimeInstance->flyoutAnimSecondary = zEffectAnim::SetPositionRefAndVelocityThunk(
-                    self->flyoutAttachedAnimationEntry,
-                    0,
-                    runtimeInstance->projectileNode,
-                    0,
-                    0
-                );
-            }
-            if (self->flyoutModelAnimationEntry != 0) {
-                zEffectAnimEntry* const asyncFxHandle = zEffectAnim::SetVelocityThunk(
-                    self->flyoutModelAnimationEntry,
-                    runtimeInstance->attachCloneChild,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
-                runtimeInstance->asyncFxHandle = asyncFxHandle;
-                zEffectAnimEntry::SetOnStateDoneCallback(
-                    asyncFxHandle,
-                    (void*)(&ClearRuntimeInstanceAsyncFxHandleCallback),
-                    runtimeInstance
-                );
-            }
+        const int flyoutSelected = self->flyoutSelectedEffectIndex != -1;
+        if (flyoutSelected && self->flyoutAnimationEntry != 0) {
+            runtimeInstance->flyoutAnimPrimary = zEffectAnim::SetTransformRefsThunk(
+                self->flyoutAnimationEntry,
+                0,
+                runtimeInstance->projectileNode,
+                0,
+                runtimeInstance->projectileNode,
+                0
+            );
+        }
+        if (flyoutSelected && self->flyoutAttachedAnimationEntry != 0) {
+            runtimeInstance->flyoutAnimSecondary = zEffectAnim::SetPositionRefAndVelocityThunk(
+                self->flyoutAttachedAnimationEntry,
+                0,
+                runtimeInstance->projectileNode,
+                0,
+                0
+            );
+        }
+        if (flyoutSelected && self->flyoutModelAnimationEntry != 0) {
+            zEffectAnimEntry* const asyncFxHandle = zEffectAnim::SetVelocityThunk(
+                self->flyoutModelAnimationEntry,
+                runtimeInstance->attachCloneChild,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+            runtimeInstance->asyncFxHandle = asyncFxHandle;
+            zEffectAnimEntry::SetOnStateDoneCallback(
+                asyncFxHandle,
+                (void*)(&ClearRuntimeInstanceAsyncFxHandleCallback),
+                runtimeInstance
+            );
         }
 
         runtimeInstance->aux = zMath::g_zMath_Vec3Zero;
@@ -1053,7 +1099,7 @@ namespace OptCatalog
                         callback(runtimeInstance);
                     }
 
-                    if ((unsigned char)(runtimeInstance->variantTag & 0xffu) == 4) {
+                    if (runtimeInstance->variantTag.count == 4) {
                         memcpy(&g_Variant_CurrentTag, &savedPackedVariantTag, sizeof(g_Variant_CurrentTag));
                     } else {
                         memcpy(&g_Variant_CurrentTag, &runtimeInstance->variantTag, sizeof(g_Variant_CurrentTag));
@@ -1770,7 +1816,14 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computeaimpitchfortarget
      * @recoil-artifact defines .text recoil:function:0x4b0530: OptCatalog::ComputeAimPitchForTarget
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate recoil:function:0x4b0530
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate
      *
+     *
+     * Raw assembly: the inline zMath::Vec3Subtract expansion [0x4b0543,0x4b0566)
+     * and one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x4b057f,0x4b058c).
      *
      * Purpose: Computes launch pitch to hit a target and writes the approximated target distance.
      */
@@ -1785,30 +1838,39 @@ namespace OptCatalog
         (void)unusedDirection;
 
         zVec3 delta;
-        delta.x = target->x - origin->x;
-        delta.y = target->y - origin->y;
-        delta.z = target->z - origin->z;
+        zMath::Vec3Subtract(target, origin, &delta);
 
-        const float distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-        int distanceBits;
-        memcpy(&distanceBits, &distanceSq, sizeof(distanceBits));
-        distanceBits = (distanceBits >> 1) + (int)(kOptCatalogFastSqrtBias);
-
+        float distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
         float distanceApprox;
-        memcpy(&distanceApprox, &distanceBits, sizeof(distanceApprox));
+        // Raw-assembly fast square-root estimate: retail transforms the named distanceSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named distanceApprox local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, distanceSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov distanceApprox, eax
+        }
+#else
+        {
+            int distanceBits;
+            memcpy(&distanceBits, &distanceSq, sizeof distanceBits);
+            distanceBits = (distanceBits >> 1) + (int)(kOptCatalogFastSqrtBias);
+            memcpy(&distanceApprox, &distanceBits, sizeof distanceApprox);
+        }
+#endif
         *distanceApproxOut = distanceApprox;
 
         if (self->gravity == 0.0f) {
             return -1.0f;
         }
 
-        const float verticalSlope = delta.y / distanceApprox;
         if (distanceApprox < self->range) {
-            return verticalSlope - (distanceApprox / self->range) * kOptCatalogAimPitchRangeScale;
+            return delta.y / distanceApprox - (distanceApprox / self->range) * kOptCatalogAimPitchRangeScale;
         }
 
         if ((self->flags & kOptCatalogFlagAllowOutOfRangeAimPitch) != 0) {
-            return verticalSlope - kOptCatalogAimPitchRangeScale;
+            return delta.y / distanceApprox - kOptCatalogAimPitchRangeScale;
         }
 
         return -1.0f;

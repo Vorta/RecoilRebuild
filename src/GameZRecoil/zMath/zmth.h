@@ -817,11 +817,9 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * Fallback: mathematical reference only; identical rounding, NaN handling,
  * exception behaviour and store scheduling are not promised.
  */
-#define ZMTH_VECTOR_LENGTH_SQ(result, vector)                                                                          \
-    do {                                                                                                               \
-        const zVec3* const lengthVector = (vector);                                                                    \
-        __asm { \
-            __asm mov ecx, lengthVector \
+#define ZMTH_VECTOR_LENGTH_SQ_BODY(result, vectorVar)                                                                  \
+    __asm { \
+            __asm mov ecx, vectorVar \
             __asm fld dword ptr [ecx]zVec3.x \
             __asm fmul dword ptr [ecx]zVec3.x \
             __asm fld dword ptr [ecx]zVec3.y \
@@ -831,7 +829,19 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
             __asm fxch st(1) \
             __asm faddp st(2), st \
             __asm faddp st(1), st \
-            __asm fstp result }                                                                                        \
+            __asm fstp result }
+#define ZMTH_VECTOR_LENGTH_SQ(result, vector)                                                                          \
+    do {                                                                                                               \
+        const zVec3* const lengthVector = (vector);                                                                    \
+        ZMTH_VECTOR_LENGTH_SQ_BODY(result, lengthVector);                                                              \
+    } while (0)
+// ZMTH_VECTOR_LENGTH_SQ_BOUND accepts an existing named, non-volatile pointer object and a
+// named float result; its VC5/x86 expansion introduces no pointer capture, while its reference
+// fallback inherits ZMTH_VECTOR_LENGTH_SQ's internal-name restriction (lengthVector).
+// ZMTH_VECTOR_LENGTH_SQ_BODY is an implementation detail, not a consumer entry point.
+#define ZMTH_VECTOR_LENGTH_SQ_BOUND(result, vectorVar)                                                                 \
+    do {                                                                                                               \
+        ZMTH_VECTOR_LENGTH_SQ_BODY(result, vectorVar);                                                                 \
     } while (0)
 #else
 #define ZMTH_VECTOR_NEGATE(source, destination)                                                                        \
@@ -851,4 +861,5 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
         (result) = (lengthVector->x * lengthVector->x + lengthVector->y * lengthVector->y)                             \
             + lengthVector->z * lengthVector->z;                                                                       \
     } while (0)
+#define ZMTH_VECTOR_LENGTH_SQ_BOUND(result, vectorVar) ZMTH_VECTOR_LENGTH_SQ(result, vectorVar)
 #endif

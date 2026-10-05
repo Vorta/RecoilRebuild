@@ -2,7 +2,6 @@
 
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zVideo/zvid.h"
 #include "zclass.h"
 
 #include <math.h>
@@ -472,6 +471,8 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3reflect-gamezrecoil-zmath-zmath-vec3-cpp
      * @recoil-artifact defines .text recoil:function:0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
      *
      *
      * Purpose: Reflects an incident vector around a normal, with the zero-dot case negating the incident vector.
@@ -480,7 +481,8 @@ namespace zMath
      */
     void __fastcall Vec3Reflect(zVec3 * normal, zVec3 * incident, zVec3 * reflected)
     {
-        const float dot = normal->x * incident->x + normal->y * incident->y + normal->z * incident->z;
+        float dot;
+        ZMTH_VECTOR_DOT_BOUND(dot, normal, incident);
         if (dot == g_zMath_Vec3ZeroFloat) {
             reflected->x = incident->x * g_zMath_Vec3NegUnitFloat;
             reflected->y = incident->y * g_zMath_Vec3NegUnitFloat;
@@ -489,26 +491,19 @@ namespace zMath
         }
 
         zVec3 scaledNormal;
-        zVec3* scaledNormalPtr = &scaledNormal;
-        scaledNormalPtr->x = -dot * normal->x;
-        scaledNormalPtr->y = normal->y * -dot;
-        scaledNormalPtr->z = normal->z * -dot;
-
         zVec3 halfReflected;
-        zVec3* halfReflectedPtr = &halfReflected;
-        halfReflectedPtr->x = incident->x + scaledNormalPtr->x;
-        halfReflectedPtr->y = incident->y + scaledNormalPtr->y;
-        halfReflectedPtr->z = incident->z + scaledNormalPtr->z;
-
-        reflected->x = scaledNormalPtr->x + halfReflectedPtr->x;
-        reflected->y = scaledNormalPtr->y + halfReflectedPtr->y;
-        reflected->z = scaledNormalPtr->z + halfReflectedPtr->z;
+        float negDot;
+        scaledNormal.x = (negDot = -dot) * normal->x;
+        scaledNormal.y = normal->y * negDot;
+        scaledNormal.z = normal->z * negDot;
+        Vec3Add(incident, &scaledNormal, &halfReflected);
+        Vec3Add(&scaledNormal, &halfReflected, reflected);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerp-gamezrecoil-zmath-zmath-vec3-cpp
      * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
+     * @recoil-match byte
      *
      * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
      */
@@ -615,7 +610,12 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perp2d-gamezrecoil-zmath-zmath-vec2-cpp
      * @recoil-artifact defines .text recoil:function:0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate recoil:function:0x472cc0
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate
+     * @recoil-match byte
      *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x472d03,0x472d10).
      *
      * Purpose: Computes a unit XY-plane perpendicular using the recovered fast square-root estimate.
      */
@@ -629,12 +629,25 @@ namespace zMath
         }
 
         const float lengthSq = in->x * in->x + in->y * in->y;
-        unsigned int lengthBits = 0;
-        memcpy(&lengthBits, &lengthSq, sizeof(lengthBits));
-        lengthBits = (lengthBits >> 1) + 0x1fc00000u;
-        float length = 0.0f;
-        memcpy(&length, &lengthBits, sizeof(length));
-        const float invLength = g_zMath_Vec3UnitFloat / length;
+        float lengthEstimate;
+        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
+        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+            mov eax, lengthSq
+            sar eax, 1
+            add eax, 01fc00000h
+            mov lengthEstimate, eax
+        }
+#else
+        {
+            int estimateBits;
+            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
+            estimateBits = (estimateBits >> 1) + 0x1fc00000;
+            memcpy(&lengthEstimate, &estimateBits, sizeof lengthEstimate);
+        }
+#endif
+        const float invLength = g_zMath_Vec3UnitFloat / lengthEstimate;
         out->x = in->y * invLength;
         out->y = -(in->x * invLength);
     }
@@ -1876,17 +1889,21 @@ void __fastcall zMathMatExtractEulerAngles(const zMat4x3* matrix, zVec3* outEule
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-rotatex
  * @recoil-artifact defines .text recoil:function:0x474ec0: zMathVec3RotateX.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
+ * @recoil-match byte
  *
  * Purpose: rotates one vector around the X axis into caller-provided output.
  */
 void __fastcall zMathVec3RotateX(zVec3* outVec, const zVec3* inVec, float angleX)
 {
-    const float sinAngle = sin(angleX);
-    const float cosAngle = cos(angleX);
+    float sinAngle;
+    float cosAngle;
+    zMath::SinCos(angleX, &sinAngle, &cosAngle);
     outVec->x = inVec->x;
-    outVec->y = cosAngle * inVec->y - sinAngle * inVec->z;
+    // inVec may alias outVec, so y is kept until z has read inVec->y.
+    const float rotatedY = cosAngle * inVec->y - sinAngle * inVec->z;
     outVec->z = sinAngle * inVec->y + cosAngle * inVec->z;
+    outVec->y = rotatedY;
 }
 
 namespace zMath
@@ -1894,7 +1911,8 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3rotatey-gamezrecoil-zmath-zmath-vec-cpp
      * @recoil-artifact defines .text recoil:function:0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
+     * @recoil-match byte
      *
      * One C-linkage implementation (VC5 decorated name @Vec3RotateY@12) in
      * the angle-last parameter order of the sibling zMathVec3RotateX: outVec
@@ -1911,11 +1929,14 @@ namespace zMath
      */
     extern "C" void __fastcall Vec3RotateY(zVec3 * outVec, const zVec3* inVec, float yawAngle)
     {
-        const float sinAngle = sin(yawAngle);
-        const float cosAngle = cos(yawAngle);
-        outVec->x = sinAngle * inVec->z + cosAngle * inVec->x;
+        float sinAngle;
+        float cosAngle;
+        SinCos(yawAngle, &sinAngle, &cosAngle);
+        // inVec may alias outVec, so x is kept until z has read inVec->x.
+        const float rotatedX = sinAngle * inVec->z + cosAngle * inVec->x;
         outVec->y = inVec->y;
         outVec->z = cosAngle * inVec->z - sinAngle * inVec->x;
+        outVec->x = rotatedX;
     }
 
     /**
@@ -2031,9 +2052,50 @@ void __fastcall zMathSolveLinearGradient2D(
 namespace zMath
 {
     /**
+     * Purpose: Inline-function spelling of the reviewed vector-dot island for
+     * this unit's consumers. VC5 binds simple variable arguments to their own
+     * homes and address arguments to inline-parameter homes, which the capturing
+     * ZMTH_VECTOR_DOT cannot express. Original header ownership is unrecovered.
+     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+     * sequence and result store without a call at that site; the original inline helper's header
+     * ownership and declaration placement are not established (TU-resident reconstruction model).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x475210 and 0x4753e0, whose dot-product islands load a simple
+     * pointer argument from its own home and an address argument from a capture.
+     */
+    inline float Vec3Dot(const zVec3* left, const zVec3* right)
+    {
+        float result;
+        ZMTH_VECTOR_DOT_BOUND(result, left, right);
+        return result;
+    }
+
+    /**
+     * Purpose: Inline-function spelling of the reviewed vector-length-sq island
+     * for this unit's consumers, binding its argument like Vec3Dot. Original
+     * header ownership is unrecovered. Original inline helper evidence: no
+     * standalone retail function; retail 0x475210 loads sphereCenterRelSegB
+     * from its parameter home and 0x4753e0 loads captured edge addresses.
+     */
+    inline float Vec3LengthSq(const zVec3* vector)
+    {
+        float result;
+        ZMTH_VECTOR_LENGTH_SQ_BOUND(result, vector);
+        return result;
+    }
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-linevsspherehit
      * @recoil-artifact defines .text recoil:function:0x475210: zMath::LineVsSphereHit
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.line-vs-sphere-hit.fast-sqrt-estimate recoil:function:0x475210
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.line-vs-sphere-hit.fast-sqrt-estimate
+     * @recoil-match byte
      *
+     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
+     * [0x475328,0x475335).
      *
      * Purpose: tests a segment direction against a sphere and writes the
      * normalized inward hit normal when the hit lies in front of the segment
@@ -2049,43 +2111,64 @@ namespace zMath
         zVec3* outInwardNormal
     )
     {
-        zVec3 lineDelta = { segA->x - segB->x, segA->y - segB->y, segA->z - segB->z };
-        const float lineLengthSq = lineDelta.x * lineDelta.x + lineDelta.y * lineDelta.y + lineDelta.z * lineDelta.z;
+        float centerDistMinusRadius;
+        zVec3 lineDelta;
+        float lineLengthSq;
+        float centerDotLine;
+        float rootNumerator;
+        float centerDistSq;
+        float discriminant;
+        float discriminantRoot;
+        float denominator;
+        float hitScale;
+
+        Vec3Subtract(segA, segB, &lineDelta);
+        lineLengthSq = Vec3LengthSq(&lineDelta);
         if (lineLengthSq == 0.0f) {
             return 0;
         }
 
-        const float centerDotLine = sphereCenterRelSegB->x * lineDelta.x + sphereCenterRelSegB->y * lineDelta.y
-            + sphereCenterRelSegB->z * lineDelta.z;
-        float centerDistMinusRadius = sphereCenterRelSegB->x * sphereCenterRelSegB->x
-            + sphereCenterRelSegB->y * sphereCenterRelSegB->y + sphereCenterRelSegB->z * sphereCenterRelSegB->z
-            - radius * radius;
-
-        float hitScale = 0.0f;
+        centerDotLine = Vec3Dot(sphereCenterRelSegB, &lineDelta);
+        rootNumerator = centerDotLine;
+        centerDistSq = Vec3LengthSq(sphereCenterRelSegB);
+        centerDistMinusRadius = centerDistSq - radius * radius;
         if (centerDistMinusRadius == 0.0f) {
             if (centerDotLine <= 0.0f) {
                 return 0;
             }
             hitScale = (centerDotLine + centerDotLine) / lineLengthSq;
         } else {
-            const float discriminant = centerDotLine * centerDotLine - lineLengthSq * centerDistMinusRadius;
+            discriminant = centerDotLine * centerDotLine - lineLengthSq * centerDistMinusRadius;
             if (discriminant < 0.0f) {
                 return 0;
             }
 
-            unsigned int discriminantBits = 0;
-            memcpy(&discriminantBits, &discriminant, sizeof(discriminantBits));
-            discriminantBits = (discriminantBits >> 1) + 0x1fc00000u;
-            float discriminantRoot = 0.0f;
-            memcpy(&discriminantRoot, &discriminantBits, sizeof(discriminantRoot));
-            float rootNumerator = centerDotLine;
-            if (centerDistMinusRadius < 0.0f) {
+            // Raw-assembly fast square-root estimate: retail transforms the named discriminant
+            // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+            __asm {
+                mov eax, discriminant
+                sar eax, 1
+                add eax, 01fc00000h
+                mov discriminantRoot, eax
+            }
+#else
+            {
+                int estimateBits;
+                memcpy(&estimateBits, &discriminant, sizeof estimateBits);
+                estimateBits = (estimateBits >> 1) + 0x1fc00000;
+                memcpy(&discriminantRoot, &estimateBits, sizeof discriminantRoot);
+            }
+#endif
+            if (centerDistMinusRadius < 0.0f)
+            {
                 centerDistMinusRadius = -centerDistMinusRadius;
                 rootNumerator = -centerDotLine;
             }
 
-            float denominator = rootNumerator - discriminantRoot;
-            if (rootNumerator <= discriminantRoot) {
+            if (rootNumerator > discriminantRoot) {
+                denominator = rootNumerator - discriminantRoot;
+            } else {
                 denominator = rootNumerator + discriminantRoot;
                 if (denominator <= 0.0f) {
                     return 0;
@@ -2098,21 +2181,20 @@ namespace zMath
         lineDelta.x *= hitScale;
         lineDelta.y *= hitScale;
         lineDelta.z *= hitScale;
-
-        outInwardNormal->x = sphereCenterRelSegB->x - lineDelta.x;
-        outInwardNormal->y = sphereCenterRelSegB->y - lineDelta.y;
-        outInwardNormal->z = sphereCenterRelSegB->z - lineDelta.z;
+        Vec3Subtract(sphereCenterRelSegB, &lineDelta, outInwardNormal);
         Vec3Normalize(outInwardNormal);
         return 1;
     }
 } // namespace zMath
 
-// Retail code keeps an EBP frame for this perspective-gradient helper under the
-// VC5SP3 /O2 profile; disable only frame-pointer omission for the function.
-#pragma optimize("y", off)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-buildperspectivetextureinterpolants
  * @recoil-artifact defines .text recoil:function:0x4753e0: zMathBuildPerspectiveTextureInterpolants
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  *
  *
  * Purpose: recovers perspective-correct reciprocal-Z and UV-over-Z plane gradients for a triangle.
@@ -2128,15 +2210,22 @@ void __fastcall zMathBuildPerspectiveTextureInterpolants(
     float* outVOverZBase
 )
 {
-    const zVec3 edge21
-        = { triVerts[2].x - triVerts[1].x, triVerts[2].y - triVerts[1].y, triVerts[2].z - triVerts[1].z };
-    const zVec3 edge01
-        = { triVerts[0].x - triVerts[1].x, triVerts[0].y - triVerts[1].y, triVerts[0].z - triVerts[1].z };
-    const zVec3 normal = { edge21.y * edge01.z - edge21.z * edge01.y,
-        edge21.z * edge01.x - edge21.x * edge01.z,
-        edge21.x * edge01.y - edge21.y * edge01.x };
-    const float normalDotOrigin = normal.x * triVerts[0].x + normal.y * triVerts[0].y + normal.z * triVerts[0].z;
+    float invGram;
+    zVec3 edge12;
+    zVec3 edge10;
+    zVec3 normal;
+    zVec3 scaled12;
+    zVec3 plane;
+    float normalDotOrigin;
+    float edge12LenSq;
+    float edge10LenSq;
+    float edgeDot;
+    float planeDotOrigin;
 
+    zMath::Vec3Subtract(&triVerts[2], &triVerts[1], &edge12);
+    zMath::Vec3Subtract(triVerts, &triVerts[1], &edge10);
+    zMath::Vec3Cross(&edge12, &edge10, &normal);
+    normalDotOrigin = zMath::Vec3Dot(&normal, triVerts);
     if (normalDotOrigin == 0.0f) {
         outRecipZGrad->x = 0.0f;
         outRecipZGrad->y = 0.0f;
@@ -2148,10 +2237,10 @@ void __fastcall zMathBuildPerspectiveTextureInterpolants(
         *outRecipZBase = reciprocalNormalDot * normal.z;
     }
 
-    const float edge21LenSq = edge21.x * edge21.x + edge21.y * edge21.y + edge21.z * edge21.z;
-    const float edge01LenSq = edge01.x * edge01.x + edge01.y * edge01.y + edge01.z * edge01.z;
-    const float edgeDot = edge21.x * edge01.x + edge21.y * edge01.y + edge21.z * edge01.z;
-    const float gramDeterminant = edge01LenSq * edge21LenSq - edgeDot * edgeDot;
+    edge12LenSq = zMath::Vec3LengthSq(&edge12);
+    edge10LenSq = zMath::Vec3LengthSq(&edge10);
+    edgeDot = zMath::Vec3Dot(&edge12, &edge10);
+    const float gramDeterminant = edge10LenSq * edge12LenSq - edgeDot * edgeDot;
     if (gramDeterminant == 0.0f) {
         outUOverZGrad->x = 0.0f;
         outUOverZGrad->y = 0.0f;
@@ -2162,35 +2251,42 @@ void __fastcall zMathBuildPerspectiveTextureInterpolants(
         return;
     }
 
-    const float invGram = 1.0f / gramDeterminant;
-    const float edgeDotScaled = edgeDot * invGram;
+    invGram = 1.0f / gramDeterminant;
+    edge12LenSq *= invGram;
+    edgeDot *= invGram;
+    edge10LenSq *= invGram;
 
-    const float uDelta21 = triUVs[2].x - triUVs[1].x;
-    const float uDelta01 = triUVs[0].x - triUVs[1].x;
-    const float uScale21 = uDelta21 * edge01LenSq * invGram - uDelta01 * edgeDotScaled;
-    const float uScale01 = uDelta01 * edge21LenSq * invGram - uDelta21 * edgeDotScaled;
-    const zVec3 uPlane = { edge21.x * uScale21 + edge01.x * uScale01,
-        edge21.y * uScale21 + edge01.y * uScale01,
-        edge21.z * uScale21 + edge01.z * uScale01 };
-    const float uOriginDelta
-        = triUVs[0].x - (uPlane.x * triVerts[0].x + uPlane.y * triVerts[0].y + uPlane.z * triVerts[0].z);
+    const float uDelta12 = triUVs[2].x - triUVs[1].x;
+    const float uDelta10 = triUVs[0].x - triUVs[1].x;
+    const float uScale12 = uDelta12 * edge10LenSq - uDelta10 * edgeDot;
+    scaled12.x = uScale12 * edge12.x;
+    scaled12.y = uScale12 * edge12.y;
+    scaled12.z = uScale12 * edge12.z;
+    const float uScale10 = uDelta10 * edge12LenSq - uDelta12 * edgeDot;
+    plane.x = uScale10 * edge10.x;
+    plane.y = uScale10 * edge10.y;
+    plane.z = uScale10 * edge10.z;
+    zMath::Vec3Add(&plane, &scaled12, &plane);
+    planeDotOrigin = zMath::Vec3Dot(&plane, triVerts);
+    const float uOriginDelta = triUVs[0].x - planeDotOrigin;
+    outUOverZGrad->x = uOriginDelta * outRecipZGrad->x + plane.x * g_zMath_InvProjScaleX;
+    outUOverZGrad->y = uOriginDelta * outRecipZGrad->y + plane.y * g_zMath_InvProjScaleY;
+    *outUOverZBase = uOriginDelta * *outRecipZBase + plane.z;
 
-    outUOverZGrad->x = uOriginDelta * outRecipZGrad->x + uPlane.x * g_zMath_InvProjScaleX;
-    outUOverZGrad->y = uOriginDelta * outRecipZGrad->y + uPlane.y * g_zMath_InvProjScaleY;
-    *outUOverZBase = uOriginDelta * *outRecipZBase + uPlane.z;
-
-    const float vDelta21 = triUVs[2].y - triUVs[1].y;
-    const float vDelta01 = triUVs[0].y - triUVs[1].y;
-    const float vScale21 = vDelta21 * edge01LenSq * invGram - vDelta01 * edgeDotScaled;
-    const float vScale01 = vDelta01 * edge21LenSq * invGram - vDelta21 * edgeDotScaled;
-    const zVec3 vPlane = { edge21.x * vScale21 + edge01.x * vScale01,
-        edge21.y * vScale21 + edge01.y * vScale01,
-        edge21.z * vScale21 + edge01.z * vScale01 };
-    const float vOriginDelta
-        = triUVs[0].y - (vPlane.x * triVerts[0].x + vPlane.y * triVerts[0].y + vPlane.z * triVerts[0].z);
-
-    outVOverZGrad->x = vOriginDelta * outRecipZGrad->x + vPlane.x * g_zMath_InvProjScaleX;
-    outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + vPlane.y * g_zMath_InvProjScaleY;
-    *outVOverZBase = vOriginDelta * *outRecipZBase + vPlane.z;
+    const float vDelta12 = triUVs[2].y - triUVs[1].y;
+    const float vDelta10 = triUVs[0].y - triUVs[1].y;
+    const float vScale12 = vDelta12 * edge10LenSq - vDelta10 * edgeDot;
+    scaled12.x = vScale12 * edge12.x;
+    scaled12.y = vScale12 * edge12.y;
+    scaled12.z = vScale12 * edge12.z;
+    const float vScale10 = vDelta10 * edge12LenSq - vDelta12 * edgeDot;
+    plane.x = vScale10 * edge10.x;
+    plane.y = vScale10 * edge10.y;
+    plane.z = vScale10 * edge10.z;
+    zMath::Vec3Add(&plane, &scaled12, &plane);
+    planeDotOrigin = zMath::Vec3Dot(&plane, triVerts);
+    const float vOriginDelta = triUVs[0].y - planeDotOrigin;
+    outVOverZGrad->x = vOriginDelta * outRecipZGrad->x + plane.x * g_zMath_InvProjScaleX;
+    outVOverZGrad->y = vOriginDelta * outRecipZGrad->y + plane.y * g_zMath_InvProjScaleY;
+    *outVOverZBase = vOriginDelta * *outRecipZBase + plane.z;
 }
-#pragma optimize("", on)

@@ -1517,19 +1517,18 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
     int pointCount
 )
 {
-    const zVec3* const trackedPos = trackedWorldOriginPtr;
-    const zVec3* const trackedForward = trackedForwardVecPtr;
+    zVec2 delta;
 
-    {
-        for (int index = 0; index < pointCount; ++index) {
-            const float deltaX = (inputWorldPoints[index].x - trackedPos->x) * mapZoom * mapScaleCurrent.x;
-            const float deltaZ = (inputWorldPoints[index].z - trackedPos->z) * mapScaleCurrent.z * mapZoom;
+    while (pointCount--) {
+        delta.x = (inputWorldPoints->x - trackedWorldOriginPtr->x) * mapZoom * mapScaleCurrent.x;
+        delta.y = (inputWorldPoints->z - trackedWorldOriginPtr->z) * mapScaleCurrent.z * mapZoom;
+        const float rotatedX = trackedForwardVecPtr->x * delta.y - trackedForwardVecPtr->z * delta.x;
+        const float rotatedY = -(trackedForwardVecPtr->x * delta.x) - trackedForwardVecPtr->z * delta.y;
 
-            projectedOverlayPoints[index].x
-                = (float)(mapOverlayCenterX) + trackedForward->x * deltaZ - trackedForward->z * deltaX;
-            projectedOverlayPoints[index].y
-                = (float)(mapOverlayCenterY)-trackedForward->x * deltaX - trackedForward->z * deltaZ;
-        }
+        projectedOverlayPoints->x = rotatedX + (float)(mapOverlayCenterX);
+        projectedOverlayPoints->y = rotatedY + (float)(mapOverlayCenterY);
+        inputWorldPoints++;
+        projectedOverlayPoints++;
     }
 
     return 1;
@@ -1590,10 +1589,94 @@ void __fastcall HudSensorTracker::DrawMarkerCross(
     zRndrDrawClippedImmediateLineStrip(points, 1, tracker, markerColor & 0xffff);
 }
 
+namespace zMath {
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.map.vector-length-sq
+ *
+ * Purpose: return the grouped (x*x + y*y) + z*z square sum as binary32.
+ * Reconstruction: map.cpp-resident copy of the Camera.c inline helper; this
+ * /Ob1 TU inlines it at 0x416e50 with the simple parameter argument bound
+ * directly.
+ * Raw assembly: identical body to the reviewed Camera.c Vec3LengthSq island.
+ * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+ * sequence and result store without a call at that site; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x416e50.
+ */
+inline float Vec3LengthSq(const zVec3* vec)
+{
+    float lengthSq;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fstp lengthSq
+    }
+#else
+    lengthSq = (vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z;
+#endif
+    return lengthSq;
+}
+
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.map.vector-length
+ *
+ * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+ * Reconstruction: map.cpp-resident copy of the Camera.c inline helper; this
+ * /Ob1 TU inlines it at 0x416e50 with the simple parameter argument bound
+ * directly.
+ * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
+ * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+ * sequence and result store without a call at that site; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x416e50.
+ */
+inline float Vec3Length(const zVec3* vec)
+{
+    float vecLength;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fsqrt
+        fstp vecLength
+    }
+#else
+    vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+    return vecLength;
+}
+} // namespace zMath
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-getsavestaterelativevectorlen
  * @recoil-artifact defines .text recoil:function:0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.map.vector-length
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.map.vector-length-sq
+ * @recoil-match byte
  *
+ * Raw assembly: the inline zMath::Vec3Subtract expansion [0x416e6a,0x416e8d)
+ * and the map.cpp-resident zMath::Vec3Length [0x416e9e,0x416ebc) and
+ * zMath::Vec3LengthSq [0x416ec6,0x416ee2) expansions (requires map.cpp /Ob1).
  *
  * Purpose: Compute the flat relative vector and squared or true distance to a save-state marker.
  */
@@ -1603,21 +1686,17 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
     int takeSqrt
 )
 {
-    const zVec3* const saveStatePos = &saveState->playerState->worldPos;
     const zVec3* const trackedOrigin = trackedWorldOriginPtr;
+    const zVec3* const saveStatePos = &saveState->playerState->worldPos;
 
-    relativeDelta->x = saveStatePos->x - trackedOrigin->x;
-    relativeDelta->y = saveStatePos->y - trackedOrigin->y;
-    relativeDelta->z = saveStatePos->z - trackedOrigin->z;
+    zMath::Vec3Subtract(saveStatePos, trackedOrigin, relativeDelta);
     relativeDelta->y = 0.0f;
 
-    const float lengthSq = relativeDelta->x * relativeDelta->x + relativeDelta->y * relativeDelta->y
-        + relativeDelta->z * relativeDelta->z;
     if (takeSqrt != 0) {
-        return sqrt(lengthSq);
+        return zMath::Vec3Length(relativeDelta);
     }
 
-    return lengthSq;
+    return zMath::Vec3LengthSq(relativeDelta);
 }
 
 /**
