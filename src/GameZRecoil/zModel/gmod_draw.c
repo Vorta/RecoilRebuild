@@ -302,6 +302,20 @@ namespace
  * Retail forms the facing value with the reviewed ZMTH_VECTOR_DOT island
  * (normal, first scratch vertex) in both render paths.
  */
+/**
+ * Purpose: backface facing dot of the surface normal with the first scratch vertex.
+ * Raw assembly: the reviewed full-XYZ ZMTH_VECTOR_DOT island, Pro-reviewed for the
+ * expansions in RenderNodeSoftware and RenderNodeHardware (run 2026-10-05T18-30-40).
+ * The VC5/x86 branch passes the first zClipVert (layout x, y, z) to the island as a
+ * read-only zVec3 operand; the C branch reads the vertex through its own type.
+ */
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+#define GMOD_DRAW_FACING_DOT(result, normal, vertex) ZMTH_VECTOR_DOT(result, normal, (const zVec3*)(&(vertex)))
+#else
+#define GMOD_DRAW_FACING_DOT(result, normal, vertex)                                                                   \
+    \n((result) = (normal)->x * (vertex).x + (normal)->y * (vertex).y + (normal)->z * (vertex).z)
+#endif
+
 #define ComputeSurfaceNormalAndCull(vertexCount, showBackFace, outNormal, outScanConvertMode, visible)                 \
     do {                                                                                                               \
         (visible) = 0;                                                                                                 \
@@ -318,7 +332,7 @@ namespace
             (outNormal)->y = edgeB.x * edgeA.z - edgeB.z * edgeA.x;                                                    \
             (outNormal)->z = edgeB.y * edgeA.x - edgeB.x * edgeA.y;                                                    \
             float facing;                                                                                              \
-            facing = (outNormal)->x * v0.x + (outNormal)->y * v0.y + (outNormal)->z * v0.z;                            \
+            GMOD_DRAW_FACING_DOT(facing, (outNormal), v0);                                                             \
             if (facing < -g_zModel_BFETolerance) {                                                                     \
                 (visible) = 1;                                                                                         \
             } else if ((showBackFace) != 0 && facing > g_zModel_BFETolerance) {                                        \
@@ -938,6 +952,11 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodesoftware
      * @recoil-artifact defines .text recoil:function:0x476cf0: zModel::RenderNodeSoftware
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     *
+     *
+     * Raw assembly: the reviewed vector-dot island in this function's sole
+     * ComputeSurfaceNormalAndCull expansion (GMOD_DRAW_FACING_DOT).
      *
      *
      * Purpose: render a display-instance node through the software renderer path.
@@ -1336,6 +1355,11 @@ namespace zModel
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodehardware
      * @recoil-artifact defines .text recoil:function:0x477b30: zModel::RenderNodeHardware
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     *
+     *
+     * Raw assembly: the reviewed vector-dot island in this function's sole
+     * ComputeSurfaceNormalAndCull expansion (GMOD_DRAW_FACING_DOT).
      *
      *
      * Purpose: render a display-instance node through the hardware renderer path.

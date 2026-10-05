@@ -461,7 +461,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.allocactivationrecord
      * @recoil-artifact defines .text recoil:function:0x460ae0: zEffect_Anim::AllocActivationRecord.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: allocate or grow the activation-record queue and return the next slot.

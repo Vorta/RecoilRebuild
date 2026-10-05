@@ -2205,7 +2205,7 @@ namespace OptCatalog
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-canspawnthroughray
      * @recoil-artifact defines .text recoil:function:0x4b0ba0: OptCatalog::CanSpawnThroughRay
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     *
+     * @recoil-match byte
      *
      * Purpose: test whether a trail segment can continue through a ray hit and
      * compute reflected distance/direction outputs.

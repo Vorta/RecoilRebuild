@@ -1417,7 +1417,7 @@ namespace zModel_Const
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.computepolygonplaneequation
      * @recoil-artifact defines .text recoil:function:0x482e30: zModel_Const::ComputePolygonPlaneEquation
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
-     *
+     * @recoil-match byte
      *
      * Raw assembly: the reviewed full-XYZ dot island for the plane offset at
      * retail [0x482f92,0x482fb1); the

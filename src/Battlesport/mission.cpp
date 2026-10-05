@@ -95,6 +95,7 @@ extern "C" const char kHudSensorTrackerWeatherArchiveName[];
 extern "C" const char kHudSensorTrackerAiArchiveName[];
 extern "C" const char kHudSensorTrackerWeaponsArchiveName[];
 extern "C" const char kHudSensorTrackerEffectsArchiveName[];
+extern "C" char g_zEffectAnim_DefaultArchiveName[0x09];
 extern "C" const char kHudSensorTrackerPickupArchiveName[];
 extern "C" int g_HudSensorTracker_ObjectiveCommandLocked;
 extern "C" const char g_HudSensorTracker_MissionUnloadedMsg[0x14];
@@ -628,9 +629,9 @@ int HudSensorTracker::InitMissionGameplaySystems()
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x108));
     zEffect::SetWorldNode(worldNode);
     zEffect::SetResourceNode(effectResourceNode);
-    zEffect_Anim::LoadAndInstantiate();
+    zEffect_Anim::LoadAndInstantiate(g_zEffectAnim_DefaultArchiveName);
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x105));
-    zDEClient::LoadConfigResources(worldNode);
+    zDEClient::LoadConfigResources(worldNode, 0);
     HudUiLoadingCheckpoint::AdvanceAndLog(zLoc::GetMessageString(0x109));
     zWeapon::LoadOptCatalogFromPath(
         worldNode,
@@ -666,7 +667,7 @@ int HudSensorTracker::InitMissionGameplaySystems()
     zInput::KeyboardResetTransitionState();
 
     if (zOpt::GetNetworkEnabled() != 0 && GameNet::GetStatusBitAllowMaps() != 0) {
-        MapOverlayRefToggle(1);
+        g_HudSensorTracker.MapOverlayRefToggle(1);
     }
 
     CZCamera::gwCameraSetFlagBit0(cameraNode, 1);

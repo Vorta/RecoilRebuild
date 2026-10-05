@@ -1127,8 +1127,10 @@ namespace zEffect_Anim
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: ensure animation entries are loaded, bind runtime roots, install
      * callbacks, capture initial node state, and mark entries instantiated.
+     * The mission loader passes the default archive name (retail ecx = 0x4db088);
+     * this body never reads it and loads through the ZBD filename state.
      */
-    int __fastcall LoadAndInstantiate()
+    int __fastcall LoadAndInstantiate(const char* /*animPath*/)
     {
         char runtimeNodeName[0x24];
         if (g_zEffectAnim_State.entriesInstantiated != 0) {

@@ -40,7 +40,6 @@
  * Purpose: keep this file's ID-counter parity after shared-header changes.
  */
 extern int g_MapIdCounterAlignment0;
-extern int g_MapIdCounterAlignment1;
 
 extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
@@ -278,7 +277,7 @@ extern "C" const char kHudSensorTrackerWeaponsArchiveName[] = "weapons.zrd";
  * Purpose: keep the standalone default animation archive-name literal separate
  * from HudSensorTracker mission archive names and zEffect runtime filename state.
  */
-char g_zEffectAnim_DefaultArchiveName[0x09] = "anim.zrd";
+extern "C" char g_zEffectAnim_DefaultArchiveName[0x09] = "anim.zrd";
 RECOIL_STATIC_ASSERT(sizeof(g_zEffectAnim_DefaultArchiveName) == 0x09);
 /**
  * Purpose: name the effects archive loaded during HUD mission startup.

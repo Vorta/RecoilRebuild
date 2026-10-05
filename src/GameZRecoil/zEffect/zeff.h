@@ -822,9 +822,7 @@ struct zEffectAnimState {
     float defaultGravity;
     int conditionalRefPosEnabled;
     int variantOverrideEnabled;
-    float conditionalRefPosX;
-    float conditionalRefPosY;
-    float conditionalRefPosZ;
+    zVec3 conditionalRefPos;
     unsigned int variantOverridePackedIds;
     float frameDeltaRemainingSec;
 };
@@ -840,9 +838,7 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, worldNode) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, defaultGravity) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosEnabled) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, variantOverrideEnabled) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosX) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosY) == 0x2c);
-RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPosZ) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPos) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, variantOverridePackedIds) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, frameDeltaRemainingSec) == 0x38);
 
@@ -866,9 +862,15 @@ extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;
 extern int g_zEffect_Anim_DebugFrameTag;
 extern CZNodePartial* g_zEffect_ResourceNode;
-extern zEffectAnimActivationRecord* g_zEffectAnim_ActivationRecordTable;
-extern int g_zEffectAnim_ActivationRecordCapacity;
-extern int g_zEffectAnim_ActivationRecordCount;
+struct zEffectAnimActivationRecordQueue {
+    zEffectAnimActivationRecord* table;
+    int capacity;
+    int count;
+};
+extern zEffectAnimActivationRecordQueue g_zEffectAnim_ActivationRecordQueue;
+#define g_zEffectAnim_ActivationRecordTable (g_zEffectAnim_ActivationRecordQueue.table)
+#define g_zEffectAnim_ActivationRecordCapacity (g_zEffectAnim_ActivationRecordQueue.capacity)
+#define g_zEffectAnim_ActivationRecordCount (g_zEffectAnim_ActivationRecordQueue.count)
 extern void(__fastcall* g_zEffectAnim_ActivationDispatchCallback)(zEffectAnimActivationRecord* record);
 extern unsigned int g_zEffectAnim_ActivationDispatchTagHigh;
 extern int g_zEffectAnim_RecordQueueEnabled;
@@ -957,7 +959,7 @@ int __fastcall GetActivationRecordPackedSize(zEffectAnimActivationRecord* record
 void __cdecl DiscardLastActivationRecord();
 void __fastcall SetZbdFilename(const char* filename);
 int __cdecl LoadZbd();
-int __fastcall LoadAndInstantiate();
+int __fastcall LoadAndInstantiate(const char* animPath);
 void __fastcall
 SetActivationDispatchContext(void(__fastcall* callback)(zEffectAnimActivationRecord* record), int context);
 } // namespace zEffect_Anim

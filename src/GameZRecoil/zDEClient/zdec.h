@@ -190,7 +190,7 @@ typedef int(__fastcall* zDEClient_CraterFeatureDispatch)(zDEClient_CraterEventTe
 typedef int(__fastcall* zDEClient_QSandFeatureDispatch)(zDEClient_QSandEventTemplate* eventTemplate);
 
 namespace zDEClient {
-int __fastcall LoadConfigResources(CZNodePartial* worldNode);
+int __fastcall LoadConfigResources(CZNodePartial* worldNode, int reserved);
 RECOIL_NO_GS int __fastcall LoadMaterialFromTexturePath_Local(zModel_MaterialPartial** outMaterial, char* texturePath);
 void __stdcall ApplyFeatureEntry(zDEClient_FeatureEntry* container, void* unused0, void* unused1);
 void __fastcall DispatchFeatureEventTemplates(

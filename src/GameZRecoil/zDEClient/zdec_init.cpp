@@ -246,8 +246,10 @@ namespace zDEClient {
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: load declient.zrd crater and quicksand resource defaults, bind the
  * active camera, and register feature reload callbacks.
+ * The mission loader passes 0 as the second argument (retail edx = 0); the
+ * body never reads it.
  */
-int __fastcall LoadConfigResources(CZNodePartial* worldNode)
+int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
 {
     int textureLoadPending = 0;
     if (worldNode == 0) {

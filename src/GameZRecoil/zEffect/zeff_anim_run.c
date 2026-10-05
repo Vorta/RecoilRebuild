@@ -149,23 +149,20 @@ int g_zEffect_Anim_DebugFrameTag = -1;
  */
 CZNodePartial* g_zEffect_ResourceNode = (CZNodePartial*)(1);
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordtable
- * @recoil-artifact defines .data recoil:data:0x53a2d8: g_zEffectAnim_ActivationRecordTable.
- * Purpose: Owns the queued activation-record table used to save, load, and replay deferred animation activations.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordqueue
+ * @recoil-artifact defines .data recoil:data:0x53a2d8: g_zEffectAnim_ActivationRecordQueue.table.
+ * @recoil-artifact defines .data recoil:data:0x53a2dc: g_zEffectAnim_ActivationRecordQueue.capacity.
+ * @recoil-artifact defines .data recoil:data:0x53a2e0: g_zEffectAnim_ActivationRecordQueue.count.
+ * Storage group: g_zEffectAnim_ActivationRecordQueue.
+ * Retail AllocActivationRecord (0x460ae0) loads count before capacity at the
+ * grow test and count before table at the record-id store, VC5's join order
+ * for members of one global aggregate; separate globals load in the reverse
+ * order. The compatibility field macros in zeff.h keep the recovered names.
+ * Purpose: Owns the queued activation-record table, its allocated slot count
+ * and its live record count used to save, load, and replay deferred animation
+ * activations.
  */
-zEffectAnimActivationRecord* g_zEffectAnim_ActivationRecordTable = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordcapacity
- * @recoil-artifact defines .data recoil:data:0x53a2dc: g_zEffectAnim_ActivationRecordCapacity.
- * Purpose: Tracks the allocated activation-record slots for the queue table.
- */
-int g_zEffectAnim_ActivationRecordCapacity = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.g-zeffectanim-activationrecordcount
- * @recoil-artifact defines .data recoil:data:0x53a2e0: g_zEffectAnim_ActivationRecordCount.
- * Purpose: Tracks the number of queued activation records available for serialization or dispatch.
- */
-int g_zEffectAnim_ActivationRecordCount = 0;
+zEffectAnimActivationRecordQueue g_zEffectAnim_ActivationRecordQueue = { 0 };
 /**
  * Purpose: Stores the optional activation-record dispatch callback.
  */
@@ -377,9 +374,9 @@ namespace zEffect
      */
     void __fastcall SetConditionalRefPos(const zVec3* position)
     {
-        g_zEffectAnim_State.conditionalRefPosX = position->x;
-        g_zEffectAnim_State.conditionalRefPosY = position->y;
-        g_zEffectAnim_State.conditionalRefPosZ = position->z;
+        g_zEffectAnim_State.conditionalRefPos.x = position->x;
+        g_zEffectAnim_State.conditionalRefPos.y = position->y;
+        g_zEffectAnim_State.conditionalRefPos.z = position->z;
         g_zEffectAnim_State.conditionalRefPosEnabled = 1;
     }
 
@@ -2974,7 +2971,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
      * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: evaluate a conditional event chain and skip to the matching branch
@@ -3012,11 +3009,10 @@ namespace zEffect
                 }
             } else if ((conditionMask & 0x08) != 0) {
                 if (g_zEffectAnim_State.conditionalRefPosEnabled != 0) {
-                    const zVec3 conditionalRefPos = { g_zEffectAnim_State.conditionalRefPosX,
-                        g_zEffectAnim_State.conditionalRefPosY,
-                        g_zEffectAnim_State.conditionalRefPosZ };
                     int hit;
-                    if (TraceUpwardHitFromNodeOrPos(0, &conditionalRefPos, &threshold.f32, &hit) == 0 && hit != 0) {
+                    if (TraceUpwardHitFromNodeOrPos(0, &g_zEffectAnim_State.conditionalRefPos, &threshold.f32, &hit)
+                            == 0
+                        && hit != 0) {
                         conditionMatched = 1;
                     }
                 }
@@ -3125,9 +3121,9 @@ namespace zEffect
         zVec3 worldPosition;
         zVec3 delta;
         if (CZNode::GetWorldPosition(node, &worldPosition) == 0) {
-            delta.x = worldPosition.x - g_zEffectAnim_State.conditionalRefPosX;
-            delta.y = worldPosition.y - g_zEffectAnim_State.conditionalRefPosY;
-            delta.z = worldPosition.z - g_zEffectAnim_State.conditionalRefPosZ;
+            delta.x = worldPosition.x - g_zEffectAnim_State.conditionalRefPos.x;
+            delta.y = worldPosition.y - g_zEffectAnim_State.conditionalRefPos.y;
+            delta.z = worldPosition.z - g_zEffectAnim_State.conditionalRefPos.z;
             return delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
         }
 
