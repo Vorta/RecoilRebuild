@@ -41,53 +41,6 @@ float g_zMath_ClipZUpperBound = 1.0f;
  */
 const float g_zMath_MidpointHalf = 0.5f;
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-vector-zero-scalar
- * @recoil-artifact defines .rdata recoil:data:0x4d2918: shared zMath vector zero scalar.
- * Purpose: supplies float-zero comparisons for recovered vector helpers.
- */
-const float g_zMath_Vec3ZeroFloat = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-vector-unit-scalar
- * @recoil-artifact defines .rdata recoil:data:0x4d291c: shared zMath vector unit scalar.
- * Purpose: supplies reciprocal numerator constants for recovered vector
- * helpers.
- */
-const float g_zMath_Vec3UnitFloat = 1.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-shared-zmath-negative-unit-scalar
- * @recoil-artifact defines .rdata recoil:data:0x4d2928: shared zMath negative unit scalar.
- * Purpose: supplies the zero-dot reflection negation multiplier.
- */
-const float g_zMath_Vec3NegUnitFloat = -1.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-doublezero
- * @recoil-artifact defines .rdata recoil:data:0x4d2920: g_zMath_DoubleZero.
- * Purpose: supplies the double-zero comparison in Vec3NormalizeXZ.
- * The original declaration spelling and ownership remain unresolved.
- */
-const double g_zMath_DoubleZero = 0.0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vector-direction-negative-dot-threshold
- * @recoil-artifact defines .rdata recoil:data:0x4d2930: zMath vector direction negative dot threshold.
- * Purpose: selects the antiparallel Vec3Slerp branch before building a
- * perpendicular direction.
- */
-const double g_zMath_Vec3DirectionDotNegThreshold = -0.95;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-direction-pi-scalar
- * @recoil-artifact defines .rdata recoil:data:0x4d2938: zMath direction pi scalar.
- * Purpose: converts the Vec3Slerp antiparallel interpolation amount to
- * radians.
- */
-const float g_zMath_DirectionToPiFloat = 3.14159274f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vector-direction-positive-dot-threshold
- * @recoil-artifact defines .rdata recoil:data:0x4d2948: zMath vector direction positive dot threshold.
- * Purpose: selects the near-linear Vec3Slerp branch for nearly aligned
- * vectors.
- */
-const double g_zMath_Vec3DirectionDotPosThreshold = 0.95;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-elevationpifloat
  * @recoil-artifact defines .rdata recoil:data:0x4d2998: g_zMath_ElevationPiFloat.
  * Purpose: supplies the Euler roll adjustment pi scalar.
@@ -303,6 +256,30 @@ namespace
 namespace zMath
 {
     /**
+     * Purpose: Inline-function spelling of the reviewed vector-dot island for
+     * this unit's consumers. VC5 binds simple variable arguments to their own
+     * homes and address arguments to inline-parameter homes, which the capturing
+     * ZMTH_VECTOR_DOT cannot express. Original header ownership is unrecovered.
+     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+     * sequence and result store without a call at that site; the original inline helper's header
+     * ownership and declaration placement are not established (TU-resident reconstruction model).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x475210 and 0x4753e0, whose dot-product islands load a simple
+     * pointer argument from its own home and an address argument from a capture.
+     * Defined ahead of the unit's functions (TU-resident helper placement); after
+     * the zmth_vec.c split this placement keeps 0x474010's VC5 ID-counter parity.
+     */
+    inline float Vec3Dot(const zVec3* left, const zVec3* right)
+    {
+        float result;
+        ZMTH_VECTOR_DOT_BOUND(result, left, right);
+        return result;
+    }
+} // namespace zMath
+
+namespace zMath
+{
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-g-zmath-camerascratchb
      * @recoil-artifact defines .data recoil:data:0x5668e8: g_zMath_CameraScratchB
      * Purpose: stores the camera inverse-rotation scratch matrix loaded by the
@@ -323,334 +300,8 @@ namespace zMath
      * projectile runtime initialization.
      */
     zVec3 g_zMath_Vec3Zero = { 0 };
-    zVec3 g_zMath_Vec3DeltaScratch = { 0 };
     int* g_currentMatrixIdentityFlagSlot = &g_matrixIdentityFlagSlots[0];
     float** g_currentMatrixPtrSlot = &g_matrixSlots[0];
-
-// Retail keeps an EBP frame for this leaf under the VC5SP3 /O2 profile.
-#pragma optimize("y", off)
-
-#pragma optimize("", on)
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalengthsq-gamezrecoil-zmath-cpp
-     * @recoil-artifact defines .text recoil:function:0x472670: zMath::Vec3DeltaLengthSq.
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.delta-square-sum
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.delta-square-sum
-     * @recoil-match byte
-     *
-     * Purpose: Use reviewed raw assembly for retail's rounded XYZ deltas and squared-length result.
-     */
-    float __fastcall Vec3DeltaLengthSq(const zVec3* a, const zVec3* b)
-    {
-        Vec3Subtract(a, b, &g_zMath_Vec3DeltaScratch);
-        float lengthSq;
-        /**
-         * Purpose: Store the grouped XYZ square sum as a float; ECX clobbered, x87 depths 0/3/0.
-         */
-        __asm {
-        mov ecx, offset g_zMath_Vec3DeltaScratch
-        fld dword ptr [ecx]zVec3.x
-        fmul dword ptr [ecx]zVec3.x
-        fld dword ptr [ecx]zVec3.y
-        fmul dword ptr [ecx]zVec3.y
-        fld dword ptr [ecx]zVec3.z
-        fmul dword ptr [ecx]zVec3.z
-        fxch st(1)
-        faddp st(2), st(0)
-        faddp st(1), st(0)
-        fstp lengthSq
-        }
-        return lengthSq;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalength-gamezrecoil-zmath-cpp
-     * @recoil-artifact defines .text recoil:function:0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
-     *
-     *
-     * Purpose: Stores the vector delta in the shared scratch vector and returns its length.
-     */
-    float __fastcall Vec3DeltaLength(const zVec3* a, const zVec3* b)
-    {
-        g_zMath_Vec3DeltaScratch.x = a->x - b->x;
-        g_zMath_Vec3DeltaScratch.y = a->y - b->y;
-        g_zMath_Vec3DeltaScratch.z = a->z - b->z;
-
-        const float lengthSq = g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x
-            + g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y
-            + g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
-        return sqrt(lengthSq);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3distsqxz-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472730: zMath::Vec3DistSqXZ (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
-     *
-     * Purpose: Stores the XZ delta in the shared scratch vector and returns squared XZ-plane distance.
-     */
-    float __fastcall Vec3DistSqXZ(const zVec3* a, const zVec3* b)
-    {
-        g_zMath_Vec3DeltaScratch.x = a->x - b->x;
-        g_zMath_Vec3DeltaScratch.z = a->z - b->z;
-
-        return g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x
-            + g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3scaleadd-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472770: zMath::Vec3ScaleAdd (GameZRecoil/zMath/zmath_vec3.cpp).
-     * @recoil-match byte
-     *
-     * Purpose: Computes out = vec + scale * delta for each vector component.
-     * Data: reads only caller-supplied vector/scalar inputs and writes only the
-     * caller-supplied output vector.
-     */
-    void __fastcall Vec3ScaleAdd(const zVec3* vec, const zVec3* delta, float scale, zVec3* out)
-    {
-        // Unused snapshots retained to reproduce the retail VC5 operand order.
-        float savedScale, savedX;
-        out->x = (savedScale = scale) * delta->x + (savedX = vec->x);
-        out->y = vec->y + delta->y * scale;
-        out->z = vec->z + delta->z * scale;
-    }
-} // namespace zMath
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-divscalar-gamezrecoil-zmath-zmath-vec3-cpp
- * @recoil-artifact defines .text recoil:function:0x4727a0: zMathVec3DivScalar (GameZRecoil/zMath/zmath_vec3.cpp).
- * @recoil-match byte
- *
- * Purpose: Divides a vector by a scalar while preserving the input vector for zero divisors.
- * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d291c; writes
- * only the caller-supplied output vector.
- */
-void __fastcall zMathVec3DivScalar(const zVec3* vec, zVec3* out, float scalar)
-{
-    if (scalar == g_zMath_Vec3ZeroFloat) {
-        if (out != vec) {
-            *out = *vec;
-        }
-        return;
-    }
-    float savedInverse; // Unused afterward but proven by byte matching.
-    const float inverseScalar = g_zMath_Vec3UnitFloat / scalar;
-    out->x = (savedInverse = inverseScalar) * vec->x;
-    out->y = vec->y * inverseScalar;
-    out->z = vec->z * inverseScalar;
-}
-
-namespace zMath
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3normalizexz-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
-     *
-     * Purpose: Normalizes a vector in the XZ plane while preserving the input Y value and leaving output Y untouched.
-     */
-    void __fastcall Vec3NormalizeXZ(zVec3 * vec, zVec3 * out)
-    {
-        const float savedY = vec->y;
-        vec->y = 0.0f;
-        const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
-        vec->y = savedY;
-
-        float scale = length;
-        if (length != g_zMath_DoubleZero) {
-            scale = g_zMath_Vec3UnitFloat / length;
-        }
-
-        out->x = vec->x * scale;
-        out->z = vec->z * scale;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3reflect-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472860: zMath::Vec3Reflect (GameZRecoil/zMath/zmath_vec3.cpp).
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
-     *
-     *
-     * Purpose: Reflects an incident vector around a normal, with the zero-dot case negating the incident vector.
-     * Data: reads shared zMath scalar constants 0x4d2918 and 0x4d2928; writes
-     * only the caller-supplied output vector.
-     */
-    void __fastcall Vec3Reflect(zVec3 * normal, zVec3 * incident, zVec3 * reflected)
-    {
-        float dot;
-        ZMTH_VECTOR_DOT_BOUND(dot, normal, incident);
-        if (dot == g_zMath_Vec3ZeroFloat) {
-            reflected->x = incident->x * g_zMath_Vec3NegUnitFloat;
-            reflected->y = incident->y * g_zMath_Vec3NegUnitFloat;
-            reflected->z = incident->z * g_zMath_Vec3NegUnitFloat;
-            return;
-        }
-
-        zVec3 scaledNormal;
-        zVec3 halfReflected;
-        float negDot;
-        scaledNormal.x = (negDot = -dot) * normal->x;
-        scaledNormal.y = normal->y * negDot;
-        scaledNormal.z = normal->z * negDot;
-        Vec3Add(incident, &scaledNormal, &halfReflected);
-        Vec3Add(&scaledNormal, &halfReflected, reflected);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerp-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
-     * @recoil-match byte
-     *
-     * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
-     */
-    void __fastcall Vec3Lerp(zVec3 * inOut, const zVec3* other, float t)
-    {
-        const float otherScale = g_zMath_Vec3UnitFloat - t;
-        inOut->x = t * inOut->x + otherScale * other->x;
-        inOut->y = t * inOut->y + otherScale * other->y;
-        inOut->z = t * inOut->z + otherScale * other->z;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3directionto-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x4729b0: zMath::Vec3DirectionTo (GameZRecoil/zMath/zmath_vec3.cpp).
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-match byte
-     *
-     * Purpose: Writes the normalized direction from one point to another and returns the original distance.
-     * Data: writes only the caller-supplied output vector before delegating
-     * normalization to zMath::Vec3Normalize.
-     */
-    float __fastcall Vec3DirectionTo(const zVec3* from, const zVec3* to, zVec3* outDir)
-    {
-        Vec3Subtract(to, from, outDir);
-        return Vec3Normalize(outDir);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerpnormalize-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
-     * @recoil-match byte
-     *
-     * Purpose: Blends the first vector toward a second vector and normalizes the result.
-     */
-    void __fastcall Vec3LerpNormalize(zVec3 * inOut, const zVec3* other, float t)
-    {
-        Vec3Lerp(inOut, other, t);
-        Vec3Normalize(inOut);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3slerp-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472a10: zMath::Vec3Slerp (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
-     *
-     * Purpose: Interpolates between two unit vectors with endpoint, near-linear, antiparallel, and spherical paths.
-     */
-    void __fastcall Vec3Slerp(const zVec3* a, const zVec3* b, float t, zVec3* out)
-    {
-        if (t == g_zMath_Vec3ZeroFloat) {
-            *out = *a;
-            return;
-        }
-
-        if (t == g_zMath_Vec3UnitFloat) {
-            *out = *b;
-            return;
-        }
-
-        const float dot = a->x * b->x + a->y * b->y + a->z * b->z;
-        if (dot < g_zMath_Vec3DirectionDotNegThreshold) {
-            zVec3 perpendicular;
-            Vec3Perp2D(a, &perpendicular);
-
-            const float angle = g_zMath_DirectionToPiFloat * t;
-            const float sinAngle = sin(angle);
-            const float cosAngle = cos(angle);
-            out->x = a->x * cosAngle + perpendicular.x * sinAngle;
-            out->y = a->y * cosAngle + perpendicular.y * sinAngle;
-            out->z = a->z * cosAngle + perpendicular.z * sinAngle;
-            return;
-        }
-
-        if (dot > g_zMath_Vec3DirectionDotPosThreshold) {
-            const float aScale = g_zMath_Vec3UnitFloat - t;
-            out->x = a->x * aScale + b->x * t;
-            out->y = a->y * aScale + b->y * t;
-            out->z = a->z * aScale + b->z * t;
-            return;
-        }
-
-        const float sinOmegaSq = g_zMath_Vec3UnitFloat - dot * dot;
-        float sinOmega = 0.0f;
-        if (sinOmegaSq > g_zMath_Vec3ZeroFloat) {
-            unsigned int sinOmegaBits = 0;
-            memcpy(&sinOmegaBits, &sinOmegaSq, sizeof(sinOmegaBits));
-            sinOmegaBits = (sinOmegaBits >> 1) + 0x1fc00000u;
-            memcpy(&sinOmega, &sinOmegaBits, sizeof(sinOmega));
-        }
-        const float omega = atan2(sinOmega, dot);
-        const float aScale = sin((g_zMath_Vec3UnitFloat - t) * omega);
-        const float bScale = sin(t * omega);
-
-        out->x = a->x * aScale + b->x * bScale;
-        out->y = a->y * aScale + b->y * bScale;
-        out->z = a->z * aScale + b->z * bScale;
-
-        const float invSinOmega = g_zMath_Vec3UnitFloat / sinOmega;
-        out->x *= invSinOmega;
-        out->y *= invSinOmega;
-        out->z *= invSinOmega;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perp2d-gamezrecoil-zmath-zmath-vec2-cpp
-     * @recoil-artifact defines .text recoil:function:0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate recoil:function:0x472cc0
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate
-     * @recoil-match byte
-     *
-     * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
-     * [0x472d03,0x472d10).
-     *
-     * Purpose: Computes a unit XY-plane perpendicular using the recovered fast square-root estimate.
-     */
-    void __fastcall Vec3Perp2D(const zVec3* in, zVec3* out)
-    {
-        out->z = 0.0f;
-        if (in->x == g_zMath_Vec3ZeroFloat) {
-            out->x = 1.0f;
-            out->y = 0.0f;
-            return;
-        }
-
-        const float lengthSq = in->x * in->x + in->y * in->y;
-        float lengthEstimate;
-        // Raw-assembly fast square-root estimate: retail transforms the named lengthSq
-        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named result local.
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-            mov eax, lengthSq
-            sar eax, 1
-            add eax, 01fc00000h
-            mov lengthEstimate, eax
-        }
-#else
-        {
-            int estimateBits;
-            memcpy(&estimateBits, &lengthSq, sizeof estimateBits);
-            estimateBits = (estimateBits >> 1) + 0x1fc00000;
-            memcpy(&lengthEstimate, &estimateBits, sizeof lengthEstimate);
-        }
-#endif
-        const float invLength = g_zMath_Vec3UnitFloat / lengthEstimate;
-        out->x = in->y * invLength;
-        out->y = -(in->x * invLength);
-    }
 } // namespace zMath
 
 /**
@@ -1621,7 +1272,7 @@ namespace zMath
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformbboxtocorners
  * @recoil-artifact defines .text recoil:function:0x474870: zMathMatTransformBBoxToCorners
- * @recoil-match functional
+ *
  *
  * Purpose: Transform finite, representable geometry under the reviewed functional contract.
  * Contract and proof: docs/reconstruction/audits/bbox_474870_byte_matching_2026-09-16.md.
@@ -2051,25 +1702,6 @@ void __fastcall zMathSolveLinearGradient2D(
 
 namespace zMath
 {
-    /**
-     * Purpose: Inline-function spelling of the reviewed vector-dot island for
-     * this unit's consumers. VC5 binds simple variable arguments to their own
-     * homes and address arguments to inline-parameter homes, which the capturing
-     * ZMTH_VECTOR_DOT cannot express. Original header ownership is unrecovered.
-     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
-     * sequence and result store without a call at that site; the original inline helper's header
-     * ownership and declaration placement are not established (TU-resident reconstruction model).
-     * Original inline helper evidence: no standalone retail function; observed at
-     * retail 0x475210 and 0x4753e0, whose dot-product islands load a simple
-     * pointer argument from its own home and an address argument from a capture.
-     */
-    inline float Vec3Dot(const zVec3* left, const zVec3* right)
-    {
-        float result;
-        ZMTH_VECTOR_DOT_BOUND(result, left, right);
-        return result;
-    }
-
     /**
      * Purpose: Inline-function spelling of the reviewed vector-length-sq island
      * for this unit's consumers, binding its argument like Vec3Dot. Original
