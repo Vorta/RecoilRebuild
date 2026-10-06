@@ -112,7 +112,7 @@ void zInput_FFEffectSet::RestartPrimaryFireEffect()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilforce.ff-effect-set-play-alt-fire-effect
  * @recoil-artifact defines .text recoil:function:0x42fac0: zInput_FFEffectSet::PlayAltFireEffect.
- *
+ * @recoil-match byte
  *
  * Purpose: Applies the requested gain and starts the alternate-fire effect.
  */
@@ -245,7 +245,7 @@ void zInput_FFEffectSet::PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ
  * @recoil-anchor recoil:anchor:battlesport.recoilforce.ff-effect-set-update-steer-and-pitch-force-effects
  * @recoil-artifact defines .text recoil:function:0x42fdc0: zInput_FFEffectSet::UpdateSteerAndPitchForceEffects.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Purpose: Updates continuous steering and pitch forces from current player motion.
  */

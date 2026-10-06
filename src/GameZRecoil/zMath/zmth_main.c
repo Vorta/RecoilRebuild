@@ -788,7 +788,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatex
      * @recoil-artifact defines .text recoil:function:0x473970: zMath::MatRotateX.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     *
+     * @recoil-match source
      *
      * Purpose: applies an X-axis rotation to the current matrix stack slot.
      */

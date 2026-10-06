@@ -172,6 +172,7 @@ namespace zVideo
      * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-setup-from-masks
      * @recoil-artifact defines .text recoil:function:0x4a6bf0: zVideo::PixelPackSetupFromMasks.
      *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: initialize the global display pixel-pack bit counts, masks, and
      * shifted channel masks from DirectDraw pixel-format masks.
@@ -374,6 +375,7 @@ namespace zVideo_buff
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-buff-copy-surface-rect-to-image
      * @recoil-artifact defines .text recoil:function:0x4a6fe0: zVideo_buff::CopySurfaceRectToImage.
+     *
      *
      * Provisional source-placement hypothesis: GameZRecoil/zImage/zvid_buff.c.
      * Purpose: provide the recovered zVideo_buff::CopySurfaceRectToImage behavior.

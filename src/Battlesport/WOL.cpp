@@ -2368,7 +2368,7 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(WestwoodOnli
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onbootstrapserverlist
  * @recoil-artifact defines .text recoil:function:0x43f6b0: WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList.
- *
+ * @recoil-match byte
  *
  * Purpose: Handles the API event-sink bootstrap-server callback.
  */
@@ -3309,7 +3309,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::AppendValueStatus3026(i
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-onnetworkstatuschanged
  * @recoil-artifact defines .text recoil:function:0x440f40: WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged.
- *
+ * @recoil-match byte
  *
  * Purpose: Updates network status text and side effects for Westwood connection changes.
  */

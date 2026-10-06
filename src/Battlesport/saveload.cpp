@@ -273,6 +273,7 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk()
  * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-initialize-file-entries
  * @recoil-artifact defines .text recoil:function:0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries.
  *
+ *
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
  */
 void HudUiSaveLoadDialog::InitializeFileEntries()

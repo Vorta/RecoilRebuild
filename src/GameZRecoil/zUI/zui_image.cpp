@@ -138,6 +138,7 @@ zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* n
 /**
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-invalidate-rect
  * @recoil-artifact defines .text recoil:function:0x4b3e90: HudUiWidget::InvalidateRect.
+ *
  */
 void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
 {

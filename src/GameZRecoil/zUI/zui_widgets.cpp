@@ -1482,6 +1482,7 @@ void HudUiTextInput::SetCursorPosition(int position)
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
  * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
+ * @recoil-match source
  */
 void HudUiTextInput::DispatchKeyAction(int key)
 {
@@ -3339,6 +3340,7 @@ void CHudRadioButtonWidget::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-load-from-zrd
  * @recoil-artifact defines .text recoil:function:0x4b8850: CHudRadioButtonWidget::LoadFromZrd.
+ *
  *
  * Purpose: load the recovered HUD data handled by CHudRadioButtonWidget::LoadFromZrd.
  */

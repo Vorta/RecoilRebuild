@@ -1422,7 +1422,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16frompal8to565
  * @recoil-artifact defines .text recoil:function:0x49c020: zRndr::SpanMasked16FromPal8To565
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN's retail body owns the same generic V-shift pal8
  * 565 loop as 0x49c230, including the nonzero source gate, alpha > 3 gate,
@@ -2508,7 +2508,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN samples an 8-bit texel, expands it through the
  * active palette before the alpha gate, skips only when alpha <= 3, copies for
@@ -2657,7 +2657,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
  * active palette expansion and 555-specific alpha > 7 gate.

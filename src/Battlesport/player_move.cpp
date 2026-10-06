@@ -1113,7 +1113,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
  * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
- *
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered

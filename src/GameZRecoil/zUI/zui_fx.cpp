@@ -899,6 +899,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
 /**
  * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-destroy-z-video-fx-pass3-config
  * @recoil-artifact defines .text recoil:function:0x4bee80: zVideoFxPass3Config::~zVideoFxPass3Config.
+ *
  */
 zVideoFxPass3Config::~zVideoFxPass3Config() { }
 

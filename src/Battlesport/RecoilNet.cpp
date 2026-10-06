@@ -1443,6 +1443,7 @@ int __fastcall HandlePkt0BChatMessage(int, NetPkt0B_ChatMessage* packet)
  * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-respawn-player-and-drop-weapon-pickup-if-allowed
  * @recoil-artifact defines .text recoil:function:0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed.
  *
+ *
  * Purpose: Choose a multiplayer respawn point, optionally drop the player's
  * current weapon pickup, reset transient player state, and refresh mission
  * vehicle unlock flags.

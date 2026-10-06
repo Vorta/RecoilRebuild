@@ -797,6 +797,7 @@ int HudSensorTracker::InitMissionGameplaySystems()
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-on-objective-command
  * @recoil-artifact defines .text recoil:function:0x417ca0: HudSensorTracker::OnObjectiveCommand.
  *
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: dispatch bound HUD objective/map command ids to the global
  * HudSensorTracker while honoring network map and objective-command gates.
@@ -977,6 +978,7 @@ void HudSensorObjectiveSlot::Reset()
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-objectives-from-path
  * @recoil-artifact defines .text recoil:function:0x417f90: HudSensorTracker::LoadObjectivesFromPath.
+ *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
@@ -1669,6 +1671,7 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(int missionId)
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-mission-weather-fx
  * @recoil-artifact defines .text recoil:function:0x419050: HudSensorTracker::LoadMissionWeatherFx.
+ *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: mission weather FX loader creates the recovered
@@ -3867,6 +3870,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-finalize-callback
  * @recoil-artifact defines .text recoil:function:0x41bca0: Player::DestroyedStateResetFinalizeCallback.
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,
