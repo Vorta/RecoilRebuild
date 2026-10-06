@@ -266,13 +266,6 @@ namespace
     const unsigned int kOptCatalogFastSqrtBias = 0x1fc00000;
 
     const int kMaxQueuedImpacts = 64;
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-f-0x4d33ec
-     * @recoil-artifact defines .rdata recoil:data:0x4d33ec: kOptCatalogAimPitchRangeScale.
-     * Purpose: scales OptCatalog aim pitch range values loaded from weapon
-     * catalog data.
-     */
-    const float kOptCatalogAimPitchRangeScale = -0.239999995f;
     const float kOptCatalogTrailDamageBlendLimit = 0.25f;
     const double kOptCatalogPi = 3.14159265359;
 
@@ -1819,7 +1812,7 @@ namespace OptCatalog
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate recoil:function:0x4b0530
      * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate
-     *
+     * @recoil-match byte
      *
      * Raw assembly: the inline zMath::Vec3Subtract expansion [0x4b0543,0x4b0566)
      * and one in-body 13-byte fast-sqrt estimate island at retail
@@ -1866,11 +1859,11 @@ namespace OptCatalog
         }
 
         if (distanceApprox < self->range) {
-            return delta.y / distanceApprox - (distanceApprox / self->range) * kOptCatalogAimPitchRangeScale;
+            return delta.y / distanceApprox - (distanceApprox / self->range) * (-0.239999995f);
         }
 
         if ((self->flags & kOptCatalogFlagAllowOutOfRangeAimPitch) != 0) {
-            return delta.y / distanceApprox - kOptCatalogAimPitchRangeScale;
+            return delta.y / distanceApprox - (-0.239999995f);
         }
 
         return -1.0f;

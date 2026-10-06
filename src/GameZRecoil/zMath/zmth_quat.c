@@ -5,7 +5,7 @@
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromeuler
  * @recoil-artifact defines .text recoil:function:0x4757c0: zMathQuatFromEuler
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- *
+ * @recoil-match byte
  *
  * Purpose: converts three Euler rotation angles into a quaternion.
  * Data: reads no authored zMath globals; VC5 materializes literal and x87
@@ -111,19 +111,64 @@ void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
     *out = 1.0f - xx2 - yy2;
 }
 
+namespace zMath
+{
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.quat.vector-length
+     *
+     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+     * Reconstruction: zmth_quat.c-resident copy of the Camera.c inline helper,
+     * following the zwep_ammo.c-resident precedent; this /Ob1 TU inlines it at
+     * 0x475b80 with the parameter argument bound to its inline parameter home.
+     * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
+     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+     * sequence and result store without a call at that site; the original inline helper's header
+     * ownership and declaration placement are not established (TU-resident reconstruction model).
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x475b80.
+     */
+    inline float Vec3Length(const zVec3* vec)
+    {
+        float vecLength;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fsqrt
+        fstp vecLength
+        }
+#else
+        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+        return vecLength;
+    }
+} // namespace zMath
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromrotationvector
  * @recoil-artifact defines .text recoil:function:0x475b80: zMathQuatFromRotationVector
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.quat.vector-length
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
+ * @recoil-match byte
  *
+ * Raw assembly: inline zMath::Vec3Length [0x475b92,0x475bb0)
+ * and the inline zMath::SinCos fsincos arm [0x475c01,0x475c10)
+ * (requires zmth_quat.c /Ob1).
  *
  * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
  */
 void __fastcall zMathQuatFromRotationVector(const zVec3* rotationVector, zQuat* outQuat)
 {
-    const float length = sqrt(
-        rotationVector->x * rotationVector->x + rotationVector->y * rotationVector->y
-        + rotationVector->z * rotationVector->z
-    );
+    float sinLength;
+    const float length = zMath::Vec3Length(rotationVector);
 
     if (length == 0.0f) {
         outQuat->w = 1.0f;
@@ -133,9 +178,8 @@ void __fastcall zMathQuatFromRotationVector(const zVec3* rotationVector, zQuat* 
         return;
     }
 
-    const float sinLength = sin(length);
+    zMath::SinCos(length, &sinLength, &outQuat->w);
     const float scale = sinLength / length;
-    outQuat->w = cos(length);
     outQuat->x = scale * rotationVector->x;
     outQuat->y = scale * rotationVector->y;
     outQuat->z = scale * rotationVector->z;
