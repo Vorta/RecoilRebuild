@@ -2941,8 +2941,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
                 spawnPos.z = PlayerZrdArrayFloat(spawnNode, 3);
                 CreateFromNamesAtPose(
                     &spawnPos,
-                    PlayerZrdArrayInt(aivNode, 1),
                     PlayerZrdArrayFloat(aivNode, 3),
+                    PlayerZrdArrayInt(aivNode, 1),
                     vehicleName,
                     aivName
                 );
@@ -3124,10 +3124,10 @@ void __fastcall InitStateFromNameAndMasterCommonData(
     playerState->angVel = g_Player_ConstZeroVec3;
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
@@ -3544,8 +3544,8 @@ namespace Player {
  */
 int __fastcall CreateFromNamesAtPose(
     const zVec3* spawnPos,
-    int aiNetId,
     float yawDeg,
+    int aiNetId,
     const char* templateName,
     const char* objectName
 )
@@ -3722,7 +3722,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-createfromnamesatposegetstate
  * @recoil-artifact defines .text recoil:function:0x421ea0: Player::CreateFromNamesAtPoseGetState
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: create a player from names and return the newly appended save-state
@@ -3737,7 +3737,7 @@ zUtil_SaveGameState* __fastcall
 CreateFromNamesAtPoseGetState(const zVec3* spawnPos, const char* templateName, float yawDeg, const char* objectName)
 {
     const char* const object = objectName;
-    const int created = CreateFromNamesAtPose(spawnPos, 0, yawDeg, templateName, object);
+    const int created = CreateFromNamesAtPose(spawnPos, yawDeg, 0, templateName, object);
     // Always capture tail so VC5 emits retail's neg/sbb/and success mask.
     zUtil_SaveGameState* const tail = g_PlayerSaveStateList.tail;
     return created == 0 ? 0 : tail;

@@ -1033,7 +1033,7 @@ namespace zModel_MatlBuffer
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-clonetoactiveslot
      * @recoil-artifact defines .text recoil:function:0x4812c0: zModel_MatlBuffer::CloneToActiveSlot
-     *
+     * @recoil-match byte
      *
      * Purpose: clone a material into a free material-buffer slot and link it active.
      */
@@ -1043,13 +1043,13 @@ namespace zModel_MatlBuffer
             return 0;
         }
 
-        const int slotIndex = g_zModel_MatlFreeHeadIndex;
-        if (slotIndex < 0) {
+        if (g_zModel_MatlFreeHeadIndex < 0) {
             zError::ReportOld(0x400, g_zModel_GModMatl_FILE, 0x626, g_zModel_CopyMaterialBufferFullUsingDefaultMsg);
             return &g_zModel_DefaultMaterial;
         }
 
-        zModel_MaterialSlot* const slot = &g_zModel_MatlPool[slotIndex];
+        zModel_MaterialSlot* const slot = &g_zModel_MatlPool[g_zModel_MatlFreeHeadIndex];
+        const int slotIndex = g_zModel_MatlFreeHeadIndex;
         const int nextFreeIndex = slot->nextPoolIndex;
         const int prevFreeIndex = slot->prevPoolIndex;
         if (prevFreeIndex >= 0) {
@@ -1060,8 +1060,8 @@ namespace zModel_MatlBuffer
         }
 
         g_zModel_MatlFreeHeadIndex = nextFreeIndex;
-        slot->prevPoolIndex = -1;
-        slot->nextPoolIndex = (short)(g_zModel_MatlActiveHeadIndex);
+        g_zModel_MatlPool[slotIndex].prevPoolIndex = -1;
+        g_zModel_MatlPool[slotIndex].nextPoolIndex = (short)(g_zModel_MatlActiveHeadIndex);
         if (g_zModel_MatlActiveHeadIndex >= 0) {
             g_zModel_MatlPool[g_zModel_MatlActiveHeadIndex].prevPoolIndex = (short)(slotIndex);
         }
@@ -1069,22 +1069,21 @@ namespace zModel_MatlBuffer
         ++g_zModel_MatlPoolInUseCount;
 
         memcpy(&slot->material, material, offsetof(zModel_MaterialPartial, cycle));
-        if ((material->flags & 0x0400) == 0) {
+        if ((material->flags & 0x0400) != 0) {
+            slot->material.cycle = (zModel_MaterialCyclePartial*)(malloc(sizeof(zModel_MaterialCyclePartial)));
+            memcpy(slot->material.cycle, material->cycle, sizeof(zModel_MaterialCyclePartial));
+            slot->material.cycle->frameTable = (zImage_TexDirEntryPartial**)(calloc(
+                (size_t)(slot->material.cycle->frameCount),
+                sizeof(slot->material.cycle->frameTable[0])
+            ));
+            memcpy(
+                slot->material.cycle->frameTable,
+                material->cycle->frameTable,
+                (size_t)(slot->material.cycle->frameCount) * sizeof(slot->material.cycle->frameTable[0])
+            );
+        } else {
             slot->material.cycle = 0;
-            return &slot->material;
         }
-
-        slot->material.cycle = (zModel_MaterialCyclePartial*)(malloc(sizeof(zModel_MaterialCyclePartial)));
-        memcpy(slot->material.cycle, material->cycle, sizeof(zModel_MaterialCyclePartial));
-        slot->material.cycle->frameTable = (zImage_TexDirEntryPartial**)(calloc(
-            (size_t)(slot->material.cycle->frameCount),
-            sizeof(slot->material.cycle->frameTable[0])
-        ));
-        memcpy(
-            slot->material.cycle->frameTable,
-            material->cycle->frameTable,
-            (size_t)(slot->material.cycle->frameCount) * sizeof(slot->material.cycle->frameTable[0])
-        );
 
         return &slot->material;
     }

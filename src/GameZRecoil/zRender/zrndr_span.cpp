@@ -1446,21 +1446,26 @@ void __fastcall SpanMasked16FromPal8To565(int texU, int texV, int pixelCount, in
                 // BN 0x49c0aa intentionally uses the current destination word
                 // as the palette index in this partial-alpha path.
                 const int srcColor = palette[dstColor];
-                const unsigned int greenDelta
-                    = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                const unsigned int redDelta
-                    = ((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                dstColor += (redDelta >> 8) & 0xfffff800;
-                const unsigned int blueDelta
-                    = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                dstColor += (blueDelta >> 8) + ((greenDelta >> 8) & 0xffffffe0);
+                // Retail shifts each unsigned channel product, then masks and accumulates in int registers.
+                int greenDelta
+                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int redDelta
+                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
                 *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -1480,23 +1485,39 @@ void __fastcall SpanMasked16FromTex16To565(int texU, int texV, int pixelCount, i
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
+    do {
+        const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const unsigned short sourceTexel = texels16[vIndex + uIndex];
-        if (sourceTexel != 0 && g_spanActiveConstAlphaBits > 3) {
-            if (g_spanActiveConstAlphaBits >= 0xfc) {
+        if (sourceTexel != 0 && (unsigned int)(g_spanActiveConstAlphaBits) > 3) {
+            if ((unsigned int)(g_spanActiveConstAlphaBits) >= 0xfc) {
                 *dst = sourceTexel;
             } else {
-                // BN 0x49c1f2 reaches the partial-alpha branch but adds zero,
-                // preserving the destination after the source/nonzero gate.
+                // BN 0x49c1bb blends the destination word with itself: the source color is the
+                // destination, so the red/green deltas fold to zero and the stored word is unchanged.
+                int srcColor, dstColor;
+                dstColor = (short)(*dst);
+                srcColor = dstColor;
+                int redDelta
+                    = ((((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8)
+                    & 0xfffff800;
+                int greenDelta
+                    = ((((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8)
+                    & 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1527,21 +1548,26 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(int texU, int texV, int pixe
                 // BN 0x49c2ba intentionally uses the current destination word
                 // as the palette index in this partial-alpha path.
                 const int srcColor = palette[dstColor];
-                const unsigned int greenDelta
-                    = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                const unsigned int redDelta
-                    = ((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                dstColor += (redDelta >> 8) & 0xfffff800;
-                const unsigned int blueDelta
-                    = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                dstColor += (blueDelta >> 8) + ((greenDelta >> 8) & 0xffffffe0);
+                // Retail shifts each unsigned channel product, then masks and accumulates in int registers.
+                int greenDelta
+                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int redDelta
+                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
                 *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -1715,23 +1741,26 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
                 *dst = (unsigned short)(srcColor);
             } else {
                 int dstColor = (short)(*dst);
-                unsigned int greenDelta = (srcColor & 0x07e0) - (dstColor & 0x07e0);
-                unsigned int redDelta = (srcColor & 0xf800) - (dstColor & 0xf800);
-                greenDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
-                redDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
-                redDelta = (redDelta >> 8) & 0xfffff800;
+                // Retail shifts each unsigned channel product, then masks and accumulates in int registers.
+                int greenDelta
+                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int redDelta
+                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
                 dstColor += redDelta;
-                unsigned int blueDelta = (srcColor & 0x001f) - (dstColor & 0x001f);
-                blueDelta *= (unsigned int)(g_spanActiveConstAlphaBits);
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
-                blueDelta >>= 8;
-                *dst = (unsigned short)(dstColor + blueDelta + greenDelta);
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -1740,7 +1769,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the tex16 constant-alpha loop shape with a
  * stricter alpha > 7 gate and 555 red/green/blue channel masks.
@@ -1759,23 +1788,25 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16(int texU, int texV, int pix
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                unsigned int redDelta
-                    = ((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                unsigned int greenDelta
-                    = ((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                redDelta = (redDelta >> 8) & 0xfffffc00;
+                // Retail adds the masked red delta to the destination word first, then blue + green.
+                int redDelta
+                    = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int greenDelta
+                    = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
                 *dst += redDelta;
-                unsigned int blueDelta
-                    = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
-                blueDelta >>= 8;
-                *dst = blueDelta + greenDelta + *dst;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                *dst += blueDelta;
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -1797,36 +1828,39 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16Alpha8(int texU, int texV, i
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
-    float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
-
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+    // Retail runs the span as a do-while (no zero-count guard).
+    do {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int srcColor = (short)(texels16[sourceIndex]);
+        // Retail scales the alpha byte by the float view of the active constant-alpha bits.
+        const double alphaScaled
+            = (double)(alphaMap[sourceIndex]) * (double)(*(const float*)(&g_spanActiveConstAlphaBits));
         const double alphaFixedBits = alphaScaled - -6755399441055744.0;
         const int alpha = *(const int*)(&alphaFixedBits);
-        const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 3) {
             if (alpha >= 0xfc) {
-                *dst = sourceTexel;
+                *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha;
+                int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha;
+                redDelta = (redDelta >> 8) & 0xfffff800;
+                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha;
+                blueDelta >>= 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1845,34 +1879,38 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
-    float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
-
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+    // Retail runs the span as a do-while (no zero-count guard).
+    do {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int srcColor = (short)(texels16[sourceIndex]);
+        // Retail scales the alpha byte by the float view of the active constant-alpha bits.
+        const double alphaScaled
+            = (double)(alphaMap[sourceIndex]) * (double)(*(const float*)(&g_spanActiveConstAlphaBits));
         const double alphaFixedBits = alphaScaled - -6755399441055744.0;
         const int alpha = *(const int*)(&alphaFixedBits);
-        const unsigned short sourceTexel = texels16[sourceIndex];
         if (alpha > 7) {
             if (alpha >= 0xfc) {
-                *dst = sourceTexel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
-                *dst = (unsigned short)(dstColor + (redDelta & 0xfffffc00) + (greenDelta & 0xffffffe0) + blueDelta);
+                int redDelta, blueDelta, greenDelta;
+                redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
+                // Retail folds both destination updates into one 16-bit read-modify-write add.
+                *dst += redDelta;
+                blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                *dst += blueDelta + greenDelta;
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1893,7 +1931,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
- *
+ * @recoil-match byte
  *
  * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
@@ -2110,7 +2148,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
- *
+ * @recoil-match byte
  *
  * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
@@ -2491,20 +2529,26 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(int texU, int texV, int 
                 *dst = (unsigned short)(srcColor);
             } else {
                 int dstColor = (short)(*dst);
-                const unsigned int greenDelta
-                    = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                const unsigned int redDelta
-                    = ((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                dstColor += (redDelta >> 8) & 0xfffff800;
-                const unsigned int blueDelta
-                    = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                *dst = (unsigned short)(dstColor + ((blueDelta >> 8) + ((greenDelta >> 8) & 0xffffffe0)));
+                // Retail shifts each unsigned channel product, then masks and accumulates in int registers.
+                int greenDelta
+                    = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int redDelta
+                    = (((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -2513,7 +2557,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the fast pal8 constant-alpha loop shape
  * with alpha <= 7 skip behavior and 555 channel masks.
@@ -2533,23 +2577,25 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(int texU, int texV, int 
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                unsigned int redDelta
-                    = ((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                unsigned int greenDelta
-                    = ((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                redDelta = (redDelta >> 8) & 0xfffffc00;
+                // Retail adds the masked red delta to the destination word first, then blue + green.
+                int redDelta
+                    = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                int greenDelta
+                    = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
                 *dst += redDelta;
-                unsigned int blueDelta
-                    = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits);
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
-                blueDelta >>= 8;
-                *dst = blueDelta + greenDelta + *dst;
+                int blueDelta
+                    = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
+                blueDelta += greenDelta;
+                *dst += blueDelta;
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
     } while (--pixelCount != 0);
 }
 } // namespace zRndr
@@ -2569,39 +2615,41 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromPal8Alpha8(int texU, int texV, in
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned char* texels8 = g_spanActiveTexPixels;
-    const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned short* palette = g_spanActiveTexPalette;
-
-    float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
-
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        const unsigned short sourcePixel = palette[texels8[sourceIndex]];
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+    const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    // Retail runs the span as a do-while (no zero-count guard).
+    do {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int srcColor = palette[texels8[sourceIndex]];
+        // Retail scales the alpha byte by the float view of the active constant-alpha bits.
+        const double alphaScaled
+            = (double)(alphaMap[sourceIndex]) * (double)(*(const float*)(&g_spanActiveConstAlphaBits));
         const double alphaFixedBits = alphaScaled - -6755399441055744.0;
         const int alpha = *(const int*)(&alphaFixedBits);
         if (alpha > 3) {
             if (alpha >= 0xfc) {
-                *dst = sourcePixel;
+                *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha;
+                int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha;
+                redDelta = (redDelta >> 8) & 0xfffff800;
+                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha;
+                blueDelta >>= 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -2619,37 +2667,40 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(int texU, int texV, in
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned char* texels8 = g_spanActiveTexPixels;
-    const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned short* palette = g_spanActiveTexPalette;
-
-    float alphaScale = 0.0f;
-    memcpy(&alphaScale, &g_spanActiveConstAlphaBits, sizeof(alphaScale));
-
-    for (int i = 0; i < pixelCount; ++i) {
-        const int vIndex = (texV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        const unsigned short sourcePixel = palette[texels8[sourceIndex]];
-        const double alphaScaled = (double)(alphaMap[sourceIndex]) * (double)(alphaScale);
+    const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    // Retail runs the span as a do-while (no zero-count guard).
+    do {
+        const int sourceIndex
+            = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
+        const int srcColor = palette[texels8[sourceIndex]];
+        // Retail scales the alpha byte by the float view of the active constant-alpha bits.
+        const double alphaScaled
+            = (double)(alphaMap[sourceIndex]) * (double)(*(const float*)(&g_spanActiveConstAlphaBits));
         const double alphaFixedBits = alphaScaled - -6755399441055744.0;
         const int alpha = *(const int*)(&alphaFixedBits);
         if (alpha > 7) {
             if (alpha >= 0xfc) {
-                *dst = sourcePixel;
+                *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
-                *dst = (unsigned short)(dstColor + (redDelta & 0xfffffc00) + (greenDelta & 0xffffffe0) + blueDelta);
+                int redDelta, blueDelta, greenDelta;
+                redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
+                // Retail folds both destination updates into one 16-bit read-modify-write add.
+                *dst += redDelta;
+                blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                *dst += blueDelta + greenDelta;
             }
         }
 
+        // Retail advances dst before the U/V steps.
+        ++dst;
         texU += g_spanActiveTexUStepFixed20;
         texV += g_spanActiveTexVStepFixed20;
-        ++dst;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -2659,7 +2710,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
- *
+ * @recoil-match byte
  *
  * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends
@@ -2896,7 +2947,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
- *
+ * @recoil-match byte
  *
  * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
@@ -3073,7 +3124,7 @@ void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(int texU, int texV, int pixel
                 if ((short)(scratch.alphas[i]) >= 0xfc) {
                     dst[i] = scratch.texels[i];
                 } else {
-                    int dstColor, srcColor;
+                    int srcColor, dstColor;
                     dstColor = (short)(dst[i]);
                     srcColor = (short)(scratch.texels[i]);
                     int redDelta = ((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (short)(scratch.alphas[i]);
@@ -3139,7 +3190,9 @@ namespace zRndr {
 void __fastcall
 FogTarget565SetPackedColorAndRamp(FogParamsPartial* params, int packedRed, int packedGreen, int packedBlue)
 {
-    const int packedColor16 = packedRed | packedGreen | packedBlue;
+    // Retail ORs blue with green before red, separately from the (red | blue) ramp term.
+    int packedColor16 = packedBlue | packedGreen;
+    packedColor16 |= packedRed;
     params->packedColorRed = packedRed;
     params->packedColorGreen = packedGreen;
     params->packedColorBlue = packedBlue;
@@ -3317,7 +3370,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49e400: zRndr::FogBlendSpan565Mmx
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-mmx
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN retail keeps scalar edge calls in C++ call shape
  * and uses a narrow MMX quad body over gRndr_SpanShade16_MmxFogFactors and
@@ -3452,7 +3505,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49e560: zRndr::FogBlendSpan555Mmx
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-mmx
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN retail matches the 565 scalar-edge/MMX-quad shape
  * with 555 red extraction and packed red terms. The guarded VC5 x86 path keeps
@@ -4013,7 +4066,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ea80: zRndr::SpanCopy16FromTex16
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN handles an optional unaligned leading texel, sets
  * paired MMX U/V and doubled-step scratch globals, samples two tex16 indices
@@ -4143,7 +4196,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ec20: zRndr::SpanCopy16FromTex16ExplicitVShift
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-copy-16-from-tex16-explicit-vshift
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the generic tex16 copy body with the
  * caller-supplied V shift feeding the MMX packed-index loop and odd tail. This

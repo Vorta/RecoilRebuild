@@ -20,69 +20,23 @@
 extern char g_HudCfgKey_Weapon[7];
 extern char g_HudCfgKey_Ammo[5];
 
-extern "C" {
 /**
  * Data owner: zTurret writable runtime globals.
  * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbacknode
- * @recoil-artifact defines .data recoil:data:0x4f3fd0: g_zTurret_CallbackNode.
- * Purpose: Holds the action-callback node used to tick the turret runtime list.
+ * @recoil-artifact defines .data recoil:data:0x4f3fd0: g_zTurret_SystemStateStorage.
+ * Purpose: Holds the turret system state: the tick callback node, the loaded
+ * definition tree, the runtime list with its round-robin scan state, and the
+ * napalm_vehicle destroy animation shared by turret destruction.
+ * Evidence: retail reloads the runtime count after each runtime-list store
+ * (0x437dc0) and after the Tick call (0x437ca0), which VC5 does only when the
+ * list and the scalars share one storage object.
+ *
+ * Members (retail addresses): callbackNode 0x4f3fd0, loadedDefRoot 0x4f3fd4,
+ * runtimeCount 0x4f3fd8, callbackIterationActive 0x4f3fdc, callbackStartIndex
+ * 0x4f3fe0, callbackIterIndex 0x4f3fe4, runtimeList 0x4f3fe8 and
+ * napalmVehicleDestroyAnim 0x4f41ec.
  */
-CZNodePartial* g_zTurret_CallbackNode = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-loadeddefroot
- * @recoil-artifact defines .data recoil:data:0x4f3fd4: g_zTurret_LoadedDefRoot.
- * Purpose: Retains the loaded turret definition tree until turret shutdown.
- */
-zReader::Node* g_zTurret_LoadedDefRoot = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-napalmvehicledestroyanim
- * @recoil-artifact defines .data recoil:data:0x4f41ec: g_zTurret_NapalmVehicleDestroyAnim.
- * Purpose: Stores the napalm_vehicle destroy animation shared by turret destruction.
- */
-zEffectAnimEntry* g_zTurret_NapalmVehicleDestroyAnim = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-runtimecount
- * @recoil-artifact defines .data recoil:data:0x4f3fd8: g_zTurret_RuntimeCount.
- * Purpose: Counts active entries in g_zTurret_RuntimeList.
- */
-int g_zTurret_RuntimeCount = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackiterationactive
- * @recoil-artifact defines .data recoil:data:0x4f3fdc: g_zTurret_CallbackIterationActive.
- * Purpose: Marks reentrant callback iteration so runtime removal can preserve scan state.
- */
-int g_zTurret_CallbackIterationActive = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackstartindex
- * @recoil-artifact defines .data recoil:data:0x4f3fe0: g_zTurret_CallbackStartIndex.
- * Purpose: Stores the rotating round-robin start index for turret ticking.
- */
-int g_zTurret_CallbackStartIndex = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-callbackiterindex
- * @recoil-artifact defines .data recoil:data:0x4f3fe4: g_zTurret_CallbackIterIndex.
- * Purpose: Tracks the current round-robin scan index while callbacks are active.
- */
-int g_zTurret_CallbackIterIndex = 0;
-/**
- * Data owner: zTurret writable runtime globals.
- * @recoil-anchor recoil:anchor:battlesport-turret-g-zturret-runtimelist
- * @recoil-artifact defines .data recoil:data:0x4f3fe8: g_zTurret_RuntimeList.
- * Purpose: Stores turret runtime pointers allocated from loaded definitions.
- * Experimental capacity: the nine-entry reconstruction overflowed with 22
- * loaded turrets. Retail uses this base and a later scalar at 0x4f41ec, but
- * the intervening extent is unresolved (128 pointers plus an unknown word
- * versus 129 pointers). This 128-entry play-test buffer is not an accepted
- * original array extent.
- */
-zTurret_Runtime* g_zTurret_RuntimeList[128] = { 0 };
-}
+extern "C" zTurret_SystemState g_zTurret_SystemStateStorage = { 0 };
 
 namespace {
 const int kPlayerLifecycleInactive = 4;
@@ -107,7 +61,7 @@ namespace zTurret_System {
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Applies the recovered default runtime state before turret field parsing.
  */
-zTurret_Runtime* zTurret_Runtime::InitDefaults()
+zTurret_Runtime::zTurret_Runtime()
 {
     flags = 0;
     scenePathVisible = 0;
@@ -164,7 +118,6 @@ zTurret_Runtime* zTurret_Runtime::InitDefaults()
     unknown_174[2] = 0;
     weaponCatalogEntry = 0;
     isFiring = 0;
-    return this;
 }
 
 /**
@@ -1034,6 +987,7 @@ int __cdecl Shutdown()
  */
 int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* path)
 {
+    zEffectAnimEntry* defaultDestroyAnim = 0;
     if (zOpt::GetNetworkEnabled() != 0) {
         return -1;
     }
@@ -1052,7 +1006,6 @@ int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* pat
 
     g_zTurret_LoadedDefRoot = rootNode;
 
-    zEffectAnimEntry* defaultDestroyAnim = 0;
     zReader::Node* destroyAnimNode = zRdrGetNode(rootNode, "DESTROY_ANIM");
     if (destroyAnimNode != 0) {
         defaultDestroyAnim = zEffectAnim::FindEntryByName(destroyAnimNode->value.nodes[1].value.str);
@@ -1061,20 +1014,14 @@ int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* pat
     zEffectAnimEntry* const napalmDestroyAnim = zEffectAnim::FindEntryByName(g_Player_NapalmVehicleEffectName);
     zReader::Node* const turretListNode = zRdrGetNode(rootNode, "TURRET");
     if (turretListNode != 0) {
-        int index = 1;
-        while (index < turretListNode->value.nodes[0].value.i32) {
-            char* const turretName = turretListNode->value.nodes[index].value.str;
-            zReader::Node* const readerNode = turretName != 0 ? zRdrGetNode(turretListNode, turretName) : 0;
+        for (int index = 1; index < turretListNode->value.nodes[0].value.i32; index += 2) {
+            zReader::Node* const readerNode = zRdrGetNode(turretListNode, turretListNode->value.nodes[index].value.str);
             if (readerNode != 0) {
-                char* searchName = zRdrInitWildcardPath(turretName);
-                while (searchName != 0) {
+                char* searchName = zRdrInitWildcardPath(turretListNode->value.nodes[index].value.str);
+                do {
                     CZNodePartial* const turretWorldNode = CZClass::FindByTypeAndName(kZClassNodeObject3D, searchName);
                     if (turretWorldNode != 0) {
-                        zTurret_Runtime* runtime = (zTurret_Runtime*)(::operator new(sizeof(zTurret_Runtime)));
-                        if (runtime != 0) {
-                            runtime = runtime->InitDefaults();
-                        }
-
+                        zTurret_Runtime* const runtime = new zTurret_Runtime;
                         runtime->InitFromReaderNode(worldNode, turretWorldNode, defaultDestroyAnim, readerNode);
                         g_zTurret_NapalmVehicleDestroyAnim = napalmDestroyAnim;
                         g_zTurret_RuntimeList[g_zTurret_RuntimeCount] = runtime;
@@ -1082,10 +1029,8 @@ int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* pat
                     }
 
                     searchName = zRdrNextWildcardPath();
-                }
+                } while (searchName != 0);
             }
-
-            index += 2;
         }
     }
 

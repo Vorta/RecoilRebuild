@@ -325,59 +325,84 @@ int zZbdManager::LoadEntries(const char* filename)
     return result;
 }
 
+namespace {
+/**
+ * Original inline helpers with no standalone retail function address.
+ * Purpose: read the archive's record count as a signed loop bound and return
+ * a record name, or null past the end (unsigned bound check), as LoadZarFile's
+ * retail expansion does.
+ */
+inline int ArchiveRecordCount(const zIndexArchive* archive)
+{
+    return archive->recordCount;
+}
+
+inline const char* ArchiveRecordName(const zIndexArchive* archive, int index)
+{
+    if (index < archive->recordCount) {
+        return archive->records[index].name;
+    }
+    return 0;
+}
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zutil-zutl-zbd-zzbdmanager-loadzarfile
  * @recoil-artifact defines .text recoil:function:0x4c0400: zZbdManager::LoadZarFile
- *
+ * @recoil-match byte
  *
  * Purpose: load a ZAR archive and dispatch matching section records.
  */
 int zZbdManager::LoadZarFile(const char* filepath)
 {
-    if (indexArchive.Init(filepath) == 0) {
-        return 0;
-    }
+    int result = 0;
+    if (indexArchive.Init(filepath) != 0) {
+        stopRequested = 0;
+        for (int i = 0; i < ArchiveRecordCount(&indexArchive); ++i) {
+            char recordPath[0x50];
+            char sectionName[0x50];
+            char sectionToken[0x50];
 
-    stopRequested = 0;
-    for (unsigned int i = 0; i < indexArchive.recordCount; ++i) {
-        const char* recordName = indexArchive.records[i].name;
-        char recordPath[0x50] = { 0 };
-        char sectionName[0x50] = { 0 };
-        char sectionToken[0x50] = { 0 };
+            strncpy(recordPath, ArchiveRecordName(&indexArchive, i), sizeof(recordPath));
+            strncpy(sectionName, strtok(recordPath, k_zar_StrTokSlash), sizeof(sectionName));
+            strncpy(sectionToken, strtok(0, " "), sizeof(sectionToken));
+            strncpy(recordPath, ArchiveRecordName(&indexArchive, i), sizeof(recordPath));
 
-        strncpy(recordPath, recordName, sizeof(recordPath));
-        strncpy(sectionName, strtok(recordPath, k_zar_StrTokSlash), sizeof(sectionName));
-        strncpy(sectionToken, strtok(0, " "), sizeof(sectionToken));
-        strncpy(recordPath, recordName, sizeof(recordPath));
-
-        zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
-        while (node != sectionHandlers.end() && strcmp(sectionName, node->sectionName) != 0) {
-            ++node;
-        }
-
-        if (node != sectionHandlers.end()) {
-            zZbdSectionCallbackCtx callbackCtx = { this, &*node };
-            unsigned int bufferSize = 0;
-            indexArchive.ReadFileByName(recordPath, 0, &bufferSize);
-            if (bufferSize > tempBufferSize) {
-                if (tempBuffer != 0) {
-                    ::operator delete(tempBuffer);
+            zZbdSectionHandlerList::iterator node = sectionHandlers.begin();
+            while (node != sectionHandlers.end()) {
+                if (strcmp(sectionName, node->sectionName) == 0) {
+                    break;
                 }
-                tempBuffer = ::operator new(bufferSize);
-                tempBufferSize = bufferSize;
+                ++node;
             }
 
-            indexArchive.ReadFileByName(recordPath, tempBuffer, &bufferSize);
-            node->InvokeDataReady(&callbackCtx, sectionToken, tempBuffer, bufferSize);
+            if (node != sectionHandlers.end()) {
+                zZbdSectionCallbackCtx callbackCtx = { this, &*node };
+                unsigned int bufferSize = 0;
+                indexArchive.ReadFileByName(recordPath, 0, &bufferSize);
+                unsigned int dataSize = bufferSize;
+                if (dataSize > tempBufferSize) {
+                    if (tempBuffer != 0) {
+                        ::operator delete(tempBuffer);
+                    }
+                    tempBuffer = ::operator new(dataSize);
+                    tempBufferSize = dataSize;
+                }
 
-            if (stopRequested != 0) {
-                break;
+                indexArchive.ReadFileByName(recordPath, tempBuffer, &dataSize);
+                node->InvokeDataReady(&callbackCtx, sectionToken, tempBuffer, dataSize);
+
+                if (stopRequested != 0) {
+                    break;
+                }
             }
         }
+
+        result = 1;
+        indexArchive.CloseAndFreeRecords();
     }
 
-    indexArchive.CloseAndFreeRecords();
-    return 1;
+    return result;
 }
 
 /**

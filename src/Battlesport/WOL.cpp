@@ -1902,7 +1902,7 @@ void WestwoodOnlineUpgradeDialog::OnRefreshCurrentQuery()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-onquerysessionsbyname
  * @recoil-artifact defines .text recoil:function:0x43e900: WestwoodOnlineUpgradeDialog::OnQuerySessionsByName
- *
+ * @recoil-match byte
  *
  * Purpose: validate a named session query, submit it, and update dialog state.
  */

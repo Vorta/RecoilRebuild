@@ -574,7 +574,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldrecttogridindex
      * @recoil-artifact defines .text recoil:function:0x450840: CZWorld::WorldRectToGridIndex.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: convert a world-space X/Z rectangle to a valid grid cell when

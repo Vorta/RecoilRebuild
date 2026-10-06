@@ -2522,116 +2522,164 @@ namespace zDi
     {
         zDiEntryPartial* const entry = &self->entries[entryIndex];
         const int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-        if (entry->material == 0 || (entry->material->flags & 0x0100) == 0 || vertexCount <= 3) {
+        // Retail tests the material flag without a null check.
+        if ((entry->material->flags & 0x0100) == 0 || vertexCount <= 3) {
             return;
         }
 
-        int* const vertexIndices = (int*)(entry->vertexIndices);
-        zClipUV* const uvPairs = (zClipUV*)(entry->uvPairs);
-        const zVec3* const vertex0 = &self->verts[vertexIndices[0]];
-        const zVec3* const vertex1 = &self->verts[vertexIndices[1]];
-        const zVec3* const vertex2 = &self->verts[vertexIndices[2]];
+        // Retail solves from a local copy of the entry UV pairs.
+        zClipUV uvPairs[0x40];
+        memcpy(uvPairs, entry->uvPairs, vertexCount * sizeof(zClipUV));
 
-        zVec3 triangleNormal;
-        zMathVec3TriangleNormal(vertex0, vertex1, vertex2, &triangleNormal);
-        zMath::Vec3Normalize(&triangleNormal);
+        zVec3 normal;
+        zMathVec3TriangleNormal(
+            &self->verts[((int*)(entry->vertexIndices))[0]],
+            &self->verts[((int*)(entry->vertexIndices))[1]],
+            &self->verts[((int*)(entry->vertexIndices))[2]],
+            &normal
+        );
+        zMath::Vec3Normalize(&normal);
 
-        const float absX = (float)(fabs(triangleNormal.x));
-        const float absY = (float)(fabs(triangleNormal.y));
-        const float absZ = (float)(fabs(triangleNormal.z));
+        const float absX = (float)(fabs(normal.x));
+        const float absY = (float)(fabs(normal.y));
+        const float absZ = (float)(fabs(normal.z));
+        const int* indices;
+        float planeA0;
+        float planeB0;
+        float planeA1;
+        float planeB1;
+        float planeA2;
+        float planeB2;
+        zClipUV uGradient;
+        zClipUV vGradient;
+        float deltaA;
+        float deltaB;
 
         if (absX >= absY && absX >= absZ) {
-            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->y,
-                vertex0->z,
-                vertex1->y,
-                vertex1->z,
-                vertex2->y,
-                vertex2->z,
+            indices = (const int*)(entry->vertexIndices);
+            planeA0 = self->verts[indices[0]].y;
+            planeB0 = self->verts[indices[0]].z;
+            planeA1 = self->verts[indices[1]].y;
+            planeB1 = self->verts[indices[1]].z;
+            planeA2 = self->verts[indices[2]].y;
+            planeB2 = self->verts[indices[2]].z;
+            uGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].u,
                 uvPairs[1].u,
                 uvPairs[2].u
             );
-            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->y,
-                vertex0->z,
-                vertex1->y,
-                vertex1->z,
-                vertex2->y,
-                vertex2->z,
+            vGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].v,
                 uvPairs[1].v,
                 uvPairs[2].v
             );
 
             for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
-                const float deltaA = vertex->y - vertex0->y;
-                const float deltaB = vertex->z - vertex0->z;
-                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+                indices = (const int*)(entry->vertexIndices);
+                const zVec3* const vertex = &self->verts[indices[vertexIndex]];
+                const zVec3* const vertex0 = &self->verts[indices[0]];
+                deltaA = vertex->y - vertex0->y;
+                deltaB = vertex->z - vertex0->z;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].u
+                    = deltaA * uGradient.u + deltaB * uGradient.v + uvPairs[0].u;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].v
+                    = deltaA * vGradient.u + deltaB * vGradient.v + uvPairs[0].v;
             }
         } else if (absY >= absX && absY >= absZ) {
-            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->z,
-                vertex0->x,
-                vertex1->z,
-                vertex1->x,
-                vertex2->z,
-                vertex2->x,
+            indices = (const int*)(entry->vertexIndices);
+            planeA0 = self->verts[indices[0]].z;
+            planeB0 = self->verts[indices[0]].x;
+            planeA1 = self->verts[indices[1]].z;
+            planeB1 = self->verts[indices[1]].x;
+            planeA2 = self->verts[indices[2]].z;
+            planeB2 = self->verts[indices[2]].x;
+            uGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].u,
                 uvPairs[1].u,
                 uvPairs[2].u
             );
-            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->z,
-                vertex0->x,
-                vertex1->z,
-                vertex1->x,
-                vertex2->z,
-                vertex2->x,
+            vGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].v,
                 uvPairs[1].v,
                 uvPairs[2].v
             );
 
             for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
-                const float deltaA = vertex->z - vertex0->z;
-                const float deltaB = vertex->x - vertex0->x;
-                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+                indices = (const int*)(entry->vertexIndices);
+                const zVec3* const vertex = &self->verts[indices[vertexIndex]];
+                const zVec3* const vertex0 = &self->verts[indices[0]];
+                deltaA = vertex->z - vertex0->z;
+                deltaB = vertex->x - vertex0->x;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].u
+                    = deltaA * uGradient.u + deltaB * uGradient.v + uvPairs[0].u;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].v
+                    = deltaA * vGradient.u + deltaB * vGradient.v + uvPairs[0].v;
             }
         } else {
-            const zClipUV uGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->x,
-                vertex0->y,
-                vertex1->x,
-                vertex1->y,
-                vertex2->x,
-                vertex2->y,
+            indices = (const int*)(entry->vertexIndices);
+            planeA0 = self->verts[indices[0]].x;
+            planeB0 = self->verts[indices[0]].y;
+            planeA1 = self->verts[indices[1]].x;
+            planeB1 = self->verts[indices[1]].y;
+            planeA2 = self->verts[indices[2]].x;
+            planeB2 = self->verts[indices[2]].y;
+            uGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].u,
                 uvPairs[1].u,
                 uvPairs[2].u
             );
-            const zClipUV vGradient = zModel_Const::SolveTriScalarGradient2D(
-                vertex0->x,
-                vertex0->y,
-                vertex1->x,
-                vertex1->y,
-                vertex2->x,
-                vertex2->y,
+            vGradient = zModel_Const::SolveTriScalarGradient2D(
+                planeA0,
+                planeB0,
+                planeA1,
+                planeB1,
+                planeA2,
+                planeB2,
                 uvPairs[0].v,
                 uvPairs[1].v,
                 uvPairs[2].v
             );
 
             for (int vertexIndex = 3; vertexIndex < vertexCount; ++vertexIndex) {
-                const zVec3* const vertex = &self->verts[vertexIndices[vertexIndex]];
-                const float deltaA = vertex->x - vertex0->x;
-                const float deltaB = vertex->y - vertex0->y;
-                uvPairs[vertexIndex].u = uvPairs[0].u + deltaA * uGradient.u + deltaB * uGradient.v;
-                uvPairs[vertexIndex].v = uvPairs[0].v + deltaA * vGradient.u + deltaB * vGradient.v;
+                indices = (const int*)(entry->vertexIndices);
+                const zVec3* const vertex = &self->verts[indices[vertexIndex]];
+                const zVec3* const vertex0 = &self->verts[indices[0]];
+                deltaA = vertex->x - vertex0->x;
+                deltaB = vertex->y - vertex0->y;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].u
+                    = deltaA * uGradient.u + deltaB * uGradient.v + uvPairs[0].u;
+                ((zClipUV*)(self->entries[entryIndex].uvPairs))[vertexIndex].v
+                    = deltaA * vGradient.u + deltaB * vGradient.v + uvPairs[0].v;
             }
         }
     }

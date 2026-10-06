@@ -5003,18 +5003,16 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
             if (blendAlpha >= 0xfc) {
                 *cursor = (unsigned short)(packedColor16);
             } else {
-                int dst = (short)(*cursor);
-                int greenDelta = (packedColor16 & 0x03e0) - (dst & 0x03e0);
-                greenDelta *= blendAlpha;
-                int redDelta = (packedColor16 & 0x7c00) - (dst & 0x7c00);
-                redDelta *= blendAlpha;
-                redDelta = (redDelta >> 8) & 0xfffffc00;
-                const int redAdjusted = dst + redDelta;
-                int blueDelta = (packedColor16 & 0x001f) - (dst & 0x001f);
-                blueDelta *= blendAlpha;
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
-                blueDelta >>= 8;
-                *cursor = (unsigned short)(redAdjusted + blueDelta + greenDelta);
+                const int dst = (short)(*cursor);
+                int greenDelta, redDelta, blueDelta;
+                redDelta = (((packedColor16 & 0x7c00) - (dst & 0x7c00)) * blendAlpha) >> 8;
+                greenDelta = (((packedColor16 & 0x03e0) - (dst & 0x03e0)) * blendAlpha) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
+                // Retail folds both cursor updates into one 16-bit read-modify-write add.
+                *cursor += redDelta;
+                blueDelta = (((packedColor16 & 0x001f) - (dst & 0x001f)) * blendAlpha) >> 8;
+                *cursor += blueDelta + greenDelta;
             }
         }
 

@@ -129,7 +129,7 @@ const int g_PlayerEnvProbeSampleMaskTable[8] = { 0x89, 0x43, 0x86, 0x4c, 0x28, 0
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatepostmoveenvironment
  * @recoil-artifact defines .text recoil:function:0x42bf90: Player::UpdatePostMoveEnvironment.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdatePostMoveEnvironment from the recovered
@@ -148,13 +148,13 @@ void __fastcall UpdatePostMoveEnvironment(zUtil_SaveGameState* saveState, int pr
     playerState->vehiclePitchRad += playerState->angVelPitch * g_Player_DeltaTime;
     playerState->vehicleRollRad += playerState->angVelRoll * g_Player_DeltaTime;
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
-    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posX = playerState->worldPos.x;
+    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
 
     RebuildSteerBasisFromMotionBasis(saveState);
@@ -725,7 +725,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildenvironmentproberesult
  * @recoil-artifact defines .text recoil:function:0x42cf90: Player::BuildEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::BuildEnvironmentProbeResult from the recovered
@@ -1096,7 +1096,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildorientationfromnormal
  * @recoil-artifact defines .text recoil:function:0x42da40: Player::RebuildOrientationFromNormal.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::RebuildOrientationFromNormal from the recovered
@@ -1121,10 +1121,10 @@ void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState)
     playerState->vehiclePitchRad = asin(yawRelativeNormal.z);
     playerState->vehicleRollRad = asin(-yawRelativeNormal.x);
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;

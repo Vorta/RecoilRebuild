@@ -409,156 +409,163 @@ zGeometry_TriangleDwordOffsetList* __fastcall TriangulatePointDwordOffsetsRecurs
     int pointDwordStrideMode
 )
 {
+    zGeometry_TriangleDwordOffsetList* result;
+    zGeometry_TriangleDwordOffsetList* triangles;
+    zGeometry_PolygonSplitDwordOffsetListPair* splitPointLists;
+    int* outTriangleOffsets;
+    int pointDwordStride;
+    int i;
+
     if (pointCount < 3) {
         fprintf(stderr, g_zGeometry_TriangulateOnlyVertsReceivedFmt, pointCount);
         return 0;
     }
 
-    const int pointDwordStride = pointDwordStrideMode == 1 ? 2 : 3;
-    int* workingOffsets = pointDwordOffsets;
-    if (workingOffsets == 0) {
-        workingOffsets = (int*)(malloc((size_t)(pointCount * pointDwordStride) * sizeof(int)));
-        for (int i = 0; i < pointCount * pointDwordStride; ++i) {
-            workingOffsets[i] = i;
+    pointDwordStride = pointDwordStrideMode == 1 ? 2 : 3;
+    if (pointCount == 3) {
+        // Retail returns the identity offsets for a lone triangle.
+        result = (zGeometry_TriangleDwordOffsetList*)malloc(sizeof(int) + pointDwordStride * 3 * sizeof(int));
+        result->triangleCount = 1;
+        for (i = pointDwordStride * 3 - 1; i >= 0; --i) {
+            result->triangleDwordOffsets[i] = i;
+        }
+        return result;
+    }
+
+    splitPointLists = (zGeometry_PolygonSplitDwordOffsetListPair*)malloc(
+        (pointCount + 2) * pointDwordStride * sizeof(int) + 2 * sizeof(int)
+    );
+    result = (zGeometry_TriangleDwordOffsetList*)malloc(
+        sizeof(int) + (pointCount - 1) * pointDwordStride * 3 * sizeof(int)
+    );
+    result->triangleCount = pointCount - 2;
+    outTriangleOffsets = result->triangleDwordOffsets;
+    if (pointDwordOffsets != 0) {
+        for (i = pointDwordStride * pointCount - 1; i >= 0; --i) {
+            outTriangleOffsets[i] = pointDwordOffsets[i];
+        }
+    } else {
+        for (i = pointDwordStride * pointCount - 1; i >= 0; --i) {
+            outTriangleOffsets[i] = i;
         }
     }
 
-    const int triangleCount = pointCount - 2;
-    zGeometry_TriangleDwordOffsetList* result = (zGeometry_TriangleDwordOffsetList*)(malloc(
-        sizeof(int) + (size_t)(triangleCount * pointDwordStride * 3) * sizeof(int)
-    ));
-    result->triangleCount = triangleCount;
-
-    zGeometry_PolygonSplitDwordOffsetListPair* splitPointLists = 0;
-    if (pointCount != 3) {
-        const int splitPointCount = pointCount + 2;
-        splitPointLists = (zGeometry_PolygonSplitDwordOffsetListPair*)(malloc(
-            sizeof(zGeometry_PolygonSplitDwordOffsetListPair)
-            + (size_t)(splitPointCount * pointDwordStride - 1) * sizeof(int)
-        ));
-    }
-
-    int splitSucceeded = 1;
-    if (pointCount != 3) {
-        splitSucceeded = TrySplitPointDwordOffsetsAtBestDiagonal(
+    // The result buffer doubles as the working offset list.
+    pointDwordOffsets = outTriangleOffsets;
+    splitPointLists->pointCount0 = pointCount;
+    if (TrySplitPointDwordOffsetsAtBestDiagonal(
             pointCount,
             pointDwords,
-            workingOffsets,
+            pointDwordOffsets,
             splitPointLists,
             pointDwordStride
+        )
+        == 0) {
+        free(splitPointLists);
+        free(result);
+        return 0;
+    }
+
+    if (splitPointLists->pointCount0 == 3 || splitPointLists->pointCount1 != 3) {
+        memcpy(
+            pointDwordOffsets,
+            splitPointLists->pointDwordOffsets,
+            (splitPointLists->pointCount0 + splitPointLists->pointCount1) * pointDwordStride * sizeof(int)
         );
     }
 
-    if (pointCount != 3) {
-        if (splitSucceeded == 0) {
+    if (splitPointLists->pointCount0 == 3) {
+        if (splitPointLists->pointCount1 == 3) {
             free(splitPointLists);
-            free(result);
-
-            return 0;
+            return result;
         }
 
-        int* outTriangleOffsets = result->triangleDwordOffsets;
-        zGeometry_TriangleDwordOffsetList* triangles = 0;
-        char* oneSideErrorMessage = 0;
-        int oneSideComplete = 0;
-        int triangles0DwordCount = 0;
-        if (splitPointLists->pointCount0 == 3) {
-            triangles = TriangulatePointDwordOffsetsRecursive(
-                splitPointLists->pointCount1,
-                pointDwords,
-                splitPointLists->pointDwordOffsets + 3 * pointDwordStride,
-                pointDwordStrideMode
-            );
-            if (triangles == 0) {
-                oneSideErrorMessage = g_zGeometry_RecursiveTriangulate1ErrorMsg;
-            } else {
-                memcpy(
-                    outTriangleOffsets,
-                    splitPointLists->pointDwordOffsets,
-                    (size_t)(3 * pointDwordStride) * sizeof(int)
-                );
-                memcpy(
-                    outTriangleOffsets + 3 * pointDwordStride,
-                    triangles->triangleDwordOffsets,
-                    (size_t)(triangles->triangleCount * 3 * pointDwordStride) * sizeof(int)
-                );
-                oneSideComplete = 1;
-            }
-        } else if (splitPointLists->pointCount1 == 3) {
-            triangles = TriangulatePointDwordOffsetsRecursive(
-                splitPointLists->pointCount0,
-                pointDwords,
-                splitPointLists->pointDwordOffsets,
-                pointDwordStrideMode
-            );
-            if (triangles == 0) {
-                oneSideErrorMessage = g_zGeometry_RecursiveTriangulate2ErrorMsg;
-            } else {
-                triangles0DwordCount = triangles->triangleCount * 3 * pointDwordStride;
-                memcpy(
-                    outTriangleOffsets,
-                    triangles->triangleDwordOffsets,
-                    (size_t)(triangles0DwordCount) * sizeof(int)
-                );
-                memcpy(
-                    outTriangleOffsets + triangles0DwordCount,
-                    splitPointLists->pointDwordOffsets + splitPointLists->pointCount0 * pointDwordStride,
-                    (size_t)(3 * pointDwordStride) * sizeof(int)
-                );
-                oneSideComplete = 1;
-            }
-        }
-
-        if (oneSideErrorMessage != 0) {
-            fprintf(stderr, oneSideErrorMessage);
-            free(result);
-            free(splitPointLists);
-            return 0;
-        }
-        if (oneSideComplete == 0) {
-            triangles = TriangulatePointDwordOffsetsRecursive(
-                splitPointLists->pointCount0,
-                pointDwords,
-                splitPointLists->pointDwordOffsets,
-                pointDwordStrideMode
-            );
-        }
-
+        triangles = TriangulatePointDwordOffsetsRecursive(
+            splitPointLists->pointCount1,
+            pointDwords,
+            splitPointLists->pointDwordOffsets + 3 * pointDwordStride,
+            pointDwordStrideMode
+        );
         if (triangles != 0) {
-            if (oneSideComplete == 0) {
-                triangles0DwordCount = triangles->triangleCount * 3 * pointDwordStride;
-                memcpy(
-                    outTriangleOffsets,
-                    triangles->triangleDwordOffsets,
-                    (size_t)(triangles0DwordCount) * sizeof(int)
-                );
-            }
-
+            memcpy(
+                pointDwordOffsets + 3 * pointDwordStride,
+                triangles->triangleDwordOffsets,
+                pointDwordStride * triangles->triangleCount * 3 * sizeof(int)
+            );
             free(triangles);
-            if (oneSideComplete == 0) {
-                triangles = TriangulatePointDwordOffsetsRecursive(
-                    splitPointLists->pointCount1,
-                    pointDwords,
-                    splitPointLists->pointDwordOffsets + splitPointLists->pointCount0 * pointDwordStride,
-                    pointDwordStrideMode
-                );
-                if (triangles != 0) {
-                    memcpy(
-                        outTriangleOffsets + triangles0DwordCount,
-                        triangles->triangleDwordOffsets,
-                        (size_t)(triangles->triangleCount * 3 * pointDwordStride) * sizeof(int)
-                    );
-                    free(triangles);
-                    free(splitPointLists);
-                    return result;
-                }
+            free(splitPointLists);
+            return result;
+        }
 
-                fprintf(stderr, g_zGeometry_RecursiveTriangulate3ErrorMsg);
-                free(splitPointLists);
-                free(result);
-                return triangles;
-            }
+        fprintf(stderr, g_zGeometry_RecursiveTriangulate1ErrorMsg);
+        free(splitPointLists);
+        free(result);
+        return 0;
+    }
 
+    if (splitPointLists->pointCount1 == 3) {
+        memcpy(
+            pointDwordOffsets,
+            splitPointLists->pointDwordOffsets + pointDwordStride * splitPointLists->pointCount0,
+            3 * pointDwordStride * sizeof(int)
+        );
+        pointDwordOffsets += 3 * pointDwordStride;
+        memcpy(
+            pointDwordOffsets,
+            splitPointLists->pointDwordOffsets,
+            pointDwordStride * splitPointLists->pointCount0 * sizeof(int)
+        );
+        triangles = TriangulatePointDwordOffsetsRecursive(
+            splitPointLists->pointCount0,
+            pointDwords,
+            splitPointLists->pointDwordOffsets,
+            pointDwordStrideMode
+        );
+        if (triangles != 0) {
+            memcpy(
+                pointDwordOffsets,
+                triangles->triangleDwordOffsets,
+                pointDwordStride * triangles->triangleCount * 3 * sizeof(int)
+            );
+            free(triangles);
+            free(splitPointLists);
+            return result;
+        }
+
+        fprintf(stderr, g_zGeometry_RecursiveTriangulate2ErrorMsg);
+        free(splitPointLists);
+        free(result);
+        return 0;
+    }
+
+    triangles = TriangulatePointDwordOffsetsRecursive(
+        splitPointLists->pointCount0,
+        pointDwords,
+        splitPointLists->pointDwordOffsets,
+        pointDwordStrideMode
+    );
+    if (triangles != 0) {
+        memcpy(
+            pointDwordOffsets,
+            triangles->triangleDwordOffsets,
+            pointDwordStride * triangles->triangleCount * 3 * sizeof(int)
+        );
+        pointDwordOffsets += pointDwordStride * triangles->triangleCount * 3;
+        free(triangles);
+        triangles = TriangulatePointDwordOffsetsRecursive(
+            splitPointLists->pointCount1,
+            pointDwords,
+            splitPointLists->pointDwordOffsets + pointDwordStride * splitPointLists->pointCount0,
+            pointDwordStrideMode
+        );
+        if (triangles != 0) {
+            memcpy(
+                pointDwordOffsets,
+                triangles->triangleDwordOffsets,
+                pointDwordStride * triangles->triangleCount * 3 * sizeof(int)
+            );
+            free(triangles);
+            free(splitPointLists);
             return result;
         }
 
@@ -568,19 +575,10 @@ zGeometry_TriangleDwordOffsetList* __fastcall TriangulatePointDwordOffsetsRecurs
         return 0;
     }
 
-    int* outTriangleOffsets = result->triangleDwordOffsets;
-    memcpy(outTriangleOffsets, workingOffsets, (size_t)(pointDwordStride) * sizeof(int));
-    memcpy(
-        outTriangleOffsets + pointDwordStride,
-        workingOffsets + pointDwordStride,
-        (size_t)(pointDwordStride) * sizeof(int)
-    );
-    memcpy(
-        outTriangleOffsets + pointDwordStride * 2,
-        workingOffsets + pointDwordStride * 2,
-        (size_t)(pointDwordStride) * sizeof(int)
-    );
-    return result;
+    fprintf(stderr, g_zGeometry_RecursiveTriangulate3ErrorMsg);
+    free(splitPointLists);
+    free(result);
+    return 0;
 }
 } // namespace zGeometry_Polygon
 

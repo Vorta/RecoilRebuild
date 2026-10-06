@@ -122,11 +122,11 @@ zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* n
 
 void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
 {
+    HudUiRectDirty* slot = 0;
     if (image == 0) {
         return;
     }
 
-    HudUiRectDirty* slot = 0;
     {
         for (int index = 0; index < 4; ++index) {
             if (dirtyRects[index].framesRemaining == 0) {
@@ -140,42 +140,37 @@ void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
         return;
     }
 
-    slot->srcLeft = dirtyRect->left;
-    slot->srcTop = dirtyRect->top;
-    slot->srcRight = dirtyRect->right;
-    slot->srcBottom = dirtyRect->bottom;
+    slot->srcRect = *dirtyRect;
 
-    if (slot->srcLeft < x) {
-        slot->srcLeft = x;
+    if (slot->srcRect.left < x) {
+        slot->srcRect.left = x;
     }
 
-    const int imageRight = image->width + x;
-    if (slot->srcRight > imageRight) {
-        slot->srcBottom = imageRight;
+    if (slot->srcRect.right > image->width + x) {
+        slot->srcRect.bottom = image->width + x;
     }
 
-    if (slot->srcTop < y) {
-        slot->srcTop = y;
+    if (slot->srcRect.top < y) {
+        slot->srcRect.top = y;
     }
 
-    const int imageBottom = image->height + y;
-    if (slot->srcBottom > imageBottom) {
-        slot->srcBottom = imageBottom;
+    if (slot->srcRect.bottom > image->height + y) {
+        slot->srcRect.bottom = image->height + y;
     }
 
-    if (slot->srcRight <= slot->srcLeft || slot->srcBottom <= slot->srcTop) {
+    if (slot->srcRect.right <= slot->srcRect.left || slot->srcRect.bottom <= slot->srcRect.top) {
         return;
     }
 
     ++dirtyRectCount;
     slot->framesRemaining = (g_HudUi_InvalidateMask == 0x0c ? 1u : 0u) + 1u;
-    slot->drawX = slot->srcLeft;
-    slot->drawY = slot->srcTop;
+    slot->drawX = slot->srcRect.left;
+    slot->drawY = slot->srcRect.top;
 
-    slot->srcLeft -= GetCenterX();
-    slot->srcRight -= GetCenterX();
-    slot->srcTop -= GetCenterY();
-    slot->srcBottom -= GetCenterY();
+    slot->srcRect.left -= GetCenterX();
+    slot->srcRect.right -= GetCenterX();
+    slot->srcRect.top -= GetCenterY();
+    slot->srcRect.bottom -= GetCenterY();
     Invalidate();
 }
 
@@ -198,7 +193,7 @@ void HudUiWidget::Draw()
                 dirtyRect.drawX,
                 dirtyRect.drawY,
                 0,
-                (zVidRect32*)(&dirtyRect.srcLeft)
+                (zVidRect32*)(&dirtyRect.srcRect)
             );
 
             --dirtyRect.framesRemaining;

@@ -639,11 +639,11 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
     if ((node->flags & 0x200) != 0) {
         zGeometry_ClipPatchModelNodeBoundsView* modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
 
-        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f) {
+        if (clipPolygon->bounds.maxX - -1.0f < (double)modelBounds->boundsMinX) {
             return 0;
         }
 
-        if (modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f) {
+        if (clipPolygon->bounds.minX - 1.0f > (double)modelBounds->boundsMaxX) {
             return 0;
         }
 
@@ -651,7 +651,7 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
             return 0;
         }
 
-        if (-modelBounds->boundsNegMinY > clipPolygon->bounds.minY + 1.0f) {
+        if (-modelBounds->boundsNegMinY > clipPolygon->bounds.minY - -1.0f) {
             return 0;
         }
     }
@@ -873,7 +873,7 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-processnodepolygonsetxy
  * @recoil-artifact defines .text recoil:function:0x46b550: zGeometry_ClipPolygon::ProcessNodePolygonSetXY
- *
+ * @recoil-match byte
  *
  * Purpose: Process a node polygon set against the clip polygon in XY space.
  */
@@ -883,36 +883,40 @@ int __fastcall ProcessNodePolygonSetXY(
     zDiPartial** outDi
 )
 {
+    int outside = 0;
+    int result = 1;
     if (clipPolygon == 0 || node == 0) {
         return 1;
     }
 
     zModel_DrawBatchBasePartial* const model = (zModel_DrawBatchBasePartial*)((unsigned int)(node->userDataOrDiRef));
-    if (model == 0) {
-        return 1;
-    }
+    if (model != 0) {
+        const int flags = node->flags;
+        if ((flags & 0x200) != 0) {
+            zGeometry_ClipPatchModelNodeBoundsView* const modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
+            if (clipPolygon->bounds.maxX - -1.0f < (double)modelBounds->boundsMinX
+                || clipPolygon->bounds.minX - 1.0f > (double)modelBounds->boundsMaxX
+                || -modelBounds->boundsNegMaxY < clipPolygon->bounds.maxY - 1.0f
+                || -modelBounds->boundsNegMinY > clipPolygon->bounds.minY - -1.0f) {
+                outside = 1;
+            }
+        }
 
-    const int flags = node->flags;
-    if ((flags & 0x200) != 0) {
-        zGeometry_ClipPatchModelNodeBoundsView* const modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
-        if (modelBounds->boundsMinX > clipPolygon->bounds.maxX + 1.0f
-            || modelBounds->boundsMaxX < clipPolygon->bounds.minX - 1.0f
-            || clipPolygon->bounds.maxY - 1.0f > -modelBounds->boundsNegMaxY
-            || clipPolygon->bounds.minY + 1.0f < -modelBounds->boundsNegMinY) {
-            return 1;
+        if (outside != 0) {
+            result = 1;
+        } else if ((flags & 0x20000) != 0) {
+            *outDi = 0;
+            result = zGeometry_Model::IsFullyInsideClipPolygonXY(
+                clipPolygon,
+                (zModel_DrawBatchBasePartial*)((unsigned int)(node->userDataOrDiRef))
+            );
+        } else if ((flags & 0x10000) != 0) {
+            result = zGeometry_Model::ProcessClipPatchNode(clipPolygon, model, outDi);
+            return result;
         }
     }
 
-    if ((flags & 0x20000) != 0) {
-        *outDi = 0;
-        return zGeometry_Model::IsFullyInsideClipPolygonXY(clipPolygon, model);
-    }
-
-    if ((flags & 0x10000) != 0) {
-        return zGeometry_Model::ProcessClipPatchNode(clipPolygon, model, outDi);
-    }
-
-    return 1;
+    return result;
 }
 
 } // namespace zGeometry_ClipPolygon

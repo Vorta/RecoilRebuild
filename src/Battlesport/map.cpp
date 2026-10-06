@@ -753,7 +753,7 @@ int HudSensorMapNode::UpdateCachedBounds(HudSensorMapBounds* outBoundsOrNull)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensormapnode-drawontracker
  * @recoil-artifact defines .text recoil:function:0x415d30: HudSensorMapNode::DrawOnTracker
- *
+ * @recoil-match byte
  *
  * Purpose: Draw this map node on the tracker, including blink state and selected-point marker.
  */

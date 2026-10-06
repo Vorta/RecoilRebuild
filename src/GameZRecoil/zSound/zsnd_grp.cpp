@@ -518,17 +518,18 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
         }
     }
 
+    float cumulativeWeight;
     const float selectSlop = totalWeight * 0.00100000005f;
     const float selection = totalWeight * ((float)(rand()) * 3.05185094e-05f);
     // Retail 0x4a4dc9 reads this index unassigned when no entry is selected.
     int selectedIndex;
-    float cumulativeWeight = 0.0f;
+    cumulativeWeight = 0.0f;
     for (i = 0; i < configBlockCount; ++i) {
         if (configBlocks[i].maxPlayCount != 0) {
             cumulativeWeight += configBlocks[i].weight;
             if (cumulativeWeight + selectSlop >= selection) {
-                selectedIndex = i;
                 result = &configBlocks[i];
+                selectedIndex = i;
                 if (dynamicWeightsEnabled != 0) {
                     result->weight = dynamicWeightScale * result->weight;
                 }
@@ -548,10 +549,10 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
             }
         }
 
-        const float scale = 100.0f / renormalizeTotal;
+        totalWeight = 100.0f / renormalizeTotal;
         for (i = 0; i < configBlockCount; ++i) {
             if (configBlocks[i].maxPlayCount != 0) {
-                configBlocks[i].weight = scale * configBlocks[i].weight;
+                configBlocks[i].weight = totalWeight * configBlocks[i].weight;
             }
         }
     }

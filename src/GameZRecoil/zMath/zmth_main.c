@@ -1025,7 +1025,7 @@ namespace zMath
      * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
      * storage and clears the translation row.
      */
-    void __fastcall MatBuildEulerRotation3x3(zMat4x3 * outBasis, float angleX, float angleY, float angleZ)
+    void __fastcall MatBuildEulerRotation3x3(float angleX, float angleY, float angleZ, zMat4x3* outBasis)
     {
         const float sx = sin(angleX);
         const float cx = cos(angleX);

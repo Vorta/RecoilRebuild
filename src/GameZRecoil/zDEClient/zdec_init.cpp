@@ -308,9 +308,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
 
     zReader::Node* const textureAnimNode = zRdrGetNode(craterNode, g_zDEClient_TextureAnimNodeName);
     if (textureAnimNode != 0) {
-        const int textureAnimEntryCount = textureAnimNode->value.nodes[0].value.i32;
-        const int additionalDisplaySourceCount = (textureAnimEntryCount - 1) / 2;
-        g_zDEClient_CraterDisplaySourceCount += additionalDisplaySourceCount;
+        g_zDEClient_CraterDisplaySourceCount += (textureAnimNode->value.nodes[0].value.i32 - 1) / 2;
 
         g_zDEClient_CraterDisplaySourceList = (zDEClient_CraterDisplaySourceEntry*)(realloc(
             g_zDEClient_CraterDisplaySourceList,
@@ -318,7 +316,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
         ));
 
         zDEClient_CraterDisplaySourceEntry* displaySource = &g_zDEClient_CraterDisplaySourceList[1];
-        for (int i = 1; i < textureAnimEntryCount; i += 2) {
+        for (int i = 1; i < textureAnimNode->value.nodes[0].value.i32; i += 2) {
             if (LoadMaterialFromTexturePath_Local(
                     &displaySource->sourceMaterial,
                     textureAnimNode->value.nodes[i].value.str
@@ -350,8 +348,9 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
 
     zReader::Node* const quickSandNode = zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
     if (quickSandNode != 0) {
+        int i;
+        int textureCount;
         zReader::Node* const defaultTextureNode = zRdrGetNode(quickSandNode, g_zDEClient_DefaultTextureNodeName);
-        int textureCount = 1;
         if (defaultTextureNode != 0) {
             g_zDEClient_QuickSandAnimSpeed = defaultTextureNode->value.nodes[1].value.f32;
             textureCount = defaultTextureNode->value.nodes[0].value.i32 - 2;
@@ -359,12 +358,14 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
 
             if (textureCount > 0) {
                 g_zDEClient_QuickSandTexturePaths = (char**)(malloc((size_t)(textureCount) * sizeof(char*)));
-                for (int i = 0; i < g_zDEClient_QuickSandTextureCount; ++i) {
+                for (i = 0; i < g_zDEClient_QuickSandTextureCount; ++i) {
                     g_zDEClient_QuickSandTexturePaths[i] = defaultTextureNode->value.nodes[i + 2].value.str;
                 }
             } else {
                 g_zDEClient_QuickSandTexturePaths = 0;
             }
+        } else {
+            textureCount = 1;
         }
 
         g_zDEClient_QuickSandEventTemplateDefaults.featureFlags = 0x1008;
@@ -397,7 +398,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
             zModel_Material::SetCycleTextureSpeed(&material, g_zDEClient_QuickSandAnimSpeed);
             zModel_Material::SetCycleTextureLoop(&material, 1);
 
-            for (int i = 0; i < textureCount; ++i) {
+            for (i = 0; i < textureCount; ++i) {
                 zModel_Material::AddCycleTexture(
                     &material,
                     zImage::TexDirFindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i])
@@ -407,7 +408,8 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
         } else if (textureCount == 1) {
-            zImage::TexDirFindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[0]);
+            // Retail 0x455cb4 indexes with the leftover path-copy counter here.
+            zImage::TexDirFindOrAppendByPath(g_zDEClient_QuickSandTexturePaths[i]);
             textureLoadPending = 1;
             g_zDEClient_QuickSandMaterial = zModel_Material::FindOrClone(&material);
         } else {
@@ -420,7 +422,8 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
             zModel_Material::SetUserTag(g_zDEClient_QuickSandMaterial, 3);
         }
 
-        if (textureCount >= 1 && g_zDEClient_QuickSandTexturePaths != 0) {
+        // Retail tests only the count here; it has no path-table null check.
+        if (textureCount >= 1) {
             zModel_Material::ResetDefaults(&material);
             material.flags = (unsigned short)(material.flags | 0x0100);
             material.currentTextureDirectoryEntry = zImage::FindTexDirEntryByName(g_zDEClient_QuickSandTexturePaths[0]);

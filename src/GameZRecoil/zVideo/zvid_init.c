@@ -340,11 +340,7 @@ namespace zVideo_buff
      * Provisional source-placement hypothesis: GameZRecoil/zImage/zvid_buff.c.
      * Purpose: provide the recovered zVideo_buff::CopySurfaceRectToImage behavior.
      */
-    zVidImagePartial* __fastcall CopySurfaceRectToImage(
-        int sourceSelector,
-        zVidRect32* rect,
-        zVidImagePartial* imageOrNull
-    )
+    zVidImagePartial* __fastcall CopySurfaceRectToImage(int sourceSelector, zVidRect32* rect, zVidImagePartial* image)
     {
         int surfaceWidth;
         int surfaceHeight;
@@ -407,7 +403,7 @@ namespace zVideo_buff
             return 0;
         }
 
-        zVidImagePartial* image = imageOrNull;
+        // Retail reuses the image parameter's stack home for the created image.
         if (image == 0) {
             image = zVid_Image::Create();
             if (image == 0) {

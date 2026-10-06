@@ -9150,29 +9150,27 @@ void UpdateFrame()
     g_HudUiChatMessageStack->UpdateAll(g_Time_UnscaledDeltaTimeSec);
     g_HudUiMgrStringMenu->UpdateAll(g_Time_UnscaledDeltaTimeSec);
 
-    const float sampleElapsedSec = g_HudUiMgrTimerPanelFloat->sampleElapsedSec + g_FrameDeltaTimeSec;
-    g_HudUiMgrTimerPanelFloat->sampleElapsedSec = sampleElapsedSec;
-
-    const float sampleFrameCount = g_HudUiMgrTimerPanelFloat->sampleFrameCount + 1.0f;
-    g_HudUiMgrTimerPanelFloat->sampleFrameCount = sampleFrameCount;
-    if (sampleElapsedSec >= 1.0f) {
-        g_HudUiMgrTimerPanelFloat->sampleFrameCount = 0.0f;
-        g_HudUiMgrTimerPanelFloat->sampleElapsedSec = 0.0f;
-        g_HudUiMgrTimerPanelFloat->displayValue = sampleFrameCount / sampleElapsedSec;
+    HudUiTimerPanelFloat* const timerPanel = g_HudUiMgrTimerPanelFloat;
+    timerPanel->sampleElapsedSec += g_FrameDeltaTimeSec;
+    const float sampleFrameCount = timerPanel->sampleFrameCount + 1.0f;
+    timerPanel->sampleFrameCount = sampleFrameCount;
+    if (timerPanel->sampleElapsedSec >= 1.0f) {
+        timerPanel->displayValue = sampleFrameCount / timerPanel->sampleElapsedSec;
+        timerPanel->sampleFrameCount = 0.0f;
+        timerPanel->sampleElapsedSec = 0.0f;
     }
 
-    HudUiElement* const floatingTimerElement = (HudUiElement*)(g_HudUiMgrTimerPanelFloat);
-    if ((floatingTimerElement->flags & 0x10) == 0) {
-        g_HudUiMgrTimerPanelFloat->Draw();
+    if ((~timerPanel->flags & 0x10) != 0) {
+        timerPanel->Draw();
     }
 
     g_HudUiMgrReticleWidget.Update(g_Time_UnscaledDeltaTimeSec);
 
     {
-        for (int slotIndex = 0; slotIndex < 32; ++slotIndex) {
-            HudUiSlot& slot = g_HudUiMgrWeaponSlots[slotIndex];
-            slot.trackMarkerWidget.SetVisible(0);
-            slot.slotWidget.SetVisible(0);
+        HudUiSlot* slot = g_HudUiMgrWeaponSlots;
+        for (int slotIndex = 0; slotIndex < 32; ++slotIndex, ++slot) {
+            slot->trackMarkerWidget.SetVisible(0);
+            slot->slotWidget.SetVisible(0);
         }
     }
 
@@ -9234,14 +9232,6 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
 {
     HudUiElement* const reticleElement = (HudUiElement*)(&g_HudUiMgrReticleWidget);
 
-    float screenX = (normalizedX + 1.0f) * g_HudUiMgrReticleMapScaleHalfW + g_HudUiMgrReticleMapBiasX;
-    float screenY = (normalizedY + 1.0f) * g_HudUiMgrReticleMapScaleHalfH + g_HudUiMgrReticleMapBiasY;
-
-    const int projectedX = (int)(screenX);
-    const int projectedY = (int)(screenY);
-    g_HudUiMgrReticleProjectedX = projectedX;
-    g_HudUiMgrReticleProjectedY = projectedY;
-
     switch (reticleMode) {
     case 2:
         break;
@@ -9255,6 +9245,16 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
         return 0;
     }
 
+    const float screenX = (normalizedX + 1.0f) * g_HudUiMgrReticleMapScaleHalfW + g_HudUiMgrReticleMapBiasX;
+    const float screenY = (normalizedY + 1.0f) * g_HudUiMgrReticleMapScaleHalfH + g_HudUiMgrReticleMapBiasY;
+    zProjectedPoint projectedPoint;
+    projectedPoint.x = screenX;
+    projectedPoint.y = screenY;
+    const int projectedX = (int)(projectedPoint.x);
+    g_HudUiMgrReticleProjectedX = projectedX;
+    const int projectedY = (int)(projectedPoint.y);
+    g_HudUiMgrReticleProjectedY = projectedY;
+
     reticleElement->SetPos(projectedX - g_HudUiMgrReticleWidgetHalfW, projectedY - g_HudUiMgrReticleWidgetHalfH);
 
     if ((g_HudLayoutHW.reticleClipInitFlags & 1) == 0) {
@@ -9262,7 +9262,7 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
         atexit(&HudUiMgr::ReticleStaticAtexitStub);
     }
 
-    RECT reticleBounds = { 0 };
+    RECT reticleBounds;
     reticleBounds.top = g_HudUiMgrReticleWidget.GetCenterY();
     reticleBounds.bottom = g_HudUiMgrReticleWidget.GetCenterY()
         + (g_HudUiMgrReticleWidget.image != 0 ? g_HudUiMgrReticleWidget.image->height : 0);
@@ -9283,22 +9283,22 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
         g_HudUiMgrReticleWidget.bltClipRectOrNull = &g_HudLayoutHW.reticleClipRect;
     }
 
-    zProjectedPoint projectedPoint = { screenX, screenY, 0.0f };
     ScreenToWorld(&projectedPoint.x);
 
     HudReticlePlayerStatePartial* const playerState
         = (HudReticlePlayerStatePartial*)(g_GameStateOrMapTable->playerState);
 
-    float nearClip = 0.0f;
-    float farClip = 0.0f;
+    float nearClip;
+    float farClip;
     CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
 
-    zVec3 nearPoint = { 0 };
+    zVec3 nearPoint;
     projectedPoint.reciprocalZ = 1.0f / nearClip;
     zMathUnprojectPointBatchZBuf(&projectedPoint, &nearPoint, 1);
 
-    zVec3 farPoint = { 0 };
-    projectedPoint.reciprocalZ = 1.0f / playerState->activeAltGunController->optCatalogEntry->range;
+    zVec3 farPoint;
+    const float range = playerState->activeAltGunController->optCatalogEntry->range;
+    projectedPoint.reciprocalZ = 1.0f / range;
     zMathUnprojectPointBatchZBuf(&projectedPoint, &farPoint, 1);
 
     CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
@@ -9307,7 +9307,7 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
     }
 
     CZDisplayInstance::SetStopAfterFirstHit(0x40000);
-    PlayerProbeSampleCandidateBuffer rayData = { 0 };
+    PlayerProbeSampleCandidateBuffer rayData;
     const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
         g_Player_RuntimeDiScene,
         &nearPoint,
@@ -9320,23 +9320,24 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
         CZClass::gwNodeSetRaycastable(playerState->activeAltGunController->attachState->projectileNode, 1);
     }
 
-    zVidImagePartial* reticleImage = 0;
-    if (raycastResult != 0) {
-        g_HudUiMgrReticleProjection[0] = farPoint.x;
-        g_HudUiMgrReticleProjection[1] = farPoint.y;
-        g_HudUiMgrReticleProjection[2] = farPoint.z;
-        reticleImage = g_HudUiMgrReticleImages[1];
-    } else {
+    if (raycastResult == 0) {
         const zClassDiPickCandidateEntry& candidate = rayData.entries[rayData.candidateCount];
         g_HudUiMgrReticleProjection[0] = candidate.hitPos.x;
         g_HudUiMgrReticleProjection[1] = candidate.hitPos.y;
         g_HudUiMgrReticleProjection[2] = candidate.hitPos.z;
 
         CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(candidate.node);
-        reticleImage = hitSlot->damageHandler != 0 ? g_HudUiMgrReticleImages[2] : g_HudUiMgrReticleImages[0];
+        if (hitSlot->damageHandler != 0) {
+            g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[2]);
+        } else {
+            g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[0]);
+        }
+    } else {
+        g_HudUiMgrReticleProjection[0] = farPoint.x;
+        g_HudUiMgrReticleProjection[1] = farPoint.y;
+        g_HudUiMgrReticleProjection[2] = farPoint.z;
+        g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[1]);
     }
-
-    g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(reticleImage);
 
     worldHitPoint->x = g_HudUiMgrReticleProjection[0];
     worldHitPoint->y = g_HudUiMgrReticleProjection[1];
@@ -9344,29 +9345,29 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
 
     zOpt_ViewRectSection* const renderRect = zOpt::GetRenderSection();
     const float minX = (float)(renderRect->x) + g_HudUiMgrSensorBlock.sensorClampHalfW;
-    if (!(screenX >= minX)) {
-        screenX = minX;
+    if (projectedPoint.x < minX) {
+        projectedPoint.x = minX;
     } else {
         const float maxX = (float)(renderRect->rightExclusive) - g_HudUiMgrSensorBlock.sensorClampHalfW;
-        if (screenX > maxX) {
-            screenX = maxX;
+        if (projectedPoint.x > maxX) {
+            projectedPoint.x = maxX;
         }
     }
 
     const float minY = (float)(renderRect->y) + g_HudUiMgrSensorBlock.sensorClampHalfH;
-    if (!(screenY >= minY)) {
-        screenY = minY;
+    if (projectedPoint.y < minY) {
+        projectedPoint.y = minY;
     } else {
         const float maxY = (float)(renderRect->bottomExclusive) - g_HudUiMgrSensorBlock.sensorClampHalfH;
-        if (screenY > maxY) {
-            screenY = maxY;
+        if (projectedPoint.y > maxY) {
+            projectedPoint.y = maxY;
         }
     }
 
-    zClipAltFloatRect targetRect = { screenX - g_HudUiMgrSensorBlock.sensorClampHalfW,
-        screenY - g_HudUiMgrSensorBlock.sensorClampHalfH,
-        screenX + g_HudUiMgrSensorBlock.sensorClampHalfW,
-        screenY + g_HudUiMgrSensorBlock.sensorClampHalfH };
+    zClipAltFloatRect targetRect = { projectedPoint.x - g_HudUiMgrSensorBlock.sensorClampHalfW,
+        projectedPoint.y - g_HudUiMgrSensorBlock.sensorClampHalfH,
+        projectedPoint.x + g_HudUiMgrSensorBlock.sensorClampHalfW,
+        projectedPoint.y + g_HudUiMgrSensorBlock.sensorClampHalfH };
     zClipAlt::SetTargetRect(&targetRect, zOpt::GetReplicateMode());
     return 0;
 }
@@ -9951,17 +9952,16 @@ int __fastcall PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime*
                 HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(slot->trackNode);
                 if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
                     zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(trackNode->payload);
-                    zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-                    outputSlots->targetPos = &playerState->fxOffsetWorld;
-                    outputSlots->targetVelocity = &playerState->projectileSpawnVel;
-                    ++outputSlots;
+                    outputSlots->targetPos = &saveState->playerState->fxOffsetWorld;
+                    outputSlots->targetVelocity = &saveState->playerState->projectileSpawnVel;
                     ++result;
+                    ++outputSlots;
                 } else if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
                     zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
                     outputSlots->targetPos = &turretRuntime->firePos;
                     outputSlots->targetVelocity = 0;
-                    ++outputSlots;
                     ++result;
+                    ++outputSlots;
                 }
             }
 
@@ -9978,36 +9978,34 @@ int __fastcall PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime*
     }
 
     outputSlots = firstOutputSlot;
-    if (markerMode != HUD_SENSOR_MARKER_MODE_NEAREST || nearestDistSq >= g_HudUiMgrReticleSnapRadiusSq
-        || g_HudUiMgrSensorTrackedProgressSlot == 0) {
+    if (markerMode != HUD_SENSOR_MARKER_MODE_NEAREST || nearestDistSq >= g_HudUiMgrReticleSnapRadiusSq) {
         return result;
     }
 
-    HudUiSlot* const trackedProgressSlot = g_HudUiMgrSensorTrackedProgressSlot;
-    trackedProgressSlot->trackMarkerWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrSensorTargetMarkerImages[0]);
+    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetImageBorrowedAndInvalidate(
+        g_HudUiMgrSensorTargetMarkerImages[0]
+    );
 
-    const zVidImagePartial* const image = trackedProgressSlot->trackMarkerWidget.image;
-    const int markerY = ((HudUiElement*)(trackedProgressSlot))->GetCenterY() - image->height / 2;
-    const int markerX = ((HudUiElement*)(trackedProgressSlot))->GetCenterX() - image->width / 2;
-    trackedProgressSlot->trackMarkerWidget.SetPos(markerX, markerY);
-    trackedProgressSlot->trackMarkerWidget.SetVisible(1);
+    const zVidImagePartial* const image = g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.image;
+    const int markerY = ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterY() - image->height / 2;
+    const int markerX = ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterX() - image->width / 2;
+    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetPos(markerX, markerY);
+    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetVisible(1);
 
-    HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(trackedProgressSlot->trackNode);
+    HudUiMgrSensorTrackNode* const trackNode
+        = (HudUiMgrSensorTrackNode*)(g_HudUiMgrSensorTrackedProgressSlot->trackNode);
     if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
         zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(trackNode->payload);
-        zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        outputSlots->targetPos = &playerState->fxOffsetWorld;
-        outputSlots->targetVelocity = &playerState->projectileSpawnVel;
-        return 1;
-    }
-
-    if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
+        outputSlots->targetPos = &saveState->playerState->fxOffsetWorld;
+        outputSlots->targetVelocity = &saveState->playerState->projectileSpawnVel;
+    } else if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
         zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
         outputSlots->targetVelocity = 0;
         outputSlots->targetPos = &turretRuntime->firePos;
     }
 
-    return 1;
+    result = 1;
+    return result;
 }
 
 } // namespace HudUiMgrSensor
@@ -11648,10 +11646,9 @@ void HudUiMessage::RebuildWeaponLayout()
     panel.SetPos(textX, widgetClipRect.bottom + anchorY);
     panel.SetBltSourceAndClipRect(0, &panelClipRect);
 
-    zVidImagePartial* const sideImage = sideImageSwaps[0];
     widget.SetPos(
-        anchorX - sideImage->width + widgetClipRect.right - 1,
-        anchorY - sideImage->height + widgetClipRect.bottom - 1
+        anchorX - sideImageSwaps[0]->width + widgetClipRect.right - 1,
+        anchorY - sideImageSwaps[0]->height + widgetClipRect.bottom - 1
     );
 }
 
@@ -13204,15 +13201,3 @@ void zFMV_Action::RunBlockingTimed()
     while (Update((GetTickCount() * 0.001f) - startSec) != 0) { }
     End();
 }
-
-/**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and HudUiListMenuEntry::SortRange (0x414710) orders its
- * partition-length evaluation by that counter. These declarations are never
- * referenced and emit no code, data or symbols. User-authorized exception:
- * match-proofs.md "0x414710 VC5 ID-counter alignment exception"; evidence in
- * build/diagnostics/sortrange-id-counter-20260926.
- * Purpose: align the ID counter so SortRange's unchanged source emits the retail order.
- */
-extern int g_HudSortRangeIdCounterAlignment0;
-extern int g_HudSortRangeIdCounterAlignment1;

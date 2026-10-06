@@ -162,10 +162,7 @@ struct HudUiRectDirty {
     unsigned int framesRemaining;
     int drawX;
     int drawY;
-    int srcLeft;
-    int srcTop;
-    int srcRight;
-    int srcBottom;
+    HudUiRect srcRect;
 };
 
 /**

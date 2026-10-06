@@ -421,10 +421,10 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     }
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehicleRotationAngles.x,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     RebuildSteerBasisFromMotionBasis(saveState);
     if (playerState->airborneFlag == 0) {
@@ -640,7 +640,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypehover
  * @recoil-artifact defines .text recoil:function:0x427140: Player::UpdateMasterTypeHover.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeHover from the recovered
@@ -658,10 +658,10 @@ void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState* saveState)
     PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehicleRotationAngles.x,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
@@ -808,7 +808,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     zVec3 slopeImpulse;
     slopeImpulse.x = probePlaneNormal.x * (g_Player_DeltaTime * gravityScale);
     slopeImpulse.z = probePlaneNormal.z * (g_Player_DeltaTime * gravityScale);
-    slopeImpulse.y = (probePlaneNormal.y - 1.0f) * g_Player_DeltaTime * gravityScale;
+    slopeImpulse.y = ((probePlaneNormal.y - 1.0f) * g_Player_DeltaTime) * gravityScale;
     zMath::Vec3Add(&playerState->projectileSpawnVel, &slopeImpulse, &playerState->projectileSpawnVel);
 
     playerState->localVel = playerState->projectileSpawnVel;
@@ -925,10 +925,10 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
     }
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehicleRotationAngles.x,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     RebuildSteerBasisFromMotionBasis(saveState);
 
@@ -1129,13 +1129,13 @@ void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState)
     }
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehicleRotationAngles.x,
         playerState->vehicleRotationAngles.y,
-        playerState->vehicleRotationAngles.z
+        playerState->vehicleRotationAngles.z,
+        &playerState->motionBasis
     );
-    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posX = playerState->worldPos.x;
+    playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     RebuildSteerBasisFromMotionBasis(saveState);
 
@@ -1145,11 +1145,11 @@ void __fastcall UpdateMasterTypeBasic(zUtil_SaveGameState* saveState)
         playerState->localVel.x = savedLocalVelX;
     }
 
+    const float negSteerZ = -playerState->steerBasisNorm.z;
+    const float negSteerX = -playerState->steerBasisNorm.x;
     playerState->projectileSpawnVel.y = playerState->localVel.y;
-    playerState->projectileSpawnVel.x = -playerState->steerBasisNorm.x * playerState->localVel.z
-        + -playerState->steerBasisNorm.z * playerState->localVel.x;
-    playerState->projectileSpawnVel.z = playerState->steerBasisNorm.x * playerState->localVel.x
-        + -playerState->steerBasisNorm.z * playerState->localVel.z;
+    playerState->projectileSpawnVel.x = negSteerX * playerState->localVel.z + negSteerZ * playerState->localVel.x;
+    playerState->projectileSpawnVel.z = negSteerZ * playerState->localVel.z - negSteerX * playerState->localVel.x;
 
     playerState->worldPos.x += playerState->projectileSpawnVel.x * g_Player_DeltaTime;
     playerState->motionBasis.posX = playerState->worldPos.x;
@@ -1304,7 +1304,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
@@ -1344,16 +1344,16 @@ void __fastcall UpdateMasterTypeSub(zUtil_SaveGameState* saveState)
     playerState->vehicleRotationAngles.x += g_Player_DeltaTime * playerState->angVelPitch;
     playerState->restartYawRad += g_Player_DeltaTime * playerState->angVelYaw;
     playerState->vehicleRollRad = playerState->angVelRoll * g_Player_DeltaTime + playerState->vehicleRollRad
-        - masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw * playerState->localVel.z;
+        - (masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw) * playerState->localVel.z;
     PLAYER_CLAMP_SIGNED(playerState->vehicleRotationAngles.x, 0.5f);
     PLAYER_WRAP_SIGNED_TWO_PI(playerState->restartYawRad);
     PLAYER_CLAMP_SIGNED(playerState->vehicleRollRad, 0.349999994f);
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehicleRotationAngles.x,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     RebuildSteerBasisFromMotionBasis(saveState);
     playerState->motionBasis.posX = playerState->worldPos.x;

@@ -246,7 +246,7 @@ struct PlayerEnvProbeResult {
     CZNodePartial* attachmentNode;
     int impactSlotBySample[9];
     PlayerProbeTypeHistogram hitHistogram;
-    PlayerProbeSampleCandidateBuffer candidateBuffers[7];
+    PlayerProbeSampleCandidateBuffer candidateBuffers[9];
 };
 
 struct PlayerMissionSaveWeaponSide {
@@ -426,8 +426,8 @@ void __fastcall ExtractVehicleNameFromAivName(const char* aivName, char* outVehi
 CZNodePartial* __fastcall CloneType6NodeFromTemplateAndRename(const char* templateName, const char* newName);
 int __fastcall CreateFromNamesAtPose(
     const zVec3* spawnPos,
-    int aiNetId,
     float yawDeg,
+    int aiNetId,
     const char* templateName,
     const char* objectName
 );

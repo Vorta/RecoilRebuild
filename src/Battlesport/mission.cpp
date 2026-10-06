@@ -196,6 +196,49 @@ inline void AppendPickupFeature(char* featureText, const char* feature)
 
 /**
  * Original-source helper evidence: no standalone retail function exists;
+ * observed in LoadMissionWeatherFx 0x419050, where each weather field store is a
+ * float-parameter fld/fstp copy rather than a plain dword move.
+ * Purpose: set the weather effect wind direction from a ZRD value.
+ */
+inline void SetWeatherFxWindDirection(HudWeatherFx* weatherFx, float windDirection)
+{
+    weatherFx->windDirection = windDirection;
+}
+
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in LoadMissionWeatherFx 0x419050 as a float-parameter fld/fstp copy.
+ * Purpose: set the weather effect wind velocity from a ZRD value.
+ */
+inline void SetWeatherFxWindVelocity(HudWeatherFx* weatherFx, float windVelocity)
+{
+    weatherFx->windVelocity = windVelocity;
+}
+
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in LoadMissionWeatherFx 0x419050 as a float-parameter fld/fstp copy.
+ * Purpose: set the weather effect particle gravity from a ZRD value.
+ */
+inline void SetWeatherFxGravity(HudWeatherFx* weatherFx, float gravity)
+{
+    weatherFx->gravity = gravity;
+}
+
+/**
+ * Original-source helper evidence: no standalone retail function exists;
+ * observed in LoadMissionWeatherFx 0x419050, which loads both gradient values
+ * before storing the start then end scale.
+ * Purpose: set the weather effect alpha gradient from ZRD values.
+ */
+inline void SetWeatherFxAlphaGradient(HudWeatherFx* weatherFx, float alphaStartScale, float alphaEndScale)
+{
+    weatherFx->alphaStartScale = alphaStartScale;
+    weatherFx->alphaEndScale = alphaEndScale;
+}
+
+/**
+ * Original-source helper evidence: no standalone retail function exists;
  * observed in HudSensorTracker objective loader caller 0x418230.
  * Evidence: ACTIVE and INACTIVE path resolution share the same zClass lookup,
  * child-node walk, and original mission.cpp error reporting pattern.
@@ -1529,35 +1572,36 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
         }
 
         if (fxPass3Obj != 0) {
-            HudWeatherFx* const weatherFx = (HudWeatherFx*)(fxPass3Obj);
-
             zReader::Node* colorNode = zRdrGetNode(missionNode, "COLOR");
             if (colorNode != 0) {
                 zReader::Node* const colorFields = colorNode->value.nodes;
-                weatherFx->packedColor16
+                ((HudWeatherFx*)(fxPass3Obj))->packedColor16
                     = zVidPackColorRGB(colorFields[1].value.i32, colorFields[2].value.i32, colorFields[3].value.i32);
             }
 
             zReader::Node* windDirNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindDirectionNodeName);
             if (windDirNode != 0) {
-                weatherFx->windDirection = windDirNode->value.f32;
+                SetWeatherFxWindDirection((HudWeatherFx*)(fxPass3Obj), windDirNode->value.f32);
             }
 
             zReader::Node* windVelNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindVelocityNodeName);
             if (windVelNode != 0) {
-                weatherFx->windVelocity = windVelNode->value.f32;
+                SetWeatherFxWindVelocity((HudWeatherFx*)(fxPass3Obj), windVelNode->value.f32);
             }
 
             zReader::Node* gravityNode = zRdrGetNode(missionNode, "GRAVITY");
             if (gravityNode != 0) {
-                weatherFx->gravity = gravityNode->value.f32;
+                SetWeatherFxGravity((HudWeatherFx*)(fxPass3Obj), gravityNode->value.f32);
             }
 
             zReader::Node* alphaGradientNode = zRdrGetNode(missionNode, g_HudWeatherFx_AlphaGradientNodeName);
             if (alphaGradientNode != 0) {
                 zReader::Node* const alphaFields = alphaGradientNode->value.nodes;
-                weatherFx->alphaStartScale = alphaFields[1].value.f32;
-                weatherFx->alphaEndScale = alphaFields[2].value.f32;
+                SetWeatherFxAlphaGradient(
+                    (HudWeatherFx*)(fxPass3Obj),
+                    alphaFields[1].value.f32,
+                    alphaFields[2].value.f32
+                );
             }
 
             ((HudUiContainer*)(&g_zVideo_FxPass3ConfigLocal))->AddChild(fxPass3Obj);

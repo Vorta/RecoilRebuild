@@ -75,7 +75,7 @@ struct zTurret_Runtime {
     int intersectBvolEnabled;
     int unknown_174[3];
 
-    zTurret_Runtime* InitDefaults();
+    zTurret_Runtime();
     void InitFromReaderNode(
         CZNodePartial* worldNode,
         CZNodePartial* turretWorldNode,
@@ -152,17 +152,38 @@ RECOIL_STATIC_ASSERT(offsetof(zTurret_Runtime, intersectBvolEnabled) == 0x170);
 RECOIL_STATIC_ASSERT(sizeof(zTurret_Runtime) == 0x180);
 } // namespace zTurret_LayoutAssertions
 
-extern "C" {
-extern CZNodePartial* g_zTurret_CallbackNode;
-extern zReader::Node* g_zTurret_LoadedDefRoot;
-extern zEffectAnimEntry* g_zTurret_NapalmVehicleDestroyAnim;
-extern int g_zTurret_RuntimeCount;
-extern int g_zTurret_CallbackIterationActive;
-extern int g_zTurret_CallbackStartIndex;
-extern int g_zTurret_CallbackIterIndex;
-// Experimental capacity; original extent remains unresolved. See turret.cpp.
-extern zTurret_Runtime* g_zTurret_RuntimeList[128];
-}
+/*
+ * Reconstructed turret system storage at [0x4f3fd0, 0x4f41f0). The runtime
+ * list capacity is a play-test choice: retail uses the list base and the
+ * scalar at 0x4f41ec, but the intervening extent is unresolved (128 pointers
+ * plus an unknown word versus 129 pointers). The compatibility macros below
+ * expose the recovered names as members of the single definition in turret.cpp.
+ */
+struct zTurret_SystemState {
+    CZNodePartial* callbackNode; /* +0x000 0x4f3fd0 */
+    zReader::Node* loadedDefRoot; /* +0x004 0x4f3fd4 */
+    int runtimeCount; /* +0x008 0x4f3fd8 */
+    int callbackIterationActive; /* +0x00c 0x4f3fdc */
+    int callbackStartIndex; /* +0x010 0x4f3fe0 */
+    int callbackIterIndex; /* +0x014 0x4f3fe4 */
+    zTurret_Runtime* runtimeList[128]; /* +0x018 0x4f3fe8 */
+    int unknown_218; /* +0x218 0x4f41e8 */
+    zEffectAnimEntry* napalmVehicleDestroyAnim; /* +0x21c 0x4f41ec */
+};
+RECOIL_STATIC_ASSERT(offsetof(zTurret_SystemState, runtimeList) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zTurret_SystemState, napalmVehicleDestroyAnim) == 0x21c);
+RECOIL_STATIC_ASSERT(sizeof(zTurret_SystemState) == 0x220);
+
+extern "C" zTurret_SystemState g_zTurret_SystemStateStorage;
+
+#define g_zTurret_CallbackNode (g_zTurret_SystemStateStorage.callbackNode)
+#define g_zTurret_LoadedDefRoot (g_zTurret_SystemStateStorage.loadedDefRoot)
+#define g_zTurret_RuntimeCount (g_zTurret_SystemStateStorage.runtimeCount)
+#define g_zTurret_CallbackIterationActive (g_zTurret_SystemStateStorage.callbackIterationActive)
+#define g_zTurret_CallbackStartIndex (g_zTurret_SystemStateStorage.callbackStartIndex)
+#define g_zTurret_CallbackIterIndex (g_zTurret_SystemStateStorage.callbackIterIndex)
+#define g_zTurret_RuntimeList (g_zTurret_SystemStateStorage.runtimeList)
+#define g_zTurret_NapalmVehicleDestroyAnim (g_zTurret_SystemStateStorage.napalmVehicleDestroyAnim)
 
 namespace zTurret_System {
 int __cdecl ResetIterationState();

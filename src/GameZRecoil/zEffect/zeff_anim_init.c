@@ -497,11 +497,15 @@ namespace zEffectAnim
         }
 
         if (clonedEntry->lightRefCount > 0) {
-            const int count = clonedEntry->lightRefCount;
-            clonedEntry->lightRefList = (zEffectAnimRuntimeNodeRef*)(calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
-            memcpy(clonedEntry->lightRefList, self->lightRefList, sizeof(zEffectAnimRuntimeNodeRef) * count);
+            clonedEntry->lightRefList
+                = (zEffectAnimRuntimeNodeRef*)(calloc(clonedEntry->lightRefCount, sizeof(zEffectAnimRuntimeNodeRef)));
+            memcpy(
+                clonedEntry->lightRefList,
+                self->lightRefList,
+                sizeof(zEffectAnimRuntimeNodeRef) * clonedEntry->lightRefCount
+            );
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->lightRefCount; ++i) {
                 zEffectAnimRuntimeNodeRef* const lightRef = &clonedEntry->lightRefList[i];
                 if (self->lightRefList[i].runtimeNode != 0) {
                     CZNodePartial* const lightNode = CZLight::gwLightNew();
@@ -513,28 +517,35 @@ namespace zEffectAnim
         }
 
         if (clonedEntry->soundRefCount > 0) {
-            const int count = clonedEntry->soundRefCount;
-            clonedEntry->soundRefList = (zEffectAnimRuntimeNodeRef*)(calloc(count, sizeof(zEffectAnimRuntimeNodeRef)));
-            memcpy(clonedEntry->soundRefList, self->soundRefList, sizeof(zEffectAnimRuntimeNodeRef) * count);
+            clonedEntry->soundRefList
+                = (zEffectAnimRuntimeNodeRef*)(calloc(clonedEntry->soundRefCount, sizeof(zEffectAnimRuntimeNodeRef)));
+            memcpy(
+                clonedEntry->soundRefList,
+                self->soundRefList,
+                sizeof(zEffectAnimRuntimeNodeRef) * clonedEntry->soundRefCount
+            );
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->soundRefCount; ++i) {
                 zEffectAnimRuntimeNodeRef* const soundRef = &clonedEntry->soundRefList[i];
                 if (self->soundRefList[i].runtimeNode != 0) {
-                    CZNodePartial* const soundNode = CZSound::gwSoundNew();
-                    soundRef->runtimeNode = soundNode;
-                    CZClass::gwNodeSetName(soundNode, soundRef->name.text);
-                    CZSound::SetSampleSetByName(soundNode, soundRef->name.text);
+                    soundRef->runtimeNode = CZSound::gwSoundNew();
+                    CZClass::gwNodeSetName(soundRef->runtimeNode, soundRef->name.text);
+                    CZSound::SetSampleSetByName(soundRef->runtimeNode, soundRef->name.text);
                 }
                 soundRef->isAttached = 0;
             }
         }
 
         if (clonedEntry->trackedNodeCount > 0) {
-            const int count = clonedEntry->trackedNodeCount;
-            clonedEntry->trackedNodeList = (zEffectAnimTrackedNode*)(calloc(count, sizeof(zEffectAnimTrackedNode)));
-            memcpy(clonedEntry->trackedNodeList, self->trackedNodeList, sizeof(zEffectAnimTrackedNode) * count);
+            clonedEntry->trackedNodeList
+                = (zEffectAnimTrackedNode*)(calloc(clonedEntry->trackedNodeCount, sizeof(zEffectAnimTrackedNode)));
+            memcpy(
+                clonedEntry->trackedNodeList,
+                self->trackedNodeList,
+                sizeof(zEffectAnimTrackedNode) * clonedEntry->trackedNodeCount
+            );
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->trackedNodeCount; ++i) {
                 if (self->trackedNodeList[i].trackedNode != 0) {
                     clonedEntry->trackedNodeList[i].trackedNode
                         = ResolveNodeByName(clonedEntry, clonedEntry->trackedNodeList[i].trackedNodeName);
@@ -543,11 +554,15 @@ namespace zEffectAnim
         }
 
         if (clonedEntry->nodeRefCount > 0) {
-            const int count = clonedEntry->nodeRefCount;
-            clonedEntry->nodeRefList = (zEffectAnimNodeRef28*)(calloc(count, sizeof(zEffectAnimNodeRef28)));
-            memcpy(clonedEntry->nodeRefList, self->nodeRefList, sizeof(zEffectAnimNodeRef28) * count);
+            clonedEntry->nodeRefList
+                = (zEffectAnimNodeRef28*)(calloc(clonedEntry->nodeRefCount, sizeof(zEffectAnimNodeRef28)));
+            memcpy(
+                clonedEntry->nodeRefList,
+                self->nodeRefList,
+                sizeof(zEffectAnimNodeRef28) * clonedEntry->nodeRefCount
+            );
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->nodeRefCount; ++i) {
                 if (self->nodeRefList[i].node != 0) {
                     clonedEntry->nodeRefList[i].node
                         = ResolveNodeByName(clonedEntry, clonedEntry->nodeRefList[i].name.text);
@@ -556,16 +571,21 @@ namespace zEffectAnim
         }
 
         if (clonedEntry->runtimeSequenceCount > 0) {
-            const int count = clonedEntry->runtimeSequenceCount;
-            clonedEntry->runtimeList = (zEffectAnimSurfaceRuntime*)(calloc(count, sizeof(zEffectAnimSurfaceRuntime)));
+            clonedEntry->runtimeList = (zEffectAnimSurfaceRuntime*)(calloc(
+                clonedEntry->runtimeSequenceCount,
+                sizeof(zEffectAnimSurfaceRuntime)
+            ));
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->runtimeSequenceCount; ++i) {
                 memcpy(&clonedEntry->runtimeList[i], &self->runtimeList[i], sizeof(zEffectAnimSurfaceRuntime));
 
-                const int eventStreamSize = self->runtimeList[i].eventStreamSize;
-                if (eventStreamSize > 0) {
-                    clonedEntry->runtimeList[i].eventStream = calloc(1, eventStreamSize);
-                    memcpy(clonedEntry->runtimeList[i].eventStream, self->runtimeList[i].eventStream, eventStreamSize);
+                if (self->runtimeList[i].eventStreamSize > 0) {
+                    clonedEntry->runtimeList[i].eventStream = calloc(1, self->runtimeList[i].eventStreamSize);
+                    memcpy(
+                        clonedEntry->runtimeList[i].eventStream,
+                        self->runtimeList[i].eventStream,
+                        self->runtimeList[i].eventStreamSize
+                    );
                 }
             }
         }
@@ -580,39 +600,49 @@ namespace zEffectAnim
         }
 
         if (clonedEntry->sampleRefCount > 0) {
-            const int count = clonedEntry->sampleRefCount;
-            clonedEntry->sampleRefList = (zEffectAnimSampleRef*)(calloc(count, sizeof(zEffectAnimSampleRef)));
-            memcpy(clonedEntry->sampleRefList, self->sampleRefList, sizeof(zEffectAnimSampleRef) * count);
+            clonedEntry->sampleRefList
+                = (zEffectAnimSampleRef*)(calloc(clonedEntry->sampleRefCount, sizeof(zEffectAnimSampleRef)));
+            memcpy(
+                clonedEntry->sampleRefList,
+                self->sampleRefList,
+                sizeof(zEffectAnimSampleRef) * clonedEntry->sampleRefCount
+            );
         }
 
         if (clonedEntry->effectTemplateRefCount > 0) {
-            const int count = clonedEntry->effectTemplateRefCount;
-            clonedEntry->effectTemplateRefList
-                = (zEffectAnimTemplateIndexRef*)(calloc(count, sizeof(zEffectAnimTemplateIndexRef)));
+            clonedEntry->effectTemplateRefList = (zEffectAnimTemplateIndexRef*)(calloc(
+                clonedEntry->effectTemplateRefCount,
+                sizeof(zEffectAnimTemplateIndexRef)
+            ));
             memcpy(
                 clonedEntry->effectTemplateRefList,
                 self->effectTemplateRefList,
-                sizeof(zEffectAnimTemplateIndexRef) * count
+                sizeof(zEffectAnimTemplateIndexRef) * clonedEntry->effectTemplateRefCount
             );
         }
 
         if (clonedEntry->activationPrereqCount > 0) {
-            const int count = clonedEntry->activationPrereqCount;
-            clonedEntry->activationPrereqList
-                = (zEffectAnimActivationPrereq*)(calloc(count, sizeof(zEffectAnimActivationPrereq)));
+            clonedEntry->activationPrereqList = (zEffectAnimActivationPrereq*)(calloc(
+                clonedEntry->activationPrereqCount,
+                sizeof(zEffectAnimActivationPrereq)
+            ));
             memcpy(
                 clonedEntry->activationPrereqList,
                 self->activationPrereqList,
-                sizeof(zEffectAnimActivationPrereq) * count
+                sizeof(zEffectAnimActivationPrereq) * clonedEntry->activationPrereqCount
             );
         }
 
         if (clonedEntry->runtimeRefCount > 0) {
-            const int count = clonedEntry->runtimeRefCount;
-            clonedEntry->runtimeRefList = (zEffectAnimRuntimeRef*)(calloc(count, sizeof(zEffectAnimRuntimeRef)));
-            memcpy(clonedEntry->runtimeRefList, self->runtimeRefList, sizeof(zEffectAnimRuntimeRef) * count);
+            clonedEntry->runtimeRefList
+                = (zEffectAnimRuntimeRef*)(calloc(clonedEntry->runtimeRefCount, sizeof(zEffectAnimRuntimeRef)));
+            memcpy(
+                clonedEntry->runtimeRefList,
+                self->runtimeRefList,
+                sizeof(zEffectAnimRuntimeRef) * clonedEntry->runtimeRefCount
+            );
 
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < clonedEntry->runtimeRefCount; ++i) {
                 clonedEntry->runtimeRefList[i].cachedChildEntry = 0;
             }
         }

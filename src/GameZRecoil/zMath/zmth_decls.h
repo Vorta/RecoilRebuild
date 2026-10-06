@@ -138,7 +138,7 @@ void __stdcall MatRotateX(float angleRad);
 void __stdcall MatRotateY(float angleRad);
 void __stdcall MatRotateZ(float angleRad);
 void __fastcall MatApplyLocalTRS(const zVec3* angles, const zVec3* position, const zVec3* scale);
-void __fastcall MatBuildEulerRotation3x3(zMat4x3* outBasis, float angleX, float angleY, float angleZ);
+void __fastcall MatBuildEulerRotation3x3(float angleX, float angleY, float angleZ, zMat4x3* outBasis);
 zVec3 __fastcall Vec3DirectionAnglesBetweenPoints(const zVec3* pointA, const zVec3* pointB);
 void __fastcall Vec3ArrayProjectToCachedY(const zVec3* points, float* outValues, int count);
 /*

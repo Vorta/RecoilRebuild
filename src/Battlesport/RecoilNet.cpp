@@ -198,26 +198,29 @@ void __cdecl InitFromZrd()
     zTurret_System::DisableTickCallback();
     zReader::Node* const treeRoot = zReader::Load("net.zrd", 0, 0);
     if (treeRoot != 0) {
-        GameNetReaderArray* const rootArray = (GameNetReaderArray*)(treeRoot->value.ptr);
-        GameNetReaderArray* const spawnArray = (GameNetReaderArray*)(rootArray->nodes[0].value.ptr);
-        int spawnPointCount = spawnArray->count - 1;
-        for (int index = 0; index < spawnPointCount; ++index) {
+        // nodes[0] holds the zrd list count (header included); spawn entries are 1..count-1.
+        const int spawnListCount = treeRoot->value.nodes[1].value.nodes[0].value.i32;
+        for (int index = 1; index < spawnListCount; ++index) {
             GameNetSpawnPoint* const spawnPoint = (GameNetSpawnPoint*)(::operator new(sizeof(GameNetSpawnPoint)));
             memset(spawnPoint, 0, sizeof(GameNetSpawnPoint));
-            if (g_GameNetSpawnPointCount == 0) {
-                g_GameNetSpawnPointHead = spawnPoint;
-            } else {
-                g_GameNetSpawnPointTail->next = spawnPoint;
+            // Retail null-checks the allocation only around the list append.
+            if (spawnPoint != 0) {
+                spawnPoint->next = 0;
+                if (g_GameNetSpawnPointCount == 0) {
+                    g_GameNetSpawnPointHead = spawnPoint;
+                } else {
+                    g_GameNetSpawnPointTail->next = spawnPoint;
+                }
+                g_GameNetSpawnPointTail = spawnPoint;
+                spawnPoint->next = 0;
+                ++g_GameNetSpawnPointCount;
             }
-            g_GameNetSpawnPointTail = spawnPoint;
-            spawnPoint->next = 0;
-            ++g_GameNetSpawnPointCount;
 
-            GameNetReaderArray* const spawnValueArray = (GameNetReaderArray*)(spawnArray->nodes[index].value.ptr);
-            spawnPoint->position.x = spawnValueArray->nodes[0].value.f32;
-            spawnPoint->position.y = spawnValueArray->nodes[1].value.f32;
-            spawnPoint->position.z = spawnValueArray->nodes[2].value.f32;
-            spawnPoint->yawDegrees = spawnValueArray->nodes[3].value.f32;
+            zReader::Node* const spawnValues = treeRoot->value.nodes[1].value.nodes[index].value.nodes;
+            spawnPoint->position.x = spawnValues[1].value.f32;
+            spawnPoint->position.y = spawnValues[2].value.f32;
+            spawnPoint->position.z = spawnValues[3].value.f32;
+            spawnPoint->yawDegrees = spawnValues[4].value.f32;
         }
         zReader::Free(treeRoot);
     }
@@ -259,8 +262,8 @@ void __cdecl InitFromZrd()
         playerRow->hudWidget.textDirty = 1;
         playerRow->ApplyPlayerColorTint();
         if (g_HudSensorTracker.raceCheckpointMode == 0) {
-            float runtimeTimerSec;
-            memcpy(&runtimeTimerSec, &g_HudSensorTracker.runtimeTimerSec, sizeof(runtimeTimerSec));
+            // Retail keeps this float copy in its own stack slot.
+            float runtimeTimerSec = g_HudSensorTracker.runtimeTimerSec;
             g_GameNetHostHudTimerInitFlag = 0;
             HudUiTimerPanel::SetSeconds(runtimeTimerSec, -1.0f);
             g_HudTimerPanelNetState.timerDirectionNeg = 1;

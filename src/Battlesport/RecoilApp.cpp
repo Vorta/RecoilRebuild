@@ -1190,8 +1190,8 @@ int CRecoilAppPlayState::OnUpdateShouldQuit()
         snapshot->StopAllIfPlaying();
         zSndCd::Stop();
 
-        zFMV_Script fmvScript;
-        fmvScript.Init(g_zFMV_ScriptFileName, g_zFMV_GrandPrizeScriptName, 0);
+        // Retail constructs and destroys the script as an EH-tracked object.
+        CRecoilAppFmvScript fmvScript(g_zFMV_ScriptFileName, g_zFMV_GrandPrizeScriptName, 0);
         fmvScript.RunBlocking(0);
 
         if (g_zVideo_ActiveRendererPath != ZVID_RENDERER_BACKEND_SOFTWARE) {
@@ -1212,7 +1212,6 @@ int CRecoilAppPlayState::OnUpdateShouldQuit()
             RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_FRONTEND);
             RecoilStateCredits::QueuePush();
         }
-        fmvScript.Cleanup();
         return 0;
     }
 

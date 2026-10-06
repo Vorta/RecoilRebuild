@@ -62,7 +62,6 @@ const float kPlayerWorldCollisionStackDrop = 0.200000003f;
 // Unused since 0x4248e0 reads the pooled -1.0f literal (retail 0x4d0728); kept so the
 // TU's C1 ID counter layout, which 0x425060's codegen depends on, stays unchanged.
 const float kPlayerWorldCollisionSubRestoreYOffset = -1.0f;
-const float kPlayerWorldCollisionUpwardBounceDamping = -0.800000012f;
 const float kPlayerTransferDamageScale = 5.0f;
 const float kPlayerTransferVelocityDamping = 0.666700006f;
 
@@ -932,19 +931,19 @@ PreparePendingWorldCollisionResponse(zUtil_SaveGameState* saveState, PlayerPendi
     const float restoreYOffset = masterModalData->masterType == kPlayerMasterTypeSub ? -1.0f : 0.0f;
     playerState->worldPos.x = playerState->previousTransform.posX;
     playerState->worldPos.y = playerState->previousTransform.posY + restoreYOffset;
-    playerState->vehicleRotationAngles = playerState->cachedVehicleRotationAngles;
     playerState->worldPos.z = playerState->previousTransform.posZ;
+    playerState->vehicleRotationAngles = playerState->cachedVehicleRotationAngles;
     playerState->angVel = g_Player_ConstZeroVec3;
 
     if (playerState->projectileSpawnVel.y > 0.0f) {
-        playerState->projectileSpawnVel.y *= kPlayerWorldCollisionUpwardBounceDamping;
+        playerState->projectileSpawnVel.y *= -0.8f;
     }
 
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
@@ -1342,15 +1341,15 @@ void __fastcall ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState* saveStat
 
     if (playerState->collisionProbeResolved == 0) {
         playerState->worldPos.x = playerState->previousTransform.posX;
-        playerState->worldPos.z = playerState->previousTransform.posZ;
         playerState->worldPos.y = playerState->previousTransform.posY;
+        playerState->worldPos.z = playerState->previousTransform.posZ;
         float cachedYaw = playerState->cachedYawRad;
         playerState->restartYawRad = cachedYaw;
         zMath::MatBuildEulerRotation3x3(
-            &playerState->motionBasis,
             playerState->vehiclePitchRad,
             playerState->restartYawRad,
-            playerState->vehicleRollRad
+            playerState->vehicleRollRad,
+            &playerState->motionBasis
         );
         playerState->motionBasis.posX = playerState->worldPos.x;
         playerState->motionBasis.posY = playerState->worldPos.y;

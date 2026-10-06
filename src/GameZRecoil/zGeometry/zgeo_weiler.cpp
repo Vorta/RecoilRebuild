@@ -3075,9 +3075,11 @@ int __fastcall Intersect2d(
                     return 1;
                 }
 
-                const double edge0Param = (((double)(edge1Start.x) - (double)(edge0Start.x)) * edge1ReverseDeltaY
-                                              + ((double)(edge1Start.y) - (double)(edge0Start.y)) * -edge1ReverseDeltaX)
-                    / divisor;
+                // Retail scales by the reciprocal divisor term by term.
+                const double invDivisor = 1.0 / divisor;
+                const double edge0Param
+                    = ((double)(edge1Start.x) - (double)(edge0Start.x)) * (edge1ReverseDeltaY * invDivisor)
+                    + ((double)(edge1Start.y) - (double)(edge0Start.y)) * -(edge1ReverseDeltaX * invDivisor);
                 createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
                 createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
 

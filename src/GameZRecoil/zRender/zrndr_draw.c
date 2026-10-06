@@ -233,7 +233,7 @@ void __fastcall zRndrSetPaletteShadeRecipeIndex(zVidPaletteRemapRecipe* recipe)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-submitpolywithspanlist
  * @recoil-artifact defines .text recoil:function:0x499a20: zRndrSubmitPolyWithSpanList
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zRender\zrndr_draw.c.
  * Source file evidence: embedded zError file path in this function.
@@ -1181,15 +1181,15 @@ void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex)
 void __fastcall
 zRndrLensFlareDrawVisibleSampleStages(zRndr_LensFlareVisibleSampleDef* visibleSampleDef, float visibilityAlpha)
 {
-    const float activeWidth = (float)((unsigned int)(zRndr::g_activeRegionWidth));
-    const float activeHeight = (float)((unsigned int)(zRndr::g_activeRegionHeight));
-    const float baseRadius = visibilityAlpha * activeWidth * 0.03125f;
+    // Retail converts the active-region extent at each use (no width/height locals): the radius
+    // multiply loads visibilityAlpha first and reuses the converted width.
+    const float baseRadius = visibilityAlpha * (float)((unsigned int)(zRndr::g_activeRegionWidth)) * 0.03125f;
     const float largeRadius = baseRadius + baseRadius;
     // Retail keeps the clip half-size and sample offset in two 12-byte vector records; only x and y are used.
     zVec3 halfClip;
     zVec3 sampleOffset;
-    halfClip.x = activeWidth * 0.5f;
-    halfClip.y = activeHeight * 0.5f;
+    halfClip.x = (float)((unsigned int)(zRndr::g_activeRegionWidth)) * 0.5f;
+    halfClip.y = (float)((unsigned int)(zRndr::g_activeRegionHeight)) * 0.5f;
     sampleOffset.x = visibleSampleDef->sampleCenterX - halfClip.x;
     sampleOffset.y = visibleSampleDef->sampleCenterY - halfClip.y;
     const zRndr_LineClipRect2I* clipRect = (const zRndr_LineClipRect2I*)(&zRndr::g_activeRegionRect);

@@ -1060,10 +1060,10 @@ void __cdecl SyncLocalPoseFromRootNode()
         &playerState->vehicleRollRad
     );
     zMath::MatBuildEulerRotation3x3(
-        &playerState->motionBasis,
         playerState->vehiclePitchRad,
         playerState->restartYawRad,
-        playerState->vehicleRollRad
+        playerState->vehicleRollRad,
+        &playerState->motionBasis
     );
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
