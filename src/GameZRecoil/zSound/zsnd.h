@@ -458,7 +458,7 @@ extern int g_zSndStream_MatchedRequestCount;
 extern CZNodePartial* g_zSndStream_RootNode;
 extern int g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
-extern int g_zSndCdDeviceId;
+extern unsigned short g_zSndCdDeviceId;
 extern int g_zSndCdAuxDeviceId;
 extern int g_zSndCdDiscLengthMinute;
 extern int g_zSndCdDiscLengthSecond;

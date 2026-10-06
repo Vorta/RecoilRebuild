@@ -8232,8 +8232,8 @@ int __fastcall HudUiMgr::InitHudLayouts(const HudUiRect* displaySection, const H
     g_HudUiMgrObjectiveDescTextPanel = new HudUiPanelSimple;
     g_HudUiMgrObjectiveLabelTextPanel = new HudUiPanelSimple;
 
-    g_HudUiTopMessageStack = new HudUiTopMessageStack;
-    g_HudUiChatMessageStack = new HudUiChatMessageStack;
+    g_HudUiTopMessageStack = (HudUiTextStack4*)(new HudUiTopMessageStack);
+    g_HudUiChatMessageStack = (HudUiTextStack4*)(new HudUiChatMessageStack);
 
     g_HudUiMgrHudLoaded = 0;
     g_HudUiMgrLayoutDelayFrames = 0;
@@ -9818,7 +9818,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:

@@ -1089,150 +1089,6 @@ RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slotWriteIndex) == 0x1ec);
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
 #endif
 
-/*
- * 0x48da60 reads the two scratch offsets, four clip bounds, active FX-surface
- * descriptor, and scratch pointer as one zVideo pass-3 scratch copy data set.
- * 0x48daf0 writes the clip bounds for every pass and writes the scratch offsets
- * only when it switches from the direct scatter path to the clipped helper path.
- * This documents the local source shape only; the complete zVideo data owner is
- * broader than this slice and remains a direct-review data-gate decision.
- */
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsetx
- * @recoil-artifact defines .data recoil:data:0x56b190: g_zVideo_FxPass3_ScratchOffsetX.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
- * X bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
- * and applies it to both the destination delta in ECX and the source X stack
- * delta before clip tests.
- * Purpose: cache the pass-3 clipped copy X offset.
- */
-int g_zVideo_FxPass3_ScratchOffsetX;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsety
- * @recoil-artifact defines .data recoil:data:0x56b194: g_zVideo_FxPass3_ScratchOffsetY.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
- * Y bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
- * and applies it to both the destination delta in EDX and the source Y stack
- * delta before clip tests.
- * Purpose: cache the pass-3 clipped copy Y offset.
- */
-int g_zVideo_FxPass3_ScratchOffsetY;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminx
- * @recoil-artifact defines .data recoil:data:0x56b1a0: g_zVideo_FxPass3_ClipMinX.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
- * current pass-3 clip rectangle and the clipped scatter helper tests source
- * and destination X coordinates against it as an inclusive lower bound.
- * Purpose: cache the inclusive minimum X clip edge for pass-3 scatter copies.
- */
-int g_zVideo_FxPass3_ClipMinX;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminy
- * @recoil-artifact defines .data recoil:data:0x56b1a4: g_zVideo_FxPass3_ClipMinY.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
- * current pass-3 clip rectangle and the clipped scatter helper tests source
- * and destination Y coordinates against it as an inclusive lower bound.
- * Purpose: cache the inclusive minimum Y clip edge for pass-3 scatter copies.
- */
-int g_zVideo_FxPass3_ClipMinY;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxx
- * @recoil-artifact defines .data recoil:data:0x56b1a8: g_zVideo_FxPass3_ClipMaxX.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
- * current pass-3 clip rectangle and the clipped scatter helper treats this as
- * the exclusive maximum X edge.
- * Purpose: cache the exclusive maximum X clip edge for pass-3 scatter copies.
- */
-int g_zVideo_FxPass3_ClipMaxX;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxy
- * @recoil-artifact defines .data recoil:data:0x56b1ac: g_zVideo_FxPass3_ClipMaxY.
- * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
- * current pass-3 clip rectangle and the clipped scatter helper treats this as
- * the exclusive maximum Y edge.
- * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
- */
-int g_zVideo_FxPass3_ClipMaxY;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetablesize
- * @recoil-artifact defines .data recoil:data:0x56b1b8: g_zVid_NoiseByteTableSize.
- * Data owner evidence: zVid::NoiseInitBuffers writes the primary-surface
- * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
- * as the random row-window limit.
- * Purpose: cache the allocated noise-byte table length.
- */
-int g_zVid_NoiseByteTableSize;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetable
- * @recoil-artifact defines .data recoil:data:0x56b1bc: g_zVid_NoiseByteTable.
- * Data owner evidence: zVid::NoiseInitBuffers allocates and fills this byte
- * table, DrawNoiseRect samples it, and zVid::NoiseShutdownBuffers frees and
- * clears it when non-null.
- * Purpose: hold the software noise bytes used by the FX surface overlay path.
- */
-unsigned char* g_zVid_NoiseByteTable;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchpixels16
- * @recoil-artifact defines .data recoil:data:0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
- * Data owner evidence: zVid::NoiseInitBuffers allocates a width*height
- * 16-bpp scratch buffer and stores it after clearing the active FX-surface
- * descriptor; zVid::NoiseShutdownBuffers frees and clears it when non-null.
- * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 writes through
- * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
- * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0 stages the radial ring
- * warp here before copying back to the active FX surface.
- * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
- */
-unsigned short* g_zVideo_FxPass3_ScratchPixels16;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepixels16
- * @recoil-artifact defines .data recoil:data:0x56b1c4: g_zVideo_FxSurfacePixels16.
- * Data owner evidence: zVideo::FxSetSurfaceState writes this active surface
- * pointer, zVid::NoiseInitBuffers clears it during scratch initialization,
- * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
- * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 reads source
- * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
- * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
- */
-unsigned short* g_zVideo_FxSurfacePixels16;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacewidth
- * @recoil-artifact defines .data recoil:data:0x56b1c8: g_zVideo_FxSurfaceWidth.
- * Data owner evidence: zVideo::FxSetSurfaceState writes the active width,
- * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for bounds
- * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
- * scratch row indexing, distinct from the provider pitch used for source rows.
- * Purpose: cache the active FX surface width in pixels.
- */
-int g_zVideo_FxSurfaceWidth;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfaceheight
- * @recoil-artifact defines .data recoil:data:0x56b1cc: g_zVideo_FxSurfaceHeight.
- * Data owner evidence: zVideo::FxSetSurfaceState writes the active height,
- * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for full
- * surface clipping.
- * Purpose: cache the active FX surface height in pixels.
- */
-int g_zVideo_FxSurfaceHeight;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchbytes
- * @recoil-artifact defines .data recoil:data:0x56b1d0: g_zVideo_FxSurfacePitchBytes.
- * Data owner evidence: zVideo::FxSetSurfaceState writes the provider pitch in
- * bytes and zVid::NoiseInitBuffers clears it with the active surface record.
- * Purpose: retain the active FX surface row pitch in bytes.
- */
-int g_zVideo_FxSurfacePitchBytes;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchpixels16
- * @recoil-artifact defines .data recoil:data:0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
- * Data owner evidence: zVideo::FxSetSurfaceState derives this from pitch
- * bytes divided by two; FX/noise/blur paths use it for source/destination row
- * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
- * 0x48da60 reads g_zVideo_FxSurfacePixels16 after multiplying the biased
- * source Y by this value.
- * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
- */
-int g_zVideo_FxSurfacePitchPixels16;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-primarysurfacerectscratch
  * @recoil-artifact defines .data recoil:data:0x56bbc8: g_zVideo_PrimarySurfaceRectScratch.
@@ -1845,6 +1701,16 @@ namespace zVideo
      * Evidence: BN is a leaf zero-return function with no callees or globals.
      */
     int __cdecl ReturnSuccessStub()
+    {
+        return 0;
+    }
+
+    /**
+     * Purpose: accept the scene's world node (or 0 on reset) and report success;
+     * the shipped renderer needs no per-world binding. Retail folds this body with
+     * ReturnSuccessStub at 0x4a75e0; callers pass the node in ECX.
+     */
+    int __fastcall BindWorldNode(CZNodePartial* /*worldNode*/)
     {
         return 0;
     }

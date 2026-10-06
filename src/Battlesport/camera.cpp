@@ -759,8 +759,8 @@ int __fastcall AdjustThirdPersonCameraBySideProbes(
         float selectedHeight;
         selectedHeight = SelectProbeSampleHeightFromCandidates(
             probeBatches,
-            &selectedCandidateIndex,
             cameraPos->y,
+            &selectedCandidateIndex,
             kCameraPickRiseWindow,
             preferAttachmentSlot1,
             &bestImpactSlot,
@@ -859,8 +859,8 @@ void __fastcall UpdateCameraVariantFromCameraPos(zUtil_SaveGameState* saveState,
         float taggedHeight;
         SelectProbeSampleHeightFromCandidates(
             candidateBuffers,
-            &selectedCandidateIndex,
             cameraPos->y,
+            &selectedCandidateIndex,
             0.00100000005f,
             pickResult,
             &selectedImpactSlot,

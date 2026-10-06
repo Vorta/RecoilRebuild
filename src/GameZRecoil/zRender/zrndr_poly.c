@@ -4577,7 +4577,7 @@ void __fastcall zRndrDrawCircleOutline16Framebuffer(int centerX, int centerY, in
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawcircleoctants16-framebuffer
  * @recoil-artifact defines .text recoil:function:0x499020: zRndrDrawCircleOctants16Framebuffer.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: zRndr_Draw.cpp.
  * Purpose: emit the eight symmetric framebuffer points for one circle-outline

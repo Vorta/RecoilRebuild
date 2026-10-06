@@ -145,13 +145,12 @@ void __fastcall UpdatePostMoveEnvironment(zUtil_SaveGameState* saveState, int pr
     probeResult.minProbeDepth = 4.0f;
     probeResult.preferAttachmentSlot1 = playerState->amphibUnlocked == 0 ? 1 : 0;
 
-    const float restartYawRad = playerState->restartYawRad;
     playerState->vehiclePitchRad += playerState->angVelPitch * g_Player_DeltaTime;
     playerState->vehicleRollRad += playerState->angVelRoll * g_Player_DeltaTime;
     zMath::MatBuildEulerRotation3x3(
         &playerState->motionBasis,
         playerState->vehiclePitchRad,
-        restartYawRad,
+        playerState->restartYawRad,
         playerState->vehicleRollRad
     );
     playerState->motionBasis.posY = playerState->worldPos.y;
@@ -526,7 +525,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Returns the shared mask bits of three environment probe samples.
  */
@@ -719,10 +718,13 @@ void __fastcall RebuildAboveGroundIndices()
     }
 }
 } // namespace Player
+extern const float kPlayerProbeNoHitHeight;
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-buildenvironmentproberesult
  * @recoil-artifact defines .text recoil:function:0x42cf90: Player::BuildEnvironmentProbeResult.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
@@ -734,17 +736,17 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerModalState* const primaryModalState = saveState->primaryModalState;
     PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
+    int bestCandidateIndex;
+    int selectedImpactSlot;
+    float taggedHeight;
 
-    const int modalPointCount = primaryModalState->modalStateCode;
-    for (int i = 0; i < modalPointCount; ++i) {
-        zVec3 transformed;
-        PLAYER_TRANSFORM_POINT_BY_MATRIX(
-            transformed,
-            masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i],
-            playerState->motionBasis
+    for (int i = 0; i < primaryModalState->modalStateCode; ++i) {
+        ZMTH_VECTOR_TRANSFORM_POINT(
+            &playerState->motionBasis,
+            &primaryModalState->transformedProbePointWorldByIndex[i],
+            &masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + i]
         );
-        primaryModalState->transformedProbePointWorldByIndex[i] = transformed;
-        g_PlayerEnvProbeWorldPoints[i] = transformed;
+        g_PlayerEnvProbeWorldPoints[i] = primaryModalState->transformedProbePointWorldByIndex[i];
     }
 
     if (g_PlayerEnvProbeSampleCount > 4) {
@@ -764,10 +766,11 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
         g_PlayerEnvProbeWorldPoints[6] = playerState->worldPos;
     }
 
-    zUtil_PlayerStateStorage* const globalPlayerState
-        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
     CZClass::gwNodeSetCellPickable(playerState->rootNode, 0);
-    CZClass::gwNodeSetCellPickable(globalPlayerState->rootNode, 0);
+    CZClass::gwNodeSetCellPickable(
+        ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))->rootNode,
+        0
+    );
 
     g_Variant_CurrentTag = playerState->variantTag;
     CZDisplayInstance::BuildPickCandidatesForPointBatch(
@@ -779,24 +782,18 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
     );
     g_Variant_CurrentTag = g_VariantTag_Current;
 
-    outProbe->highestSelectedHitY = -300.0f;
+    outProbe->highestSelectedHitY = kPlayerProbeNoHitHeight;
     outProbe->attachmentCandidateCount = 0;
 
-    float maxRiseWindow = -(playerState->projectileSpawnVel.y * g_Player_DeltaTime);
-    if (outProbe->minProbeDepth > maxRiseWindow) {
-        maxRiseWindow = outProbe->minProbeDepth;
-    }
+    const float maxRiseWindow
+        = __max(outProbe->minProbeDepth, -(playerState->projectileSpawnVel.y * g_Player_DeltaTime));
 
     for (int sampleIndex = 0; sampleIndex < g_PlayerEnvProbeSampleCount; ++sampleIndex) {
-        int bestCandidateIndex = 0;
-        int selectedImpactSlot = 0;
-        float taggedHeight = -300.0f;
-        PlayerProbeSampleCandidateBuffer* const candidateBuffer = &outProbe->candidateBuffers[sampleIndex];
 
         outProbe->candidateScoreBySample[sampleIndex] = SelectProbeSampleHeightFromCandidates(
-            candidateBuffer,
-            &bestCandidateIndex,
+            &outProbe->candidateBuffers[sampleIndex],
             g_PlayerEnvProbeWorldPoints[sampleIndex].y,
+            &bestCandidateIndex,
             maxRiseWindow,
             outProbe->preferAttachmentSlot1,
             &selectedImpactSlot,
@@ -804,26 +801,29 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
         );
         outProbe->bestIndexBySample[sampleIndex] = bestCandidateIndex;
         outProbe->impactSlotBySample[sampleIndex] = selectedImpactSlot;
-
-        if (outProbe->highestSelectedHitY < taggedHeight) {
-            outProbe->highestSelectedHitY = taggedHeight;
-        }
+        outProbe->highestSelectedHitY = __max(outProbe->highestSelectedHitY, taggedHeight);
 
         if (sampleIndex < 4) {
             if (sampleIndex == 0) {
                 if (outProbe->candidateBuffers[0].candidateCount > 0) {
-                    const zClassDiPickCandidateEntry* const selectedCandidate
-                        = &outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]];
-                    playerState->selectedProbeSample = *selectedCandidate;
+                    playerState->selectedProbeSample
+                        = outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]];
                     playerState->selectedProbeSample.hitPos.x
                         = primaryModalState->transformedProbePointWorldByIndex[0].x;
                     playerState->selectedProbeSample.hitPos.z
                         = primaryModalState->transformedProbePointWorldByIndex[0].z;
-                    playerState->variantTag = selectedCandidate->variantTag;
+                    playerState->variantTag = outProbe->candidateBuffers[0].entries[bestCandidateIndex].variantTag;
 
-                    CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(selectedCandidate->node);
-                    const int nodeType = worldChild != 0 ? worldChild->nodeType : selectedCandidate->variantTag.tags[0];
-                    CZClass::gwNodeSetNodeType(playerState->rootNode, nodeType);
+                    CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(
+                        outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]].node
+                    );
+                    if (worldChild != 0) {
+                        CZClass::gwNodeSetNodeType(playerState->rootNode, worldChild->nodeType);
+                    } else {
+                        const zTag4Partial candidateTag
+                            = outProbe->candidateBuffers[0].entries[outProbe->bestIndexBySample[0]].variantTag;
+                        CZClass::gwNodeSetNodeType(playerState->rootNode, candidateTag.tags[0]);
+                    }
                 } else {
                     CZClass::gwNodeSetNodeType(playerState->rootNode, 0xff);
                 }
@@ -832,12 +832,13 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
             // Only the four primary samples feed the surface histogram and attachment vote.
             outProbe->hitHistogram.countByImpactSlot[selectedImpactSlot] += 1;
 
-            if (candidateBuffer->candidateCount != 0) {
-                CZNodePartial* const candidateNode = candidateBuffer->entries[bestCandidateIndex].node;
-                if (candidateNode != 0 && candidateNode->auxFlags != 0) {
-                    outProbe->attachmentCandidateCount += 1;
-                    outProbe->attachmentNode = (CZNodePartial*)(candidateNode->callbackContext);
-                }
+            // Retail reads the best candidate's node without a null test.
+            if (outProbe->candidateBuffers[sampleIndex].candidateCount != 0
+                && outProbe->candidateBuffers[sampleIndex].entries[bestCandidateIndex].node->auxFlags != 0) {
+                outProbe->attachmentCandidateCount += 1;
+                outProbe->attachmentNode = (CZNodePartial*)(outProbe->candidateBuffers[sampleIndex]
+                        .entries[bestCandidateIndex]
+                        .node->callbackContext);
             }
         } else if ((g_PlayerEnvProbeSampleMaskTable[sampleIndex] & 0x0a) == 0) {
             outProbe->candidateScoreBySample[sampleIndex] -= 0.2f;
@@ -947,7 +948,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-source previously-byte-matched
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered
@@ -1117,8 +1118,8 @@ void __fastcall RebuildOrientationFromNormal(zUtil_SaveGameState* saveState)
 
     zVec3 yawRelativeNormal;
     zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
-    playerState->vehiclePitchRad = (float)(asin(yawRelativeNormal.z));
-    playerState->vehicleRollRad = (float)(asin(-yawRelativeNormal.x));
+    playerState->vehiclePitchRad = asin(yawRelativeNormal.z);
+    playerState->vehicleRollRad = asin(-yawRelativeNormal.x);
     zMath::MatBuildEulerRotation3x3(
         &playerState->motionBasis,
         playerState->vehiclePitchRad,

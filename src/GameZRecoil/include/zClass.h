@@ -1019,7 +1019,7 @@ int __fastcall
 BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
 int __fastcall
 BuildFrustumGridTilesFromParams(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
-int __fastcall RenderFrustumGridTiles(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
+void __fastcall RenderFrustumGridTiles(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
 void __fastcall RenderOverlayNodes(CZNodePartial* world);
 void __fastcall RenderWorld(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
 int __fastcall gwCameraSetVariantTagOverride(CZNodePartial* camera, zTag4Partial* variantTag);
@@ -1055,7 +1055,7 @@ namespace CZTypeList {
 CZTypeListLink* __cdecl AllocLink();
 void __fastcall FreeLink(CZTypeListLink* link);
 void __cdecl FreeAll();
-void __fastcall ProcessPendingRemovals(int bucket);
+int __fastcall ProcessPendingRemovals(int bucket);
 int __fastcall CountNodes(int bucket);
 void __fastcall PrintBucket(int bucket);
 CZTypeListLink* __fastcall GetBucketHead(int bucket);

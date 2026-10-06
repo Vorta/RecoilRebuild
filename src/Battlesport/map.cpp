@@ -762,9 +762,11 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
     if (isEnabled != 0) {
         blinkTimerSec -= 0.075000003f;
         if (blinkTimerSec <= 0.0) {
-            const unsigned int colorPair = (unsigned int)(packedColor565Pair);
+            unsigned int colorPair = (unsigned int)(packedColor565Pair);
             blinkTimerSec = 0.25f;
-            packedColor565Pair = (int)((colorPair >> 16) | (colorPair << 16));
+            const unsigned int highColor = colorPair >> 16;
+            colorPair <<= 16;
+            packedColor565Pair = (int)(colorPair | highColor);
         }
     }
 
@@ -783,8 +785,8 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
             continue;
         }
 
-        const int splitResult
-            = ((HudRectI*)(&tracker->innerRectExpanded))->ClipOrSplitSegment(&segmentStart, &segmentEnd);
+        HudRectI* const innerRect = (HudRectI*)(&tracker->innerRectExpanded);
+        const int splitResult = innerRect->ClipOrSplitSegment(&segmentStart, &segmentEnd);
         if (splitResult == 0) {
             continue;
         }
@@ -991,7 +993,7 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */

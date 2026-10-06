@@ -56,7 +56,7 @@ namespace zDi
      * Purpose: assign the variant tag to each display-instance entry that has
      * not already initialized its variant-tag state.
      */
-    void __fastcall SetVariantTagIfUnset(zDiPartial * self, int variantTag)
+    void __fastcall SetVariantTagIfUnset(zDiPartial * self, unsigned char variantTag)
     {
         if (self != 0) {
             zDiEntryPartial* entry = self->entries;

@@ -668,8 +668,8 @@ void __fastcall ApplyCameraState(int newState);
 void __fastcall SetAutoTurnTargetDirFromWorldPoint(zUtil_SaveGameState* saveState, const zVec3* worldPoint);
 float __fastcall SelectProbeSampleHeightFromCandidates(
     PlayerProbeSampleCandidateBuffer* candidateBuffer,
-    int* outBestCandidateIndex,
     float sampleHeight,
+    int* outBestCandidateIndex,
     float maxRiseWindow,
     int preferAttachmentSlot1,
     int* outSelectedImpactSlot,

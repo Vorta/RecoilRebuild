@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern const zVec3 g_Player_ConstZeroVec3;
 extern char g_PickupLogicalName_ERFPG_AMMO[];
 extern char g_PickupLogicalName_HEMORTAR_AMMO[];
 extern char g_PickupLogicalName_QMORTAR_AMMO[];
@@ -1607,13 +1608,14 @@ int __fastcall Net::IsOptEntryActiveInAnySlot(OptCatalogEntryDef* optEntry)
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-initandloadpuppyspawns
  * @recoil-artifact defines .text recoil:function:0x41de70: Pickup::InitAndLoadPuppySpawns (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: initialize weapon pickup metadata and load puppy pickup spawn records.
  */
 int __cdecl Pickup::InitAndLoadPuppySpawns()
 {
     PickupParsedZrdEntry parsedEntry;
+    zVec3 zeroVec;
 
     for (int index = 17; index <= 33; ++index) {
         PickupType& pickupType = g_PickupTypes[index];
@@ -1629,8 +1631,7 @@ int __cdecl Pickup::InitAndLoadPuppySpawns()
     CZNodePartial* pickupObj = CZClass::FindNextByTypePrefix(0, 6);
     while (pickupObj != 0) {
         if (strlen(pickupObj->name) > 5 && isdigit(pickupObj->name[2]) != 0) {
-            static const zVec3 kPuppyZeroVec = { 0.0f, 0.0f, 0.0f };
-            zVec3 zeroVec = kPuppyZeroVec;
+            zeroVec = g_Player_ConstZeroVec3;
             ((PickupNodeRuntimeFields*)(pickupObj->name))->pickupId = g_NextPickupId;
             if (AssignBvolGroupAndId(pickupObj) != 0) {
                 PickupSpawnDef* const spawn = CreateSpawnDefAndLink(pickupObj, &zeroVec, &zeroVec, 0, 0);
@@ -1862,7 +1863,7 @@ void __fastcall Pickup::RemoveOtherSpawnsWithSameOptEntry(OptCatalogEntryDef* op
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-setvariantfromterrain
  * @recoil-artifact defines .text recoil:function:0x41e330: Pickup::SetVariantFromTerrain (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match byte
  *
  * Purpose: choose the pickup variant tag from terrain below the spawn point.
  */
@@ -1885,31 +1886,29 @@ void __fastcall Pickup::SetVariantFromTerrain(CZNodePartial* pickupObj, zVec3* p
     float taggedHeight;
     Player::SelectProbeSampleHeightFromCandidates(
         &candidateBuffer,
-        &bestCandidateIndex,
         position->y,
+        &bestCandidateIndex,
         0.5f,
         1,
         &selectedImpactSlot,
         &taggedHeight
     );
 
-    int variantTag = 255;
     if (candidateBuffer.candidateCount != 0) {
-        zClassDiPickCandidateEntry* const candidate = &candidateBuffer.entries[bestCandidateIndex];
-        CZNodePartial* const worldChild = CZClass::gwNodeGetWorldChild(candidate->node);
+        CZNodePartial* const worldChild
+            = CZClass::gwNodeGetWorldChild(candidateBuffer.entries[bestCandidateIndex].node);
         if (worldChild != 0) {
             CZClass::gwNodeSetNodeType(pickupObj, worldChild->nodeType);
             zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), worldChild->nodeType);
-            return;
         } else {
-            variantTag = candidate->variantTag.tags[0];
-            CZClass::gwNodeSetNodeType(pickupObj, variantTag);
-            zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), variantTag);
+            const zTag4Partial variantTag = candidateBuffer.entries[bestCandidateIndex].variantTag;
+            CZClass::gwNodeSetNodeType(pickupObj, variantTag.tags[0]);
+            zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), variantTag.tags[0]);
         }
+    } else {
+        CZClass::gwNodeSetNodeType(pickupObj, 255);
+        zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), 255);
     }
-
-    CZClass::gwNodeSetNodeType(pickupObj, variantTag);
-    zDi::SetVariantTagIfUnset((zDiPartial*)(pickupObj->userDataOrDiRef), variantTag);
 }
 
 /**

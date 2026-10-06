@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "GameZRecoil/include/zclass.h"
+#include "GameZRecoil/include/zclip_alt.h"
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/include/zdi.h"
 #include "recoil/recoil_callconv.h"
@@ -303,10 +304,7 @@ struct zModel_GlobalState {
     int altClipSourceRectValid; /* +0x0054 0x576254 */
     zClipRectPartial clipRectAlt; /* +0x0058 0x576258 */
     unsigned char unknown_007c[0x10]; /* +0x007c 0x57627c unrecovered byte span */
-    float altSourceLeft; /* +0x008c 0x57628c */
-    float altSourceTop; /* +0x0090 0x576290 */
-    float altSourceRight; /* +0x0094 0x576294 */
-    float altSourceBottom; /* +0x0098 0x576298 */
+    zClipAltFloatRect altSourceRect; /* +0x008c 0x57628c */
     float altSourceWidth; /* +0x009c 0x57629c */
     float altSourceHeight; /* +0x00a0 0x5762a0 */
     float altRemapOffsetX; /* +0x00a4 0x5762a4 */
@@ -408,10 +406,11 @@ extern zModel_GlobalState g_zModel_GlobalStateStorage;
 #define gModel_SmallPolyRejectArea20x (g_zModel_GlobalStateStorage.smallPolyRejectArea20x)
 #define gAltClipSourceRectValid (g_zModel_GlobalStateStorage.altClipSourceRectValid)
 #define gClipRect_Alt (g_zModel_GlobalStateStorage.clipRectAlt)
-#define g_zClipAlt_SourceLeft (g_zModel_GlobalStateStorage.altSourceLeft)
-#define g_zClipAlt_SourceTop (g_zModel_GlobalStateStorage.altSourceTop)
-#define g_zClipAlt_SourceRight (g_zModel_GlobalStateStorage.altSourceRight)
-#define g_zClipAlt_SourceBottom (g_zModel_GlobalStateStorage.altSourceBottom)
+#define g_zClipAlt_SourceRect (g_zModel_GlobalStateStorage.altSourceRect)
+#define g_zClipAlt_SourceLeft (g_zModel_GlobalStateStorage.altSourceRect.left)
+#define g_zClipAlt_SourceTop (g_zModel_GlobalStateStorage.altSourceRect.top)
+#define g_zClipAlt_SourceRight (g_zModel_GlobalStateStorage.altSourceRect.right)
+#define g_zClipAlt_SourceBottom (g_zModel_GlobalStateStorage.altSourceRect.bottom)
 #define g_zClipAlt_SourceWidth (g_zModel_GlobalStateStorage.altSourceWidth)
 #define g_zClipAlt_SourceHeight (g_zModel_GlobalStateStorage.altSourceHeight)
 #define g_zClipAlt_RemapOffsetX (g_zModel_GlobalStateStorage.altRemapOffsetX)

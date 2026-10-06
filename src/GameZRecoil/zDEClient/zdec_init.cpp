@@ -23,6 +23,10 @@
 #include <yvals.h>
 #endif
 
+namespace zVideo {
+int __fastcall BindWorldNode(CZNodePartial* worldNode);
+}
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-g-zdeclient-quicksandenabled
  * @recoil-artifact defines .data recoil:data:0x539d10: g_zDEClient_QuickSandEnabled.
@@ -259,7 +263,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
 
     zGame::ReturnOnlyStub();
     SetCameraNode(worldNode);
-    zVideo::ReturnSuccessStub();
+    zVideo::BindWorldNode(0);
 
     g_zDEClient_ConfigReaderRoot = zReader::Load(g_zDEClient_ConfigArchiveName, 0, 0);
     srand((unsigned int)(time(0)));

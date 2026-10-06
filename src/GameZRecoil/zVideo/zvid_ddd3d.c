@@ -1950,7 +1950,7 @@ namespace zVideo_dd3d
      * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
      * Purpose: Queue one alpha-blended solid screen-space quad for the Direct3D batch flush.
      */
-    void __fastcall QueueSolidQuad(unsigned int packedColor16, zVidRect32* clipRect, double alpha)
+    void __fastcall QueueSolidQuad(unsigned int packedColor16, double alpha, zVidRect32* clipRect)
     {
         const int batchIndex = g_zVideo_QuadBatchCount;
         if ((unsigned int)(batchIndex) >= 0x10) {

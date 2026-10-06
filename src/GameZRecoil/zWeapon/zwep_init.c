@@ -21,6 +21,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct OptCatalogQueuedImpactRecord {
+    OptCatalogEntryDef* entry;
+    CZNodePartial* ownerNode;
+    zVec3 sourcePos;
+    OptCatalogRaycastHitEntry hit;
+    float damageAmount;
+    unsigned char unknown_40[4];
+};
+
+/**
+ * Deferred OptCatalog impact queue. Retail keeps the count and the 64 records
+ * in one object (0x77896c..0x779a70): HandleImpactFromRuntimeProbe re-reads
+ * the count after every record store, as VC5 does for stores into one aggregate.
+ */
+struct OptCatalogQueuedImpactQueue {
+    int count;
+    OptCatalogQueuedImpactRecord records[64];
+};
+
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogruntimeworld
@@ -134,11 +153,11 @@ int g_OptCatalog_FallbackImpactProbeEnabled = 0;
 int g_OptCatalog_CaptureHitSnapshotEnabled = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogqueuedimpactcount
- * @recoil-artifact defines .data recoil:data:0x77896c: g_OptCatalogQueuedImpactCount.
- * Purpose: counts deferred OptCatalog impact records drained by
- * ProcessRuntimeInstances.
+ * @recoil-artifact defines .data recoil:data:0x77896c: g_OptCatalogQueuedImpactQueue.
+ * Purpose: deferred OptCatalog impact queue (count at +0, 64 records at +4)
+ * drained by ProcessRuntimeInstances.
  */
-int g_OptCatalogQueuedImpactCount = 0;
+OptCatalogQueuedImpactQueue g_OptCatalogQueuedImpactQueue = { 0 };
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogloadedtreeroot
@@ -588,7 +607,7 @@ extern "C" int __cdecl zWepInit()
     g_OptCatalogPendingSpawnTargetCountPtr = 0;
     g_OptCatalogPendingSpawnTargetListPtr = 0;
     g_OptCatalogMaxCraterRadius = 30.0f;
-    g_OptCatalogQueuedImpactCount = 0;
+    g_OptCatalogQueuedImpactQueue.count = 0;
     g_OptCatalog_DamageContextKind = 0;
     g_OptCatalog_DamageContextHitEvent = 0;
     g_zWeapon_MaxTetherAltitude = 30.0f;
@@ -1230,7 +1249,7 @@ namespace OptCatalog
         g_OptCatalogPendingSpawnTargetListPtr = 0;
         g_OptCatalog_FallbackImpactProbeEnabled = 1;
         g_OptCatalog_CaptureHitSnapshotEnabled = 1;
-        g_OptCatalogQueuedImpactCount = 0;
+        g_OptCatalogQueuedImpactQueue.count = 0;
         g_OptCatalog_DamageFeedbackHitCount = 0;
         return 0;
     }

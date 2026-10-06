@@ -287,21 +287,23 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingremovals
      * @recoil-artifact defines .text recoil:function:0x44e700: CZTypeList::ProcessPendingRemovals.
-     *
+     * @recoil-match byte
      *
      * Purpose: unlink deferred-removal entries from one type-list bucket and
      * recycle their list links.
      */
-    void __fastcall ProcessPendingRemovals(int bucket)
+    int __fastcall ProcessPendingRemovals(int bucket)
     {
         if (g_CZClass_DeferredProcessingEnabled == 0) {
-            return;
+            return 0;
         }
 
-        CZTypeListLink* next = *g_CZTypeList_HeadSlotPtrs[bucket];
-        bool removed;
+        CZTypeListLink* head = *g_CZTypeList_HeadSlotPtrs[bucket];
+        CZTypeListLink* tail = *g_CZTypeList_TailSlotPtrs[bucket];
+        CZTypeListLink* next = head;
+        int removed;
         do {
-            removed = false;
+            removed = 0;
             while (next != 0 && next->pendingRemove == 0) {
                 next = next->next;
             }
@@ -309,16 +311,18 @@ namespace CZTypeList
             if (next != 0) {
                 CZTypeListLink* link = next;
                 next = link->next;
-                removed = true;
+                removed = 1;
 
                 if (bucket == 7 && (link->node->flags & 0x02) != 0) {
                     link->pendingRemove = 0;
                 } else {
-                    if (link == *g_CZTypeList_HeadSlotPtrs[bucket]) {
-                        *g_CZTypeList_HeadSlotPtrs[bucket] = link->next;
+                    if (link == head) {
+                        head = head->next;
+                        *g_CZTypeList_HeadSlotPtrs[bucket] = head;
                     }
-                    if (link == *g_CZTypeList_TailSlotPtrs[bucket]) {
-                        *g_CZTypeList_TailSlotPtrs[bucket] = link->prev;
+                    if (link == tail) {
+                        tail = tail->prev;
+                        *g_CZTypeList_TailSlotPtrs[bucket] = tail;
                     }
                     if (link->prev != 0) {
                         link->prev->next = link->next;
@@ -334,9 +338,57 @@ namespace CZTypeList
             }
         } while (removed);
 
-        if (bucket >= 0 && bucket < 16) {
-            ((CZTypeListBucket*)g_CZTypeList_HeadSlotPtrs[bucket])->pendingRemovalDirty = 0;
+        switch (bucket) {
+        case 6:
+            g_CZTypeList_Buckets[0].pendingRemovalDirty = 0;
+            break;
+        case 0:
+            g_CZTypeList_Buckets[1].pendingRemovalDirty = 0;
+            break;
+        case 1:
+            g_CZTypeList_Buckets[2].pendingRemovalDirty = 0;
+            break;
+        case 2:
+            g_CZTypeList_Buckets[3].pendingRemovalDirty = 0;
+            break;
+        case 3:
+            g_CZTypeList_Buckets[4].pendingRemovalDirty = 0;
+            break;
+        case 4:
+            g_CZTypeList_Buckets[5].pendingRemovalDirty = 0;
+            break;
+        case 5:
+            g_CZTypeList_Buckets[6].pendingRemovalDirty = 0;
+            break;
+        case 7:
+            g_CZTypeList_Buckets[7].pendingRemovalDirty = 0;
+            break;
+        case 8:
+            g_CZTypeList_Buckets[8].pendingRemovalDirty = 0;
+            break;
+        case 9:
+            g_CZTypeList_Buckets[9].pendingRemovalDirty = 0;
+            break;
+        case 10:
+            g_CZTypeList_Buckets[10].pendingRemovalDirty = 0;
+            break;
+        case 13:
+            g_CZTypeList_Buckets[11].pendingRemovalDirty = 0;
+            break;
+        case 14:
+            g_CZTypeList_Buckets[12].pendingRemovalDirty = 0;
+            break;
+        case 15:
+            g_CZTypeList_Buckets[13].pendingRemovalDirty = 0;
+            break;
+        case 11:
+            g_CZTypeList_Buckets[14].pendingRemovalDirty = 0;
+            break;
+        case 12:
+            g_CZTypeList_Buckets[15].pendingRemovalDirty = 0;
+            break;
         }
+        return 0;
     }
 }
 

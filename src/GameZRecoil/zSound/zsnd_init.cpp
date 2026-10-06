@@ -343,7 +343,7 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
     g_zSndCdFlags &= ~0x03;
     g_zSndCdTrackListCount = 0;
     g_zSnd_SearchPathList = 0;
-    g_zSndCdDeviceId &= 0xffff0000;
+    g_zSndCdDeviceId = 0;
     g_zSndCdAuxDeviceId = 0;
     g_zSndCdAuxVolumePrimary = 0;
     g_zSndCdAuxVolumeSecondary = 0;

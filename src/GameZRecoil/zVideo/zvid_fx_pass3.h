@@ -105,3 +105,20 @@ struct zVideoFxPass3Config : HudUiContainer {
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Element) == 0x38);
 RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Element, clipRectOrNull) == 0x34);
 #endif
+
+extern "C" {
+extern int g_zVid_NoiseByteTableSize;
+extern unsigned char* g_zVid_NoiseByteTable;
+extern unsigned short* g_zVideo_FxPass3_ScratchPixels16;
+extern unsigned short* g_zVideo_FxSurfacePixels16;
+extern int g_zVideo_FxSurfaceWidth;
+extern int g_zVideo_FxSurfaceHeight;
+extern int g_zVideo_FxSurfacePitchBytes;
+extern int g_zVideo_FxSurfacePitchPixels16;
+extern int g_zVideo_FxPass3_ScratchOffsetX;
+extern int g_zVideo_FxPass3_ScratchOffsetY;
+extern int g_zVideo_FxPass3_ClipMinX;
+extern int g_zVideo_FxPass3_ClipMinY;
+extern int g_zVideo_FxPass3_ClipMaxX;
+extern int g_zVideo_FxPass3_ClipMaxY;
+}

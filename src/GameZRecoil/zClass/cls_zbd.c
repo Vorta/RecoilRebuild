@@ -612,11 +612,11 @@ namespace CZZbd
      */
     int __fastcall WriteNodeTable(void* stream)
     {
-        int result = g_CZClass_NodeArraySize;
-        if (result == 0) {
-            return result;
+        if (g_CZClass_NodeArraySize == 0) {
+            return 0;
         }
 
+        int result = g_CZClass_NodeArraySize;
         const int byteCount = result * (int)(sizeof(CZNodeFreeListSlot));
         CZNodeFreeListSlot* nodeBuffer = (CZNodeFreeListSlot*)(malloc(byteCount));
         memcpy(nodeBuffer, g_CZClass_NodeArray, byteCount);

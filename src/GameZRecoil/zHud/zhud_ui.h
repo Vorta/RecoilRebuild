@@ -2972,7 +2972,11 @@ struct HudUiTextStack4 : HudUiContainer {
  * @recoil-artifact emits .text recoil:function:0x40fe90: VC5-generated implicit cleanup for the top-message stack.
  * Purpose: Record the compiler-generated destruction of the top-message rows and container base.
  */
-struct HudUiTopMessageStack : HudUiTextStack4 {
+struct HudUiTopMessageStack : HudUiContainer {
+    // Retail EH table 0x4d7910 unwinds the container, then lines[4] directly: no
+    // HudUiTextStack4 base-complete state, so the rows are this class's own member.
+    // The shared HudUiTextStack4 methods operate on the identical layout.
+    HudUiPanel lines[4];
     HudUiTopMessageStack();
 };
 
@@ -2981,7 +2985,9 @@ struct HudUiTopMessageStack : HudUiTextStack4 {
  * @recoil-artifact emits .text recoil:function:0x40fef0: VC5-generated implicit cleanup for the chat-message stack.
  * Purpose: Record the compiler-generated destruction of the chat-message rows and container base.
  */
-struct HudUiChatMessageStack : HudUiTextStack4 {
+struct HudUiChatMessageStack : HudUiContainer {
+    // Same layout as HudUiTopMessageStack (retail EH table 0x4d7940).
+    HudUiPanel lines[4];
     HudUiChatMessageStack();
 };
 

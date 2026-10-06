@@ -379,12 +379,12 @@ struct zEffectScreenColorFxEvent {
     float greenBase;
     float greenEnd;
     float greenSlope;
-    float alphaBase;
-    float alphaEnd;
-    float alphaSlope;
     float blueBase;
     float blueEnd;
     float blueSlope;
+    float alphaBase;
+    float alphaEnd;
+    float alphaSlope;
     float endTimeSec;
 };
 
@@ -713,8 +713,8 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectRunKeyframeEvent, endTimeSec) == 0x20);
 RECOIL_STATIC_ASSERT(sizeof(zEffectScreenColorFxEvent) == 0x40);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, redBase) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, greenBase) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, alphaBase) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, blueBase) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, blueBase) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, alphaBase) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenColorFxEvent, endTimeSec) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zEffectScreenOverlayFxEvent) == 0x70);
 RECOIL_STATIC_ASSERT(offsetof(zEffectScreenOverlayFxEvent, flags) == 0x0c);

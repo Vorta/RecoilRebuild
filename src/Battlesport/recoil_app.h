@@ -122,9 +122,9 @@ struct CRecoilAppFmvScript : zFMV_Script {
      * Purpose: initialize the embedded zFMV_Script member to its empty script
      * state before the owning RecoilApp state installs its final vptr.
      */
-    CRecoilAppFmvScript()
+    CRecoilAppFmvScript(const char* zrdPath = 0, const char* tagPrefix = 0, HWND hWnd = 0)
     {
-        Init(0, 0, 0);
+        Init(zrdPath, tagPrefix, hWnd);
     }
 
     /**
@@ -293,7 +293,6 @@ public:
     RecoilApp_MpExitDialogState m_mpExitDialogState;
 
     RecoilApp();
-    virtual ~RecoilApp();
     RECOIL_NO_GS static void __fastcall InitStdLogFiles(const char* exePath) throw();
     RECOIL_NO_GS static void __fastcall FatalErrorAndExit(int errorCode);
 

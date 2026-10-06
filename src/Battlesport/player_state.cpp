@@ -1076,7 +1076,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: normalize the steering direction projected onto the reference plane.
  */
@@ -1149,8 +1149,8 @@ int __fastcall SnapProbePointYToBestCandidate(zVec3* point)
     float taggedHeight;
     point->y = Player::SelectProbeSampleHeightFromCandidates(
         &candidateBuffer,
-        &bestCandidateIndex,
         point->y,
+        &bestCandidateIndex,
         2.0f,
         0,
         &selectedImpactSlot,

@@ -1256,7 +1256,7 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arraytransformdirection
      * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirection.
-     *
+     * @recoil-match source
      *
      * Purpose: transforms direction vectors in place by the current matrix
      * rotation when the matrix stack slot is non-identity.
@@ -1892,7 +1892,7 @@ namespace zMath
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- *
+ * @recoil-match source
  *
  * Purpose: recovers perspective-correct reciprocal-Z and UV-over-Z plane gradients for a triangle.
  */

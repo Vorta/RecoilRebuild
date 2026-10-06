@@ -90,8 +90,6 @@ extern float gRndr_PerspInvDepthStepY;
 extern float gRndr_PerspTexScaledVOverZStepX;
 extern float gRndr_PerspTexScaledVOverZStepY;
 extern float gRndr_PerspTexScaledVOverZBase;
-extern int g_zRndr_CircleCenterX;
-extern int g_zRndr_CircleCenterY;
 extern int g_zRndr_CircleDrawAuxArg;
 
 namespace zRndr_GlobalStringTable {
@@ -364,11 +362,19 @@ extern PointOpProc g_pfnPointOpCandidate;
 extern PointOpProc g_pfnPointOpActive;
 extern SpanRoutineProc g_pfnTexturedQueuedFinalize;
 extern SpanRoutineProc g_pfnTexturedQueuedFinalizeAlt;
-extern TransparentQueuedPolyDrawCmd g_transparentQueue[0x15e];
-extern OverwriteQueuedPolyDrawCmd g_overwriteQueue[0x15e];
-extern int g_transparentQueueSortIndices[0x15e];
-extern int g_transparentQueueCount;
-extern int g_overwriteQueueCount;
+typedef struct {
+    int transparentQueueCount;
+    TransparentQueuedPolyDrawCmd transparentQueue[0x15e];
+    int transparentQueueSortIndices[0x15e];
+    int overwriteQueueCount;
+    OverwriteQueuedPolyDrawCmd overwriteQueue[0x15e];
+} QueuedPolyBanks;
+extern QueuedPolyBanks g_queuedPolyBanks;
+#define g_transparentQueueCount g_queuedPolyBanks.transparentQueueCount
+#define g_transparentQueue g_queuedPolyBanks.transparentQueue
+#define g_transparentQueueSortIndices g_queuedPolyBanks.transparentQueueSortIndices
+#define g_overwriteQueueCount g_queuedPolyBanks.overwriteQueueCount
+#define g_overwriteQueue g_queuedPolyBanks.overwriteQueue
 extern int g_overlayBlendEnabled;
 extern int g_overlayBlendRectLeft;
 extern int g_overlayBlendRectTop;
@@ -376,12 +382,19 @@ extern int g_overlayBlendRectRight;
 extern int g_overlayBlendRectBottom;
 extern unsigned int g_overlayBlendPackedColor16;
 extern double g_overlayBlendAlpha;
-extern int g_lensFlareSampleQueueCount;
-extern int g_lensFlareVisibleSampleCount;
+struct LensFlareFrameBank {
+    int sampleQueueCount;
+    LensFlareSamplePartial sampleQueue[0x28a];
+    int visibleSampleCount;
+    zRndr_LensFlareVisibleSampleDef* visibleSampleDefs[0x40];
+};
+extern LensFlareFrameBank g_lensFlareBank;
+#define g_lensFlareSampleQueueCount g_lensFlareBank.sampleQueueCount
+#define g_lensFlareSampleQueue g_lensFlareBank.sampleQueue
+#define g_lensFlareVisibleSampleCount g_lensFlareBank.visibleSampleCount
+#define g_lensFlareVisibleSampleDefs g_lensFlareBank.visibleSampleDefs
 extern int g_lensFlareVisibilityActive;
 extern zImage_TexDirEntryPartial* g_lensFlareVisibleSampleStages[4];
-extern zRndr_LensFlareVisibleSampleDef* g_lensFlareVisibleSampleDefs[0x40];
-extern LensFlareSamplePartial g_lensFlareSampleQueue[0x28a];
 extern int g_textureMipSelectionEnabled;
 extern int g_textureMipReservedWriteOnly;
 extern int g_renderStateReadyWriteOnlyFlag;

@@ -356,7 +356,7 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int col
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduipanel-measuretextprefixrect
  * @recoil-artifact defines .text recoil:function:0x4bb1c0: HudUiPanel::MeasureTextPrefixRect.
- *
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiPanel::MeasureTextPrefixRect.
  */
@@ -376,15 +376,14 @@ int HudUiPanel::MeasureTextPrefixRect(int maxChars, RECT* outRect)
             }
 
             free(textCopy);
-            DeleteDC(hdc);
         } else {
             if (DrawTextA(hdc, "W", -1, outRect, DT_CALCRECT) != 0) {
                 result = 1;
                 outRect->right = outRect->left;
             }
-
-            DeleteDC(hdc);
         }
+
+        DeleteDC(hdc);
     }
 
     return result;

@@ -870,10 +870,8 @@ HudUiTopMessageStack::HudUiTopMessageStack()
         HudUiElement* const element = (HudUiElement*)(panel);
         AddChild(element);
         panel->SetFont(g_HudFontName_Arial, 0x0d, 0x258, 7, 0, 0, 2);
-        panel->shadowOffsetX = -1;
-        panel->shadowEnabled = 1;
-        panel->shadowOffsetY = -1;
-        panel->alignMode = 1;
+        panel->SetShadow(1, -1, -1);
+        panel->SetTextAlignment(1);
         element->SetPos(0x140, y);
         element->SetVisible(0);
     }

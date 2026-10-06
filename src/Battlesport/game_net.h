@@ -40,7 +40,7 @@ struct NetSessionBrowserDialog : CDialog {
     static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
     NetSessionBrowserDialog(CWnd* parentWnd);
-    virtual ~NetSessionBrowserDialog() { }
+    // Destructor is compiler-generated; retail teardown never resets this class vptr.
     virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* dataExchange);
@@ -88,7 +88,7 @@ struct NetSessionConfigDialog : CDialog {
     static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
     NetSessionConfigDialog(CWnd* parentWnd);
-    virtual ~NetSessionConfigDialog() { }
+    // Destructor is compiler-generated; retail teardown never resets this class vptr.
     virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* dataExchange);

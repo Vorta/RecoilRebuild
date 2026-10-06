@@ -165,7 +165,8 @@ struct zModel_PickFaceScenePayload {
 };
 
 struct zModel_PickFaceEntry {
-    unsigned int flagsAndVertexCount;
+    unsigned int vertexCount : 8;
+    unsigned int doubleSided : 1;
     unsigned int unknown_04;
     int* vertexIndices;
     unsigned int unknown_0c;
@@ -238,7 +239,7 @@ void __fastcall SetFlagBit0(zDiPartial* self, int enabled);
 void __fastcall SetClonedFlag(zDiPartial* self, int isCloned);
 zDiPartial* __fastcall CloneToInstance(zDiPartial* self, int cloneMaterials, int cloneAuxOnly);
 int __fastcall HasSpecialFlagsOrAuxMaterialData(zDiPartial* self);
-void __fastcall SetVariantTagIfUnset(zDiPartial* self, int variantTag);
+void __fastcall SetVariantTagIfUnset(zDiPartial* self, unsigned char variantTag);
 void __fastcall BuildAabb(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMax);
 void __fastcall BuildOriginSymmetricAabb(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMax);
 void __fastcall RebuildBounds(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMax);
@@ -583,7 +584,7 @@ RECOIL_STATIC_ASSERT(offsetof(CZDisplayInstanceRaycastFilterRuntime, unused_16c)
 RECOIL_STATIC_ASSERT(sizeof(CZDisplayInstanceRaycastFilterRuntime) == 0x170);
 RECOIL_STATIC_ASSERT(sizeof(zModel_PickFaceUvData) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceScenePayload, flags) == 0x00);
-RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, flagsAndVertexCount) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, unknown_04) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, vertexIndices) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, faceUvData) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zModel_PickFaceEntry, scenePayload) == 0x14);

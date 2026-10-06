@@ -594,10 +594,19 @@ namespace CZWorld
         *outGridRow = -1;
         *outGridCol = -1;
 
-        if (data->originX - data->partitionInclusionTolX > minX
-            || maxX >= data->worldMaxX + data->partitionInclusionTolX
-            || maxZ > data->originZ + data->partitionInclusionTolZ
-            || minZ <= data->worldMaxZ - data->partitionInclusionTolZ) {
+        if (data->originX - data->partitionInclusionTolX > minX) {
+            return 0;
+        }
+        float limit = data->worldMaxX + data->partitionInclusionTolX;
+        if (maxX >= limit) {
+            return 0;
+        }
+        limit = data->originZ + data->partitionInclusionTolZ;
+        if (maxZ > limit) {
+            return 0;
+        }
+        limit = data->worldMaxZ - data->partitionInclusionTolZ;
+        if (minZ <= limit) {
             return 0;
         }
 

@@ -154,20 +154,16 @@ namespace zVideo
         unsigned int blueMask
     )
     {
-        const int redMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
-        const int greenBlueBits = greenBits + blueBits;
+        g_zVideo_PixelPack.rBits = redBits;
+        g_zVideo_PixelPack.gBits = greenBits;
+        g_zVideo_PixelPack.bBits = blueBits;
         g_zVideo_PixelPack.rMask = redMask;
         g_zVideo_PixelPack.gMask = greenMask;
         g_zVideo_PixelPack.bMask = blueMask;
-        const int packedBase = redBits + greenBlueBits - 8;
-        const int sumMinus8 = greenBlueBits - 8;
-        g_zVideo_PixelPack.rBits = redBits;
-        g_zVideo_PixelPack.sumMinus8 = sumMinus8;
-        g_zVideo_PixelPack.packedBase = packedBase;
-        g_zVideo_PixelPack.gBits = greenBits;
+        g_zVideo_PixelPack.packedBase = redBits + greenBits + blueBits - 8;
+        g_zVideo_PixelPack.sumMinus8 = greenBits + blueBits - 8;
         g_zVideo_PixelPack.bShiftTo8 = 8 - blueBits;
-        g_zVideo_PixelPack.bBits = blueBits;
-        g_zVideo_PixelPack.rMaskShifted = redMaskShifted;
+        g_zVideo_PixelPack.rMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
         g_zVideo_PixelPack.gMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
         g_zVideo_PixelPack.bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
     }
@@ -175,6 +171,10 @@ namespace zVideo
 } // namespace zVideo
 
 /**
+ * @recoil-anchor recoil:anchor:zvid.pack-color-00rrggbb
+ * @recoil-artifact defines .text recoil:function:0x4a6ca0: zVidPackColor00RRGGBB.
+ * @recoil-match source
+ *
  * Purpose: provide the recovered zVidPackColor00RRGGBB behavior.
  */
 unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
@@ -187,6 +187,10 @@ unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zvid.pack-color-rgb
+ * @recoil-artifact defines .text recoil:function:0x4a6cf0: zVidPackColorRGB.
+ * @recoil-match source
+ *
  * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
  * BN passes red and green as low-byte fastcall registers and consumes the low
  * byte of the stack blue argument.
@@ -200,6 +204,10 @@ unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char gree
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zvid.pack-color-rgb-floats
+ * @recoil-artifact defines .text recoil:function:0x4a6d40: zVidPackColorRgbFloats.
+ * @recoil-match source
+ *
  * Purpose: round RGB float channels and pack them through the active 16-bit pixel format.
  */
 unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color)
@@ -413,16 +421,10 @@ namespace zVideo_buff
         unsigned char* dstBytes
             = (unsigned char*)(image->pixels) + (originalWidth * dstOffsetY + dstOffsetX) * sizeof(unsigned short);
         unsigned char* srcBytes = surfacePixels + (pitchWords * rect->top + rect->left) * sizeof(unsigned short);
-        const int rowBytes = clippedWidth * (int)(sizeof(unsigned short));
-        const int dstStrideBytes = originalWidth * (int)(sizeof(unsigned short));
-        const int srcStrideBytes = pitchWords * (int)(sizeof(unsigned short));
-
-        {
-            for (int row = clippedHeight; row > 0; --row) {
-                memcpy(dstBytes, srcBytes, (size_t)(rowBytes));
-                dstBytes += dstStrideBytes;
-                srcBytes += srcStrideBytes;
-            }
+        for (int row = 0; row < clippedHeight; ++row) {
+            memcpy(dstBytes, srcBytes, clippedWidth * sizeof(unsigned short));
+            dstBytes += originalWidth * sizeof(unsigned short);
+            srcBytes += pitchWords * sizeof(unsigned short);
         }
 
         return image;

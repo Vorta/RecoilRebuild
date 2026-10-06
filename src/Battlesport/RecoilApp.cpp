@@ -230,11 +230,7 @@ const AFX_MSGMAP* RecoilApp::GetMessageMap() const
  * Retail CRT slot 0x4da080 references the compiler-generated coordinator.
  */
 RecoilApp g_RecoilApp;
-
-/**
- * Purpose: destroy embedded app states before the MFC/OLE module base.
- */
-RecoilApp::~RecoilApp() { }
+// ~RecoilApp is compiler-generated: retail's destructor never resets the RecoilApp vptr.
 
 /**
  * Purpose: Initializes application state after constructing the MFC module base.
@@ -1273,8 +1269,7 @@ void CRecoilAppPlayState::OnDeactivate()
         snapshot->StopAllIfPlaying();
     }
 
-    zFMV_Script fmvScript;
-    fmvScript.Init(g_zFMV_ScriptFileName, g_RecoilApp_MissionOverFmvTag, 0);
+    CRecoilAppFmvScript fmvScript(g_zFMV_ScriptFileName, g_RecoilApp_MissionOverFmvTag, 0);
     fmvScript.RunBlocking(1);
 
     if (g_RecoilApp.m_missionShutdownMode == RECOILAPP_MISSION_SHUTDOWN_ON_EXIT) {
@@ -1282,7 +1277,6 @@ void CRecoilAppPlayState::OnDeactivate()
     }
 
     zRdrUnmount(0);
-    fmvScript.Cleanup();
 }
 
 /**

@@ -293,7 +293,7 @@ void zFMV_Script::Reset(int destroyActions)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-loadactionsfromzrd
  * @recoil-artifact defines .text recoil:function:0x4626b0: zFMV_Script::LoadActionsFromZrd.
- * @recoil-source previously-byte-matched
+ * @recoil-match source
  *
  * Purpose: load FMV path metadata and construct actions from a named zReader sequence.
  */

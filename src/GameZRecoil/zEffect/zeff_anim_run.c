@@ -1893,7 +1893,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatekeyframesample
      * @recoil-artifact defines .text recoil:function:0x45ae90: zEffect_Anim::AnimateKeyframeSample.
-     * @recoil-source previously-byte-matched
+     * @recoil-match source
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply position, rotation, and scale channels for one keyframe
@@ -3133,7 +3133,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
@@ -3215,25 +3215,25 @@ namespace zEffect
         float timeSlice;
         float colorTime;
         if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
+            colorTime = event->endTimeSec;
             timeSlice
                 = g_zEffectAnim_State.frameDeltaRemainingSec - (sequenceRuntime->eventElapsedSec - event->endTimeSec);
-            colorTime = event->endTimeSec;
         } else {
-            colorTime = sequenceRuntime->eventElapsedSec;
             timeSlice = g_zEffectAnim_State.frameDeltaRemainingSec;
+            colorTime = sequenceRuntime->eventElapsedSec;
         }
 
         float red = event->redSlope * colorTime + event->redBase;
         float green = event->greenSlope * colorTime + event->greenBase;
-        float alpha = event->alphaSlope * colorTime + event->alphaBase;
         float blue = event->blueSlope * colorTime + event->blueBase;
+        float alpha = event->alphaSlope * colorTime + event->alphaBase;
         g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
 
         if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
             red = event->redEnd;
             green = event->greenEnd;
-            alpha = event->alphaEnd;
             blue = event->blueEnd;
+            alpha = event->alphaEnd;
             result = 2;
         }
 
@@ -3249,23 +3249,23 @@ namespace zEffect
         if (green > 1.0f) {
             green = 1.0f;
         }
-        if (alpha < 0.0f) {
-            alpha = 0.0f;
-        }
-        if (alpha > 1.0f) {
-            alpha = 1.0f;
-        }
         if (blue < 0.0f) {
             blue = 0.0f;
         }
         if (blue > 1.0f) {
             blue = 1.0f;
         }
+        if (alpha < 0.0f) {
+            alpha = 0.0f;
+        }
+        if (alpha > 1.0f) {
+            alpha = 1.0f;
+        }
 
-        const unsigned int packedColor = zVidPackColorRGB(
-            (unsigned char)((int)(red * 255.0f + 0.5f)),
-            (unsigned char)((int)(green * 255.0f + 0.5f)),
-            (unsigned char)((int)(blue * 255.0f + 0.5f))
+        const unsigned short packedColor = zVidPackColorRGB(
+            (unsigned char)((int)(red * 255.0f + 0.5)),
+            (unsigned char)((int)(green * 255.0f + 0.5)),
+            (unsigned char)((int)(blue * 255.0f + 0.5))
         );
         zVideo::FxPass3SetPrimaryElementParamsLocal(packedColor, (double)(alpha));
         return result;

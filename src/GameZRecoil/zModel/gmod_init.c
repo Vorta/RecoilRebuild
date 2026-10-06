@@ -543,20 +543,17 @@ namespace zClipAlt
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-setsourcerect
      * @recoil-artifact defines .text recoil:function:0x476120: zClipAlt::SetSourceRect.
-     *
+     * @recoil-match byte
      *
      * Purpose: cache the source rectangle extents used to remap alternate clipped
      * points into the active target rectangle.
      */
     void __fastcall SetSourceRect(const zClipAltFloatRect* rect)
     {
-        g_zClipAlt_SourceLeft = rect->left;
-        g_zClipAlt_SourceTop = rect->top;
-        g_zClipAlt_SourceRight = rect->right;
-        g_zClipAlt_SourceBottom = rect->bottom;
+        g_zClipAlt_SourceRect = *rect;
         g_zClipAlt_SourceWidth = rect->right - rect->left;
-        gAltClipSourceRectValid = 1;
         g_zClipAlt_SourceHeight = rect->bottom - rect->top;
+        gAltClipSourceRectValid = 1;
     }
 } // namespace zClipAlt
 
@@ -742,16 +739,20 @@ RECOIL_STATIC_ASSERT(
     offsetof(zModel_GlobalState, unknown_007c) == 0x7c && sizeof(g_zModel_GlobalStateStorage.unknown_007c) == 0x10
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceLeft) == 0x8c && sizeof(g_zModel_GlobalStateStorage.altSourceLeft) == 0x4
+    offsetof(zModel_GlobalState, altSourceRect.left) == 0x8c
+    && sizeof(g_zModel_GlobalStateStorage.altSourceRect.left) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceTop) == 0x90 && sizeof(g_zModel_GlobalStateStorage.altSourceTop) == 0x4
+    offsetof(zModel_GlobalState, altSourceRect.top) == 0x90
+    && sizeof(g_zModel_GlobalStateStorage.altSourceRect.top) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceRight) == 0x94 && sizeof(g_zModel_GlobalStateStorage.altSourceRight) == 0x4
+    offsetof(zModel_GlobalState, altSourceRect.right) == 0x94
+    && sizeof(g_zModel_GlobalStateStorage.altSourceRect.right) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceBottom) == 0x98 && sizeof(g_zModel_GlobalStateStorage.altSourceBottom) == 0x4
+    offsetof(zModel_GlobalState, altSourceRect.bottom) == 0x98
+    && sizeof(g_zModel_GlobalStateStorage.altSourceRect.bottom) == 0x4
 );
 RECOIL_STATIC_ASSERT(
     offsetof(zModel_GlobalState, altSourceWidth) == 0x9c && sizeof(g_zModel_GlobalStateStorage.altSourceWidth) == 0x4

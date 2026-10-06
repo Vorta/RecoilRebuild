@@ -2995,7 +2995,7 @@ void HudUiFillBitmap::DestructorCore()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-draw
  * @recoil-artifact defines .text recoil:function:0x4b8520: HudUiFillBitmap::Draw.
- * @recoil-source previously-byte-matched
+ * @recoil-match source
  *
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
  */
@@ -4177,7 +4177,8 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
         clipRect.bottom = element->GetCenterY();
         element->SetBltSourceAndClipRect(capturedCompositeImage, &clipRect);
 
-        element->flags = (unsigned int)((unsigned char)(element->flags) & 0x10u) | 0x02u;
+        const unsigned int visibleFlag = (unsigned char)(element->flags);
+        element->flags = (unsigned char)((visibleFlag & ~0xefu) | 0x02u);
     }
     return 0;
 }

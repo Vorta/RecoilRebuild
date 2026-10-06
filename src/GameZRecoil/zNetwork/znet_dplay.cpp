@@ -1490,7 +1490,7 @@ int __fastcall PumpIncomingMessages(zNetworkDPlaySystemMessage* systemMessage)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-enumconnectionscallback-addserviceproviderinfo
  * @recoil-artifact defines .text recoil:function:0x48b3a0: zNetworkDPlay::EnumConnectionsCallbackAddServiceProviderInfo.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zNetwork\znet_dplay.cpp.
  * Purpose: copy an enumerated DirectPlay provider record into the provider list.

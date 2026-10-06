@@ -248,11 +248,11 @@ CZRecoilFrame::CZRecoilFrame()
     ));
     SetMenu(&m_mainMenu);
 
-    if (m_campaignsOnlyMode != 0) {
+    if (m_campaignsOnlyMode == 0) {
+        m_mainMenu.RemoveMenu(1, MF_BYPOSITION);
+    } else {
         m_mainMenu.GetSubMenu(1)->RemoveMenu(0x9c6b, MF_BYCOMMAND);
         m_mainMenu.GetSubMenu(1)->RemoveMenu(0x9c7b, MF_BYCOMMAND);
-    } else {
-        m_mainMenu.RemoveMenu(1, MF_BYPOSITION);
     }
 
     m_mainMenu.GetSubMenu(2)->RemoveMenu(kFullscreenMenuCommandId, MF_BYCOMMAND);
@@ -275,13 +275,17 @@ CZRecoilFrame::CZRecoilFrame()
     m_hwApiMenuCommandIds[2] = 0x9c75;
     m_hwApiMenuCommandIds[3] = 0x9c76;
 
-    CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, zVid::GetTexturePackLoadState() == 0 ? 0 : MF_CHECKED);
+    if (zVid::GetTexturePackLoadState() != 0) {
+        CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_CHECKED);
+    } else {
+        CheckMenuItem(m_mainMenu.m_hMenu, 0x9c7b, MF_UNCHECKED);
+    }
 
     g_HudSensorTracker.missionFlags = m_useArchiveBanks;
     zSnd::SetUseArchiveBanksFlag(m_useArchiveBanks);
     m_acceptedD3DDeviceCount = zVid::GetAcceptedHardwareRendererCount();
 
-    HKEY wolApiRegKey = 0;
+    HKEY wolApiRegKey;
     if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, g_CZRecoilFrame_WolApiRegKey, 0, KEY_READ, &wolApiRegKey) == ERROR_SUCCESS) {
         g_CZRecoilFrame_HasWolApi = 1;
         RegCloseKey(wolApiRegKey);
@@ -675,7 +679,8 @@ RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(int errorCode)
  */
 void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser()
 {
-    if (CoInitialize(0) >= 0) {
+    const HRESULT initResult = CoInitialize(0);
+    if (SUCCEEDED(initResult)) {
         NetSessionBrowserDialog browserDialog(0);
         NetSessionConfigDialog configDialog(0);
 
@@ -710,8 +715,9 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser()
 
                     GameNet::SetStatusBitsFromFlags(statusFields.statusFlags);
 
+                    // Retail converts the session time field as unsigned (fild qword).
                     g_HudSensorTracker.SetRuntimeTimerSecAndGoalValue(
-                        (float)(statusFields.valueOrTime) * kSecondsPerMinute,
+                        (float)((unsigned int)(statusFields.valueOrTime)) * kSecondsPerMinute,
                         statusFields.auxParam
                     );
 

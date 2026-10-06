@@ -473,8 +473,12 @@ zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsnd-gainscaletodirectsoundattenuation
  * @recoil-artifact defines .text recoil:function:0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsound.play.attenuation-fyl2x recoil:function:0x49f9a0
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsound.play.attenuation-fyl2x
  *
  *
+ * Raw assembly: four-instruction scaled-log2 block containing one FYL2X, at
+ * retail [0x49f9d2,0x49f9e0), including the binary32 parameter store.
  * Purpose: convert linear gain into DirectSound attenuation units.
  */
 int __stdcall zSnd::GainScaleToDirectSoundAttenuation(float gainScale)
@@ -487,8 +491,18 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(float gainScale)
         return -10000;
     }
 
-    const float attenuation = (log(gainScale) / log(2.0)) * g_zSnd_DirectSoundAttenScale;
-    return (int)(attenuation - g_zSnd_DirectSoundAttenRoundBias);
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    // Retail scales log2(gain) with one FYL2X and rounds the parameter home.
+    __asm {
+        fld g_zSnd_DirectSoundAttenScale
+        fld gainScale
+        fyl2x
+        fstp gainScale
+    }
+#else
+    gainScale = (float)(g_zSnd_DirectSoundAttenScale * (log(gainScale) / log(2.0)));
+#endif
+    return (int)(gainScale - g_zSnd_DirectSoundAttenRoundBias);
 }
 
 /**

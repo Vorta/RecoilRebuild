@@ -499,7 +499,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-collectpendingcontactsforsegments
  * @recoil-artifact defines .text recoil:function:0x423b10: Player::CollectPendingContactsForSegments.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::CollectPendingContactsForSegments from the recovered
@@ -528,14 +528,15 @@ int __fastcall CollectPendingContactsForSegments(
     g_Variant_CurrentTag = g_VariantTag_Current;
     CZClass::gwNodeSetRaycastable(playerState->rootNode, 1);
 
-    CZDisplayInstanceSegmentEndpoints* segment = segmentPairs;
-    for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex += 2, ++segment) {
+    // Retail walks the pairs as one flat endpoint array indexed by endpointIndex.
+    const zVec3* const endpoints = &segmentPairs->start;
+    for (int endpointIndex = 0; endpointIndex < endpointCount; endpointIndex += 2) {
         const int segmentIndex = endpointIndex >> 1;
         ClassifyPendingContactsForSegment(
             saveState,
             &hitBatches[segmentIndex],
-            &segment->start,
-            &segment->end,
+            &endpoints[endpointIndex],
+            &endpoints[endpointIndex + 1],
             segmentTags[segmentIndex]
         );
     }
@@ -897,10 +898,13 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
     }
 }
 } // namespace Player
+extern const zVec3 g_Player_ConstZeroVec3;
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-preparependingworldcollisionresponse
  * @recoil-artifact defines .text recoil:function:0x4248e0: Player::PreparePendingWorldCollisionResponse.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
  *
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
@@ -928,13 +932,9 @@ PreparePendingWorldCollisionResponse(zUtil_SaveGameState* saveState, PlayerPendi
     const float restoreYOffset = masterModalData->masterType == kPlayerMasterTypeSub ? -1.0f : 0.0f;
     playerState->worldPos.x = playerState->previousTransform.posX;
     playerState->worldPos.y = playerState->previousTransform.posY + restoreYOffset;
+    playerState->vehicleRotationAngles = playerState->cachedVehicleRotationAngles;
     playerState->worldPos.z = playerState->previousTransform.posZ;
-    playerState->vehiclePitchRad = playerState->cachedPitchRad;
-    playerState->restartYawRad = playerState->cachedYawRad;
-    playerState->vehicleRollRad = playerState->cachedRollRad;
-    playerState->angVelPitch = 0.0f;
-    playerState->angVelYaw = 0.0f;
-    playerState->angVelRoll = 0.0f;
+    playerState->angVel = g_Player_ConstZeroVec3;
 
     if (playerState->projectileSpawnVel.y > 0.0f) {
         playerState->projectileSpawnVel.y *= kPlayerWorldCollisionUpwardBounceDamping;
@@ -950,14 +950,8 @@ PreparePendingWorldCollisionResponse(zUtil_SaveGameState* saveState, PlayerPendi
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
 
-    const zVec3 projectileVel = playerState->projectileSpawnVel;
-    const zMat4x3& motionBasis = playerState->motionBasis;
-    playerState->localVel.x
-        = projectileVel.x * motionBasis.xx + projectileVel.y * motionBasis.xy + projectileVel.z * motionBasis.xz;
-    playerState->localVel.y
-        = projectileVel.x * motionBasis.yx + projectileVel.y * motionBasis.yy + projectileVel.z * motionBasis.yz;
-    playerState->localVel.z
-        = projectileVel.x * motionBasis.zx + projectileVel.y * motionBasis.zy + projectileVel.z * motionBasis.zz;
+    playerState->localVel = playerState->projectileSpawnVel;
+    ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->motionBasis, &playerState->localVel);
 }
 } // namespace Player
 namespace Player {
@@ -1097,6 +1091,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-processtransfercontactqueue
  * @recoil-artifact defines .text recoil:function:0x424d00: Player::ProcessTransferContactQueue.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  *
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
@@ -1107,37 +1102,40 @@ void __fastcall ProcessTransferContactQueue(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
-    const float localSpeedSq = playerState->localVel.x * playerState->localVel.x
-        + playerState->localVel.y * playerState->localVel.y + playerState->localVel.z * playerState->localVel.z;
-    const float transferDamage
-        = (localSpeedSq * kPlayerTransferDamageScale) / (masterModalData->maxSpeed * masterModalData->maxSpeed);
-
     PlayerPendingContact* contact = playerState->transferQueue.head;
+    float localSpeedSq;
+    ZMTH_VECTOR_DOT(localSpeedSq, &playerState->localVel, &playerState->localVel);
+    const float transferDamage
+        = localSpeedSq * kPlayerTransferDamageScale / (masterModalData->maxSpeed * masterModalData->maxSpeed);
+
     while (contact != 0) {
-        PlayerPendingContact* const next = contact->next;
         const float callbackResult = OptCatalog::CaptureHitSnapshotAndInvokeDamageTimerCallback(
             &contact->sweepStart,
             (OptCatalogHitEventPartial*)(void*)contact,
             transferDamage
         );
         if (callbackResult > 0.0f) {
+            PlayerPendingContact* const next = contact->next;
             PLAYER_REMOVE_EXISTING_PENDING_CONTACT(&playerState->transferQueue, contact);
-            PLAYER_APPEND_EXISTING_PENDING_CONTACT(&playerState->preferredCollisionQueue, contact);
+            if (contact != 0) {
+                PLAYER_APPEND_EXISTING_PENDING_CONTACT(&playerState->preferredCollisionQueue, contact);
+            }
+            contact = next;
         } else {
-            CZNodePartial* const hitNode = contact->hit.node;
-            RecordNodeFlagsForRestore(hitNode);
-            CZClass::gwNodeSetCellPickable(hitNode, 0);
-            CZClass::gwNodeSetRaycastable(hitNode, 0);
+            RecordNodeFlagsForRestore(contact->hit.node);
+            CZClass::gwNodeSetCellPickable(contact->hit.node, 0);
+            CZClass::gwNodeSetRaycastable(contact->hit.node, 0);
+            contact = contact->next;
         }
-        contact = next;
     }
 
-    playerState->localVel.x *= kPlayerTransferVelocityDamping;
-    playerState->localVel.y *= kPlayerTransferVelocityDamping;
-    playerState->localVel.z *= kPlayerTransferVelocityDamping;
-    playerState->projectileSpawnVel.x *= kPlayerTransferVelocityDamping;
-    playerState->projectileSpawnVel.y *= kPlayerTransferVelocityDamping;
-    playerState->projectileSpawnVel.z *= kPlayerTransferVelocityDamping;
+    // Retail multiplies each member by the pooled literal (fld member; fmul m32).
+    playerState->localVel.x *= 0.666700006f;
+    playerState->localVel.y *= 0.666700006f;
+    playerState->localVel.z *= 0.666700006f;
+    playerState->projectileSpawnVel.x *= 0.666700006f;
+    playerState->projectileSpawnVel.y *= 0.666700006f;
+    playerState->projectileSpawnVel.z *= 0.666700006f;
 }
 } // namespace Player
 namespace Player {
@@ -1331,6 +1329,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applypendingcollisionprobevelocity
  * @recoil-artifact defines .text recoil:function:0x425770: Player::ApplyPendingCollisionProbeVelocity.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
  *
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
@@ -1343,13 +1342,14 @@ void __fastcall ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState* saveStat
 
     if (playerState->collisionProbeResolved == 0) {
         playerState->worldPos.x = playerState->previousTransform.posX;
-        playerState->worldPos.y = playerState->previousTransform.posY;
         playerState->worldPos.z = playerState->previousTransform.posZ;
-        playerState->restartYawRad = playerState->cachedYawRad;
+        playerState->worldPos.y = playerState->previousTransform.posY;
+        float cachedYaw = playerState->cachedYawRad;
+        playerState->restartYawRad = cachedYaw;
         zMath::MatBuildEulerRotation3x3(
             &playerState->motionBasis,
             playerState->vehiclePitchRad,
-            playerState->cachedYawRad,
+            playerState->restartYawRad,
             playerState->vehicleRollRad
         );
         playerState->motionBasis.posX = playerState->worldPos.x;
@@ -1371,18 +1371,11 @@ void __fastcall ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState* saveStat
     playerState->projectileSpawnVel.y = surfaceNormal.y * 20.0f;
     playerState->projectileSpawnVel.z = surfaceNormal.z * 20.0f;
 
-    if (playerState->projectileSpawnVel.y > 0.0f) {
-        if (previousY > playerState->projectileSpawnVel.y) {
-            playerState->projectileSpawnVel.y = previousY;
-        }
-    } else if (previousY < playerState->projectileSpawnVel.y) {
-        playerState->projectileSpawnVel.y = previousY;
-    }
+    playerState->projectileSpawnVel.y = playerState->projectileSpawnVel.y <= 0.0f
+        ? __min(previousY, playerState->projectileSpawnVel.y)
+        : __max(previousY, playerState->projectileSpawnVel.y);
 
-    const zVec3 pushVel = playerState->projectileSpawnVel;
-    const zMat4x3& motionBasis = playerState->motionBasis;
-    playerState->localVel.x = pushVel.x * motionBasis.xx + pushVel.y * motionBasis.xy + pushVel.z * motionBasis.xz;
-    playerState->localVel.y = pushVel.x * motionBasis.yx + pushVel.y * motionBasis.yy + pushVel.z * motionBasis.yz;
-    playerState->localVel.z = pushVel.x * motionBasis.zx + pushVel.y * motionBasis.zy + pushVel.z * motionBasis.zz;
+    playerState->localVel = playerState->projectileSpawnVel;
+    ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->motionBasis, &playerState->localVel);
 }
 } // namespace Player

@@ -2,6 +2,7 @@
 #include "zgeo.h"
 
 #include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -1835,7 +1836,7 @@ void __fastcall Destroy(zGeometry_WeilerBufferPartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-getappendspace
  * @recoil-artifact defines .text recoil:function:0x467660: zGeometry_WeilerBuffer::GetAppendSpace
- * @recoil-source previously-byte-matched
+ * @recoil-match byte
  *
  * Purpose: Reserve contiguous append slots, growing backing storage when needed.
  */
@@ -2675,7 +2676,7 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-buildpointsidetablesforcontourpair
  * @recoil-artifact defines .text recoil:function:0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
- * @recoil-source previously-byte-matched
+ * @recoil-match source
  *
  * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
  */
@@ -2978,59 +2979,53 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
  */
 char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints)
 {
-    if (contourPointCount <= 0) {
-        return -1;
-    }
+    float x = contourPoints[contourPointCount - 1].x;
+    float y = contourPoints[contourPointCount - 1].y;
+    int xSide = x < point->x ? -1 : x > point->x ? 1 : 0;
+    int ySide = y < point->y ? -1 : y > point->y ? 1 : 0;
 
-    zVec3* previous = &contourPoints[contourPointCount - 1];
-    int previousXSide = previous->x < point->x ? -1 : previous->x > point->x ? 1 : 0;
-    int previousYSide = previous->y < point->y ? -1 : previous->y > point->y ? 1 : 0;
-
-    if (previousXSide == 0 && previousYSide == 0) {
+    int crossingParity = 0;
+    if (xSide == 0 && ySide == 0) {
         return 0;
     }
 
-    int crossingParity = 0;
+    while (contourPointCount--) {
+        const float previousX = x;
+        const float previousY = y;
+        const int previousXSide = xSide;
+        const int previousYSide = ySide;
+        x = contourPoints->x;
+        y = contourPoints->y;
+        xSide = x < point->x ? -1 : x > point->x ? 1 : 0;
+        ySide = y < point->y ? -1 : y > point->y ? 1 : 0;
+        ++contourPoints;
 
-    for (int i = 0; i < contourPointCount; ++i) {
-        zVec3* const current = &contourPoints[i];
-        const int currentXSide = current->x < point->x ? -1 : current->x > point->x ? 1 : 0;
-        const int currentYSide = current->y < point->y ? -1 : current->y > point->y ? 1 : 0;
-
-        if (currentXSide == 0 && currentYSide == 0) {
+        if (xSide == 0 && ySide == 0) {
             return 0;
         }
 
-        if (currentXSide != previousXSide) {
-            const int currentYNonNegative = currentYSide >= 0;
-            const int previousYNonNegative = previousYSide >= 0;
+        if (xSide != previousXSide) {
+            if ((ySide >= 0) != (previousYSide >= 0)) {
+                const float xIntersection = (point->y - y) / (previousY - y) * (previousX - x) + x;
+                const float intersectionSide = xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0;
 
-            if (currentYNonNegative != previousYNonNegative) {
-                const float xIntersection
-                    = (point->y - current->y) / (previous->y - current->y) * (previous->x - current->x) + current->x;
-                const int intersectionSide = xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0;
-
-                if (intersectionSide == 0) {
+                if (intersectionSide == 0.0f) {
                     return 0;
                 }
 
-                if (intersectionSide == 1) {
+                if (intersectionSide == 1.0f) {
                     ++crossingParity;
                 }
-            } else if (currentYSide == 0 && previousYSide == 0) {
+            } else if (ySide == 0 && previousYSide == 0) {
                 return 0;
             }
-        } else if ((currentYSide >= 0) != (previousYSide >= 0)) {
-            if (currentXSide == 1) {
+        } else if ((ySide >= 0) != (previousYSide >= 0)) {
+            if (xSide == 1) {
                 ++crossingParity;
-            } else if (currentXSide == 0) {
+            } else if (xSide == 0) {
                 return 0;
             }
         }
-
-        previous = current;
-        previousXSide = currentXSide;
-        previousYSide = currentYSide;
     }
 
     return (crossingParity & 1) != 0 ? 1 : -1;
@@ -3647,6 +3642,26 @@ void __fastcall SetCountAndAppendPtr(zGeometry_WeilerBufferPartial* self, int co
 
 } // namespace zGeometry_WeilerBuffer
 
+namespace zMath {
+/**
+ * Purpose: Inline-function spelling of the reviewed vector-cross island for
+ * this unit's consumers (same form as zgeo_hole.cpp and zmth_main.c).
+ * Retail inline-expansion evidence: the consumer captures both edge addresses
+ * and the normal destination before the 65-byte cross sequence, without a
+ * call; spelling and header ownership are inferred.
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x469b60.
+ */
+inline void Vec3Cross(const zVec3* left, const zVec3* right, zVec3* dest)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    ZMTH_VECTOR_CROSS_BODY(left, right, dest);
+#else
+    ZMTH_VECTOR_CROSS(left, right, dest);
+#endif
+}
+} // namespace zMath
+
 namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-restorepointtranslation
@@ -3684,6 +3699,8 @@ void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-restoreoutputzfrominputplane
  * @recoil-artifact defines .text recoil:function:0x469b60: zGeometry_Weiler::RestoreOutputZFromInputPlane
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
  *
  *
  * Purpose: Restore output point Z values from the input contour B plane.
@@ -3691,22 +3708,14 @@ void __fastcall RestorePointTranslation(zGeometry_WeilerStatePartial* self)
 void __fastcall RestoreOutputZFromInputPlane(zGeometry_WeilerStatePartial* self)
 {
     zVec3* const inputPoints = (zVec3*)(self->inputContourBBuffer.base);
-
-    const zVec3 edge01 = {
-        inputPoints[0].x - inputPoints[1].x,
-        inputPoints[0].y - inputPoints[1].y,
-        inputPoints[0].z - inputPoints[1].z,
-    };
-    const zVec3 edge12 = {
-        inputPoints[2].x - inputPoints[1].x,
-        inputPoints[2].y - inputPoints[1].y,
-        inputPoints[2].z - inputPoints[1].z,
-    };
-
+    zVec3 edge01;
+    zVec3 edge12;
     zVec3 planeNormal;
-    planeNormal.x = edge01.y * edge12.z - edge01.z * edge12.y;
-    planeNormal.y = edge01.z * edge12.x - edge01.x * edge12.z;
-    planeNormal.z = edge01.x * edge12.y - edge01.y * edge12.x;
+    float planeOffset;
+
+    zMath::Vec3Subtract(&inputPoints[0], &inputPoints[1], &edge01);
+    zMath::Vec3Subtract(&inputPoints[2], &inputPoints[1], &edge12);
+    zMath::Vec3Cross(&edge01, &edge12, &planeNormal);
 
     if (planeNormal.z == 0.0f) {
         return;
@@ -3715,11 +3724,10 @@ void __fastcall RestoreOutputZFromInputPlane(zGeometry_WeilerStatePartial* self)
     planeNormal.x /= planeNormal.z;
     planeNormal.y /= planeNormal.z;
 
-    const float planeOffset = -(planeNormal.x * inputPoints[0].x + planeNormal.y * inputPoints[0].y + inputPoints[0].z);
+    planeOffset = -(planeNormal.x * inputPoints[0].x + planeNormal.y * inputPoints[0].y + inputPoints[0].z);
 
-    zGeometry_WeilerClipOutputPartial* const outClip = self->outClip;
-    zVec3* point = outClip->pointList.points;
-    for (unsigned int i = 0; i < (unsigned int)(outClip->pointList.pointCount); ++i) {
+    zVec3* point = self->outClip->pointList.points;
+    for (unsigned int i = 0; i < (unsigned int)(self->outClip->pointList.pointCount); ++i) {
         point->z = -(planeNormal.x * point->x + planeNormal.y * point->y + planeOffset);
         ++point;
     }

@@ -22,6 +22,153 @@
 #include <stdlib.h>
 #include <string.h>
 
+extern "C" {
+/*
+ * 0x48da60 reads the two scratch offsets, four clip bounds, active FX-surface
+ * descriptor, and scratch pointer as one zVideo pass-3 scratch copy data set.
+ * 0x48daf0 writes the clip bounds for every pass and writes the scratch offsets
+ * only when it switches from the direct scatter path to the clipped helper path.
+ * This documents the local source shape only; the complete zVideo data owner is
+ * broader than this slice and remains a direct-review data-gate decision.
+ */
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsetx
+ * @recoil-artifact defines .data recoil:data:0x56b190: g_zVideo_FxPass3_ScratchOffsetX.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
+ * X bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
+ * and applies it to both the destination delta in ECX and the source X stack
+ * delta before clip tests.
+ * Purpose: cache the pass-3 clipped copy X offset.
+ */
+int g_zVideo_FxPass3_ScratchOffsetX;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchoffsety
+ * @recoil-artifact defines .data recoil:data:0x56b194: g_zVideo_FxPass3_ScratchOffsetY.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the center
+ * Y bias before clipped scatter calls; BN assembly for 0x48da60 loads it once
+ * and applies it to both the destination delta in EDX and the source Y stack
+ * delta before clip tests.
+ * Purpose: cache the pass-3 clipped copy Y offset.
+ */
+int g_zVideo_FxPass3_ScratchOffsetY;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminx
+ * @recoil-artifact defines .data recoil:data:0x56b1a0: g_zVideo_FxPass3_ClipMinX.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper tests source
+ * and destination X coordinates against it as an inclusive lower bound.
+ * Purpose: cache the inclusive minimum X clip edge for pass-3 scatter copies.
+ */
+int g_zVideo_FxPass3_ClipMinX;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipminy
+ * @recoil-artifact defines .data recoil:data:0x56b1a4: g_zVideo_FxPass3_ClipMinY.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper tests source
+ * and destination Y coordinates against it as an inclusive lower bound.
+ * Purpose: cache the inclusive minimum Y clip edge for pass-3 scatter copies.
+ */
+int g_zVideo_FxPass3_ClipMinY;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxx
+ * @recoil-artifact defines .data recoil:data:0x56b1a8: g_zVideo_FxPass3_ClipMaxX.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper treats this as
+ * the exclusive maximum X edge.
+ * Purpose: cache the exclusive maximum X clip edge for pass-3 scatter copies.
+ */
+int g_zVideo_FxPass3_ClipMaxX;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-clipmaxy
+ * @recoil-artifact defines .data recoil:data:0x56b1ac: g_zVideo_FxPass3_ClipMaxY.
+ * Data owner evidence: zVideo::FxPass3ApplyToCurrentSurface writes the
+ * current pass-3 clip rectangle and the clipped scatter helper treats this as
+ * the exclusive maximum Y edge.
+ * Purpose: cache the exclusive maximum Y clip edge for pass-3 scatter copies.
+ */
+int g_zVideo_FxPass3_ClipMaxY;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetablesize
+ * @recoil-artifact defines .data recoil:data:0x56b1b8: g_zVid_NoiseByteTableSize.
+ * Data owner evidence: zVid::NoiseInitBuffers writes the primary-surface
+ * width multiplied by 25 before filling the byte table; DrawNoiseRect uses it
+ * as the random row-window limit.
+ * Purpose: cache the allocated noise-byte table length.
+ */
+int g_zVid_NoiseByteTableSize;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-noisebytetable
+ * @recoil-artifact defines .data recoil:data:0x56b1bc: g_zVid_NoiseByteTable.
+ * Data owner evidence: zVid::NoiseInitBuffers allocates and fills this byte
+ * table, DrawNoiseRect samples it, and zVid::NoiseShutdownBuffers frees and
+ * clears it when non-null.
+ * Purpose: hold the software noise bytes used by the FX surface overlay path.
+ */
+unsigned char* g_zVid_NoiseByteTable;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxpass3-scratchpixels16
+ * @recoil-artifact defines .data recoil:data:0x56b1c0: g_zVideo_FxPass3_ScratchPixels16.
+ * Data owner evidence: zVid::NoiseInitBuffers allocates a width*height
+ * 16-bpp scratch buffer and stores it after clearing the active FX-surface
+ * descriptor; zVid::NoiseShutdownBuffers frees and clears it when non-null.
+ * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 writes through
+ * this pointer with tight g_zVideo_FxSurfaceWidth row stride, while
+ * zVideo::FxPass3ApplyToCurrentSurface at 0x48daf0 stages the radial ring
+ * warp here before copying back to the active FX surface.
+ * Purpose: stage pass-3 warp, blur, and related 16-bpp FX surface pixels.
+ */
+unsigned short* g_zVideo_FxPass3_ScratchPixels16;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepixels16
+ * @recoil-artifact defines .data recoil:data:0x56b1c4: g_zVideo_FxSurfacePixels16.
+ * Data owner evidence: zVideo::FxSetSurfaceState writes this active surface
+ * pointer, zVid::NoiseInitBuffers clears it during scratch initialization,
+ * and noise/blur/pass-3/FX-surface routines use it as the 16-bpp destination.
+ * zVideo::FxPass3CopySurfacePixelToScratchClipped at 0x48da60 reads source
+ * pixels through this pointer using g_zVideo_FxSurfacePitchPixels16.
+ * Purpose: point at the currently active 16-bpp FX surface pixel buffer.
+ */
+unsigned short* g_zVideo_FxSurfacePixels16;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacewidth
+ * @recoil-artifact defines .data recoil:data:0x56b1c8: g_zVideo_FxSurfaceWidth.
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the active width,
+ * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for bounds
+ * and tight scratch-buffer row stride. FxPass3 clipped copies use this for
+ * scratch row indexing, distinct from the provider pitch used for source rows.
+ * Purpose: cache the active FX surface width in pixels.
+ */
+int g_zVideo_FxSurfaceWidth;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfaceheight
+ * @recoil-artifact defines .data recoil:data:0x56b1cc: g_zVideo_FxSurfaceHeight.
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the active height,
+ * zVid::NoiseInitBuffers clears it, and FX/noise/blur paths use it for full
+ * surface clipping.
+ * Purpose: cache the active FX surface height in pixels.
+ */
+int g_zVideo_FxSurfaceHeight;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchbytes
+ * @recoil-artifact defines .data recoil:data:0x56b1d0: g_zVideo_FxSurfacePitchBytes.
+ * Data owner evidence: zVideo::FxSetSurfaceState writes the provider pitch in
+ * bytes and zVid::NoiseInitBuffers clears it with the active surface record.
+ * Purpose: retain the active FX surface row pitch in bytes.
+ */
+int g_zVideo_FxSurfacePitchBytes;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-fxsurfacepitchpixels16
+ * @recoil-artifact defines .data recoil:data:0x56b1d4: g_zVideo_FxSurfacePitchPixels16.
+ * Data owner evidence: zVideo::FxSetSurfaceState derives this from pitch
+ * bytes divided by two; FX/noise/blur paths use it for source/destination row
+ * stepping while scratch rows use g_zVideo_FxSurfaceWidth. BN assembly for
+ * 0x48da60 reads g_zVideo_FxSurfacePixels16 after multiplying the biased
+ * source Y by this value.
+ * Purpose: retain the active FX surface row pitch in 16-bpp pixels.
+ */
+int g_zVideo_FxSurfacePitchPixels16;
+}
+
 namespace
 {
     unsigned short zVideoBlendPixel565Alpha8(unsigned short dstPixel, unsigned short srcPixel, int alpha);
@@ -138,7 +285,7 @@ namespace zVid
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-noise-initbuffers
      * @recoil-artifact defines .text recoil:function:0x48d340: zVid::NoiseInitBuffers
-     *
+     * @recoil-match byte
      *
      * Data-gate evidence: BN writes gRndr_pfnOverlayBlendRow to
      * zRndr::OverlayBlendRow555Scalar after allocating the noise and FX scratch
@@ -147,9 +294,9 @@ namespace zVid
      */
     void __cdecl NoiseInitBuffers()
     {
-        int i;
         const int width = zVideo::GetPrimarySurfaceWidth();
         const int height = zVideo::GetPrimarySurfaceHeight();
+        int i;
 
         g_zVid_NoiseByteTableSize = width * 0x19;
         g_zVid_NoiseByteTable = (unsigned char*)(malloc((size_t)(g_zVid_NoiseByteTableSize)));
@@ -836,15 +983,15 @@ void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32*
         xMax = rectOrNull->right;
         rect.bottom = rectOrNull->bottom;
     } else {
-        rect.left = 0;
         rect.top = 0;
+        rect.left = 0;
         rect.bottom = g_zVideo_FxSurfaceHeight;
         xMax = g_zVideo_FxSurfaceWidth - 1;
     }
 
     if (g_zVideo_ActiveRendererPath != 0) {
         rect.right = xMax + 1;
-        zVideo_dd3d::QueueSolidQuad(overlayColor16, &rect, alpha);
+        zVideo_dd3d::QueueSolidQuad(overlayColor16, alpha, &rect);
         return;
     }
 
@@ -930,7 +1077,7 @@ namespace zVid
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawnoiserect
      * @recoil-artifact defines .text recoil:function:0x48d910: zVid::DrawNoiseRect.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
      * Purpose: overlay thresholded grayscale noise on the active FX surface rectangle.
@@ -942,37 +1089,34 @@ namespace zVid
         }
 
         const int threshold = (int)(intensity * 256.0);
-        int xMin;
-        int yMin;
-        int xMax;
-        int yMax;
+        zVidRect32 rect;
         if (rectOrNull != 0) {
-            xMin = rectOrNull->left;
-            yMin = rectOrNull->top;
-            xMax = rectOrNull->right;
-            yMax = rectOrNull->bottom;
+            rect = *rectOrNull;
         } else {
-            xMin = 0;
-            yMin = 0;
-            xMax = g_zVideo_FxSurfaceWidth - 1;
-            yMax = g_zVideo_FxSurfaceHeight - 1;
+            rect.left = 0;
+            rect.top = 0;
+            rect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            rect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
-        const int rowWidth = xMax - xMin;
+        const int xMin = rect.left;
+        const int yMin = rect.top;
+        const int yMax = rect.bottom;
+        const int rowWidth = rect.right - xMin;
         int rBits;
         int gBits;
         int bBits;
         zVideo::PixelPackGetRgbBits(&rBits, &gBits, &bBits);
 
-        int gShift = bBits;
         const int rShift = bBits + gBits;
+        int gShift = bBits;
         if (gBits == 6) {
             ++gShift;
         }
 
         for (int y = yMin; y < yMax; ++y) {
-            const int noiseRange = g_zVid_NoiseByteTableSize - rowWidth;
-            unsigned char* noiseBytes = g_zVid_NoiseByteTable + (rand() * noiseRange) / 0x7fff;
+            const int noiseOffset = (rand() * (g_zVid_NoiseByteTableSize - rowWidth)) / 0x7fff;
+            unsigned char* noiseBytes = g_zVid_NoiseByteTable + noiseOffset;
             unsigned short* dstPixels = g_zVideo_FxSurfacePixels16 + y * g_zVideo_FxSurfacePitchPixels16 + xMin;
 
             for (int x = 0; x < rowWidth; ++x) {
@@ -994,7 +1138,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-copysurfacepixeltoscratchclipped
      * @recoil-artifact defines .text recoil:function:0x48da60: zVideo::FxPass3CopySurfacePixelToScratchClipped.
-     *
+     * @recoil-match byte
      *
      * Source owner evidence: current BN assembly shows a zVideo namespace helper
      * with no direct callees, fastcall destination deltas in ECX/EDX, source deltas
@@ -1407,34 +1551,32 @@ namespace zVideo
      */
     void __fastcall buffBlurRegionVertical(zVidRect32 * rectOrNull, int)
     {
-        int top;
-        int left;
-        int right;
-        int bottom;
+        zVidRect32 rect;
         if (rectOrNull != 0) {
-            left = rectOrNull->left;
-            top = rectOrNull->top;
-            right = rectOrNull->right;
-            bottom = rectOrNull->bottom;
-            if (top < 1) {
-                top = 1;
+            rect = *rectOrNull;
+            if (rect.top < 1) {
+                rect.top = 1;
             }
-            if (left < 0) {
-                left = 0;
+            if (rect.left < 0) {
+                rect.left = 0;
             }
-            if (bottom > g_zVideo_FxSurfaceHeight - 1) {
-                bottom = g_zVideo_FxSurfaceHeight - 1;
+            if (rect.bottom > g_zVideo_FxSurfaceHeight - 1) {
+                rect.bottom = g_zVideo_FxSurfaceHeight - 1;
             }
-            if (right > g_zVideo_FxSurfaceWidth - 1) {
-                right = g_zVideo_FxSurfaceWidth - 1;
+            if (rect.right > g_zVideo_FxSurfaceWidth - 1) {
+                rect.right = g_zVideo_FxSurfaceWidth - 1;
             }
         } else {
-            left = 0;
-            top = 1;
-            right = g_zVideo_FxSurfaceWidth - 1;
-            bottom = g_zVideo_FxSurfaceHeight - 1;
+            rect.left = 0;
+            rect.top = 1;
+            rect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            rect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
+        const int left = rect.left;
+        const int top = rect.top;
+        const int bottom = rect.bottom;
+        const int right = rect.right;
         const int surfaceWidth = g_zVideo_FxSurfaceWidth;
         int columnCount = right - left + 1;
         unsigned int redMask;
@@ -1444,15 +1586,13 @@ namespace zVideo
         PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
         rbMask = redMask | blueMask;
 
-        unsigned short* srcRow = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short* scratchRow = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+        unsigned short* src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+        unsigned short* scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
         const int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
 
         if (top < bottom) {
             int rowCount = bottom - top;
             do {
-                unsigned short* src = srcRow;
-                unsigned short* scratch = scratchRow;
                 if (columnCount > 0) {
                     int count = columnCount;
                     do {
@@ -1467,19 +1607,17 @@ namespace zVideo
                     } while (count != 0);
                 }
 
-                srcRow = src + rowDelta;
-                scratchRow = scratch + rowDelta;
+                src += rowDelta;
+                scratch += rowDelta;
                 --rowCount;
             } while (rowCount != 0);
         }
 
-        srcRow = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
-        scratchRow = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+        src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+        scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
         if (top < bottom) {
             int rowCount = bottom - top;
             do {
-                unsigned short* src = srcRow;
-                unsigned short* scratch = scratchRow;
                 if (columnCount > 0) {
                     int count = columnCount;
                     do {
@@ -1490,8 +1628,8 @@ namespace zVideo
                     } while (count != 0);
                 }
 
-                srcRow = src + rowDelta;
-                scratchRow = scratch + rowDelta;
+                src += rowDelta;
+                scratch += rowDelta;
                 --rowCount;
             } while (rowCount != 0);
         }
@@ -1625,10 +1763,10 @@ namespace zVideo_FxSurface
             clipRect.right = rectOrNull->right;
             clipRect.bottom = rectOrNull->bottom;
         } else {
-            clipRect.left = 0;
             clipRect.top = 0;
-            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
+            clipRect.left = 0;
             clipRect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            clipRect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
         unsigned int redMask;
@@ -1637,36 +1775,27 @@ namespace zVideo_FxSurface
         zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
         if (g_zVideo_ActiveRendererPath != 0) {
-            zVideo_dd3d::QueueSolidQuad(blueMask, &clipRect, 0.3);
+            zVideo_dd3d::QueueSolidQuad(blueMask, 0.3, &clipRect);
             return;
         }
 
-        const unsigned int pairedGreenMask = greenMask | (greenMask << 16);
-        const unsigned int pairedRedMask = redMask | (redMask << 16);
-        const unsigned int pairedBlueMask = blueMask | (blueMask << 16);
-        const unsigned int halvedRedGreenMask
-            = ((pairedGreenMask >> 1) & pairedGreenMask) | ((pairedRedMask >> 1) & pairedRedMask);
-
+        greenMask |= greenMask << 16;
+        redMask |= redMask << 16;
+        blueMask |= blueMask << 16;
+        const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
         unsigned short* row
             = g_zVideo_FxSurfacePixels16 + clipRect.top * g_zVideo_FxSurfacePitchPixels16 + clipRect.left;
-        const int rowPairCount = (clipRect.right - clipRect.left - 1) >> 1;
-        int y = clipRect.top;
-        if (y >= clipRect.bottom) {
-            return;
-        }
-
-        do {
+        for (int y = clipRect.top; y < clipRect.bottom; ++y) {
             unsigned int* pixelPair = (unsigned int*)(row);
             int remainingPairs = rowPairCount;
             do {
-                const unsigned int value = *pixelPair;
-                *pixelPair = (((value >> 1) & halvedRedGreenMask) | (value & pairedBlueMask));
+                *pixelPair = ((*pixelPair >> 1) & (((greenMask >> 1) & greenMask) | ((redMask >> 1) & redMask)))
+                    | (*pixelPair & blueMask);
                 ++pixelPair;
             } while (remainingPairs-- != 0);
 
             row += g_zVideo_FxSurfacePitchPixels16;
-            ++y;
-        } while (y < clipRect.bottom);
+        }
     }
 } // namespace zVideo_FxSurface
 
@@ -1675,7 +1804,7 @@ namespace zVideo_FxSurface
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-applygreenmaskrect
      * @recoil-artifact defines .text recoil:function:0x48eb80: zVideo_FxSurface::ApplyGreenMaskRect.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: provide the recovered zVideo_FxSurface::ApplyGreenMaskRect behavior.
@@ -1701,7 +1830,7 @@ namespace zVideo_FxSurface
         zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
         if (g_zVideo_ActiveRendererPath != 0) {
-            zVideo_dd3d::QueueSolidQuad(greenMask, &clipRect, 0.3);
+            zVideo_dd3d::QueueSolidQuad(greenMask, 0.3, &clipRect);
             return;
         }
 

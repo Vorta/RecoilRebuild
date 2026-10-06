@@ -1455,8 +1455,7 @@ namespace zModelConst
 
         zVec3 edgeNormal;
         int edgeStart = 0;
-        for (int edgeEnd = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1; edgeEnd >= 0 && anyActive != 0;
-            --edgeEnd) {
+        for (int edgeEnd = (int)(faceEntry->vertexCount) - 1; edgeEnd >= 0 && anyActive != 0; --edgeEnd) {
             edgeNormal.x = polygonVertices[edgeStart].z - polygonVertices[edgeEnd].z;
             edgeNormal.z = polygonVertices[edgeEnd].x - polygonVertices[edgeStart].x;
 
@@ -1568,7 +1567,7 @@ namespace CZDisplayInstance
         ZMTH_MAT_TRANSFORM_POINT_BATCH(vertices, g_zModel_SharedVec3ScratchB, faceData->vertexCount);
 
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            int vertexCount = (int)(faceData->faces[faceIndex].vertexCount);
             const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
             zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
             const zVec3* transformed = g_zModel_SharedVec3ScratchB;
@@ -1651,14 +1650,13 @@ namespace CZDisplayInstance
         }
 
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            int vertexCount = (int)(faceData->faces[faceIndex].vertexCount);
             const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
             zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
             do {
                 *faceVertex++ = vertices[*vertexIndices++];
             } while (--vertexCount != 0);
 
-            const unsigned int flagsAndVertexCount = faceData->faces[faceIndex].flagsAndVertexCount;
             int hit;
             if ((faceData->faces[faceIndex].scenePayload->flags & kPickFaceTexturedDamageMaskFlag) != 0) {
                 hit = BuildPickCandidateForSegmentVsPolygonWithUv(
@@ -1668,8 +1666,8 @@ namespace CZDisplayInstance
                     g_CZClass_DiFaceVertexScratch4,
                     faceData->faces[faceIndex].faceUvData,
                     &outUv,
-                    (int)(flagsAndVertexCount & 0xffu),
-                    (int)((flagsAndVertexCount >> 8) & 1u)
+                    (int)(faceData->faces[faceIndex].vertexCount),
+                    (int)(faceData->faces[faceIndex].doubleSided)
                 );
             } else {
                 hit = BuildPickCandidateForSegmentVsPolygon(
@@ -1677,8 +1675,8 @@ namespace CZDisplayInstance
                     &segmentStartLocal,
                     &segmentEndLocal,
                     g_CZClass_DiFaceVertexScratch4,
-                    (int)(flagsAndVertexCount & 0xffu),
-                    (int)((flagsAndVertexCount >> 8) & 1u)
+                    (int)(faceData->faces[faceIndex].vertexCount),
+                    (int)(faceData->faces[faceIndex].doubleSided)
                 );
             }
 
@@ -1827,16 +1825,19 @@ namespace CZDisplayInstance
         int vertexCount
     )
     {
-        {
-            for (int currentIndex = 0; currentIndex < vertexCount; ++currentIndex) {
-                const int previousIndex = currentIndex == 0 ? vertexCount - 1 : currentIndex - 1;
-                const zVec3* previous = &polygonVertices[previousIndex];
-                const zVec3* current = &polygonVertices[currentIndex];
-                const float edge = (queryX - previous->x) * (current->z - previous->z)
-                    + (queryZ - previous->z) * (previous->x - current->x);
-                if (edge <= -0.0001) {
-                    return 0;
-                }
+        int index = vertexCount - 1;
+        const zVec3* previous = &polygonVertices[index];
+        if ((queryX - previous->x) * (polygonVertices[0].z - previous->z)
+                + (queryZ - previous->z) * (previous->x - polygonVertices[0].x)
+            <= -0.0001) {
+            return 0;
+        }
+
+        while (--index >= 0) {
+            if ((queryX - polygonVertices[index].x) * (polygonVertices[index + 1].z - polygonVertices[index].z)
+                    + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[index + 1].x)
+                <= -0.0001) {
+                return 0;
             }
         }
 
@@ -1852,10 +1853,12 @@ namespace CZDisplayInstance
             return 1;
         }
 
-        candidate->hitPos.y = polygonVertices[0].y
-            - ((queryX - polygonVertices[0].x) * candidate->surfaceNormal.x
-                  + (queryZ - polygonVertices[0].z) * candidate->surfaceNormal.z)
-                / candidate->surfaceNormal.y;
+        // Retail rounds through 1/normal.y slopes (as in AddFaceToPlayerProbeSampleBuckets), not one divide.
+        const float invNormalY = 1.0f / candidate->surfaceNormal.y;
+        const float xSlope = -candidate->surfaceNormal.x * invNormalY;
+        const float zSlope = -candidate->surfaceNormal.z * invNormalY;
+        candidate->hitPos.y = (queryZ - polygonVertices[0].z) * zSlope + (queryX - polygonVertices[0].x) * xSlope
+            + polygonVertices[0].y;
         return 1;
     }
 
@@ -1877,6 +1880,12 @@ namespace CZDisplayInstance
         int cullBackface
     )
     {
+        union {
+            float f;
+            unsigned int u;
+        } startBits, endBits;
+        zVec3 delta;
+
         zMathVec3TriangleNormal(
             &polygonVertices[0],
             &polygonVertices[1],
@@ -1884,76 +1893,190 @@ namespace CZDisplayInstance
             &candidate->surfaceNormal
         );
 
-        const zVec3 endDelta = { segmentEnd->x - polygonVertices[0].x,
-            segmentEnd->y - polygonVertices[0].y,
-            segmentEnd->z - polygonVertices[0].z };
-        const float endSide = endDelta.x * candidate->surfaceNormal.x + endDelta.y * candidate->surfaceNormal.y
-            + endDelta.z * candidate->surfaceNormal.z;
+        float endSide;
+        zMath::Vec3Subtract(segmentEnd, polygonVertices, &delta);
+        ZMTH_VECTOR_DOT(endSide, &delta, &candidate->surfaceNormal);
+        endBits.f = endSide;
         if (cullBackface == 0 && endSide >= 0.0) {
             return 0;
         }
 
-        const zVec3 startDelta = { segmentStart->x - polygonVertices[0].x,
-            segmentStart->y - polygonVertices[0].y,
-            segmentStart->z - polygonVertices[0].z };
-        const float startSide = startDelta.x * candidate->surfaceNormal.x + startDelta.y * candidate->surfaceNormal.y
-            + startDelta.z * candidate->surfaceNormal.z;
-        union {
-            float f;
-            unsigned int u;
-        } startBits, endBits;
+        float startSide;
+        zMath::Vec3Subtract(segmentStart, polygonVertices, &delta);
+        ZMTH_VECTOR_DOT(startSide, &delta, &candidate->surfaceNormal);
         startBits.f = startSide;
-        endBits.f = endSide;
         if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
             return 0;
         }
 
         const float t = startSide / (startSide - endSide);
-        const zVec3 segmentDelta
-            = { segmentEnd->x - segmentStart->x, segmentEnd->y - segmentStart->y, segmentEnd->z - segmentStart->z };
-        candidate->hitPos.x = segmentStart->x + t * segmentDelta.x;
-        candidate->hitPos.y = segmentStart->y + t * segmentDelta.y;
-        candidate->hitPos.z = segmentStart->z + t * segmentDelta.z;
+        zMath::Vec3Subtract(segmentEnd, segmentStart, &delta);
+        delta.x = t * delta.x;
+        delta.y = t * delta.y;
+        delta.z = t * delta.z;
+        zMath::Vec3Add(segmentStart, &delta, &candidate->hitPos);
 
-        int dominantAxis = 0;
-        float maxAbs = candidate->surfaceNormal.x < 0.0f ? -candidate->surfaceNormal.x : candidate->surfaceNormal.x;
-        const float absY = candidate->surfaceNormal.y < 0.0f ? -candidate->surfaceNormal.y : candidate->surfaceNormal.y;
+        int axis = 0;
+        float maxAbs = (float)fabs(candidate->surfaceNormal.x);
+        const float absY = (float)fabs(candidate->surfaceNormal.y);
         if (absY > maxAbs) {
             maxAbs = absY;
-            dominantAxis = 1;
+            axis = 1;
         }
-        const float absZ = candidate->surfaceNormal.z < 0.0f ? -candidate->surfaceNormal.z : candidate->surfaceNormal.z;
-        if (absZ > maxAbs) {
-            dominantAxis = 2;
+        if ((float)fabs(candidate->surfaceNormal.z) > maxAbs) {
+            axis = 2;
         }
-
-        const float dominantComponent = dominantAxis == 0
-            ? candidate->surfaceNormal.x
-            : (dominantAxis == 1 ? candidate->surfaceNormal.y : candidate->surfaceNormal.z);
-        int windingSign;
-        if (dominantAxis == 1) {
-            windingSign = dominantComponent < 0.0f ? 1 : -1;
-        } else {
-            windingSign = dominantComponent < 0.0f ? -1 : 1;
+        if (((float*)(&candidate->surfaceNormal))[axis] < 0.0f) {
+            axis += 3;
         }
 
-        for (int edgeIndex = vertexCount - 1; edgeIndex >= 0; --edgeIndex) {
-            const zVec3* edgeStart = &polygonVertices[edgeIndex];
-            const zVec3* edgeEnd = &polygonVertices[(edgeIndex + 1) % vertexCount];
-            double edgeCross;
-            if (dominantAxis == 0) {
-                edgeCross = (edgeEnd->y - edgeStart->y) * (candidate->hitPos.z - edgeStart->z)
-                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.y - edgeStart->y);
-            } else if (dominantAxis == 1) {
-                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.z - edgeStart->z)
-                    - (edgeEnd->z - edgeStart->z) * (candidate->hitPos.x - edgeStart->x);
-            } else {
-                edgeCross = (edgeEnd->x - edgeStart->x) * (candidate->hitPos.y - edgeStart->y)
-                    - (edgeEnd->y - edgeStart->y) * (candidate->hitPos.x - edgeStart->x);
-            }
-            if ((double)(windingSign)*edgeCross <= -0.0001) {
+        int index = vertexCount - 1;
+        int current;
+        switch (axis) {
+        case 1:
+            if ((polygonVertices[index].x - polygonVertices[0].x) * (candidate->hitPos.z - polygonVertices[index].z)
+                    + (polygonVertices[0].z - polygonVertices[index].z)
+                        * (candidate->hitPos.x - polygonVertices[index].x)
+                <= -0.0001) {
                 return 0;
             }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[index].x - polygonVertices[current].x)
+                            * (candidate->hitPos.z - polygonVertices[index].z)
+                        + (polygonVertices[current].z - polygonVertices[index].z)
+                            * (candidate->hitPos.x - polygonVertices[index].x)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
+        case 0:
+            if ((polygonVertices[index].z - polygonVertices[0].z) * (candidate->hitPos.y - polygonVertices[index].y)
+                    + (polygonVertices[0].y - polygonVertices[index].y)
+                        * (candidate->hitPos.z - polygonVertices[index].z)
+                <= -0.0001) {
+                return 0;
+            }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[index].z - polygonVertices[current].z)
+                            * (candidate->hitPos.y - polygonVertices[index].y)
+                        + (polygonVertices[current].y - polygonVertices[index].y)
+                            * (candidate->hitPos.z - polygonVertices[index].z)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
+        case 2:
+            if ((polygonVertices[index].y - polygonVertices[0].y) * (candidate->hitPos.x - polygonVertices[index].x)
+                    + (polygonVertices[0].x - polygonVertices[index].x)
+                        * (candidate->hitPos.y - polygonVertices[index].y)
+                <= -0.0001) {
+                return 0;
+            }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[index].y - polygonVertices[current].y)
+                            * (candidate->hitPos.x - polygonVertices[index].x)
+                        + (polygonVertices[current].x - polygonVertices[index].x)
+                            * (candidate->hitPos.y - polygonVertices[index].y)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
+        case 4:
+            if ((polygonVertices[0].x - polygonVertices[index].x) * (candidate->hitPos.z - polygonVertices[index].z)
+                    + (polygonVertices[index].z - polygonVertices[0].z)
+                        * (candidate->hitPos.x - polygonVertices[index].x)
+                <= -0.0001) {
+                return 0;
+            }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[current].x - polygonVertices[index].x)
+                            * (candidate->hitPos.z - polygonVertices[index].z)
+                        + (polygonVertices[index].z - polygonVertices[current].z)
+                            * (candidate->hitPos.x - polygonVertices[index].x)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
+        case 3:
+            if ((polygonVertices[0].z - polygonVertices[index].z) * (candidate->hitPos.y - polygonVertices[index].y)
+                    + (polygonVertices[index].y - polygonVertices[0].y)
+                        * (candidate->hitPos.z - polygonVertices[index].z)
+                <= -0.0001) {
+                return 0;
+            }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[current].z - polygonVertices[index].z)
+                            * (candidate->hitPos.y - polygonVertices[index].y)
+                        + (polygonVertices[index].y - polygonVertices[current].y)
+                            * (candidate->hitPos.z - polygonVertices[index].z)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
+        case 5:
+            if ((polygonVertices[0].y - polygonVertices[index].y) * (candidate->hitPos.x - polygonVertices[index].x)
+                    + (polygonVertices[index].x - polygonVertices[0].x)
+                        * (candidate->hitPos.y - polygonVertices[index].y)
+                <= -0.0001) {
+                return 0;
+            }
+
+            while (1) {
+                current = index;
+                --index;
+                if (index < 0) {
+                    break;
+                }
+
+                if ((polygonVertices[current].y - polygonVertices[index].y)
+                            * (candidate->hitPos.x - polygonVertices[index].x)
+                        + (polygonVertices[index].x - polygonVertices[current].x)
+                            * (candidate->hitPos.y - polygonVertices[index].y)
+                    <= -0.0001) {
+                    return 0;
+                }
+            }
+            break;
         }
 
         return 1;
@@ -1999,30 +2122,18 @@ namespace CZDisplayInstance
             &candidate->surfaceNormal
         );
 
-        scratch.x = segmentEnd->x - polygonVertices[0].x;
-
-        scratch.y = segmentEnd->y - polygonVertices[0].y;
-
-        scratch.z = segmentEnd->z - polygonVertices[0].z;
-        endSide = scratch.x * candidate->surfaceNormal.x + scratch.y * candidate->surfaceNormal.y
-            + scratch.z * candidate->surfaceNormal.z;
+        zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
+        ZMTH_VECTOR_DOT(endSide, &scratch, &candidate->surfaceNormal);
         if (cullBackface != 0 || endSide < 0.0) {
-            scratch.x = segmentStart->x - polygonVertices[0].x;
-            scratch.y = segmentStart->y - polygonVertices[0].y;
-            scratch.z = segmentStart->z - polygonVertices[0].z;
-            startSide = scratch.x * candidate->surfaceNormal.x + scratch.y * candidate->surfaceNormal.y
-                + scratch.z * candidate->surfaceNormal.z;
+            zMath::Vec3Subtract(segmentStart, polygonVertices, &scratch);
+            ZMTH_VECTOR_DOT(startSide, &scratch, &candidate->surfaceNormal);
             if ((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) {
                 t = startSide / (startSide - endSide);
-                scratch.x = segmentEnd->x - segmentStart->x;
-                scratch.y = segmentEnd->y - segmentStart->y;
-                scratch.z = segmentEnd->z - segmentStart->z;
+                zMath::Vec3Subtract(segmentEnd, segmentStart, &scratch);
                 scratch.x = t * scratch.x;
                 scratch.y = t * scratch.y;
                 scratch.z = t * scratch.z;
-                candidate->hitPos.x = segmentStart->x + scratch.x;
-                candidate->hitPos.y = segmentStart->y + scratch.y;
-                candidate->hitPos.z = segmentStart->z + scratch.z;
+                zMath::Vec3Add(segmentStart, &scratch, &candidate->hitPos);
 
                 // endSide is dead here; retail reuses its stack home for |normal.y|.
                 dominantAxis = 0;
@@ -2239,34 +2350,29 @@ namespace CZDisplayInstance
         for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex, ++segment) {
             segmentEnd = &segment->end;
             if (localActive[segmentIndex] != 0) {
-                scratch.x = segmentEnd->x - polygonVertices[0].x;
-                scratch.y = segmentEnd->y - polygonVertices[0].y;
-                scratch.z = segmentEnd->z - polygonVertices[0].z;
-                endSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
-                if ((faceEntry->flagsAndVertexCount & 0x100) == 0 && endSide >= 0.0) {
+                zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
+                ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
+                if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                     localActive[segmentIndex] = 0;
                 } else {
-                    scratch.x = segment->start.x - polygonVertices[0].x;
-                    scratch.y = segment->start.y - polygonVertices[0].y;
-                    scratch.z = segment->start.z - polygonVertices[0].z;
-                    startSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                    zMath::Vec3Subtract(&segment->start, polygonVertices, &scratch);
+                    ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
                     if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
                         localActive[segmentIndex] = 0;
                     } else {
                         anyActive = 1;
                         t = startSide / (startSide - endSide);
-                        scratch.x = segmentEnd->x - segment->start.x;
-                        scratch.y = segmentEnd->y - segment->start.y;
-                        scratch.z = segmentEnd->z - segment->start.z;
+                        zMath::Vec3Subtract(segmentEnd, &segment->start, &scratch);
                         scratch.x = t * scratch.x;
                         scratch.y = t * scratch.y;
                         scratch.z = t * scratch.z;
-                        hitPos = &outCandidateBuffersBySegment[segmentIndex]
-                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
-                                      .hitPos;
-                        hitPos->x = segment->start.x + scratch.x;
-                        hitPos->y = segment->start.y + scratch.y;
-                        hitPos->z = segment->start.z + scratch.z;
+                        zMath::Vec3Add(
+                            &segment->start,
+                            &scratch,
+                            &outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .hitPos
+                        );
                     }
                 }
             }
@@ -2290,7 +2396,7 @@ namespace CZDisplayInstance
         }
 
         anyActive = 1;
-        edgeIndex = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1;
+        edgeIndex = (int)(faceEntry->vertexCount) - 1;
         switch (dominantAxis) {
         case 0:
             for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
@@ -2490,34 +2596,29 @@ namespace CZDisplayInstance
         for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex, ++segment) {
             segmentEnd = &segment->end;
             if (localActive[segmentIndex] != 0) {
-                scratch.x = segmentEnd->x - polygonVertices[0].x;
-                scratch.y = segmentEnd->y - polygonVertices[0].y;
-                scratch.z = segmentEnd->z - polygonVertices[0].z;
-                endSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
-                if ((faceEntry->flagsAndVertexCount & 0x100) == 0 && endSide >= 0.0) {
+                zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
+                ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
+                if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                     localActive[segmentIndex] = 0;
                 } else {
-                    scratch.x = segment->start.x - polygonVertices[0].x;
-                    scratch.y = segment->start.y - polygonVertices[0].y;
-                    scratch.z = segment->start.z - polygonVertices[0].z;
-                    startSide = scratch.x * normal.x + scratch.y * normal.y + scratch.z * normal.z;
+                    zMath::Vec3Subtract(&segment->start, polygonVertices, &scratch);
+                    ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
                     if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
                         localActive[segmentIndex] = 0;
                     } else {
                         anyActive = 1;
                         t = startSide / (startSide - endSide);
-                        scratch.x = segmentEnd->x - segment->start.x;
-                        scratch.y = segmentEnd->y - segment->start.y;
-                        scratch.z = segmentEnd->z - segment->start.z;
+                        zMath::Vec3Subtract(segmentEnd, &segment->start, &scratch);
                         scratch.x = t * scratch.x;
                         scratch.y = t * scratch.y;
                         scratch.z = t * scratch.z;
-                        hitPos = &outCandidateBuffersBySegment[segmentIndex]
-                                      .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
-                                      .hitPos;
-                        hitPos->x = segment->start.x + scratch.x;
-                        hitPos->y = segment->start.y + scratch.y;
-                        hitPos->z = segment->start.z + scratch.z;
+                        zMath::Vec3Add(
+                            &segment->start,
+                            &scratch,
+                            &outCandidateBuffersBySegment[segmentIndex]
+                                .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
+                                .hitPos
+                        );
                     }
                 }
             }
@@ -2538,7 +2639,7 @@ namespace CZDisplayInstance
             }
 
             anyActive = 1;
-            edgeIndex = (int)(faceEntry->flagsAndVertexCount & 0xffu) - 1;
+            edgeIndex = (int)(faceEntry->vertexCount) - 1;
             switch (dominantAxis) {
             case 0:
                 for (nextIndex = 0; edgeIndex >= 0 && anyActive; nextIndex = edgeIndex--) {
@@ -2907,7 +3008,7 @@ namespace CZDisplayInstance
 
         zVec2 scratchUv;
         for (int faceIndex = 0; faceIndex < faceData->faceCount; ++faceIndex) {
-            int vertexCount = (int)(faceData->faces[faceIndex].flagsAndVertexCount & 0xffu);
+            int vertexCount = (int)(faceData->faces[faceIndex].vertexCount);
             const int* vertexIndices = faceData->faces[faceIndex].vertexIndices;
             zVec3* faceVertex = g_CZClass_DiFaceVertexScratch4;
             const zVec3* transformed = g_zModel_SharedVec3ScratchB;
@@ -2944,7 +3045,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.filterregionsagainstpolygonwithdamagemaskuv
      * @recoil-artifact defines .text recoil:function:0x487540: CZDisplayInstance::FilterRegionsAgainstPolygonWithDamageMaskUv.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -2960,8 +3061,9 @@ namespace CZDisplayInstance
     )
     {
         zModel_PickFaceEntry faceEntry;
-        faceEntry.flagsAndVertexCount = (faceEntry.flagsAndVertexCount & ~0x1ffu) | 4u;
         faceEntry.scenePayload = 0;
+        faceEntry.doubleSided = 0;
+        faceEntry.vertexCount = 4;
 
         int result = 0;
         g_CZClass_DiFaceVertexScratch4[0] = bboxCorners->corners[0];

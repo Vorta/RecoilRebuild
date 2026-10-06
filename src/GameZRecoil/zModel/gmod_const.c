@@ -1155,37 +1155,46 @@ namespace zModel_Const
      */
     int __fastcall AddOrMergeVertex(zDiPartial * self, zVec3 * point)
     {
-        for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-            const zVec3* const existingPoint = &self->verts[vertexIndex];
+        int vertexIndex = -1;
+        zVec3* existingPoint = self->verts;
+        for (int i = 0; i < self->vertCount; ++existingPoint, ++i) {
             if (fabs(existingPoint->x - point->x) <= g_zModel_ConstVertexMergeEpsilon
                 && fabs(existingPoint->y - point->y) <= g_zModel_ConstVertexMergeEpsilon
                 && fabs(existingPoint->z - point->z) <= g_zModel_ConstVertexMergeEpsilon) {
-                return vertexIndex;
+                vertexIndex = i;
+                break;
             }
         }
 
-        if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
-            sprintf(
-                g_zError_DebugMsgBuffer,
-                "%s: Line %d: WARNING: Model vertex count = %d\n",
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-                1783,
-                self->vertCount
-            );
-            sprintf(
-                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-                "         Approaching max allowable: %d\n",
-                1024
-            );
-            zError::EmitDebugBuffer(1);
-            return -1;
+        if (vertexIndex == -1) {
+            vertexIndex = self->vertCount;
+            if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+                sprintf(
+                    g_zError_DebugMsgBuffer,
+                    g_zModel_VertexCountWarningFmt,
+                    g_zModel_SourceFile_GmodConstC,
+                    1783,
+                    self->vertCount
+                );
+                sprintf(
+                    g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                    g_zModel_CreateModel3dApproachingLimitFmt,
+                    1024
+                );
+                zError::EmitDebugBuffer(1);
+                return -1;
+            }
+
+            self->verts = (zVec3*)(realloc(self->verts, (self->vertCount + 1) * sizeof(zVec3)));
+            // Retail copies the appended vertex field by field through this pointer.
+            zVec3* const appended = &self->verts[self->vertCount];
+            appended->x = point->x;
+            appended->y = point->y;
+            appended->z = point->z;
+            ++self->vertCount;
         }
 
-        const int appendedVertexIndex = self->vertCount;
-        self->verts = (zVec3*)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-        self->verts[appendedVertexIndex] = *point;
-        self->vertCount = appendedVertexIndex + 1;
-        return appendedVertexIndex;
+        return vertexIndex;
     }
 
     /**
@@ -1202,43 +1211,51 @@ namespace zModel_Const
         blendNormalDelta.y = normal->y - point->y;
         blendNormalDelta.z = normal->z - point->z;
 
-        for (int vertexIndex = 0; vertexIndex < self->vertCount; ++vertexIndex) {
-            const zVec3* const existingPoint = &self->verts[vertexIndex];
-            const zVec3* const existingBlend = &self->blendVerts[vertexIndex];
+        int vertexIndex = -1;
+        zVec3* existingPoint = self->verts;
+        zVec3* existingBlend = self->blendVerts;
+        for (int i = 0; i < self->vertCount; ++existingPoint, ++existingBlend, ++i) {
             if (existingPoint->x == point->x && existingPoint->y == point->y && existingPoint->z == point->z
                 && existingBlend->x == blendNormalDelta.x && existingBlend->y == blendNormalDelta.y
                 && existingBlend->z == blendNormalDelta.z) {
-                return vertexIndex;
+                vertexIndex = i;
+                break;
             }
         }
 
-        const int appendedVertexIndex = self->vertCount;
-        self->verts = (zVec3*)(realloc(self->verts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-        self->verts[appendedVertexIndex] = *point;
+        if (vertexIndex == -1) {
+            vertexIndex = self->vertCount;
+            self->verts = (zVec3*)(realloc(self->verts, (self->vertCount + 1) * sizeof(zVec3)));
+            // Retail copies the appended vertex field by field through this pointer.
+            zVec3* const appendedVert = &self->verts[self->vertCount];
+            appendedVert->x = point->x;
+            appendedVert->y = point->y;
+            appendedVert->z = point->z;
 
-        self->blendVerts = (zVec3*)(realloc(self->blendVerts, (size_t)(appendedVertexIndex + 1) * sizeof(zVec3)));
-        self->blendVerts[appendedVertexIndex] = blendNormalDelta;
+            self->blendVerts = (zVec3*)(realloc(self->blendVerts, (self->vertCount + 1) * sizeof(zVec3)));
+            self->blendVerts[self->vertCount] = blendNormalDelta;
 
-        self->vertCount = appendedVertexIndex + 1;
-        self->blendVertCount = self->vertCount;
-        if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
-            sprintf(
-                g_zError_DebugMsgBuffer,
-                "%s: Line %d: WARNING: Model vertex count = %d\n",
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-                1896,
-                self->vertCount
-            );
-            sprintf(
-                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-                "         Approaching max allowable: %d\n",
-                1024
-            );
-            zError::EmitDebugBuffer(1);
-            return -1;
+            ++self->vertCount;
+            self->blendVertCount = self->vertCount;
+            if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+                sprintf(
+                    g_zError_DebugMsgBuffer,
+                    g_zModel_VertexCountWarningFmt,
+                    g_zModel_SourceFile_GmodConstC,
+                    1896,
+                    self->vertCount
+                );
+                sprintf(
+                    g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                    g_zModel_CreateModel3dApproachingLimitFmt,
+                    1024
+                );
+                zError::EmitDebugBuffer(1);
+                return -1;
+            }
         }
 
-        return appendedVertexIndex;
+        return vertexIndex;
     }
 
     /**
@@ -1250,37 +1267,45 @@ namespace zModel_Const
      */
     int __fastcall FindOrAppendNormalIndex(zDiPartial * self, zVec3 * normal)
     {
-        for (int normalIndex = 0; normalIndex < self->normalCount; ++normalIndex) {
-            const zVec3* const existingNormal = &self->normals[normalIndex];
+        int normalIndex = -1;
+        zVec3* existingNormal = self->normals;
+        for (int i = 0; i < self->normalCount; ++existingNormal, ++i) {
             if (fabs(existingNormal->x - normal->x) < g_zModel_NormalMergeEpsilon
                 && fabs(existingNormal->y - normal->y) < g_zModel_NormalMergeEpsilon
                 && fabs(existingNormal->z - normal->z) < g_zModel_NormalMergeEpsilon) {
-                return normalIndex;
+                normalIndex = i;
+                break;
             }
         }
 
-        const int appendedNormalIndex = self->normalCount;
-        self->normals = (zVec3*)(realloc(self->normals, (size_t)(appendedNormalIndex + 1) * sizeof(zVec3)));
-        self->normals[appendedNormalIndex] = *normal;
-        self->normalCount = appendedNormalIndex + 1;
-        if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
-            sprintf(
-                g_zError_DebugMsgBuffer,
-                "%s: Line %d: WARNING: Model normal count = %d\n",
-                "D:\\Proj\\GameZRecoil\\zModel\\gmod_const.c",
-                1972,
-                self->normalCount
-            );
-            sprintf(
-                g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
-                "         Approaching max allowable: %d\n",
-                1024
-            );
-            zError::EmitDebugBuffer(1);
-            return -1;
+        if (normalIndex == -1) {
+            normalIndex = self->normalCount;
+            self->normals = (zVec3*)(realloc(self->normals, (self->normalCount + 1) * sizeof(zVec3)));
+            // Retail copies the appended normal field by field through this pointer.
+            zVec3* const appended = &self->normals[self->normalCount];
+            appended->x = normal->x;
+            appended->y = normal->y;
+            appended->z = normal->z;
+            ++self->normalCount;
+            if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
+                sprintf(
+                    g_zError_DebugMsgBuffer,
+                    g_zModel_NormalCountWarningFmt,
+                    g_zModel_SourceFile_GmodConstC,
+                    1972,
+                    self->normalCount
+                );
+                sprintf(
+                    g_zError_DebugMsgBuffer + strlen(g_zError_DebugMsgBuffer),
+                    g_zModel_CreateModel3dApproachingLimitFmt,
+                    1024
+                );
+                zError::EmitDebugBuffer(1);
+                return -1;
+            }
         }
 
-        return appendedNormalIndex;
+        return normalIndex;
     }
 
     /**
@@ -1345,7 +1370,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
      * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
-     *
+     * @recoil-match source
      *
      * Purpose: compute and normalize the cross product from three polygon vertices.
      */
@@ -1361,14 +1386,16 @@ namespace zModel_Const
         edge2.x = vertex2->x - vertex1->x;
         edge0.x = vertex0->x - vertex1->x;
 
-        const float normalX = edge0.z * edge2.y - edge0.y * edge2.z;
-        const float normalY = edge0.x * edge2.z - edge0.z * edge2.x;
-        const float normalZ = edge0.y * edge2.x - edge0.x * edge2.y;
+        // Retail builds and scales the cross product in place in this local.
+        zVec3 normal;
+        normal.x = edge0.z * edge2.y - edge0.y * edge2.z;
+        normal.y = edge0.x * edge2.z - edge0.z * edge2.x;
+        normal.z = edge0.y * edge2.x - edge0.x * edge2.y;
 
         float length;
-        if (fabs(normalX) > g_zModel_ColinearTolerance || fabs(normalY) > g_zModel_ColinearTolerance
-            || fabs(normalZ) > g_zModel_ColinearTolerance) {
-            length = sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+        if (fabs(normal.x) > g_zModel_ColinearTolerance || fabs(normal.y) > g_zModel_ColinearTolerance
+            || fabs(normal.z) > g_zModel_ColinearTolerance) {
+            length = sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
         } else {
             length = 0.0f;
         }
@@ -1380,10 +1407,9 @@ namespace zModel_Const
             scale = 0.0f;
         }
 
-        zVec3 normal;
-        normal.x = normalX * scale;
-        normal.y = normalY * scale;
-        normal.z = normalZ * scale;
+        normal.x = normal.x * scale;
+        normal.y = normal.y * scale;
+        normal.z = normal.z * scale;
         *outNormal = normal;
         return outNormal;
     }
@@ -1391,7 +1417,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
      * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
-     *
+     * @recoil-match source
      *
      * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
      */
@@ -1401,13 +1427,14 @@ namespace zModel_Const
         ComputePolygonPlaneEquation(vertexCount, vertices, &plane);
 
         int coplanar = 1;
+        zVec3* vertex = vertices;
         for (int i = 0; i < vertexCount; ++i) {
-            const double distance
-                = vertices[i].x * plane.a + vertices[i].y * plane.b + vertices[i].z * plane.c + plane.d;
+            const double distance = vertex->x * plane.a + vertex->y * plane.b + vertex->z * plane.c + plane.d;
             if (fabs(distance) > g_zModel_CoplanarTolerance) {
                 coplanar = 0;
                 break;
             }
+            ++vertex;
         }
 
         return coplanar;
@@ -1570,7 +1597,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
@@ -2147,7 +2174,8 @@ namespace zDi
             extent.z = (float)fabs(outBoundsMinMax->min.z);
         }
 
-        float maxExtent = extent.x;
+        // Retail keeps maxExtent register-resident (fcomp st(1)), which the double widening reproduces.
+        double maxExtent = extent.x;
         if ((self->flags & 0x10) != 0) {
             if (extent.y > maxExtent) {
                 maxExtent = extent.y;
@@ -2462,7 +2490,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setobject3dcolormodeformaterials
      * @recoil-artifact defines .text recoil:function:0x484350: zDi::SetObject3DColorModeForMaterials
-     *
+     * @recoil-match byte
      *
      * Purpose: apply an object3D color mode to untextured materials.
      */
@@ -2470,17 +2498,16 @@ namespace zDi
     {
         zDiEntryPartial* entry = self->entries;
         for (int i = 0; i < self->entryCount; ++i, ++entry) {
-            zModel_MaterialPartial* material = entry->material;
-            if ((material->flags & 0x0100) != 0) {
+            if ((entry->material->flags & 0x0100) != 0) {
                 continue;
             }
 
-            material->colorRgb.red = (float)(colorMode);
-            material->colorRgb.green = 0.0f;
-            material->colorRgb.blue = 0.0f;
-            material->packedColor
-                = (unsigned short)((material->packedColor & 0x00ff) | (((unsigned int)(colorMode) & 0xff) << 8));
-            material->colorScalar = 1.0f;
+            entry->material->colorRgb.red = (float)(colorMode);
+            entry->material->colorRgb.green = 0.0f;
+            entry->material->colorRgb.blue = 0.0f;
+            // Retail stores only the high byte of packedColor (mov byte ptr [material+3]).
+            ((unsigned char*)(&entry->material->packedColor))[1] = (unsigned char)(colorMode);
+            entry->material->colorScalar = 1.0f;
         }
     }
 

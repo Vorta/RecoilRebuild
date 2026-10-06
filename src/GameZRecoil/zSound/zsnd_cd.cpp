@@ -26,7 +26,7 @@ struct zSndCdTrackState {
 extern "C" int g_zSndCdTrackListCount = 0;
 extern "C" int g_zSndCdLastPlayMode = 0;
 extern "C" int g_zSndCdFlags = 0;
-extern "C" int g_zSndCdDeviceId = 0;
+extern "C" unsigned short g_zSndCdDeviceId = 0;
 extern "C" int g_zSndCdAuxDeviceId = 0;
 extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
 extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
@@ -79,7 +79,7 @@ int __cdecl Shutdown();
  */
 RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) != 0) {
+    if (((g_zSndCdFlags >> 1) & 1) != 0) {
         return 1;
     }
 
@@ -90,12 +90,12 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x43);
     }
 
-    g_zSndCdDeviceId = (g_zSndCdDeviceId & 0xffff0000) | (unsigned short)(openParms.wDeviceID);
+    g_zSndCdDeviceId = (unsigned short)(openParms.wDeviceID);
 
     MCI_STATUS_PARMS statusParms = { 0 };
     statusParms.dwItem = 5;
     mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_STATUS,
         MCI_WAIT | MCI_STATUS_ITEM,
         (DWORD_PTR)(&statusParms)
@@ -112,7 +112,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     MCI_SET_PARMS setParms = { 0 };
     setParms.dwTimeFormat = MCI_FORMAT_TMSF;
     mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_SET,
         MCI_WAIT | MCI_SET_TIME_FORMAT,
         (DWORD_PTR)(&setParms)
@@ -124,7 +124,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     memset(&statusParms, 0, sizeof(statusParms));
     statusParms.dwItem = 3;
     mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_STATUS,
         MCI_WAIT | MCI_STATUS_ITEM,
         (DWORD_PTR)(&statusParms)
@@ -137,7 +137,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     statusParms.dwItem = 1;
     statusParms.dwTrack = 0;
     mciError = mciSendCommandA(
-        (MCIDEVICEID)(g_zSndCdDeviceId & 0xffff),
+        (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_STATUS,
         MCI_WAIT | MCI_STATUS_ITEM,
         (DWORD_PTR)(&statusParms)
@@ -174,20 +174,13 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     g_zSndCdFlags |= ZSND_CD_FLAG_READY;
 
     if (cdTracksNode != 0) {
-        zReader::Node* tracks = cdTracksNode->value.nodes;
         for (int i = 1; i < cdTracksNode->value.nodes[0].value.i32; ++i) {
-            zReader::Node* trackNode = &tracks[i];
-            if (trackNode->type != zReader::ZRDR_NODE_ARRAY) {
-                continue;
-            }
-
-            zReader::Node* trackConfig = trackNode->value.nodes;
+            zReader::Node* const trackConfig = cdTracksNode->value.nodes[i].value.nodes;
             zSndCdTrackEntry* entry = (zSndCdTrackEntry*)(::operator new(sizeof(zSndCdTrackEntry)));
             if (entry != 0) {
                 entry->trackNumber = trackConfig[2].value.i32;
                 entry->archiveName = _strdup(trackConfig[1].value.str);
             }
-
             g_zSndCdTrackList.push_back(entry);
         }
     }
@@ -223,25 +216,26 @@ int __cdecl Shutdown()
 {
     Stop();
 
-    if ((g_zSndCdDeviceId & 0xffff) != 0) {
+    if (g_zSndCdDeviceId != 0) {
         MCI_GENERIC_PARMS closeParms = { 0 };
-        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), MCI_CLOSE, MCI_WAIT, (DWORD_PTR)(&closeParms));
-        g_zSndCdDeviceId &= 0xffff0000;
+        mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId), MCI_CLOSE, MCI_WAIT, (DWORD_PTR)(&closeParms));
+        g_zSndCdDeviceId = 0;
     }
 
     g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
 
-    if (g_zSndCdTrackList.empty()) {
-        return 1;
-    }
-
+    const std::list<zSndCdTrackEntry*>::iterator end = g_zSndCdTrackList.end();
     std::list<zSndCdTrackEntry*>::iterator entryIt = g_zSndCdTrackList.begin();
-    while (entryIt != g_zSndCdTrackList.end()) {
-        zSndCdTrackEntry* entry = *entryIt;
-        free(entry->archiveName);
-        entry->archiveName = 0;
-        ::operator delete(entry);
-        ++entryIt;
+    while (entryIt != end) {
+        zSndCdTrackEntry* const entry = *entryIt;
+        if (entry != 0) {
+            if (entry->archiveName != 0) {
+                free(entry->archiveName);
+                entry->archiveName = 0;
+            }
+            delete entry;
+        }
+        *entryIt++ = 0;
     }
     g_zSndCdTrackList.clear();
 
@@ -300,8 +294,7 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
         playFlags = 0x0d;
     }
 
-    const DWORD mciError
-        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x806, playFlags, (DWORD_PTR)(&playParms));
+    const DWORD mciError = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId), 0x806, playFlags, (DWORD_PTR)(&playParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0xf1);
     }
@@ -320,7 +313,7 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
 void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
 {
     if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5
-        || lParam != (unsigned int)(g_zSndCdDeviceId & 0xffff) || wParam != 1) {
+        || lParam != (unsigned int)(g_zSndCdDeviceId) || wParam != 1) {
         return;
     }
 
@@ -341,8 +334,7 @@ RECOIL_NO_GS int __cdecl Stop()
     }
 
     MCI_GENERIC_PARMS stopParms;
-    const DWORD mciError
-        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x808, 0x02, (DWORD_PTR)(&stopParms));
+    const DWORD mciError = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId), 0x808, 0x02, (DWORD_PTR)(&stopParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x10e);
     }
@@ -368,8 +360,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
     MCI_SEEK_PARMS seekParms;
     seekParms.dwTo = (DWORD)(trackIndex & 0xff);
 
-    const DWORD mciError
-        = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId & 0xffff), 0x807, 0x0a, (DWORD_PTR)(&seekParms));
+    const DWORD mciError = mciSendCommandA((MCIDEVICEID)(g_zSndCdDeviceId), 0x807, 0x0a, (DWORD_PTR)(&seekParms));
     if (mciError != 0) {
         return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x16e);
     }
@@ -438,7 +429,7 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
- * @recoil-source previously-byte-matched
+ * @recoil-match source
  *
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */

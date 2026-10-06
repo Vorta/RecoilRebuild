@@ -947,6 +947,9 @@ WestwoodOnlineUpgradeDialog* WestwoodOnlineUpgradeDialog::Constructor(CWnd* pare
 #include <stdarg.h>
 #include <stdio.h>
 
+// Empty debug-text sink; retail passes each formatted buffer in ECX to the shared RET fold 0x4076f0.
+void WolDebugString(const char* /*text*/) { }
+
 RECOIL_STATIC_ASSERT(sizeof(CWnd) == 0x40);
 RECOIL_STATIC_ASSERT(sizeof(CDialog) == 0x60);
 
@@ -1909,7 +1912,6 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName()
     m_sessionNameEdit.GetWindowTextA(sessionNameText);
     sessionNameText.TrimLeft();
     sessionNameText.TrimRight();
-    CWnd* const serverAddressEdit = &m_serverAddressEdit;
     char messageBoxText[kWolQueryStatusMessageBoxTextBufferSize];
     char messageBoxTitle[kWolQueryStatusMessageBoxTitleBufferSize];
     if (sessionNameText.GetLength() == 0) {
@@ -1933,8 +1935,8 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName()
     request.m_queryVariant = 2;
     request.m_queryMaxPlayers = m_queryMaxPlayers;
     request.m_queryExtraParam = 0;
-    serverAddressEdit->GetWindowTextA(request.m_serverAddress, kWolQuerySessionsByNameServerTextMaxChars);
-    serverAddressEdit->SetWindowTextA(request.m_serverAddress);
+    m_serverAddressEdit.GetWindowTextA(request.m_serverAddress, kWolQuerySessionsByNameServerTextMaxChars);
+    m_serverAddressEdit.SetWindowTextA(request.m_serverAddress);
 
     if (g_WestwoodOnlineUpgradeCachedBrowseRecord.m_sessionName[0] != '\0') {
         IWestwoodOnlineUpgradeProviderApi* const api = (IWestwoodOnlineUpgradeProviderApi*)g_pWestwoodOnlineUpgradeApi;
@@ -1945,15 +1947,17 @@ void WestwoodOnlineUpgradeDialog::OnQuerySessionsByName()
     int result = api->SubmitQueryRequest(&request);
     if (result < 0) {
         strcpy(messageBoxTitle, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
-        unsigned int messageId = kWolQueryStatusErrorTitleMessageId;
-        if (result != kWolQueryDuplicateNameResult) {
-            if (result == kWolQuerySubmitFailedResult) {
-                messageId = kWolQuerySessionSubmitFailedMessageId;
-            }
-        } else {
-            messageId = kWolQuerySessionDuplicateMessageId;
+        switch (result) {
+        case kWolQueryDuplicateNameResult:
+            strcpy(messageBoxText, zLoc::GetMessageString(kWolQuerySessionDuplicateMessageId));
+            break;
+        case kWolQuerySubmitFailedResult:
+            strcpy(messageBoxText, zLoc::GetMessageString(kWolQuerySessionSubmitFailedMessageId));
+            break;
+        default:
+            strcpy(messageBoxText, zLoc::GetMessageString(kWolQueryStatusErrorTitleMessageId));
+            break;
         }
-        strcpy(messageBoxText, zLoc::GetMessageString(messageId));
         ((CWnd*)this)->MessageBoxA(messageBoxText, messageBoxTitle, 0);
         return;
     }
@@ -2379,7 +2383,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
         "\nOnServerList:\n\tResult Code: %d\n",
         resultCode
     );
-    zGame::ReturnOnlyStub();
+    WolDebugString(debugText);
 
     if (resultCode < 0) {
         SetEvent(g_WestwoodOnlineUpgradeFailureEvent);
@@ -2408,19 +2412,18 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnBootstrapServerList(
             server->m_connectData,
             server->m_gameType
         );
-        zGame::ReturnOnlyStub();
+        WolDebugString(debugText);
         server = server->m_next;
     }
 
-    {
-        CString playerName = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName();
-        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName, (const char*)playerName);
-    }
-
-    {
-        CString connectString = g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString();
-        strcpy(g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString, (const char*)connectString);
-    }
+    strcpy(
+        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_playerName,
+        (const char*)g_pWestwoodOnlineUpgradeDialog->GetSelectedProfilePlayerName()
+    );
+    strcpy(
+        g_WestwoodOnlineUpgradeSelectedBootstrapServer.m_connectString,
+        (const char*)g_pWestwoodOnlineUpgradeDialog->GetSelectedProfileConnectString()
+    );
 
     SetEvent(g_WestwoodOnlineUpgradeInitWaitEvents[0]);
     return 0;
@@ -3332,7 +3335,7 @@ int STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::OnNetworkStatusChanged(
     }
 
     sprintf(debugStatusText, kNetworkStatusDebugFormat, statusName, connectionStatusCode);
-    zGame::ReturnOnlyStub();
+    WolDebugString(debugStatusText);
 
     if (connectionStatusCode == kNetworkStatusDisconnected && g_WestwoodOnlineUpgradeAbortFlag == 0) {
         g_pWestwoodOnlineUpgradeDialog->SetAbortAndClose();

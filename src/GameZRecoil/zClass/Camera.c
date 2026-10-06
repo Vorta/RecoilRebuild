@@ -15,6 +15,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace zVideo
+{
+    int __fastcall BindWorldNode(CZNodePartial * worldNode);
+}
+
 namespace zMath
 {
     /**
@@ -1036,9 +1041,24 @@ namespace CZCamera
     }
 
     /**
+     * Original inline helper evidence: no standalone retail function; 0x44aa30
+     * expands it twice (forward direction scaled by the near/far clip distance)
+     * immediately before each reviewed vector-add island. The spelling is
+     * descriptive; no original name is known.
+     * Purpose: scale a vector by a scalar into an output vector.
+     */
+    inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+    {
+        out->x = vec->x * scale;
+        out->y = vec->y * scale;
+        out->z = vec->z * scale;
+    }
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.updateimpl
      * @recoil-artifact defines .text recoil:function:0x44aa30: CZCamera::UpdateImpl.
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+     * @recoil-match byte
      *
      * Purpose: rebuild camera transforms, frustum planes, and clip centers.
      */
@@ -1059,38 +1079,33 @@ namespace CZCamera
         zClipAltBuildFrustumPlanes(data);
 
         if (data->frustumVectorsDirty != 0) {
-            const float farClip = data->farClip;
-            const float halfWidth = (float)(tan(data->fovX * 0.5f)) * farClip;
-            const float halfHeight = (float)(tan(data->fovY * 0.5f)) * farClip;
-            const float negHalfHeight = -halfHeight;
-            const float negFarClip = -farClip;
-            const float negHalfWidth = -halfWidth;
-
             data->frustumVectorsDirty = 0;
             data->frustumOrigin.x = 0.0f;
             data->frustumOrigin.y = 0.0f;
             data->frustumOrigin.z = 0.0f;
+            const float halfWidth = (float)(tan(data->fovX * 0.5f)) * data->farClip;
             data->frustumCorners[0].x = halfWidth;
+            const float negHalfHeight = -((float)(tan(data->fovY * 0.5f)) * data->farClip);
             data->frustumCorners[0].y = negHalfHeight;
+            const float negFarClip = -data->farClip;
             data->frustumCorners[0].z = negFarClip;
+            const float negHalfWidth = -halfWidth;
             data->frustumCorners[1].x = negHalfWidth;
             data->frustumCorners[1].y = negHalfHeight;
             data->frustumCorners[1].z = negFarClip;
             data->frustumCorners[2].x = halfWidth;
-            data->frustumCorners[2].y = halfHeight;
+            data->frustumCorners[2].y = -negHalfHeight;
             data->frustumCorners[2].z = negFarClip;
             data->frustumCorners[3].x = negHalfWidth;
-            data->frustumCorners[3].y = halfHeight;
+            data->frustumCorners[3].y = -negHalfHeight;
             data->frustumCorners[3].z = negFarClip;
         }
 
-        data->nearClipCenter.x = data->cameraPos.x + data->forwardDir.x * data->nearClip;
-        data->nearClipCenter.y = data->cameraPos.y + data->forwardDir.y * data->nearClip;
-        data->nearClipCenter.z = data->cameraPos.z + data->forwardDir.z * data->nearClip;
+        Vec3ScaleTo(&data->forwardDir, data->nearClip, &data->nearClipCenter);
+        zMath::Vec3Add(&data->nearClipCenter, &data->cameraPos, &data->nearClipCenter);
 
-        data->farClipCenter.x = data->cameraPos.x + data->forwardDir.x * data->farClip;
-        data->farClipCenter.y = data->cameraPos.y + data->forwardDir.y * data->farClip;
-        data->farClipCenter.z = data->cameraPos.z + data->forwardDir.z * data->farClip;
+        Vec3ScaleTo(&data->forwardDir, data->farClip, &data->farClipCenter);
+        zMath::Vec3Add(&data->farClipCenter, &data->cameraPos, &data->farClipCenter);
 
         return 0;
     }
@@ -2464,8 +2479,8 @@ namespace CZCamera
             g_zCamera_FrustumGridTileRings[ringIndex].count = 0;
         }
 
-        int originCol = 0;
-        int originRow = 0;
+        int originCol;
+        int originRow;
         int result = CZWorld::WorldToGridCoordsClamped(
             world,
             &originCol,
@@ -2477,39 +2492,33 @@ namespace CZCamera
             return result;
         }
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)&slotBuffer);
         zMath::MatLoadIdentity();
         zMath::MatTranslate(cameraData->cameraPos.x, cameraData->cameraPos.y, cameraData->cameraPos.z);
         zMath::MatRotateY(cameraData->eulerAngles.y);
 
-        int pointCount;
-        if (fabs(cameraData->eulerAngles.x) < 0.174533 && fabs(cameraData->eulerAngles.z) < 0.174533) {
-            pointCount = 3;
+        if (fabs(cameraData->eulerAngles.x) <= 0.174533 && fabs(cameraData->eulerAngles.z) <= 0.174533) {
+            g_zCamera_FrustumFootprintPointCount = 3;
         } else {
-            pointCount = 5;
+            g_zCamera_FrustumFootprintPointCount = 5;
             zMath::MatRotateX(cameraData->eulerAngles.x);
             zMath::MatRotateZ(cameraData->eulerAngles.z);
         }
-        g_zCamera_FrustumFootprintPointCount = pointCount;
-        memcpy(g_zCamera_FrustumFootprintPoints, &cameraData->frustumOrigin, pointCount * sizeof(zVec3));
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int i = 0; i < pointCount; ++i) {
-                const zVec3 point = g_zCamera_FrustumFootprintPoints[i];
-                g_zCamera_FrustumFootprintPoints[i].x
-                    = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
-                g_zCamera_FrustumFootprintPoints[i].z
-                    = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
-                g_zCamera_FrustumFootprintPoints[i].y
-                    = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
-            }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(
+            &cameraData->frustumOrigin,
+            g_zCamera_FrustumFootprintPoints,
+            g_zCamera_FrustumFootprintPointCount
+        );
+        if (g_zCamera_FrustumFootprintPointCount > 3) {
+            g_zCamera_FrustumFootprintPointCount
+                = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
         }
-        if (pointCount > 3) {
-            pointCount = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, pointCount);
-            g_zCamera_FrustumFootprintPointCount = pointCount;
-        }
-        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(g_zCamera_FrustumFootprintPoints, pointCount) == 0) {
+        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
+                g_zCamera_FrustumFootprintPoints,
+                g_zCamera_FrustumFootprintPointCount
+            )
+            == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt,
@@ -2539,16 +2548,16 @@ namespace CZCamera
             }
         }
 
-        int minCol = 0;
-        int minRow = 0;
+        int minCol;
+        int minRow;
         result = CZWorld::WorldToGridCoordsClamped(world, &minCol, minX, minZ, &minRow);
         if (result != 0) {
             zMath::MatStackPopPtr();
             return result;
         }
 
-        int maxCol = 0;
-        int maxRow = 0;
+        int maxCol;
+        int maxRow;
         result = CZWorld::WorldToGridCoordsClamped(world, &maxCol, maxX, maxZ, &maxRow);
         if (result != 0) {
             zMath::MatStackPopPtr();
@@ -2592,7 +2601,7 @@ namespace CZCamera
                             continue;
                         }
 
-                        zVec3 center = { 0 };
+                        zVec3 center;
                         center.x = area->cellMinX + worldData->areaHalfSizeX;
                         center.y = 0.0f;
                         center.z = area->cellMinZ + worldData->areaHalfSizeZ;
@@ -2673,8 +2682,8 @@ namespace CZCamera
             g_zCamera_FrustumGridTileRings[ringIndex].count = 0;
         }
 
-        int originCol = 0;
-        int originRow = 0;
+        int originCol;
+        int originRow;
         int originClampedCol = 0;
         int originClampedRow = 0;
         int originInsideBounds = 0;
@@ -2692,39 +2701,33 @@ namespace CZCamera
             return result;
         }
 
-        zMat4x3 slotBuffer = { 0 };
+        zMat4x3 slotBuffer;
         zMath::MatStackPushPtr((float*)&slotBuffer);
         zMath::MatLoadIdentity();
         zMath::MatTranslate(cameraData->cameraPos.x, cameraData->cameraPos.y, cameraData->cameraPos.z);
         zMath::MatRotateY(cameraData->eulerAngles.y);
 
-        int pointCount;
-        if (fabs(cameraData->eulerAngles.x) < 0.174533 && fabs(cameraData->eulerAngles.z) < 0.174533) {
-            pointCount = 3;
+        if (fabs(cameraData->eulerAngles.x) <= 0.174533 && fabs(cameraData->eulerAngles.z) <= 0.174533) {
+            g_zCamera_FrustumFootprintPointCount = 3;
         } else {
-            pointCount = 5;
+            g_zCamera_FrustumFootprintPointCount = 5;
             zMath::MatRotateX(cameraData->eulerAngles.x);
             zMath::MatRotateZ(cameraData->eulerAngles.z);
         }
-        g_zCamera_FrustumFootprintPointCount = pointCount;
-        memcpy(g_zCamera_FrustumFootprintPoints, &cameraData->frustumOrigin, pointCount * sizeof(zVec3));
-        if (*zMath::g_currentMatrixIdentityFlagSlot == 0) {
-            const zMat4x3* matrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);
-            for (int i = 0; i < pointCount; ++i) {
-                const zVec3 point = g_zCamera_FrustumFootprintPoints[i];
-                g_zCamera_FrustumFootprintPoints[i].x
-                    = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
-                g_zCamera_FrustumFootprintPoints[i].z
-                    = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
-                g_zCamera_FrustumFootprintPoints[i].y
-                    = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
-            }
+        ZMTH_MAT_TRANSFORM_POINT_BATCH(
+            &cameraData->frustumOrigin,
+            g_zCamera_FrustumFootprintPoints,
+            g_zCamera_FrustumFootprintPointCount
+        );
+        if (g_zCamera_FrustumFootprintPointCount > 3) {
+            g_zCamera_FrustumFootprintPointCount
+                = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
         }
-        if (pointCount > 3) {
-            pointCount = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, pointCount);
-            g_zCamera_FrustumFootprintPointCount = pointCount;
-        }
-        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(g_zCamera_FrustumFootprintPoints, pointCount) == 0) {
+        if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
+                g_zCamera_FrustumFootprintPoints,
+                g_zCamera_FrustumFootprintPointCount
+            )
+            == 0) {
             sprintf(
                 g_zError_DebugMsgBuffer,
                 g_CZClass_LineErrorPointInPolygonInitCameraFrustumFmt,
@@ -2754,13 +2757,13 @@ namespace CZCamera
             }
         }
 
-        int minCol = 0;
-        int minRow = 0;
+        int minCol;
+        int minRow;
         int minClampedCol = 0;
         int minClampedRow = 0;
         int minInsideBounds = 0;
-        int maxCol = 0;
-        int maxRow = 0;
+        int maxCol;
+        int maxRow;
         int maxClampedCol = 0;
         int maxClampedRow = 0;
         int maxInsideBounds = 0;
@@ -2839,7 +2842,7 @@ namespace CZCamera
                                 continue;
                             }
 
-                            zVec3 center = { 0 };
+                            zVec3 center;
                             center.x = area->cellMinX + worldData->areaHalfSizeX + posOffsetX;
                             center.y = 0.0f;
                             center.z = area->cellMinZ + worldData->areaHalfSizeZ + posOffsetZ;
@@ -2911,18 +2914,21 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderfrustumgridtiles
      * @recoil-artifact defines .text recoil:function:0x44ce70: CZCamera::RenderFrustumGridTiles.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zclass.camera.vector-length
      *
      *
      * Purpose: render world grid tiles selected by the camera frustum.
      */
-    int __fastcall RenderFrustumGridTiles(
+    void __fastcall RenderFrustumGridTiles(
         CZNodePartial * world,
         CZNodePartial * camera,
         CZCameraDataPartial * cameraData
     )
     {
+        int cameraAtBasePos = 1;
         CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
-        int result = 0;
+        int result;
 
         if (worldData->clampQueriesToBounds != 0) {
             result = BuildFrustumGridTilesFromParams(world, worldData, cameraData);
@@ -2930,105 +2936,100 @@ namespace CZCamera
             result = BuildFrustumGridTiles(world, worldData, cameraData);
         }
         if (result != 0) {
-            return result;
+            return;
         }
 
         const int fogWasEnabled = zModelFogIsEnabled();
-        float fogDistanceStart = 0.0f;
+        float fogDistanceStart;
         if (fogWasEnabled != 0) {
             fogDistanceStart = zModelFogGetDistanceStart();
         }
 
-        g_CZClass_RenderFrustumGridTileIndex = 0;
-        int cameraAtBasePos = 1;
-        {
-            int ringIndex = 0;
-            while (ringIndex < 50) {
-                g_CZClass_RenderFrustumGridTileIndex = ringIndex;
-                zCamera_FrustumGridTileRingPartial* ring = &g_zCamera_FrustumGridTileRings[ringIndex];
-                {
-                    for (int tileIndex = 0; tileIndex < ring->count; ++tileIndex) {
-                        zCamera_FrustumGridTilePartial* tile = &ring->tiles[tileIndex];
-                        zWorldAreaPartial* area = &worldData->areaGridRows[tile->row][tile->col];
-                        zVec3 center = area->bboxCenter;
+        for (g_CZClass_RenderFrustumGridTileIndex = 0; g_CZClass_RenderFrustumGridTileIndex < 50;
+            ++g_CZClass_RenderFrustumGridTileIndex) {
+            for (int tileIndex = 0;
+                tileIndex < g_zCamera_FrustumGridTileRings[g_CZClass_RenderFrustumGridTileIndex].count;
+                ++tileIndex) {
+                zCamera_FrustumGridTilePartial* tile
+                    = &g_zCamera_FrustumGridTileRings[g_CZClass_RenderFrustumGridTileIndex].tiles[tileIndex];
+                zWorldAreaPartial* area = &worldData->areaGridRows[tile->row][tile->col];
+                zVec3 center = area->bboxCenter;
+                zVec3 delta;
 
-                        if (tile->hasPosOffset != 0) {
-                            zVec3 posOffset = { -tile->posOffsetX, 0.0f, -tile->posOffsetZ };
-                            UpdateImpl(camera, &posOffset);
-                            cameraAtBasePos = 0;
-                        } else if (cameraAtBasePos == 0) {
-                            gwCameraUpdate(camera);
-                            cameraAtBasePos = 1;
-                        }
+                if (tile->hasPosOffset != 0) {
+                    zVec3 posOffset = { -tile->posOffsetX, 0.0f, -tile->posOffsetZ };
+                    UpdateImpl(camera, &posOffset);
+                    cameraAtBasePos = 0;
+                } else if (cameraAtBasePos == 0) {
+                    gwCameraUpdate(camera);
+                    cameraAtBasePos = 1;
+                }
 
-                        if (g_CZClass_ObjectHseTestEnabled != 0 && ringIndex > 0
-                            && zScene::TestProjectedSphereVisible(&center, area->bboxRadius) == 0) {
-                            continue;
-                        }
+                int visible;
+                if (g_CZClass_ObjectHseTestEnabled != 0 && g_CZClass_RenderFrustumGridTileIndex > 0) {
+                    visible = zScene::TestProjectedSphereVisible(&center, area->bboxRadius);
+                } else {
+                    visible = 1;
+                }
+                if (visible == 0) {
+                    continue;
+                }
 
-                        for (int lightIndex = 0; lightIndex < worldData->lightCount; ++lightIndex) {
-                            CZNodePartial* lightNode = worldData->lightNodes[lightIndex];
-                            if ((lightNode->flags & 0x04) == 0) {
-                                continue;
-                            }
+                for (int lightIndex = 0; lightIndex < worldData->lightCount; ++lightIndex) {
+                    CZNodePartial* lightNode = worldData->lightNodes[lightIndex];
+                    if ((lightNode->flags & 0x04) == 0) {
+                        continue;
+                    }
 
-                            CZLightDataPartial* lightData = worldData->lightDataList[lightIndex];
-                            if (lightData->isPointSource == 0 || lightData->enabled == 0) {
-                                lightData->lightSubMode = 1;
-                                continue;
-                            }
+                    CZLightDataPartial* lightData = worldData->lightDataList[lightIndex];
+                    if (lightData->isPointSource == 0 || lightData->enabled == 0) {
+                        lightData->lightSubMode = 1;
+                        continue;
+                    }
 
-                            const float dx = center.x - lightData->worldPosScratch.x;
-                            const float dy = center.y - lightData->worldPosScratch.y;
-                            const float dz = center.z - lightData->worldPosScratch.z;
-                            const float range = lightData->range2 + area->bboxRadius;
-                            const float distanceSq = dx * dx + dy * dy + dz * dz;
-                            lightData->lightSubMode = range * range <= distanceSq ? 0 : 1;
-                        }
+                    delta.x = center.x - lightData->worldPosScratch.x;
+                    delta.y = center.y - lightData->worldPosScratch.y;
+                    delta.z = center.z - lightData->worldPosScratch.z;
+                    const float range = lightData->range2 + area->bboxRadius;
+                    const float distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
+                    if (distanceSq >= range * range) {
+                        lightData->lightSubMode = 0;
+                    } else {
+                        lightData->lightSubMode = 1;
+                    }
+                }
 
-                        if (fogWasEnabled != 0) {
-                            const float dx = center.x - cameraData->cameraPos.x;
-                            const float dy = center.y - cameraData->cameraPos.y;
-                            const float dz = center.z - cameraData->cameraPos.z;
-                            // Retail uses FSQRT before adding the area radius.
-                            const float distanceSq = dx * dx + dy * dy + dz * dz;
-                            float distance = (float)sqrt(distanceSq);
-                            distance += area->bboxRadius * 1.10000002f;
-                            zModelFogSetEnabled(distance < fogDistanceStart ? 0 : 1);
-                        }
+                if (fogWasEnabled != 0) {
+                    zMath::Vec3Subtract(&center, &cameraData->cameraPos, &delta);
+                    float distance = zMath::Vec3Length(&delta);
+                    distance += area->bboxRadius * 1.10000002f;
+                    zModelFogSetEnabled(distance < fogDistanceStart ? 0 : 1);
+                }
 
-                        *gModel_ClipMaskStackTop = tile->clipMask;
-                        if (tile->hasPosOffset == 0) {
-                            for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                                CZClass::gwNodeRenderDispatch(area->childList[childIndex], area->childCount);
-                            }
-                        } else {
-                            for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
-                                CZNodePartial* child = area->childList[childIndex];
-                                if (strstr(child->name, g_CZClass_VapStaticsNodeName) != 0) {
-                                    CZClass::gwNodeRenderDispatch(child, area->childCount);
-                                }
-                            }
+                *gModel_ClipMaskStackTop = tile->clipMask;
+                if (tile->hasPosOffset == 0) {
+                    for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
+                        CZClass::gwNodeRenderDispatch(area->childList[childIndex], area->childCount);
+                    }
+                } else {
+                    for (int childIndex = 0; childIndex < area->childCount; ++childIndex) {
+                        if (strstr(area->childList[childIndex]->name, g_CZClass_VapStaticsNodeName) != 0) {
+                            CZClass::gwNodeRenderDispatch(area->childList[childIndex], area->childCount);
                         }
                     }
                 }
-                ++ringIndex;
-                g_CZClass_RenderFrustumGridTileIndex = ringIndex;
             }
         }
 
         if (cameraAtBasePos == 0) {
             gwCameraUpdate(camera);
         }
-        {
-            for (int lightIndex = 0; lightIndex < worldData->lightCount; ++lightIndex) {
-                worldData->lightDataList[lightIndex]->lightSubMode = 1;
-            }
+        for (int lightIndex = 0; lightIndex < worldData->lightCount; ++lightIndex) {
+            worldData->lightDataList[lightIndex]->lightSubMode = 1;
         }
         if (fogWasEnabled != 0) {
             zModelFogSetEnabled(fogWasEnabled);
         }
-        return result;
     }
 
     /**
@@ -3169,7 +3170,7 @@ namespace CZCamera
         }
 
         CZWorld::InitLightPointInPolygonXZ(world);
-        zVideo::ReturnSuccessStub();
+        zVideo::BindWorldNode(world);
         gwCameraUpdate(camera);
         SyncViewContextPositions();
         zVideoSetActiveViewContext(g_zVideo_pActiveViewContext);
@@ -3275,7 +3276,7 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
     }
 
     CZWorld::InitLightPointInPolygonXZ(world);
-    zVideo::ReturnSuccessStub();
+    zVideo::BindWorldNode(world);
     CZCamera::gwCameraUpdate(camera);
     CZCamera::SyncViewContextPositions();
     zVideoSetActiveViewContext(g_zVideo_pActiveViewContext);

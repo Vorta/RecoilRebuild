@@ -1887,7 +1887,9 @@ namespace zModel
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-frustumtestsphereclipmask
  * @recoil-artifact defines .text recoil:function:0x478c70: zVideoFrustumTestSphereClipMask.
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zModel/zModel_Display.cpp.
  * Purpose: reject or clip a sphere against the active view frustum planes.
@@ -1898,35 +1900,28 @@ namespace zModel
  */
 int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius, int* clipMaskInOut)
 {
+    zVec3 delta;
     const int oldMask = *clipMaskInOut;
     *clipMaskInOut = 0;
 
-    CZCameraDataPartial* viewContext = g_zVideo_pActiveProjectionViewContext;
-    zVec3 delta;
-    if ((oldMask & 0x10) != 0) {
-        delta.x = sphereCenter->x - viewContext->nearClipCenter.x;
-        delta.y = sphereCenter->y - viewContext->nearClipCenter.y;
-        delta.z = sphereCenter->z - viewContext->nearClipCenter.z;
-        const float dot = delta.x * viewContext->worldFrustumNormals[4].x
-            + delta.y * viewContext->worldFrustumNormals[4].y + delta.z * viewContext->worldFrustumNormals[4].z;
-        if (dot < radius) {
+    if ((oldMask & 0x10) > 0) {
+        zMath::Vec3Subtract(sphereCenter, &g_zVideo_pActiveProjectionViewContext->nearClipCenter, &delta);
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[4]);
+        if (dot >= radius) {
+            *clipMaskInOut = 0;
+        } else {
             if (-radius >= dot) {
                 return 0x10;
             }
             *clipMaskInOut = 0x10;
-        } else {
-            *clipMaskInOut = 0;
         }
     }
 
-    viewContext = g_zVideo_pActiveProjectionViewContext;
-    delta.x = sphereCenter->x - viewContext->cameraPos.x;
-    delta.y = sphereCenter->y - viewContext->cameraPos.y;
-    delta.z = sphereCenter->z - viewContext->cameraPos.z;
-
-    if ((oldMask & 1) != 0) {
-        const float dot = delta.x * viewContext->worldFrustumNormals[0].x
-            + delta.y * viewContext->worldFrustumNormals[0].y + delta.z * viewContext->worldFrustumNormals[0].z;
+    zMath::Vec3Subtract(sphereCenter, &g_zVideo_pActiveProjectionViewContext->cameraPos, &delta);
+    if ((oldMask & 1) > 0) {
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[0]);
         if (-radius >= dot) {
             return 1;
         }
@@ -1935,9 +1930,9 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
         }
     }
 
-    if ((oldMask & 2) != 0) {
-        const float dot = delta.x * viewContext->worldFrustumNormals[1].x
-            + delta.y * viewContext->worldFrustumNormals[1].y + delta.z * viewContext->worldFrustumNormals[1].z;
+    if ((oldMask & 2) > 0) {
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[1]);
         if (-radius >= dot) {
             return 2;
         }
@@ -1946,9 +1941,9 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
         }
     }
 
-    if ((oldMask & 4) != 0) {
-        const float dot = delta.x * viewContext->worldFrustumNormals[2].x
-            + delta.y * viewContext->worldFrustumNormals[2].y + delta.z * viewContext->worldFrustumNormals[2].z;
+    if ((oldMask & 4) > 0) {
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[2]);
         if (-radius >= dot) {
             return 4;
         }
@@ -1957,9 +1952,9 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
         }
     }
 
-    if ((oldMask & 8) != 0) {
-        const float dot = delta.x * viewContext->worldFrustumNormals[3].x
-            + delta.y * viewContext->worldFrustumNormals[3].y + delta.z * viewContext->worldFrustumNormals[3].z;
+    if ((oldMask & 8) > 0) {
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[3]);
         if (-radius >= dot) {
             return 8;
         }
@@ -1968,13 +1963,10 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
         }
     }
 
-    if ((oldMask & 0x20) != 0) {
-        viewContext = g_zVideo_pActiveProjectionViewContext;
-        delta.x = sphereCenter->x - viewContext->farClipCenter.x;
-        delta.y = sphereCenter->y - viewContext->farClipCenter.y;
-        delta.z = sphereCenter->z - viewContext->farClipCenter.z;
-        const float dot = delta.x * viewContext->worldFrustumNormals[5].x
-            + delta.y * viewContext->worldFrustumNormals[5].y + delta.z * viewContext->worldFrustumNormals[5].z;
+    if ((oldMask & 0x20) > 0) {
+        zMath::Vec3Subtract(sphereCenter, &g_zVideo_pActiveProjectionViewContext->farClipCenter, &delta);
+        float dot;
+        ZMTH_VECTOR_DOT(dot, &delta, &g_zVideo_pActiveProjectionViewContext->worldFrustumNormals[5]);
         if (-radius >= dot) {
             return 0x20;
         }

@@ -3,13 +3,12 @@
 
 #include "recoil/Mfc42Abi.h"
 
-#include "GameZRecoil/zRender/zrndr.h"
-
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "zclass.h"
 
@@ -754,7 +753,7 @@ void __fastcall SpanMasked16FromTex16SwitchVShift(int texU, int texV, int pixelC
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-masked-16-from-tex16-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49b7e0: Current C++ definition under the canonical compiler settings.
- *
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x49b7e0 has this portable conditional definition.
  * Purpose: Preserve portable masked tex16 behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -1284,7 +1283,7 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(int texU, int texV, int pixelCo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-masked-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49bbf0: Current C++ definition under the canonical compiler settings.
- *
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x49bbf0 has this portable conditional definition.
  * Purpose: Preserve portable masked palettized behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -1878,6 +1877,17 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
 } // namespace zRndr
 
 namespace zRndr {
+// Stack scratch of the alpha-map MMX span leaves: sampled texels, then the matching alpha bytes widened to
+// words; the MMX gather addresses the alpha half through this layout.
+struct SpanAlpha8Scratch {
+    unsigned short texels[1024];
+    unsigned short alphas[1024];
+};
+// Byte offset of the alpha half, for the dword alpha-pair store (a word-typed field operand cannot take a dword).
+enum { kSpanAlpha8ScratchAlphas = offsetof(SpanAlpha8Scratch, alphas) };
+} // namespace zRndr
+
+namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565mmxfromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
@@ -1895,157 +1905,175 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend565MmxFromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    SpanAlpha8Scratch scratch;
+    const unsigned short* texels16;
+    const unsigned char* alphaMap;
+    int oddPixel;
+    unsigned short* gatherCursor;
+    SpanAlpha8Scratch* scratchPtr;
+    int tailPixels;
+    unsigned short* dst;
+
+    g_mmxVPair.hi = texV;
+    scratchPtr = &scratch;
+    dst = g_spanCurrentSpanBaseAddr;
+    texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    oddPixel = pixelCount & 1;
+    tailPixels = pixelCount & 3;
+    int vStep = g_spanActiveTexVStepFixed20;
+    texV += vStep;
+    vStep += vStep;
+    g_mmxVPair.lo = texV;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep;
+    texU += uStep;
+    g_mmxUPair.lo = texU;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels16
+        mov edi, scratchPtr
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        xor edx, edx
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_a565t_gather_done
+        movq mm2, mm0
+        movq mm3, mm1
+        mov gatherCursor, edi
+        mov edi, texels16
+        mov esi, alphaMap
+    recoil_a565t_gather_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        mov cx, word ptr [edi+ebx*2]
+        mov dl, byte ptr [esi+ebx]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        shl edx, 10h
+        inc eax
+        mov cx, word ptr [edi+ebx*2]
+        mov edi, gatherCursor
+        mov dl, byte ptr [esi+ebx]
+        mov dword ptr [edi+eax*4-4], ecx
+        mov dword ptr [edi+eax*4-4+kSpanAlpha8ScratchAlphas], edx
+        mov edi, texels16
+        jne recoil_a565t_gather_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_a565t_gather_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        mov cx, word ptr [edi+ebx*2]
+        mov dl, byte ptr [esi+ebx]
+        mov edi, gatherCursor
+        mov word ptr [edi+eax*4], cx
+        mov word ptr [edi+eax*4]SpanAlpha8Scratch.alphas, dx
+    recoil_a565t_gather_done:
+        mov esi, scratchPtr
+        mov edi, dst
+        mov eax, pixelCount
+        shr eax, 2
+        cmp eax, 0
+        je recoil_a565t_blend_done
+        lea esi, [esi+eax*8]
+        lea edi, [edi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        movq mm0, qword ptr [esi+eax*8]
+        movq mm1, mm0
+
+    recoil_a565t_blend_loop:
+        movq mm7, qword ptr [edi+eax*8]
+        movq mm2, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        movq mm4, mm7
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0bh
+        movq mm5, mm7
+        movq mm6, mm7
+        pand mm5, qword ptr [g_mmxMaskGreenBits]
+        psrlw mm1, 5
+        pand mm6, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm4, 0bh
+        movq mm3, qword ptr [esi+eax*8]SpanAlpha8Scratch.alphas
+        psrlw mm5, 5
+        psubw mm0, mm4
+        psubw mm1, mm5
+        pmullw mm0, mm3
+        psubw mm2, mm6
+        pmullw mm1, mm3
+        inc eax
+        pmullw mm2, mm3
+        psllw mm0, 3
+        pand mm0, qword ptr [g_mmxMaskRedPacked]
+        psraw mm1, 3
+        pand mm1, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm7, mm0
+        psraw mm2, 8
+        paddw mm7, mm1
+        movq mm0, qword ptr [esi+eax*8]
+        paddw mm7, mm2
+        movq qword ptr [edi+eax*8-8], mm7
+        movq mm1, mm0
+        jne recoil_a565t_blend_loop
+    recoil_a565t_blend_done:
+    }
+
+    if (tailPixels != 0)
+    {
+        for (int i = pixelCount - tailPixels; i < pixelCount; ++i) {
+            if ((short)(scratch.alphas[i]) > 3) {
+                if ((short)(scratch.alphas[i]) >= 0xfc) {
+                    dst[i] = scratch.texels[i];
+                } else {
+                    int srcColor, dstColor;
+                    dstColor = (short)(dst[i]);
+                    srcColor = (short)(scratch.texels[i]);
+                    int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (short)(scratch.alphas[i]);
+                    int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * (short)(scratch.alphas[i]);
+                    redDelta = (redDelta >> 8) & 0xfffff800;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    dstColor += redDelta;
+                    int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (short)(scratch.alphas[i]);
+                    blueDelta >>= 8;
+                    blueDelta += greenDelta;
+                    dst[i] = (unsigned short)(dstColor + blueDelta);
+                }
+            }
+        }
+    }
+#else
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
 
-#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    unsigned short texelScratch[1024];
-    unsigned short alphaScratch[1024];
-    unsigned short* texelScratchBase = texelScratch;
-    unsigned short* alphaScratchBase = alphaScratch;
-    const int pairCount = pixelCount >> 1;
-    const int pairPixels = pairCount << 1;
-
-    g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
-    g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    if (pairCount != 0) {
-        unsigned short* alphaScratchEnd = alphaScratchBase + pairPixels;
-        __asm {
-            mov eax, pairCount
-            mov esi, texels16
-            mov edi, texelScratchBase
-            lea edi, [edi+eax*4]
-            neg eax
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-            xor edx, edx
-
-        zRndr_span_alpha565_tex16_alpha8_gather_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            mov cx, word ptr [esi+ebx*2]
-            mov edx, alphaMap
-            mov dl, byte ptr [edx+ebx]
-            and edx, 0ffh
-            movd ebx, mm2
-            shl ecx, 10h
-            shl edx, 10h
-            inc eax
-            mov cx, word ptr [esi+ebx*2]
-            mov esi, alphaMap
-            mov dl, byte ptr [esi+ebx]
-            mov esi, alphaScratchEnd
-            mov dword ptr [edi+eax*4-4], ecx
-            mov dword ptr [esi+eax*4-4], edx
-            mov esi, texels16
-            jne zRndr_span_alpha565_tex16_alpha8_gather_loop
-        }
-    }
-
-    if ((pixelCount & 1) != 0) {
-        const int tailTexU = texU + pairPixels * g_spanActiveTexUStepFixed20;
-        const int tailTexV = texV + pairPixels * g_spanActiveTexVStepFixed20;
-        const int vIndex = (tailTexV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (tailTexU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        texelScratch[pairPixels] = texels16[sourceIndex];
-        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
-    }
-
-    const int quadPixels = pixelCount & ~3;
-    const int quadCount = pixelCount >> 2;
-    if (quadCount != 0) {
-        __asm {
-            mov eax, quadCount
-            mov esi, texelScratchBase
-            mov edi, dst
-            lea esi, [esi+eax*8]
-            lea edi, [edi+eax*8]
-            neg eax
-            movq mm0, qword ptr [esi+eax*8]
-            movq mm1, mm0
-
-        zRndr_span_alpha565_tex16_alpha8_blend_loop:
-            movq mm7, qword ptr [edi+eax*8]
-            movq mm2, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            movq mm4, mm7
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0bh
-            movq mm5, mm7
-            movq mm6, mm7
-            pand mm5, qword ptr [g_mmxMaskGreenBits]
-            psrlw mm1, 5
-            pand mm6, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm4, 0bh
-            mov ebx, alphaScratchBase
-            movq mm3, qword ptr [ebx+eax*8]
-            psrlw mm5, 5
-            psubw mm0, mm4
-            psubw mm1, mm5
-            pmullw mm0, mm3
-            psubw mm2, mm6
-            pmullw mm1, mm3
-            inc eax
-            pmullw mm2, mm3
-            psllw mm0, 3
-            pand mm0, qword ptr [g_mmxMaskRedPacked]
-            psraw mm1, 3
-            pand mm1, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm7, mm0
-            psraw mm2, 8
-            paddw mm7, mm1
-            movq mm0, qword ptr [esi+eax*8]
-            paddw mm7, mm2
-            movq qword ptr [edi+eax*8-8], mm7
-            movq mm1, mm0
-            jne zRndr_span_alpha565_tex16_alpha8_blend_loop
-        }
-        dst += quadPixels;
-    }
-
-    for (int i = quadPixels; i < pixelCount; ++i) {
-        const int alpha = alphaScratch[i];
-        const unsigned short sourceTexel = texelScratch[i];
-        if (alpha > 3) {
-            if (alpha >= 0xfc) {
-                *dst = sourceTexel;
-            } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
-            }
-        }
-
-        ++dst;
-    }
-#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
@@ -2093,157 +2121,175 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    SpanAlpha8Scratch scratch;
+    const unsigned short* texels16;
+    const unsigned char* alphaMap;
+    int oddPixel;
+    unsigned short* gatherCursor;
+    SpanAlpha8Scratch* scratchPtr;
+    int tailPixels;
+    unsigned short* dst;
+
+    g_mmxVPair.hi = texV;
+    scratchPtr = &scratch;
+    dst = g_spanCurrentSpanBaseAddr;
+    texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    oddPixel = pixelCount & 1;
+    tailPixels = pixelCount & 3;
+    int vStep = g_spanActiveTexVStepFixed20;
+    texV += vStep;
+    vStep += vStep;
+    g_mmxVPair.lo = texV;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep;
+    texU += uStep;
+    g_mmxUPair.lo = texU;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels16
+        mov edi, scratchPtr
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        xor edx, edx
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_a555t_gather_done
+        movq mm2, mm0
+        movq mm3, mm1
+        mov gatherCursor, edi
+        mov edi, texels16
+        mov esi, alphaMap
+    recoil_a555t_gather_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        mov cx, word ptr [edi+ebx*2]
+        mov dl, byte ptr [esi+ebx]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        shl edx, 10h
+        inc eax
+        mov cx, word ptr [edi+ebx*2]
+        mov edi, gatherCursor
+        mov dl, byte ptr [esi+ebx]
+        mov dword ptr [edi+eax*4-4], ecx
+        mov dword ptr [edi+eax*4-4+kSpanAlpha8ScratchAlphas], edx
+        mov edi, texels16
+        jne recoil_a555t_gather_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_a555t_gather_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        mov cx, word ptr [edi+ebx*2]
+        mov dl, byte ptr [esi+ebx]
+        mov edi, gatherCursor
+        mov word ptr [edi+eax*4], cx
+        mov word ptr [edi+eax*4]SpanAlpha8Scratch.alphas, dx
+    recoil_a555t_gather_done:
+        mov esi, scratchPtr
+        mov edi, dst
+        mov eax, pixelCount
+        shr eax, 2
+        cmp eax, 0
+        je recoil_a555t_blend_done
+        lea esi, [esi+eax*8]
+        lea edi, [edi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        movq mm0, qword ptr [esi+eax*8]
+        movq mm1, mm0
+
+    recoil_a555t_blend_loop:
+        movq mm7, qword ptr [edi+eax*8]
+        movq mm2, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        movq mm4, mm7
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0ah
+        movq mm5, mm7
+        movq mm6, mm7
+        pand mm5, qword ptr [g_mmxMaskGreenBits]
+        psrlw mm1, 5
+        pand mm6, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm4, 0ah
+        movq mm3, qword ptr [esi+eax*8]SpanAlpha8Scratch.alphas
+        psrlw mm5, 5
+        psubw mm0, mm4
+        psubw mm1, mm5
+        pmullw mm0, mm3
+        psubw mm2, mm6
+        pmullw mm1, mm3
+        inc eax
+        pmullw mm2, mm3
+        psllw mm0, 2
+        pand mm0, qword ptr [g_mmxMaskRedPacked]
+        psraw mm1, 3
+        pand mm1, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm7, mm0
+        psraw mm2, 8
+        paddw mm7, mm1
+        movq mm0, qword ptr [esi+eax*8]
+        paddw mm7, mm2
+        movq qword ptr [edi+eax*8-8], mm7
+        movq mm1, mm0
+        jne recoil_a555t_blend_loop
+    recoil_a555t_blend_done:
+    }
+
+    if (tailPixels != 0)
+    {
+        for (int i = pixelCount - tailPixels; i < pixelCount; ++i) {
+            if ((short)(scratch.alphas[i]) > 7) {
+                if ((short)(scratch.alphas[i]) >= 0xfc) {
+                    dst[i] = scratch.texels[i];
+                } else {
+                    int srcColor, dstColor;
+                    dstColor = (short)(dst[i]);
+                    srcColor = (short)(scratch.texels[i]);
+                    int redDelta = ((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (short)(scratch.alphas[i]);
+                    int greenDelta = ((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (short)(scratch.alphas[i]);
+                    redDelta = (redDelta >> 8) & 0xfffffc00;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    dst[i] += redDelta;
+                    int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (short)(scratch.alphas[i]);
+                    blueDelta >>= 8;
+                    blueDelta += greenDelta;
+                    dst[i] += blueDelta;
+                }
+            }
+        }
+    }
+#else
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
 
-#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    unsigned short texelScratch[1024];
-    unsigned short alphaScratch[1024];
-    unsigned short* texelScratchBase = texelScratch;
-    unsigned short* alphaScratchBase = alphaScratch;
-    const int pairCount = pixelCount >> 1;
-    const int pairPixels = pairCount << 1;
-
-    g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
-    g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    if (pairCount != 0) {
-        unsigned short* alphaScratchEnd = alphaScratchBase + pairPixels;
-        __asm {
-            mov eax, pairCount
-            mov esi, texels16
-            mov edi, texelScratchBase
-            lea edi, [edi+eax*4]
-            neg eax
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-            xor edx, edx
-
-        zRndr_span_alpha555_tex16_alpha8_gather_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            mov cx, word ptr [esi+ebx*2]
-            mov edx, alphaMap
-            mov dl, byte ptr [edx+ebx]
-            and edx, 0ffh
-            movd ebx, mm2
-            shl ecx, 10h
-            shl edx, 10h
-            inc eax
-            mov cx, word ptr [esi+ebx*2]
-            mov esi, alphaMap
-            mov dl, byte ptr [esi+ebx]
-            mov esi, alphaScratchEnd
-            mov dword ptr [edi+eax*4-4], ecx
-            mov dword ptr [esi+eax*4-4], edx
-            mov esi, texels16
-            jne zRndr_span_alpha555_tex16_alpha8_gather_loop
-        }
-    }
-
-    if ((pixelCount & 1) != 0) {
-        const int tailTexU = texU + pairPixels * g_spanActiveTexUStepFixed20;
-        const int tailTexV = texV + pairPixels * g_spanActiveTexVStepFixed20;
-        const int vIndex = (tailTexV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (tailTexU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        texelScratch[pairPixels] = texels16[sourceIndex];
-        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
-    }
-
-    const int quadPixels = pixelCount & ~3;
-    const int quadCount = pixelCount >> 2;
-    if (quadCount != 0) {
-        __asm {
-            mov eax, quadCount
-            mov esi, texelScratchBase
-            mov edi, dst
-            lea esi, [esi+eax*8]
-            lea edi, [edi+eax*8]
-            neg eax
-            movq mm0, qword ptr [esi+eax*8]
-            movq mm1, mm0
-
-        zRndr_span_alpha555_tex16_alpha8_blend_loop:
-            movq mm7, qword ptr [edi+eax*8]
-            movq mm2, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            movq mm4, mm7
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0ah
-            movq mm5, mm7
-            movq mm6, mm7
-            pand mm5, qword ptr [g_mmxMaskGreenBits]
-            psrlw mm1, 5
-            pand mm6, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm4, 0ah
-            mov ebx, alphaScratchBase
-            movq mm3, qword ptr [ebx+eax*8]
-            psrlw mm5, 5
-            psubw mm0, mm4
-            psubw mm1, mm5
-            pmullw mm0, mm3
-            psubw mm2, mm6
-            pmullw mm1, mm3
-            inc eax
-            pmullw mm2, mm3
-            psllw mm0, 2
-            pand mm0, qword ptr [g_mmxMaskRedPacked]
-            psraw mm1, 3
-            pand mm1, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm7, mm0
-            psraw mm2, 8
-            paddw mm7, mm1
-            movq mm0, qword ptr [esi+eax*8]
-            paddw mm7, mm2
-            movq qword ptr [edi+eax*8-8], mm7
-            movq mm1, mm0
-            jne zRndr_span_alpha555_tex16_alpha8_blend_loop
-        }
-        dst += quadPixels;
-    }
-
-    for (int i = quadPixels; i < pixelCount; ++i) {
-        const int alpha = alphaScratch[i];
-        const unsigned short sourceTexel = texelScratch[i];
-        if (alpha > 7) {
-            if (alpha >= 0xfc) {
-                *dst = sourceTexel;
-            } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourceTexel;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffffc00);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
-            }
-        }
-
-        ++dst;
-    }
-#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
@@ -2625,165 +2671,195 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    SpanAlpha8Scratch scratch;
+    const unsigned char* alphaMap;
+    const unsigned short* palette;
+    int oddPixel;
+    unsigned short* gatherCursor;
+    const unsigned char* texels8;
+    SpanAlpha8Scratch* scratchPtr;
+    int tailPixels;
+    unsigned short* dst;
+
+    g_mmxVPair.hi = texV;
+    scratchPtr = &scratch;
+    dst = g_spanCurrentSpanBaseAddr;
+    texels8 = g_spanActiveTexPixels;
+    palette = g_spanActiveTexPalette;
+    alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    oddPixel = pixelCount & 1;
+    tailPixels = pixelCount & 3;
+    int vStep = g_spanActiveTexVStepFixed20;
+    texV += vStep;
+    vStep += vStep;
+    g_mmxVPair.lo = texV;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep;
+    texU += uStep;
+    g_mmxUPair.lo = texU;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels8
+        mov edi, scratchPtr
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        xor edx, edx
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_a565p_gather_done
+        movq mm2, mm0
+        movq mm3, mm1
+        mov gatherCursor, edi
+        mov edi, texels8
+        mov esi, alphaMap
+    recoil_a565p_gather_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov dl, byte ptr [esi+ebx]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        shl edx, 10h
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov edi, gatherCursor
+        mov dl, byte ptr [esi+ebx]
+        mov dword ptr [edi+eax*4], ecx
+        mov dword ptr [edi+eax*4+kSpanAlpha8ScratchAlphas], edx
+        inc eax
+        jne recoil_a565p_gather_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_a565p_gather_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov dl, byte ptr [esi+ebx]
+        mov edi, gatherCursor
+        mov word ptr [edi+eax*4], cx
+        mov word ptr [edi+eax*4]SpanAlpha8Scratch.alphas, dx
+    recoil_a565p_gather_done:
+        mov esi, scratchPtr
+        mov edi, dst
+        mov eax, pixelCount
+        shr eax, 2
+        cmp eax, 0
+        je recoil_a565p_blend_done
+        lea esi, [esi+eax*8]
+        lea edi, [edi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        movq mm0, qword ptr [esi+eax*8]
+        movq mm1, mm0
+
+    recoil_a565p_blend_loop:
+        movq mm7, qword ptr [edi+eax*8]
+        movq mm2, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        movq mm4, mm7
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0bh
+        movq mm5, mm7
+        movq mm6, mm7
+        pand mm5, qword ptr [g_mmxMaskGreenBits]
+        psrlw mm1, 5
+        pand mm6, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm4, 0bh
+        movq mm3, qword ptr [esi+eax*8]SpanAlpha8Scratch.alphas
+        psrlw mm5, 5
+        psubw mm0, mm4
+        psubw mm1, mm5
+        pmullw mm0, mm3
+        psubw mm2, mm6
+        pmullw mm1, mm3
+        inc eax
+        pmullw mm2, mm3
+        psllw mm0, 3
+        pand mm0, qword ptr [g_mmxMaskRedPacked]
+        psraw mm1, 3
+        pand mm1, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm7, mm0
+        psraw mm2, 8
+        paddw mm7, mm1
+        movq mm0, qword ptr [esi+eax*8]
+        paddw mm7, mm2
+        movq qword ptr [edi+eax*8-8], mm7
+        movq mm1, mm0
+        jne recoil_a565p_blend_loop
+    recoil_a565p_blend_done:
+    }
+
+    if (tailPixels != 0)
+    {
+        for (int i = pixelCount - tailPixels; i < pixelCount; ++i) {
+            if ((short)(scratch.alphas[i]) > 3) {
+                if ((short)(scratch.alphas[i]) >= 0xfc) {
+                    dst[i] = scratch.texels[i];
+                } else {
+                    int srcColor, dstColor;
+                    dstColor = (short)(dst[i]);
+                    srcColor = (short)(scratch.texels[i]);
+                    int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (short)(scratch.alphas[i]);
+                    int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * (short)(scratch.alphas[i]);
+                    redDelta = (redDelta >> 8) & 0xfffff800;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    dstColor += redDelta;
+                    int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (short)(scratch.alphas[i]);
+                    blueDelta >>= 8;
+                    blueDelta += greenDelta;
+                    dst[i] = (unsigned short)(dstColor + blueDelta);
+                }
+            }
+        }
+    }
+#else
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned char* texels8 = g_spanActiveTexPixels;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned short* palette = g_spanActiveTexPalette;
 
-#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    unsigned short texelScratch[1024];
-    unsigned short alphaScratch[1024];
-    unsigned short* texelScratchBase = texelScratch;
-    unsigned short* alphaScratchBase = alphaScratch;
-    const int pairCount = pixelCount >> 1;
-    const int pairPixels = pairCount << 1;
-
-    g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
-    g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    if (pairCount != 0) {
-        unsigned short* alphaScratchEnd = alphaScratchBase + pairPixels;
-        __asm {
-            mov eax, pairCount
-            mov esi, texels8
-            mov edi, texelScratchBase
-            lea edi, [edi+eax*4]
-            neg eax
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-            xor edx, edx
-
-        zRndr_span_alpha565_pal8_alpha8_gather_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            mov cl, byte ptr [esi+ebx]
-            and ecx, 0ffh
-            mov edx, palette
-            mov cx, word ptr [edx+ecx*2]
-            mov edx, alphaMap
-            mov dl, byte ptr [edx+ebx]
-            and edx, 0ffh
-            movd ebx, mm2
-            shl ecx, 10h
-            shl edx, 10h
-            mov esi, alphaMap
-            mov dl, byte ptr [esi+ebx]
-            mov esi, texels8
-            mov bl, byte ptr [esi+ebx]
-            and ebx, 0ffh
-            mov esi, palette
-            mov cx, word ptr [esi+ebx*2]
-            inc eax
-            mov esi, alphaScratchEnd
-            mov dword ptr [edi+eax*4-4], ecx
-            mov dword ptr [esi+eax*4-4], edx
-            mov esi, texels8
-            jne zRndr_span_alpha565_pal8_alpha8_gather_loop
-        }
-    }
-
-    if ((pixelCount & 1) != 0) {
-        const int tailTexU = texU + pairPixels * g_spanActiveTexUStepFixed20;
-        const int tailTexV = texV + pairPixels * g_spanActiveTexVStepFixed20;
-        const int vIndex = (tailTexV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (tailTexU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        texelScratch[pairPixels] = palette[texels8[sourceIndex]];
-        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
-    }
-
-    const int quadPixels = pixelCount & ~3;
-    const int quadCount = pixelCount >> 2;
-    if (quadCount != 0) {
-        __asm {
-            mov eax, quadCount
-            mov esi, texelScratchBase
-            mov edi, dst
-            lea esi, [esi+eax*8]
-            lea edi, [edi+eax*8]
-            neg eax
-            movq mm0, qword ptr [esi+eax*8]
-            movq mm1, mm0
-
-        zRndr_span_alpha565_pal8_alpha8_blend_loop:
-            movq mm7, qword ptr [edi+eax*8]
-            movq mm2, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            movq mm4, mm7
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0bh
-            movq mm5, mm7
-            movq mm6, mm7
-            pand mm5, qword ptr [g_mmxMaskGreenBits]
-            psrlw mm1, 5
-            pand mm6, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm4, 0bh
-            mov ebx, alphaScratchBase
-            movq mm3, qword ptr [ebx+eax*8]
-            psrlw mm5, 5
-            psubw mm0, mm4
-            psubw mm1, mm5
-            pmullw mm0, mm3
-            psubw mm2, mm6
-            pmullw mm1, mm3
-            inc eax
-            pmullw mm2, mm3
-            psllw mm0, 3
-            pand mm0, qword ptr [g_mmxMaskRedPacked]
-            psraw mm1, 3
-            pand mm1, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm7, mm0
-            psraw mm2, 8
-            paddw mm7, mm1
-            movq mm0, qword ptr [esi+eax*8]
-            paddw mm7, mm2
-            movq qword ptr [edi+eax*8-8], mm7
-            movq mm1, mm0
-            jne zRndr_span_alpha565_pal8_alpha8_blend_loop
-        }
-        dst += quadPixels;
-    }
-
-    for (int i = quadPixels; i < pixelCount; ++i) {
-        const int alpha = alphaScratch[i];
-        const unsigned short sourcePixel = texelScratch[i];
-        if (alpha > 3) {
-            if (alpha >= 0xfc) {
-                *dst = sourcePixel;
-            } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
-            }
-        }
-
-        ++dst;
-    }
-#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
@@ -2831,165 +2907,194 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend555MmxFromPal8Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    SpanAlpha8Scratch scratch;
+    const unsigned char* alphaMap;
+    const unsigned short* palette;
+    int oddPixel;
+    unsigned short* gatherCursor;
+    const unsigned char* texels8;
+    SpanAlpha8Scratch* scratchPtr;
+    int tailPixels;
+    unsigned short* dst;
+
+    g_mmxVPair.hi = texV;
+    scratchPtr = &scratch;
+    dst = g_spanCurrentSpanBaseAddr;
+    texels8 = g_spanActiveTexPixels;
+    palette = g_spanActiveTexPalette;
+    alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    oddPixel = pixelCount & 1;
+    tailPixels = pixelCount & 3;
+    int vStep = g_spanActiveTexVStepFixed20;
+    texV += vStep;
+    vStep += vStep;
+    g_mmxVPair.lo = texV;
+    const int uStep = g_spanActiveTexUStepFixed20;
+    g_mmxUPair.hi = texU;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep;
+    texU += uStep;
+    g_mmxUPair.lo = texU;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels8
+        mov edi, scratchPtr
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        xor edx, edx
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_a555p_gather_done
+        movq mm2, mm0
+        movq mm3, mm1
+        mov gatherCursor, edi
+        mov esi, alphaMap
+    recoil_a555p_gather_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov dl, byte ptr [esi+ebx]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        shl edx, 10h
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov edi, gatherCursor
+        mov dl, byte ptr [esi+ebx]
+        mov dword ptr [edi+eax*4], ecx
+        mov dword ptr [edi+eax*4+kSpanAlpha8ScratchAlphas], edx
+        inc eax
+        jne recoil_a555p_gather_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_a555p_gather_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        mov edi, texels8
+        mov cl, byte ptr [edi+ebx]
+        mov edi, ecx
+        and edi, 0ffh
+        add edi, edi
+        add edi, palette
+        mov cx, word ptr [edi]
+        mov dl, byte ptr [esi+ebx]
+        mov edi, gatherCursor
+        mov word ptr [edi+eax*4], cx
+        mov word ptr [edi+eax*4]SpanAlpha8Scratch.alphas, dx
+    recoil_a555p_gather_done:
+        mov esi, scratchPtr
+        mov edi, dst
+        mov eax, pixelCount
+        shr eax, 2
+        cmp eax, 0
+        je recoil_a555p_blend_done
+        lea esi, [esi+eax*8]
+        lea edi, [edi+eax*8]
+        xor eax, 0ffffffffh
+        inc eax
+        movq mm0, qword ptr [esi+eax*8]
+        movq mm1, mm0
+
+    recoil_a555p_blend_loop:
+        movq mm7, qword ptr [edi+eax*8]
+        movq mm2, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        movq mm4, mm7
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0ah
+        movq mm5, mm7
+        movq mm6, mm7
+        pand mm5, qword ptr [g_mmxMaskGreenBits]
+        psrlw mm1, 5
+        pand mm6, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm4, 0ah
+        movq mm3, qword ptr [esi+eax*8]SpanAlpha8Scratch.alphas
+        psrlw mm5, 5
+        psubw mm0, mm4
+        psubw mm1, mm5
+        pmullw mm0, mm3
+        psubw mm2, mm6
+        pmullw mm1, mm3
+        inc eax
+        pmullw mm2, mm3
+        psllw mm0, 2
+        pand mm0, qword ptr [g_mmxMaskRedPacked]
+        psraw mm1, 3
+        pand mm1, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm7, mm0
+        psraw mm2, 8
+        paddw mm7, mm1
+        movq mm0, qword ptr [esi+eax*8]
+        paddw mm7, mm2
+        movq qword ptr [edi+eax*8-8], mm7
+        movq mm1, mm0
+        jne recoil_a555p_blend_loop
+    recoil_a555p_blend_done:
+    }
+
+    if (tailPixels != 0)
+    {
+        for (int i = pixelCount - tailPixels; i < pixelCount; ++i) {
+            if ((short)(scratch.alphas[i]) > 7) {
+                if ((short)(scratch.alphas[i]) >= 0xfc) {
+                    dst[i] = scratch.texels[i];
+                } else {
+                    int dstColor, srcColor;
+                    dstColor = (short)(dst[i]);
+                    srcColor = (short)(scratch.texels[i]);
+                    int redDelta = ((srcColor & 0x7c00) - (dstColor & 0x7c00)) * (short)(scratch.alphas[i]);
+                    int greenDelta = ((srcColor & 0x03e0) - (dstColor & 0x03e0)) * (short)(scratch.alphas[i]);
+                    redDelta = (redDelta >> 8) & 0xfffffc00;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    dst[i] += redDelta;
+                    int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * (short)(scratch.alphas[i]);
+                    blueDelta >>= 8;
+                    blueDelta += greenDelta;
+                    dst[i] += blueDelta;
+                }
+            }
+        }
+    }
+#else
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned char* texels8 = g_spanActiveTexPixels;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned short* palette = g_spanActiveTexPalette;
 
-#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    unsigned short texelScratch[1024];
-    unsigned short alphaScratch[1024];
-    unsigned short* texelScratchBase = texelScratch;
-    unsigned short* alphaScratchBase = alphaScratch;
-    const int pairCount = pixelCount >> 1;
-    const int pairPixels = pairCount << 1;
-
-    g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
-    g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    if (pairCount != 0) {
-        unsigned short* alphaScratchEnd = alphaScratchBase + pairPixels;
-        __asm {
-            mov eax, pairCount
-            mov esi, texels8
-            mov edi, texelScratchBase
-            lea edi, [edi+eax*4]
-            neg eax
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-            xor edx, edx
-
-        zRndr_span_alpha555_pal8_alpha8_gather_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            mov cl, byte ptr [esi+ebx]
-            and ecx, 0ffh
-            mov edx, palette
-            mov cx, word ptr [edx+ecx*2]
-            mov edx, alphaMap
-            mov dl, byte ptr [edx+ebx]
-            and edx, 0ffh
-            movd ebx, mm2
-            shl ecx, 10h
-            shl edx, 10h
-            mov esi, alphaMap
-            mov dl, byte ptr [esi+ebx]
-            mov esi, texels8
-            mov bl, byte ptr [esi+ebx]
-            and ebx, 0ffh
-            mov esi, palette
-            mov cx, word ptr [esi+ebx*2]
-            inc eax
-            mov esi, alphaScratchEnd
-            mov dword ptr [edi+eax*4-4], ecx
-            mov dword ptr [esi+eax*4-4], edx
-            mov esi, texels8
-            jne zRndr_span_alpha555_pal8_alpha8_gather_loop
-        }
-    }
-
-    if ((pixelCount & 1) != 0) {
-        const int tailTexU = texU + pairPixels * g_spanActiveTexUStepFixed20;
-        const int tailTexV = texV + pairPixels * g_spanActiveTexVStepFixed20;
-        const int vIndex = (tailTexV & g_spanActiveTexVMask) >> texVShift;
-        const int uIndex = (tailTexU >> 20) & g_spanActiveTexUMask;
-        const int sourceIndex = vIndex + uIndex;
-        texelScratch[pairPixels] = palette[texels8[sourceIndex]];
-        alphaScratch[pairPixels] = (unsigned char)(alphaMap[sourceIndex]);
-    }
-
-    const int quadPixels = pixelCount & ~3;
-    const int quadCount = pixelCount >> 2;
-    if (quadCount != 0) {
-        __asm {
-            mov eax, quadCount
-            mov esi, texelScratchBase
-            mov edi, dst
-            lea esi, [esi+eax*8]
-            lea edi, [edi+eax*8]
-            neg eax
-            movq mm0, qword ptr [esi+eax*8]
-            movq mm1, mm0
-
-        zRndr_span_alpha555_pal8_alpha8_blend_loop:
-            movq mm7, qword ptr [edi+eax*8]
-            movq mm2, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            movq mm4, mm7
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0ah
-            movq mm5, mm7
-            movq mm6, mm7
-            pand mm5, qword ptr [g_mmxMaskGreenBits]
-            psrlw mm1, 5
-            pand mm6, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm4, 0ah
-            mov ebx, alphaScratchBase
-            movq mm3, qword ptr [ebx+eax*8]
-            psrlw mm5, 5
-            psubw mm0, mm4
-            psubw mm1, mm5
-            pmullw mm0, mm3
-            psubw mm2, mm6
-            pmullw mm1, mm3
-            inc eax
-            pmullw mm2, mm3
-            psllw mm0, 2
-            pand mm0, qword ptr [g_mmxMaskRedPacked]
-            psraw mm1, 3
-            pand mm1, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm7, mm0
-            psraw mm2, 8
-            paddw mm7, mm1
-            movq mm0, qword ptr [esi+eax*8]
-            paddw mm7, mm2
-            movq qword ptr [edi+eax*8-8], mm7
-            movq mm1, mm0
-            jne zRndr_span_alpha555_pal8_alpha8_blend_loop
-        }
-        dst += quadPixels;
-    }
-
-    for (int i = quadPixels; i < pixelCount; ++i) {
-        const int alpha = alphaScratch[i];
-        const unsigned short sourcePixel = texelScratch[i];
-        if (alpha > 7) {
-            if (alpha >= 0xfc) {
-                *dst = sourcePixel;
-            } else {
-                const int dstColor = (short)(*dst);
-                const int srcColor = sourcePixel;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffffc00);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
-            }
-        }
-
-        ++dst;
-    }
-#else
     const int quadPixels = pixelCount & ~3;
     for (int i = 0; i < quadPixels; ++i) {
         const int sourceIndex = SpanTex16SampleIndex(texU, texV, texVShift, g_spanActiveTexUMask);
@@ -3034,17 +3139,18 @@ namespace zRndr {
 void __fastcall
 FogTarget565SetPackedColorAndRamp(FogParamsPartial* params, int packedRed, int packedGreen, int packedBlue)
 {
-    const unsigned int packedColor16 = (unsigned int)(packedRed | packedGreen | packedBlue);
+    const int packedColor16 = packedRed | packedGreen | packedBlue;
     params->packedColorRed = packedRed;
     params->packedColorGreen = packedGreen;
     params->packedColorBlue = packedBlue;
     params->packedColor16 = (unsigned short)(packedColor16);
-    params->packedColor16Dup = (int)(packedColor16 | (packedColor16 << 16));
+    params->packedColor16Dup = packedColor16 | (packedColor16 << 16);
 
-    const unsigned int rampStep = ((unsigned int)(packedRed | packedBlue) << 11) | ((unsigned int)(packedGreen) >> 5);
-    unsigned int rampValue = 0;
-    for (int i = 31; i >= 0; --i) {
-        params->packedColorRamp[i] = (int)(rampValue);
+    const int rampStep = ((packedRed | packedBlue) << 11) | (packedGreen >> 5);
+    int rampValue = 0;
+    int i = 32;
+    while (i--) {
+        params->packedColorRamp[i] = rampValue;
         rampValue += rampStep;
     }
 }
@@ -3221,10 +3327,8 @@ namespace zRndr {
  */
 void __fastcall FogBlendSpan565Mmx(unsigned short* pixels, int pixelCount, int fogCoordFixed24, int fogCoordStepFixed24)
 {
-    unsigned short* cursor = pixels;
     int remaining = pixelCount;
-    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
-    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
+    unsigned short* cursor = pixels;
 
     int headPixels = (int)((unsigned int)(pixels) & 3u);
     if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
@@ -3232,81 +3336,86 @@ void __fastcall FogBlendSpan565Mmx(unsigned short* pixels, int pixelCount, int f
     }
 
     if (headPixels != 0) {
-        FogBlendSpan565Scalar(cursor, headPixels, (int)(fogCoord), fogCoordStepFixed24);
+        FogBlendSpan565Scalar(cursor, headPixels, fogCoordFixed24, fogCoordStepFixed24);
         cursor += headPixels;
-        fogCoord += (unsigned int)(headPixels)*fogStep;
+        // Retail advances the fog coordinate in its parameter slot.
+        fogCoordFixed24 += headPixels * fogCoordStepFixed24;
         remaining -= headPixels;
     }
 
     const int tailPixels = remaining & 3;
-    unsigned int quadCount = (unsigned int)(remaining) >> 2;
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    if (quadCount != 0) {
-        __asm {
-            mov ecx, quadCount
-            mov edx, cursor
-            mov eax, fogCoord
-            mov ebx, fogStep
-            add eax, ebx
-            mov esi, eax
-            add eax, ebx
-            shr esi, 10h
-            mov edi, eax
-            and edi, 0ffff0000h
+    __asm {
+        mov ecx, remaining
+        shr ecx, 2
+        mov edx, cursor
+        mov ebx, fogCoordStepFixed24
+        mov eax, fogCoordFixed24
+        cmp ecx, 0
+        je recoil_fog565_mmx_done
+        add eax, ebx
+        mov esi, eax
+        add eax, ebx
+        shr esi, 10h
+        mov edi, eax
+        and edi, 0ffff0000h
 
-        zRndr_fog565_mmx_loop:
-            add eax, ebx
-            or edi, esi
-            mov esi, eax
-            add eax, ebx
-            shr esi, 10h
-            mov dword ptr [g_mmxFogFactors], edi
-            mov edi, eax
-            and edi, 0ffff0000h
-            or edi, esi
-            mov dword ptr [g_mmxFogFactors+4], edi
-            movq mm0, qword ptr [edx]
-            movq mm1, mm0
-            movq mm2, mm0
-            movq mm4, qword ptr [g_mmxFogFactors]
-            movq mm3, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0bh
-            movq mm5, qword ptr [g_mmxBitsRed255]
-            psrlw mm1, 5
-            movq mm6, qword ptr [g_mmxBitsGreen255]
-            psubsw mm5, mm0
-            movq mm7, qword ptr [g_mmxBitsBlue255]
-            psubsw mm6, mm1
-            psubsw mm7, mm2
-            pmullw mm5, mm4
-            add eax, ebx
-            pmullw mm6, mm4
-            mov esi, eax
-            pmullw mm7, mm4
-            add eax, ebx
-            psllw mm5, 3
-            shr esi, 10h
-            psraw mm6, 3
-            mov edi, eax
-            psraw mm7, 8
-            and edi, 0ffff0000h
-            pand mm5, qword ptr [g_mmxMaskRedPacked]
-            pand mm6, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm3, mm5
-            paddw mm3, mm6
-            add edx, 8
-            paddw mm3, mm7
-            dec ecx
-            movq qword ptr [edx-8], mm3
-            jne zRndr_fog565_mmx_loop
+    zRndr_fog565_mmx_loop:
+        add eax, ebx
+        or edi, esi
+        mov esi, eax
+        add eax, ebx
+        shr esi, 10h
+        mov dword ptr [g_mmxFogFactors], edi
+        mov edi, eax
+        and edi, 0ffff0000h
+        or edi, esi
+        mov dword ptr [g_mmxFogFactors+4], edi
+        movq mm0, qword ptr [edx]
+        movq mm1, mm0
+        movq mm2, mm0
+        movq mm4, qword ptr [g_mmxFogFactors]
+        movq mm3, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0bh
+        movq mm5, qword ptr [g_mmxBitsRed255]
+        psrlw mm1, 5
+        movq mm6, qword ptr [g_mmxBitsGreen255]
+        psubsw mm5, mm0
+        movq mm7, qword ptr [g_mmxBitsBlue255]
+        psubsw mm6, mm1
+        psubsw mm7, mm2
+        pmullw mm5, mm4
+        add eax, ebx
+        pmullw mm6, mm4
+        mov esi, eax
+        pmullw mm7, mm4
+        add eax, ebx
+        psllw mm5, 3
+        shr esi, 10h
+        psraw mm6, 3
+        mov edi, eax
+        psraw mm7, 8
+        and edi, 0ffff0000h
+        pand mm5, qword ptr [g_mmxMaskRedPacked]
+        pand mm6, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm3, mm5
+        paddw mm3, mm6
+        add edx, 8
+        paddw mm3, mm7
+        dec ecx
+        movq qword ptr [edx-8], mm3
+        jne zRndr_fog565_mmx_loop
 
-            mov dword ptr [cursor], edx
-            mov dword ptr [fogCoord], eax
-        }
+    recoil_fog565_mmx_done:
+        mov dword ptr [cursor], edx
+        mov dword ptr [fogCoordFixed24], eax
     }
 #else
+    unsigned int quadCount = (unsigned int)(remaining) >> 2;
+    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
+    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     while (quadCount != 0) {
         fogCoord += fogStep;
         g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
@@ -3327,10 +3436,12 @@ void __fastcall FogBlendSpan565Mmx(unsigned short* pixels, int pixelCount, int f
         cursor += 4;
         --quadCount;
     }
+    fogCoordFixed24 = (int)(fogCoord);
 #endif
 
-    if (tailPixels != 0) {
-        FogBlendSpan565Scalar(cursor, tailPixels, (int)(fogCoord), fogCoordStepFixed24);
+    if (tailPixels != 0)
+    {
+        FogBlendSpan565Scalar(cursor, tailPixels, fogCoordFixed24, fogCoordStepFixed24);
     }
 }
 } // namespace zRndr
@@ -3350,10 +3461,8 @@ namespace zRndr {
  */
 void __fastcall FogBlendSpan555Mmx(unsigned short* pixels, int pixelCount, int fogCoordFixed24, int fogCoordStepFixed24)
 {
-    unsigned short* cursor = pixels;
     int remaining = pixelCount;
-    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
-    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
+    unsigned short* cursor = pixels;
 
     int headPixels = (int)((unsigned int)(pixels) & 3u);
     if ((unsigned int)(headPixels) >= (unsigned int)(remaining)) {
@@ -3361,81 +3470,86 @@ void __fastcall FogBlendSpan555Mmx(unsigned short* pixels, int pixelCount, int f
     }
 
     if (headPixels != 0) {
-        FogBlendSpan555Scalar(cursor, headPixels, (int)(fogCoord), fogCoordStepFixed24);
+        FogBlendSpan555Scalar(cursor, headPixels, fogCoordFixed24, fogCoordStepFixed24);
         cursor += headPixels;
-        fogCoord += (unsigned int)(headPixels)*fogStep;
+        // Retail advances the fog coordinate in its parameter slot.
+        fogCoordFixed24 += headPixels * fogCoordStepFixed24;
         remaining -= headPixels;
     }
 
     const int tailPixels = remaining & 3;
-    unsigned int quadCount = (unsigned int)(remaining) >> 2;
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    if (quadCount != 0) {
-        __asm {
-            mov ecx, quadCount
-            mov edx, cursor
-            mov eax, fogCoord
-            mov ebx, fogStep
-            add eax, ebx
-            mov esi, eax
-            add eax, ebx
-            shr esi, 10h
-            mov edi, eax
-            and edi, 0ffff0000h
+    __asm {
+        mov ecx, remaining
+        shr ecx, 2
+        mov edx, cursor
+        mov ebx, fogCoordStepFixed24
+        mov eax, fogCoordFixed24
+        cmp ecx, 0
+        je recoil_fog555_mmx_done
+        add eax, ebx
+        mov esi, eax
+        add eax, ebx
+        shr esi, 10h
+        mov edi, eax
+        and edi, 0ffff0000h
 
-        zRndr_fog555_mmx_loop:
-            add eax, ebx
-            or edi, esi
-            mov esi, eax
-            add eax, ebx
-            shr esi, 10h
-            mov dword ptr [g_mmxFogFactors], edi
-            mov edi, eax
-            and edi, 0ffff0000h
-            or edi, esi
-            mov dword ptr [g_mmxFogFactors+4], edi
-            movq mm0, qword ptr [edx]
-            movq mm1, mm0
-            movq mm2, mm0
-            movq mm4, qword ptr [g_mmxFogFactors]
-            movq mm3, mm0
-            pand mm1, qword ptr [g_mmxMaskGreenBits]
-            pand mm2, qword ptr [g_mmxMaskBlueBits]
-            psrlw mm0, 0ah
-            movq mm5, qword ptr [g_mmxBitsRed255]
-            psrlw mm1, 5
-            movq mm6, qword ptr [g_mmxBitsGreen255]
-            psubsw mm5, mm0
-            movq mm7, qword ptr [g_mmxBitsBlue255]
-            psubsw mm6, mm1
-            psubsw mm7, mm2
-            pmullw mm5, mm4
-            add eax, ebx
-            pmullw mm6, mm4
-            mov esi, eax
-            pmullw mm7, mm4
-            add eax, ebx
-            psllw mm5, 2
-            shr esi, 10h
-            psraw mm6, 3
-            mov edi, eax
-            psraw mm7, 8
-            and edi, 0ffff0000h
-            pand mm5, qword ptr [g_mmxMaskRedPacked]
-            pand mm6, qword ptr [g_mmxMaskGreenPacked]
-            paddw mm3, mm5
-            paddw mm3, mm6
-            add edx, 8
-            paddw mm3, mm7
-            dec ecx
-            movq qword ptr [edx-8], mm3
-            jne zRndr_fog555_mmx_loop
+    zRndr_fog555_mmx_loop:
+        add eax, ebx
+        or edi, esi
+        mov esi, eax
+        add eax, ebx
+        shr esi, 10h
+        mov dword ptr [g_mmxFogFactors], edi
+        mov edi, eax
+        and edi, 0ffff0000h
+        or edi, esi
+        mov dword ptr [g_mmxFogFactors+4], edi
+        movq mm0, qword ptr [edx]
+        movq mm1, mm0
+        movq mm2, mm0
+        movq mm4, qword ptr [g_mmxFogFactors]
+        movq mm3, mm0
+        pand mm1, qword ptr [g_mmxMaskGreenBits]
+        pand mm2, qword ptr [g_mmxMaskBlueBits]
+        psrlw mm0, 0ah
+        movq mm5, qword ptr [g_mmxBitsRed255]
+        psrlw mm1, 5
+        movq mm6, qword ptr [g_mmxBitsGreen255]
+        psubsw mm5, mm0
+        movq mm7, qword ptr [g_mmxBitsBlue255]
+        psubsw mm6, mm1
+        psubsw mm7, mm2
+        pmullw mm5, mm4
+        add eax, ebx
+        pmullw mm6, mm4
+        mov esi, eax
+        pmullw mm7, mm4
+        add eax, ebx
+        psllw mm5, 2
+        shr esi, 10h
+        psraw mm6, 3
+        mov edi, eax
+        psraw mm7, 8
+        and edi, 0ffff0000h
+        pand mm5, qword ptr [g_mmxMaskRedPacked]
+        pand mm6, qword ptr [g_mmxMaskGreenPacked]
+        paddw mm3, mm5
+        paddw mm3, mm6
+        add edx, 8
+        paddw mm3, mm7
+        dec ecx
+        movq qword ptr [edx-8], mm3
+        jne zRndr_fog555_mmx_loop
 
-            mov dword ptr [cursor], edx
-            mov dword ptr [fogCoord], eax
-        }
+    recoil_fog555_mmx_done:
+        mov dword ptr [cursor], edx
+        mov dword ptr [fogCoordFixed24], eax
     }
 #else
+    unsigned int quadCount = (unsigned int)(remaining) >> 2;
+    unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
+    const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     while (quadCount != 0) {
         fogCoord += fogStep;
         g_mmxFogFactors[0] = (unsigned short)(fogCoord >> 16);
@@ -3456,10 +3570,12 @@ void __fastcall FogBlendSpan555Mmx(unsigned short* pixels, int pixelCount, int f
         cursor += 4;
         --quadCount;
     }
+    fogCoordFixed24 = (int)(fogCoord);
 #endif
 
-    if (tailPixels != 0) {
-        FogBlendSpan555Scalar(cursor, tailPixels, (int)(fogCoord), fogCoordStepFixed24);
+    if (tailPixels != 0)
+    {
+        FogBlendSpan555Scalar(cursor, tailPixels, fogCoordFixed24, fogCoordStepFixed24);
     }
 }
 } // namespace zRndr
@@ -3750,7 +3866,7 @@ void __fastcall SpanCopy16FromTex16SwitchVShift(int texU, int texV, int pixelCou
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-copy-16-from-tex16-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49e6c0: Current C++ definition under the canonical compiler settings.
- *
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x49e6c0 has this portable conditional definition.
  * Purpose: Preserve portable tex16 copy behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -3910,96 +4026,114 @@ void __fastcall SpanCopy16FromTex16(int texU, int texV, int pixelCount, int texV
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    int uStep;
+    int vStep;
     if (((unsigned int)(dst) & 3u) != 0) {
-        const int sourceIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        *dst = texels16[sourceIndex];
-        ++dst;
-        --pixelCount;
-        if (pixelCount == 0) {
+        *dst++ = texels16
+            [((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask)];
+        if (--pixelCount == 0) {
             return;
         }
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        uStep = g_spanActiveTexUStepFixed20;
+        vStep = g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
+    } else {
+        uStep = g_spanActiveTexUStepFixed20;
+        vStep = g_spanActiveTexVStepFixed20;
+    }
+
+    // Retail peels an odd pixel count up front; the packed loop's tail then samples the low MMX lane.
+    const int oddPixel = pixelCount & 1;
+    if (oddPixel != 0) {
+        if (--pixelCount == 0) {
+            *dst = texels16
+                [((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask)];
+            return;
+        }
     }
 
     g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxVPair.lo = texV + vStep;
     g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    int pairCount = pixelCount >> 1;
+    g_mmxUPair.lo = texU + uStep;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep + vStep;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    const int pairPixels = pairCount << 1;
-    if (pairCount != 0) {
-        __asm {
-            mov eax, pairCount
-            mov esi, texels16
-            mov edi, dst
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-
-        zRndr_span_copy_tex16_mmx_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            xor ecx, ecx
-            mov cx, word ptr [esi+ebx*2]
-            movd ebx, mm2
-            shl ecx, 10h
-            xor edx, edx
-            mov dx, word ptr [esi+ebx*2]
-            or ecx, edx
-            mov dword ptr [edi], ecx
-            add edi, 4
-            dec eax
-            jne zRndr_span_copy_tex16_mmx_loop
-
-            mov dword ptr [dst], edi
-        }
-        texU += pairPixels * g_spanActiveTexUStepFixed20;
-        texV += pairPixels * g_spanActiveTexVStepFixed20;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels16
+        mov edi, dst
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_copy16_tex16_done
+        movq mm2, mm0
+        movq mm3, mm1
+    recoil_copy16_tex16_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        mov cx, word ptr [esi+ebx*2]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        inc eax
+        mov cx, word ptr [esi+ebx*2]
+        mov dword ptr [edi+eax*4-4], ecx
+        jne recoil_copy16_tex16_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_copy16_tex16_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        psrld mm3, 14h
+        paddd mm2, mm3
+        movd ebx, mm2
+        mov cx, word ptr [esi+ebx*2]
+        mov word ptr [edi], cx
+    recoil_copy16_tex16_done:
     }
 #else
+    // Behaviour model of the packed loop: the high lane holds the first pixel of each pair, the low lane the
+    // second, and the odd tail samples the low lane after the last pair (as retail does).
+    int pairCount = pixelCount >> 1;
     while (pairCount != 0) {
-        const int firstIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const unsigned short first = texels16[firstIndex];
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
-
-        const int secondIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const unsigned short second = texels16[secondIndex];
+        const unsigned short first = texels16
+            [((unsigned int)(g_mmxVPair.hi & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.hi) >> 20) & g_spanActiveTexUMask)];
+        const unsigned short second = texels16
+            [((unsigned int)(g_mmxVPair.lo & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.lo) >> 20) & g_spanActiveTexUMask)];
         *((unsigned int*)(dst)) = ((unsigned int)(second) << 16) | first;
         dst += 2;
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        g_mmxVPair.hi += g_mmxVStepDup2.hi;
+        g_mmxVPair.lo += g_mmxVStepDup2.lo;
+        g_mmxUPair.hi += g_mmxUStepDup2.hi;
+        g_mmxUPair.lo += g_mmxUStepDup2.lo;
         --pairCount;
     }
-#endif
-
-    if ((pixelCount & 1) != 0) {
-        const int sourceIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        *dst = texels16[sourceIndex];
+    if (oddPixel != 0) {
+        *dst = texels16
+            [((unsigned int)(g_mmxVPair.lo & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.lo) >> 20) & g_spanActiveTexUMask)];
     }
+#endif
 }
 } // namespace zRndr
 
@@ -4021,96 +4155,117 @@ void __fastcall SpanCopy16FromTex16ExplicitVShift(int texU, int texV, int pixelC
 {
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
+    int uStep;
+    int vStep;
     if (((unsigned int)(dst) & 3u) != 0) {
-        const int sourceIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        *dst = texels16[sourceIndex];
-        ++dst;
-        --pixelCount;
-        if (pixelCount == 0) {
+        *dst++ = texels16
+            [((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask)];
+        if (--pixelCount == 0) {
             return;
         }
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        uStep = g_spanActiveTexUStepFixed20;
+        vStep = g_spanActiveTexVStepFixed20;
+        texU += uStep;
+        texV += vStep;
+    } else {
+        uStep = g_spanActiveTexUStepFixed20;
+        vStep = g_spanActiveTexVStepFixed20;
+    }
+
+    // Retail peels an odd pixel count up front; the packed loop's tail then samples the low MMX lane.
+    const int oddPixel = pixelCount & 1;
+    if (oddPixel != 0) {
+        if (--pixelCount == 0) {
+            *dst = texels16
+                [((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask)];
+            return;
+        }
     }
 
     g_mmxVPair.hi = texV;
-    g_mmxVPair.lo = texV + g_spanActiveTexVStepFixed20;
+    g_mmxVPair.lo = texV + vStep;
     g_mmxUPair.hi = texU;
-    g_mmxUPair.lo = texU + g_spanActiveTexUStepFixed20;
-    g_mmxVStepDup2.lo = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxVStepDup2.hi = g_spanActiveTexVStepFixed20 * 2;
-    g_mmxUStepDup2.lo = g_spanActiveTexUStepFixed20 * 2;
-    g_mmxUStepDup2.hi = g_spanActiveTexUStepFixed20 * 2;
-
-    int pairCount = pixelCount >> 1;
+    g_mmxUPair.lo = texU + uStep;
+    g_mmxVStepDup2.lo = g_mmxVStepDup2.hi = vStep + vStep;
+    g_mmxUStepDup2.lo = g_mmxUStepDup2.hi = uStep + uStep;
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
-    const int pairPixels = pairCount << 1;
-    if (pairCount != 0) {
-        __asm {
-            mov eax, pairCount
-            mov esi, texels16
-            mov edi, dst
-            movq mm0, qword ptr [g_mmxVPair]
-            movq mm1, qword ptr [g_mmxUPair]
-            movq mm4, qword ptr [g_mmxVMask]
-            movq mm5, qword ptr [g_mmxUMask]
-            movq mm6, qword ptr [g_mmxVStepDup2]
-            movq mm7, qword ptr [g_mmxUStepDup2]
-
-        zRndr_span_copy_tex16_explicit_mmx_loop:
-            movq mm2, mm0
-            movq mm3, mm1
-            pand mm2, mm4
-            pand mm3, mm5
-            psrld mm2, qword ptr [g_mmxVShiftCounts]
-            paddd mm0, mm6
-            psrld mm3, 14h
-            paddd mm1, mm7
-            paddd mm2, mm3
-            movd ebx, mm2
-            psrlq mm2, 20h
-            xor ecx, ecx
-            mov cx, word ptr [esi+ebx*2]
-            movd ebx, mm2
-            shl ecx, 10h
-            xor edx, edx
-            mov dx, word ptr [esi+ebx*2]
-            or ecx, edx
-            mov dword ptr [edi], ecx
-            add edi, 4
-            dec eax
-            jne zRndr_span_copy_tex16_explicit_mmx_loop
-
-            mov dword ptr [dst], edi
-        }
-        texU += pairPixels * g_spanActiveTexUStepFixed20;
-        texV += pairPixels * g_spanActiveTexVStepFixed20;
+    __asm {
+        mov eax, pixelCount
+        mov esi, texels16
+        mov edi, dst
+        movq mm0, qword ptr [g_mmxVPair]
+        movq mm1, qword ptr [g_mmxUPair]
+        movq mm4, qword ptr [g_mmxVMask]
+        movq mm5, qword ptr [g_mmxUMask]
+        movq mm6, qword ptr [g_mmxVStepDup2]
+        movq mm7, qword ptr [g_mmxUStepDup2]
+        shr eax, 1
+        lea edi, [edi+eax*4]
+        xor eax, 0ffffffffh
+        inc eax
+        jge recoil_copy16_tex16x_done
+        movq mm2, mm0
+        movq mm3, mm1
+    recoil_copy16_tex16x_loop:
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        paddd mm0, mm6
+        psrld mm3, 14h
+        paddd mm1, mm7
+        paddd mm2, mm3
+        movq mm3, mm1
+        movd ebx, mm2
+        psrlq mm2, 20h
+        xor ecx, ecx
+        mov cx, word ptr [esi+ebx*2]
+        movd ebx, mm2
+        movq mm2, mm0
+        shl ecx, 10h
+        xor edx, edx
+        mov dx, word ptr [esi+ebx*2]
+        or ecx, edx
+        mov dword ptr [edi+eax*4], ecx
+        inc eax
+        jne recoil_copy16_tex16x_loop
+        mov ecx, oddPixel
+        cmp ecx, 0
+        je recoil_copy16_tex16x_done
+        pand mm2, mm4
+        pand mm3, mm5
+        psrld mm2, qword ptr [g_mmxVShiftCounts]
+        psrld mm3, 14h
+        paddd mm2, mm3
+        movd ebx, mm2
+        mov cx, word ptr [esi+ebx*2]
+        mov word ptr [edi], cx
+    recoil_copy16_tex16x_done:
     }
 #else
+    // Behaviour model of the packed loop: the high lane holds the first pixel of each pair, the low lane the
+    // second, and the odd tail samples the low lane after the last pair (as retail does).
+    int pairCount = pixelCount >> 1;
     while (pairCount != 0) {
-        const int firstIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const unsigned short first = texels16[firstIndex];
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
-
-        const int secondIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const unsigned short second = texels16[secondIndex];
+        const unsigned short first = texels16
+            [((unsigned int)(g_mmxVPair.hi & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.hi) >> 20) & g_spanActiveTexUMask)];
+        const unsigned short second = texels16
+            [((unsigned int)(g_mmxVPair.lo & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.lo) >> 20) & g_spanActiveTexUMask)];
         *((unsigned int*)(dst)) = ((unsigned int)(second) << 16) | first;
         dst += 2;
-        texU += g_spanActiveTexUStepFixed20;
-        texV += g_spanActiveTexVStepFixed20;
+        g_mmxVPair.hi += g_mmxVStepDup2.hi;
+        g_mmxVPair.lo += g_mmxVStepDup2.lo;
+        g_mmxUPair.hi += g_mmxUStepDup2.hi;
+        g_mmxUPair.lo += g_mmxUStepDup2.lo;
         --pairCount;
     }
-#endif
-
-    if ((pixelCount & 1) != 0) {
-        const int sourceIndex
-            = ((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        *dst = texels16[sourceIndex];
+    if (oddPixel != 0) {
+        *dst = texels16
+            [((unsigned int)(g_mmxVPair.lo & g_spanActiveTexVMask) >> texVShift)
+                + (((unsigned int)(g_mmxUPair.lo) >> 20) & g_spanActiveTexUMask)];
     }
+#endif
 }
 } // namespace zRndr
 
@@ -4417,7 +4572,7 @@ void __fastcall SpanCopy16FromPal8SwitchVShift(int texU, int texV, int pixelCoun
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-copy-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49edc0: Current C++ definition under the canonical compiler settings.
- *
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x49edc0 has this portable conditional definition.
  * Purpose: Preserve portable palettized copy behavior when the ESP-pivot raw-assembly exception is disabled.
@@ -4905,7 +5060,7 @@ void __fastcall SpanShade16FromPal8SwitchVShift(int texU, int texV, int pixelCou
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zrender.span-shade-16-from-pal8-switch-vshift
  * @recoil-artifact defines .text recoil:function:0x49f180: Current C++ definition under the canonical compiler settings.
- *
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x49f180 has this portable conditional definition.
  * Purpose: Preserve portable palettized shade behavior when the ESP-pivot raw-assembly exception is disabled.

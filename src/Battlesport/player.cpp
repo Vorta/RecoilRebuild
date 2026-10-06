@@ -3402,7 +3402,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-samplegroundandalignroottosurface
  * @recoil-artifact defines .text recoil:function:0x421830: Player::SampleGroundAndAlignRootToSurface
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: sample ground under the player, update the active variant tag, and
@@ -3433,8 +3433,8 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
     float taggedHeight;
     SelectProbeSampleHeightFromCandidates(
         &candidateBuffer,
-        &bestCandidateIndex,
         playerState->worldPos.y,
+        &bestCandidateIndex,
         4.0f,
         playerState->amphibUnlocked == 0,
         &selectedImpactSlot,
@@ -3460,9 +3460,8 @@ void __fastcall SampleGroundAndAlignRootToSurface(zUtil_SaveGameState* saveState
         if (updateRotation == 0) {
             return;
         }
-        const zVec3* const surfaceNormal = &candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
-        playerState->steerBasisRef = *surfaceNormal;
-        zVec3 yawRelativeNormal = *surfaceNormal;
+        playerState->steerBasisRef = candidateBuffer.entries[bestCandidateIndex].surfaceNormal;
+        zVec3 yawRelativeNormal = playerState->steerBasisRef;
         RebuildSteerBasisRawFromRef(saveState);
         zMath::Vec3RotateY(&yawRelativeNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
 

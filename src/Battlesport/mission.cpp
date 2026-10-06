@@ -918,10 +918,10 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         }
 
         lastObjectiveIndex = objectiveNumber - 1;
-        HudSensorObjectiveSlot& slot = objectiveSlots[lastObjectiveIndex];
 
-        slot.objectiveImage = zImage::TexDirFindOrCreateByPath(objectiveNode->value.nodes[1].value.str);
-        if (slot.objectiveImage == 0) {
+        objectiveSlots[lastObjectiveIndex].objectiveImage
+            = zImage::TexDirFindOrCreateByPath(objectiveNode->value.nodes[1].value.str);
+        if (objectiveSlots[lastObjectiveIndex].objectiveImage == 0) {
             zError::ReportOld(
                 0x800,
                 g_HudSensorTracker_MissionCppSourcePath,
@@ -933,22 +933,30 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
             return 1;
         }
 
-        strncpy(slot.objectiveTitle, zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[2].value.str), 0x100);
-        slot.objectiveTitle[0xff] = '\0';
-
-        strncpy(slot.objectiveDesc, zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[3].value.str), 0x100);
-        slot.objectiveDesc[0xff] = '\0';
+        strncpy(
+            objectiveSlots[lastObjectiveIndex].objectiveTitle,
+            zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[2].value.str),
+            0x100
+        );
+        objectiveSlots[lastObjectiveIndex].objectiveTitle[0xff] = '\0';
 
         strncpy(
-            slot.objectiveSummary,
+            objectiveSlots[lastObjectiveIndex].objectiveDesc,
+            zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[3].value.str),
+            0x100
+        );
+        objectiveSlots[lastObjectiveIndex].objectiveDesc[0xff] = '\0';
+
+        strncpy(
+            objectiveSlots[lastObjectiveIndex].objectiveSummary,
             zLoc::ResolveMessageKeyOrFallback(objectiveNode->value.nodes[4].value.str),
             0x100
         );
-        slot.objectiveSummary[0xff] = '\0';
+        objectiveSlots[lastObjectiveIndex].objectiveSummary[0xff] = '\0';
 
-        slot.completedFlag = 0;
+        objectiveSlots[lastObjectiveIndex].completedFlag = 0;
         if (zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Autoplay) != 0) {
-            slot.autoplayFlag = 1;
+            objectiveSlots[lastObjectiveIndex].autoplayFlag = 1;
         }
 
         ++objectiveNumber;

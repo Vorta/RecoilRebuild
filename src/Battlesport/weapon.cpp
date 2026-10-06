@@ -619,7 +619,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- * @recoil-match byte
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -2310,7 +2310,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -3644,7 +3644,7 @@ int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userDa
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-mines-zar-readentryorreset
  * @recoil-artifact defines .text recoil:function:0x43cdf0: Player::MinesZARReadEntryOrReset
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\Player\player_weapon.c.
  * Purpose: handle Mines ZAR blobs by clearing live mine runtimes on the
@@ -3656,12 +3656,10 @@ MinesZARReadEntryOrReset(zZbdSectionCallbackCtx*, const char*, PlayerMineSaveEnt
     if (mineData->resetMarker != 0) {
         for (int bankIndex = 4; bankIndex < 6; ++bankIndex) {
             for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
+                zUtil_PlayerStateStorage* const playerState
+                    = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
                 OptCatalogEntryDef* const entry
-                    = (&((zUtil_SaveGameState*)g_GameStateOrMapTable)
-                            ->playerState->altWeaponBanks[bankIndex]
-                            .controllerA
-                        + sideIndex)
-                          ->optCatalogEntry;
+                    = (&playerState->altWeaponBanks[bankIndex].controllerA + sideIndex)->optCatalogEntry;
                 if (entry != 0) {
                     OptCatalog::ClearRuntimeInstances(entry);
                 }

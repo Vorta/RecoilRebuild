@@ -60,28 +60,93 @@ namespace zMath
     }
 
     /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec.vector-length
+     *
+     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+     * Reconstruction: zmth_vec.c-resident copy of the Camera.c inline helper,
+     * following the zmth_quat.c and zwep_ammo.c precedent.
+     * Raw assembly: identical body to the reviewed Camera.c Vec3Length island;
+     * retail inlines it at [0x472702,0x472722) with the constant scratch
+     * address and at [0x472809,0x472827) bound to its parameter home.
+     * Original inline helper evidence: no standalone retail function.
+     */
+    inline float Vec3Length(const zVec3* vec)
+    {
+        float vecLength;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.y
+        fmul dword ptr [ecx]zVec3.y
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        fxch st(1)
+        faddp st(2), st
+        faddp st(1), st
+        fsqrt
+        fstp vecLength
+        }
+#else
+        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+        return vecLength;
+    }
+
+    /**
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec.vector-length-sq-xz
+     *
+     * Purpose: return the x*x + z*z square sum rounded to binary32.
+     * Raw assembly: retail [0x47274a,0x47275e) inside 0x472730. Contract: uses
+     * and clobbers ECX; x87 entry/peak/exit depth 0/2/0 on normal completion;
+     * reads X and Z only and stores the result as binary32. The C fallback is
+     * the arithmetic reference, not a code-generation match.
+     * Retail inline-expansion evidence: the consumer contains the reload, the
+     * X/Z products and the result store without a call; spelling and header
+     * ownership are inferred.
+     * Original inline helper evidence: no standalone retail function; observed at
+     * retail 0x472730.
+     */
+    inline float Vec3LengthSqXZ(const zVec3* vec)
+    {
+        float lengthSq;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+        __asm {
+        mov ecx, vec
+        fld dword ptr [ecx]zVec3.x
+        fmul dword ptr [ecx]zVec3.x
+        fld dword ptr [ecx]zVec3.z
+        fmul dword ptr [ecx]zVec3.z
+        faddp st(1), st
+        fstp lengthSq
+        }
+#else
+        lengthSq = vec->x * vec->x + vec->z * vec->z;
+#endif
+        return lengthSq;
+    }
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3deltalength-gamezrecoil-zmath-cpp
      * @recoil-artifact defines .text recoil:function:0x4726d0: zMath::Vec3DeltaLength (GameZRecoil/zMath.cpp).
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec.vector-length
+     * @recoil-match byte
      *
      * Purpose: Stores the vector delta in the shared scratch vector and returns its length.
      */
     float __fastcall Vec3DeltaLength(const zVec3* a, const zVec3* b)
     {
-        g_zMath_Vec3DeltaScratch.x = a->x - b->x;
-        g_zMath_Vec3DeltaScratch.y = a->y - b->y;
-        g_zMath_Vec3DeltaScratch.z = a->z - b->z;
-
-        const float lengthSq = g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x
-            + g_zMath_Vec3DeltaScratch.y * g_zMath_Vec3DeltaScratch.y
-            + g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
-        return sqrt(lengthSq);
+        Vec3Subtract(a, b, &g_zMath_Vec3DeltaScratch);
+        return Vec3Length(&g_zMath_Vec3DeltaScratch);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3distsqxz-gamezrecoil-zmath-zmath-vec3-cpp
      * @recoil-artifact defines .text recoil:function:0x472730: zMath::Vec3DistSqXZ (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec.vector-length-sq-xz
+     * @recoil-match byte
      *
      * Purpose: Stores the XZ delta in the shared scratch vector and returns squared XZ-plane distance.
      */
@@ -90,8 +155,7 @@ namespace zMath
         g_zMath_Vec3DeltaScratch.x = a->x - b->x;
         g_zMath_Vec3DeltaScratch.z = a->z - b->z;
 
-        return g_zMath_Vec3DeltaScratch.x * g_zMath_Vec3DeltaScratch.x
-            + g_zMath_Vec3DeltaScratch.z * g_zMath_Vec3DeltaScratch.z;
+        return Vec3LengthSqXZ(&g_zMath_Vec3DeltaScratch);
     }
 
     /**
@@ -142,7 +206,8 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3normalizexz-gamezrecoil-zmath-zmath-vec3-cpp
      * @recoil-artifact defines .text recoil:function:0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
-     *
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec.vector-length
+     * @recoil-match byte
      *
      * Purpose: Normalizes a vector in the XZ plane while preserving the input Y value and leaving output Y untouched.
      */
@@ -150,7 +215,7 @@ namespace zMath
     {
         const float savedY = vec->y;
         vec->y = 0.0f;
-        const float length = sqrt(vec->x * vec->x + vec->y * vec->y + vec->z * vec->z);
+        const float length = Vec3Length(vec);
         vec->y = savedY;
 
         float scale = length;

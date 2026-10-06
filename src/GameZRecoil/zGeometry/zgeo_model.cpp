@@ -131,15 +131,14 @@ zModel_MaterialPartial* __cdecl FindOrCreateRandomDebugMaterial()
     zModel_MaterialPartial material;
     zModel_Material::ResetDefaults(&material);
 
-    const float green = (float)(rand()) * kRandToDebugColorScale;
-    const float red = (float)(rand()) * kRandToDebugColorScale;
-    const float blue = (float)(rand()) * kRandToDebugColorScale;
+    zColorRgb color;
+    color.green = (float)(rand()) * kRandToDebugColorScale;
+    color.red = (float)(rand()) * kRandToDebugColorScale;
+    color.blue = (float)(rand()) * kRandToDebugColorScale;
 
-    material.colorRgb.red = red;
-    material.colorRgb.green = green;
-    material.colorRgb.blue = blue;
-    material.packedColor
-        = (unsigned short)((((int)(red) & 0x1f) << 11) | (((int)(green) & 0x3f) << 5) | ((int)(blue) & 0x1f));
+    material.colorRgb = color;
+    material.packedColor = (unsigned short)((((int)(color.red) & 0x1f) << 11) | (((int)(color.green) & 0x3f) << 5)
+        | ((int)(color.blue) & 0x1f));
 
     g_zGeometry_Model_LastRandomDebugMaterial = zModel_Material::FindOrClone(&material);
     return g_zGeometry_Model_LastRandomDebugMaterial;

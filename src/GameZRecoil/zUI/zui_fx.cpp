@@ -510,7 +510,7 @@ HudWeatherFxSnow::HudWeatherFxSnow(int particleCount)
  */
 void HudWeatherFxSnow::Update(float deltaSeconds)
 {
-    if ((flags & 0x10) != 0) {
+    if ((~flags & 0x10) == 0) {
         return;
     }
 
@@ -519,18 +519,15 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
         return;
     }
 
-    int viewportWidth = 0;
-    int viewportHeight = 0;
+    int viewportWidth;
+    int viewportHeight;
     if (clipRectOrNull != 0) {
         viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
         viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
-        const zVidRect32* const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
-        viewportWidth = primaryRect->right - primaryRect->left;
-        viewportHeight = primaryRect->bottom - primaryRect->top;
+        // Retail discards the primary-surface rect here; the viewport size stays unset.
+        zVideo::GetPrimarySurfaceRectScratch();
     }
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
     CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
@@ -539,9 +536,10 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
-    cameraTargetDrift.x = (g_HudWeatherFxSnow_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y = (g_HudWeatherFxSnow_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z = (g_HudWeatherFxSnow_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    zMath::Vec3Subtract((const zVec3*)(&g_HudWeatherFxSnow_LastCameraTarget), &cameraTarget, &cameraTargetDrift);
+    cameraTargetDrift.x *= -0.100000001f;
+    cameraTargetDrift.y *= -0.100000001f;
+    cameraTargetDrift.z *= -0.100000001f;
     g_HudWeatherFxSnow_LastCameraTarget.x = cameraTarget.x;
     g_HudWeatherFxSnow_LastCameraTarget.y = cameraTarget.y;
     g_HudWeatherFxSnow_LastCameraTarget.z = cameraTarget.z;
@@ -560,31 +558,34 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     zMath::MatRotateY(cameraAngles.y);
     zMath::MatRotateX(cameraAngles.x);
 
-    zVec3 gravityOffset;
-    const float gravityScale = (float)(gravity * 0.1);
-    gravityOffset.x = basisVector.x * gravityScale;
-    gravityOffset.y = basisVector.y * gravityScale;
-    gravityOffset.z = basisVector.z * gravityScale;
+    const double gravityScale = gravity * 0.1;
+    zVec3 gravityOffset = basisVector;
+    gravityOffset.x *= gravityScale;
+    gravityOffset.y *= gravityScale;
+    gravityOffset.z *= gravityScale;
     zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
 
     zVec3 windOffset;
-    const float windScale = (float)(windVelocity * 0.1);
-    windOffset.x = (float)(sin(windDirection)) * windScale;
+    windOffset.x = (float)(sin(windDirection) * windVelocity * 0.1);
     windOffset.y = 0.0f;
-    windOffset.z = (float)(cos(windDirection)) * windScale;
+    windOffset.z = (float)(cos(windDirection) * windVelocity * 0.1);
     zMath::MatTransformPointBatchInPlace(&windOffset, 1);
     zMath::MatStackPopPtr();
 
     zVec3 particleVelocity;
-    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
-    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
-    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
+    zMath::Vec3Add(&gravityOffset, &cameraTargetDrift, &particleVelocity);
+    zMath::Vec3Add(&windOffset, &particleVelocity, &particleVelocity);
+    float lengthSq;
+    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &particleVelocity);
+    if (lengthSq > 1.0) {
         zMath::Vec3Normalize(&particleVelocity);
     }
 
+    const float viewportWidthF = (float)(viewportWidth);
+    const float viewportHeightF = (float)(viewportHeight);
     zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
+    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
+    if (lengthSq > 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
         probeVelocity.x *= 0.100000001f;
         probeVelocity.y *= 0.100000001f;
@@ -592,32 +593,33 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3* const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3* const destPosition = &particlePositions[destBufferIndex][particleIndex];
-        destPosition->x = sourcePosition->x + particleVelocity.x;
-        destPosition->y = sourcePosition->y + particleVelocity.y;
-        destPosition->z = sourcePosition->z + particleVelocity.z;
+        zMath::Vec3Add(
+            &particlePositions[sourceBufferIndex][particleIndex],
+            &particleVelocity,
+            &particlePositions[destBufferIndex][particleIndex]
+        );
 
         zVec3 probePosition;
-        probePosition.x = sourcePosition->x + probeVelocity.x;
-        probePosition.y = sourcePosition->y + probeVelocity.y;
-        probePosition.z = sourcePosition->z + probeVelocity.z;
+        zMath::Vec3Add(&particlePositions[sourceBufferIndex][particleIndex], &probeVelocity, &probePosition);
 
-        const float sourceDepthFactor = 1.5f - sourcePosition->z;
+        const float sourceDepthFactor = 1.5f - particlePositions[sourceBufferIndex][particleIndex].z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad* const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
-        particleQuad->y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
-        particleQuad->width
-            = (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) * viewportWidthF) - particleQuad->x;
-        particleQuad->height
-            = (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) * viewportHeightF) - particleQuad->y;
-        particleQuad->color16 = packedColor16;
-        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor * 3.5);
+        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
+        particleQuads[particleIndex].y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuads[particleIndex].width
+            = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].x) - -0.5f)
+                  * viewportWidthF)
+            - particleQuads[particleIndex].x;
+        particleQuads[particleIndex].height
+            = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].y) - -0.5f)
+                  * viewportHeightF)
+            - particleQuads[particleIndex].y;
+        particleQuads[particleIndex].color16 = packedColor16;
+        particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
+        particleQuads[particleIndex].texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        particleQuads[particleIndex].slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor * 3.5);
 
-        if (HudWeatherFxSnowNeedsReset(destPosition) != 0) {
+        if (HudWeatherFxSnowNeedsReset(&particlePositions[destBufferIndex][particleIndex]) != 0) {
             ResetParticleSlot(particleIndex, 0);
         }
     }
@@ -662,7 +664,7 @@ HudWeatherFxRain::~HudWeatherFxRain() { }
  */
 void HudWeatherFxRain::Update(float deltaSeconds)
 {
-    if ((flags & 0x10) != 0) {
+    if ((~flags & 0x10) == 0) {
         return;
     }
 
@@ -671,18 +673,15 @@ void HudWeatherFxRain::Update(float deltaSeconds)
         return;
     }
 
-    int viewportWidth = 0;
-    int viewportHeight = 0;
+    int viewportWidth;
+    int viewportHeight;
     if (clipRectOrNull != 0) {
         viewportWidth = clipRectOrNull->right - clipRectOrNull->left;
         viewportHeight = clipRectOrNull->bottom - clipRectOrNull->top;
     } else {
-        const zVidRect32* const primaryRect = zVideo::GetPrimarySurfaceRectScratch();
-        viewportWidth = primaryRect->right - primaryRect->left;
-        viewportHeight = primaryRect->bottom - primaryRect->top;
+        // Retail discards the primary-surface rect here; the viewport size stays unset.
+        zVideo::GetPrimarySurfaceRectScratch();
     }
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
 
     zVec3 cameraTarget;
     CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
@@ -691,9 +690,10 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
-    cameraTargetDrift.x = (g_HudWeatherFxRain_LastCameraTarget.x - cameraTarget.x) * -0.100000001f;
-    cameraTargetDrift.y = (g_HudWeatherFxRain_LastCameraTarget.y - cameraTarget.y) * -0.100000001f;
-    cameraTargetDrift.z = (g_HudWeatherFxRain_LastCameraTarget.z - cameraTarget.z) * -0.100000001f;
+    zMath::Vec3Subtract((const zVec3*)(&g_HudWeatherFxRain_LastCameraTarget), &cameraTarget, &cameraTargetDrift);
+    cameraTargetDrift.x *= -0.100000001f;
+    cameraTargetDrift.y *= -0.100000001f;
+    cameraTargetDrift.z *= -0.100000001f;
     g_HudWeatherFxRain_LastCameraTarget.x = cameraTarget.x;
     g_HudWeatherFxRain_LastCameraTarget.y = cameraTarget.y;
     g_HudWeatherFxRain_LastCameraTarget.z = cameraTarget.z;
@@ -712,31 +712,34 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     zMath::MatRotateY(cameraAngles.y);
     zMath::MatRotateX(cameraAngles.x);
 
-    zVec3 gravityOffset;
-    const float gravityScale = (float)(gravity * 0.1);
-    gravityOffset.x = basisVector.x * gravityScale;
-    gravityOffset.y = basisVector.y * gravityScale;
-    gravityOffset.z = basisVector.z * gravityScale;
+    const double gravityScale = gravity * 0.1;
+    zVec3 gravityOffset = basisVector;
+    gravityOffset.x *= gravityScale;
+    gravityOffset.y *= gravityScale;
+    gravityOffset.z *= gravityScale;
     zMath::MatTransformPointBatchInPlace(&gravityOffset, 1);
 
     zVec3 windOffset;
-    const float windScale = (float)(windVelocity * 0.1);
-    windOffset.x = (float)(sin(windDirection)) * windScale;
+    windOffset.x = (float)(sin(windDirection) * windVelocity * 0.1);
     windOffset.y = 0.0f;
-    windOffset.z = (float)(cos(windDirection)) * windScale;
+    windOffset.z = (float)(cos(windDirection) * windVelocity * 0.1);
     zMath::MatTransformPointBatchInPlace(&windOffset, 1);
     zMath::MatStackPopPtr();
 
     zVec3 particleVelocity;
-    particleVelocity.x = cameraTargetDrift.x + gravityOffset.x + windOffset.x;
-    particleVelocity.y = cameraTargetDrift.y + gravityOffset.y + windOffset.y;
-    particleVelocity.z = cameraTargetDrift.z + gravityOffset.z + windOffset.z;
-    if (HudWeatherFxVec3LengthSq(&particleVelocity) >= 1.0) {
+    zMath::Vec3Add(&gravityOffset, &cameraTargetDrift, &particleVelocity);
+    zMath::Vec3Add(&windOffset, &particleVelocity, &particleVelocity);
+    float lengthSq;
+    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &particleVelocity);
+    if (lengthSq > 1.0) {
         zMath::Vec3Normalize(&particleVelocity);
     }
 
+    const float viewportWidthF = (float)(viewportWidth);
+    const float viewportHeightF = (float)(viewportHeight);
     zVec3 probeVelocity = particleVelocity;
-    if (HudWeatherFxVec3LengthSq(&probeVelocity) >= 0.010000000000000002) {
+    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
+    if (lengthSq > 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
         probeVelocity.x *= 0.100000001f;
         probeVelocity.y *= 0.100000001f;
@@ -744,30 +747,31 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     }
 
     for (int particleIndex = 0; particleIndex < particleCount; ++particleIndex) {
-        const zVec3* const sourcePosition = &particlePositions[sourceBufferIndex][particleIndex];
-        zVec3* const destPosition = &particlePositions[destBufferIndex][particleIndex];
-        destPosition->x = sourcePosition->x + particleVelocity.x;
-        destPosition->y = sourcePosition->y + particleVelocity.y;
-        destPosition->z = sourcePosition->z + particleVelocity.z;
+        zMath::Vec3Add(
+            &particlePositions[sourceBufferIndex][particleIndex],
+            &particleVelocity,
+            &particlePositions[destBufferIndex][particleIndex]
+        );
 
         zVec3 probePosition;
-        probePosition.x = sourcePosition->x + probeVelocity.x;
-        probePosition.y = sourcePosition->y + probeVelocity.y;
-        probePosition.z = sourcePosition->z + probeVelocity.z;
+        zMath::Vec3Add(&particlePositions[sourceBufferIndex][particleIndex], &probeVelocity, &probePosition);
 
-        const float sourceDepthFactor = 1.5f - sourcePosition->z;
+        const float sourceDepthFactor = 1.5f - particlePositions[sourceBufferIndex][particleIndex].z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        HudWeatherFxParticleQuad* const particleQuad = &particleQuads[particleIndex];
-        particleQuad->x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
-        particleQuad->y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
-        particleQuad->width
-            = (int)(((sourceDepthFactor * sourcePosition->x) - -0.5f) * viewportWidthF) - particleQuad->x;
-        particleQuad->height
-            = (int)(((sourceDepthFactor * sourcePosition->y) - -0.5f) * viewportHeightF) - particleQuad->y;
-        particleQuad->color16 = packedColor16;
-        particleQuad->texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuad->texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuad->slantOffset = kHudWeatherFxRainSlantDelta;
+        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
+        particleQuads[particleIndex].y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuads[particleIndex].width
+            = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].x) - -0.5f)
+                  * viewportWidthF)
+            - particleQuads[particleIndex].x;
+        particleQuads[particleIndex].height
+            = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].y) - -0.5f)
+                  * viewportHeightF)
+            - particleQuads[particleIndex].y;
+        particleQuads[particleIndex].color16 = packedColor16;
+        particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
+        particleQuads[particleIndex].texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        particleQuads[particleIndex].slantOffset = kHudWeatherFxRainSlantDelta;
 
         ResetParticleSlot(particleIndex, 0);
     }

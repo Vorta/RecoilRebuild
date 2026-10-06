@@ -30,6 +30,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct OptCatalogQueuedImpactRecord {
+    OptCatalogEntryDef* entry;
+    CZNodePartial* ownerNode;
+    zVec3 sourcePos;
+    OptCatalogRaycastHitEntry hit;
+    float damageAmount;
+    unsigned char unknown_40[4];
+};
+
+RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
+
+/**
+ * Deferred OptCatalog impact queue. Retail keeps the count and the 64 records
+ * in one object (0x77896c..0x779a70): HandleImpactFromRuntimeProbe re-reads
+ * the count after every record store, as VC5 does for stores into one aggregate.
+ */
+struct OptCatalogQueuedImpactQueue {
+    int count;
+    OptCatalogQueuedImpactRecord records[64];
+};
+
+// Defined in zwep_init.c inside its extern "C" data block.
+extern "C" OptCatalogQueuedImpactQueue g_OptCatalogQueuedImpactQueue;
+
 namespace zMath
 {
     /**
@@ -195,30 +219,6 @@ float g_OptCatalogRuntimeDeltaTime = 0.0f;
  */
 float g_OptCatalogRuntimeNowSec = 0.0f;
 }
-
-namespace
-{
-    struct OptCatalogQueuedImpactRecord {
-        OptCatalogEntryDef* entry;
-        CZNodePartial* ownerNode;
-        zVec3 sourcePos;
-        OptCatalogRaycastHitEntry hit;
-        float damageAmount;
-        unsigned char unknown_40[4];
-    };
-
-    RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogqueuedimpacts
-     * @recoil-artifact defines .data recoil:data:0x778970: g_OptCatalogQueuedImpactRecords.
-     * BN data shape: OptCatalogQueuedImpactRecord[64], 4352 bytes, zero-filled
-     * BSS. Paired with g_OptCatalogQueuedImpactCount at 0x77896c.
-     * Purpose: deferred impact callback queue drained by
-     * OptCatalog::ProcessRuntimeInstances.
-     */
-    OptCatalogQueuedImpactRecord g_OptCatalogQueuedImpacts[64] = { 0 };
-} // namespace
 
 extern "C" {
 /**
@@ -504,7 +504,7 @@ namespace OptCatalog
      * @recoil-artifact defines .text recoil:function:0x4ae660: OptCatalog::AllocRuntimeInstance
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
-     *
+     * @recoil-match byte
      *
      * Raw assembly: the zwep_ammo.c-resident zMath::Vec3Length expansion
      * [0x4ae7aa,0x4ae7c8) and zMath::Vec3Subtract expansion [0x4ae803,0x4ae826)
@@ -1045,7 +1045,7 @@ namespace OptCatalog
      * walks every loaded OptCatalog entry, updates trail-runtime segment
      * visuals and projectile runtime instances, recycles expired instances,
      * handles lock-on warning audio, and restores the packed variant tag.
-     * Data touch: reads/writes g_OptCatalogQueuedImpactCount at 0x77896c,
+     * Data touch: reads/writes g_OptCatalogQueuedImpactQueue.count at 0x77896c,
      * g_OptCatalogRuntimeDeltaTime at 0x56bca8, g_OptCatalogRuntimeNowSec at
      * 0x56bcac, and lock-on warning gate state.
      * Purpose: frame-update all active OptCatalog runtime state.
@@ -1059,9 +1059,10 @@ namespace OptCatalog
         g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
         g_OptCatalogRuntimeNowSec = g_Time_UnscaledAccumulatedTimeSec;
 
-        while (g_OptCatalogQueuedImpactCount != 0) {
-            --g_OptCatalogQueuedImpactCount;
-            OptCatalogQueuedImpactRecord* const record = &g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount];
+        while (g_OptCatalogQueuedImpactQueue.count != 0) {
+            --g_OptCatalogQueuedImpactQueue.count;
+            OptCatalogQueuedImpactRecord* const record
+                = &g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count];
             InvokeDamageFeedbackAndHitCallback(
                 record->entry,
                 record->ownerNode,
@@ -2232,7 +2233,7 @@ namespace OptCatalog
             damageAmount *= runtimeInstance->spawnScale;
 
             if ((self->flags & kOptCatalogFlagImmediateProbeImpact) != 0
-                || g_OptCatalogQueuedImpactCount >= kMaxQueuedImpacts) {
+                || g_OptCatalogQueuedImpactQueue.count >= kMaxQueuedImpacts) {
                 OptCatalogHitEventPartial* hitEvent = (OptCatalogHitEventPartial*)(void*)(hit);
                 InvokeDamageFeedbackAndHitCallback(
                     self,
@@ -2242,12 +2243,14 @@ namespace OptCatalog
                     damageAmount
                 );
             } else {
-                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].entry = self;
-                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].ownerNode = runtimeInstance->ownerNode;
-                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].sourcePos = runtimeInstance->pos;
-                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].hit = *hit;
-                g_OptCatalogQueuedImpacts[g_OptCatalogQueuedImpactCount].damageAmount = damageAmount;
-                ++g_OptCatalogQueuedImpactCount;
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry = self;
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode
+                    = runtimeInstance->ownerNode;
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos
+                    = runtimeInstance->pos;
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].hit = *hit;
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount = damageAmount;
+                ++g_OptCatalogQueuedImpactQueue.count;
             }
 
             processedAny = 1;
