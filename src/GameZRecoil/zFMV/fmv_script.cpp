@@ -293,7 +293,7 @@ void zFMV_Script::Reset(int destroyActions)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-loadactionsfromzrd
  * @recoil-artifact defines .text recoil:function:0x4626b0: zFMV_Script::LoadActionsFromZrd.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: load FMV path metadata and construct actions from a named zReader sequence.
  */
@@ -733,6 +733,10 @@ void CZFMVActionImage::End()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-fade-czfmvaction-fade
+ * @recoil-artifact defines .text recoil:function:0x4633c0: CZFMVActionFade::CZFMVActionFade.
+ * @recoil-match byte
+ *
  * Purpose: initialize fade color, duration, direction, and alpha settings.
  */
 CZFMVActionFade::CZFMVActionFade(int red, int green, int blue, unsigned int duration, int direction, float alpha)
@@ -831,6 +835,10 @@ void CZFMVActionFade::End()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-avi-czfmvaction-play-avi
+ * @recoil-artifact defines .text recoil:function:0x463570: CZFMVActionPlayAvi::CZFMVActionPlayAvi.
+ * @recoil-match byte
+ *
  * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
  */
 CZFMVActionPlayAvi::CZFMVActionPlayAvi(const char* mediaRootPath, const char* mediaFileName, int flags)
@@ -936,6 +944,10 @@ void CZFMVActionPlayAvi::End()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zfmv.fmv-script.z-fmv-action-blur-z-fmv-action-blur
+ * @recoil-artifact defines .text recoil:function:0x463850: zFMV_ActionBlur::zFMV_ActionBlur.
+ * @recoil-match byte
+ *
  * Purpose: initialize a blur action's frame count and pass count.
  */
 zFMV_ActionBlur::zFMV_ActionBlur(int framesRemainingParam, int blurPassCountParam)
@@ -1125,6 +1137,10 @@ int CZFMVActionBlurV::Update(double)
     return framesRemaining != 0;
 }
 /**
+ * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-mci-czfmvaction-play-mci
+ * @recoil-artifact defines .text recoil:function:0x463b00: CZFMVActionPlayMci::CZFMVActionPlayMci.
+ * @recoil-match byte
+ *
  * Purpose: build the MCI media path, create playback state, and set its destination rect.
  */
 CZFMVActionPlayMci::CZFMVActionPlayMci(HWND hwnd, const char* mediaRootPath, const char* playbackTitle)

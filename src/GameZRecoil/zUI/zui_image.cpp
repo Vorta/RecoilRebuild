@@ -83,6 +83,11 @@ void HudUiWidget::ReleaseImageIfOwned()
     ownsImage = 0;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-pos
+ * @recoil-artifact defines .text recoil:function:0x4b3dd0: HudUiWidget::SetPos.
+ * @recoil-match byte
+ */
 void HudUiWidget::SetPos(int newX, int newY)
 {
     if (alignFlags != 0 && image != 0) {
@@ -96,6 +101,11 @@ void HudUiWidget::SetPos(int newX, int newY)
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-image-by-path-owned
+ * @recoil-artifact defines .text recoil:function:0x4b3e30: HudUiWidget::SetImageByPathOwned.
+ * @recoil-match byte
+ */
 zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
 {
     if (imagePath == 0) {
@@ -112,6 +122,11 @@ zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
     return image;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-image-borrowed-and-invalidate
+ * @recoil-artifact defines .text recoil:function:0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate.
+ * @recoil-match byte
+ */
 zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* newImage)
 {
     ownsImage = 0;
@@ -120,6 +135,10 @@ zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* n
     return newImage;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-invalidate-rect
+ * @recoil-artifact defines .text recoil:function:0x4b3e90: HudUiWidget::InvalidateRect.
+ */
 void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
 {
     HudUiRectDirty* slot = 0;
@@ -174,6 +193,11 @@ void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
     Invalidate();
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-draw
+ * @recoil-artifact defines .text recoil:function:0x4b3fb0: HudUiWidget::Draw.
+ * @recoil-match byte
+ */
 void HudUiWidget::Draw()
 {
     if (image == 0) {

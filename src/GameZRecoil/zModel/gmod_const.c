@@ -208,14 +208,6 @@ float g_zModel_ConstVertexMergeEpsilon = 0.001f;
  */
 int g_zModel_MaxPolygonVertexCountBeforeSplit = 48;
 /**
- * Purpose: store the vertex and normal count warning threshold.
- */
-double g_zModel_ConstVertexWarnThreshold = 921.6;
-/**
- * Purpose: store the normal merge epsilon used when adding model normals.
- */
-double g_zModel_NormalMergeEpsilon = 0.0001;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-coplanartolerance
  * @recoil-artifact defines .data recoil:data:0x4e1388: g_zModel_CoplanarTolerance.
  * Purpose: store the coplanar polygon tolerance.
@@ -1168,7 +1160,7 @@ namespace zModel_Const
 
         if (vertexIndex == -1) {
             vertexIndex = self->vertCount;
-            if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+            if ((double)(self->vertCount) > 921.6) {
                 sprintf(
                     g_zError_DebugMsgBuffer,
                     g_zModel_VertexCountWarningFmt,
@@ -1237,7 +1229,7 @@ namespace zModel_Const
 
             ++self->vertCount;
             self->blendVertCount = self->vertCount;
-            if ((double)(self->vertCount) > g_zModel_ConstVertexWarnThreshold) {
+            if ((double)(self->vertCount) > 921.6) {
                 sprintf(
                     g_zError_DebugMsgBuffer,
                     g_zModel_VertexCountWarningFmt,
@@ -1270,9 +1262,8 @@ namespace zModel_Const
         int normalIndex = -1;
         zVec3* existingNormal = self->normals;
         for (int i = 0; i < self->normalCount; ++existingNormal, ++i) {
-            if (fabs(existingNormal->x - normal->x) < g_zModel_NormalMergeEpsilon
-                && fabs(existingNormal->y - normal->y) < g_zModel_NormalMergeEpsilon
-                && fabs(existingNormal->z - normal->z) < g_zModel_NormalMergeEpsilon) {
+            if (fabs(existingNormal->x - normal->x) < 0.0001f && fabs(existingNormal->y - normal->y) < 0.0001f
+                && fabs(existingNormal->z - normal->z) < 0.0001f) {
                 normalIndex = i;
                 break;
             }
@@ -1287,7 +1278,7 @@ namespace zModel_Const
             appended->y = normal->y;
             appended->z = normal->z;
             ++self->normalCount;
-            if ((double)(self->normalCount) > g_zModel_ConstVertexWarnThreshold) {
+            if ((double)(self->normalCount) > 921.6) {
                 sprintf(
                     g_zError_DebugMsgBuffer,
                     g_zModel_NormalCountWarningFmt,

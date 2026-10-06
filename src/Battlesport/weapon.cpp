@@ -619,7 +619,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- * @recoil-match byte
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -2310,7 +2310,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -2939,6 +2939,10 @@ int __fastcall EnterDestroyedState(
     return playerState->recentHitValid;
 }
 /**
+ * @recoil-anchor recoil:anchor:battlesport.weapon.player-apply-damage-local
+ * @recoil-artifact defines .text recoil:function:0x43c010: Player::ApplyDamageLocal.
+ * @recoil-match byte
+ *
  * Source placement note: Player::ApplyDamageLocal is provisionally located here.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish local damage processing by updating feedback while health
@@ -3083,10 +3087,7 @@ void __fastcall ProcessAltGunDispatchRequest(zUtil_SaveGameState* saveState)
 
             if (didFire != 0 && saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable
                 && zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
-                zInputDIPlayAltFireEffect(
-                    g_zInputFfEffectSet,
-                    activeAltGunController->optCatalogEntry->damage * 0.0151515156f
-                );
+                g_zInputFfEffectSet->PlayAltFireEffect(activeAltGunController->optCatalogEntry->damage * 0.0151515156f);
             }
         }
 
@@ -3368,6 +3369,10 @@ void __fastcall AutoSwitchToNextUsableAltWeapon(zUtil_SaveGameState* saveState)
     }
 }
 /**
+ * @recoil-anchor recoil:anchor:battlesport.weapon.player-reset-alt-gun-door-animation-state
+ * @recoil-artifact defines .text recoil:function:0x43c800: Player::ResetAltGunDoorAnimationState.
+ * @recoil-match byte
+ *
  * Source placement note: Player::ResetAltGunDoorAnimationState is provisionally located here.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reset the alternate-gun door animation timer and restore the

@@ -784,6 +784,10 @@ void HudWeatherFxRain::Update(float deltaSeconds)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-update-local
+ * @recoil-artifact defines .text recoil:function:0x4bed30: zVideoFxPass3Config::UpdateLocal.
+ * @recoil-match byte
+ *
  * Purpose: update the pass-3 children and reset the queued-slot count.
  * Retail 0x4bed30 receives this in ECX and deltaTime on the stack.
  */
@@ -794,6 +798,10 @@ void zVideoFxPass3Config::UpdateLocal(float deltaTime)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-set-primary-element-params-local
+ * @recoil-artifact defines .text recoil:function:0x4bed50: zVideoFxPass3Config::SetPrimaryElementParamsLocal.
+ * @recoil-match byte
+ *
  * Purpose: arm the root overlay with its packed color and alpha.
  * Retail 0x4bed50 receives this in ECX and both arguments on the stack.
  */
@@ -808,6 +816,10 @@ void zVideoFxPass3Config::SetPrimaryElementParamsLocal(unsigned short packedColo
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-queue-element-local
+ * @recoil-artifact defines .text recoil:function:0x4bed90: zVideoFxPass3Config::QueueElementLocal.
+ * @recoil-match byte
+ *
  * Purpose: queue one radial-warp slot for the next pass-3 update.
  * Retail 0x4bed90 receives this in ECX and all seven arguments on the stack.
  */
@@ -842,6 +854,10 @@ void zVideoFxPass3Config::QueueElementLocal(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-set-input-rect-by-index
+ * @recoil-artifact defines .text recoil:function:0x4bee00: zVideoFxPass3Config::SetInputRectByIndex.
+ * @recoil-match byte
+ *
  * Purpose: store a provisional pass-3 input rectangle while retail source
  * placement remains unresolved.
  */
@@ -880,11 +896,19 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(void* primitive, int width, int heig
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-destroy-z-video-fx-pass3-config
+ * @recoil-artifact defines .text recoil:function:0x4bee80: zVideoFxPass3Config::~zVideoFxPass3Config.
+ */
 zVideoFxPass3Config::~zVideoFxPass3Config() { }
 
 namespace zVideo {
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-set-primary-element-params-local
+ * @recoil-artifact defines .text recoil:function:0x4beee0: zVideo::FxPass3SetPrimaryElementParamsLocal.
+ * @recoil-match byte
+ *
  * Purpose: relay provisional local pass-3 primary-element state while retail
  * source placement remains unresolved.
  */
@@ -894,6 +918,10 @@ void __fastcall FxPass3SetPrimaryElementParamsLocal(unsigned short packedColor, 
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-queue-element-local
+ * @recoil-artifact defines .text recoil:function:0x4bef10: zVideo::FxPass3QueueElementLocal.
+ * @recoil-match byte
+ *
  * Purpose: relay provisional local pass-3 queue state while retail source
  * placement remains unresolved.
  */
@@ -919,6 +947,10 @@ void __fastcall FxPass3QueueElementLocal(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-set-input-rect-by-index
+ * @recoil-artifact defines .text recoil:function:0x4bef40: zVideo::FxPass3SetInputRectByIndex.
+ * @recoil-match byte
+ *
  * Purpose: relay a provisional local pass-3 input rectangle while retail
  * source placement remains unresolved.
  */
@@ -928,6 +960,10 @@ void __fastcall FxPass3SetInputRectByIndex(int index, HudUiRect* rectOrNull)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-queue-primitive
+ * @recoil-artifact defines .text recoil:function:0x4bef50: zVideo::FxPass3QueuePrimitive.
+ * @recoil-match byte
+ *
  * Purpose: relay provisional raw pass-3 surface input while retail source
  * placement remains unresolved.
  */
@@ -937,6 +973,10 @@ void __fastcall FxPass3QueuePrimitive(void* primitive, int width, int height, in
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-update-local
+ * @recoil-artifact defines .text recoil:function:0x4bef70: zVideo::FxPass3UpdateLocal.
+ * @recoil-match byte
+ *
  * Purpose: relay the provisional local pass-3 update while retail source
  * placement remains unresolved.
  */
@@ -948,6 +988,10 @@ void __fastcall FxPass3UpdateLocal(float deltaTime)
 } // namespace zVideo
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-z-video-fx-pass3-config
+ * @recoil-artifact defines .text recoil:function:0x4bef90: zVideoFxPass3Config::zVideoFxPass3Config.
+ * @recoil-match byte
+ *
  * Purpose: provide the provisional pass-3 configuration constructor while
  * retail source placement remains unresolved.
  */
@@ -1324,6 +1368,10 @@ void HudUiPolyline::SetPoint(int index, int pointX, int pointY)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.hud-ui-polyline-draw
+ * @recoil-artifact defines .text recoil:function:0x4bf900: HudUiPolyline::Draw.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiPolyline::Draw.
  */
 void HudUiPolyline::Draw()

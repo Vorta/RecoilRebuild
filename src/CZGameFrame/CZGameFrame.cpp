@@ -194,6 +194,10 @@ void CZGameFrame::OnSize(unsigned int nType, int cx, int cy)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:czgameframe.czgameframe.z-vid-update-cached-client-rect-if-update-mask-enabled
+ * @recoil-artifact defines .text recoil:function:0x443a40: zVid::UpdateCachedClientRectIfUpdateMaskEnabled.
+ * @recoil-match byte
+ *
  * Purpose: refresh the cached client rectangle when the active renderer path
  * permits update-mask-driven window tracking.
  */

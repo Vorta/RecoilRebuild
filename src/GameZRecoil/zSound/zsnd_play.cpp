@@ -222,6 +222,10 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(unsigned char tag)
 #endif
 
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-play.z-snd-tick
+ * @recoil-artifact defines .text recoil:function:0x49f620: zSndTick.
+ * @recoil-match byte
+ *
  * Purpose: advance backend deferred work, active fades, and the last-voice
  * marker callback timeline.
  */
@@ -1337,6 +1341,10 @@ zSndPlayHandleSnapshot::NewNode(zSndPlayHandleSnapshotItem* listHead, zSndPlayHa
 
 namespace zSnd {
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-play.z-snd-set-use-archive-banks-flag
+ * @recoil-artifact defines .text recoil:function:0x4a07f0: zSnd::SetUseArchiveBanksFlag.
+ * @recoil-match byte
+ *
  * Purpose: Store the archive-bank selector global for sound-bank loading.
  */
 void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks)

@@ -417,6 +417,10 @@ namespace zSnd
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zgame.zgame-opt.z-snd-release-cached-direct-sound
+     * @recoil-artifact defines .text recoil:function:0x4b2fa0: zSnd::ReleaseCachedDirectSound.
+     * @recoil-match byte
+     *
      * Purpose: release and clear the cached DirectSound device when present.
      */
     void __cdecl ReleaseCachedDirectSound()
@@ -429,6 +433,10 @@ namespace zSnd
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zgame.zgame-opt.z-snd-cached-direct-sound-get-caps
+     * @recoil-artifact defines .text recoil:function:0x4b2fc0: zSnd::CachedDirectSoundGetCaps.
+     * @recoil-match byte
+     *
      * Purpose: initialize the DirectSound caps structure size and query the cached
      * DirectSound device.
      */
@@ -614,6 +622,11 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem()
     defaultFlagBits.capability2 = zSys::ReturnZeroStub();
     defaultFlagBits.hasHardware3d = zVid::HasAcceptedHardwareRenderer();
 
+    /**
+     * @recoil-anchor recoil:anchor:zgame.zgame-opt.z-snd-acquire-cached-direct-sound
+     * @recoil-artifact defines .text recoil:function:0x4b2f50: zSnd::AcquireCachedDirectSound.
+     * @recoil-match byte
+     */
     if (zSnd::AcquireCachedDirectSound(0) != 0) {
         DSCAPS caps;
         zSnd::CachedDirectSoundGetCaps(&caps);
@@ -630,7 +643,7 @@ RECOIL_NO_GS int zGame_OptionsRuntimeConfig::InitFromSystem()
  * @recoil-artifact defines .text recoil:function:0x4b3160: zGame_OptionsRuntimeConfig::LoadCpuVendorString.
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zgame.options-runtime-config.load-cpu-vendor-string
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zGame\zGame.cpp.
  * Purpose: load the CPUID vendor string into the runtime configuration when
@@ -644,25 +657,31 @@ RECOIL_NO_GS void zGame_OptionsRuntimeConfig::LoadCpuVendorString()
         return;
     }
 
-    int cpuInfo[4];
+    char vendor[0x0c];
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     __asm {
-        lea edi, cpuInfo
-        xor eax, eax
+        push ebx
+        push ecx
+        push edx
+        mov eax, 0
         _emit 0x0f
         _emit 0xa2
-        mov dword ptr [edi], eax
-        mov dword ptr [edi + 004h], ebx
-        mov dword ptr [edi + 008h], ecx
-        mov dword ptr [edi + 00ch], edx
+        mov dword ptr vendor, ebx
+        mov dword ptr vendor + 4, edx
+        mov dword ptr vendor + 8, ecx
+        pop edx
+        pop ecx
+        pop ebx
     }
 #else
-    __cpuid(cpuInfo, 0);
+    {
+        int cpuInfo[4];
+        __cpuid(cpuInfo, 0);
+        memcpy(&vendor[0], &cpuInfo[1], 4);
+        memcpy(&vendor[4], &cpuInfo[3], 4);
+        memcpy(&vendor[8], &cpuInfo[2], 4);
+    }
 #endif
-    char vendor[0x0c];
-    memcpy(&vendor[0], &cpuInfo[1], 4);
-    memcpy(&vendor[4], &cpuInfo[3], 4);
-    memcpy(&vendor[8], &cpuInfo[2], 4);
     strncpy(cpuVendor, vendor, 0x0c);
     cpuVendor[0x0c] = '\0';
 }
@@ -725,6 +744,10 @@ namespace zVid
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zgame.zgame-opt.z-vid-has-accepted-hardware-renderer
+     * @recoil-artifact defines .text recoil:function:0x4b3220: zVid::HasAcceptedHardwareRenderer.
+     * @recoil-match byte
+     *
      * Purpose: report whether the cached renderer list contains an accepted entry.
      */
     int __cdecl HasAcceptedHardwareRenderer()

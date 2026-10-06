@@ -142,6 +142,10 @@ void __cdecl Reset()
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-register-gameplay-handlers-and-opt-catalog-callbacks
+ * @recoil-artifact defines .text recoil:function:0x431c50: GameNet::RegisterGameplayHandlersAndOptCatalogCallbacks.
+ * @recoil-match byte
+ *
  * Purpose: Register gameplay packet handlers and option catalog callbacks once.
  */
 void __fastcall RegisterGameplayHandlersAndOptCatalogCallbacks()
@@ -286,6 +290,10 @@ void __cdecl InitFromZrd()
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-wait-for-local-player-color-index
+ * @recoil-artifact defines .text recoil:function:0x4320b0: GameNet::WaitForLocalPlayerColorIndex.
+ * @recoil-match byte
+ *
  * Purpose: Pump pending DirectPlay messages until the local player receives a
  * positive color index or the wait budget expires.
  */
@@ -354,6 +362,10 @@ void __cdecl ResetRemotePlayersAndSpawnLists()
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-unregister-gameplay-packet-handlers
+ * @recoil-artifact defines .text recoil:function:0x4321b0: GameNet::UnregisterGameplayPacketHandlers.
+ * @recoil-match byte
+ *
  * Purpose: Remove all gameplay packet handlers registered with zNetwork.
  */
 void __cdecl UnregisterGameplayPacketHandlers()
@@ -400,6 +412,10 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-tick-local-player-pkt06-replication-and-hud-timer
+ * @recoil-artifact defines .text recoil:function:0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer.
+ * @recoil-match byte
+ *
  * Purpose: Replicate the local pkt06 player-state snapshot and drive host HUD
  * timer warning/status packet updates.
  */
@@ -534,6 +550,10 @@ int __fastcall TickLocalPlayerPkt06ReplicationAndHudTimer(zUtil_SaveGameState* s
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt06-player-state-snapshot
+ * @recoil-artifact defines .text recoil:function:0x4327e0: GameNet::HandlePkt06PlayerStateSnapshot.
+ * @recoil-match byte
+ *
  * Purpose: Dispatch an incoming player-state snapshot to row creation or
  * existing-row update handling.
  */
@@ -561,6 +581,10 @@ int __fastcall HandlePkt06PlayerStateSnapshot(int senderPlayerId, NetPkt06_Playe
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-find-player-row-by-key
+ * @recoil-artifact defines .text recoil:function:0x432830: GameNet::FindPlayerRowByKey.
+ * @recoil-match byte
+ *
  * Purpose: Find the active GameNet remote-player row for a network player key.
  */
 GameNetPlayerRow* __fastcall FindPlayerRowByKey(int playerKey)
@@ -759,6 +783,10 @@ int __fastcall ApplyPkt06PlayerStateSnapshotToRow(GameNetPlayerRow* row, NetPkt0
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-update-remote-player-hud-widget-screen-pos
+ * @recoil-artifact defines .text recoil:function:0x432d60: GameNet::UpdateRemotePlayerHudWidgetScreenPos.
+ * @recoil-match byte
+ *
  * Purpose: Project a remote player name-tag HUD widget into screen space.
  */
 int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveState)
@@ -894,6 +922,10 @@ int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketH
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt08-player-kill-event
+ * @recoil-artifact defines .text recoil:function:0x433000: GameNet::SendPkt08PlayerKillEvent.
+ * @recoil-match byte
+ *
  * Purpose: Build, send, and locally dispatch a packet-08 player kill event.
  */
 void __fastcall SendPkt08PlayerKillEvent(zUtil_SaveGameState* saveState, short killMethodOrOptCatalogEntryId)
@@ -915,6 +947,10 @@ void __fastcall SendPkt08PlayerKillEvent(zUtil_SaveGameState* saveState, short k
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt08-player-kill-event
+ * @recoil-artifact defines .text recoil:function:0x433060: GameNet::HandlePkt08PlayerKillEvent.
+ * @recoil-match byte
+ *
  * Purpose: Apply an incoming packet-08 player kill event and host-side
  * scoreboard update.
  */
@@ -950,6 +986,10 @@ int __fastcall HandlePkt08PlayerKillEvent(int localPlayerKey, NetPkt08_PlayerKil
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt0-eplayer-lap-progress
+ * @recoil-artifact defines .text recoil:function:0x4330f0: GameNet::SendPkt0EPlayerLapProgress.
+ * @recoil-match byte
+ *
  * Purpose: Publish the local player's packed lap count and lap time packet.
  */
 void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState* saveState)
@@ -974,6 +1014,10 @@ void __fastcall SendPkt0EPlayerLapProgress(zUtil_SaveGameState* saveState)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt0-eplayer-lap-progress
+ * @recoil-artifact defines .text recoil:function:0x433170: GameNet::HandlePkt0EPlayerLapProgress.
+ * @recoil-match byte
+ *
  * Purpose: Apply a host-side player lap-progress packet and refresh race HUD
  * state when the lap target is reached.
  */
@@ -1034,6 +1078,10 @@ int __cdecl AreAllPlayersAtLapTarget()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt0-dhud-timer-panel-state
+ * @recoil-artifact defines .text recoil:function:0x433250: GameNet::HandlePkt0DHudTimerPanelState.
+ * @recoil-match byte
+ *
  * Purpose: Apply the host HUD timer panel state packet to local timer state.
  */
 int __fastcall HandlePkt0DHudTimerPanelState(int, NetPkt0D_HudTimerPanelState* packet)
@@ -1075,6 +1123,10 @@ int __fastcall HandlePkt0DHudTimerPanelState(int, NetPkt0D_HudTimerPanelState* p
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt0-dhud-timer-panel-state
+ * @recoil-artifact defines .text recoil:function:0x433310: GameNet::SendPkt0DHudTimerPanelState.
+ * @recoil-match byte
+ *
  * Purpose: Send and locally apply the host HUD timer panel state packet.
  */
 void __fastcall SendPkt0DHudTimerPanelState(HudTimerPanelNetState* timerState)
@@ -1112,6 +1164,10 @@ void __fastcall SendPkt0DHudTimerPanelState(HudTimerPanelNetState* timerState)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt0-chud-timer-status-bits
+ * @recoil-artifact defines .text recoil:function:0x433390: GameNet::SendPkt0CHudTimerStatusBits.
+ * @recoil-match byte
+ *
  * Purpose: Send and locally apply replicated HUD timer status bits.
  */
 int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState* timerState)
@@ -1145,6 +1201,10 @@ int __fastcall SendPkt0CHudTimerStatusBits(HudTimerPanelNetState* timerState)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt0-chud-timer-status-bits
+ * @recoil-artifact defines .text recoil:function:0x433410: GameNet::HandlePkt0CHudTimerStatusBits.
+ * @recoil-match byte
+ *
  * Purpose: Apply replicated HUD timer seconds and warning status bits.
  */
 int __fastcall HandlePkt0CHudTimerStatusBits(int, NetPkt0C_HudTimerStatusBits* packet)
@@ -1220,6 +1280,10 @@ void __cdecl SendPkt09PlayerScoreboardSnapshot()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt09-player-scoreboard-snapshot
+ * @recoil-artifact defines .text recoil:function:0x4335b0: GameNet::HandlePkt09PlayerScoreboardSnapshot.
+ * @recoil-match byte
+ *
  * Purpose: Apply packed player score and lap rows and trigger HUD warnings.
  */
 int __fastcall HandlePkt09PlayerScoreboardSnapshot(int, NetPkt09_PlayerScoreboardSnapshot* packet)
@@ -1273,6 +1337,10 @@ int __fastcall HandlePkt09PlayerScoreboardSnapshot(int, NetPkt09_PlayerScoreboar
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-get-local-player-color-index-or-zero
+ * @recoil-artifact defines .text recoil:function:0x4336f0: GameNet::GetLocalPlayerColorIndexOrZero.
+ * @recoil-match byte
+ *
  * Purpose: Return the local GameNet player-row color index when the local
  * save-state row is available, or zero otherwise.
  */
@@ -1292,6 +1360,10 @@ int __cdecl GetLocalPlayerColorIndexOrZero()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-set-status-bits-from-flags
+ * @recoil-artifact defines .text recoil:function:0x433710: GameNet::SetStatusBitsFromFlags.
+ * @recoil-match byte
+ *
  * Purpose: Decode host status flags into the cached allow-map and name-tag bits.
  */
 void __fastcall SetStatusBitsFromFlags(unsigned int statusFlags)
@@ -1301,6 +1373,10 @@ void __fastcall SetStatusBitsFromFlags(unsigned int statusFlags)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-get-status-bit-allow-maps
+ * @recoil-artifact defines .text recoil:function:0x433730: GameNet::GetStatusBitAllowMaps.
+ * @recoil-match byte
+ *
  * Purpose: Return the cached status bit controlling map availability.
  */
 int __cdecl GetStatusBitAllowMaps()
@@ -1317,6 +1393,10 @@ int __cdecl GetStatusBitNameTags()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt0-bchat-message
+ * @recoil-artifact defines .text recoil:function:0x433750: GameNet::SendPkt0BChatMessage.
+ * @recoil-match byte
+ *
  * Purpose: Build and send a packet-0B chat message for the local player.
  */
 void __fastcall SendPkt0BChatMessage(const char* message)
@@ -1338,6 +1418,10 @@ void __fastcall SendPkt0BChatMessage(const char* message)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt0-bchat-message
+ * @recoil-artifact defines .text recoil:function:0x4337e0: GameNet::HandlePkt0BChatMessage.
+ * @recoil-match byte
+ *
  * Purpose: Copy an incoming chat payload into a bounded local string and show it.
  */
 int __fastcall HandlePkt0BChatMessage(int, NetPkt0B_ChatMessage* packet)
@@ -1356,6 +1440,9 @@ int __fastcall HandlePkt0BChatMessage(int, NetPkt0B_ChatMessage* packet)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-respawn-player-and-drop-weapon-pickup-if-allowed
+ * @recoil-artifact defines .text recoil:function:0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed.
+ *
  * Purpose: Choose a multiplayer respawn point, optionally drop the player's
  * current weapon pickup, reset transient player state, and refresh mission
  * vehicle unlock flags.
@@ -1431,6 +1518,11 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState* s
  * game-state-table row for a candidate multiplayer spawn point.
  */
 float __fastcall
+/**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-get-nearest-other-player-distance-to-spawn-point
+ * @recoil-artifact defines .text recoil:function:0x4339d0: GameNet::GetNearestOtherPlayerDistanceToSpawnPoint.
+ * @recoil-match byte
+ */
 GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNetPlayerSaveState** outSaveState)
 {
     float nearestDistanceSq = 1.0e23f;
@@ -1453,6 +1545,10 @@ GetNearestOtherPlayerDistanceToSpawnPoint(GameNetSpawnPoint* spawnPoint, GameNet
 } // namespace GameNet
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.hud-timer-panel-net-state-clear-tail-flags-local
+ * @recoil-artifact defines .text recoil:function:0x433a40: HudTimerPanelNetState::ClearTailFlagsLocal.
+ * @recoil-match byte
+ *
  * Purpose: Clears the locally cached HUD timer tail flags.
  */
 void HudTimerPanelNetState::ClearTailFlagsLocal()
@@ -1463,6 +1559,10 @@ void HudTimerPanelNetState::ClearTailFlagsLocal()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-player-row-apply-player-color-tint
+ * @recoil-artifact defines .text recoil:function:0x433a50: GameNetPlayerRow::ApplyPlayerColorTint.
+ * @recoil-match byte
+ *
  * Purpose: Applies the selected player color to the row's modal display.
  */
 void GameNetPlayerRow::ApplyPlayerColorTint()
@@ -1480,6 +1580,10 @@ void GameNetPlayerRow::ApplyPlayerColorTint()
 
 namespace zDEClient_Crater {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.z-declient-crater-execute
+ * @recoil-artifact defines .text recoil:function:0x433ad0: zDEClient_Crater::Execute.
+ * @recoil-match byte
+ *
  * Purpose: Normalizes a crater event and relays locally owned events to the network.
  */
 int __fastcall Execute(zDEClient_CraterEventTemplate* eventTemplate)
@@ -1533,6 +1637,10 @@ int __fastcall NetRelayCallback(int, NetPkt0F_CraterEvent* packet)
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-host-send-pkt0-fcrater-feature
+ * @recoil-artifact defines .text recoil:function:0x433c30: GameNet::HostSendPkt0FCraterFeature.
+ * @recoil-match byte
+ *
  * Purpose: Relay a host-authored crater feature event to network peers.
  */
 int __fastcall HostSendPkt0FCraterFeature(zDEClient_CraterEventTemplate* eventTemplate)
@@ -1552,6 +1660,10 @@ int __fastcall HostSendPkt0FCraterFeature(zDEClient_CraterEventTemplate* eventTe
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt10-qsand-event
+ * @recoil-artifact defines .text recoil:function:0x433ca0: GameNet::SendPkt10QSandEvent.
+ * @recoil-match byte
+ *
  * Purpose: relay local quicksand feature events through packet 0x10 after
  * validating local damage ownership.
  */
@@ -1608,6 +1720,10 @@ int __fastcall NetRelayCallback(int, NetPkt10_QSandEvent* packet)
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-host-send-pkt10-qsand-feature
+ * @recoil-artifact defines .text recoil:function:0x433de0: GameNet::HostSendPkt10QSandFeature.
+ * @recoil-match byte
+ *
  * Purpose: Relay a host-authored quicksand feature event to network peers.
  */
 int __fastcall HostSendPkt10QSandFeature(zDEClient_QSandEventTemplate* eventTemplate)
@@ -1765,6 +1881,10 @@ int __fastcall AltGunDispatchAllocRuntimeGateCallback(OptCatalogEntryDef* self, 
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt07-alt-gun-dispatch
+ * @recoil-artifact defines .text recoil:function:0x434130: GameNet::SendPkt07_AltGunDispatch.
+ * @recoil-match byte
+ *
  * Purpose: send the local alternate-gun dispatch packet to peers.
  */
 void __fastcall SendPkt07_AltGunDispatch(int weaponId, unsigned int dispatchFlags)
@@ -1780,6 +1900,10 @@ void __fastcall SendPkt07_AltGunDispatch(int weaponId, unsigned int dispatchFlag
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt07-alt-gun-dispatch
+ * @recoil-artifact defines .text recoil:function:0x434190: GameNet::HandlePkt07_AltGunDispatch.
+ * @recoil-match byte
+ *
  * Purpose: apply a remote pkt07 alternate-gun dispatch to the matching player
  * row.
  */
@@ -1810,6 +1934,10 @@ int __fastcall HandlePkt07_AltGunDispatch(int, NetPkt07_AltGunDispatch* packet)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-alt-gun-dispatch-no-op-callback
+ * @recoil-artifact defines .text recoil:function:0x434230: GameNet::AltGunDispatchNoOpCallback.
+ * @recoil-match byte
+ *
  * Purpose: accept remote alternate-gun runtime allocation without local side
  * effects.
  */
@@ -1885,6 +2013,10 @@ int __fastcall HandlePkt0ARemoveRuntimeRelay(int, NetPkt0A_RemoveRuntimeRelay* p
 
 namespace GameNet {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt13-effect-anim-activation-record
+ * @recoil-artifact defines .text recoil:function:0x434370: GameNet::SendPkt13EffectAnimActivationRecord.
+ * @recoil-match byte
+ *
  * Purpose: Send a reliable pkt13 effect-animation activation record unless
  * replay echo suppression is active.
  */
@@ -1909,6 +2041,10 @@ void __fastcall SendPkt13EffectAnimActivationRecord(zEffectAnimActivationRecord*
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt13-effect-anim-activation-record
+ * @recoil-artifact defines .text recoil:function:0x4343f0: GameNet::HandlePkt13EffectAnimActivationRecord.
+ * @recoil-match byte
+ *
  * Purpose: Apply a new remote effect-animation activation record while
  * suppressing replay echo.
  */
@@ -1926,6 +2062,10 @@ int __fastcall HandlePkt13EffectAnimActivationRecord(int, zNetworkPacketHeader* 
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-all-pkt13-effect-anim-activation-records
+ * @recoil-artifact defines .text recoil:function:0x434430: GameNet::SendAllPkt13EffectAnimActivationRecords.
+ * @recoil-match byte
+ *
  * Purpose: Broadcast every queued effect-animation activation record from the
  * host.
  */
@@ -1942,6 +2082,10 @@ void __cdecl SendAllPkt13EffectAnimActivationRecords()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-send-pkt14-hud-timer-and-flags-sync
+ * @recoil-artifact defines .text recoil:function:0x434460: GameNet::SendPkt14HudTimerAndFlagsSync.
+ * @recoil-match byte
+ *
  * Purpose: Send the reliable packet that synchronizes HUD timer and status flags.
  */
 int __fastcall SendPkt14HudTimerAndFlagsSync(int eventCode, unsigned int statusFlags, int valueOrTime, int auxParam)
@@ -1955,6 +2099,10 @@ int __fastcall SendPkt14HudTimerAndFlagsSync(int eventCode, unsigned int statusF
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-handle-pkt14-hud-timer-and-flags-sync
+ * @recoil-artifact defines .text recoil:function:0x4344b0: GameNet::HandlePkt14HudTimerAndFlagsSync.
+ * @recoil-match byte
+ *
  * Purpose: Receive the HUD timer/status sync packet and start the matching mission state.
  */
 int __fastcall HandlePkt14HudTimerAndFlagsSync(int senderPlayerId, NetPkt14_HudTimerAndFlagsSync* packet)
@@ -1986,6 +2134,10 @@ int __fastcall HandlePkt14HudTimerAndFlagsSync(int senderPlayerId, NetPkt14_HudT
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-host-update-session-desc-status-fields
+ * @recoil-artifact defines .text recoil:function:0x434550: GameNet::HostUpdateSessionDescStatusFields.
+ * @recoil-match byte
+ *
  * Purpose: Let the host mirror timer and status fields into the session descriptor.
  */
 int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, int valueOrTime, int statusFlags)
@@ -2008,6 +2160,10 @@ int __fastcall HostUpdateSessionDescStatusFields(int eventCode, int auxParam, in
 } // namespace GameNet
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-player-row-list-state-append-new-row
+ * @recoil-artifact defines .text recoil:function:0x4345a0: GameNetPlayerRowListState::AppendNewRow.
+ * @recoil-match byte
+ *
  * Purpose: Allocate a scoreboard player row and append it to this GameNet
  * player-row list header.
  */
@@ -2034,6 +2190,10 @@ GameNetPlayerRow* GameNetPlayerRowListState::AppendNewRow(int zeroInitializeRow)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-player-row-destroy-embedded-panel
+ * @recoil-artifact defines .text recoil:function:0x434650: GameNetPlayerRow::DestroyEmbeddedPanel.
+ * @recoil-match byte
+ *
  * Purpose: Destroys the player row's embedded HUD panel.
  */
 void GameNetPlayerRow::DestroyEmbeddedPanel()

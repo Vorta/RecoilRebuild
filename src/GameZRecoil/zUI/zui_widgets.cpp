@@ -420,13 +420,6 @@ char g_Hud_SourceFile_HudCpp[28] = "D:\\Proj\\Battlesport\\hud.cpp";
  */
 char g_HudSensorTracker_ReadFileFailedFmt[18] = "Failed to read %s";
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x6-0x4db428
- * @recoil-artifact defines .data recoil:data:0x4db428: g_HudZrd_Key_Color.
- * Shared data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name shared COLOR ZRD records consumed by HUD primitive binding.
- */
-char g_HudZrd_Key_Color[0x6] = "COLOR";
-/**
  * Storage group:
  * hud_ui.hud_ui_zrd_widget_base_zrd_key_literals.
  * Source model: writable HUD ZRD key string globals consumed by the base
@@ -485,13 +478,6 @@ RECOIL_STATIC_ASSERT(sizeof(g_HudZrd_Key_Rollover) == 0x9);
  * Purpose: name the shared BITMAP ZRD record consumed by HUD widget loaders.
  */
 char g_HudUiCycleSelectorWidget_ZrdKey_Bitmap[] = "BITMAP";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x9-0x4e4710
- * @recoil-artifact defines .data recoil:data:0x4e4710: g_HudZrd_Key_Position.
- * Shared data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name shared POSITION ZRD records consumed by HUD widget loaders.
- */
-char g_HudZrd_Key_Position[0x9] = "POSITION";
 /**
  * Storage group:
  * hud_ui.hud_ui_check_toggle_zrd_key_literals.
@@ -594,34 +580,6 @@ RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_VIDEOS) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_BACKGROUND_IMAGES) == 0x12);
 RECOIL_STATIC_ASSERT(sizeof(zHudCfgKey_SHARED_IMAGE_PATH) == 0x12);
 
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x9-0x4e4840
- * @recoil-artifact defines .data recoil:data:0x4e4840: g_HudUiZrdToken_EndPointAbsolute.
- * Data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name the absolute endpoint ZRD record consumed by HUD primitive binding.
- */
-char g_HudUiZrdToken_EndPointAbsolute[0x9] = "ENDP_ABS";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x9-0x4e484c
- * @recoil-artifact defines .data recoil:data:0x4e484c: g_HudUiZrdToken_EndPointRelative.
- * Data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name the relative endpoint ZRD record consumed by HUD primitive binding.
- */
-char g_HudUiZrdToken_EndPointRelative[0x9] = "ENDP_REL";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-x9-0x4e4858
- * @recoil-artifact defines .data recoil:data:0x4e4858: g_HudUiZrdToken_WordWrap.
- * Data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name the WORDWRAP ZRD record consumed by HUD primitive binding.
- */
-char g_HudUiZrdToken_WordWrap[0x9] = "WORDWRAP";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-xb
- * @recoil-artifact defines .data recoil:data:0x4e4864: g_HudUiBackground_ZrdKey_Primitives.
- * Data owner: hud_ui.background_primitive_zrd_key_literals.
- * Purpose: name the PRIMITIVES ZRD container consumed by HUD primitive binding.
- */
-char g_HudUiBackground_ZrdKey_Primitives[0xb] = "PRIMITIVES";
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduifillbitmap-zrdkey-fillbitmap
  * @recoil-artifact defines .data recoil:data:0x4e4764: g_HudUiFillBitmap_ZrdKey_FillBitmap.
@@ -1423,6 +1381,11 @@ void HudUiApplyStatsTripletInt3(zReader::Node* payload, int nodeIndex, int& outX
 }
 } // namespace
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-hud-ui-text-input
+ * @recoil-artifact defines .text recoil:function:0x4b42f0: HudUiTextInput::HudUiTextInput.
+ * @recoil-match byte
+ */
 HudUiTextInput::HudUiTextInput(int bufferSize)
 {
     HudUiTextInput* const input = this;
@@ -1451,12 +1414,22 @@ HudUiTextInput::HudUiTextInput(int bufferSize)
     input->keyActionMap[0x06] = 7;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-destroy-hud-ui-text-input
+ * @recoil-artifact defines .text recoil:function:0x4b4370: HudUiTextInput::~HudUiTextInput.
+ * @recoil-match byte
+ */
 HudUiTextInput::~HudUiTextInput()
 {
     char* const ownedBuffer = buffer;
     ::operator delete(ownedBuffer);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-alloc-text-buffer
+ * @recoil-artifact defines .text recoil:function:0x4b4390: HudUiTextInput::AllocTextBuffer.
+ * @recoil-match byte
+ */
 void HudUiTextInput::AllocTextBuffer(int bufferSize)
 {
     char* const newBuffer = (char*)(::operator new(bufferSize));
@@ -1474,6 +1447,11 @@ void HudUiTextInput::AllocTextBuffer(int bufferSize)
     buffer = newBuffer;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-set-contents
+ * @recoil-artifact defines .text recoil:function:0x4b43d0: HudUiTextInput::SetContents.
+ * @recoil-match byte
+ */
 void HudUiTextInput::SetContents(const char* source)
 {
     strncpy(buffer, source, capacity);
@@ -1481,16 +1459,30 @@ void HudUiTextInput::SetContents(const char* source)
     SetCursorPosition((int)(cursor));
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-get-buffer
+ * @recoil-artifact defines .text recoil:function:0x4b4410: HudUiTextInput::GetBuffer.
+ * @recoil-match byte
+ */
 char* HudUiTextInput::GetBuffer()
 {
     return buffer;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-set-cursor-position
+ * @recoil-artifact defines .text recoil:function:0x4b4420: HudUiTextInput::SetCursorPosition.
+ * @recoil-match byte
+ */
 void HudUiTextInput::SetCursorPosition(int position)
 {
     cursor = (position < (int)(strlen(buffer))) ? (unsigned int)(position) : (unsigned int)(strlen(buffer));
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
+ * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
+ */
 void HudUiTextInput::DispatchKeyAction(int key)
 {
     const int keyIndex = (signed char)(key);
@@ -1526,6 +1518,11 @@ void HudUiTextInput::DispatchKeyAction(int key)
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-insert-char-at-cursor
+ * @recoil-artifact defines .text recoil:function:0x4b44e0: HudUiTextInput::InsertCharAtCursor.
+ * @recoil-match byte
+ */
 void HudUiTextInput::InsertCharAtCursor(int ch)
 {
     const int textLength = (int)(strlen(buffer));
@@ -1538,6 +1535,11 @@ void HudUiTextInput::InsertCharAtCursor(int ch)
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-backspace-delete-char
+ * @recoil-artifact defines .text recoil:function:0x4b4530: HudUiTextInput::BackspaceDeleteChar.
+ * @recoil-match byte
+ */
 void HudUiTextInput::BackspaceDeleteChar()
 {
     if ((int)(cursor) > 0) {
@@ -1546,11 +1548,21 @@ void HudUiTextInput::BackspaceDeleteChar()
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-delete-char-forward
+ * @recoil-artifact defines .text recoil:function:0x4b4550: HudUiTextInput::DeleteCharForward.
+ * @recoil-match byte
+ */
 void HudUiTextInput::DeleteCharForward()
 {
     ShiftTextLeft(1, (int)(cursor));
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-move-cursor-left
+ * @recoil-artifact defines .text recoil:function:0x4b4560: HudUiTextInput::MoveCursorLeft.
+ * @recoil-match byte
+ */
 void HudUiTextInput::MoveCursorLeft()
 {
     if ((int)(cursor) > 0) {
@@ -1574,7 +1586,7 @@ void HudUiTextInput::MoveCursorRight()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduitextinput-shifttextright
  * @recoil-artifact defines .text recoil:function:0x4b4590: HudUiTextInput::ShiftTextRight.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: make room in the input buffer by shifting its suffix right.
  */
@@ -1593,6 +1605,11 @@ int HudUiTextInput::ShiftTextRight(int count, int startPos)
     return result;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-shift-text-left
+ * @recoil-artifact defines .text recoil:function:0x4b45e0: HudUiTextInput::ShiftTextLeft.
+ * @recoil-match byte
+ */
 int HudUiTextInput::ShiftTextLeft(int count, int startPos)
 {
     const int textLength = (int)(strlen(buffer));
@@ -1605,6 +1622,11 @@ int HudUiTextInput::ShiftTextLeft(int count, int startPos)
     return 1;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-hud-ui-slider-border
+ * @recoil-artifact defines .text recoil:function:0x4b4620: HudUiSliderBorder::HudUiSliderBorder.
+ * @recoil-match byte
+ */
 HudUiSliderBorder::HudUiSliderBorder()
 {
     originX = 0;
@@ -1631,6 +1653,11 @@ HudUiSliderBorder::HudUiSliderBorder()
     SetPoint(12, -halfWidth, 0);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-update
+ * @recoil-artifact defines .text recoil:function:0x4b47b0: HudUiSliderBorder::Update.
+ * @recoil-match byte
+ */
 void HudUiSliderBorder::Update(float deltaSeconds)
 {
     if (((~flags) & 0x10) == 0) {
@@ -1651,6 +1678,11 @@ void HudUiSliderBorder::Update(float deltaSeconds)
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-set-bounds
+ * @recoil-artifact defines .text recoil:function:0x4b4810: HudUiSliderBorder::SetBounds.
+ * @recoil-match byte
+ */
 void HudUiSliderBorder::SetBounds(int newOriginX, int newOriginY, int newHalfWidth, int newHeight)
 {
     originX = newOriginX;
@@ -1673,6 +1705,11 @@ void HudUiSliderBorder::SetBounds(int newOriginX, int newOriginY, int newHalfWid
     SetPoint(12, originX - halfWidth, originY);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-hud-ui-numeric-text-input
+ * @recoil-artifact defines .text recoil:function:0x4b49e0: HudUiNumericTextInput::HudUiNumericTextInput.
+ * @recoil-match byte
+ */
 HudUiNumericTextInput::HudUiNumericTextInput()
     : HudUiZrdWidget()
     , textInput(0x100)
@@ -1706,6 +1743,11 @@ HudUiNumericTextInput::~HudUiNumericTextInput()
     SetRawKeyboardCapture(0);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-raw-keyboard-callback
+ * @recoil-artifact defines .text recoil:function:0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback.
+ * @recoil-match byte
+ */
 int __fastcall HudUiNumericTextInput::RawKeyboardCallback(int key, HudUiNumericTextInput* callbackCtx)
 {
     if (callbackCtx != 0) {
@@ -1715,6 +1757,11 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(int key, HudUiNumericT
     return 0;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-on-raw-keyboard-char
+ * @recoil-artifact defines .text recoil:function:0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar.
+ * @recoil-match byte
+ */
 int HudUiNumericTextInput::OnRawKeyboardChar(int key)
 {
     if (rawKeyFilterEnabled != 0) {
@@ -1729,6 +1776,11 @@ int HudUiNumericTextInput::OnRawKeyboardChar(int key)
     return 0;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-set-input-active
+ * @recoil-artifact defines .text recoil:function:0x4b4ba0: HudUiNumericTextInput::SetInputActive.
+ * @recoil-match byte
+ */
 int HudUiNumericTextInput::SetInputActive(int active)
 {
     HudUiPanel* firstLabelPanel = 0;
@@ -1758,6 +1810,11 @@ int HudUiNumericTextInput::SetInputActive(int active)
     return previousActive;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-set-raw-keyboard-capture
+ * @recoil-artifact defines .text recoil:function:0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture.
+ * @recoil-match byte
+ */
 void HudUiNumericTextInput::SetRawKeyboardCapture(int enable)
 {
     const char enableByte = (char)(enable);
@@ -1773,6 +1830,11 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(int enable)
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-on-activate
+ * @recoil-artifact defines .text recoil:function:0x4b4c90: HudUiNumericTextInput::OnActivate.
+ * @recoil-match byte
+ */
 void HudUiNumericTextInput::OnActivate()
 {
     sliderBorder.inputActive = 1;
@@ -1829,6 +1891,11 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
     sliderBorder.Update(deltaSeconds);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-alloc-text-buffer
+ * @recoil-artifact defines .text recoil:function:0x4b4e40: HudUiNumericTextInput::AllocTextBuffer.
+ * @recoil-match byte
+ */
 void HudUiNumericTextInput::AllocTextBuffer(unsigned int bufferSize)
 {
     textInput.AllocTextBuffer(bufferSize);
@@ -1848,11 +1915,21 @@ void HudUiNumericTextInput::Update(const char* text)
     Invalidate();
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-get-buffer
+ * @recoil-artifact defines .text recoil:function:0x4b4ed0: HudUiNumericTextInput::GetBuffer.
+ * @recoil-match byte
+ */
 char* HudUiNumericTextInput::GetBuffer()
 {
     return textInput.GetBuffer();
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-hud-ui-zrd-widget
+ * @recoil-artifact defines .text recoil:function:0x4b4ee0: HudUiZrdWidget::HudUiZrdWidget.
+ * @recoil-match byte
+ */
 HudUiZrdWidget::HudUiZrdWidget()
     : HudUiWidget(0)
 {
@@ -1952,6 +2029,11 @@ HudUiZrdWidget::~HudUiZrdWidget()
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-delete-child-if-present
+ * @recoil-artifact defines .text recoil:function:0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent.
+ * @recoil-match byte
+ */
 void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
 {
     if (childWidgetOrNull != 0) {
@@ -1961,6 +2043,11 @@ void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
     return 0;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-invalidate
+ * @recoil-artifact defines .text recoil:function:0x4b5310: HudUiZrdWidget::Invalidate.
+ * @recoil-match byte
+ */
 void HudUiZrdWidget::Invalidate()
 {
     HudUiElement::Invalidate();
@@ -1977,6 +2064,11 @@ void HudUiZrdWidget::Invalidate()
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-get-bounds-rect-or-null
+ * @recoil-artifact defines .text recoil:function:0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull.
+ * @recoil-match byte
+ */
 HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
 {
     HudUiRect* result = 0;
@@ -2031,6 +2123,11 @@ HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
     return result;
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-show-preview
+ * @recoil-artifact defines .text recoil:function:0x4b5630: HudUiZrdWidget::ShowPreview.
+ * @recoil-match byte
+ */
 void HudUiZrdWidget::ShowPreview()
 {
     if (rolloverImage != 0) {
@@ -2056,6 +2153,11 @@ void HudUiZrdWidget::ShowPreview()
     HudUiSetPanelVectorVisible(activateLabelPanels, 0);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-refresh-state
+ * @recoil-artifact defines .text recoil:function:0x4b5740: HudUiZrdWidget::RefreshState.
+ * @recoil-match byte
+ */
 void HudUiZrdWidget::RefreshState()
 {
     for (HudUiPanelPtrVector::iterator rolloverIt = rolloverLabelPanels.begin();
@@ -2095,6 +2197,11 @@ void HudUiZrdWidget::RefreshState()
     Invalidate();
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-hide-preview
+ * @recoil-artifact defines .text recoil:function:0x4b5860: HudUiZrdWidget::HidePreview.
+ * @recoil-match byte
+ */
 void HudUiZrdWidget::HidePreview()
 {
     if (defaultImage != 0) {
@@ -2120,6 +2227,11 @@ void HudUiZrdWidget::HidePreview()
     }
 }
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-on-activate
+ * @recoil-artifact defines .text recoil:function:0x4b5900: HudUiZrdWidget::OnActivate.
+ * @recoil-match byte
+ */
 void HudUiZrdWidget::OnActivate()
 {
     zInput::ResetAllTransitionState();
@@ -2168,7 +2280,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
         return 0;
     }
 
-    zReader::Node* const positionNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Position);
+    zReader::Node* const positionNode = zRdrGetNode(zrdSection, "POSITION");
     if (positionNode != 0) {
         originX += positionNode->value.nodes[1].value.i32;
         originY += positionNode->value.nodes[2].value.i32;
@@ -2230,6 +2342,10 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-check-toggle-widget-hud-ui-check-toggle-widget
+ * @recoil-artifact defines .text recoil:function:0x4b6fc0: HudUiCheckToggleWidget::HudUiCheckToggleWidget.
+ * @recoil-match byte
+ *
  * Function modeled here:
  * Purpose: initialize the toggle widget's unchecked, checked, label, and
  * disabled-state members over the ZRD widget base.
@@ -2561,6 +2677,10 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-cycle-selector-widget-hud-ui-cycle-selector-widget
+ * @recoil-artifact defines .text recoil:function:0x4b7d60: HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiCycleSelectorWidget::HudUiCycleSelectorWidget.
  */
 HudUiCycleSelectorWidget::HudUiCycleSelectorWidget()
@@ -3135,6 +3255,10 @@ CHudRadioButtonWidget* CHudRadioButtonWidget::Constructor()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-destroy-chud-radio-button-widget
+ * @recoil-artifact defines .text recoil:function:0x4b87c0: CHudRadioButtonWidget::~CHudRadioButtonWidget.
+ * @recoil-match byte
+ *
  * Purpose: run the recovered CHudRadioButtonWidget::DestructorCore teardown path.
  */
 CHudRadioButtonWidget::~CHudRadioButtonWidget() { }
@@ -3162,6 +3286,10 @@ void CHudRadioButtonWidget::ShowPreview()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-hide-preview-if-not-selected
+ * @recoil-artifact defines .text recoil:function:0x4b87e0: CHudRadioButtonWidget::HidePreviewIfNotSelected.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for CHudRadioButtonWidget::HidePreviewIfNotSelected.
  */
 void CHudRadioButtonWidget::HidePreviewIfNotSelected()
@@ -3180,6 +3308,10 @@ void CHudRadioButtonWidget::HidePreview()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-on-activate-select-self
+ * @recoil-artifact defines .text recoil:function:0x4b87f0: CHudRadioButtonWidget::OnActivateSelectSelf.
+ * @recoil-match byte
+ *
  * Purpose: handle the recovered HUD event path for CHudRadioButtonWidget::OnActivateSelectSelf.
  */
 void CHudRadioButtonWidget::OnActivateSelectSelf()
@@ -3205,6 +3337,9 @@ void CHudRadioButtonWidget::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-load-from-zrd
+ * @recoil-artifact defines .text recoil:function:0x4b8850: CHudRadioButtonWidget::LoadFromZrd.
+ *
  * Purpose: load the recovered HUD data handled by CHudRadioButtonWidget::LoadFromZrd.
  */
 int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* ownerDialog)
@@ -3317,6 +3452,10 @@ CHudRadioGroupWidget::CHudRadioGroupWidget()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-group-widget-destroy-chud-radio-group-widget
+ * @recoil-artifact defines .text recoil:function:0x4b8b60: CHudRadioGroupWidget::~CHudRadioGroupWidget.
+ * @recoil-match byte
+ *
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
  * Purpose: Delete owned option-selector items and clear their slots before compiler-generated base cleanup.
  */
@@ -3400,6 +3539,10 @@ void CHudRadioGroupWidget::SetVisible(int childIndex)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-group-widget-set-selected-index
+ * @recoil-artifact defines .text recoil:function:0x4b8cf0: CHudRadioGroupWidget::SetSelectedIndex.
+ * @recoil-match byte
+ *
  * Source file evidence: BN labels the source as HudUiZrdWidgetEx17C.cpp.
  * Purpose: Store the selected option index and update every loaded option item's selected state.
  */
@@ -4073,7 +4216,7 @@ int HudUiBackground::BindWidgetByName(zReader::Node*, HudUiWidget* widget, const
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduibackground-bindprimitivenodetoelement
  * @recoil-artifact defines .text recoil:function:0x4ba0e0: HudUiBackground::BindPrimitiveNodeToElement.
- *
+ * @recoil-match byte
  *
  * Purpose: bind a named ZRD primitive node to an existing HUD element.
  * Binary Ninja: 0x4ba0e0 performs direct zReader::Node child/value reads for
@@ -4087,7 +4230,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
         return 0;
     }
 
-    zReader::Node* primitiveNode = zRdrGetNode(cfgRoot, g_HudUiBackground_ZrdKey_Primitives);
+    zReader::Node* primitiveNode = zRdrGetNode(cfgRoot, "PRIMITIVES");
     if (primitiveNode != 0) {
         primitiveNode = zRdrGetNode(primitiveNode, name);
     }
@@ -4100,13 +4243,13 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
             ((HudUiWidget*)(element))->SetImageByPathOwned(bitmapNode->value.nodes[1].value.str);
         }
 
-        zReader::Node* positionNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Position);
+        zReader::Node* positionNode = zRdrGetNode(primitiveNode, "POSITION");
         if (positionNode != 0) {
             zReader::Node* const positionBase = positionNode->value.nodes;
             element->SetPos(uiOriginX + positionBase[1].value.i32, uiOriginY + positionBase[2].value.i32);
         }
 
-        zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_WordWrap);
+        zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, "WORDWRAP");
         if (wordWrapNode != 0) {
             zReader::Node* const wordWrapBase = wordWrapNode->value.nodes;
             HudUiRect wordWrapRect;
@@ -4136,7 +4279,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
             }
         }
 
-        zReader::Node* colorNode = zRdrGetNode(primitiveNode, g_HudZrd_Key_Color);
+        zReader::Node* colorNode = zRdrGetNode(primitiveNode, "COLOR");
         if (colorNode != 0) {
             zReader::Node* const colorBase = colorNode->value.nodes;
             ((HudUiPrimitiveBindTarget*)(element))->color565 = zVidPackColorRGB(
@@ -4147,7 +4290,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
                 & 0xffffu;
         }
 
-        zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointRelative);
+        zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, "ENDP_REL");
         if (relativeEndNode != 0) {
             ((HudUiPrimitiveBindTarget*)(element))
                 ->SetSegmentEndpoints(
@@ -4158,7 +4301,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
                 );
         }
 
-        zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, g_HudUiZrdToken_EndPointAbsolute);
+        zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, "ENDP_ABS");
         if (absoluteEndNode != 0) {
             zReader::Node* const absoluteEndBase = absoluteEndNode->value.nodes;
             ((HudUiPrimitiveBindTarget*)(element))

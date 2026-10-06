@@ -834,19 +834,6 @@ struct HudUiPanel : HudUiTextLabel {
     HudUiPanel(const char* text = 0, int x = 0, int y = 0);
     HudUiPanel(const HudUiPanel& source);
     ~HudUiPanel();
-    /**
-     * Original-source helper; no standalone retail function exists.
-     * Evidence: recovered in the HUD source cluster near address-backed
-     * 0x4bd100 HudUiPanel::ConstructorDefaultThunk callers.
-     * Purpose: preserve the recovered HUD behavior for
-     * HudUiPanel::ConstructorDefault.
-     */
-    HudUiPanel* ConstructorDefault(const char* text, int x, int y)
-    {
-        new (this) HudUiPanel(text, x, y);
-        return this;
-    }
-    HudUiPanel* ConstructorDefaultThunk();
     HudUiPanel& operator=(const HudUiPanel& source);
     void Invalidate();
     virtual void __cdecl SetTextFmt(const char* format, ...);

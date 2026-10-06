@@ -316,6 +316,10 @@ namespace zVideo_dd3d
     } // namespace
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-begin-scene-and-flush-pending-render-states
+     * @recoil-artifact defines .text recoil:function:0x4a9ac0: zVideo_dd3d::BeginSceneAndFlushPendingRenderStates.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: begin the Direct3D scene and flush deferred wireframe and dither states.
      *
@@ -349,6 +353,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-end-scene
+     * @recoil-artifact defines .text recoil:function:0x4a9b40: zVideo_dd3d::EndScene.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: end the active Direct3D scene and report provider failures.
      *
@@ -420,6 +428,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-create-device-state
+     * @recoil-artifact defines .text recoil:function:0x4a9c20: zVideo_dd3d::CreateDeviceState.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: creates the Direct3D z-buffer/device/viewport/material state and
      * initializes the fixed render-state defaults for the active software surface.
@@ -884,6 +896,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-lock-upload-surface
+     * @recoil-artifact defines .text recoil:function:0x4aa8b0: zVideo_dd3d::TextureRecordLockUploadSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: locks a texture record's upload surface and returns the provider
      * pixel pointer and row pitch to the caller.
@@ -912,6 +928,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-unlock-upload-surface
+     * @recoil-artifact defines .text recoil:function:0x4aa8f0: zVideo_dd3d::TextureRecordUnlockUploadSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: GameZRecoil/zVideo/zvid_ddd3d.c.
      * Purpose: unlocks a texture record's upload surface and normalizes provider
      * success to a one-or-zero result.
@@ -926,6 +946,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-release-upload-surface-ref
+     * @recoil-artifact defines .text recoil:function:0x4aa900: zVideo_dd3d::TextureRecordReleaseUploadSurfaceRef.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: releases and clears the upload-surface reference when one is held by
      * a texture record.
@@ -942,6 +966,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-finalize-upload
+     * @recoil-artifact defines .text recoil:function:0x4aa920: zVideo_dd3d::TextureRecordFinalizeUpload.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: GameZRecoil/zVideo/zvid_ddd3d.c.
      * Purpose: optionally refreshes a texture-record upload surface from an image
      * and loads the temporary upload texture into the target Direct3D texture.
@@ -980,6 +1008,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-destroy
+     * @recoil-artifact defines .text recoil:function:0x4aa980: zVideo_dd3d::TextureRecordDestroy.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: release non-default Direct3D texture-record provider resources and
      * free the texture record.
@@ -1012,6 +1044,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-texture-record-create
+     * @recoil-artifact defines .text recoil:function:0x4aa9d0: zVideo_dd3d::TextureRecordCreate.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: allocates a zeroed Direct3D texture-record structure.
      *
@@ -1024,6 +1060,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-set-fog-enable
+     * @recoil-artifact defines .text recoil:function:0x4aa9e0: zVideo_dd3d::SetFogEnable.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: update the cached Direct3D fog-enable render state and force the
      * fixed fog light-state mode.
@@ -1047,6 +1087,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-set-fog-start
+     * @recoil-artifact defines .text recoil:function:0x4aaa30: zVideo_dd3d::SetFogStart.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: update the cached Direct3D fog-start light state only when the
      * requested start distance changes.
@@ -1065,6 +1109,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-set-fog-end
+     * @recoil-artifact defines .text recoil:function:0x4aaa60: zVideo_dd3d::SetFogEnd.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: update the cached Direct3D fog-end light-state value only when
      * the requested end distance changes.
@@ -1084,6 +1132,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-apply-fog-state-from-globals
+     * @recoil-artifact defines .text recoil:function:0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: apply pending global fog enable, color, mode, start, and end
      * state to the active Direct3D device.
@@ -1114,6 +1166,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-update-fog-color
+     * @recoil-artifact defines .text recoil:function:0x4aab30: zVideo_dd3d::UpdateFogColor.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: upload the applied global fog RGB floats as a packed Direct3D
      * fog-color render state.
@@ -1922,6 +1978,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-set-quad-batch-depth-and-rhw
+     * @recoil-artifact defines .text recoil:function:0x4accc0: zVideo_dd3d::SetQuadBatchDepthAndRhw.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: stamp the current Direct3D quad-batch depth and reciprocal
      * homogeneous weight across all cached TL vertices.
@@ -2102,6 +2162,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-flush-quad-batch
+     * @recoil-artifact defines .text recoil:function:0x4ad120: zVideo_dd3d::FlushQuadBatch.
+     * @recoil-match byte
+     *
      * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
      * Purpose: Draw and clear the Direct3D solid-quad batch with cached render-state setup and restoration.
      */
@@ -2344,6 +2408,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd-report-error
+     * @recoil-artifact defines .text recoil:function:0x4ad6a0: zVideo_dd::ReportError.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: maps DirectDraw/Direct3D HRESULTs to report text and emits the legacy DirectDraw error report.
      */

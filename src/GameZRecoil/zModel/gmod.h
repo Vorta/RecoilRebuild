@@ -16,8 +16,6 @@ extern zTag4Partial g_VariantTag_Current;
 extern float g_zModel_BFETolerance;
 extern float g_zModel_ConstVertexMergeEpsilon;
 extern int g_zModel_MaxPolygonVertexCountBeforeSplit;
-extern double g_zModel_ConstVertexWarnThreshold;
-extern double g_zModel_NormalMergeEpsilon;
 extern double g_zModel_CoplanarTolerance;
 extern double g_zModel_ColinearTolerance;
 extern float g_zModel_UvQuantizeBias;

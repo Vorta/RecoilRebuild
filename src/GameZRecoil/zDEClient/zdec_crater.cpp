@@ -2,6 +2,7 @@
 
 #include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zError/zerr.h"
+#include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zUtil/zbd.h"
 #include "zdi.h"
@@ -207,6 +208,7 @@ namespace zDEClient_Crater {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-initfeaturefromeventtemplate
  * @recoil-artifact defines .text recoil:function:0x456c80: zDEClient_Crater::InitFeatureFromEventTemplate
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  *
  *
  * Purpose: create a crater feature from an event template, fit it to the
@@ -223,8 +225,8 @@ zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_Crate
         return 0;
     }
 
-    int gridCol;
     int gridRow;
+    int gridCol;
     CZWorld::WorldToGridCoordsClamped(world, &gridCol, eventTemplate->center.x, eventTemplate->center.z, &gridRow);
 
     zDEClient_FeatureGridCell* featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
@@ -241,34 +243,33 @@ zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_Crate
 
     const float localX = featureInstance->eventTemplate.center.x - featureGridCell->originX;
     const float localZ = featureInstance->eventTemplate.center.z - featureGridCell->originZ;
-    const float radius = featureInstance->eventTemplate.radius;
+    const float cellSizeX = worldData->areaCellSizeX;
+    const float cellSizeZ = worldData->areaCellSizeZ;
 
-    const float localXPlusRadius = localX + radius;
-    if (localXPlusRadius > worldData->areaCellSizeX) {
-        featureInstance->eventTemplate.center.x -= (localXPlusRadius - worldData->areaCellSizeX) + 1.0f;
-    } else if (localX - radius < 0.0f) {
-        featureInstance->eventTemplate.center.x += (radius - localX) + 1.0f;
+    const float localXPlusRadius = localX + featureInstance->eventTemplate.radius;
+    if (localXPlusRadius > cellSizeX) {
+        featureInstance->eventTemplate.center.x -= (localXPlusRadius - cellSizeX) + 1.0f;
+    } else if (localX - featureInstance->eventTemplate.radius < 0.0f) {
+        featureInstance->eventTemplate.center.x += (featureInstance->eventTemplate.radius - localX) + 1.0f;
     }
 
-    const float localZMinusRadius = localZ - radius;
-    if (localZMinusRadius < worldData->areaCellSizeZ) {
-        featureInstance->eventTemplate.center.z += (worldData->areaCellSizeZ - localZMinusRadius) + 1.0f;
+    const float localZMinusRadius = localZ - featureInstance->eventTemplate.radius;
+    if (localZMinusRadius < cellSizeZ) {
+        featureInstance->eventTemplate.center.z += (cellSizeZ - localZMinusRadius) + 1.0f;
     } else {
-        const float localZPlusRadius = localZ + radius;
-        if (localZPlusRadius > 0.0f) {
+        const float localZPlusRadius = localZ + featureInstance->eventTemplate.radius;
+        if (localZPlusRadius > 0.0) {
             featureInstance->eventTemplate.center.z -= localZPlusRadius + 1.0f;
         }
     }
 
-    const int pointCount = eventTemplate->pointCount;
     float angle = 0.0f;
-    const float angleStep = (float)(6.2831853071800001 / pointCount);
-    for (int i = 0; i < pointCount; ++i) {
-        currentPoint->x = (float)(sin((double)(angle)));
-        currentPoint->z = (float)(cos((double)(angle)));
+    const float angleStep = (float)(6.2831853071800001 / eventTemplate->pointCount);
+    for (int i = 0; i < eventTemplate->pointCount; ++i) {
+        zMath::SinCos(angle, &currentPoint->x, &currentPoint->z);
 
-        currentPoint->x *= radius;
-        currentPoint->z *= radius;
+        currentPoint->x *= featureInstance->eventTemplate.radius;
+        currentPoint->z *= featureInstance->eventTemplate.radius;
         currentPoint->x += featureInstance->eventTemplate.center.x;
         currentPoint->y = featureInstance->eventTemplate.center.y;
         currentPoint->z += featureInstance->eventTemplate.center.z;
@@ -285,27 +286,27 @@ zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_Crate
 
     for (int i_282 = 1; i_282 < eventTemplate->pointCount; ++i_282) {
         zVec3* const point = &points[i_282];
-        if (featureInstance->boundsMinX > point->x) {
+        if (point->x < featureInstance->boundsMinX) {
             featureInstance->boundsMinX = point->x;
         }
 
-        if (featureInstance->boundsMaxX < point->x) {
+        if (point->x > featureInstance->boundsMaxX) {
             featureInstance->boundsMaxX = point->x;
         }
 
-        if (featureInstance->boundsMinZ > point->z) {
+        if (point->z < featureInstance->boundsMinZ) {
             featureInstance->boundsMinZ = point->z;
         }
 
-        if (featureInstance->boundsMaxZ < point->z) {
+        if (point->z > featureInstance->boundsMaxZ) {
             featureInstance->boundsMaxZ = point->z;
         }
     }
 
-    if (featureGridCell->featureCount > 0) {
-        const int nodeCount = featureGridCell->nodeCount;
+    if (featureInstance->featureGridCell->featureCount > 0) {
+        const int nodeCount = featureInstance->featureGridCell->nodeCount;
         if (nodeCount > 0) {
-            zGeometry_ClipPatchNodeView** nodeCursor = featureGridCell->nodes;
+            zGeometry_ClipPatchNodeView** nodeCursor = featureInstance->featureGridCell->nodes;
             for (int i = 0; i < nodeCount; ++i) {
                 zGeometry_ClipPatchNodeView* node = *nodeCursor;
                 if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {

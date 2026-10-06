@@ -337,6 +337,10 @@ namespace
 namespace CZClass
 {
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-zbd.czclass-reset-current-zbd-path
+     * @recoil-artifact defines .text recoil:function:0x454360: CZClass::ResetCurrentZbdPath.
+     * @recoil-match byte
+     *
      * Purpose: clear the active zClass ZBD path buffer and return success.
      */
     int __cdecl ResetCurrentZbdPath()

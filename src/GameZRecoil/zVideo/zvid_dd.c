@@ -98,6 +98,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-startup-enumerate-and-default-select
+     * @recoil-artifact defines .text recoil:function:0x4a7b40: zVideo_dd::StartupEnumerateAndDefaultSelect.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: enumerate DirectDraw devices and select the first hardware device
      * record as the default startup renderer.
@@ -129,6 +133,10 @@ namespace zVideo_dd
      * and retries a failed Blt after DDERR_SURFACELOST Restore succeeds.
      */
     int __fastcall
+    /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-present-display-mode-surface
+     * @recoil-artifact defines .text recoil:function:0x4a7b60: zVideo_dd::PresentDisplayModeSurface.
+     */
     PresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
     {
         DWORD presentBltFlags = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
@@ -236,6 +244,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-open-video-mode
+     * @recoil-artifact defines .text recoil:function:0x4a7d20: zVideo_dd::OpenVideoMode.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: run the fullscreen window preparation step and create the selected
      * DirectDraw2 device, returning one on failure and zero on success.
@@ -258,6 +270,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-shutdown-video-system
+     * @recoil-artifact defines .text recoil:function:0x4a7d40: zVideo_dd::ShutdownVideoSystem.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: clear the default texture record and tear down the DirectDraw
      * backend state.
@@ -283,6 +299,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-flip-to-gdiif-attached
+     * @recoil-artifact defines .text recoil:function:0x4a7d70: zVideo_dd::FlipToGDIIfAttached.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: flip the attached primary DirectDraw surface back to GDI when the
      * fullscreen primary owns an attached backbuffer.
@@ -300,6 +320,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-blt-sw-to-primary-rect-direct
+     * @recoil-artifact defines .text recoil:function:0x4a7d90: zVideo_dd::BltSwToPrimaryRectDirect.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: copy a source rectangle from the software surface directly to the
      * primary DirectDraw surface.
@@ -325,6 +349,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-blt-primary-to-sw-rect-direct
+     * @recoil-artifact defines .text recoil:function:0x4a7dd0: zVideo_dd::BltPrimaryToSwRectDirect.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: copy a source rectangle from the primary surface directly back to
      * the software DirectDraw surface.
@@ -365,6 +393,11 @@ namespace zVideo_dd
      * DDBLT_KEYSRC, and reports line 0x159 on Blt failure.
      */
     void __fastcall
+    /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-blt-sw-to-primary-rect
+     * @recoil-artifact defines .text recoil:function:0x4a7e10: zVideo_dd::BltSwToPrimaryRect.
+     * @recoil-match byte
+     */
     BltSwToPrimaryRect(zVidImagePartial * srcImage, int srcColorKeyEnable, zVidRect32* srcRect, zVidRect32* dstRect)
     {
         if (srcImage->surface == 0) {
@@ -509,6 +542,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-lock-direct-draw-surface
+     * @recoil-artifact defines .text recoil:function:0x4a8060: zVideo_dd::LockDirectDrawSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: lock a DirectDraw surface descriptor, restoring and retrying when
      * the provider reports a lost surface.
@@ -545,6 +582,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-unlock-direct-draw-surface
+     * @recoil-artifact defines .text recoil:function:0x4a80c0: zVideo_dd::UnlockDirectDrawSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: unlock a DirectDraw surface, restoring and retrying when the
      * provider reports a lost surface.
@@ -578,6 +619,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-lock-surface-wait-restore
+     * @recoil-artifact defines .text recoil:function:0x4a8100: zVideo_dd::LockSurfaceWaitRestore.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: locks a DirectDraw surface with DDLOCK_WAIT, retrying once the
      * provider restores a lost surface and reporting permanent failures.
@@ -609,6 +654,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-unlock-surface-wait-restore
+     * @recoil-artifact defines .text recoil:function:0x4a8160: zVideo_dd::UnlockSurfaceWaitRestore.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: unlocks a DirectDraw surface, retrying once the provider restores a
      * lost surface and reporting permanent failures.
@@ -637,6 +686,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-zbuffer-depth-fill-rect
+     * @recoil-artifact defines .text recoil:function:0x4a81a0: zVideo_dd::ZBufferDepthFillRect.
+     * @recoil-match byte
+     *
      * Purpose: clear the current DirectDraw Z-buffer rectangle to depth zero.
      *
      * Evidence: BN source file zvid_dd.c tests g_zVideo_pZBufferSurface, builds a
@@ -675,6 +728,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-clear-screen-and-zbuffer-rect
+     * @recoil-artifact defines .text recoil:function:0x4a8220: zVideo_dd::ClearScreenAndZBufferRect.
+     * @recoil-match byte
+     *
      * Purpose: clear a color surface rectangle and then the matching Z-buffer.
      *
      * Evidence: BN source file zvid_dd.c gates the color fill with
@@ -733,6 +790,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-clear-sw-backbuffer-and-zbuffer-rects
+     * @recoil-artifact defines .text recoil:function:0x4a82f0: zVideo_dd::ClearSwBackbufferAndZBufferRects.
+     * @recoil-match byte
+     *
      * Purpose: clear the software backbuffer rectangle and a separate Z rectangle.
      *
      * Evidence: BN source file zvid_dd.c fills g_zVideo_SwSurfaceState.surf when
@@ -839,6 +900,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-image-lazy-create-video-memory-surface
+     * @recoil-artifact defines .text recoil:function:0x4a84c0: zVideo_dd::ImageLazyCreateVideoMemorySurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: create an image video-memory backing surface when the current
      * renderer/device state requires one.
@@ -867,6 +932,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-image-populate-surface-from-heap-pixels
+     * @recoil-artifact defines .text recoil:function:0x4a8500: zVideo_dd::ImagePopulateSurfaceFromHeapPixels.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: copy an image heap pixel buffer into its locked DirectDraw surface
      * and rebind the image pixels to the surface memory.
@@ -941,6 +1010,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-image-ensure-surface-for-current-device
+     * @recoil-artifact defines .text recoil:function:0x4a8650: zVideo_dd::ImageEnsureSurfaceForCurrentDevice.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: release and clear an image-owned DirectDraw surface so it can be
      * recreated for the current video device.
@@ -967,6 +1040,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-image-upload-pixels-to-surface
+     * @recoil-artifact defines .text recoil:function:0x4a8680: zVideo_dd::ImageUploadPixelsToSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: ensure an image has a DirectDraw surface and acquire a GDI DC for
      * drawing into it.
@@ -1010,6 +1087,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-image-release-surface
+     * @recoil-artifact defines .text recoil:function:0x4a86f0: zVideo_dd::ImageReleaseSurface.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: release a GDI DC acquired from an image-backed DirectDraw surface.
      *
@@ -1077,6 +1158,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-set-video-mode
+     * @recoil-artifact defines .text recoil:function:0x4a8790: zVideo_dd::SetVideoMode.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: rebuild fullscreen DirectDraw surfaces for the active renderer and
      * verify the restored display surfaces.
@@ -1157,6 +1242,10 @@ namespace zVideo
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-commit-hw-api-device-selection
+     * @recoil-artifact defines .text recoil:function:0x4a8870: zVideo::CommitHwApiDeviceSelection.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: commit an accepted hardware API device as the active renderer
      * backend.
@@ -1179,6 +1268,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-create-surface3-from-desc
+     * @recoil-artifact defines .text recoil:function:0x4a88b0: zVideo_dd::CreateSurface3FromDesc.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: create a DirectDraw surface and return its DirectDrawSurface3
      * interface.
@@ -1241,6 +1334,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-create-half-res-backbuffer-surfaces
+     * @recoil-artifact defines .text recoil:function:0x4a8920: zVideo_dd::CreateHalfResBackbufferSurfaces.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: create the half-resolution display, primary, software, and clipper
      * surfaces used by fullscreen rendering.
@@ -1327,6 +1424,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-create-fullscreen-software-surfaces
+     * @recoil-artifact defines .text recoil:function:0x4a8b20: zVideo_dd::CreateFullscreenSoftwareSurfaces.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: create fullscreen DirectDraw display, primary, software, and
      * clipper surfaces for the software renderer path.
@@ -1427,6 +1528,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-create-fullscreen-hardware-surfaces
+     * @recoil-artifact defines .text recoil:function:0x4a8dc0: zVideo_dd::CreateFullscreenHardwareSurfaces.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: create fullscreen DirectDraw display, attached software, primary,
      * and clipper surfaces for the hardware renderer path.
@@ -1633,6 +1738,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-verify-surface-state-locking
+     * @recoil-artifact defines .text recoil:function:0x4a9160: zVideo_dd::VerifySurfaceStateLocking.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: optionally ask the surface-lock verifier to validate the current
      * surface state for a teardown caller context.
@@ -1743,6 +1852,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-teardown-video-subsystem
+     * @recoil-artifact defines .text recoil:function:0x4a9300: zVideo_dd::TeardownVideoSubsystem.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: tear down the remaining DirectDraw fullscreen state after the
      * surface/interface release pass.
@@ -1781,6 +1894,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-run-direct-draw-device-enumeration
+     * @recoil-artifact defines .text recoil:function:0x4a9390: zVideo_dd::RunDirectDrawDeviceEnumeration.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: run DirectDraw device enumeration during video startup.
      *
@@ -1807,6 +1924,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-enum-direct-draw-device-callback
+     * @recoil-artifact defines .text recoil:function:0x4a93d0: zVideo_dd::EnumDirectDrawDeviceCallback.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: collect one DirectDraw device record and enumerate its usable
      * Direct3D drivers during startup.
@@ -1947,6 +2068,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-enum-direct3-ddevice-callback
+     * @recoil-artifact defines .text recoil:function:0x4a96b0: zVideo_dd::EnumDirect3DDeviceCallback.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: filter Direct3D enumeration callbacks and append accepted hardware
      * RGB devices with 16-bit Z-buffer support to the current DirectDraw record.
@@ -2028,6 +2153,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-palette-set-entries
+     * @recoil-artifact defines .text recoil:function:0x4a9890: zVideo_dd::PaletteSetEntries.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: forward palette updates to the active DirectDraw palette only in
      * 8-bpp display modes.
@@ -2055,6 +2184,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-get-accepted-direct-draw-device-count-cached
+     * @recoil-artifact defines .text recoil:function:0x4a9900: zVideo_dd::GetAcceptedDirectDrawDeviceCountCached.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: return the cached number of accepted DirectDraw hardware API records.
      *
@@ -2072,6 +2205,10 @@ namespace zVid
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-vid-get-accepted-hardware-renderer-count-cached
+     * @recoil-artifact defines .text recoil:function:0x4a9910: zVid::GetAcceptedHardwareRendererCountCached.
+     * @recoil-match byte
+     *
      * Purpose: provide the recovered zVid::GetAcceptedHardwareRendererCountCached behavior.
      */
     int __cdecl GetAcceptedHardwareRendererCountCached()
@@ -2085,6 +2222,10 @@ namespace zVideo_dd
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-get-hw-api-device-feature-flags
+     * @recoil-artifact defines .text recoil:function:0x4a9920: zVideo_dd::GetHwApiDeviceFeatureFlags.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: return the DirectDraw hardware API feature flags for the indexed
      * device record.
@@ -2104,6 +2245,10 @@ namespace zVid
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-vid-get-selected-d3-ddevice-name-or-default
+     * @recoil-artifact defines .text recoil:function:0x4a9940: zVid::GetSelectedD3DDeviceNameOrDefault.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: return the selected Direct3D device name or the writable default
      * device name when no D3D device record is selected.
@@ -2120,6 +2265,10 @@ namespace zVid
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-vid-query-device-video-memory-bytes
+     * @recoil-artifact defines .text recoil:function:0x4a9950: zVid::QueryDeviceVideoMemoryBytes.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: queries live or cached DirectDraw video memory totals and free bytes for a device.
      */
@@ -2160,6 +2309,10 @@ namespace zVid
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-vid-query-texture-memory-bytes
+     * @recoil-artifact defines .text recoil:function:0x4a9a30: zVid::QueryTextureMemoryBytes.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: queries live or cached DirectDraw texture memory totals and free bytes for a device.
      */

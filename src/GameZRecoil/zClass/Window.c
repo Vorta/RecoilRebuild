@@ -70,6 +70,10 @@ namespace CZWindow
 namespace CZClass
 {
     /**
+     * @recoil-anchor recoil:anchor:zclass.window.czclass-remove-child-checked
+     * @recoil-artifact defines .text recoil:function:0x44f870: CZClass::RemoveChildChecked.
+     * @recoil-match byte
+     *
      * Purpose: validate parent and child pointers before removing the child
      * through the generic class helper.
      */

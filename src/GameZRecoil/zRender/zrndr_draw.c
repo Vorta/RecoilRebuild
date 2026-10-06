@@ -1172,7 +1172,7 @@ void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawvisiblesamplestages
  * @recoil-artifact defines .text recoil:function:0x49b020: zRndrLensFlareDrawVisibleSampleStages
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.

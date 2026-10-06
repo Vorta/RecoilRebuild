@@ -141,6 +141,9 @@ HRESULT WINAPI zCom::ConnectionPointContainerUnadvise(IUnknown* source, REFIID c
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoil.westwood-online-upgrade-api-init-state-init
+ * @recoil-artifact defines .text recoil:function:0x42dda0: WestwoodOnlineUpgradeApiInitState::Init.
+ * @recoil-match byte
  *
  * Purpose: validate and initialize the transient WOL bootstrap-state block,
  * module handles, event-sink live count, and critical sections.

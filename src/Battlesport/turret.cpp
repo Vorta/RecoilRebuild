@@ -685,7 +685,7 @@ void zTurret_Runtime::UpdateFirePositionFromParts()
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate recoil:function:0x4374a0
  * @recoil-raw-asm recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Raw assembly: inline zMath::Vec3Subtract [0x4374f3,0x437516) and
  * zMath::FastExp [0x4375ba,0x4375c5) expansions (requires turret.cpp /Ob1),
@@ -980,7 +980,7 @@ int __cdecl Shutdown()
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-loaddefinitionsfrompath
  * @recoil-artifact defines .text recoil:function:0x437ac0: zTurret_System::LoadDefinitionsFromPath.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Loads turret definitions, allocates runtimes, and enables the tick callback.
@@ -1042,7 +1042,7 @@ int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* pat
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-tickallruntimesroundrobin
  * @recoil-artifact defines .text recoil:function:0x437ca0: zTurret_System::TickAllRuntimesRoundRobin.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Advances active turret runtimes using the recovered round-robin globals.
@@ -1132,7 +1132,7 @@ namespace zTurret_System {
 /**
  * @recoil-anchor recoil:anchor:battlesport-turret-zturret-system-freeallruntimes
  * @recoil-artifact defines .text recoil:function:0x437dc0: zTurret_System::FreeAllRuntimes.
- *
+ * @recoil-match byte
  *
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Releases turret runtimes, the loaded definition tree, and callback node.

@@ -33,6 +33,10 @@
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-renderer-type-and-active-path
+     * @recoil-artifact defines .text recoil:function:0x4a6b40: zVideo::SetRendererTypeAndActivePath.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: updates the active renderer backend globals and returns the
      * previous renderer type.
@@ -54,6 +58,10 @@ namespace zVideo
 namespace zVideo_dd3d
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-dd3d-set-pending-wireframe-state
+     * @recoil-artifact defines .text recoil:function:0x4a6b60: zVideo_dd3d::SetPendingWireframeState.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
      * Purpose: store the deferred Direct3D wireframe fill-mode request.
      *
@@ -70,6 +78,10 @@ namespace zVideo_dd3d
 namespace zVideo_dd3d
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-dd3d-set-pending-dither-enable
+     * @recoil-artifact defines .text recoil:function:0x4a6b70: zVideo_dd3d::SetPendingDitherEnable.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
      * Purpose: store the deferred Direct3D dither-enable render-state request.
      *
@@ -84,6 +96,10 @@ namespace zVideo_dd3d
 } // namespace zVideo_dd3d
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-clear-color-packed16
+ * @recoil-artifact defines .text recoil:function:0x4a6b80: zVideoSetClearColorPacked16.
+ * @recoil-match byte
+ *
  * Purpose: store the packed 16-bit clear color used by zVideo clear paths.
  *
  * Evidence: BN source file zVideo.cpp is a leaf fastcall store of ECX into
@@ -97,6 +113,10 @@ void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16)
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-get-rgb-bits
+     * @recoil-artifact defines .text recoil:function:0x4a6b90: zVideo::PixelPackGetRgbBits.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: return the cached display RGB channel bit counts.
      */
@@ -112,6 +132,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-get-rgb-masks
+     * @recoil-artifact defines .text recoil:function:0x4a6bb0: zVideo::PixelPackGetRgbMasks.
+     * @recoil-match byte
+     *
      * Purpose: Return the cached RGB bit masks from the active pixel-pack record.
      */
     void __fastcall PixelPackGetRgbMasks(unsigned int* outRMask, unsigned int* outGMask, unsigned int* outBMask)
@@ -126,6 +150,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-get-packing-params
+     * @recoil-artifact defines .text recoil:function:0x4a6bd0: zVideo::PixelPackGetPackingParams.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: return the cached packed RGB shift parameters.
      */
@@ -141,6 +169,9 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-setup-from-masks
+     * @recoil-artifact defines .text recoil:function:0x4a6bf0: zVideo::PixelPackSetupFromMasks.
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: initialize the global display pixel-pack bit counts, masks, and
      * shifted channel masks from DirectDraw pixel-format masks.
@@ -272,6 +303,10 @@ namespace zVideo
 } // namespace zVideo
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-videobuff-capture-surface-to-image
+ * @recoil-artifact defines .text recoil:function:0x4a6e80: zVideobuffCaptureSurfaceToImage.
+ * @recoil-match byte
+ *
  * Purpose: Captures a selected 16-bit video surface into an owned zVid image.
  */
 extern "C" zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sourceSelector)
@@ -337,6 +372,9 @@ extern "C" zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sour
 namespace zVideo_buff
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-buff-copy-surface-rect-to-image
+     * @recoil-artifact defines .text recoil:function:0x4a6fe0: zVideo_buff::CopySurfaceRectToImage.
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zImage/zvid_buff.c.
      * Purpose: provide the recovered zVideo_buff::CopySurfaceRectToImage behavior.
      */
@@ -431,6 +469,10 @@ namespace zVideo_buff
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-half-res-adjust-mode
+     * @recoil-artifact defines .text recoil:function:0x4a71c0: zVideo::SetHalfResAdjustMode.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: update the half-resolution adjustment mode when the current
      * surface configuration allows it.
@@ -461,6 +503,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-get-primary-surface-rect-scratch
+     * @recoil-artifact defines .text recoil:function:0x4a7200: zVideo::GetPrimarySurfaceRectScratch.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: updates the reusable primary-surface rectangle dimensions and
      * returns its address.
@@ -481,6 +527,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-fog-color-from-rgb01
+     * @recoil-artifact defines .text recoil:function:0x4a7220: zVideo::SetFogColorFromRgb01.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Data evidence: writes the pending fog-color RGB255 globals at
      * 0x6321d0-0x6321d8.
@@ -496,6 +546,10 @@ namespace zVideo
 } // namespace zVideo
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-pending-fog-target-color-from-rgb01
+ * @recoil-artifact defines .text recoil:function:0x4a7250: zVideoSetPendingFogTargetColorFromRgb01.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Data evidence: writes the D3D color-attribute bias globals at
  * 0x6321dc-0x6321e4 and, for non-software renderers, the normalize-channel
@@ -527,6 +581,10 @@ void __fastcall zVideoSetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat* co
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-fog-target-color-from-rgb01
+     * @recoil-artifact defines .text recoil:function:0x4a7300: zVideo::SetFogTargetColorFromRgb01.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Data evidence: writes the target fog-color RGB255 globals at
      * 0x6321e8-0x6321f0.
@@ -544,6 +602,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-commit-fog-color-if-changed
+     * @recoil-artifact defines .text recoil:function:0x4a7330: zVideo::CommitFogColorIfChanged.
+     * @recoil-match byte
+     *
      * Source file evidence: zVideo.cpp.
      * Data evidence: compares pending fog RGB255 globals at 0x6321d0-0x6321d8
      * with applied fog RGB255 globals at 0x6321f4-0x6321fc, copies pending to
@@ -569,6 +631,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-commit-fog-target-color-if-changed
+     * @recoil-artifact defines .text recoil:function:0x4a73a0: zVideo::CommitFogTargetColorIfChanged.
+     * @recoil-match byte
+     *
      * Source file evidence: zVideo.cpp.
      * Data evidence: compares target fog RGB255 globals at 0x6321e8-0x6321f0
      * with applied fog RGB255 globals at 0x6321f4-0x6321fc, copies target to
@@ -594,6 +660,10 @@ namespace zVideo
 namespace zVid
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-vid-get-selected-hw-api-description-or-default
+     * @recoil-artifact defines .text recoil:function:0x4a7410: zVid::GetSelectedHwApiDescriptionOrDefault.
+     * @recoil-match byte
+     *
      * Purpose: return the selected hardware API description or the default
      * writable fallback string when no hardware API record is selected.
      */
@@ -608,6 +678,10 @@ namespace zVid
 namespace zVid
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-vid-get-hw-api-description
+     * @recoil-artifact defines .text recoil:function:0x4a7430: zVid::GetHwApiDescription.
+     * @recoil-match byte
+     *
      * Purpose: provide the recovered zVid::GetHwApiDescription behavior.
      */
     char* __fastcall GetHwApiDescription(int index)
@@ -620,6 +694,10 @@ namespace zVid
 namespace zVid
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-vid-get-hw-api-driver-name
+     * @recoil-artifact defines .text recoil:function:0x4a7450: zVid::GetHwApiDriverName.
+     * @recoil-match byte
+     *
      * Purpose: provide the recovered zVid::GetHwApiDriverName behavior.
      */
     char* __fastcall GetHwApiDriverName(int index)
@@ -647,6 +725,10 @@ namespace zVid
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-vid-get-accepted-direct-draw-device-count
+     * @recoil-artifact defines .text recoil:function:0x4a7480: zVid::GetAcceptedDirectDrawDeviceCount.
+     * @recoil-match byte
+     *
      * Retail 0x4a7480 tail-calls the distinct cached DirectDraw count at 0x4a9900.
      * Purpose: return the accepted DirectDraw hardware API device count.
      */
@@ -660,6 +742,10 @@ namespace zVid
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-select-hw-api-device-or-fallback
+     * @recoil-artifact defines .text recoil:function:0x4a7490: zVideo::SelectHwApiDeviceOrFallback.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: select the persisted hardware API device or fall back to the
      * software renderer path.
@@ -687,6 +773,10 @@ namespace zVideo
 namespace zVideoD3D
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-d3-d-scene-enter
+     * @recoil-artifact defines .text recoil:function:0x4a74d0: zVideoD3D::SceneEnter.
+     * @recoil-match byte
+     *
      * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
      * zVideo_dd3d::BeginSceneAndFlushPendingRenderStates only when depth is not
      * positive, then increments the same zero-initialized int32.
@@ -707,6 +797,10 @@ namespace zVideoD3D
 namespace zVideoD3D
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-d3-d-scene-leave
+     * @recoil-artifact defines .text recoil:function:0x4a74f0: zVideoD3D::SceneLeave.
+     * @recoil-match byte
+     *
      * Data evidence: BN reads g_zVideo_D3DSceneDepth at 0x632148, calls
      * zVideo_dd3d::EndScene only for the final active scene, decrements the stored
      * depth, and returns zero for all depth states.
@@ -731,6 +825,10 @@ namespace zVideoD3D
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-at-exit-release-all-interfaces-and-surfaces
+     * @recoil-artifact defines .text recoil:function:0x4a7520: zVideo::AtExitReleaseAllInterfacesAndSurfaces.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: release tracked DirectDraw and Direct3D interfaces from the CRT
      * atexit hook registered by zVideo::ModuleInit.
@@ -930,6 +1028,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-init-video-system
+     * @recoil-artifact defines .text recoil:function:0x4a75f0: zVideo::InitVideoSystem.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_init.c.
      * Purpose: open the requested renderer video mode, initialize backend state,
      * seed hardware texture defaults, and refresh cached client coordinates.
@@ -988,6 +1090,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-update-cached-client-rect-screen-coords
+     * @recoil-artifact defines .text recoil:function:0x4a7700: zVideo::UpdateCachedClientRectScreenCoords.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: Battlesport/zVideo.cpp.
      * Purpose: cache the client rectangle in screen coordinates for the active
      * zVideo window.
@@ -1009,6 +1115,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-shutdown-video-system
+     * @recoil-artifact defines .text recoil:function:0x4a7740: zVideo::ShutdownVideoSystem.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: Battlesport/zVideo.cpp.
      * Purpose: shut down the active zVideo backend and restore cursor visibility.
      *
@@ -1031,6 +1141,10 @@ namespace zVideo
 } // namespace zVideo
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-restore-iconic-fullscreen-window-if-needed
+ * @recoil-artifact defines .text recoil:function:0x4a7770: zVideoRestoreIconicFullscreenWindowIfNeeded.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVideoRestoreIconicFullscreenWindowIfNeeded behavior.
  */
 void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded()
@@ -1043,6 +1157,10 @@ void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded()
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-bind-renderer-dispatch
+     * @recoil-artifact defines .text recoil:function:0x4a77a0: zVideo::BindRendererDispatch.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: bind renderer-specific zVideo dispatch functions and fullscreen state.
      */
@@ -1107,6 +1225,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-init-set-surface-geometry-from-mode-index
+     * @recoil-artifact defines .text recoil:function:0x4a7990: zVideo::InitSetSurfaceGeometryFromModeIndex.
+     * @recoil-match byte
+     *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
      * Purpose: initializes cached display, primary, and software surface geometry
      * for the selected video mode index.
@@ -1186,6 +1308,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-set-video-mode
+     * @recoil-artifact defines .text recoil:function:0x4a7af0: zVideo::SetVideoMode.
+     * @recoil-match byte
+     *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_init.c.
      * Purpose: apply cached geometry for a requested video mode and forward the
      * mode switch through the active renderer backend.
@@ -1209,6 +1335,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-exchange-clear-screen-buffer-enabled
+     * @recoil-artifact defines .text recoil:function:0x4a7b20: zVideo::ExchangeClearScreenBufferEnabled.
+     * @recoil-match byte
+     *
      * Purpose: Swaps the clear-screen-buffer flag and returns the previous value.
      */
     int __fastcall ExchangeClearScreenBufferEnabled(int enable)
@@ -1223,6 +1353,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-get-clear-screen-buffer-enabled
+     * @recoil-artifact defines .text recoil:function:0x4a7b30: zVideo::GetClearScreenBufferEnabled.
+     * @recoil-match byte
+     *
      * Purpose: Returns the current clear-screen-buffer flag.
      */
     int __cdecl GetClearScreenBufferEnabled()

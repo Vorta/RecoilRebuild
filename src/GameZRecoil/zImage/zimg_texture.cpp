@@ -888,6 +888,10 @@ extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntr
 
 extern "C" zVidImagePartial *__fastcall
 /**
+ * @recoil-anchor recoil:anchor:zimage.zimg-texture.z-vid-texture-pack-load-builtin-image-by-name
+ * @recoil-artifact defines .text recoil:function:0x46dd30: zVidTexturePackLoadBuiltinImageByName.
+ * @recoil-match byte
+ *
  * Purpose: provide the recovered zVidTexturePackLoadBuiltinImageByName behavior.
  */
 zVidTexturePackLoadBuiltinImageByName(

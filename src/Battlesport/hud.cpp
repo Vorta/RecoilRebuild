@@ -1040,6 +1040,10 @@ void RecoilStateCheatCode::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-cheat-code-title-widget-on-activate
+ * @recoil-artifact defines .text recoil:function:0x4070e0: HudUiCheatCodeTitleWidget::OnActivate.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x4070e0.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
  * Purpose: queue the cheat-code state exit when the GO widget is activated.
@@ -4041,6 +4045,10 @@ HudUiCreditsPanel::HudUiCreditsPanel()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-credits-back-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x409160: HudUiCreditsBackButton::OnActivate.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x409160.
  * Purpose: queue exit from the credits state and run the inherited activation behavior.
  */
@@ -4262,7 +4270,7 @@ inline void HudUiPanelSpan::clear()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x409570: HudUiZrdScrollingText::LoadFromZrd.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
  * Purpose: load scrolling credits rows from ZRD layout data and compute stacked row heights.
@@ -6165,6 +6173,10 @@ void CHudUiOptionsPanelLighting::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-lighting-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40c9c0: CHudUiOptionsPanelLighting::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40c9c0.
  * Purpose: synchronize the lighting toggle from the active hardware-mode graphics flags.
  */
@@ -6217,6 +6229,10 @@ void CHudUiOptionsPanelPerspective::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-perspective-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40ca20: CHudUiOptionsPanelPerspective::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40ca20.
  * Purpose: synchronize the perspective toggle from the active hardware-mode graphics flags.
  */
@@ -6258,6 +6274,10 @@ void CHudUiOptionsPanelFullHud::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-full-hud-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40ca80: CHudUiOptionsPanelFullHud::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40ca80.
  * Purpose: synchronize the full-HUD toggle from the active hardware-mode HUD type.
  */
@@ -6267,6 +6287,10 @@ void CHudUiOptionsPanelFullHud::InitFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-full-hud-on-activate
+ * @recoil-artifact defines .text recoil:function:0x40caa0: CHudUiOptionsPanelFullHud::OnActivate.
+ * @recoil-match byte
+ *
  * Original function; shared retail body 0x40caa0.
  * Evidence: the body is shared with HudUiCheckToggleWidget::OnActivateThunk.
  * Purpose: run inherited toggle activation for the full-HUD option.
@@ -6301,6 +6325,10 @@ void CHudUiOptionsPanelObjectDetail::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-object-detail-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cab0: CHudUiOptionsPanelObjectDetail::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cab0.
  * Purpose: synchronize the object detail selector from the active hardware-mode object LOD.
  */
@@ -6310,6 +6338,10 @@ void CHudUiOptionsPanelObjectDetail::InitFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-object-detail-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cad0: CHudUiOptionsPanelObjectDetail::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cad0.
  * Purpose: advance the object detail selector and store its object LOD option.
  */
@@ -6344,6 +6376,10 @@ void CHudUiOptionsPanelTextureMemory::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-texture-memory-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40caf0: CHudUiOptionsPanelTextureMemory::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40caf0.
  * Purpose: synchronize the texture memory selector from the active hardware-mode option.
  */
@@ -6353,6 +6389,10 @@ void CHudUiOptionsPanelTextureMemory::InitFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-texture-memory-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cb10: CHudUiOptionsPanelTextureMemory::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cb10.
  * Purpose: advance the texture memory selector and store its option.
  */
@@ -6387,6 +6427,10 @@ void CHudUiOptionsPanelEffects::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-effects-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cb30: CHudUiOptionsPanelEffects::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cb30.
  * Purpose: synchronize the effects selector and constrain software-renderer choices.
  */
@@ -6404,6 +6448,10 @@ void CHudUiOptionsPanelEffects::InitFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-effects-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cb70: CHudUiOptionsPanelEffects::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cb70.
  * Purpose: advance the effects selector and store its effects-level option.
  */
@@ -6438,6 +6486,10 @@ void CHudUiOptionsPanelSoundActive::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-sound-active-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cb90: CHudUiOptionsPanelSoundActive::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cb90.
  * Purpose: synchronize the sound-active toggle from the mute-sound option.
  */
@@ -6447,6 +6499,10 @@ void CHudUiOptionsPanelSoundActive::InitFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-sound-active-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cbb0: CHudUiOptionsPanelSoundActive::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cbb0.
  * Purpose: toggle sound activity and store the inverse mute-sound option.
  */
@@ -6481,6 +6537,10 @@ void CHudUiOptionsPanelSoundQuality::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-sound-quality-init-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cbd0: CHudUiOptionsPanelSoundQuality::InitFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cbd0.
  * Purpose: synchronize the sound quality selector from the sound LOD option.
  */
@@ -6515,6 +6575,10 @@ void CHudUiOptionsPanelSoundVolume::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-sound-volume-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cc10: CHudUiOptionsPanelSoundVolume::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cc10.
  * Purpose: synchronize the sound volume fill widget from the stored sound volume option.
  */
@@ -6563,6 +6627,10 @@ void CHudUiOptionsPanelMusicEnable::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-music-enable-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cc60: CHudUiOptionsPanelMusicEnable::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cc60.
  * Purpose: synchronize the CD-audio toggle from the stored music-enable option.
  */
@@ -6603,6 +6671,10 @@ void CHudUiOptionsPanelMusicVolume::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-music-volume-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40ccc0: CHudUiOptionsPanelMusicVolume::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40ccc0.
  * Purpose: synchronize the music volume fill widget from the current CD volume.
  */
@@ -6641,6 +6713,10 @@ void CHudUiOptionsPanelResolution::PostLoadFromZrd()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.hud.chud-ui-options-panel-resolution-sync-from-options
+ * @recoil-artifact defines .text recoil:function:0x40cd30: CHudUiOptionsPanelResolution::SyncFromOptions.
+ * @recoil-match byte
+ *
  * Original function; retail address 0x40cd30.
  * Purpose: synchronize and constrain the resolution selector for the active renderer.
  */
@@ -9819,7 +9895,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
@@ -12022,7 +12098,7 @@ namespace HudUiListMenuEntry {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.sortrange
  * @recoil-artifact defines .text recoil:function:0x414710: HudUiListMenuEntry::SortRange.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.

@@ -2032,6 +2032,10 @@ void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequests()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.wol.westwood-online-upgrade-dialog-queue-visible-session-requests-and-lookup-browse-records
+ * @recoil-artifact defines .text recoil:function:0x43ed10: WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords.
+ * @recoil-match byte
+ *
  * Purpose: look up selected browse records and queue matching session requests.
  */
 void WestwoodOnlineUpgradeDialog::QueueVisibleSessionRequestsAndLookupBrowseRecords()

@@ -212,6 +212,10 @@ RECOIL_NO_GS void __fastcall RecoilApp::InitStdLogFiles(const char* exePath)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-get-message-map
+ * @recoil-artifact defines .text recoil:function:0x42de10: RecoilApp::GetMessageMap.
+ * @recoil-match byte
+ *
  * Purpose: return RecoilApp's authored MFC message map for runtime dispatch.
  */
 const AFX_MSGMAP* RecoilApp::GetMessageMap() const
@@ -233,6 +237,10 @@ RecoilApp g_RecoilApp;
 // ~RecoilApp is compiler-generated: retail's destructor never resets the RecoilApp vptr.
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-recoil-app
+ * @recoil-artifact defines .text recoil:function:0x42dfa0: RecoilApp::RecoilApp.
+ * @recoil-match byte
+ *
  * Purpose: Initializes application state after constructing the MFC module base.
  */
 RecoilApp::RecoilApp()
@@ -242,6 +250,10 @@ RecoilApp::RecoilApp()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-create-main-wnd
+ * @recoil-artifact defines .text recoil:function:0x42e110: RecoilApp::CreateMainWnd.
+ * @recoil-match byte
+ *
  * Purpose: Allocates the application's main Recoil frame window object.
  */
 CZRecoilFrame* RecoilApp::CreateMainWnd()
@@ -255,6 +267,10 @@ CZRecoilFrame* RecoilApp::CreateMainWnd()
 
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.z-input-diset-joystick-enabled
+ * @recoil-artifact defines .text recoil:function:0x42e170: zInput::DISetJoystickEnabled.
+ * @recoil-match byte
+ *
  * Purpose: Enables or disables joystick acquisition and gameplay axis ranges.
  */
 int __fastcall DISetJoystickEnabled(int enable)
@@ -287,6 +303,10 @@ int __fastcall DISetJoystickEnabled(int enable)
 } // namespace zInput
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-start-engine
+ * @recoil-artifact defines .text recoil:function:0x42e220: RecoilApp::StartEngine.
+ * @recoil-match byte
+ *
  * Purpose: Initializes the engine and its startup subsystems for the application window.
  */
 RECOIL_NO_GS int RecoilApp::StartEngine(HWND hwnd)
@@ -315,6 +335,10 @@ RECOIL_NO_GS int RecoilApp::StartEngine(HWND hwnd)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-initialize-display
+ * @recoil-artifact defines .text recoil:function:0x42e330: RecoilApp::InitializeDisplay.
+ * @recoil-match byte
+ *
  * Purpose: Initializes the configured video mode and rendering surfaces.
  */
 int __fastcall RecoilApp::InitializeDisplay(HWND hwnd)
@@ -354,6 +378,10 @@ int __fastcall RecoilApp::InitializeDisplay(HWND hwnd)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-shutdown-engine
+ * @recoil-artifact defines .text recoil:function:0x42e430: RecoilApp::ShutdownEngine.
+ * @recoil-match byte
+ *
  * Purpose: Shuts down the active engine, rendering, audio, and gameplay subsystems.
  */
 void RecoilApp::ShutdownEngine()
@@ -382,6 +410,10 @@ void RecoilApp::ShutdownEngine()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-load-zbd-and-start-engine
+ * @recoil-artifact defines .text recoil:function:0x42e490: RecoilApp::LoadZbdAndStartEngine.
+ * @recoil-match byte
+ *
  * Purpose: Mounts the startup archive when needed and starts the engine state flow.
  */
 int RecoilApp::LoadZbdAndStartEngine()
@@ -396,6 +428,10 @@ int RecoilApp::LoadZbdAndStartEngine()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-load-zbd-and-setup-sensor-tracker
+ * @recoil-artifact defines .text recoil:function:0x42e4d0: RecoilApp::LoadZbdAndSetupSensorTracker.
+ * @recoil-match byte
+ *
  * Purpose: Starts the engine and records the selected mission setup in the sensor tracker.
  */
 int RecoilApp::LoadZbdAndSetupSensorTracker(int missionId, const char* zbdPath, int skipIntroFmvMode, int missionFlags)
@@ -412,6 +448,10 @@ int RecoilApp::LoadZbdAndSetupSensorTracker(int missionId, const char* zbdPath, 
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-init-instance
+ * @recoil-artifact defines .text recoil:function:0x42e520: RecoilApp::InitInstance.
+ * @recoil-match byte
+ *
  * Purpose: Initializes the process window, application services, and initial game state.
  */
 RECOIL_NO_GS int RecoilApp::InitInstance()
@@ -525,6 +565,10 @@ RECOIL_NO_GS int RecoilApp::InitInstance()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-exit-instance
+ * @recoil-artifact defines .text recoil:function:0x42e930: RecoilApp::ExitInstance.
+ * @recoil-match byte
+ *
  * Purpose: Releases application resources and persists options during process shutdown.
  */
 int RecoilApp::ExitInstance()
@@ -548,6 +592,10 @@ int RecoilApp::ExitInstance()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-activate-existing-instance
+ * @recoil-artifact defines .text recoil:function:0x42e990: RecoilApp::ActivateExistingInstance.
+ * @recoil-match byte
+ *
  * Purpose: Activates an existing Recoil window or permits this instance to continue.
  */
 int RecoilApp::ActivateExistingInstance()
@@ -567,6 +615,10 @@ int RecoilApp::ActivateExistingInstance()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-pre-translate-message
+ * @recoil-artifact defines .text recoil:function:0x42e9f0: RecoilApp::PreTranslateMessage.
+ * @recoil-match byte
+ *
  * Purpose: Filters accelerated-mode system-key messages before normal MFC translation.
  */
 int RecoilApp::PreTranslateMessage(tagMSG* msg)
@@ -583,6 +635,10 @@ int RecoilApp::PreTranslateMessage(tagMSG* msg)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-intro-fmv-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42ea20: CRecoilAppIntroFmvState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Configures rendering and prepares the intro FMV state for activation.
  */
 int CRecoilAppIntroFmvState::OnTryBecomeCurrent()
@@ -618,6 +674,10 @@ int CRecoilAppIntroFmvState::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-intro-fmv-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x42eac0: CRecoilAppIntroFmvState::OnUpdateShouldQuit.
+ * @recoil-match byte
+ *
  * Purpose: Advances or skips the intro FMV and queues the mission FMV state.
  */
 int CRecoilAppIntroFmvState::OnUpdateShouldQuit()
@@ -637,6 +697,10 @@ int CRecoilAppIntroFmvState::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-fmv-state-on-idle-or-dispatch
+ * @recoil-artifact defines .text recoil:function:0x42eb00: RecoilApp_FmvState::OnIdleOrDispatch.
+ * @recoil-match byte
+ *
  * Purpose: Reports that the FMV state accepts the idle or dispatch callback.
  */
 int RecoilApp_FmvState::OnIdleOrDispatch(unsigned int, unsigned int)
@@ -645,6 +709,10 @@ int RecoilApp_FmvState::OnIdleOrDispatch(unsigned int, unsigned int)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-intro-fmv-state-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x42eb10: CRecoilAppIntroFmvState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Purpose: Applies the intro FMV's deactivation transition.
  */
 void CRecoilAppIntroFmvState::OnDeactivate()
@@ -653,6 +721,10 @@ void CRecoilAppIntroFmvState::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-main-menu-prep-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42eb20: RecoilApp_MainMenuPrepState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Configures the video surface and resets main-menu preparation state.
  */
 int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent()
@@ -668,6 +740,10 @@ int RecoilApp_MainMenuPrepState::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-main-menu-prep-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x42eb60: RecoilApp_MainMenuPrepState::OnUpdateShouldQuit.
+ * @recoil-match byte
+ *
  * Purpose: Queues entry to the front-end main menu.
  */
 int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit()
@@ -677,11 +753,19 @@ int RecoilApp_MainMenuPrepState::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-attract-fmv-state-crecoil-app-attract-fmv-state
+ * @recoil-artifact defines .text recoil:function:0x42eb70: CRecoilAppAttractFmvState::CRecoilAppAttractFmvState.
+ * @recoil-match byte
+ *
  * Purpose: Establishes the attract-mode FMV state object.
  */
 CRecoilAppAttractFmvState::CRecoilAppAttractFmvState() { }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-attract-fmv-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42ebf0: CRecoilAppAttractFmvState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Configures the display and prepares attract-mode FMV playback.
  */
 int CRecoilAppAttractFmvState::OnTryBecomeCurrent()
@@ -713,6 +797,10 @@ int CRecoilAppAttractFmvState::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-attract-fmv-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x42ec80: CRecoilAppAttractFmvState::OnUpdateShouldQuit.
+ * @recoil-match byte
+ *
  * Purpose: Advances attract-mode playback and returns to the menu when it finishes.
  */
 int CRecoilAppAttractFmvState::OnUpdateShouldQuit()
@@ -727,6 +815,10 @@ int CRecoilAppAttractFmvState::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-attract-fmv-state-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x42eca0: CRecoilAppAttractFmvState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Purpose: Applies the attract-mode FMV's deactivation transition.
  */
 void CRecoilAppAttractFmvState::OnDeactivate()
@@ -736,6 +828,10 @@ void CRecoilAppAttractFmvState::OnDeactivate()
 
 namespace zUtil {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.z-util-set-mission-zrdr-paths-and-mount-zbd
+ * @recoil-artifact defines .text recoil:function:0x42ecb0: zUtil::SetMissionZrdrPathsAndMountZbd.
+ * @recoil-match byte
+ *
  * Purpose: Rebuilds mission resource search paths and mounts the mission archive.
  */
 int __fastcall SetMissionZrdrPathsAndMountZbd(int missionId)
@@ -760,6 +856,10 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(int missionId)
 } // namespace zUtil
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-mission-fmv-state-recoil-app-mission-fmv-state
+ * @recoil-artifact defines .text recoil:function:0x42ed30: RecoilApp_MissionFmvState::RecoilApp_MissionFmvState.
+ * @recoil-match byte
+ *
  * Purpose: Initializes the mission FMV selection and skip state.
  */
 RecoilApp_MissionFmvState::RecoilApp_MissionFmvState()
@@ -769,6 +869,10 @@ RecoilApp_MissionFmvState::RecoilApp_MissionFmvState()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-mission-fmv-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42edb0: RecoilApp_MissionFmvState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Selects the mission, mounts its resources, and prepares mission FMV playback.
  */
 int RecoilApp_MissionFmvState::OnTryBecomeCurrent()
@@ -810,6 +914,10 @@ void RecoilApp_MissionFmvState::SetMissionId(int missionId)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-mission-fmv-state-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x42ee50: RecoilApp_MissionFmvState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Purpose: Resets the mission selection and finalizes unskipped FMV playback.
  */
 void RecoilApp_MissionFmvState::OnDeactivate()
@@ -822,6 +930,10 @@ void RecoilApp_MissionFmvState::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-mission-fmv-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x42ee70: RecoilApp_MissionFmvState::OnUpdateShouldQuit.
+ * @recoil-match byte
+ *
  * Purpose: Switches to gameplay when the mission FMV is skipped or finishes.
  */
 int RecoilApp_MissionFmvState::OnUpdateShouldQuit()
@@ -834,6 +946,10 @@ int RecoilApp_MissionFmvState::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-crecoil-app-play-state
+ * @recoil-artifact defines .text recoil:function:0x42eea0: CRecoilAppPlayState::CRecoilAppPlayState.
+ * @recoil-match byte
+ *
  * Purpose: Initializes transient gameplay transition and pending-load state.
  */
 CRecoilAppPlayState::CRecoilAppPlayState()
@@ -843,6 +959,10 @@ CRecoilAppPlayState::CRecoilAppPlayState()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-wnd-activate
+ * @recoil-artifact defines .text recoil:function:0x42eec0: CRecoilAppPlayState::OnWndActivate.
+ * @recoil-match byte
+ *
  * Purpose: Reactivates the current HUD layout when the gameplay window gains focus.
  */
 void CRecoilAppPlayState::OnWndActivate(int bActivate)
@@ -853,6 +973,10 @@ void CRecoilAppPlayState::OnWndActivate(int bActivate)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42eed0: CRecoilAppPlayState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Configures runtime state before the application enters active gameplay.
  */
 int CRecoilAppPlayState::OnTryBecomeCurrent()
@@ -987,6 +1111,8 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
+ * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
@@ -1150,6 +1276,9 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x42f5e0: CRecoilAppPlayState::OnUpdateShouldQuit.
+ *
  * Purpose: Advances gameplay and completes any active fade-driven state transition.
  */
 int CRecoilAppPlayState::OnUpdateShouldQuit()
@@ -1232,6 +1361,10 @@ int CRecoilAppPlayState::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-resume
+ * @recoil-artifact defines .text recoil:function:0x42f8a0: CRecoilAppPlayState::OnResume.
+ * @recoil-match byte
+ *
  * Purpose: Restarts mission CD audio when gameplay resumes.
  */
 void CRecoilAppPlayState::OnResume(int)
@@ -1243,6 +1376,10 @@ void CRecoilAppPlayState::OnResume(int)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x42f8e0: CRecoilAppPlayState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Purpose: Restores system and engine state while leaving active gameplay.
  */
 void CRecoilAppPlayState::OnDeactivate()
@@ -1279,6 +1416,10 @@ void CRecoilAppPlayState::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-leave-network-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x42f9d0: RecoilApp_LeaveNetworkState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Tears down the local network player, engine, and sound backend.
  */
 int RecoilApp_LeaveNetworkState::OnTryBecomeCurrent()
@@ -2113,6 +2254,10 @@ inline void RecoilApp_StateQueue::PushBack(RecoilApp_StateQueueItem* const& item
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-mfc-ole-module-recoil-app-mfc-ole-module
+ * @recoil-artifact defines .text recoil:function:0x442c70: RecoilApp_MfcOleModule::RecoilApp_MfcOleModule.
+ * @recoil-match byte
+ *
  * Purpose: constructs the MFC app subobject and initializes Recoil-owned state host fields.
  */
 RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()

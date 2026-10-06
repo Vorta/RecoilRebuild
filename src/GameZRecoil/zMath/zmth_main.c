@@ -694,7 +694,7 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-scale-gamezrecoil-zmath-zmath-matrix-cpp
      * @recoil-artifact defines .text recoil:function:0x473690: zMath::MatScale (GameZRecoil/zMath/zmath_matrix.cpp).
-     *
+     * @recoil-match byte
      *
      * Purpose: Applies per-axis scale to the current matrix basis while preserving translation.
      */
@@ -706,31 +706,33 @@ namespace zMath
             ((zMat4x3*)*zMath::g_currentMatrixPtrSlot)->yy = sy;
             ((zMat4x3*)*zMath::g_currentMatrixPtrSlot)->zz = sz;
         } else {
-            zMat4x3* matrix = (zMat4x3*)*zMath::g_currentMatrixPtrSlot;
-            scaled.xx = matrix->xx * sx;
-            scaled.xy = matrix->xy * sx;
-            scaled.xz = matrix->xz * sx;
-            scaled.yx = matrix->yx * sy;
-            scaled.yy = matrix->yy * sy;
-            scaled.yz = matrix->yz * sy;
-            scaled.zx = matrix->zx * sz;
-            scaled.zy = matrix->zy * sz;
-            scaled.zz = matrix->zz * sz;
-            scaled.posX = matrix->posX;
-            scaled.posY = matrix->posY;
-            scaled.posZ = matrix->posZ;
-            matrix->xx = scaled.xx;
-            matrix->xy = scaled.xy;
-            matrix->xz = scaled.xz;
-            matrix->yx = scaled.yx;
-            matrix->yy = scaled.yy;
-            matrix->yz = scaled.yz;
-            matrix->zx = scaled.zx;
-            matrix->zy = scaled.zy;
-            matrix->zz = scaled.zz;
-            matrix->posX = scaled.posX;
-            matrix->posY = scaled.posY;
-            matrix->posZ = scaled.posZ;
+            const float* matrix = *zMath::g_currentMatrixPtrSlot;
+            float* dest = *zMath::g_currentMatrixPtrSlot;
+            const float* source = (const float*)&scaled;
+            scaled.xx = matrix[0] * sx;
+            scaled.xy = matrix[1] * sx;
+            scaled.xz = matrix[2] * sx;
+            scaled.yx = matrix[3] * sy;
+            scaled.yy = matrix[4] * sy;
+            scaled.yz = matrix[5] * sy;
+            scaled.zx = matrix[6] * sz;
+            scaled.zy = matrix[7] * sz;
+            scaled.zz = matrix[8] * sz;
+            scaled.posX = matrix[9];
+            scaled.posY = matrix[10];
+            scaled.posZ = matrix[11];
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest = *source;
         }
         *zMath::g_currentMatrixIdentityFlagSlot = 0;
     }
@@ -745,63 +747,98 @@ namespace zMath
      */
     void __stdcall MatTranslate(float tx, float ty, float tz)
     {
-        zMat4x3* matrix = (zMat4x3*)(*g_currentMatrixPtrSlot);
-
+        zMat4x3 translated;
         if (*g_currentMatrixIdentityFlagSlot != 0) {
-            matrix->posX = tx;
-            matrix->posY = ty;
-            matrix->posZ = tz;
-            *g_currentMatrixIdentityFlagSlot = 0;
-            return;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->posX = tx;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->posY = ty;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->posZ = tz;
+        } else {
+            const zMat4x3* matrix = (const zMat4x3*)*g_currentMatrixPtrSlot;
+            float* dest = *g_currentMatrixPtrSlot;
+            const float* source = (const float*)&translated;
+            translated.xx = matrix->xx;
+            translated.xy = matrix->xy;
+            translated.xz = matrix->xz;
+            translated.yx = matrix->yx;
+            translated.yy = matrix->yy;
+            translated.yz = matrix->yz;
+            translated.zx = matrix->zx;
+            translated.zy = matrix->zy;
+            translated.zz = matrix->zz;
+            translated.posX = tx * matrix->xx + ty * matrix->yx + tz * matrix->zx + matrix->posX;
+            translated.posY = tx * matrix->xy + ty * matrix->yy + tz * matrix->zy + matrix->posY;
+            translated.posZ = tx * matrix->xz + ty * matrix->yz + tz * matrix->zz + matrix->posZ;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest = *source;
         }
-
-        matrix->posX += tx * matrix->xx + ty * matrix->yx + tz * matrix->zx;
-        matrix->posY += tx * matrix->xy + ty * matrix->yy + tz * matrix->zy;
-        matrix->posZ += tx * matrix->xz + ty * matrix->yz + tz * matrix->zz;
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatex
      * @recoil-artifact defines .text recoil:function:0x473970: zMath::MatRotateX.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
      *
      *
      * Purpose: applies an X-axis rotation to the current matrix stack slot.
      */
     void __stdcall MatRotateX(float angleRad)
     {
-        const float sinAngle = sin(angleRad);
-        const float cosAngle = cos(angleRad);
-        zMat4x3* matrix = (zMat4x3*)(*g_currentMatrixPtrSlot);
-
+        zMat4x3 rotated;
+        float sinAngle;
+        float cosAngle;
+        SinCos(angleRad, &sinAngle, &cosAngle);
         if (*g_currentMatrixIdentityFlagSlot != 0) {
-            matrix->yy = cosAngle;
-            matrix->yz = sinAngle;
-            matrix->zy = -sinAngle;
-            matrix->zz = cosAngle;
-            *g_currentMatrixIdentityFlagSlot = 0;
-            return;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->yy = cosAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->yz = sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->zy = -sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->zz = cosAngle;
+        } else {
+            const zMat4x3* matrix = (const zMat4x3*)*g_currentMatrixPtrSlot;
+            float* dest = *g_currentMatrixPtrSlot;
+            const float* source = (const float*)&rotated;
+            rotated.xx = matrix->xx;
+            rotated.xy = matrix->xy;
+            rotated.xz = matrix->xz;
+            rotated.yx = cosAngle * matrix->yx + sinAngle * matrix->zx;
+            rotated.yy = cosAngle * matrix->yy + sinAngle * matrix->zy;
+            rotated.yz = cosAngle * matrix->yz + sinAngle * matrix->zz;
+            rotated.zx = cosAngle * matrix->zx - sinAngle * matrix->yx;
+            rotated.zy = cosAngle * matrix->zy - sinAngle * matrix->yy;
+            rotated.zz = cosAngle * matrix->zz - sinAngle * matrix->yz;
+            rotated.posX = matrix->posX;
+            rotated.posY = matrix->posY;
+            rotated.posZ = matrix->posZ;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest = *source;
         }
-
-        const float oldYx = matrix->yx;
-        const float oldYy = matrix->yy;
-        const float oldYz = matrix->yz;
-        const float oldZx = matrix->zx;
-        const float oldZy = matrix->zy;
-        const float oldZz = matrix->zz;
-
-        matrix->yx = cosAngle * oldYx + sinAngle * oldZx;
-        matrix->yy = cosAngle * oldYy + sinAngle * oldZy;
-        matrix->yz = cosAngle * oldYz + sinAngle * oldZz;
-        matrix->zx = cosAngle * oldZx - sinAngle * oldYx;
-        matrix->zy = cosAngle * oldZy - sinAngle * oldYy;
-        matrix->zz = cosAngle * oldZz - sinAngle * oldYz;
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatey
      * @recoil-artifact defines .text recoil:function:0x473b10: zMath::MatRotateY.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
      *
      *
      * Purpose: applies a Y-axis rotation to the current matrix stack slot while
@@ -809,82 +846,95 @@ namespace zMath
      */
     void __stdcall MatRotateY(float angleRad)
     {
-        const float sinAngle = sin(angleRad);
-        const float cosAngle = cos(angleRad);
-        zMat4x3* matrix = (zMat4x3*)(*g_currentMatrixPtrSlot);
-
+        zMat4x3 rotated;
+        float sinAngle;
+        float cosAngle;
+        SinCos(angleRad, &sinAngle, &cosAngle);
         if (*g_currentMatrixIdentityFlagSlot != 0) {
-            matrix->xx = cosAngle;
-            matrix->xz = -sinAngle;
-            matrix->zx = sinAngle;
-            matrix->zz = cosAngle;
-            *g_currentMatrixIdentityFlagSlot = 0;
-            return;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->xx = cosAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->xz = -sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->zx = sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->zz = cosAngle;
+        } else {
+            const zMat4x3* matrix = (const zMat4x3*)*g_currentMatrixPtrSlot;
+            float* dest = *g_currentMatrixPtrSlot;
+            const float* source = (const float*)&rotated;
+            rotated.xx = cosAngle * matrix->xx - sinAngle * matrix->zx;
+            rotated.xy = cosAngle * matrix->xy - sinAngle * matrix->zy;
+            rotated.xz = cosAngle * matrix->xz - sinAngle * matrix->zz;
+            rotated.yx = matrix->yx;
+            rotated.yy = matrix->yy;
+            rotated.yz = matrix->yz;
+            rotated.zx = sinAngle * matrix->xx + cosAngle * matrix->zx;
+            rotated.zy = sinAngle * matrix->xy + cosAngle * matrix->zy;
+            rotated.zz = sinAngle * matrix->xz + cosAngle * matrix->zz;
+            rotated.posX = matrix->posX;
+            rotated.posY = matrix->posY;
+            rotated.posZ = matrix->posZ;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest = *source;
         }
-
-        const float oldXx = matrix->xx;
-        const float oldXy = matrix->xy;
-        const float oldXz = matrix->xz;
-        const float oldYx = matrix->yx;
-        const float oldYy = matrix->yy;
-        const float oldYz = matrix->yz;
-        const float oldZx = matrix->zx;
-        const float oldZy = matrix->zy;
-        const float oldZz = matrix->zz;
-        const float oldPosX = matrix->posX;
-        const float oldPosY = matrix->posY;
-        const float oldPosZ = matrix->posZ;
-
-        matrix->xx = cosAngle * oldXx - sinAngle * oldZx;
-        matrix->xy = cosAngle * oldXy - sinAngle * oldZy;
-        matrix->xz = cosAngle * oldXz - sinAngle * oldZz;
-        matrix->yx = oldYx;
-        matrix->yy = oldYy;
-        matrix->yz = oldYz;
-        matrix->zx = sinAngle * oldXx + cosAngle * oldZx;
-        matrix->zy = sinAngle * oldXy + cosAngle * oldZy;
-        matrix->zz = sinAngle * oldXz + cosAngle * oldZz;
-        matrix->posX = oldPosX;
-        matrix->posY = oldPosY;
-        matrix->posZ = oldPosZ;
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatez
      * @recoil-artifact defines .text recoil:function:0x473cc0: zMath::MatRotateZ.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
      *
      *
      * Purpose: applies a Z-axis rotation to the current matrix stack slot.
      */
     void __stdcall MatRotateZ(float angleRad)
     {
-        const float sinAngle = sin(angleRad);
-        const float cosAngle = cos(angleRad);
-        zMat4x3* matrix = (zMat4x3*)(*g_currentMatrixPtrSlot);
-
+        zMat4x3 rotated;
+        float sinAngle;
+        float cosAngle;
+        SinCos(angleRad, &sinAngle, &cosAngle);
         if (*g_currentMatrixIdentityFlagSlot != 0) {
-            matrix->xx = cosAngle;
-            matrix->xy = sinAngle;
-            matrix->yx = -sinAngle;
-            matrix->yy = cosAngle;
-            *g_currentMatrixIdentityFlagSlot = 0;
-            return;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->xx = cosAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->xy = sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->yx = -sinAngle;
+            ((zMat4x3*)*g_currentMatrixPtrSlot)->yy = cosAngle;
+        } else {
+            const zMat4x3* matrix = (const zMat4x3*)*g_currentMatrixPtrSlot;
+            float* dest = *g_currentMatrixPtrSlot;
+            const float* source = (const float*)&rotated;
+            rotated.xx = cosAngle * matrix->xx + sinAngle * matrix->yx;
+            rotated.xy = cosAngle * matrix->xy + sinAngle * matrix->yy;
+            rotated.xz = cosAngle * matrix->xz + sinAngle * matrix->yz;
+            rotated.yx = cosAngle * matrix->yx - sinAngle * matrix->xx;
+            rotated.yy = cosAngle * matrix->yy - sinAngle * matrix->xy;
+            rotated.yz = cosAngle * matrix->yz - sinAngle * matrix->xz;
+            rotated.zx = matrix->zx;
+            rotated.zy = matrix->zy;
+            rotated.zz = matrix->zz;
+            rotated.posX = matrix->posX;
+            rotated.posY = matrix->posY;
+            rotated.posZ = matrix->posZ;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest++ = *source++;
+            *dest = *source;
         }
-
-        const float oldXx = matrix->xx;
-        const float oldXy = matrix->xy;
-        const float oldXz = matrix->xz;
-        const float oldYx = matrix->yx;
-        const float oldYy = matrix->yy;
-        const float oldYz = matrix->yz;
-
-        matrix->xx = cosAngle * oldXx + sinAngle * oldYx;
-        matrix->xy = cosAngle * oldXy + sinAngle * oldYy;
-        matrix->xz = cosAngle * oldXz + sinAngle * oldYz;
-        matrix->yx = cosAngle * oldYx - sinAngle * oldXx;
-        matrix->yy = cosAngle * oldYy - sinAngle * oldXy;
-        matrix->yz = cosAngle * oldYz - sinAngle * oldXz;
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 } // namespace zMath
@@ -1606,7 +1656,7 @@ void __fastcall zMathMatExtractEulerAngles(const zMat4x3* matrix, zVec3* outEule
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-rotatex
  * @recoil-artifact defines .text recoil:function:0x474ec0: zMathVec3RotateX.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: rotates one vector around the X axis into caller-provided output.
  */

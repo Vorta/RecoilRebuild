@@ -66,6 +66,10 @@ struct zFMV_MciPlayParams {
 } // namespace
 
 /**
+ * @recoil-anchor recoil:anchor:zfmv.fmv-main.czfmvplayback-czfmvplayback
+ * @recoil-artifact defines .text recoil:function:0x462330: CZFMVPlayback::CZFMVPlayback.
+ * @recoil-match byte
+ *
  * Purpose: initialize an MCI playback object with a duplicated media path and window handle.
  */
 CZFMVPlayback::CZFMVPlayback(const char* mediaPath, HWND hwnd)

@@ -194,6 +194,10 @@ int __stdcall FloatSign(float value)
 } // namespace Player
 namespace Player {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-move.player-tick-all-players
+ * @recoil-artifact defines .text recoil:function:0x426390: Player::TickAllPlayers.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/player.cpp.
  * Purpose: reimplement PlayerMgr::TickAllPlayers from the recovered
  * Battlesport gameplay source file.
@@ -369,7 +373,7 @@ void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState* saveState)
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
         zEffect::SetConditionalRefPos(&playerState->worldPos);
         if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
-            zInputDIUpdateSteerAndPitchForceEffects(g_zInputFfEffectSet);
+            g_zInputFfEffectSet->UpdateSteerAndPitchForceEffects();
         }
     }
 }

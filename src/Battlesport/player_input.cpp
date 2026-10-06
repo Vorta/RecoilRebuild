@@ -342,6 +342,10 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
 } // namespace Player
 namespace HudUi {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-input.hud-ui-handle-hotkey-command
+ * @recoil-artifact defines .text recoil:function:0x426150: HudUi::HandleHotkeyCommand.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hudui.cpp.
  * Purpose: Dispatch gameplay hotkeys to camera, HUD, cheat, chat, aux overlay, throttle, and save/load commands.
  */

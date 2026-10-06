@@ -4,6 +4,9 @@
 
 namespace Mission {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.mission-init-objectives
+ * @recoil-artifact defines .text recoil:function:0x417350: Mission::InitObjectives.
+ * @recoil-match byte
  *
  * Purpose: initialize the global HUD sensor objective tracker and register its
  * process-exit cleanup hook.
@@ -267,6 +270,10 @@ ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-construct-global
+ * @recoil-artifact defines .text recoil:function:0x417360: HudSensorTracker::ConstructGlobal.
+ * @recoil-match byte
+ *
  * Source model: global construction thunk for the CZRecoilFrame-owned
  * g_HudSensorTracker object.
  * Touched data: constructs the accepted zero-filled global data owner
@@ -279,6 +286,10 @@ HudSensorTracker* __cdecl HudSensorTracker::ConstructGlobal()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-register-global-on-exit
+ * @recoil-artifact defines .text recoil:function:0x417370: HudSensorTracker::RegisterGlobalOnExit.
+ * @recoil-match byte
+ *
  * Source model: global lifetime registration helper for the tracker singleton.
  * Touched data: registers ShutdownGlobal as the CRT atexit callback.
  * Purpose: Schedule HUD sensor tracker shutdown during process exit.
@@ -289,6 +300,10 @@ void __cdecl HudSensorTracker::RegisterGlobalOnExit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-shutdown-global
+ * @recoil-artifact defines .text recoil:function:0x417380: HudSensorTracker::ShutdownGlobal.
+ * @recoil-match byte
+ *
  * Source model: global destruction thunk for the CZRecoilFrame-owned
  * g_HudSensorTracker object.
  * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
@@ -322,6 +337,10 @@ HudSensorTracker* HudSensorTracker::Constructor()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-write-mission-data-section
+ * @recoil-artifact defines .text recoil:function:0x417430: HudSensorTracker::WriteMissionDataSection.
+ * @recoil-match byte
+ *
  * Source model: member serializer for the fixed MissionData ZAR payload.
  * Touched data: reads the tracker mission counters, ten objective completion
  * flags, and the provider-owned difficulty option.
@@ -359,6 +378,10 @@ int HudSensorTracker::WriteMissionDataSection(zZbdSectionCallbackCtx* writer)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-apply-mission-data-and-reload
+ * @recoil-artifact defines .text recoil:function:0x4174f0: HudSensorTracker::ApplyMissionDataAndReload.
+ * @recoil-match byte
+ *
  * Source model: member restore helper for the fixed MissionData ZAR payload.
  * Touched data: updates tracker mission state, pending player-save state,
  * objective completion flags, and provider-owned difficulty option.
@@ -418,6 +441,10 @@ int HudSensorTracker::ApplyMissionDataAndReload(void*, const char*, const void* 
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-register-mission-section-handlers
+ * @recoil-artifact defines .text recoil:function:0x417640: HudSensorTracker::RegisterMissionSectionHandlers.
+ * @recoil-match byte
+ *
  * Source model: member registration helper for mission ZAR save/restore callbacks.
  * Touched data: registers this tracker as callback context for Mission and
  * MissionLate sections.
@@ -442,6 +469,10 @@ void HudSensorTracker::RegisterMissionSectionHandlers()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-zar-mission-save-callback
+ * @recoil-artifact defines .text recoil:function:0x417680: HudSensorTracker::ZarMissionSaveCallback.
+ * @recoil-match byte
+ *
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: serializes the callback tracker through WriteMissionDataSection.
  * Purpose: Forward Mission section save requests to the tracker serializer.
@@ -452,6 +483,10 @@ int __fastcall HudSensorTracker::ZarMissionSaveCallback(zZbdSectionCallbackCtx* 
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-zar-mission-restore-callback
+ * @recoil-artifact defines .text recoil:function:0x417690: HudSensorTracker::ZarMissionRestoreCallback.
+ * @recoil-match byte
+ *
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: restores the callback tracker through ApplyMissionDataAndReload.
  * Purpose: Forward Mission section restore payloads to the tracker restore helper.
@@ -468,6 +503,10 @@ int __fastcall HudSensorTracker::ZarMissionRestoreCallback(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-zar-mission-late-save-callback
+ * @recoil-artifact defines .text recoil:function:0x4176b0: HudSensorTracker::ZarMissionLateSaveCallback.
+ * @recoil-match byte
+ *
  * Source model: static ZAR callback for the late mission restore marker section.
  * Touched data: writes a one-word LateMissionData marker payload.
  * Purpose: Emit the late mission marker section used during saved-game restore.
@@ -479,6 +518,10 @@ void __fastcall HudSensorTracker::ZarMissionLateSaveCallback(zZbdSectionCallback
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-zar-mission-late-restore-callback
+ * @recoil-artifact defines .text recoil:function:0x4176d0: HudSensorTracker::ZarMissionLateRestoreCallback.
+ * @recoil-match byte
+ *
  * Source model: static ZAR callback that receives HudSensorTracker as user data.
  * Touched data: runs the callback tracker start-animation script after late restore.
  * Purpose: Resume mission start animations after late mission data is restored.
@@ -495,6 +538,10 @@ void __fastcall HudSensorTracker::ZarMissionLateRestoreCallback(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-reset-mission-state
+ * @recoil-artifact defines .text recoil:function:0x4176f0: HudSensorTracker::ResetMissionState.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: HudSensorTracker mission reset method; weather FX teardown is
  * the recovered HudUiElement virtual visibility/deleting-destructor dispatch,
@@ -530,6 +577,10 @@ int HudSensorTracker::ResetMissionState()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-init-mission-id-and-flags
+ * @recoil-artifact defines .text recoil:function:0x417770: HudSensorTracker::InitMissionIdAndFlags.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/HudSensorTracker.cpp.
  * Purpose: store the current mission id and flags, clearing the ZBD override
  * path when a nonzero mission id is supplied.
@@ -546,6 +597,10 @@ int HudSensorTracker::InitMissionIdAndFlags(int newMissionId, int flags)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-set-mission-id
+ * @recoil-artifact defines .text recoil:function:0x4177a0: HudSensorTracker::SetMissionId.
+ * @recoil-match byte
+ *
  * Purpose: apply the recovered HUD state change handled by HudSensorTracker::SetMissionId.
  */
 int HudSensorTracker::SetMissionId(int newMissionId)
@@ -559,6 +614,10 @@ int HudSensorTracker::SetMissionId(int newMissionId)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-set-zbd-path
+ * @recoil-artifact defines .text recoil:function:0x4177d0: HudSensorTracker::SetZbdPath.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: GameZRecoil/HudSensorTracker.cpp.
  * Purpose: replace or clear the explicit mission ZBD path override.
  */
@@ -574,6 +633,10 @@ int HudSensorTracker::SetZbdPath(const char* path)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-get-mission-id
+ * @recoil-artifact defines .text recoil:function:0x417800: HudSensorTracker::GetMissionId.
+ * @recoil-match byte
+ *
  * Purpose: Return the mission id currently owned by the HUD sensor tracker.
  */
 int HudSensorTracker::GetMissionId()
@@ -582,6 +645,10 @@ int HudSensorTracker::GetMissionId()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-mission-core-resources
+ * @recoil-artifact defines .text recoil:function:0x417810: HudSensorTracker::LoadMissionCoreResources.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: load the core mission script/resources, bind world/camera/window
  * nodes, and activate the render/display/camera sections.
@@ -637,6 +704,10 @@ int HudSensorTracker::LoadMissionCoreResources()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-init-mission-gameplay-systems
+ * @recoil-artifact defines .text recoil:function:0x417a00: HudSensorTracker::InitMissionGameplaySystems.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: initialize mission HUD/gameplay systems, objective commands,
  * player runtime, networking, objectives, weather FX, map overlay, and final
@@ -723,6 +794,9 @@ int HudSensorTracker::InitMissionGameplaySystems()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-on-objective-command
+ * @recoil-artifact defines .text recoil:function:0x417ca0: HudSensorTracker::OnObjectiveCommand.
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: dispatch bound HUD objective/map command ids to the global
  * HudSensorTracker while honoring network map and objective-command gates.
@@ -768,6 +842,10 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(int commandId)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-shutdown-mission-gameplay-systems
+ * @recoil-artifact defines .text recoil:function:0x417d40: HudSensorTracker::ShutdownMissionGameplaySystems.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: shut down mission gameplay/HUD systems, release mission resources,
  * clear core node refs, and return the tracker to reset mission state.
@@ -841,6 +919,10 @@ int HudSensorTracker::ShutdownMissionGameplaySystems()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-unload-objectives
+ * @recoil-artifact defines .text recoil:function:0x417ee0: HudSensorTracker::UnloadObjectives.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: reset loaded objective slots in single-player mode and free the
  * loaded objective ZRD tree.
@@ -868,6 +950,10 @@ int HudSensorTracker::UnloadObjectives()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-objective-slot-reset
+ * @recoil-artifact defines .text recoil:function:0x417f60: HudSensorObjectiveSlot::Reset.
+ * @recoil-match byte
+ *
  * Source model: embedded HudSensorObjectiveSlot reset method for the objective
  * slot array owned by HudSensorTracker.
  * Touched data: no authored globals; releases only the slot-owned objective
@@ -889,6 +975,9 @@ void HudSensorObjectiveSlot::Reset()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-objectives-from-path
+ * @recoil-artifact defines .text recoil:function:0x417f90: HudSensorTracker::LoadObjectivesFromPath.
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
  */
@@ -1013,6 +1102,10 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-objectives-from-zrd
+ * @recoil-artifact defines .text recoil:function:0x418230: HudSensorTracker::LoadObjectivesFromZrd.
+ * @recoil-match byte
+ *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: bind objective sounds and node paths from the loaded objective ZRD,
  * then select the first incomplete objective for the HUD.
@@ -1091,6 +1184,10 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-advance-objective-state
+ * @recoil-artifact defines .text recoil:function:0x4184e0: HudSensorTracker::AdvanceObjectiveState.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: advance objective review/readout flow and transition HUD sound
  * ducking state.
@@ -1135,6 +1232,10 @@ void HudSensorTracker::AdvanceObjectiveState()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-set-objective-review-visible
+ * @recoil-artifact defines .text recoil:function:0x418620: HudSensorTracker::SetObjectiveReviewVisible.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: show or hide the objective review panel and restore HUD sound state
  * when the review closes.
@@ -1171,6 +1272,10 @@ int HudSensorTracker::SetObjectiveReviewVisible(int visible)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-get-objective-briefing-strings-and-image-ref
+ * @recoil-artifact defines .text recoil:function:0x4186f0: HudSensorTracker::GetObjectiveBriefingStringsAndImageRef.
+ * @recoil-match byte
+ *
  * Purpose: Return the briefing text buffers and image pointer for one objective slot.
  */
 int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
@@ -1187,6 +1292,10 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-command-toggle-objective-panel
+ * @recoil-artifact defines .text recoil:function:0x418730: HudSensorTracker::CommandToggleObjectivePanel.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: play the objective review click and toggle the objective summary
  * panel.
@@ -1198,6 +1307,10 @@ void HudSensorTracker::CommandToggleObjectivePanel()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-set-objective-panel-visible
+ * @recoil-artifact defines .text recoil:function:0x418760: HudSensorTracker::SetObjectivePanelVisible.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: show or hide the objective summary panel and format the mission
  * status text displayed in it.
@@ -1253,6 +1366,10 @@ void HudSensorTracker::SetObjectivePanelVisible(int visible)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-command-show-objective-pickup-info
+ * @recoil-artifact defines .text recoil:function:0x4188f0: HudSensorTracker::CommandShowObjectivePickupInfo.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: play the objective review click and toggle pickup information for
  * the local player's active alternate weapon.
@@ -1352,6 +1469,10 @@ void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-find-and-highlight-first-incomplete-objective
+ * @recoil-artifact defines .text recoil:function:0x418c30: HudSensorTracker::FindAndHighlightFirstIncompleteObjective.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: find the first active incomplete objective and enable its blue map
  * marker.
@@ -1369,6 +1490,10 @@ int HudSensorTracker::FindAndHighlightFirstIncompleteObjective()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-reset-hud-for-mission-start
+ * @recoil-artifact defines .text recoil:function:0x418c70: HudSensorTracker::ResetHudForMissionStart.
+ * @recoil-match byte
+ *
  * Source model: HudSensorTracker mission-start HUD/objective state reset
  * method; HUD-manager and option calls are external owner dependencies.
  * Touched data: mutates only this tracker and accepted HUD/option globals
@@ -1410,6 +1535,10 @@ void HudSensorTracker::ResetHudForMissionStart()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-update-objective-flow
+ * @recoil-artifact defines .text recoil:function:0x418d40: HudSensorTracker::UpdateObjectiveFlow.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: Advance mission objective UI state, timers, and post-read transitions.
  */
@@ -1498,6 +1627,10 @@ int HudSensorTracker::UpdateObjectiveFlow()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-save-and-queue-mission-state
+ * @recoil-artifact defines .text recoil:function:0x418fb0: HudSensorTracker::SaveAndQueueMissionState.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: preserve the recovered HUD behavior for HudSensorTracker::SaveAndQueueMissionState.
  */
@@ -1518,6 +1651,10 @@ int HudSensorTracker::SaveAndQueueMissionState()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-queue-mission-fmv-state-for-mission-id
+ * @recoil-artifact defines .text recoil:function:0x419010: HudSensorTracker::QueueMissionFmvStateForMissionId.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\recoilapp.cpp.
  * Purpose: queue the recovered HUD application-state transition for HudSensorTracker::QueueMissionFmvStateForMissionId.
  */
@@ -1530,6 +1667,9 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(int missionId)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-mission-weather-fx
+ * @recoil-artifact defines .text recoil:function:0x419050: HudSensorTracker::LoadMissionWeatherFx.
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: mission weather FX loader creates the recovered
  * HudWeatherFxSnow/HudWeatherFxRain class owner and stores it as the
@@ -1612,6 +1752,10 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-run-start-anims-from-zrd
+ * @recoil-artifact defines .text recoil:function:0x4192d0: HudSensorTracker::RunStartAnimsFromZrd.
+ * @recoil-match byte
+ *
  * Source model: mission-start helper on HudSensorTracker; animation lookup and
  * tree loading are accepted zEffect/zReader provider-source dependencies.
  * Touched data: reads network option state and mutates resolved zEffect
@@ -1657,6 +1801,10 @@ void HudSensorTracker::RunStartAnimsFromZrd(const char* zrdPath, const char* nam
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-on-objective-read-sound-event
+ * @recoil-artifact defines .text recoil:function:0x419380: HudSensorTracker::OnObjectiveReadSoundEvent.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: handle objective read-sound events that open or close the review UI
  * and restore HUD sound state when playback completes.
@@ -1678,6 +1826,10 @@ void __fastcall HudSensorTracker::OnObjectiveReadSoundEvent(int eventCode)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-race-checkpoint-meta
+ * @recoil-artifact defines .text recoil:function:0x4193c0: HudSensorTracker::LoadRaceCheckpointMeta.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: load mission race checkpoint metadata and publish timer/count state
  * when a cp_count node is present.
@@ -1704,6 +1856,10 @@ int HudSensorTracker::LoadRaceCheckpointMeta()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-set-runtime-timer-sec-and-goal-value
+ * @recoil-artifact defines .text recoil:function:0x419470: HudSensorTracker::SetRuntimeTimerSecAndGoalValue.
+ * @recoil-match byte
+ *
  * Purpose: Store the runtime timer seconds payload and mission goal value.
  */
 void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(float timerSec, int goalValue)
@@ -1755,6 +1911,10 @@ extern "C" HWND g_RecoilApp_hWndMain;
 HudUiMpExitDialog* g_HudUiMpExitDialog = 0;
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-mp-exit-dialog-load-layout
+ * @recoil-artifact defines .text recoil:function:0x419500: HudUiMpExitDialog::LoadLayout.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: capture and blur the current surface, load the MPEXIT dialog layout, and configure button or network-message
  * state.
@@ -1803,6 +1963,10 @@ void HudUiMpExitDialog::LoadLayout()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-mp-exit-dialog-unload-layout
+ * @recoil-artifact defines .text recoil:function:0x419650: HudUiMpExitDialog::UnloadLayout.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: disable and unload the multiplayer exit dialog presentation state and release its captured background image.
  */
@@ -1818,6 +1982,10 @@ void HudUiMpExitDialog::UnloadLayout()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-mp-exit-dialog-update
+ * @recoil-artifact defines .text recoil:function:0x419690: HudUiMpExitDialog::Update.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: advance the multiplayer exit fade/update path and restore the captured background through the video
  * postprocess pass.
@@ -1849,6 +2017,10 @@ void HudUiMpExitDialog::Update(float deltaSeconds)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.recoil-app-mp-exit-dialog-state-on-enter
+ * @recoil-artifact defines .text recoil:function:0x419740: RecoilApp_MpExitDialogState::OnEnter.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: lazily construct the multiplayer exit dialog singleton and load its layout in software video mode.
  */
@@ -1865,6 +2037,10 @@ void RecoilApp_MpExitDialogState::OnEnter()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.chud-ui-mp-exit-dialog-new-game-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x419800: CHudUiMpExitDialogNewGameButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: queue the intro FMV and multiplayer setup reconfiguration when the new-game button is activated.
  */
@@ -1876,6 +2052,10 @@ void CHudUiMpExitDialogNewGameButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.chud-ui-mp-exit-dialog-exit-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x419830: CHudUiMpExitDialogExitButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: run the base widget activation and queue the leave-network state.
  */
@@ -1886,6 +2066,10 @@ void CHudUiMpExitDialogExitButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.recoil-app-mp-exit-dialog-state-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x4198d0: RecoilApp_MpExitDialogState::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: configure render, sound, and input state before entering the multiplayer exit dialog.
  */
@@ -1913,6 +2097,10 @@ int RecoilApp_MpExitDialogState::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.recoil-app-mp-exit-dialog-state-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x419940: RecoilApp_MpExitDialogState::OnDeactivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: unload, destroy, and clear the multiplayer exit dialog and restore input, sound, and scoreboard state.
  */
@@ -1933,6 +2121,10 @@ void RecoilApp_MpExitDialogState::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.recoil-app-mp-exit-dialog-state-on-update-should-quit
+ * @recoil-artifact defines .text recoil:function:0x419990: RecoilApp_MpExitDialogState::OnUpdateShouldQuit.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMpExitDialog.cpp.
  * Purpose: poll input, tick/update the dialog, and run the fatal timeout shutdown path after a long stalled fade.
  */
@@ -2147,6 +2339,10 @@ HudUiNetGameSetupPanel::HudUiNetGameSetupPanel(int reconfigureExistingSessionVal
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-panel-cancel-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41a160: HudUiNetGameSetupPanel_CancelButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Leave the network setup state when the cancel button is activated.
  */
 void HudUiNetGameSetupPanel_CancelButton::OnActivate()
@@ -2175,6 +2371,10 @@ inline HudUiNetGameSetupTextInput::HudUiNetGameSetupTextInput(unsigned int buffe
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-clamped-int-text-input-hud-ui-clamped-int-text-input
+ * @recoil-artifact defines .text recoil:function:0x41a200: HudUiClampedIntTextInput::HudUiClampedIntTextInput.
+ * @recoil-match byte
+ *
  * Purpose: constructs the numeric input base, allocates a digit buffer, clears
  * the display, disables capture, and initializes the signed 32-bit clamp range.
  */
@@ -2186,6 +2386,10 @@ HudUiClampedIntTextInput::HudUiClampedIntTextInput(unsigned int maxDigits)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-clamped-int-text-input-on-accept
+ * @recoil-artifact defines .text recoil:function:0x41a290: HudUiClampedIntTextInput::OnAccept.
+ * @recoil-match byte
+ *
  * Purpose: commit the clamped value when the text editor accepts its input.
  */
 void HudUiClampedIntTextInput::OnAccept()
@@ -2206,6 +2410,10 @@ int HudUiClampedIntTextInput::OnRawKeyboardChar(int key)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-clamped-int-text-input-commit-and-get-value
+ * @recoil-artifact defines .text recoil:function:0x41a2d0: HudUiClampedIntTextInput::CommitAndGetValue.
+ * @recoil-match byte
+ *
  * Purpose: preserve the recovered HUD behavior for HudUiClampedIntTextInput::CommitAndGetValue.
  */
 int HudUiClampedIntTextInput::CommitAndGetValue()
@@ -2232,6 +2440,10 @@ int HudUiClampedIntTextInput::CommitAndGetValue()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-clamped-int-step-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41a350: HudUiClampedIntStepButton::OnActivate.
+ * @recoil-match byte
+ *
  * Binary Ninja source file D:\Proj\Battlesport\hud.cpp shows the target-input
  * guard, virtual commit slot, signed step/clamp, numeric text update, target
  * invalidate slot, then HudUiZrdWidget activation.
@@ -2250,6 +2462,10 @@ void HudUiClampedIntStepButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-panel-launch-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41a5b0: HudUiNetGameSetupPanel_LaunchButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Commit setup values and start or reconfigure the network game session.
  */
 void HudUiNetGameSetupPanel_LaunchButton::OnActivate()
@@ -2344,6 +2560,10 @@ void HudUiNetGameSetupTextInput::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-panel-next-world-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41a820: HudUiNetGameSetupPanel_NextWorldButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Advance the selected world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_NextWorldButton::OnActivate()
@@ -2384,6 +2604,10 @@ void HudUiNetGameSetupPanel_NextWorldButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-panel-prev-world-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41a9c0: HudUiNetGameSetupPanel_PrevWorldButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Move to the previous world and apply the related setup side effects.
  */
 void HudUiNetGameSetupPanel_PrevWorldButton::OnActivate()
@@ -2471,6 +2695,10 @@ HudUiNetGameSetupOverlayOwner::~HudUiNetGameSetupOverlayOwner()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-overlay-owner-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x41ac50: HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: configure HUD video and dialog audio state, create and enable the
  * network setup panel, then start the menu CD track when enabled.
@@ -2501,6 +2729,10 @@ int HudUiNetGameSetupOverlayOwner::OnTryBecomeCurrent()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-overlay-owner-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x41ad20: HudUiNetGameSetupOverlayOwner::OnDeactivate.
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\Battlesport\HudUi.cpp.
  * Purpose: tear down dialog audio and the active setup panel while restoring
  * the primary surface after the multiplayer setup overlay exits.
@@ -2532,6 +2764,10 @@ void HudUiNetGameSetupOverlayOwner::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-game-setup-overlay-owner-queue-enter-with-reconfigure-flag
+ * @recoil-artifact defines .text recoil:function:0x41ad80: HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag.
+ * @recoil-match byte
+ *
  * BN source path: D:\Proj\GameZRecoil\zHud\HudUiNetGameSetup.cpp.
  * Purpose: store the requested reconfigure mode on the static overlay owner
  * and queue that owner as the next application state.
@@ -3034,6 +3270,10 @@ const AFX_MSGMAP NetSessionConfigDialog::messageMap = {
 };
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-net-session-browser-dialog
+ * @recoil-artifact defines .text recoil:function:0x41ada0: NetSessionBrowserDialog::NetSessionBrowserDialog.
+ * @recoil-match byte
+ *
  * Purpose: Construct the multiplayer session browser dialog and child controls.
  */
 NetSessionBrowserDialog::NetSessionBrowserDialog(CWnd* parentWnd)
@@ -3049,6 +3289,10 @@ NetSessionBrowserDialog::NetSessionBrowserDialog(CWnd* parentWnd)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-do-data-exchange
+ * @recoil-artifact defines .text recoil:function:0x41af50: NetSessionBrowserDialog::DoDataExchange.
+ * @recoil-match byte
+ *
  * Purpose: Bind browser dialog controls and validate the player-name field.
  */
 void NetSessionBrowserDialog::DoDataExchange(CDataExchange* dataExchange)
@@ -3063,6 +3307,10 @@ void NetSessionBrowserDialog::DoDataExchange(CDataExchange* dataExchange)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-get-message-map
+ * @recoil-artifact defines .text recoil:function:0x41afd0: NetSessionBrowserDialog::GetMessageMap.
+ * @recoil-match byte
+ *
  * Purpose: Return the browser dialog MFC message map.
  */
 const AFX_MSGMAP* NetSessionBrowserDialog::GetMessageMap() const
@@ -3071,6 +3319,10 @@ const AFX_MSGMAP* NetSessionBrowserDialog::GetMessageMap() const
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-on-init-dialog
+ * @recoil-artifact defines .text recoil:function:0x41afe0: NetSessionBrowserDialog::OnInitDialog.
+ * @recoil-match byte
+ *
  * Purpose: Initialize the multiplayer session browser controls and providers.
  */
 BOOL NetSessionBrowserDialog::OnInitDialog()
@@ -3110,6 +3362,10 @@ BOOL NetSessionBrowserDialog::OnInitDialog()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-refresh-session-list
+ * @recoil-artifact defines .text recoil:function:0x41b150: NetSessionBrowserDialog::RefreshSessionList.
+ * @recoil-match byte
+ *
  * Purpose: Refresh and restore the visible DirectPlay session list.
  */
 int NetSessionBrowserDialog::RefreshSessionList()
@@ -3166,6 +3422,10 @@ int NetSessionBrowserDialog::RefreshSessionList()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-connect-selected-provider
+ * @recoil-artifact defines .text recoil:function:0x41b2f0: NetSessionBrowserDialog::ConnectSelectedProvider.
+ * @recoil-match byte
+ *
  * Purpose: Connect to the selected provider and update browser dialog actions.
  */
 void NetSessionBrowserDialog::ConnectSelectedProvider()
@@ -3229,6 +3489,10 @@ void NetSessionBrowserDialog::ConnectSelectedProvider()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-on-ok
+ * @recoil-artifact defines .text recoil:function:0x41b510: NetSessionBrowserDialog::OnOK.
+ * @recoil-match byte
+ *
  * Purpose: Join or initialize the selected multiplayer provider/session.
  */
 void NetSessionBrowserDialog::OnOK()
@@ -3261,6 +3525,10 @@ void NetSessionBrowserDialog::OnOK()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-on-create-session
+ * @recoil-artifact defines .text recoil:function:0x41b5a0: NetSessionBrowserDialog::OnCreateSession.
+ * @recoil-match byte
+ *
  * Purpose: Enter host setup or create a modem session from browser state.
  */
 void NetSessionBrowserDialog::OnCreateSession()
@@ -3295,6 +3563,10 @@ void NetSessionBrowserDialog::OnCreateSession()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-on-timer
+ * @recoil-artifact defines .text recoil:function:0x41b660: NetSessionBrowserDialog::OnTimer.
+ * @recoil-match byte
+ *
  * Purpose: Poll for updated DirectPlay sessions while the browser is open.
  */
 void NetSessionBrowserDialog::OnTimer(UINT_PTR)
@@ -3304,6 +3576,10 @@ void NetSessionBrowserDialog::OnTimer(UINT_PTR)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-on-destroy
+ * @recoil-artifact defines .text recoil:function:0x41b680: NetSessionBrowserDialog::OnDestroy.
+ * @recoil-match byte
+ *
  * Purpose: Forward browser dialog destruction and stop session polling.
  */
 void NetSessionBrowserDialog::OnDestroy()
@@ -3313,6 +3589,10 @@ void NetSessionBrowserDialog::OnDestroy()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-browser-dialog-validate-player-name
+ * @recoil-artifact defines .text recoil:function:0x41b6a0: NetSessionBrowserDialog::ValidatePlayerName.
+ * @recoil-match byte
+ *
  * Purpose: Trim, validate, and prompt for the multiplayer player name.
  */
 int NetSessionBrowserDialog::ValidatePlayerName()
@@ -3404,6 +3684,10 @@ void NetSessionBrowserDialog::OnHelpDocs()
 namespace Player {
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-tick-remote-network-player
+ * @recoil-artifact defines .text recoil:function:0x41b950: Player::TickRemoteNetworkPlayer.
+ * @recoil-match byte
+ *
  * Source owner: battlesport_gameplay.player_remote_network_tick.
  * Purpose: Ticks a remote network player from received network state and updates its gameplay presentation.
  */
@@ -3456,6 +3740,10 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-update-gun-dispatch-requests-from-trigger-latches
+ * @recoil-artifact defines .text recoil:function:0x41bab0: Player::UpdateGunDispatchRequestsFromTriggerLatches.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateGunDispatchRequestsFromTriggerLatches from the recovered
  * Battlesport gameplay source file.
@@ -3486,6 +3774,10 @@ void __fastcall UpdateGunDispatchRequestsFromTriggerLatches(zUtil_SaveGameState*
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-respawn-callback
+ * @recoil-artifact defines .text recoil:function:0x41bb30: Player::DestroyedStateRespawnCallback.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: restore the respawned player model to a lit, visible, healthy
  * state and clear destroyed-state combat selection and damage state.
@@ -3528,6 +3820,10 @@ void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry*, zUtil_SaveGameS
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-callback
+ * @recoil-artifact defines .text recoil:function:0x41bbf0: Player::DestroyedStateResetCallback.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: begin destroyed-state reset by restarting the player node action,
  * restoring damage/health visibility, queuing model fade-in, and refreshing
@@ -3569,6 +3865,9 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-finalize-callback
+ * @recoil-artifact defines .text recoil:function:0x41bca0: Player::DestroyedStateResetFinalizeCallback.
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,
  * lifecycle, and camera transition state after respawn reset.
@@ -3600,6 +3899,10 @@ void __fastcall DestroyedStateResetFinalizeCallback(zUtil_SaveGameState* saveSta
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-clear-respawn-transition-flag-callback
+ * @recoil-artifact defines .text recoil:function:0x41bd10: Player::ClearRespawnTransitionFlagCallback.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: clear the camera transition timer after the destroyed-state
  * respawn fade finishes.
@@ -3614,6 +3917,10 @@ void __fastcall ClearRespawnTransitionFlagCallback(zUtil_SaveGameState* saveStat
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-local-finalize
+ * @recoil-artifact defines .text recoil:function:0x41bd20: Player::DestroyedStateResetLocalFinalize.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the local destroyed-state reset by restoring active local
  * lifecycle, input/camera state, damage state, and pickup effect feedback.
@@ -3702,6 +4009,10 @@ void HudUiNetExitPanel::SetEnabled(int enabled)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-exit-panel-exit-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41be70: HudUiNetExitPanel_ExitButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: queue the leave-network app state when the exit button is activated.
  */
@@ -3711,6 +4022,10 @@ void HudUiNetExitPanel_ExitButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.chud-ui-net-exit-panel-resume-widget-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41bf10: CHudUiNetExitPanelResumeWidget::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: close the preview, hide the network exit panel, and dispatch normal ZRD activation.
  */
@@ -3723,6 +4038,10 @@ void CHudUiNetExitPanelResumeWidget::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.chud-ui-net-exit-panel-resume-widget-show-preview
+ * @recoil-artifact defines .text recoil:function:0x41bf40: CHudUiNetExitPanelResumeWidget::ShowPreview.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: push preview input capture, restore saved focus for mouse mode, and show the resume preview.
  */
@@ -3748,6 +4067,10 @@ void CHudUiNetExitPanelResumeWidget::ShowPreview()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.chud-ui-net-exit-panel-resume-widget-hide-preview
+ * @recoil-artifact defines .text recoil:function:0x41bfa0: CHudUiNetExitPanelResumeWidget::HidePreview.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: pop preview input capture, save current focus for mouse mode, and hide the resume preview.
  */
@@ -3783,6 +4106,10 @@ HudUiNetExitPanel* __cdecl HudUiNetExitPanel::CreateGlobal()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-exit-panel-show
+ * @recoil-artifact defines .text recoil:function:0x41c070: HudUiNetExitPanel::Show.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: enable the process-global network exit panel.
  */
@@ -3792,6 +4119,10 @@ void __cdecl HudUiNetExitPanel::Show()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-exit-panel-tick
+ * @recoil-artifact defines .text recoil:function:0x41c080: HudUiNetExitPanel::Tick.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: tick the process-global network exit panel with the frame delta.
  */
@@ -3802,6 +4133,10 @@ int __cdecl HudUiNetExitPanel::Tick()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-net-exit-panel-destroy-global
+ * @recoil-artifact defines .text recoil:function:0x41c0a0: HudUiNetExitPanel::DestroyGlobal.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUi_NetExit.cpp.
  * Purpose: destroy and release the process-global network exit panel singleton.
  */
@@ -3909,6 +4244,10 @@ const AFX_MSGMAP* AiPropertyDlg::GetMessageMap() const
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.ai-property-dlg-on-destroy
+ * @recoil-artifact defines .text recoil:function:0x41c0c0: AiPropertyDlg::OnDestroy.
+ * @recoil-match byte
+ *
  * Purpose: Saves combo-box selections when the AI property dialog closes and hides the cursor.
  */
 void AiPropertyDlg::OnDestroy()
@@ -3922,6 +4261,10 @@ void AiPropertyDlg::OnDestroy()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.ai-property-dlg-on-sel-change
+ * @recoil-artifact defines .text recoil:function:0x41c130: AiPropertyDlg::OnSelChange.
+ * @recoil-match byte
+ *
  * Purpose: Updates the selected AI behavior and refreshes the property labels.
  */
 void AiPropertyDlg::OnSelChange()
@@ -3932,6 +4275,10 @@ void AiPropertyDlg::OnSelChange()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.ai-property-dlg-update-property-labels
+ * @recoil-artifact defines .text recoil:function:0x41c170: AiPropertyDlg::UpdatePropertyLabels.
+ * @recoil-match byte
+ *
  * Purpose: Chooses the two property label strings for the currently selected AI behavior.
  */
 void AiPropertyDlg::UpdatePropertyLabels()
@@ -3979,6 +4326,10 @@ void AiPropertyDlg::UpdatePropertyLabels()
 /* Include exactly once after AiPropertyDlg and before NetSessionConfigDialog. */
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-start-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41c270: HudUiNewGamePanel_StartButton::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Start the new game through the owning panel before normal widget activation.
  */
@@ -3993,6 +4344,10 @@ void HudUiNewGamePanel_StartButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-hud-ui-new-game-panel
+ * @recoil-artifact defines .text recoil:function:0x41c290: HudUiNewGamePanel::HudUiNewGamePanel.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Construct the panel, bind its ZRD widgets, and load the player name.
  */
@@ -4012,6 +4367,10 @@ HudUiNewGamePanel::HudUiNewGamePanel()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-name-input-on-activate
+ * @recoil-artifact defines .text recoil:function:0x41c3b0: HudUiNewGamePanel_NameInput::OnActivate.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Refresh and activate the player-name input with raw keyboard capture.
  */
@@ -4024,6 +4383,10 @@ void HudUiNewGamePanel_NameInput::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-sync-intensity-from-difficulty
+ * @recoil-artifact defines .text recoil:function:0x41c4e0: HudUiNewGamePanel::SyncIntensityFromDifficulty.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Reflect the saved game difficulty in the panel selector.
  */
@@ -4033,6 +4396,10 @@ void HudUiNewGamePanel::SyncIntensityFromDifficulty()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-start-game-from-fields
+ * @recoil-artifact defines .text recoil:function:0x41c500: HudUiNewGamePanel::StartGameFromFields.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Commit new-game options and queue mission FMV startup.
  */
@@ -4048,6 +4415,10 @@ void HudUiNewGamePanel::StartGameFromFields()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-overlay-owner-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x41c560: HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Create, enable, and retain the new-game panel for the overlay state.
  */
@@ -4072,6 +4443,10 @@ int HudUiNewGamePanelOverlayOwner::OnTryBecomeCurrent()
 HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-overlay-owner-destroy-hud-ui-new-game-panel-overlay-owner
+ * @recoil-artifact defines .text recoil:function:0x41c630: HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Disable and destroy the active panel owned by this app state.
  */
@@ -4091,6 +4466,10 @@ HudUiNewGamePanelOverlayOwner::~HudUiNewGamePanelOverlayOwner()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-new-game-panel-overlay-owner-queue-enter
+ * @recoil-artifact defines .text recoil:function:0x41c6c0: HudUiNewGamePanelOverlayOwner::QueueEnter.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiNewGamePanel.cpp.
  * Purpose: Queue the global overlay owner as the next app state.
  */
@@ -4100,6 +4479,10 @@ void __cdecl HudUiNewGamePanelOverlayOwner::QueueEnter()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-net-session-config-dialog
+ * @recoil-artifact defines .text recoil:function:0x41c6e0: NetSessionConfigDialog::NetSessionConfigDialog.
+ * @recoil-match byte
+ *
  * Purpose: Construct the multiplayer session configuration dialog controls.
  */
 NetSessionConfigDialog::NetSessionConfigDialog(CWnd* parentWnd)
@@ -4118,6 +4501,10 @@ NetSessionConfigDialog::NetSessionConfigDialog(CWnd* parentWnd)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-do-data-exchange
+ * @recoil-artifact defines .text recoil:function:0x41c880: NetSessionConfigDialog::DoDataExchange.
+ * @recoil-match byte
+ *
  * Purpose: Bind config dialog controls and validate session numeric fields.
  */
 void NetSessionConfigDialog::DoDataExchange(CDataExchange* dataExchange)
@@ -4138,6 +4525,10 @@ void NetSessionConfigDialog::DoDataExchange(CDataExchange* dataExchange)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-get-message-map
+ * @recoil-artifact defines .text recoil:function:0x41c970: NetSessionConfigDialog::GetMessageMap.
+ * @recoil-match byte
+ *
  * Purpose: Return the config dialog MFC message map.
  */
 const AFX_MSGMAP* NetSessionConfigDialog::GetMessageMap() const
@@ -4160,6 +4551,10 @@ CString g_NetSessionConfigDialog_MapNameStrings[7]
     = { "RiverWorks", "Crater Chaos", "Beach Rally", "Clone City", "Frozen Tundra", "Poison Valley", "New Clone City" };
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-on-init-dialog
+ * @recoil-artifact defines .text recoil:function:0x41ca30: NetSessionConfigDialog::OnInitDialog.
+ * @recoil-match byte
+ *
  * Purpose: Initialize multiplayer session config fields, maps, and spin ranges.
  */
 BOOL NetSessionConfigDialog::OnInitDialog()
@@ -4212,6 +4607,10 @@ BOOL NetSessionConfigDialog::OnInitDialog()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-on-destroy
+ * @recoil-artifact defines .text recoil:function:0x41cb50: NetSessionConfigDialog::OnDestroy.
+ * @recoil-match byte
+ *
  * Purpose: Persist the selected map index as the config dialog closes.
  */
 void NetSessionConfigDialog::OnDestroy()
@@ -4222,6 +4621,10 @@ void NetSessionConfigDialog::OnDestroy()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.net-session-config-dialog-on-map-changed
+ * @recoil-artifact defines .text recoil:function:0x41cb90: NetSessionConfigDialog::OnMapChanged.
+ * @recoil-match byte
+ *
  * Purpose: Track map selection and refresh max-player label text.
  */
 void NetSessionConfigDialog::OnMapChanged()

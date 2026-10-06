@@ -1222,6 +1222,10 @@ namespace CZBBox
 namespace CZClass
 {
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.czclass-find-sub-node-by-name
+     * @recoil-artifact defines .text recoil:function:0x452770: CZClass::FindSubNodeByName.
+     * @recoil-match byte
+     *
      * Purpose: recursively search a node subtree by name, checking the root
      * first and then visiting child-list entries from tail to head.
      */
@@ -1248,6 +1252,10 @@ namespace CZClass
 namespace CZNode
 {
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.cznode-has-renderable-di-predicate
+     * @recoil-artifact defines .text recoil:function:0x4527f0: CZNode::HasRenderableDiPredicate.
+     * @recoil-match byte
+     *
      * Purpose: test whether a node's DI reference points to a renderable display
      * instance mode without the hidden flag.
      */
@@ -1291,6 +1299,10 @@ namespace CZClass
 namespace CZNode
 {
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.cznode-set-material-flag-bit9-for-flag-bit0-entries-recursive
+     * @recoil-artifact defines .text recoil:function:0x452860: CZNode::SetMaterialFlagBit9ForFlagBit0EntriesRecursive.
+     * @recoil-match byte
+     *
      * Purpose: recurse a child-list subtree and propagate material flag bit 9
      * updates through each node display instance.
      */
@@ -1307,6 +1319,10 @@ namespace CZNode
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.cznode-load-flag-bit8-material-images-and-texture-pack
+     * @recoil-artifact defines .text recoil:function:0x4528a0: CZNode::LoadFlagBit8MaterialImagesAndTexturePack.
+     * @recoil-match byte
+     *
      * Purpose: invalidate flagged material images under a node subtree and
      * then load pending texture-directory entries.
      */
@@ -1321,6 +1337,10 @@ namespace CZNode
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.cznode-invalidate-flag-bit8-material-images-recursive
+     * @recoil-artifact defines .text recoil:function:0x4528b0: CZNode::InvalidateFlagBit8MaterialImagesRecursive.
+     * @recoil-match byte
+     *
      * Purpose: recurse a child-list subtree and invalidate loaded material
      * image variants for each display instance with material flag bit 8 set.
      */
@@ -1337,6 +1357,10 @@ namespace CZNode
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zclass.cls-util.cznode-assign-int32-to-di-recursive
+     * @recoil-artifact defines .text recoil:function:0x4528e0: CZNode::AssignInt32ToDiRecursive.
+     * @recoil-match byte
+     *
      * Purpose: assign display-instance flag bit 0 for each display instance
      * reachable through a node's child-list subtree.
      */

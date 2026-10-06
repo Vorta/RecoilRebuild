@@ -172,6 +172,10 @@ int __fastcall BindGroupListGetGroupCommandId(int groupIndex, int commandIndex)
 } // namespace zInput
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-remap.z-input-bind-map-get-command-label
+ * @recoil-artifact defines .text recoil:function:0x42a4e0: zInput::BindMapGetCommandLabel.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id and tail-calls
  * zLoc::GetMessageString for the command's localized label.
@@ -184,6 +188,10 @@ char* __fastcall BindMapGetCommandLabel(int commandId)
 } // namespace zInput
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-remap.z-input-bind-map-get-command-hint
+ * @recoil-artifact defines .text recoil:function:0x42a4f0: zInput::BindMapGetCommandHint.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zin_bindmap.cpp.
  * Binary Ninja indexes g_zInput_CommandLocIdTable by command id, increments
  * the recovered localization id, and tail-calls zLoc::GetMessageString for
@@ -197,6 +205,10 @@ char* __fastcall BindMapGetCommandHint(int commandId)
 } // namespace zInput
 namespace zInput {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-remap.z-input-bind-map-add-default-binding
+ * @recoil-artifact defines .text recoil:function:0x42a500: zInput::BindMapAddDefaultBinding.
+ * @recoil-match byte
+ *
  * Purpose: Add one localized default command binding to the active bind map and bind-group list.
  */
 void __fastcall BindMapAddDefaultBinding(

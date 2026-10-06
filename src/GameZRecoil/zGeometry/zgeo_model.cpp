@@ -549,6 +549,10 @@ void __fastcall Destroy(zGeometry_ClipPatchOutputPartial* self)
 
 namespace zDEClient {
 /**
+ * @recoil-anchor recoil:anchor:zgeometry.zgeo-model.z-declient-create-feature-node-and-di-from-clip-patch-partition
+ * @recoil-artifact defines .text recoil:function:0x46af40: zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition.
+ * @recoil-match byte
+ *
  * Function modeled here:
  * zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition
  *

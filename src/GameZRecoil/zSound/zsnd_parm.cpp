@@ -148,6 +148,10 @@ extern "C" int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle
 
 namespace zSnd {
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-parm.z-snd-set-active-backend-pre-init
+ * @recoil-artifact defines .text recoil:function:0x4a1290: zSnd::SetActiveBackendPreInit.
+ * @recoil-match byte
+ *
  * Purpose: Select the sound backend before the runtime is preinitialized.
  */
 int __fastcall SetActiveBackendPreInit(int backend)
@@ -161,6 +165,10 @@ int __fastcall SetActiveBackendPreInit(int backend)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-parm.z-snd-get-active-backend
+ * @recoil-artifact defines .text recoil:function:0x4a12b0: zSnd::GetActiveBackend.
+ * @recoil-match byte
+ *
  * Purpose: Return the currently selected sound backend id.
  */
 int __cdecl GetActiveBackend()

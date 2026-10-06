@@ -3016,6 +3016,10 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
 } // namespace Player
 namespace zReader {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.z-reader-load-movers-from-zrd
+ * @recoil-artifact defines .text recoil:function:0x420be0: zReader::LoadMoversFromZrd.
+ * @recoil-match byte
+ *
  * Purpose: load mover definitions from the current ZRD tree.
  */
 void __fastcall LoadMoversFromZrd()
@@ -3651,6 +3655,10 @@ int __fastcall CreateFromNamesAtPose(
 } // namespace Player
 namespace CZNode {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.cznode-mask-extra-flags-recursive
+ * @recoil-artifact defines .text recoil:function:0x421d60: CZNode::MaskExtraFlagsRecursive.
+ * @recoil-match byte
+ *
  * BN evidence: fastcall self/mask, auxFlags at 0x28, signed
  * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
  * global data references.
@@ -3667,6 +3675,10 @@ void __fastcall MaskExtraFlagsRecursive(CZNodePartial* self, int mask)
 } // namespace CZNode
 namespace CZNode {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.cznode-propagate-extra-flags-recursive
+ * @recoil-artifact defines .text recoil:function:0x421da0: CZNode::PropagateExtraFlagsRecursive.
+ * @recoil-match byte
+ *
  * BN evidence: fastcall self/flags, auxFlags at 0x28, signed
  * listCountB at 0x5c, listB at 0x60, recursive self-call only, and no
  * global data references.
@@ -3683,6 +3695,10 @@ void __fastcall PropagateExtraFlagsRecursive(CZNodePartial* self, int flags)
 } // namespace CZNode
 namespace CZNode {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.cznode-propagate-flags-recursive
+ * @recoil-artifact defines .text recoil:function:0x421de0: CZNode::PropagateFlagsRecursive.
+ * @recoil-match byte
+ *
  * BN evidence: fastcall self/flags, flags at 0x24, signed listCountB at
  * 0x5c, listB at 0x60, recursive self-call only, and no global data
  * references.
@@ -4368,6 +4384,10 @@ int __fastcall IsMissionProbeType1EnabledById(int missionId)
 }
 } // namespace Player
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.cplayer-underwater-fx-pass3-ui-apply-pass3
+ * @recoil-artifact defines .text recoil:function:0x423440: CPlayerUnderwaterFxPass3Ui::ApplyPass3.
+ * @recoil-match byte
+ *
  * Purpose: applies the underwater blue-tint pass to the active pass-3 input
  * rectangle through the recovered ApplyPass3 virtual slot.
  */
@@ -4376,6 +4396,10 @@ void CPlayerUnderwaterFxPass3Ui::ApplyPass3()
     zVideo_FxSurface::ApplyBlueTintRect((zVidRect32*)(clipRectOrNull));
 }
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player.cplayer-projectile-camera-fx-pass3-ui-apply-pass3
+ * @recoil-artifact defines .text recoil:function:0x423450: CPlayerProjectileCameraFxPass3Ui::ApplyPass3.
+ * @recoil-match byte
+ *
  * Purpose: applies the projectile-camera green-mask pass to the active pass-3
  * input rectangle through the recovered ApplyPass3 virtual slot.
  */

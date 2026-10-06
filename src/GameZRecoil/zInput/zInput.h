@@ -126,8 +126,10 @@ struct zInput_FFEffectSet {
 
     zInput_FFEffectSet();
     void RestartPrimaryFireEffect();
+    void PlayAltFireEffect(float gain);
     void PlayCollisionImpactEffect(const zVec3* impactWorldPosXZ, float gain);
     void PlayDamageHitEffect(const zVec3* damageSourceWorldPosXZ, float gain);
+    void UpdateSteerAndPitchForceEffects();
 };
 RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, PrimaryFire) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zInput_FFEffectSet, AltFire) == 0x04);
@@ -520,8 +522,6 @@ zInput_DiEffect* __stdcall zInputDICreateConstantForceEffectScaled(float gain);
 zInput_DiEffect* __fastcall zInputDICreateConstantForceEffectWithDirection(int direction);
 zInput_DiEffect* __stdcall zInputDICreateSineEffectScaled(float gain);
 void __fastcall zInputBindMapContextDispatchFromKeyboardEvent(int dikCode);
-void __fastcall zInputDIPlayAltFireEffect(zInput_FFEffectSet* effectSet, float gain);
-void __fastcall zInputDIUpdateSteerAndPitchForceEffects(zInput_FFEffectSet* effectSet);
 }
 
 #define g_zInput_GlobalState (g_zInput_GlobalStateStorage.directInput)

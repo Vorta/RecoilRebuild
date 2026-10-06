@@ -296,6 +296,9 @@ CZRecoilFrame::CZRecoilFrame()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-destroy-czrecoil-frame
+ * @recoil-artifact defines .text recoil:function:0x430610: CZRecoilFrame::~CZRecoilFrame.
+ * @recoil-match byte
  *
  * Purpose: let compiler-emitted MFC member and CZGameFrame base teardown
  * destroy the owned menu through the CMenu provider.
@@ -303,6 +306,9 @@ CZRecoilFrame::CZRecoilFrame()
 CZRecoilFrame::~CZRecoilFrame() { }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-set-menu-bar-visibility
+ * @recoil-artifact defines .text recoil:function:0x430680: CZRecoilFrame::SetMenuBarVisibility.
+ * @recoil-match byte
  *
  * Purpose: attach or remove the recovered main menu and frame menu style.
  */
@@ -390,6 +396,9 @@ ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-build-window-title
+ * @recoil-artifact defines .text recoil:function:0x4306f0: CZRecoilFrame::BuildWindowTitle.
+ * @recoil-match byte
  *
  * Purpose: build the Recoil window title, including the 3Dfx renderer suffix.
  */
@@ -403,6 +412,9 @@ CString CZRecoilFrame::BuildWindowTitle()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-single-player
+ * @recoil-artifact defines .text recoil:function:0x430740: CZRecoilFrame::OnMenuStartSinglePlayer.
+ * @recoil-match byte
  *
  * Purpose: clear intro/mission FMV skips and start the default engine load.
  */
@@ -414,6 +426,9 @@ void CZRecoilFrame::OnMenuStartSinglePlayer()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-open-campaign
+ * @recoil-artifact defines .text recoil:function:0x430760: CZRecoilFrame::OnMenuOpenCampaign.
+ * @recoil-match byte
  *
  * Purpose: enter campaign-open flow with the intro FMV skipped.
  */
@@ -424,6 +439,9 @@ void CZRecoilFrame::OnMenuOpenCampaign()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-open-file-dialog
+ * @recoil-artifact defines .text recoil:function:0x430770: CZRecoilFrame::OnOpenFileDialog.
+ * @recoil-match byte
  *
  * Purpose: open a campaign ZBD file through the retail common dialog path and
  * launch the selected mission data.
@@ -468,6 +486,10 @@ RECOIL_NO_GS void CZRecoilFrame::OnOpenFileDialog()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-exit-game
+ * @recoil-artifact defines .text recoil:function:0x4308a0: CZRecoilFrame::OnMenuExitGame.
+ * @recoil-match byte
+ *
  * Purpose: Posts a close request to the main Recoil frame.
  */
 void CZRecoilFrame::OnMenuExitGame()
@@ -476,6 +498,9 @@ void CZRecoilFrame::OnMenuExitGame()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-configure-mode-feature-flags
+ * @recoil-artifact defines .text recoil:function:0x4308c0: CZRecoilFrame::ConfigureModeFeatureFlags.
+ * @recoil-match byte
  *
  * Purpose: cache menu command UI states for video modes based on acceleration
  * state and available video memory.
@@ -512,6 +537,9 @@ void CZRecoilFrame::ConfigureModeFeatureFlags()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode2
+ * @recoil-artifact defines .text recoil:function:0x4309b0: CZRecoilFrame::OnMenuSetVideoMode2.
+ * @recoil-match byte
  *
  * Purpose: set video mode 2 and refresh the recovered mode command state.
  */
@@ -522,6 +550,9 @@ void CZRecoilFrame::OnMenuSetVideoMode2()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode3
+ * @recoil-artifact defines .text recoil:function:0x4309d0: CZRecoilFrame::OnMenuSetVideoMode3.
+ * @recoil-match byte
  *
  * Purpose: set video mode 3 and refresh the recovered mode command state.
  */
@@ -532,6 +563,9 @@ void CZRecoilFrame::OnMenuSetVideoMode3()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode4
+ * @recoil-artifact defines .text recoil:function:0x4309f0: CZRecoilFrame::OnMenuSetVideoMode4.
+ * @recoil-match byte
  *
  * Purpose: set video mode 4 and refresh the recovered mode command state.
  */
@@ -542,6 +576,9 @@ void CZRecoilFrame::OnMenuSetVideoMode4()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode5
+ * @recoil-artifact defines .text recoil:function:0x430a10: CZRecoilFrame::OnMenuSetVideoMode5.
+ * @recoil-match byte
  *
  * Purpose: set video mode 5 and refresh the recovered mode command state.
  */
@@ -552,6 +589,9 @@ void CZRecoilFrame::OnMenuSetVideoMode5()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode6
+ * @recoil-artifact defines .text recoil:function:0x430a30: CZRecoilFrame::OnMenuSetVideoMode6.
+ * @recoil-match byte
  *
  * Purpose: set video mode 6 and refresh the recovered mode command state.
  */
@@ -562,6 +602,9 @@ void CZRecoilFrame::OnMenuSetVideoMode6()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-set-video-mode7
+ * @recoil-artifact defines .text recoil:function:0x430a50: CZRecoilFrame::OnMenuSetVideoMode7.
+ * @recoil-match byte
  *
  * Purpose: set video mode 7 and refresh the recovered mode command state.
  */
@@ -572,6 +615,9 @@ void CZRecoilFrame::OnMenuSetVideoMode7()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-hud
+ * @recoil-artifact defines .text recoil:function:0x430a70: CZRecoilFrame::OnMenuToggleHud.
+ * @recoil-match byte
  *
  * Purpose: toggle the HUD visibility option from the frame menu.
  */
@@ -581,6 +627,9 @@ void CZRecoilFrame::OnMenuToggleHud()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-hud-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x430a90: CZRecoilFrame::OnUpdateHudCmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the HUD command from the current option state.
  */
@@ -591,6 +640,9 @@ void CZRecoilFrame::OnUpdateHudCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-fullscreen
+ * @recoil-artifact defines .text recoil:function:0x430ab0: CZRecoilFrame::OnMenuToggleFullscreen.
+ * @recoil-match byte
  *
  * Purpose: toggle the fullscreen option from the frame menu.
  */
@@ -604,6 +656,9 @@ void CZRecoilFrame::OnMenuToggleFullscreen()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-open-help-docs
+ * @recoil-artifact defines .text recoil:function:0x430ad0: CZRecoilFrame::OnMenuOpenHelpDocs.
+ * @recoil-match byte
  *
  * Purpose: open the retail help index or report the associated shell error.
  */
@@ -638,6 +693,9 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuOpenHelpDocs()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-about
+ * @recoil-artifact defines .text recoil:function:0x430c30: CZRecoilFrame::OnMenuAbout.
+ * @recoil-match byte
  *
  * Purpose: display the recovered About dialog through the frame menu.
  */
@@ -648,6 +706,10 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuAbout()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.recoil-app-fatal-error-and-exit
+ * @recoil-artifact defines .text recoil:function:0x430c90: RecoilApp::FatalErrorAndExit.
+ * @recoil-match byte
+ *
  * Purpose: Presents the fatal startup error and terminates the application.
  */
 RECOIL_NO_GS void __fastcall RecoilApp::FatalErrorAndExit(int errorCode)
@@ -743,6 +805,9 @@ void CZRecoilFrame::OnMenuOpenMultiplayerSessionBrowser()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-multiplayer
+ * @recoil-artifact defines .text recoil:function:0x431270: CZRecoilFrame::OnMenuStartMultiplayer.
+ * @recoil-match byte
  *
  * Purpose: start the default multiplayer mission setup path.
  */
@@ -752,6 +817,9 @@ void CZRecoilFrame::OnMenuStartMultiplayer()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-campaign-mode
+ * @recoil-artifact defines .text recoil:function:0x431290: CZRecoilFrame::OnMenuStartCampaignMode.
+ * @recoil-match byte
  *
  * Purpose: start campaign mission slot 2 with the current archive-bank flag.
  */
@@ -761,6 +829,9 @@ void CZRecoilFrame::OnMenuStartCampaignMode()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-campaign-mode2
+ * @recoil-artifact defines .text recoil:function:0x4312b0: CZRecoilFrame::OnMenuStartCampaignMode2.
+ * @recoil-match byte
  *
  * Purpose: start campaign mission slot 3 with the current archive-bank flag.
  */
@@ -770,6 +841,9 @@ void CZRecoilFrame::OnMenuStartCampaignMode2()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-campaign-mode3
+ * @recoil-artifact defines .text recoil:function:0x4312d0: CZRecoilFrame::OnMenuStartCampaignMode3.
+ * @recoil-match byte
  *
  * Purpose: start campaign mission slot 4 with the current archive-bank flag.
  */
@@ -779,6 +853,9 @@ void CZRecoilFrame::OnMenuStartCampaignMode3()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-campaign-mode4
+ * @recoil-artifact defines .text recoil:function:0x4312f0: CZRecoilFrame::OnMenuStartCampaignMode4.
+ * @recoil-match byte
  *
  * Purpose: start campaign mission slot 5 with the current archive-bank flag.
  */
@@ -788,6 +865,9 @@ void CZRecoilFrame::OnMenuStartCampaignMode4()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-start-campaign-mode5
+ * @recoil-artifact defines .text recoil:function:0x431310: CZRecoilFrame::OnMenuStartCampaignMode5.
+ * @recoil-match byte
  *
  * Purpose: start campaign mission slot 6 with the current archive-bank flag.
  */
@@ -797,6 +877,9 @@ void CZRecoilFrame::OnMenuStartCampaignMode5()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-archive-banks
+ * @recoil-artifact defines .text recoil:function:0x431330: CZRecoilFrame::OnMenuToggleArchiveBanks.
+ * @recoil-match byte
  *
  * Purpose: toggle archive-bank loading and mirror it into audio/HUD state.
  */
@@ -810,6 +893,9 @@ void CZRecoilFrame::OnMenuToggleArchiveBanks()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-texture-packs
+ * @recoil-artifact defines .text recoil:function:0x431380: CZRecoilFrame::OnMenuToggleTexturePacks.
+ * @recoil-match byte
  *
  * Purpose: toggle texture-pack loading and update the menu check state.
  */
@@ -826,6 +912,9 @@ void CZRecoilFrame::OnMenuToggleTexturePacks()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode2-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4313d0: CZRecoilFrame::OnUpdateVideoMode2CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 2.
  */
@@ -835,6 +924,9 @@ void CZRecoilFrame::OnUpdateVideoMode2CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode3-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431430: CZRecoilFrame::OnUpdateVideoMode3CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 3.
  */
@@ -844,6 +936,9 @@ void CZRecoilFrame::OnUpdateVideoMode3CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode4-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431490: CZRecoilFrame::OnUpdateVideoMode4CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 4.
  */
@@ -853,6 +948,9 @@ void CZRecoilFrame::OnUpdateVideoMode4CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode5-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4314f0: CZRecoilFrame::OnUpdateVideoMode5CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 5.
  */
@@ -862,6 +960,9 @@ void CZRecoilFrame::OnUpdateVideoMode5CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode6-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431550: CZRecoilFrame::OnUpdateVideoMode6CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 6.
  */
@@ -871,6 +972,9 @@ void CZRecoilFrame::OnUpdateVideoMode6CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-video-mode7-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4315b0: CZRecoilFrame::OnUpdateVideoMode7CmdUI.
+ * @recoil-match byte
  *
  * Purpose: apply cached command UI state for video mode 7.
  */
@@ -880,6 +984,9 @@ void CZRecoilFrame::OnUpdateVideoMode7CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-set-hw-api-and-init-mode
+ * @recoil-artifact defines .text recoil:function:0x431610: CZRecoilFrame::SetHwApiAndInitMode.
+ * @recoil-match byte
  *
  * Purpose: select a hardware API, query video memory, force accelerated mode, and enter the default hardware video
  * mode.
@@ -896,6 +1003,9 @@ void CZRecoilFrame::SetHwApiAndInitMode(int hwApiIndex)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-init-fallback-mode
+ * @recoil-artifact defines .text recoil:function:0x431680: CZRecoilFrame::InitFallbackMode.
+ * @recoil-match byte
  *
  * Purpose: restore software/fallback renderer options and rebuild mode command state.
  */
@@ -909,6 +1019,9 @@ void CZRecoilFrame::InitFallbackMode()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-ensure-hw-api-initialized
+ * @recoil-artifact defines .text recoil:function:0x4316c0: CZRecoilFrame::EnsureHwApiInitialized.
+ * @recoil-match byte
  *
  * Purpose: initialize the selected hardware API once and clear competing menu checks.
  */
@@ -937,6 +1050,9 @@ void CZRecoilFrame::EnsureHwApiInitialized(int hwApiSelector)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-init-startup-hw-api-from-options
+ * @recoil-artifact defines .text recoil:function:0x431730: CZRecoilFrame::InitStartupHwApiFromOptions.
+ * @recoil-match byte
  *
  * Purpose: select the startup renderer path from saved options or fallback defaults.
  */
@@ -959,6 +1075,9 @@ void CZRecoilFrame::InitStartupHwApiFromOptions()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-hw-api0
+ * @recoil-artifact defines .text recoil:function:0x431790: CZRecoilFrame::OnMenuSelectHwApi0.
+ * @recoil-match byte
  *
  * Purpose: select the software/fallback hardware API menu path.
  */
@@ -968,6 +1087,9 @@ void CZRecoilFrame::OnMenuSelectHwApi0()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-hw-api1
+ * @recoil-artifact defines .text recoil:function:0x4317a0: CZRecoilFrame::OnMenuSelectHwApi1.
+ * @recoil-match byte
  *
  * Purpose: select hardware API menu entry 1.
  */
@@ -977,6 +1099,9 @@ void CZRecoilFrame::OnMenuSelectHwApi1()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-hw-api2
+ * @recoil-artifact defines .text recoil:function:0x4317b0: CZRecoilFrame::OnMenuSelectHwApi2.
+ * @recoil-match byte
  *
  * Purpose: select hardware API menu entry 2.
  */
@@ -986,6 +1111,9 @@ void CZRecoilFrame::OnMenuSelectHwApi2()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-hw-api3
+ * @recoil-artifact defines .text recoil:function:0x4317c0: CZRecoilFrame::OnMenuSelectHwApi3.
+ * @recoil-match byte
  *
  * Purpose: select hardware API menu entry 3.
  */
@@ -995,6 +1123,9 @@ void CZRecoilFrame::OnMenuSelectHwApi3()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-update-hw-api-menu-item
+ * @recoil-artifact defines .text recoil:function:0x4317d0: CZRecoilFrame::UpdateHwApiMenuItem.
+ * @recoil-match byte
  *
  * Purpose: remove unavailable hardware API commands or update their label/check state.
  */
@@ -1023,6 +1154,9 @@ RECOIL_NO_GS void CZRecoilFrame::UpdateHwApiMenuItem(CCmdUI* cmdUi, int apiIndex
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-hw-api0-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431870: CZRecoilFrame::OnUpdateHwApi0CmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the software/fallback hardware API command.
  */
@@ -1037,6 +1171,9 @@ void CZRecoilFrame::OnUpdateHwApi0CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-hw-api1-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4318b0: CZRecoilFrame::OnUpdateHwApi1CmdUI.
+ * @recoil-match byte
  *
  * Purpose: update hardware API command UI entry 1.
  */
@@ -1046,6 +1183,9 @@ void CZRecoilFrame::OnUpdateHwApi1CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-hw-api2-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4318c0: CZRecoilFrame::OnUpdateHwApi2CmdUI.
+ * @recoil-match byte
  *
  * Purpose: update hardware API command UI entry 2.
  */
@@ -1055,6 +1195,9 @@ void CZRecoilFrame::OnUpdateHwApi2CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-hw-api3-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4318d0: CZRecoilFrame::OnUpdateHwApi3CmdUI.
+ * @recoil-match byte
  *
  * Purpose: update hardware API command UI entry 3.
  */
@@ -1064,6 +1207,9 @@ void CZRecoilFrame::OnUpdateHwApi3CmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-fullscreen-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x4318e0: CZRecoilFrame::OnUpdateFullscreenCmdUI.
+ * @recoil-match byte
  *
  * Purpose: remove the fullscreen command from the update menu path.
  */
@@ -1083,6 +1229,9 @@ void CZRecoilFrame::OnUpdateAlwaysEnabledCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-cdaudio
+ * @recoil-artifact defines .text recoil:function:0x431900: CZRecoilFrame::OnMenuToggleCDAudio.
+ * @recoil-match byte
  *
  * Purpose: toggle the CD audio option from the frame menu.
  */
@@ -1092,6 +1241,9 @@ void CZRecoilFrame::OnMenuToggleCDAudio()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-cdaudio-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431920: CZRecoilFrame::OnUpdateCDAudioCmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the CD audio command from sound options.
  */
@@ -1102,6 +1254,9 @@ void CZRecoilFrame::OnUpdateCDAudioCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-toggle-joystick
+ * @recoil-artifact defines .text recoil:function:0x431950: CZRecoilFrame::OnMenuToggleJoystick.
+ * @recoil-match byte
  *
  * Purpose: toggle joystick input from the frame menu.
  */
@@ -1111,6 +1266,9 @@ void CZRecoilFrame::OnMenuToggleJoystick()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-joystick-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431970: CZRecoilFrame::OnUpdateJoystickCmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the joystick command from input options.
  */
@@ -1121,6 +1279,10 @@ void CZRecoilFrame::OnUpdateJoystickCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-westwood-online-upgrade
+ * @recoil-artifact defines .text recoil:function:0x4319a0: CZRecoilFrame::OnMenuWestwoodOnlineUpgrade.
+ * @recoil-match byte
+ *
  * Purpose: gate the Westwood Online upgrade flow on Winsock2 readiness and
  * launch the selected mission.
  */
@@ -1155,6 +1317,10 @@ RECOIL_NO_GS void CZRecoilFrame::OnMenuWestwoodOnlineUpgrade()
 
 namespace MfcCmdUI {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.mfc-cmd-ui-enable-always
+ * @recoil-artifact defines .text recoil:function:0x431a80: MfcCmdUI::EnableAlways.
+ * @recoil-match byte
+ *
  * Purpose: Marks the associated MFC command as enabled.
  */
 void __stdcall EnableAlways(CCmdUI* cmdUi)
@@ -1164,6 +1330,9 @@ void __stdcall EnableAlways(CCmdUI* cmdUi)
 } // namespace MfcCmdUI
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-direct-sound
+ * @recoil-artifact defines .text recoil:function:0x431a90: CZRecoilFrame::OnMenuSelectDirectSound.
+ * @recoil-match byte
  *
  * Purpose: select DirectSound as the active audio API option.
  */
@@ -1173,6 +1342,9 @@ void CZRecoilFrame::OnMenuSelectDirectSound()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-direct-sound-cmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431aa0: CZRecoilFrame::OnUpdateDirectSoundCmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the DirectSound command from audio options.
  */
@@ -1183,6 +1355,9 @@ void CZRecoilFrame::OnUpdateDirectSoundCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-menu-select-a3-d
+ * @recoil-artifact defines .text recoil:function:0x431ad0: CZRecoilFrame::OnMenuSelectA3D.
+ * @recoil-match byte
  *
  * Purpose: select A3D as the active audio API option.
  */
@@ -1192,6 +1367,9 @@ void CZRecoilFrame::OnMenuSelectA3D()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-update-a3-dcmd-ui
+ * @recoil-artifact defines .text recoil:function:0x431ae0: CZRecoilFrame::OnUpdateA3DCmdUI.
+ * @recoil-match byte
  *
  * Purpose: enable and check the A3D command from the active sound backend.
  */
@@ -1202,6 +1380,9 @@ void CZRecoilFrame::OnUpdateA3DCmdUI(CCmdUI* cmdUi)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-on-size
+ * @recoil-artifact defines .text recoil:function:0x431b10: CZRecoilFrame::OnSize.
+ * @recoil-match byte
  *
  * Purpose: forward sizing to CZGameFrame and deactivate the app on minimized/iconic states.
  */

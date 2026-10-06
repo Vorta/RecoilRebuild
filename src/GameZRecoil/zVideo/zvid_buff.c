@@ -16,6 +16,10 @@ namespace zVideo_buff
 {
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-buff.z-video-buff-clip-coord-to-range
+     * @recoil-artifact defines .text recoil:function:0x4a69c0: zVideo_buff::ClipCoordToRange.
+     * @recoil-match byte
+     *
      * Purpose: provide the recovered zVideo_buff::ClipCoordToRange behavior.
      */
     int __fastcall ClipCoordToRange(int* coordPtr, int minCoord, int maxCoord)

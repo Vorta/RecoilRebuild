@@ -1076,7 +1076,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: normalize the steering direction projected onto the reference plane.
  */
@@ -1135,6 +1135,10 @@ void __fastcall RebuildMotionBasisFromSteerBasis(zUtil_SaveGameState* saveState)
 } // namespace Player
 namespace CZDisplayInstance {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-state.czdisplay-instance-snap-probe-point-yto-best-candidate
+ * @recoil-artifact defines .text recoil:function:0x42ba50: CZDisplayInstance::SnapProbePointYToBestCandidate.
+ * @recoil-match byte
+ *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.
  * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
@@ -1391,6 +1395,10 @@ void __fastcall ResetMotionTransientState(zUtil_SaveGameState* saveState)
 } // namespace Player
 namespace HudUi {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.player-state.hud-ui-play-powerup-sfx
+ * @recoil-artifact defines .text recoil:function:0x42bf40: HudUi::PlayPowerupSfx.
+ * @recoil-match byte
+ *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud.cpp.
  * Purpose: lazily resolve the powerup sound sample and play or stop its active voices.
  */

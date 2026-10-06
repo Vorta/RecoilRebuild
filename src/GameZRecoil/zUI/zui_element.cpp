@@ -9,6 +9,11 @@
 
 #include "GameZRecoil/zHud/zhud_ui.h"
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-element.hud-ui-widget-hit-test
+ * @recoil-artifact defines .text recoil:function:0x4b4030: HudUiWidget::HitTest.
+ * @recoil-match byte
+ */
 int HudUiWidget::HitTest(int px, int py)
 {
     if ((~flags & 0x10) == 0) {

@@ -415,6 +415,10 @@ int __fastcall zSndSample::UnlockBackendBuffers(void* buffer1, void* buffer2, in
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-create.z-snd-sample-get-play-cursor-bytes
+ * @recoil-artifact defines .text recoil:function:0x4a3620: zSndSample::GetPlayCursorBytes.
+ * @recoil-match byte
+ *
  * Purpose: return the active backend play cursor in bytes, or zero on failure.
  */
 unsigned int __fastcall zSndSample::GetPlayCursorBytes()
@@ -443,6 +447,10 @@ unsigned int __fastcall zSndSample::GetPlayCursorBytes()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-create.z-snd-sample-destroy-owned-data
+ * @recoil-artifact defines .text recoil:function:0x4a3690: zSndSample::DestroyOwnedData.
+ * @recoil-match byte
+ *
  * Purpose: release runtime-owned sample buffers, voices, and loaded-state flags.
  */
 int zSndSample::DestroyOwnedData()
@@ -567,6 +575,10 @@ zSndSampleCreateQueuedStreamingSample(WAVEFORMATEX* audioFormat, void* audioBuff
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zsound.zsnd-create.z-snd-sample-destroy
+ * @recoil-artifact defines .text recoil:function:0x4a3910: zSndSample::Destroy.
+ * @recoil-match byte
+ *
  * Purpose: release owned sample data and free the sample record itself.
  */
 void zSndSample::Destroy()

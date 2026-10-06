@@ -127,6 +127,10 @@ int __fastcall operator<(const HudUiSaveLoadEntry& lhs, const HudUiSaveLoadEntry
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-game-dialog-hud-ui-save-game-dialog
+ * @recoil-artifact defines .text recoil:function:0x434680: HudUiSaveGameDialog::HudUiSaveGameDialog.
+ * @recoil-match byte
+ *
  * Purpose: Builds the save-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiSaveGameDialog::HudUiSaveGameDialog()
@@ -154,6 +158,10 @@ HudUiSaveGameDialog::HudUiSaveGameDialog()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-game-name-input-on-activate
+ * @recoil-artifact defines .text recoil:function:0x4348b0: HudUiSaveLoadGameNameInput::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Activates the save-game name input and moves the cursor to the end.
  */
 void HudUiSaveLoadGameNameInput::OnActivate()
@@ -164,6 +172,10 @@ void HudUiSaveLoadGameNameInput::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-game-name-input-on-raw-keyboard-char
+ * @recoil-artifact defines .text recoil:function:0x4348f0: HudUiSaveLoadGameNameInput::OnRawKeyboardChar.
+ * @recoil-match byte
+ *
  * Purpose: Filters raw key input to the save-game filename character set.
  */
 int HudUiSaveLoadGameNameInput::OnRawKeyboardChar(int key)
@@ -176,6 +188,10 @@ int HudUiSaveLoadGameNameInput::OnRawKeyboardChar(int key)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-list-item-hud-ui-save-load-list-item
+ * @recoil-artifact defines .text recoil:function:0x434920: HudUiSaveLoadListItem::HudUiSaveLoadListItem.
+ * @recoil-match byte
+ *
  * Purpose: Initializes a save/load list row panel and clears its entry index.
  */
 HudUiSaveLoadListItem::HudUiSaveLoadListItem()
@@ -186,6 +202,10 @@ HudUiSaveLoadListItem::HudUiSaveLoadListItem()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-list-item-draw
+ * @recoil-artifact defines .text recoil:function:0x434950: HudUiSaveLoadListItem::Draw.
+ * @recoil-match byte
+ *
  * Purpose: Draws the list row panel and refreshes text bounds after rendering.
  */
 void HudUiSaveLoadListItem::Draw()
@@ -195,6 +215,10 @@ void HudUiSaveLoadListItem::Draw()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-game-dialog-on-primary-action-thunk
+ * @recoil-artifact defines .text recoil:function:0x434970: HudUiSaveGameDialog::OnPrimaryActionThunk.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the save dialog primary action to its nonvirtual result handler.
  */
 void HudUiSaveGameDialog::OnPrimaryActionThunk()
@@ -203,6 +227,10 @@ void HudUiSaveGameDialog::OnPrimaryActionThunk()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-load-game-dialog-hud-ui-load-game-dialog
+ * @recoil-artifact defines .text recoil:function:0x434b90: HudUiLoadGameDialog::HudUiLoadGameDialog.
+ * @recoil-match byte
+ *
  * Purpose: Builds the load-game dialog controls from dialog.zrd and initializes list contents.
  */
 HudUiLoadGameDialog::HudUiLoadGameDialog()
@@ -230,6 +258,10 @@ HudUiLoadGameDialog::HudUiLoadGameDialog()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-load-game-dialog-on-primary-action-thunk
+ * @recoil-artifact defines .text recoil:function:0x434dc0: HudUiLoadGameDialog::OnPrimaryActionThunk.
+ * @recoil-match byte
+ *
  * Purpose: Dispatches the load dialog primary action through the concrete dialog object.
  */
 void HudUiLoadGameDialog::OnPrimaryActionThunk()
@@ -238,6 +270,9 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-initialize-file-entries
+ * @recoil-artifact defines .text recoil:function:0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries.
+ *
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
  */
 void HudUiSaveLoadDialog::InitializeFileEntries()
@@ -267,6 +302,10 @@ void HudUiSaveLoadDialog::InitializeFileEntries()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-delete-save-file
+ * @recoil-artifact defines .text recoil:function:0x434fb0: HudUiSaveLoadDialog::DeleteSaveFile.
+ * @recoil-match byte
+ *
  * Purpose: Deletes the selected saved-game file and refreshes the dialog list.
  */
 void HudUiSaveLoadDialog::DeleteSaveFile(int confirmDelete)
@@ -308,6 +347,10 @@ void HudUiSaveLoadDialog::DeleteSaveFile(int confirmDelete)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-delete-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x435140: HudUiSaveLoadDeleteButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Runs widget activation behavior and asks the dialog to delete the selected file.
  */
 void HudUiSaveLoadDeleteButton::OnActivate()
@@ -318,6 +361,10 @@ void HudUiSaveLoadDeleteButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-next-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x435160: HudUiSaveLoadNextButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Advances the selected save/load entry when another entry exists.
  */
 void HudUiSaveLoadNextButton::OnActivate()
@@ -333,6 +380,10 @@ void HudUiSaveLoadNextButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-prev-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x4351b0: HudUiSaveLoadPrevButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Moves the selected save/load entry to the previous valid row.
  */
 void HudUiSaveLoadPrevButton::OnActivate()
@@ -348,6 +399,10 @@ void HudUiSaveLoadPrevButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-game-primary-action-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x435200: HudUiSaveGamePrimaryActionButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Commits the save-game dialog result before running the widget activation path.
  */
 void HudUiSaveGamePrimaryActionButton::OnActivate()
@@ -361,6 +416,10 @@ void HudUiSaveGamePrimaryActionButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-load-game-primary-action-button-on-activate
+ * @recoil-artifact defines .text recoil:function:0x435220: HudUiLoadGamePrimaryActionButton::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Commits the load-game dialog result before running the widget activation path.
  */
 void HudUiLoadGamePrimaryActionButton::OnActivate()
@@ -374,6 +433,10 @@ void HudUiLoadGamePrimaryActionButton::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-game-dialog-process-dialog-result
+ * @recoil-artifact defines .text recoil:function:0x435240: HudUiSaveGameDialog::ProcessDialogResult.
+ * @recoil-match byte
+ *
  * Purpose: Saves to the selected file path through the global archive entry path and exits the dialog.
  */
 void HudUiSaveGameDialog::ProcessDialogResult()
@@ -412,6 +475,10 @@ void HudUiSaveGameDialog::ProcessDialogResult()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-game-name-input-on-accept
+ * @recoil-artifact defines .text recoil:function:0x4353e0: HudUiSaveLoadGameNameInput::OnAccept.
+ * @recoil-match byte
+ *
  * Purpose: commit the current save-game name through the owning dialog.
  */
 void HudUiSaveLoadGameNameInput::OnAccept()
@@ -488,6 +555,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(int selectedEntryIndexValue)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-refresh-save-file-list
+ * @recoil-artifact defines .text recoil:function:0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList.
+ * @recoil-match source
+ *
  * Purpose: Rebuilds and sorts the saved-game file entry vector from the SavedGames directory.
  */
 void HudUiSaveLoadDialog::RefreshSaveFileList()
@@ -513,6 +584,10 @@ void HudUiSaveLoadDialog::RefreshSaveFileList()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-list-item-on-activate
+ * @recoil-artifact defines .text recoil:function:0x435a10: HudUiSaveLoadListItem::OnActivate.
+ * @recoil-match byte
+ *
  * Purpose: Selects this row's save/load entry in its parent dialog.
  */
 void HudUiSaveLoadListItem::OnActivate()
@@ -524,6 +599,10 @@ void HudUiSaveLoadListItem::OnActivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-static-init-and-register-at-exit
+ * @recoil-artifact defines .text recoil:function:0x435a30: RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit.
+ * @recoil-match byte
+ *
  * Purpose: Initializes the save/load transition singleton and registers its exit cleanup.
  */
 void __cdecl RecoilStateSaveLoadTransition::StaticInitAndRegisterAtExit()
@@ -557,6 +636,10 @@ void __cdecl RecoilStateSaveLoadTransition::RegisterAtExit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-at-exit-destructor
+ * @recoil-artifact defines .text recoil:function:0x435a60: RecoilStateSaveLoadTransition::AtExitDestructor.
+ * @recoil-match byte
+ *
  * Purpose: Tears down the global save/load transition during process exit.
  */
 void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor()
@@ -565,6 +648,10 @@ void __cdecl RecoilStateSaveLoadTransition::AtExitDestructor()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-load-game-dialog-process-dialog-result
+ * @recoil-artifact defines .text recoil:function:0x435a70: HudUiLoadGameDialog::ProcessDialogResult.
+ * @recoil-match byte
+ *
  * Purpose: Loads the selected saved game and queues the appropriate game-state transition.
  */
 void HudUiLoadGameDialog::ProcessDialogResult()
@@ -667,6 +754,10 @@ RecoilStateSaveLoadTransition::~RecoilStateSaveLoadTransition()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-on-try-become-current
+ * @recoil-artifact defines .text recoil:function:0x435d20: RecoilStateSaveLoadTransition::OnTryBecomeCurrent.
+ * @recoil-match byte
+ *
  * Purpose: Captures presentation/audio state and opens the requested save/load dialog.
  */
 int RecoilStateSaveLoadTransition::OnTryBecomeCurrent()
@@ -769,6 +860,10 @@ int RecoilStateSaveLoadTransition::OnUpdateShouldQuit()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-on-deactivate
+ * @recoil-artifact defines .text recoil:function:0x435ed0: RecoilStateSaveLoadTransition::OnDeactivate.
+ * @recoil-match byte
+ *
  * Purpose: Restores captured presentation/audio state and deletes the active save/load dialog.
  */
 void RecoilStateSaveLoadTransition::OnDeactivate()
@@ -806,6 +901,10 @@ void RecoilStateSaveLoadTransition::OnDeactivate()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-queue-open-save-dialog
+ * @recoil-artifact defines .text recoil:function:0x435f50: RecoilStateSaveLoadTransition::QueueOpenSaveDialog.
+ * @recoil-match byte
+ *
  * Purpose: Configures and queues the save-dialog transition.
  */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
@@ -822,6 +921,10 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenSaveDialog(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.saveload.recoil-state-save-load-transition-queue-open-load-dialog
+ * @recoil-artifact defines .text recoil:function:0x435f80: RecoilStateSaveLoadTransition::QueueOpenLoadDialog.
+ * @recoil-match byte
+ *
  * Purpose: Configures and queues the load-dialog transition.
  */
 void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RecoilSaveLoadTransitionMode transitionMode)

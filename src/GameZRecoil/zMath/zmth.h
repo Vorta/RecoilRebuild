@@ -778,8 +778,8 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  */
 #define ZMTH_VECTOR_NEGATE(source, destination)                                                                        \
     do {                                                                                                               \
-        const zVec3* const negateSource = (source);                                                                    \
         zVec3* const negateDest = (destination);                                                                       \
+        const zVec3* const negateSource = (source);                                                                    \
         __asm { \
             __asm mov ebx, negateSource \
             __asm mov ecx, negateDest \

@@ -857,7 +857,7 @@ void HudUiBar::Draw()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitopmessagestack-constructor
  * @recoil-artifact defines .text recoil:function:0x4bd020: HudUiTopMessageStack::HudUiTopMessageStack.
- *
+ * @recoil-match byte
  *
  * Purpose: construct the top-message four-line stack and configure ascending rows.
  * Retail constructs the container and panel array in this body, before the
@@ -957,7 +957,7 @@ void HudUiTextStack4::Clear()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduichatmessagestack-constructor
  * @recoil-artifact defines .text recoil:function:0x4bd2d0: HudUiChatMessageStack::HudUiChatMessageStack.
- *
+ * @recoil-match byte
  *
  * Purpose: construct the chat-message four-line stack and configure descending rows.
  * As in the top-message constructor, VC5 owns base/member construction and
@@ -1565,16 +1565,6 @@ void HudUiNumericTextInput::Destructor()
 /**
  * Purpose: handle the recovered HUD event path for HudUiNumericTextInput::OnRawKeyboardChar.
  */
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduipanel-constructordefaultthunk
- * @recoil-artifact defines .text recoil:function:0x4bd100: HudUiPanel::ConstructorDefaultThunk.
- * Purpose: preserve the recovered HUD behavior for HudUiPanel::ConstructorDefaultThunk.
- */
-HudUiPanel* HudUiPanel::ConstructorDefaultThunk()
-{
-    return ConstructorDefault(0, 0, 0);
-}
 
 namespace HudScoreboard {
 

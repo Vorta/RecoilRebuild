@@ -461,6 +461,10 @@ namespace zModel
 } // namespace zModel
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-target-color-override-set-current
+ * @recoil-artifact defines .text recoil:function:0x476040: zModelFogTargetColorOverrideSetCurrent.
+ * @recoil-match byte
+ *
  * Purpose: optionally copy a fog-target override color and always store its
  * blend weight.
  */
@@ -473,6 +477,10 @@ void __fastcall zModelFogTargetColorOverrideSetCurrent(zColorRgb* colorRgb01, fl
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-render-alpha-scale-set-current
+ * @recoil-artifact defines .text recoil:function:0x476070: zModelRenderAlphaScaleSetCurrent.
+ * @recoil-match byte
+ *
  * Purpose: store the current render alpha-scale value.
  */
 void __stdcall zModelRenderAlphaScaleSetCurrent(float scale)
@@ -481,6 +489,10 @@ void __stdcall zModelRenderAlphaScaleSetCurrent(float scale)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-render-vertex-alpha-enabled-set-current
+ * @recoil-artifact defines .text recoil:function:0x476080: zModelRenderVertexAlphaEnabledSetCurrent.
+ * @recoil-match byte
+ *
  * Purpose: store the current vertex-alpha enabled flag.
  */
 void __fastcall zModelRenderVertexAlphaEnabledSetCurrent(int enabled)
@@ -558,6 +570,10 @@ namespace zClipAlt
 } // namespace zClipAlt
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-enabled
+ * @recoil-artifact defines .text recoil:function:0x476170: zModelFogSetEnabled.
+ * @recoil-match byte
+ *
  * Purpose: store the current fog-enabled flag.
  */
 void __fastcall zModelFogSetEnabled(int enabled)
@@ -566,6 +582,10 @@ void __fastcall zModelFogSetEnabled(int enabled)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-is-enabled
+ * @recoil-artifact defines .text recoil:function:0x476180: zModelFogIsEnabled.
+ * @recoil-match byte
+ *
  * Purpose: return the current fog-enabled flag.
  */
 int __cdecl zModelFogIsEnabled()
@@ -574,6 +594,10 @@ int __cdecl zModelFogIsEnabled()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-distance-start
+ * @recoil-artifact defines .text recoil:function:0x476190: zModelFogSetDistanceStart.
+ * @recoil-match byte
+ *
  * Purpose: store the distance-fog start value and refresh the cached inverse
  * range against the current end value.
  */
@@ -585,6 +609,10 @@ void __stdcall zModelFogSetDistanceStart(float distanceStart)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-get-distance-start
+ * @recoil-artifact defines .text recoil:function:0x4761d0: zModelFogGetDistanceStart.
+ * @recoil-match byte
+ *
  * Purpose: return the current distance-fog start value.
  */
 float __cdecl zModelFogGetDistanceStart()
@@ -593,6 +621,10 @@ float __cdecl zModelFogGetDistanceStart()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-distance-end
+ * @recoil-artifact defines .text recoil:function:0x4761e0: zModelFogSetDistanceEnd.
+ * @recoil-match byte
+ *
  * Purpose: store the distance-fog end value and refresh the cached inverse
  * range against the current start value.
  */
@@ -604,6 +636,10 @@ void __stdcall zModelFogSetDistanceEnd(float distanceEnd)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-height-high
+ * @recoil-artifact defines .text recoil:function:0x476220: zModelFogSetHeightHigh.
+ * @recoil-match byte
+ *
  * Purpose: store the high height-fog bound and refresh the cached inverse
  * vertical range.
  */
@@ -615,6 +651,10 @@ void __stdcall zModelFogSetHeightHigh(float heightHigh)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-height-low
+ * @recoil-artifact defines .text recoil:function:0x476260: zModelFogSetHeightLow.
+ * @recoil-match byte
+ *
  * Purpose: store the low height-fog bound and refresh the cached inverse
  * vertical range.
  */
@@ -626,6 +666,10 @@ void __stdcall zModelFogSetHeightLow(float heightLow)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-density
+ * @recoil-artifact defines .text recoil:function:0x4762a0: zModelFogSetDensity.
+ * @recoil-match byte
+ *
  * Purpose: store the current fog density scalar.
  */
 void __stdcall zModelFogSetDensity(float density)
@@ -634,6 +678,10 @@ void __stdcall zModelFogSetDensity(float density)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-linear-mode-enabled
+ * @recoil-artifact defines .text recoil:function:0x4762b0: zModelFogSetLinearModeEnabled.
+ * @recoil-match byte
+ *
  * Purpose: store the linear fog mode enabled flag.
  */
 void __fastcall zModelFogSetLinearModeEnabled(int enabled)
@@ -642,6 +690,10 @@ void __fastcall zModelFogSetLinearModeEnabled(int enabled)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-color-rgb01
+ * @recoil-artifact defines .text recoil:function:0x4762c0: zModelFogSetColorRgb01.
+ * @recoil-match byte
+ *
  * Purpose: copy the fog RGB color and update hardware renderer fog color when
  * the active renderer path requires it.
  */
@@ -654,6 +706,10 @@ void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-apply-current-color
+ * @recoil-artifact defines .text recoil:function:0x4762f0: zModelFogApplyCurrentColor.
+ * @recoil-match byte
+ *
  * Purpose: apply the current fog color through the renderer's clamped RGB path.
  */
 void __cdecl zModelFogApplyCurrentColor()
