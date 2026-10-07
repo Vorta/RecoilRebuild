@@ -278,7 +278,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 ### Fixes
 
-- Kept the holographic guidance system’s hum playing until the system is disabled instead of stopping it when the first power bay is destroyed.
+- Kept the hum at Mission 1’s northern-base building playing until the building is disabled instead of stopping it when the first power bay is destroyed.
 - Corrected primary-gun positioning during multiplayer SUBMARINE transformations.
 - Corrected track references on minelayer and missile-tank models used by their destruction animations.
 - Reset impact-fragment positions before reusing effects, attached a SAM debris trail to the correct fragment, and stopped parachute flares and sway during cleanup.
@@ -398,7 +398,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 - Prevented a supply crate from running both its collision and weapon-hit destruction sequences.
 - Kept the core weapon-kill explosion visible at long range while limiting additional rings and lighting by distance.
-- Prevented destroyed northern-base sirens, power-bay beams, and the holographic guidance system’s force field from being reactivated by their proximity triggers.
+- Prevented destroyed northern-base sirens, power-bay beams, and the northern-base force field from being reactivated by their proximity triggers.
 - Improved multiplayer name-tag placement and suppressed labels that would be clipped at the top of the screen.
 - Fixed truncation of long sound-group names during configuration loading.
 - Fixed Direct3D loading software texture archives (`texture*.zbd`) instead of hardware texture archives (`rtexture*.zbd`) on devices reporting more than 8 MB of texture memory.
@@ -452,7 +452,6 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 ### Added
 
 - Added Mission 1’s secret beach, unlocked by destroying all four northern-base sirens, with a destructible inner entrance.
-None recorded.
 
 ### Changed
 
@@ -514,7 +513,7 @@ None recorded.
 
 - Revised Mission 1’s terrain, northern-base retaining walls, helicopter model, and truck wreckage.
 - Reworked the demo multiplayer arena’s buildings and spillways.
-- Retimed the holographic guidance system’s destruction effects and removed duplicate debris bursts.
+- Retimed the destruction effects for Mission 1’s northern-base building and removed duplicate debris bursts.
 - Reduced saved and networked animation history by excluding short-lived splashes, wakes, exhaust, regeneration flashes, and multiplayer vehicle effects.
 - Reworked player-name, save-name, cheat-code, and multiplayer text entry, with filtering for numeric fields.
 - Bouncing mines now update their position, lose speed, and play bounce sounds at each successive impact within the same frame.
