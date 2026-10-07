@@ -936,6 +936,9 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
     PlayerGunFireController* const previousController = playerState->activeAltGunController;
+    int switchAccepted = 0;
+    PlayerGunFireController* newController;
+    PlayerGunFireController* failedController;
 
     if (playerState->altGunTransitionState != 1) {
         return;
@@ -943,36 +946,41 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
 
     int bankIndex = inputCode - 14;
     if (inputCode < 14 || inputCode > 23) {
-        bankIndex = playerState->activeAltBankIndex;
+        // Retail 0x4392a2 reloads the spilled previous-controller slot as the bank index.
+        bankIndex = (int)previousController;
     }
 
     PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[bankIndex];
-    PlayerGunFireController* newController = 0;
-    PlayerGunFireController* failedController = 0;
-    int switchAccepted = 0;
-
     if (bankIndex == playerState->activeAltBankIndex) {
         if (bank->selectedSide == 0) {
-            newController = &bank->controllerB;
+            if (bank->controllerB.optCatalogEntry != 0 && (bank->controllerB.flags & 4) != 0
+                && bank->controllerB.ammoOrCharge != 0.0f) {
+                newController = &bank->controllerB;
+                switchAccepted = 1;
+            } else {
+                failedController = &bank->controllerB;
+            }
         } else {
-            newController = &bank->controllerA;
-        }
-        failedController = newController;
-
-        if (newController->optCatalogEntry != 0 && (newController->flags & 4) != 0
-            && newController->ammoOrCharge != 0.0f) {
-            switchAccepted = 1;
+            if (bank->controllerA.optCatalogEntry != 0 && (bank->controllerA.flags & 4) != 0
+                && bank->controllerA.ammoOrCharge != 0.0f) {
+                newController = &bank->controllerA;
+                switchAccepted = 1;
+            } else {
+                failedController = &bank->controllerA;
+            }
         }
     } else {
         const int selectedSide = bank->selectedSide;
-        newController = selectedSide == 0 ? &bank->controllerA : &bank->controllerB;
-        failedController = newController;
-
-        if (newController->optCatalogEntry != 0 && (newController->flags & 4) != 0
-            && newController->ammoOrCharge != 0.0f) {
+        if ((&bank->controllerA)[selectedSide].optCatalogEntry != 0
+            && ((&bank->controllerA)[selectedSide].flags & 4) != 0
+            && (&bank->controllerA)[selectedSide].ammoOrCharge != 0.0f) {
+            newController = &(&bank->controllerA)[selectedSide];
             switchAccepted = 1;
-        } else if (newController->optCatalogEntry != 0) {
-            bank->selectedSide = selectedSide == 0 ? 1 : 0;
+        } else {
+            failedController = &(&bank->controllerA)[selectedSide];
+            if (failedController->optCatalogEntry != 0) {
+                bank->selectedSide = selectedSide == 0;
+            }
         }
     }
 
@@ -1007,6 +1015,7 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
         LocalPlayerState()->activeAltGunController->ammoOrCharge
     );
 }
+
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-handleprimaryweaponvarianttoggleinput
  * @recoil-artifact defines .text recoil:function:0x439460: Player::HandlePrimaryWeaponVariantToggleInput.
@@ -1167,26 +1176,28 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(const zTag4Partial* requi
 
             if (playerState->lifecycleState != 1 && playerState->lifecycleState != 4
                 && VariantTag::TagsOverlap(&playerState->variantTag, requiredVariantTag) != 0) {
-                const float distXZ = fabs(playerState->fxOffsetWorld.x - localPlayerState->worldPos.x)
-                    + fabs(playerState->fxOffsetWorld.z - localPlayerState->worldPos.z);
-                if (distXZ < 650.0f && candidateCount < 0x63) {
+                // Retail 0x439748 compares the double sum against a double 650.0.
+                if (fabs(playerState->fxOffsetWorld.x - localPlayerState->worldPos.x)
+                            + fabs(playerState->fxOffsetWorld.z - localPlayerState->worldPos.z)
+                        < 650.0
+                    && candidateCount < 0x63) {
                     candidateTrackNodes[candidateCount++] = trackNode;
                 }
             }
-        } else {
-            trackNode->trackKind = HUD_SENSOR_TRACK_KIND_TURRET;
+        } else if ((trackNode->trackKind = HUD_SENSOR_TRACK_KIND_TURRET) != 0) {
             zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
             if (turretRuntime->HasActiveNode() != 0
                 && VariantTag::CurrentAllowsId(turretRuntime->turretNode->nodeType) != 0) {
-                const float distXZ = fabs(turretRuntime->firePos.z - localPlayerState->worldPos.z)
-                    + fabs(turretRuntime->firePos.x - localPlayerState->worldPos.x);
-                if (distXZ < 650.0f && candidateCount < 0x63) {
+                if (fabs(turretRuntime->firePos.z - localPlayerState->worldPos.z)
+                            + fabs(turretRuntime->firePos.x - localPlayerState->worldPos.x)
+                        < 650.0
+                    && candidateCount < 0x63) {
                     candidateTrackNodes[candidateCount++] = trackNode;
                 }
             }
         }
 
-        trackNode = trackNode->next;
+        trackNode = trackNode != 0 ? trackNode->next : 0;
     }
 
     if (candidateCount != 0) {
@@ -1202,13 +1213,13 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(const zTag4Partial* requi
             zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(selectedTrackNode->payload);
             zUtil_PlayerStateStorage* const playerState = saveState->playerState;
             zVec3 point = playerState->fxOffsetWorld;
-            point.y += 3.0f;
+            point.y -= -3.0f;
 
             const int visible = AINet::HasLineOfSightFromCameraTarget(playerState->rootNode, &point, 1);
             playerState->spawnStateInitialized = visible;
             if (visible != 0 && playerState->recentHitMarkerHandle != 0) {
                 playerState->recentHitFlag = 1;
-                playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec + 3.0f;
+                playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec - -3.0f;
             }
         } else if (selectedTrackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
             zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(selectedTrackNode->payload);
@@ -1238,7 +1249,7 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(const zTag4Partial* requi
 
     PlayerGunFireController* const activeAltGunController = localPlayerState->activeAltGunController;
     const unsigned int optEntryFlags = activeAltGunController->optCatalogEntry->flags;
-    if (((optEntryFlags >> 20) & 1u) != 0) {
+    if ((unsigned char)(optEntryFlags >> 20) & 1) {
         HudUiMgr::CopyReticleProjection(&localPlayerState->autoTurnTargetWorldPos.x);
         localPlayerState->progressTargetCount = 1;
         localPlayerState->progressTargetSlots[0].targetPos = &localPlayerState->autoTurnTargetWorldPos;
@@ -1248,15 +1259,16 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(const zTag4Partial* requi
     }
 
     if (activeAltGunController->ammoOrCharge != 0.0f) {
-        int markerMode = 0;
-        if (((optEntryFlags >> 16) & 1u) != 0) {
-            markerMode = 2;
+        if ((unsigned char)(optEntryFlags >> 16) & 1) {
+            localPlayerState->progressTargetCount
+                = HudUiMgrSensor::PlaceTrackMarker(2, localPlayerState->progressTargetSlots);
         } else if ((optEntryFlags & 0x4000u) != 0) {
-            markerMode = 1;
+            localPlayerState->progressTargetCount
+                = HudUiMgrSensor::PlaceTrackMarker(1, localPlayerState->progressTargetSlots);
+        } else {
+            localPlayerState->progressTargetCount
+                = HudUiMgrSensor::PlaceTrackMarker(0, localPlayerState->progressTargetSlots);
         }
-
-        localPlayerState->progressTargetCount
-            = HudUiMgrSensor::PlaceTrackMarker(markerMode, localPlayerState->progressTargetSlots);
     }
 
     HudUiMgrTarget::UpdateSelectedProgressMeter(0);
@@ -1474,7 +1486,11 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
                 playerState->pendingAltCameraToggle = 0;
                 OptCatalog::RecycleRuntimeInstanceStorage(activeAltGunController->optCatalogEntry, attachState);
                 activeAltGunController->attachState = 0;
-                playerState->altGunTransitionState = activeAltGunController->ammoOrCharge > 0.0f ? 4 : 1;
+                if (activeAltGunController->ammoOrCharge > 0.0f) {
+                    playerState->altGunTransitionState = 4;
+                } else {
+                    playerState->altGunTransitionState = 1;
+                }
             } else if (playerState->pendingAltCameraToggle != 0) {
                 if (playerState->cameraState != kPlayerTickCameraStateProjectileAttached) {
                     HudUiMgr::DisableHud();
@@ -1490,7 +1506,8 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         }
 
         if (playerState->altGunTriggerProcessFlag != 0) {
-            char message[0x50] = { 0 };
+            // Retail formats into an uninitialised buffer (no zero fill at 0x43a171).
+            char message[0x50];
             int removedA = 0;
             int removedB = 0;
             OptCatalogEntryDef* const entryA = playerState->altWeaponBanks[5].controllerA.optCatalogEntry;
@@ -1531,8 +1548,8 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
 
         case 4: {
             playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
-            const float progress = playerState->altGunTransitionTimerA * 4.0f;
             const float targetY = transitionController->attachPosY - 0.400000006f;
+            const float progress = playerState->altGunTransitionTimerA * 4.0f;
             const float animScale = progress * 0.400000006f;
             playerState->altGunTransitionAnimScale = animScale;
 
@@ -1601,13 +1618,14 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
                 );
             }
 
-            PlayerGunFireController* const activeController = playerState->activeAltGunController;
+            // Retail 0x439dd5 tests the controller cached at entry (edi), not a fresh load.
+            PlayerGunFireController* const activeController = activeAltGunController;
             if (activeController == 0 || activeController->attachNodePrimary == 0) {
                 playerState->altGunTransitionState = 1;
                 break;
             }
 
-            if ((unsigned char)(activeController->flags >> 1) & 1) {
+            if ((unsigned char)((unsigned int)activeController->flags >> 1) & 1) {
                 saveState->StartMasterTypeLoopSfxHandle(2, 1.0f);
                 PlayerGunFireController* const oppositeController
                     = &playerState->altWeaponBanks[activeController->weaponBankIndex].controllerA
@@ -1665,12 +1683,12 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         }
 
         case 64: {
-            PlayerGunFireController* const activeController = playerState->activeAltGunController;
+            PlayerGunFireController* const activeController = activeAltGunController;
             playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
             const float progress = playerState->altGunTransitionTimerA * 4.0f;
             const float animScale = progress * 0.400000006f;
             playerState->altGunTransitionAnimScale = animScale;
-            const float y = animScale + activeController->attachPosY - 0.400000006f;
+            const float y = animScale + (activeController->attachPosY - 0.400000006f);
             if (y >= activeController->attachPosY) {
                 playerState->altGunTransitionAnimScale = 0.400000006f;
                 playerState->altGunTransitionState = 1;
@@ -1691,7 +1709,7 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
                 y,
                 activeController->attachPosZ
             );
-            const float scale = progress * 0.399999976f + 0.600000024f;
+            const float scale = progress * 0.399999976f - -0.600000024f;
             CZObject3D::gwObject3DSetScale(activeController->attachNodePrimary, 1.0f, scale, scale);
             break;
         }
@@ -1700,41 +1718,42 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
 
     OptCatalog::SetPendingSpawnTargetOverrides(0, 0);
 
-    if (saveState != (zUtil_SaveGameState*)g_GameStateOrMapTable) {
-        return;
-    }
+    // Retail 0x43a21b skips only the ammo bookkeeping for remote save states;
+    // the gun-slot decay and primary dispatch below still run for every player.
+    if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
+        if (playerState->altGunFireHeldFlag != 0 && activeAltGunController->ammoOrCharge != 123456792.0f) {
+            activeAltGunController->ammoOrCharge
+                -= g_FrameDeltaTimeSec / activeAltGunController->optCatalogEntry->fireRateInterval;
+            if (activeAltGunController->ammoOrCharge < 0.0f) {
+                activeAltGunController->ammoOrCharge = 0.0f;
+            }
+            activeAltGunController->trailRuntimeState->ammoOrChargeMirror = activeAltGunController->ammoOrCharge;
+        }
 
-    OptCatalogEntryDef* const activeEntry = activeAltGunController->optCatalogEntry;
-    if (playerState->altGunFireHeldFlag != 0 && activeAltGunController->ammoOrCharge != 123456792.0f) {
-        activeAltGunController->ammoOrCharge -= g_FrameDeltaTimeSec / activeEntry->fireRateInterval;
-        if (activeAltGunController->ammoOrCharge < 0.0f) {
+        if (activeAltGunController->ammoOrCharge <= 0.0f) {
+            if ((activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagReload) != 0
+                && playerState->altGunTransitionState != 1) {
+                return;
+            }
+
             activeAltGunController->ammoOrCharge = 0.0f;
-        }
-        activeAltGunController->trailRuntimeState->ammoOrChargeMirror = activeAltGunController->ammoOrCharge;
-    }
+            if (playerState->altGunFireHeldFlag != 0) {
+                activeAltGunController->trailRuntimeState->ammoOrChargeMirror = 0.0f;
+                playerState->altGunFireHeldFlag = 0;
+                playerState->altGunDispatchRequested = 0;
+                OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);
+            }
 
-    if (activeAltGunController->ammoOrCharge <= 0.0f) {
-        if ((activeEntry->flags & kOptCatalogFlagReload) != 0 && playerState->altGunTransitionState != 1) {
-            return;
+            HudUiMessage::SetValueIfOwnerMatches(
+                activeAltGunController->weaponBankIndex,
+                activeAltGunController->weaponSideIndex,
+                0.0f
+            );
+            Player::AutoSwitchToNextUsableAltWeapon(saveState);
+        } else if ((activeAltGunController->optCatalogEntry->flags & kOptCatalogFlagReload) != 0
+            && playerState->altGunTransitionState == 1 && activeAltGunController->attachState == 0) {
+            playerState->altGunTransitionState = 2;
         }
-
-        activeAltGunController->ammoOrCharge = 0.0f;
-        if (playerState->altGunFireHeldFlag != 0) {
-            activeAltGunController->trailRuntimeState->ammoOrChargeMirror = 0.0f;
-            playerState->altGunFireHeldFlag = 0;
-            playerState->altGunDispatchRequested = 0;
-            OptCatalog::DeactivateTrailRuntimeState(activeAltGunController->trailRuntimeState);
-        }
-
-        HudUiMessage::SetValueIfOwnerMatches(
-            activeAltGunController->weaponBankIndex,
-            activeAltGunController->weaponSideIndex,
-            0.0f
-        );
-        Player::AutoSwitchToNextUsableAltWeapon(saveState);
-    } else if ((activeEntry->flags & kOptCatalogFlagReload) != 0 && playerState->altGunTransitionState == 1
-        && activeAltGunController->attachState == 0) {
-        playerState->altGunTransitionState = 2;
     }
 
     if (playerState->gunNode != 0) {
@@ -2319,7 +2338,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */

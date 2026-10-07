@@ -203,8 +203,8 @@ void __cdecl InitFromZrd()
     zReader::Node* const treeRoot = zReader::Load("net.zrd", 0, 0);
     if (treeRoot != 0) {
         // nodes[0] holds the zrd list count (header included); spawn entries are 1..count-1.
-        const int spawnListCount = treeRoot->value.nodes[1].value.nodes[0].value.i32;
-        for (int index = 1; index < spawnListCount; ++index) {
+        int index = 1;
+        for (int remaining = treeRoot->value.nodes[1].value.nodes[0].value.i32 - 1; remaining > 0; --remaining) {
             GameNetSpawnPoint* const spawnPoint = (GameNetSpawnPoint*)(::operator new(sizeof(GameNetSpawnPoint)));
             memset(spawnPoint, 0, sizeof(GameNetSpawnPoint));
             // Retail null-checks the allocation only around the list append.
@@ -221,6 +221,7 @@ void __cdecl InitFromZrd()
             }
 
             zReader::Node* const spawnValues = treeRoot->value.nodes[1].value.nodes[index].value.nodes;
+            ++index;
             spawnPoint->position.x = spawnValues[1].value.f32;
             spawnPoint->position.y = spawnValues[2].value.f32;
             spawnPoint->position.z = spawnValues[3].value.f32;
@@ -234,13 +235,8 @@ void __cdecl InitFromZrd()
     playerRow->saveState = (GameNetPlayerSaveState*)(localSaveState);
     playerRow->playerKey = zNetworkGetLocalPlayerKey();
     zNetwork::GetPlayerNameByKey(playerRow->playerKey, playerRow->displayName, sizeof(playerRow->displayName));
-    playerRow->playerColorIndex = zNetworkGetPlayerColorIndexByKey(playerRow->playerKey);
-
-    if (playerRow->playerColorIndex <= 0) {
-        if (zNetwork::IsHost() == 0) {
-            playerRow->playerColorIndex = GameNet::WaitForLocalPlayerColorIndex(60);
-        }
-        if (playerRow->playerColorIndex <= 0) {
+    if ((playerRow->playerColorIndex = zNetworkGetPlayerColorIndexByKey(playerRow->playerKey)) <= 0) {
+        if (zNetwork::IsHost() != 0 || (playerRow->playerColorIndex = GameNet::WaitForLocalPlayerColorIndex(60)) <= 0) {
             zVideo_dd::FlipToGDIIfAttached();
             Briefing::StopAndShutdownThread(0);
             zSndSystem::Shutdown();

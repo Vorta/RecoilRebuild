@@ -510,9 +510,9 @@ namespace CZWorld
      */
     int __fastcall WorldToGridCoordsClampedEx(
         CZNodePartial * world,
-        int* outGridCol,
         float worldX,
         float worldZ,
+        int* outGridCol,
         int* outGridRow,
         int* clampedGridColOut,
         int* clampedGridRowOut,
@@ -564,7 +564,7 @@ namespace CZWorld
      * Purpose: clamp a world X/Z position to the world's grid extents and return the corresponding grid coordinates.
      */
     int __fastcall
-    WorldToGridCoordsClamped(CZNodePartial * world, int* outGridCol, float worldX, float worldZ, int* outGridRow)
+    WorldToGridCoordsClamped(CZNodePartial * world, float worldX, float worldZ, int* outGridCol, int* outGridRow)
     {
         CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
@@ -602,11 +602,11 @@ namespace CZWorld
      */
     int __fastcall WorldRectToGridIndex(
         CZNodePartial * world,
-        int* outGridCol,
         float minX,
         float maxX,
         float minZ,
         float maxZ,
+        int* outGridCol,
         int* outGridRow
     )
     {
@@ -1195,7 +1195,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.addchildatgrid
      * @recoil-artifact defines .text recoil:function:0x4510e0: CZWorld::AddChildAtGrid.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: derive the child's world grid cell from bounds or world extent
@@ -1240,7 +1240,7 @@ namespace CZWorld
                 }
             }
 
-            WorldRectToGridIndex(world, &gridCol, bounds.min.x, bounds.max.x, bounds.min.z, bounds.max.z, &gridRow);
+            WorldRectToGridIndex(world, bounds.min.x, bounds.max.x, bounds.min.z, bounds.max.z, &gridCol, &gridRow);
         } else {
             gridCol = gridRow = -1;
         }

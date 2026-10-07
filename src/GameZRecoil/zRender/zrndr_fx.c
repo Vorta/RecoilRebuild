@@ -1215,139 +1215,187 @@ namespace zVideo
         zVidRect32* clipRectOrNull
     )
     {
-        const int cappedMaxRadius = maxRadius > 0 ? maxRadius : 0;
-        if (currentRadius > cappedMaxRadius) {
-            currentRadius = cappedMaxRadius;
-        }
-        if (currentRadius < 0) {
+        unsigned short* srcCenter;
+        unsigned short* dstCenter;
+        float* sinTable;
+        float* recipTable;
+        int currentRadiusSquared;
+        int maxRadiusSquared;
+        int left;
+        int top;
+        int outerMinX;
+        int outerMaxX;
+        int outerMinY;
+        int outerMaxY;
+        float amplitude;
+        int tableIndex;
+        float radius;
+        int x;
+        int y;
+        float distanceSquared;
+        int sqrtBits;
+        int sqrtBitsAgain;
+        int radiusIndex;
+        int offsetX;
+        float sinValue;
+        float recipValue;
+        int offsetY;
+        int srcX;
+        int srcY;
+        int copyY;
+        int copyX;
+        unsigned short* copyDst;
+        unsigned short* copySrc;
+
+        // Retail builds both center pointers and both tables before validating the radii.
+        srcCenter = g_zVideo_FxSurfacePixels16 + centerY * g_zVideo_FxSurfacePitchPixels16 + centerX;
+        dstCenter = g_zVideo_FxPass3_ScratchPixels16 + centerY * g_zVideo_FxSurfaceWidth + centerX;
+        sinTable = (float*)(_alloca((maxRadius + 1) * sizeof(float)));
+        recipTable = (float*)(_alloca((maxRadius + 1) * sizeof(float)));
+        maxRadius = maxRadius > 0 ? maxRadius : 0;
+        if (currentRadius > maxRadius) {
+            currentRadius = maxRadius;
+        } else if (currentRadius < 0) {
             currentRadius = 0;
         }
-        if (currentRadius == cappedMaxRadius) {
+        if (currentRadius == maxRadius) {
             return;
         }
 
-        const int currentRadiusSquared = currentRadius * currentRadius;
-        const int maxRadiusSquared = cappedMaxRadius * cappedMaxRadius;
-        int clipMinX;
-        int clipMinY;
-        int clipMaxX;
-        int clipMaxY;
+        currentRadiusSquared = currentRadius * currentRadius;
+        maxRadiusSquared = maxRadius * maxRadius;
         if (clipRectOrNull != 0) {
-            clipMinX = clipRectOrNull->left;
-            clipMinY = clipRectOrNull->top;
-            clipMaxX = clipRectOrNull->right;
-            clipMaxY = clipRectOrNull->bottom;
+            g_zVideo_FxPass3_ClipMinX = clipRectOrNull->left;
+            g_zVideo_FxPass3_ClipMinY = clipRectOrNull->top;
+            g_zVideo_FxPass3_ClipMaxX = clipRectOrNull->right;
+            g_zVideo_FxPass3_ClipMaxY = clipRectOrNull->bottom;
         } else {
-            clipMinX = 0;
-            clipMinY = 0;
-            clipMaxX = g_zVideo_FxSurfaceWidth - 1;
-            clipMaxY = g_zVideo_FxSurfaceHeight - 1;
+            g_zVideo_FxPass3_ClipMinX = 0;
+            g_zVideo_FxPass3_ClipMinY = 0;
+            g_zVideo_FxPass3_ClipMaxX = g_zVideo_FxSurfaceWidth - 1;
+            g_zVideo_FxPass3_ClipMaxY = g_zVideo_FxSurfaceHeight - 1;
         }
 
-        g_zVideo_FxPass3_ClipMinX = clipMinX;
-        g_zVideo_FxPass3_ClipMinY = clipMinY;
-        g_zVideo_FxPass3_ClipMaxX = clipMaxX;
-        g_zVideo_FxPass3_ClipMaxY = clipMaxY;
-
-        const int minOuterX = centerX - cappedMaxRadius - extent;
-        const int maxOuterX = centerX + cappedMaxRadius + extent;
-        const int minOuterY = centerY - cappedMaxRadius - extent;
-        const int maxOuterY = centerY + cappedMaxRadius + extent;
-        if (minOuterX > clipMaxX || maxOuterX < clipMinX || minOuterY > clipMaxY || maxOuterY < clipMinY) {
+        left = centerX - maxRadius;
+        outerMinX = left - extent;
+        if (outerMinX > g_zVideo_FxPass3_ClipMaxX) {
+            return;
+        }
+        outerMaxX = centerX + maxRadius + extent;
+        if (outerMaxX < g_zVideo_FxPass3_ClipMinX) {
+            return;
+        }
+        top = centerY - maxRadius;
+        outerMinY = top - extent;
+        if (outerMinY > g_zVideo_FxPass3_ClipMaxY) {
+            return;
+        }
+        outerMaxY = centerY + maxRadius + extent;
+        if (outerMaxY < g_zVideo_FxPass3_ClipMinY) {
             return;
         }
 
-        float* sinAmpTable = (float*)(_alloca((cappedMaxRadius + 1) * sizeof(float)));
-        float* recipTable = (float*)(_alloca((cappedMaxRadius + 1) * sizeof(float)));
-        sinAmpTable[0] = (float)(sin(sinPhase) * (double)(extent));
+        amplitude = (float)(extent);
+        sinTable[0] = sin(sinPhase) * amplitude;
         recipTable[0] = 1.0f;
-
-        int tableIndex = currentRadius - 1;
+        tableIndex = currentRadius - 1;
         if (tableIndex < 1) {
             tableIndex = 1;
         }
-        while (tableIndex <= cappedMaxRadius) {
-            const float radius = (float)(tableIndex);
-            sinAmpTable[tableIndex] = (float)(sin(radius / sinFreq + sinPhase) * (double)(extent));
+        for (; tableIndex <= maxRadius; ++tableIndex) {
+            radius = (float)(tableIndex);
+            sinTable[tableIndex] = sin(radius / sinFreq + sinPhase) * amplitude;
             recipTable[tableIndex] = 1.0f / radius;
-            ++tableIndex;
         }
 
-        const int useClippedPath
-            = minOuterX < clipMinX || maxOuterX >= clipMaxX || minOuterY < clipMinY || maxOuterY >= clipMaxY;
-        if (!useClippedPath) {
-            int y;
-            for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
-                int x;
+        if (outerMinX >= g_zVideo_FxPass3_ClipMinX && outerMaxX < g_zVideo_FxPass3_ClipMaxX
+            && outerMinY >= g_zVideo_FxPass3_ClipMinY && outerMaxY < g_zVideo_FxPass3_ClipMaxY) {
+            // The whole ring fits the clip: scatter through the center pointers.
+            for (y = -maxRadius; y <= currentRadius; ++y) {
                 for (x = y; x <= currentRadius; ++x) {
-                    const int distanceSquared = x * x + y * y;
-                    int srcX = x;
-                    int srcY = y;
+                    distanceSquared = (float)(x * x + y * y);
                     if (distanceSquared < maxRadiusSquared && currentRadiusSquared < distanceSquared) {
-                        const float distanceSquaredFloat = (float)(distanceSquared);
-                        const int distanceBits = *((int*)(&distanceSquaredFloat));
-                        int approximateBits = (distanceBits >> 1) + 0x1fc00000;
-                        int radiusIndex;
-                        if ((int)(*((float*)(&approximateBits))) >= cappedMaxRadius) {
-                            radiusIndex = cappedMaxRadius;
+                        sqrtBits = *((int*)(&distanceSquared));
+                        sqrtBits = (sqrtBits >> 1) + 0x1fc00000;
+                        if ((int)(*((float*)(&sqrtBits))) < maxRadius) {
+                            sqrtBitsAgain = *((int*)(&distanceSquared));
+                            sqrtBitsAgain = (sqrtBitsAgain >> 1) + 0x1fc00000;
+                            radiusIndex = (int)(*((float*)(&sqrtBitsAgain)));
                         } else {
-                            approximateBits = (distanceBits >> 1) + 0x1fc00000;
-                            radiusIndex = (int)(*((float*)(&approximateBits)));
+                            radiusIndex = maxRadius;
                         }
-                        const float scale = sinAmpTable[radiusIndex] * recipTable[radiusIndex];
-                        srcX = x + (int)((float)(x)*scale);
-                        srcY = y + (int)((float)(y)*scale);
+                        sinValue = sinTable[radiusIndex];
+                        recipValue = recipTable[radiusIndex];
+                        offsetX = (int)(x * sinValue * recipValue);
+                        offsetY = (int)(y * sinValue * recipValue);
+                        srcX = x + offsetX;
+                        srcY = y + offsetY;
+                        dstCenter[y * g_zVideo_FxSurfaceWidth + x]
+                            = srcCenter[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
+                        dstCenter[x * g_zVideo_FxSurfaceWidth + y]
+                            = srcCenter[srcX * g_zVideo_FxSurfacePitchPixels16 + srcY];
+                        dstCenter[y * g_zVideo_FxSurfaceWidth - x]
+                            = srcCenter[srcY * g_zVideo_FxSurfacePitchPixels16 - srcX];
+                        dstCenter[-x * g_zVideo_FxSurfaceWidth + y]
+                            = srcCenter[-srcX * g_zVideo_FxSurfacePitchPixels16 + srcY];
+                        dstCenter[-y * g_zVideo_FxSurfaceWidth + x]
+                            = srcCenter[-srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
+                        dstCenter[x * g_zVideo_FxSurfaceWidth - y]
+                            = srcCenter[srcX * g_zVideo_FxSurfacePitchPixels16 - srcY];
+                        dstCenter[-y * g_zVideo_FxSurfaceWidth - x]
+                            = srcCenter[-srcY * g_zVideo_FxSurfacePitchPixels16 - srcX];
+                        dstCenter[-x * g_zVideo_FxSurfaceWidth - y]
+                            = srcCenter[-srcX * g_zVideo_FxSurfacePitchPixels16 - srcY];
+                    } else {
+                        dstCenter[y * g_zVideo_FxSurfaceWidth + x] = srcCenter[y * g_zVideo_FxSurfacePitchPixels16 + x];
+                        dstCenter[x * g_zVideo_FxSurfaceWidth + y] = srcCenter[x * g_zVideo_FxSurfacePitchPixels16 + y];
+                        dstCenter[y * g_zVideo_FxSurfaceWidth - x] = srcCenter[y * g_zVideo_FxSurfacePitchPixels16 - x];
+                        dstCenter[-x * g_zVideo_FxSurfaceWidth + y]
+                            = srcCenter[-x * g_zVideo_FxSurfacePitchPixels16 + y];
+                        dstCenter[-y * g_zVideo_FxSurfaceWidth + x]
+                            = srcCenter[-y * g_zVideo_FxSurfacePitchPixels16 + x];
+                        dstCenter[x * g_zVideo_FxSurfaceWidth - y] = srcCenter[x * g_zVideo_FxSurfacePitchPixels16 - y];
+                        dstCenter[-y * g_zVideo_FxSurfaceWidth - x]
+                            = srcCenter[-y * g_zVideo_FxSurfacePitchPixels16 - x];
+                        dstCenter[-x * g_zVideo_FxSurfaceWidth - y]
+                            = srcCenter[-x * g_zVideo_FxSurfacePitchPixels16 - y];
                     }
+                }
+            }
 
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY + y) * g_zVideo_FxSurfaceWidth + centerX + x]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY + srcY) * g_zVideo_FxSurfacePitchPixels16 + centerX + srcX];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY + x) * g_zVideo_FxSurfaceWidth + centerX + y]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY + srcX) * g_zVideo_FxSurfacePitchPixels16 + centerX + srcY];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY + y) * g_zVideo_FxSurfaceWidth + centerX - x]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY + srcY) * g_zVideo_FxSurfacePitchPixels16 + centerX - srcX];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY - x) * g_zVideo_FxSurfaceWidth + centerX + y]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY - srcX) * g_zVideo_FxSurfacePitchPixels16 + centerX + srcY];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY - y) * g_zVideo_FxSurfaceWidth + centerX + x]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY - srcY) * g_zVideo_FxSurfacePitchPixels16 + centerX + srcX];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY + x) * g_zVideo_FxSurfaceWidth + centerX - y]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY + srcX) * g_zVideo_FxSurfacePitchPixels16 + centerX - srcY];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY - y) * g_zVideo_FxSurfaceWidth + centerX - x]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY - srcY) * g_zVideo_FxSurfacePitchPixels16 + centerX - srcX];
-                    g_zVideo_FxPass3_ScratchPixels16[(centerY - x) * g_zVideo_FxSurfaceWidth + centerX - y]
-                        = g_zVideo_FxSurfacePixels16
-                            [(centerY - srcX) * g_zVideo_FxSurfacePitchPixels16 + centerX - srcY];
+            // Retail compares the absolute copy coordinates against the radius and advances both
+            // pointers only for copied pixels.
+            for (copyY = top; copyY < centerY + maxRadius; ++copyY) {
+                if (copyY > currentRadius || copyY < -currentRadius) {
+                    copyDst
+                        = &g_zVideo_FxSurfacePixels16[copyY * g_zVideo_FxSurfacePitchPixels16 - maxRadius + centerX];
+                    copySrc = &g_zVideo_FxPass3_ScratchPixels16[copyY * g_zVideo_FxSurfaceWidth - maxRadius + centerX];
+                    for (copyX = left; copyX < centerX + maxRadius; ++copyX) {
+                        if (copyX > currentRadius || copyX < -currentRadius) {
+                            *copyDst++ = *copySrc++;
+                        }
+                    }
                 }
             }
         } else {
             g_zVideo_FxPass3_ScratchOffsetX = centerX;
             g_zVideo_FxPass3_ScratchOffsetY = centerY;
-            int y;
-            for (y = -cappedMaxRadius; y <= currentRadius; ++y) {
-                int x;
+            for (y = -maxRadius; y <= currentRadius; ++y) {
                 for (x = y; x <= currentRadius; ++x) {
-                    const int distanceSquared = x * x + y * y;
+                    distanceSquared = (float)(x * x + y * y);
                     if (distanceSquared < maxRadiusSquared && currentRadiusSquared < distanceSquared) {
-                        const float distanceSquaredFloat = (float)(distanceSquared);
-                        const int distanceBits = *((int*)(&distanceSquaredFloat));
-                        int approximateBits = (distanceBits >> 1) + 0x1fc00000;
-                        int radiusIndex;
-                        if ((int)(*((float*)(&approximateBits))) >= cappedMaxRadius) {
-                            radiusIndex = cappedMaxRadius;
+                        sqrtBits = *((int*)(&distanceSquared));
+                        sqrtBits = (sqrtBits >> 1) + 0x1fc00000;
+                        if ((int)(*((float*)(&sqrtBits))) < maxRadius) {
+                            sqrtBitsAgain = *((int*)(&distanceSquared));
+                            sqrtBitsAgain = (sqrtBitsAgain >> 1) + 0x1fc00000;
+                            radiusIndex = (int)(*((float*)(&sqrtBitsAgain)));
                         } else {
-                            approximateBits = (distanceBits >> 1) + 0x1fc00000;
-                            radiusIndex = (int)(*((float*)(&approximateBits)));
+                            radiusIndex = maxRadius;
                         }
-                        const float scale = sinAmpTable[radiusIndex] * recipTable[radiusIndex];
-                        const int srcX = x + (int)((float)(x)*scale);
-                        const int srcY = y + (int)((float)(y)*scale);
-
+                        radius = sinTable[radiusIndex] * recipTable[radiusIndex];
+                        srcX = x + (int)((float)(x)*radius);
+                        srcY = y + (int)((float)(y)*radius);
                         FxPass3CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
                         FxPass3CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
                         FxPass3CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
@@ -1368,39 +1416,24 @@ namespace zVideo
                     }
                 }
             }
-        }
 
-        int copyMinX = centerX - cappedMaxRadius;
-        int copyMinY = centerY - cappedMaxRadius;
-        int copyMaxX = centerX + cappedMaxRadius;
-        int copyMaxY = centerY + cappedMaxRadius;
-        if (useClippedPath) {
-            if (copyMinY < clipMinY) {
-                copyMinY = clipMinY;
-            }
-            if (copyMaxY > clipMaxY) {
-                copyMaxY = clipMaxY;
-            }
-            if (copyMinX < clipMinX) {
-                copyMinX = clipMinX;
-            }
-            if (copyMaxX > clipMaxX) {
-                copyMaxX = clipMaxX;
-            }
-        }
-
-        int copyY;
-        for (copyY = copyMinY; copyY < copyMaxY; ++copyY) {
-            if (copyY > currentRadius || copyY < -currentRadius) {
-                unsigned short* src = g_zVideo_FxPass3_ScratchPixels16 + copyY * g_zVideo_FxSurfaceWidth + copyMinX;
-                unsigned short* dst = g_zVideo_FxSurfacePixels16 + copyY * g_zVideo_FxSurfacePitchPixels16 + copyMinX;
-                int copyX;
-                for (copyX = copyMinX; copyX < copyMaxX; ++copyX) {
-                    if (copyX > currentRadius || copyX < -currentRadius) {
-                        *dst = *src;
+            // Retail re-evaluates the clipped copy bounds in the loop conditions.
+            for (copyY = top > g_zVideo_FxPass3_ClipMinY ? top : g_zVideo_FxPass3_ClipMinY; copyY
+                < (centerY + maxRadius < g_zVideo_FxPass3_ClipMaxY ? centerY + maxRadius : g_zVideo_FxPass3_ClipMaxY);
+                ++copyY) {
+                if (copyY > currentRadius || copyY < -currentRadius) {
+                    copyDst = g_zVideo_FxSurfacePixels16 + copyY * g_zVideo_FxSurfacePitchPixels16
+                        + (left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX);
+                    copySrc = g_zVideo_FxPass3_ScratchPixels16 + copyY * g_zVideo_FxSurfaceWidth
+                        + (left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX);
+                    for (copyX = left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX; copyX
+                        < (centerX + maxRadius < g_zVideo_FxPass3_ClipMaxX ? centerX + maxRadius
+                                                                           : g_zVideo_FxPass3_ClipMaxX);
+                        ++copyX) {
+                        if (copyX > currentRadius || copyX < -currentRadius) {
+                            *copyDst++ = *copySrc++;
+                        }
                     }
-                    ++dst;
-                    ++src;
                 }
             }
         }
@@ -1936,36 +1969,58 @@ namespace zVideo_FxSurface
         int clipInset
     )
     {
-        int dx = x0 - x1;
-        int dy = y0 - y1;
-        const int left = clipRect->left + clipInset;
-        const int top = clipRect->top + clipInset;
-        const int right = clipRect->right - clipInset;
-        const int bottom = clipRect->bottom - clipInset;
-        int startOutCode = 0;
+        int alphaFixed;
+        int dx;
+        int dy;
+        int left;
+        int top;
+        int right;
+        int bottom;
+        int startOutCode;
+        int endOutCode;
+        float slopeYPerX;
+        float slopeXPerY;
+        int pitchPixels;
+        int xStep;
+        unsigned short* pixel;
+        int err;
+        int steps;
+        int alphaStep;
+        int alpha;
+        unsigned short* spanPixel;
+        int spanCount;
+        int dstValue;
+        int redDelta;
+        int greenDelta;
+        int blueDelta;
+
+        alphaFixed = (int)(alphaStart * 255.0f) << 16;
+        dx = x0 - x1;
+        dy = y0 - y1;
+        left = clipRect->left + clipInset;
+        top = clipRect->top + clipInset;
+        right = clipRect->right - clipInset;
+        bottom = clipRect->bottom - clipInset;
+        startOutCode = 0;
         if (x1 < left) {
-            startOutCode |= 1;
-        }
-        if (x1 > right) {
-            startOutCode |= 2;
+            startOutCode = 1;
+        } else if (x1 > right) {
+            startOutCode = 2;
         }
         if (y1 < top) {
             startOutCode |= 4;
-        }
-        if (y1 > bottom) {
+        } else if (y1 > bottom) {
             startOutCode |= 8;
         }
-        int endOutCode = 0;
+        endOutCode = 0;
         if (x0 < left) {
-            endOutCode |= 1;
-        }
-        if (x0 > right) {
-            endOutCode |= 2;
+            endOutCode = 1;
+        } else if (x0 > right) {
+            endOutCode = 2;
         }
         if (y0 < top) {
             endOutCode |= 4;
-        }
-        if (y0 > bottom) {
+        } else if (y0 > bottom) {
             endOutCode |= 8;
         }
         if ((startOutCode & endOutCode) != 0) {
@@ -1973,215 +2028,174 @@ namespace zVideo_FxSurface
         }
 
         if ((startOutCode | endOutCode) != 0) {
-            float slopeYPerX = 0.0f;
-            float slopeXPerY = 0.0f;
-            if (dx != 0) {
-                slopeYPerX = (float)(dy) / (float)(dx);
-            }
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            }
-
+            slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
+            slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             if (x1 < left) {
-                y1 += (int)((float)(left - x1) * slopeYPerX);
+                y1 += (int)((left - x1) * slopeYPerX);
                 x1 = left;
-            }
-            dx = x0 - x1;
-            dy = y0 - y1;
-            if (dx != 0) {
-                slopeYPerX = (float)(dy) / (float)(dx);
-            } else {
-                slopeYPerX = 0.0f;
-            }
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            } else {
-                slopeXPerY = 0.0f;
-            }
-
-            if (x1 > right) {
-                y1 += (int)((float)(right - x1) * slopeYPerX);
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
+            } else if (x1 > right) {
+                y1 += (int)((right - x1) * slopeYPerX);
                 x1 = right;
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
-            dx = x0 - x1;
-            dy = y0 - y1;
-            if (dx != 0) {
-                slopeYPerX = (float)(dy) / (float)(dx);
-            } else {
-                slopeYPerX = 0.0f;
-            }
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            } else {
-                slopeXPerY = 0.0f;
-            }
-
             if (x0 < left) {
-                y0 += (int)((float)(left - x0) * slopeYPerX);
+                y0 += (int)((left - x0) * slopeYPerX);
                 x0 = left;
-            }
-            dx = x0 - x1;
-            dy = y0 - y1;
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            } else {
-                slopeXPerY = 0.0f;
-            }
-
-            if (x0 > right) {
-                y0 += (int)((float)(right - x0) * slopeYPerX);
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
+            } else if (x0 > right) {
+                y0 += (int)((right - x0) * slopeYPerX);
                 x0 = right;
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
-            dx = x0 - x1;
-            dy = y0 - y1;
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            } else {
-                slopeXPerY = 0.0f;
-            }
-
+            // Retail rejects the line when both clipped endpoints remain beyond the same horizontal edge.
             if (y1 < top) {
-                x1 += (int)((float)(top - y1) * slopeXPerY);
+                if (y0 < top) {
+                    return;
+                }
+                x1 += (int)((top - y1) * slopeXPerY);
                 y1 = top;
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             } else if (y1 > bottom) {
-                x1 += (int)((float)(bottom - y1) * slopeXPerY);
+                if (y0 > bottom) {
+                    return;
+                }
+                x1 += (int)((bottom - y1) * slopeXPerY);
                 y1 = bottom;
+                dx = x0 - x1;
+                dy = y0 - y1;
+                slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
-            dx = x0 - x1;
-            dy = y0 - y1;
-            if (dy != 0) {
-                slopeXPerY = (float)(dx) / (float)(dy);
-            } else {
-                slopeXPerY = 0.0f;
-            }
-
             if (y0 < top) {
-                x0 += (int)((float)(top - y0) * slopeXPerY);
+                x0 += (int)((top - y0) * slopeXPerY);
                 y0 = top;
+                dx = x0 - x1;
+                dy = y0 - y1;
             } else if (y0 > bottom) {
-                x0 += (int)((float)(bottom - y0) * slopeXPerY);
+                x0 += (int)((bottom - y0) * slopeXPerY);
                 y0 = bottom;
+                dx = x0 - x1;
+                dy = y0 - y1;
             }
         }
 
-        dx = x0 - x1;
-        dy = y0 - y1;
-        const int pitchPixels = zRndr::g_pitchBytes >> 1;
-        unsigned short* pixel = g_zVideo_FxSurfacePixels16 + pitchPixels * y1 + x1;
-        int yStepPitch = pitchPixels;
-        int xStep = 1;
+        pitchPixels = (unsigned int)(zRndr::g_pitchBytes) >> 1;
+        xStep = 1;
+        pixel = g_zVideo_FxSurfacePixels16 + pitchPixels * y1 + x1;
         if (dy < 0) {
             dy = -dy;
-            yStepPitch = -yStepPitch;
+            pitchPixels = -pitchPixels;
         }
         if (dx < 0) {
             dx = -dx;
             xStep = -1;
         }
 
-        const unsigned short packedColor = (unsigned short)(color16);
-        int alphaFixed = (int)(alphaStart * 255.0f) << 16;
         if (dx > dy) {
-            int err = dx >> 1;
-            int steps = dx + 1;
-            const int alphaStep = (int)(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
-            while (steps != 0) {
-                const int alpha = alphaFixed >> 16;
+            err = dx >> 1;
+            steps = dx + 1;
+            alphaStep = (int)((alphaEnd - alphaStart) / steps * 16777215.0f);
+            do {
+                alpha = alphaFixed >> 16;
                 if (clipInset > 0) {
-                    unsigned short* spanPixel = pixel;
-                    int spanCount = clipInset;
-                    while (spanCount != 0) {
-                        const int dstValue = (int)(*spanPixel);
-                        const int colorValue = (int)(packedColor);
+                    spanPixel = pixel;
+                    spanCount = clipInset;
+                    do {
                         if (zRndr::g_pixelPackGreenBits == 5) {
                             if (alpha > 7) {
-                                if (alpha >= 252) {
-                                    *spanPixel = packedColor;
+                                if (alpha >= 0xfc) {
+                                    *spanPixel = color16;
                                 } else {
-                                    const int redDelta = (((colorValue & 0x7c00) - (dstValue & 0x7c00)) * alpha) >> 8;
-                                    const int greenDelta = (((colorValue & 0x03e0) - (dstValue & 0x03e0)) * alpha) >> 8;
-                                    const int blueDelta = (((colorValue & 0x001f) - (dstValue & 0x001f)) * alpha) >> 8;
-                                    *spanPixel = (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0)
-                                        + blueDelta);
+                                    dstValue = *spanPixel;
+                                    redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
+                                    greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
+                                    blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
+                                    *spanPixel += (greenDelta & 0xffffffe0) + blueDelta + (redDelta & 0xfffffc00);
                                 }
                             }
                         } else if (alpha > 3) {
-                            if (alpha >= 252) {
-                                *spanPixel = packedColor;
+                            if (alpha >= 0xfc) {
+                                *spanPixel = color16;
                             } else {
-                                const int redDelta = (((colorValue & 0xf800) - (dstValue & 0xf800)) * alpha) >> 8;
-                                const int greenDelta = (((colorValue & 0x07e0) - (dstValue & 0x07e0)) * alpha) >> 8;
-                                const int redApplied = dstValue + (redDelta & 0xfffff800);
-                                const int blueDelta = (((colorValue & 0x001f) - (redApplied & 0x001f)) * alpha) >> 8;
-                                *spanPixel = (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
+                                dstValue = *spanPixel;
+                                redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha >> 8;
+                                greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha >> 8;
+                                dstValue += redDelta & 0xfffff800;
+                                blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
+                                *spanPixel = (unsigned short)(dstValue + (blueDelta + (greenDelta & 0xffffffe0)));
                             }
                         }
-                        spanPixel += yStepPitch;
-                        --spanCount;
-                    }
+                        spanPixel += pitchPixels;
+                    } while (--spanCount);
                 }
 
                 pixel += xStep;
-                err += dy;
                 alphaFixed += alphaStep;
+                err += dy;
                 if (err > dx) {
                     err -= dx;
-                    pixel += yStepPitch;
+                    pixel += pitchPixels;
                 }
-                --steps;
-            }
+            } while (--steps);
             return;
         }
 
-        {
-            int err = dy >> 1;
-            int steps = dy + 1;
-            const int alphaStep = (int)(((alphaEnd - alphaStart) / (float)(steps)) * 16777215.0f);
-            while (steps != 0) {
-                const int alpha = alphaFixed >> 16;
-                if (clipInset > 0) {
-                    unsigned short* spanPixel = pixel;
-                    int spanCount = clipInset;
-                    while (spanCount != 0) {
-                        const int dstValue = (int)(*spanPixel);
-                        const int colorValue = (int)(packedColor);
-                        if (zRndr::g_pixelPackGreenBits == 5) {
-                            if (alpha > 7) {
-                                if (alpha >= 252) {
-                                    *spanPixel = packedColor;
-                                } else {
-                                    const int redDelta = (((colorValue & 0x7c00) - (dstValue & 0x7c00)) * alpha) >> 8;
-                                    const int greenDelta = (((colorValue & 0x03e0) - (dstValue & 0x03e0)) * alpha) >> 8;
-                                    const int blueDelta = (((colorValue & 0x001f) - (dstValue & 0x001f)) * alpha) >> 8;
-                                    *spanPixel = (unsigned short)(dstValue + (redDelta & 0xfc00) + (greenDelta & 0xffe0)
-                                        + blueDelta);
-                                }
-                            }
-                        } else if (alpha > 3) {
-                            if (alpha >= 252) {
-                                *spanPixel = packedColor;
+        err = dy >> 1;
+        steps = dy + 1;
+        alphaStep = (int)((alphaEnd - alphaStart) / steps * 16777215.0f);
+        do {
+            alpha = alphaFixed >> 16;
+            if (clipInset > 0) {
+                spanPixel = pixel;
+                spanCount = clipInset;
+                do {
+                    if (zRndr::g_pixelPackGreenBits == 5) {
+                        if (alpha > 7) {
+                            if (alpha >= 0xfc) {
+                                *spanPixel = color16;
                             } else {
-                                const int redDelta = (((colorValue & 0xf800) - (dstValue & 0xf800)) * alpha) >> 8;
-                                const int greenDelta = (((colorValue & 0x07e0) - (dstValue & 0x07e0)) * alpha) >> 8;
-                                const int redApplied = dstValue + (redDelta & 0xfffff800);
-                                const int blueDelta = (((colorValue & 0x001f) - (redApplied & 0x001f)) * alpha) >> 8;
-                                *spanPixel = (unsigned short)(redApplied + (greenDelta & 0xffe0) + blueDelta);
+                                dstValue = *spanPixel;
+                                redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
+                                greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
+                                blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
+                                *spanPixel += (greenDelta & 0xffffffe0) + blueDelta + (redDelta & 0xfffffc00);
                             }
                         }
-                        spanPixel += xStep;
-                        --spanCount;
+                    } else if (alpha > 3) {
+                        if (alpha >= 0xfc) {
+                            *spanPixel = color16;
+                        } else {
+                            dstValue = *spanPixel;
+                            redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha >> 8;
+                            greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha >> 8;
+                            dstValue += redDelta & 0xfffff800;
+                            blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
+                            *spanPixel = (unsigned short)(dstValue + (blueDelta + (greenDelta & 0xffffffe0)));
+                        }
                     }
-                }
-
-                pixel += yStepPitch;
-                err += dx;
-                alphaFixed += alphaStep;
-                if (err > dy) {
-                    err -= dy;
-                    pixel += xStep;
-                }
-                --steps;
+                    spanPixel += xStep;
+                } while (--spanCount);
             }
-        }
+
+            pixel += pitchPixels;
+            alphaFixed += alphaStep;
+            err += dx;
+            if (err > dy) {
+                err -= dy;
+                pixel += xStep;
+            }
+        } while (--steps);
     }
 } // namespace zVideo_FxSurface

@@ -168,7 +168,7 @@ zDEClient_QSandFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_QSandE
 
     int gridRow;
     int gridCol;
-    CZWorld::WorldToGridCoordsClamped(world, &gridCol, eventTemplate->center.x, eventTemplate->center.z, &gridRow);
+    CZWorld::WorldToGridCoordsClamped(world, eventTemplate->center.x, eventTemplate->center.z, &gridCol, &gridRow);
 
     zDEClient_FeatureGridCell* featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
     featureInstance->featureGridCell = featureGridCell;

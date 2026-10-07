@@ -845,27 +845,28 @@ int __fastcall gwWorldSetMaxDecFeatures(CZNodePartial* world, int maxFeatures);
 int __fastcall gwWorldSetVirtualAreaPartition(CZNodePartial* world, float cellSizeX, float cellSizeZ);
 int __fastcall InitVirtualAreaPartitions(CZNodePartial* world);
 int __fastcall SetVirtualPartition(CZNodePartial* world, int enabled);
+// Grid query parameter order (inputs, then out-pointers) follows the retail call-site argument order.
 int __fastcall WorldRectToGridIndex(
     CZNodePartial* world,
-    int* outGridCol,
     float minX,
     float maxX,
     float minZ,
     float maxZ,
+    int* outGridCol,
     int* outGridRow
 );
 int __fastcall WorldToGridCoordsClampedEx(
     CZNodePartial* world,
-    int* outGridCol,
     float worldX,
     float worldZ,
+    int* outGridCol,
     int* outGridRow,
     int* clampedGridColOut,
     int* clampedGridRowOut,
     int* insideBoundsOut
 );
 int __fastcall
-WorldToGridCoordsClamped(CZNodePartial* world, int* outGridCol, float worldX, float worldZ, int* outGridRow);
+WorldToGridCoordsClamped(CZNodePartial* world, float worldX, float worldZ, int* outGridCol, int* outGridRow);
 zWorldAreaPartial* __fastcall GetAreaPartitionAtGrid(CZNodePartial* world, int gridCol, int gridRow);
 int __fastcall AddChildAtGrid(CZNodePartial* world, CZNodePartial* child);
 int __fastcall EnsureGridCellDisplayPosition(CZNodePartial* world, int gridCol, int gridRow);

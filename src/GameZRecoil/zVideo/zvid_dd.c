@@ -5,6 +5,13 @@
  * nor vfw.h, whose GUIDs retail keeps elsewhere or lacks.
  */
 #define INITGUID
+/*
+ * CINTERFACE selects the C COM bindings: the original zvid_dd.c was C and called
+ * DirectDraw through lpVtbl. Retail 0x4a8f80 takes GetPixelFormat from the
+ * display-mode surface's vtable but passes the displaySurface parameter as this,
+ * which only the C binding can express.
+ */
+#define CINTERFACE
 #include "recoil/Mfc42Abi.h"
 
 #include <ddraw.h>
@@ -69,7 +76,7 @@ namespace zVideo_dd
             void ReleaseComInterface(InterfaceT * &value)
         {
             if (value != 0) {
-                value->Release();
+                value->lpVtbl->Release(value);
                 value = 0;
             }
         }
@@ -81,7 +88,7 @@ namespace zVideo_dd
         bool PageUnlockBeforeRelease(zVideo_SurfaceStatePartial & state, int reportLine)
         {
             if (state.surf != 0 && state.pageLockActive != 0) {
-                const HRESULT hresult = state.surf->PageUnlock(0);
+                const HRESULT hresult = state.surf->lpVtbl->PageUnlock(state.surf, 0);
                 if (hresult != DD_OK) {
                     ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, reportLine);
                     return false;
@@ -141,8 +148,8 @@ namespace zVideo_dd
      */
     PresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
     {
-        // Retail reuses the waitForPresent parameter as the Blt flags word.
-        waitForPresent = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
+        // Retail keeps the Blt flags in the dead waitForPresent home slot ([esp+0x18]).
+        const DWORD bltFlags = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
 
         if (g_zVideo_DisplayModeSurfaceState.surf == 0 || g_zVideo_PrimarySurfaceState.surf == 0) {
             return kPresentMissingSurfaceResult;
@@ -153,27 +160,30 @@ namespace zVideo_dd
         for (;;) {
             if (g_zVideo_UseHalfResBackbuffer != 0) {
                 if (skipSurfaceStateSwap != 0) {
-                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Blt(
+                        g_zVideo_DisplayModeSurfaceState.surf,
                         (RECT*)(dstRect),
                         g_zVideo_PrimarySurfaceState.surf,
                         (RECT*)(srcRect),
-                        waitForPresent,
+                        bltFlags,
                         0
                     );
                 } else {
-                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Blt(
+                        g_zVideo_DisplayModeSurfaceState.surf,
                         (RECT*)(dstRect),
                         g_zVideo_PrimarySurfaceState.surf,
                         (RECT*)(srcRect),
-                        waitForPresent,
+                        bltFlags,
                         0
                     );
                 }
             } else if (g_zVideo_HalfResAdjustMode != 0) {
-                hresult = g_zVideo_PrimarySurfaceState.surf->PageLock(0);
+                hresult = g_zVideo_PrimarySurfaceState.surf->lpVtbl->PageLock(g_zVideo_PrimarySurfaceState.surf, 0);
                 if (hresult == DD_OK) {
                     g_zVideo_PrimarySurfaceState.pageLockActive = 1;
-                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                    hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Blt(
+                        g_zVideo_DisplayModeSurfaceState.surf,
                         (RECT*)(dstRect),
                         g_zVideo_PrimarySurfaceState.surf,
                         (RECT*)(srcRect),
@@ -199,7 +209,10 @@ namespace zVideo_dd
                         );
 
                         if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
-                            const HRESULT pageUnlockResult = g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
+                            const HRESULT pageUnlockResult = g_zVideo_PrimarySurfaceState.surf->lpVtbl->PageUnlock(
+                                g_zVideo_PrimarySurfaceState.surf,
+                                0
+                            );
                             if (pageUnlockResult != DD_OK) {
                                 ReportError(
                                     (int)(pageUnlockResult),
@@ -217,18 +230,20 @@ namespace zVideo_dd
                     return 0;
                 }
             } else {
-                hresult = g_zVideo_DisplayModeSurfaceState.surf->Blt(
+                hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Blt(
+                    g_zVideo_DisplayModeSurfaceState.surf,
                     (RECT*)(dstRect),
                     g_zVideo_PrimarySurfaceState.surf,
                     (RECT*)(srcRect),
-                    waitForPresent,
+                    bltFlags,
                     0
                 );
             }
 
             if (hresult != DD_OK) {
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
+                    hresult
+                        = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Restore(g_zVideo_DisplayModeSurfaceState.surf);
                 }
 
                 if (hresult != DD_OK) {
@@ -313,7 +328,7 @@ namespace zVideo_dd
     void __cdecl FlipToGDIIfAttached()
     {
         if (g_zVideo_pDirectDraw2 != 0 && g_zVideo_PrimaryHasAttachedBackbuffer != 0) {
-            g_zVideo_pDirectDraw2->FlipToGDISurface();
+            g_zVideo_pDirectDraw2->lpVtbl->FlipToGDISurface(g_zVideo_pDirectDraw2);
         }
     }
 
@@ -338,9 +353,14 @@ namespace zVideo_dd
      */
     void __fastcall BltSwToPrimaryRectDirect(zVidRect32 * srcRect, zVidRect32 * dstRect)
     {
-        const HRESULT hresult
-            = g_zVideo_PrimarySurfaceState.surf
-                  ->Blt((RECT*)(dstRect), g_zVideo_SwSurfaceState.surf, (RECT*)(srcRect), DDBLT_WAIT, 0);
+        const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->lpVtbl->Blt(
+            g_zVideo_PrimarySurfaceState.surf,
+            (RECT*)(dstRect),
+            g_zVideo_SwSurfaceState.surf,
+            (RECT*)(srcRect),
+            DDBLT_WAIT,
+            0
+        );
         if (hresult != DD_OK) {
             ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0xe9);
         }
@@ -368,9 +388,14 @@ namespace zVideo_dd
      */
     void __fastcall BltPrimaryToSwRectDirect(zVidRect32 * srcRect, zVidRect32 * dstRect)
     {
-        const HRESULT hresult
-            = g_zVideo_SwSurfaceState.surf
-                  ->Blt((RECT*)(dstRect), g_zVideo_PrimarySurfaceState.surf, (RECT*)(srcRect), DDBLT_WAIT, 0);
+        const HRESULT hresult = g_zVideo_SwSurfaceState.surf->lpVtbl->Blt(
+            g_zVideo_SwSurfaceState.surf,
+            (RECT*)(dstRect),
+            g_zVideo_PrimarySurfaceState.surf,
+            (RECT*)(srcRect),
+            DDBLT_WAIT,
+            0
+        );
         if (hresult != DD_OK) {
             ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0xfc);
         }
@@ -470,9 +495,14 @@ namespace zVideo_dd
             UnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
         }
 
-        const HRESULT hresult
-            = g_zVideo_PrimarySurfaceState.surf
-                  ->Blt((RECT*)(&dstRectLocal), srcImage->surface, (RECT*)(&srcRectLocal), bltFlags, 0);
+        const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->lpVtbl->Blt(
+            g_zVideo_PrimarySurfaceState.surf,
+            (RECT*)(&dstRectLocal),
+            srcImage->surface,
+            (RECT*)(&srcRectLocal),
+            bltFlags,
+            0
+        );
 
         if (wasLocked != 0) {
             LockSurfaceState(&g_zVideo_PrimarySurfaceState);
@@ -565,13 +595,13 @@ namespace zVideo_dd
 
         HRESULT hresult = DD_OK;
         while (hresult == DD_OK) {
-            hresult = surface->Lock(0, outLockedSurfaceDesc, DDLOCK_WAIT, 0);
+            hresult = surface->lpVtbl->Lock(surface, 0, outLockedSurfaceDesc, DDLOCK_WAIT, 0);
             if (hresult == DD_OK) {
                 return 0;
             }
 
             if (hresult == DDERR_SURFACELOST) {
-                hresult = surface->Restore();
+                hresult = surface->lpVtbl->Restore(surface);
             }
         }
 
@@ -602,13 +632,13 @@ namespace zVideo_dd
     {
         HRESULT hresult = DD_OK;
         while (hresult == DD_OK) {
-            hresult = surface->Unlock(0);
+            hresult = surface->lpVtbl->Unlock(surface, 0);
             if (hresult == DD_OK) {
                 return 0;
             }
 
             if (hresult == DDERR_SURFACELOST) {
-                hresult = surface->Restore();
+                hresult = surface->lpVtbl->Restore(surface);
             }
         }
 
@@ -637,13 +667,13 @@ namespace zVideo_dd
 
         HRESULT hresult = DD_OK;
         while (hresult == DD_OK) {
-            hresult = surface->Lock(0, lockedDescOut, DDLOCK_WAIT, 0);
+            hresult = surface->lpVtbl->Lock(surface, 0, lockedDescOut, DDLOCK_WAIT, 0);
             if (hresult == DD_OK) {
                 return 0;
             }
 
             if (hresult == DDERR_SURFACELOST) {
-                hresult = surface->Restore();
+                hresult = surface->lpVtbl->Restore(surface);
             }
         }
 
@@ -669,13 +699,13 @@ namespace zVideo_dd
     {
         HRESULT hresult = DD_OK;
         while (hresult == DD_OK) {
-            hresult = surface->Unlock(0);
+            hresult = surface->lpVtbl->Unlock(surface, 0);
             if (hresult == DD_OK) {
                 return 0;
             }
 
             if (hresult == DDERR_SURFACELOST) {
-                hresult = surface->Restore();
+                hresult = surface->lpVtbl->Restore(surface);
             }
         }
 
@@ -709,13 +739,14 @@ namespace zVideo_dd
             bltFx.dwFillDepth = 0;
             hresult = DD_OK;
             while (hresult == DD_OK) {
-                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                hresult = g_zVideo_pZBufferSurface->lpVtbl
+                              ->Blt(g_zVideo_pZBufferSurface, (RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
                 if (hresult == DD_OK) {
                     return 0;
                 }
 
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = g_zVideo_pZBufferSurface->Restore();
+                    hresult = g_zVideo_pZBufferSurface->lpVtbl->Restore(g_zVideo_pZBufferSurface);
                 }
             }
 
@@ -752,13 +783,15 @@ namespace zVideo_dd
             bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
             HRESULT hresult = DD_OK;
             while (hresult == DD_OK) {
-                hresult = colorSurfaceState->surf->Blt((RECT*)(dstRect), 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &bltFx);
+                hresult
+                    = colorSurfaceState->surf->lpVtbl
+                          ->Blt(colorSurfaceState->surf, (RECT*)(dstRect), 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &bltFx);
                 if (hresult == DD_OK) {
                     break;
                 }
 
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = colorSurfaceState->surf->Restore();
+                    hresult = colorSurfaceState->surf->lpVtbl->Restore(colorSurfaceState->surf);
                 }
             }
             if (hresult != DD_OK) {
@@ -771,13 +804,14 @@ namespace zVideo_dd
             HRESULT hresult;
             hresult = DD_OK;
             while (hresult == DD_OK) {
-                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                hresult = g_zVideo_pZBufferSurface->lpVtbl
+                              ->Blt(g_zVideo_pZBufferSurface, (RECT*)(dstRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
                 if (hresult == DD_OK) {
                     return 0;
                 }
 
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = g_zVideo_pZBufferSurface->Restore();
+                    hresult = g_zVideo_pZBufferSurface->lpVtbl->Restore(g_zVideo_pZBufferSurface);
                 }
             }
 
@@ -814,14 +848,20 @@ namespace zVideo_dd
             bltFx.dwFillColor = g_zVideo_ClearColorPacked16;
             HRESULT hresult = DD_OK;
             while (hresult == DD_OK) {
-                hresult
-                    = g_zVideo_SwSurfaceState.surf->Blt((RECT*)(colorRect), 0, 0, DDBLT_COLORFILL | DDBLT_WAIT, &bltFx);
+                hresult = g_zVideo_SwSurfaceState.surf->lpVtbl->Blt(
+                    g_zVideo_SwSurfaceState.surf,
+                    (RECT*)(colorRect),
+                    0,
+                    0,
+                    DDBLT_COLORFILL | DDBLT_WAIT,
+                    &bltFx
+                );
                 if (hresult == DD_OK) {
                     break;
                 }
 
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = g_zVideo_SwSurfaceState.surf->Restore();
+                    hresult = g_zVideo_SwSurfaceState.surf->lpVtbl->Restore(g_zVideo_SwSurfaceState.surf);
                 }
             }
             if (hresult != DD_OK) {
@@ -834,13 +874,14 @@ namespace zVideo_dd
             HRESULT hresult;
             hresult = DD_OK;
             while (hresult == DD_OK) {
-                hresult = g_zVideo_pZBufferSurface->Blt((RECT*)(zRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
+                hresult = g_zVideo_pZBufferSurface->lpVtbl
+                              ->Blt(g_zVideo_pZBufferSurface, (RECT*)(zRect), 0, 0, DDBLT_DEPTHFILL, &bltFx);
                 if (hresult == DD_OK) {
                     return 0;
                 }
 
                 if (hresult == DDERR_SURFACELOST) {
-                    hresult = g_zVideo_pZBufferSurface->Restore();
+                    hresult = g_zVideo_pZBufferSurface->lpVtbl->Restore(g_zVideo_pZBufferSurface);
                 }
             }
 
@@ -883,9 +924,9 @@ namespace zVideo_dd
         desc.ddsCaps.dwCaps = ddsCapsFlags | DDSCAPS_OFFSCREENPLAIN;
         image->surface = 0;
 
-        HRESULT hresult = g_zVideo_pDirectDraw2->CreateSurface(&desc, &baseSurface, 0);
+        HRESULT hresult = g_zVideo_pDirectDraw2->lpVtbl->CreateSurface(g_zVideo_pDirectDraw2, &desc, &baseSurface, 0);
         if (hresult == DD_OK) {
-            hresult = baseSurface->QueryInterface(IID_IDirectDrawSurface3, (void**)(&surface3));
+            hresult = baseSurface->lpVtbl->QueryInterface(baseSurface, IID_IDirectDrawSurface3, (void**)(&surface3));
             if (hresult == DD_OK) {
                 image->surface = surface3;
                 ImagePopulateSurfaceFromHeapPixels(image);
@@ -956,7 +997,7 @@ namespace zVideo_dd
         HRESULT hresult;
 
         while (1) {
-            hresult = image->surface->Lock(0, &lockedSurfaceDesc, DDLOCK_WAIT, 0);
+            hresult = image->surface->lpVtbl->Lock(image->surface, 0, &lockedSurfaceDesc, DDLOCK_WAIT, 0);
             if (hresult == DD_OK) {
                 break;
             }
@@ -966,7 +1007,7 @@ namespace zVideo_dd
                 return 0;
             }
 
-            hresult = image->surface->Restore();
+            hresult = image->surface->lpVtbl->Restore(image->surface);
             if (hresult != DD_OK) {
                 ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x31b);
             }
@@ -988,7 +1029,7 @@ namespace zVideo_dd
         image->pitchWords = (int)((unsigned int)(lockedSurfaceDesc.lPitch) >> 1);
 
         while (1) {
-            hresult = image->surface->Unlock(&lockedSurfaceDesc);
+            hresult = image->surface->lpVtbl->Unlock(image->surface, &lockedSurfaceDesc);
             if (hresult == DD_OK) {
                 break;
             }
@@ -998,7 +1039,7 @@ namespace zVideo_dd
                 return 0;
             }
 
-            hresult = image->surface->Restore();
+            hresult = image->surface->lpVtbl->Restore(image->surface);
             if (hresult != DD_OK) {
                 ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x33b);
             }
@@ -1028,7 +1069,7 @@ namespace zVideo_dd
     void __fastcall ImageEnsureSurfaceForCurrentDevice(zVidImagePartial * image)
     {
         if (g_zVideo_IsInitialized != 0 && image->surface != 0) {
-            image->surface->Release();
+            image->surface->lpVtbl->Release(image->surface);
         }
 
         if (image->surface != 0) {
@@ -1075,7 +1116,7 @@ namespace zVideo_dd
             }
         }
 
-        const HRESULT hresult = image->surface->GetDC(outHdc);
+        const HRESULT hresult = image->surface->lpVtbl->GetDC(image->surface, outHdc);
         if (hresult != DD_OK) {
             ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x36d);
             return 0;
@@ -1108,7 +1149,7 @@ namespace zVideo_dd
             return (int)(surface);
         }
 
-        const HRESULT hresult = surface->ReleaseDC(hdc);
+        const HRESULT hresult = surface->lpVtbl->ReleaseDC(surface, hdc);
         if (hresult != DD_OK) {
             ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x382);
             return 0;
@@ -1134,13 +1175,15 @@ namespace zVideo_dd
      */
     int __cdecl SetDisplayMode()
     {
-        HRESULT hresult = g_zVideo_pDirectDraw2->SetCooperativeLevel(g_zVideo_hWnd, 0x13);
+        HRESULT hresult
+            = g_zVideo_pDirectDraw2->lpVtbl->SetCooperativeLevel(g_zVideo_pDirectDraw2, g_zVideo_hWnd, 0x13);
         if (hresult != DD_OK) {
             ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x393);
             return 0;
         }
 
-        hresult = g_zVideo_pDirectDraw2->SetDisplayMode(
+        hresult = g_zVideo_pDirectDraw2->lpVtbl->SetDisplayMode(
+            g_zVideo_pDirectDraw2,
             g_zVideo_DisplayModeSurfaceState.width,
             g_zVideo_DisplayModeSurfaceState.height,
             g_zVideo_DisplayModeBpp,
@@ -1230,12 +1273,13 @@ namespace zVideo_dd
             return ReportError((int)(createResult), g_zVideo_SourceFile_ZvidDdC, 0x3c4);
         }
 
-        const HRESULT queryResult = directDraw1->QueryInterface(IID_IDirectDraw2, (void**)(&g_zVideo_pDirectDraw2));
+        const HRESULT queryResult
+            = directDraw1->lpVtbl->QueryInterface(directDraw1, IID_IDirectDraw2, (void**)(&g_zVideo_pDirectDraw2));
         if (queryResult != DD_OK) {
             return ReportError((int)(queryResult), g_zVideo_SourceFile_ZvidDdC, 0x3cb);
         }
 
-        directDraw1->Release();
+        directDraw1->lpVtbl->Release(directDraw1);
         return 0;
     }
 
@@ -1294,11 +1338,12 @@ namespace zVideo_dd
     {
         IDirectDrawSurface* createdSurface;
         reserved;
-        HRESULT result = directDraw->CreateSurface(desc, &createdSurface, 0);
+        HRESULT result = directDraw->lpVtbl->CreateSurface(directDraw, desc, &createdSurface, 0);
         if (result == DD_OK) {
-            result = createdSurface->QueryInterface(IID_IDirectDrawSurface3, (void**)(outSurface));
+            result
+                = createdSurface->lpVtbl->QueryInterface(createdSurface, IID_IDirectDrawSurface3, (void**)(outSurface));
             if (result == DD_OK) {
-                return createdSurface->Release();
+                return createdSurface->lpVtbl->Release(createdSurface);
             }
         }
 
@@ -1376,7 +1421,8 @@ namespace zVideo_dd
 
         g_zVideo_PrimaryHasAttachedBackbuffer = 1;
         attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
-        hresult = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->GetAttachedSurface(
+            g_zVideo_DisplayModeSurfaceState.surf,
             &attachedCaps,
             &g_zVideo_PrimarySurfaceState.surf
         );
@@ -1403,17 +1449,20 @@ namespace zVideo_dd
             return 1;
         }
 
-        hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+        hresult = g_zVideo_pDirectDraw2->lpVtbl->CreateClipper(g_zVideo_pDirectDraw2, 0, &g_zVideo_pClipper, 0);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x447);
         }
 
-        hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+        hresult = g_zVideo_pClipper->lpVtbl->SetHWnd(g_zVideo_pClipper, 0, g_zVideo_hWnd);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x44b);
         }
 
-        hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->SetClipper(
+            g_zVideo_DisplayModeSurfaceState.surf,
+            g_zVideo_pClipper
+        );
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x450);
         }
@@ -1462,7 +1511,7 @@ namespace zVideo_dd
         }
 
         if (LockSurfaceState(&g_zVideo_DisplayModeSurfaceState) != 0) {
-            g_zVideo_DisplayModeSurfaceState.surf->Release();
+            g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Release(g_zVideo_DisplayModeSurfaceState.surf);
             desc.ddsCaps.dwCaps = 0x200;
             hresult = CreateSurface3FromDesc(g_zVideo_pDirectDraw2, &desc, &g_zVideo_DisplayModeSurfaceState.surf, 0);
             if (hresult != DD_OK) {
@@ -1507,17 +1556,20 @@ namespace zVideo_dd
             return 1;
         }
 
-        hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+        hresult = g_zVideo_pDirectDraw2->lpVtbl->CreateClipper(g_zVideo_pDirectDraw2, 0, &g_zVideo_pClipper, 0);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x515);
         }
 
-        hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+        hresult = g_zVideo_pClipper->lpVtbl->SetHWnd(g_zVideo_pClipper, 0, g_zVideo_hWnd);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x519);
         }
 
-        hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->SetClipper(
+            g_zVideo_DisplayModeSurfaceState.surf,
+            g_zVideo_pClipper
+        );
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x51d);
         }
@@ -1561,8 +1613,11 @@ namespace zVideo_dd
 
         g_zVideo_PrimaryHasAttachedBackbuffer = 1;
         attachedCaps.dwCaps = DDSCAPS_BACKBUFFER;
-        hresult
-            = g_zVideo_DisplayModeSurfaceState.surf->GetAttachedSurface(&attachedCaps, &g_zVideo_SwSurfaceState.surf);
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->GetAttachedSurface(
+            g_zVideo_DisplayModeSurfaceState.surf,
+            &attachedCaps,
+            &g_zVideo_SwSurfaceState.surf
+        );
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x546);
         }
@@ -1582,17 +1637,20 @@ namespace zVideo_dd
             return 1;
         }
 
-        hresult = g_zVideo_pDirectDraw2->CreateClipper(0, &g_zVideo_pClipper, 0);
+        hresult = g_zVideo_pDirectDraw2->lpVtbl->CreateClipper(g_zVideo_pDirectDraw2, 0, &g_zVideo_pClipper, 0);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x55f);
         }
 
-        hresult = g_zVideo_pClipper->SetHWnd(0, g_zVideo_hWnd);
+        hresult = g_zVideo_pClipper->lpVtbl->SetHWnd(g_zVideo_pClipper, 0, g_zVideo_hWnd);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x563);
         }
 
-        hresult = g_zVideo_DisplayModeSurfaceState.surf->SetClipper(g_zVideo_pClipper);
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->SetClipper(
+            g_zVideo_DisplayModeSurfaceState.surf,
+            g_zVideo_pClipper
+        );
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x567);
         }
@@ -1611,7 +1669,8 @@ namespace zVideo_dd
      * software pixel-pack masks for supported formats.
      *
      * Evidence: BN initializes DDPIXELFORMAT.dwSize to 0x20, calls the
-     * IDirectDrawSurface3::GetPixelFormat provider slot, reports provider failures
+     * IDirectDrawSurface3::GetPixelFormat provider slot (vtable from
+     * g_zVideo_DisplayModeSurfaceState.surf, this from displaySurface), reports provider failures
      * at source line 0x597, accepts green masks 0x07e0, 0x03e0, and 0xff00, and
      * tears down plus reports line 0x5bd for unrecognized formats.
      */
@@ -1620,7 +1679,9 @@ namespace zVideo_dd
         DDPIXELFORMAT pixelFormat = { 0 };
         pixelFormat.dwSize = sizeof(pixelFormat);
 
-        const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->GetPixelFormat(&pixelFormat);
+        // Retail reads the vtable from the global surface but passes the parameter as this.
+        const HRESULT hresult
+            = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->GetPixelFormat(displaySurface, &pixelFormat);
         if (hresult != DD_OK) {
             return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x597);
         }
@@ -1712,21 +1773,23 @@ namespace zVideo_dd
     int __cdecl RestoreDisplaySurfaces()
     {
         if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
-            const HRESULT hresult = g_zVideo_DisplayModeSurfaceState.surf->Restore();
+            const HRESULT hresult
+                = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Restore(g_zVideo_DisplayModeSurfaceState.surf);
             if (hresult != DD_OK) {
                 return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x5e1);
             }
         }
 
         if (g_zVideo_PrimarySurfaceState.surf != 0) {
-            const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->Restore();
+            const HRESULT hresult
+                = g_zVideo_PrimarySurfaceState.surf->lpVtbl->Restore(g_zVideo_PrimarySurfaceState.surf);
             if (hresult != DD_OK) {
                 return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x5e8);
             }
         }
 
         if (g_zVideo_SwSurfaceState.surf != 0) {
-            const HRESULT hresult = g_zVideo_SwSurfaceState.surf->Restore();
+            const HRESULT hresult = g_zVideo_SwSurfaceState.surf->lpVtbl->Restore(g_zVideo_SwSurfaceState.surf);
             if (hresult != DD_OK) {
                 return ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x5ef);
             }
@@ -1787,62 +1850,64 @@ namespace zVideo_dd
     int __cdecl ReleaseAllInterfacesAndSurfaces()
     {
         if (g_zVideo_pD3DMaterial2 != 0) {
-            g_zVideo_pD3DMaterial2->Release();
+            g_zVideo_pD3DMaterial2->lpVtbl->Release(g_zVideo_pD3DMaterial2);
             g_zVideo_pD3DMaterial2 = 0;
         }
         if (g_zVideo_pD3DViewport2 != 0) {
-            g_zVideo_pD3DViewport2->Release();
+            g_zVideo_pD3DViewport2->lpVtbl->Release(g_zVideo_pD3DViewport2);
             g_zVideo_pD3DViewport2 = 0;
         }
         if (g_zVideo_pD3DDevice != 0) {
-            g_zVideo_pD3DDevice->Release();
+            g_zVideo_pD3DDevice->lpVtbl->Release(g_zVideo_pD3DDevice);
             g_zVideo_pD3DDevice = 0;
         }
         if (g_zVideo_pD3D2 != 0) {
-            g_zVideo_pD3D2->Release();
+            g_zVideo_pD3D2->lpVtbl->Release(g_zVideo_pD3D2);
             g_zVideo_pD3D2 = 0;
         }
         if (g_zVideo_pClipper != 0) {
-            g_zVideo_pClipper->Release();
+            g_zVideo_pClipper->lpVtbl->Release(g_zVideo_pClipper);
             g_zVideo_pClipper = 0;
         }
         if (g_zVideo_pZBufferSurface != 0) {
-            g_zVideo_pZBufferSurface->Release();
+            g_zVideo_pZBufferSurface->lpVtbl->Release(g_zVideo_pZBufferSurface);
             g_zVideo_pZBufferSurface = 0;
         }
 
         if (g_zVideo_SwSurfaceState.surf != 0) {
             if (g_zVideo_SwSurfaceState.pageLockActive != 0) {
-                const HRESULT hresult = g_zVideo_SwSurfaceState.surf->PageUnlock(0);
+                const HRESULT hresult
+                    = g_zVideo_SwSurfaceState.surf->lpVtbl->PageUnlock(g_zVideo_SwSurfaceState.surf, 0);
                 if (hresult != DD_OK) {
                     ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x652);
                     return 0;
                 }
                 g_zVideo_SwSurfaceState.pageLockActive = 0;
             }
-            g_zVideo_SwSurfaceState.surf->Release();
+            g_zVideo_SwSurfaceState.surf->lpVtbl->Release(g_zVideo_SwSurfaceState.surf);
             g_zVideo_SwSurfaceState.surf = 0;
         }
 
         if (g_zVideo_PrimarySurfaceState.surf != 0) {
             if (g_zVideo_PrimarySurfaceState.pageLockActive != 0) {
-                const HRESULT hresult = g_zVideo_PrimarySurfaceState.surf->PageUnlock(0);
+                const HRESULT hresult
+                    = g_zVideo_PrimarySurfaceState.surf->lpVtbl->PageUnlock(g_zVideo_PrimarySurfaceState.surf, 0);
                 if (hresult != DD_OK) {
                     ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x662);
                     return 0;
                 }
                 g_zVideo_PrimarySurfaceState.pageLockActive = 0;
             }
-            g_zVideo_PrimarySurfaceState.surf->Release();
+            g_zVideo_PrimarySurfaceState.surf->lpVtbl->Release(g_zVideo_PrimarySurfaceState.surf);
             g_zVideo_PrimarySurfaceState.surf = 0;
         }
 
         if (g_zVideo_DisplayModeSurfaceState.surf != 0) {
-            g_zVideo_DisplayModeSurfaceState.surf->Release();
+            g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Release(g_zVideo_DisplayModeSurfaceState.surf);
             g_zVideo_DisplayModeSurfaceState.surf = 0;
         }
         if (g_zVideo_pDDPalette != 0) {
-            g_zVideo_pDDPalette->Release();
+            g_zVideo_pDDPalette->lpVtbl->Release(g_zVideo_pDDPalette);
             g_zVideo_pDDPalette = 0;
         }
 
@@ -1873,8 +1938,8 @@ namespace zVideo_dd
         ReleaseAllInterfacesAndSurfaces();
 
         if (g_zVideo_pPageUnlockSurface != 0) {
-            g_zVideo_pPageUnlockSurface->PageUnlock(0);
-            g_zVideo_pPageUnlockSurface->Release();
+            g_zVideo_pPageUnlockSurface->lpVtbl->PageUnlock(g_zVideo_pPageUnlockSurface, 0);
+            g_zVideo_pPageUnlockSurface->lpVtbl->Release(g_zVideo_pPageUnlockSurface);
             g_zVideo_pPageUnlockSurface = 0;
         }
 
@@ -1885,8 +1950,8 @@ namespace zVideo_dd
         }
 
         if (g_zVideo_pDirectDraw2 != 0) {
-            g_zVideo_pDirectDraw2->SetCooperativeLevel(g_zVideo_hWnd, 8);
-            g_zVideo_pDirectDraw2->Release();
+            g_zVideo_pDirectDraw2->lpVtbl->SetCooperativeLevel(g_zVideo_pDirectDraw2, g_zVideo_hWnd, 8);
+            g_zVideo_pDirectDraw2->lpVtbl->Release(g_zVideo_pDirectDraw2);
             g_zVideo_pDirectDraw2 = 0;
         }
     }
@@ -1977,7 +2042,8 @@ namespace zVideo_dd
         g_zVideo_DDrawCapsHal.dwSize = sizeof(g_zVideo_DDrawCapsHal);
         g_zVideo_DDrawCapsHel.dwSize = sizeof(g_zVideo_DDrawCapsHel);
 
-        const HRESULT capsResult = g_zVideo_pDirectDraw2->GetCaps(&g_zVideo_DDrawCapsHal, &g_zVideo_DDrawCapsHel);
+        const HRESULT capsResult = g_zVideo_pDirectDraw2->lpVtbl
+                                       ->GetCaps(g_zVideo_pDirectDraw2, &g_zVideo_DDrawCapsHal, &g_zVideo_DDrawCapsHel);
         if (capsResult != DD_OK) {
             ReportError((int)(capsResult), g_zVideo_SourceFile_ZvidDdC, 0x739);
             return FALSE;
@@ -1991,7 +2057,8 @@ namespace zVideo_dd
 
         DDSCAPS memoryCaps;
         memoryCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
-        if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
+        if (g_zVideo_pDirectDraw2->lpVtbl->GetAvailableVidMem(
+                g_zVideo_pDirectDraw2,
                 &memoryCaps,
                 (DWORD*)(&entry->m_videoMemTotalBytes),
                 (DWORD*)(&entry->m_videoMemFreeBytes)
@@ -2002,7 +2069,8 @@ namespace zVideo_dd
         }
 
         memoryCaps.dwCaps = DDSCAPS_TEXTURE;
-        if (g_zVideo_pDirectDraw2->GetAvailableVidMem(
+        if (g_zVideo_pDirectDraw2->lpVtbl->GetAvailableVidMem(
+                g_zVideo_pDirectDraw2,
                 &memoryCaps,
                 (DWORD*)(&entry->m_textureMemTotalBytes),
                 (DWORD*)(&entry->m_textureMemFreeBytes)
@@ -2044,16 +2112,20 @@ namespace zVideo_dd
         printf(g_zVideo_D3DEnumBeginMsgFmt, entry->m_driverName);
         fflush(stdout);
 
-        const HRESULT queryResult = g_zVideo_pDirectDraw2->QueryInterface(IID_IDirect3D2, (void**)(&g_zVideo_pD3D2));
+        const HRESULT queryResult = g_zVideo_pDirectDraw2->lpVtbl->QueryInterface(
+            g_zVideo_pDirectDraw2,
+            IID_IDirect3D2,
+            (void**)(&g_zVideo_pD3D2)
+        );
         if (queryResult != DD_OK) {
             ReportError((int)(queryResult), g_zVideo_SourceFile_ZvidDdC, 0x781);
             return 0;
         }
 
         entry->m_acceptedD3DDeviceCount = 0;
-        g_zVideo_pD3D2->EnumDevices(EnumDirect3DDeviceCallback, entry);
+        g_zVideo_pD3D2->lpVtbl->EnumDevices(g_zVideo_pD3D2, EnumDirect3DDeviceCallback, entry);
         if (g_zVideo_pD3D2 != 0) {
-            g_zVideo_pD3D2->Release();
+            g_zVideo_pD3D2->lpVtbl->Release(g_zVideo_pD3D2);
             g_zVideo_pD3D2 = 0;
         }
 
@@ -2171,7 +2243,8 @@ namespace zVideo_dd
     int __fastcall PaletteSetEntries(unsigned short firstEntry, unsigned short entryCount, PALETTEENTRY* entries)
     {
         if (g_zVideo_DisplayModeBpp == 8) {
-            const HRESULT hresult = g_zVideo_pDDPalette->SetEntries(0, firstEntry, entryCount, entries);
+            const HRESULT hresult
+                = g_zVideo_pDDPalette->lpVtbl->SetEntries(g_zVideo_pDDPalette, 0, firstEntry, entryCount, entries);
             if (hresult != DD_OK) {
                 ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdC, 0x823);
                 return 0x5a56ffff;
@@ -2281,7 +2354,9 @@ namespace zVid
             if (deviceIndexOrMinus1 == -1) {
                 DDSCAPS caps;
                 caps.dwCaps = DDSCAPS_VIDEOMEMORY;
-                if (g_zVideo_pDirectDraw2->GetAvailableVidMem(&caps, (DWORD*)totalBytes, (DWORD*)freeBytes) != DD_OK) {
+                if (g_zVideo_pDirectDraw2->lpVtbl
+                        ->GetAvailableVidMem(g_zVideo_pDirectDraw2, &caps, (DWORD*)totalBytes, (DWORD*)freeBytes)
+                    != DD_OK) {
                     *freeBytes = 0;
                     *totalBytes = 0;
                 } else {
@@ -2330,7 +2405,9 @@ namespace zVid
         if (deviceIndexOrMinus1 == -1) {
             DDSCAPS caps;
             caps.dwCaps = DDSCAPS_TEXTURE;
-            if (g_zVideo_pDirectDraw2->GetAvailableVidMem(&caps, (DWORD*)totalBytes, (DWORD*)freeBytes) != DD_OK) {
+            if (g_zVideo_pDirectDraw2->lpVtbl
+                    ->GetAvailableVidMem(g_zVideo_pDirectDraw2, &caps, (DWORD*)totalBytes, (DWORD*)freeBytes)
+                != DD_OK) {
                 *freeBytes = 0;
                 *totalBytes = 0;
             }

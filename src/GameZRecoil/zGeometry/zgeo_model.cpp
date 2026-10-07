@@ -636,76 +636,72 @@ int __fastcall SnapPointsNearNodeModelXY(zGeometry_ClipPolygonPartial* clipPolyg
     }
 
     zModel_DrawBatchBasePartial* polygonSet = (zModel_DrawBatchBasePartial*)((unsigned int)(node->userDataOrDiRef));
-    if (polygonSet == 0) {
-        return result;
-    }
+    if (polygonSet != 0) {
+        if ((node->flags & 0x200) != 0) {
+            zGeometry_ClipPatchModelNodeBoundsView* modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
 
-    if ((node->flags & 0x200) != 0) {
-        zGeometry_ClipPatchModelNodeBoundsView* modelBounds = (zGeometry_ClipPatchModelNodeBoundsView*)(node);
+            if (clipPolygon->bounds.maxX - -1.0f < (double)modelBounds->boundsMinX) {
+                return 0;
+            }
 
-        if (clipPolygon->bounds.maxX - -1.0f < (double)modelBounds->boundsMinX) {
-            return 0;
+            if (clipPolygon->bounds.minX - 1.0f > (double)modelBounds->boundsMaxX) {
+                return 0;
+            }
+
+            if (-modelBounds->boundsNegMaxY < clipPolygon->bounds.maxY - 1.0f) {
+                return 0;
+            }
+
+            if (-modelBounds->boundsNegMinY > clipPolygon->bounds.minY - -1.0f) {
+                return 0;
+            }
         }
 
-        if (clipPolygon->bounds.minX - 1.0f > (double)modelBounds->boundsMaxX) {
-            return 0;
-        }
-
-        if (-modelBounds->boundsNegMaxY < clipPolygon->bounds.maxY - 1.0f) {
-            return 0;
-        }
-
-        if (-modelBounds->boundsNegMinY > clipPolygon->bounds.minY - -1.0f) {
-            return 0;
-        }
-    }
-
-    zModel_PolygonPartial* face = polygonSet->faceList;
-    for (int i = 0; i < polygonSet->faceCount; ++i) {
-        if ((face->vertexCountAndFlags & 0xff) < 3) {
-            zError::ReportOld(
-                0x400,
-                g_zGeometry_SourceFile_ZgeoModelCpp,
-                0x36b,
-                g_zGeometry_SkippingClipPolygonVertsFmt,
-                vertexCount
-            );
-        } else {
-            vertexCount = face->vertexCountAndFlags & 0xff;
-            linearPoints = zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
-            if (linearPoints == 0) {
+        zModel_PolygonPartial* face = polygonSet->faceList;
+        for (int i = 0; i < polygonSet->faceCount; ++i, ++face) {
+            if ((face->vertexCountAndFlags & 0xff) < 3) {
                 zError::ReportOld(
                     0x400,
                     g_zGeometry_SourceFile_ZgeoModelCpp,
-                    0x375,
-                    g_zGeometry_PolygonVertexBufferErrorMsg
+                    0x36b,
+                    g_zGeometry_SkippingClipPolygonVertsFmt,
+                    vertexCount
                 );
             } else {
-                zGeometry_Vec3Array::RotatePos90AroundX(vertexCount, linearPoints);
+                vertexCount = face->vertexCountAndFlags & 0xff;
+                linearPoints = zGeometry_Model::GetLinearBufferOfPolygonVertices(polygonSet, face, linearPoints);
+                if (linearPoints == 0) {
+                    zError::ReportOld(
+                        0x400,
+                        g_zGeometry_SourceFile_ZgeoModelCpp,
+                        0x375,
+                        g_zGeometry_PolygonVertexBufferErrorMsg
+                    );
+                } else {
+                    zGeometry_Vec3Array::RotatePos90AroundX(vertexCount, linearPoints);
 
-                zGeometry_BoundsXY bounds;
-                zGeometry_Vec3Array::ComputeBoundsXY(&bounds, linearPoints, vertexCount);
+                    zGeometry_BoundsXY bounds;
+                    zGeometry_Vec3Array::ComputeBoundsXY(&bounds, linearPoints, vertexCount);
 
-                if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds)) {
-                    if (zGeometry_Polygon::SnapPointsXYIfNear(
-                            linearPoints,
-                            vertexCount,
-                            clipPolygon->points,
-                            clipPolygon->pointCount,
-                            0.100000001f,
-                            0.100000001f
-                        )) {
-                        result = 1;
+                    if (zGeometry_Bounds2D::OverlapsWithUnitMargin(&bounds, &clipPolygon->bounds)) {
+                        if (zGeometry_Polygon::SnapPointsXYIfNear(
+                                linearPoints,
+                                vertexCount,
+                                clipPolygon->points,
+                                clipPolygon->pointCount,
+                                0.100000001f,
+                                0.100000001f
+                            )) {
+                            result = 1;
+                        }
                     }
                 }
             }
         }
 
-        ++face;
-    }
-
-    if (linearPoints != 0) {
-        free(linearPoints);
+        if (linearPoints != 0) {
+            free(linearPoints);
+        }
     }
 
     return result;

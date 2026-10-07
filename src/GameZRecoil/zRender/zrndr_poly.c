@@ -1682,6 +1682,7 @@ namespace zRndr
             edgeCountA = 0;
             edgeCountB = 0;
             // Same direction-specialized edge walks as zRndrRasterizePoly.
+            // Each walk converts its slope, x intercept and next row through one walk-local double, as retail does.
             if (g_scanConvertMode != 0) {
                 edgeVertexIndex = topVertexIndex;
                 ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
@@ -1693,19 +1694,21 @@ namespace zRndr
                         nextIndex -= reducedCount;
                     }
                     if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                        double fixedBits;
                         const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                         const zVec3& start = reducedVerts[edgeVertexIndex];
                         edge = &edgeTableA[edgeCountA++];
                         edge->yStart = edgeYStart;
                         if (dy != 0.0f) {
                             const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                                edge->currentXFixed,
-                                start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                            );
+                            fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                            edge->xStepFixed = *(int*)(&fixedBits);
+                            fixedBits = 6755399441055744.0
+                                - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                            edge->currentXFixed = *(int*)(&fixedBits);
                         }
-                        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                        fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                        fixed16Value = *(int*)(&fixedBits);
                         edgeYStart = (fixed16Value + 0x7fff) >> 16;
                         edgeSampleY = (float)(edgeYStart) + 0.5f;
                     }
@@ -1722,19 +1725,21 @@ namespace zRndr
                         nextIndex += reducedCount;
                     }
                     if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                        double fixedBits;
                         const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                         const zVec3& start = reducedVerts[edgeVertexIndex];
                         edge = &edgeTableB[edgeCountB++];
                         edge->yStart = edgeYStart;
                         if (dy != 0.0f) {
                             const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                                edge->currentXFixed,
-                                start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                            );
+                            fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                            edge->xStepFixed = *(int*)(&fixedBits);
+                            fixedBits = 6755399441055744.0
+                                - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                            edge->currentXFixed = *(int*)(&fixedBits);
                         }
-                        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                        fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                        fixed16Value = *(int*)(&fixedBits);
                         edgeYStart = (fixed16Value + 0x7fff) >> 16;
                         edgeSampleY = (float)(edgeYStart) + 0.5f;
                     }
@@ -1751,19 +1756,21 @@ namespace zRndr
                         nextIndex -= reducedCount;
                     }
                     if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                        double fixedBits;
                         const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                         const zVec3& start = reducedVerts[edgeVertexIndex];
                         edge = &edgeTableB[edgeCountB++];
                         edge->yStart = edgeYStart;
                         if (dy != 0.0f) {
                             const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                                edge->currentXFixed,
-                                start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                            );
+                            fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                            edge->xStepFixed = *(int*)(&fixedBits);
+                            fixedBits = 6755399441055744.0
+                                - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                            edge->currentXFixed = *(int*)(&fixedBits);
                         }
-                        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                        fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                        fixed16Value = *(int*)(&fixedBits);
                         edgeYStart = (fixed16Value + 0x7fff) >> 16;
                         edgeSampleY = (float)(edgeYStart) + 0.5f;
                     }
@@ -1780,19 +1787,21 @@ namespace zRndr
                         nextIndex += reducedCount;
                     }
                     if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                        double fixedBits;
                         const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                         const zVec3& start = reducedVerts[edgeVertexIndex];
                         edge = &edgeTableA[edgeCountA++];
                         edge->yStart = edgeYStart;
                         if (dy != 0.0f) {
                             const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                            ZRNDR_SET_FIXED16_FROM_FLOAT(
-                                edge->currentXFixed,
-                                start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                            );
+                            fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                            edge->xStepFixed = *(int*)(&fixedBits);
+                            fixedBits = 6755399441055744.0
+                                - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                            edge->currentXFixed = *(int*)(&fixedBits);
                         }
-                        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                        fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                        fixed16Value = *(int*)(&fixedBits);
                         edgeYStart = (fixed16Value + 0x7fff) >> 16;
                         edgeSampleY = (float)(edgeYStart) + 0.5f;
                     }
@@ -2137,7 +2146,7 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
     edgeCountB = 0;
     // Retail expands one direction-specialized edge walk per table and scan mode. Each walk starts from the top vertex
     // (its fixed-point Y is computed once and reused), stores only yStart for horizontal edges, and derives the
-    // x intercept from the sample row (edgeYStart + 0.5).
+    // x intercept from the sample row (edgeYStart + 0.5). Each walk converts through one walk-local double.
     if (zRndr::g_scanConvertMode != 0) {
         edgeVertexIndex = topVertexIndex;
         ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
@@ -2149,19 +2158,21 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
                 nextIndex -= reducedCount;
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                double fixedBits;
                 const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
                 edge = &edgeTableA[edgeCountA++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
                     const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edge->currentXFixed,
-                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                    );
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
                 }
-                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -2178,19 +2189,21 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
                 nextIndex += reducedCount;
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                double fixedBits;
                 const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
                 edge = &edgeTableB[edgeCountB++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
                     const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edge->currentXFixed,
-                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                    );
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
                 }
-                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -2207,19 +2220,21 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
                 nextIndex -= reducedCount;
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                double fixedBits;
                 const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
                 edge = &edgeTableB[edgeCountB++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
                     const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edge->currentXFixed,
-                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                    );
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
                 }
-                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -2236,19 +2251,21 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
                 nextIndex += reducedCount;
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
+                double fixedBits;
                 const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
                 edge = &edgeTableA[edgeCountA++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
                     const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
-                    ZRNDR_SET_FIXED16_FROM_FLOAT(
-                        edge->currentXFixed,
-                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
-                    );
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
                 }
-                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[nextIndex].y);
+                fixedBits = 6755399441055744.0 - (double)(reducedVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
                 edgeYStart = (fixed16Value + 0x7fff) >> 16;
                 edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
@@ -2323,326 +2340,353 @@ void __fastcall zRndrDrawFlatQueued(
     int paletteIndex
 )
 {
-    zVidImagePartial* selectedImage = entry->image;
-    const float imageWidth = (float)(selectedImage->width);
-    const float imageHeight = (float)(selectedImage->height);
-
-    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
-    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
-    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
-    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
-    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
-    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
-
-    const float reciprocalValues[3] = { triVerts[0].z, triVerts[1].z, triVerts[2].z };
-    const float uValues[3] = { gRndr_PerspTexScaledUOverZ0, gRndr_PerspTexScaledUOverZ1, gRndr_PerspTexScaledUOverZ2 };
-    const float vValues[3] = { gRndr_PerspTexScaledVOverZ0, gRndr_PerspTexScaledVOverZ1, gRndr_PerspTexScaledVOverZ2 };
-    const float planeDx10 = triVerts[0].x - triVerts[1].x;
-    const float planeDx12 = triVerts[2].x - triVerts[1].x;
-    const float planeDy10 = triVerts[0].y - triVerts[1].y;
-    const float planeDy12 = triVerts[2].y - triVerts[1].y;
-    const float planeDeterminant = planeDy12 * planeDx10 - planeDy10 * planeDx12;
-    Plane2f reciprocalZ = { 0 };
-    Plane2f uOverZ = { 0 };
-    Plane2f vOverZ = { 0 };
-    if (planeDeterminant != 0.0f) {
-        const float inversePlaneDeterminant = -1.0f / planeDeterminant;
-        const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
-        const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
-        const float u10 = uValues[0] - uValues[1];
-        const float u12 = uValues[2] - uValues[1];
-        const float v10 = vValues[0] - vValues[1];
-        const float v12 = vValues[2] - vValues[1];
-        reciprocalZ.gradient.x = (planeDy12 * reciprocal10 - planeDy10 * reciprocal12) * inversePlaneDeterminant;
-        reciprocalZ.gradient.y = (planeDx10 * reciprocal12 - planeDx12 * reciprocal10) * inversePlaneDeterminant;
-        uOverZ.gradient.x = (planeDy12 * u10 - planeDy10 * u12) * inversePlaneDeterminant;
-        uOverZ.gradient.y = (planeDx10 * u12 - planeDx12 * u10) * inversePlaneDeterminant;
-        vOverZ.gradient.x = (planeDy12 * v10 - planeDy10 * v12) * inversePlaneDeterminant;
-        vOverZ.gradient.y = (planeDx10 * v12 - planeDx12 * v10) * inversePlaneDeterminant;
-    }
-    reciprocalZ.base = reciprocalValues[0];
-    uOverZ.base = uValues[0];
-    vOverZ.base = vValues[0];
-    gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
-    gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
-    gRndr_PerspInvDepthBase = reciprocalZ.base;
-    gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
-    gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
-    gRndr_PerspTexScaledUOverZBase = uOverZ.base;
-    gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
-    gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
-    gRndr_PerspTexScaledVOverZBase = vOverZ.base;
-    gRndr_PerspPlaneOriginX = triVerts[0].x;
-    gRndr_PerspPlaneOriginY = triVerts[0].y;
-
-    TexturedPlanes planes = { 0 };
-    planes.reciprocalZ = reciprocalZ;
-    planes.uOverZ = uOverZ;
-    planes.vOverZ = vOverZ;
-    planes.originX = gRndr_PerspPlaneOriginX;
-    planes.originY = gRndr_PerspPlaneOriginY;
-    const float adjustX = planes.originX - 0.5f;
-    const float adjustY = planes.originY - 0.5f;
-    planes.reciprocalZ.base -= adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
-    planes.uOverZ.base -= adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
-    planes.vOverZ.base -= adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
-
-    if (entry->nextVariant != 0) {
-        selectedImage = zRndrTextureMipSelectVariantImage(
-            entry,
-            triVerts,
-            3,
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZ0),
-            (const zVec2*)(&gRndr_PerspInvDepthStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledVOverZStepX)
-        );
-    }
-
-    int topVertexIndex = 0;
-    int bottomVertexIndex = 0;
-    for (int i_4366 = 1; i_4366 < vertCount; ++i_4366) {
-        if (polyVerts[i_4366].y < polyVerts[topVertexIndex].y) {
-            topVertexIndex = i_4366;
-        }
-        if (polyVerts[i_4366].y > polyVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i_4366;
-        }
-    }
-
-    ScanConvertEdge edgeTableA[0x40] = { 0 };
-    ScanConvertEdge edgeTableB[0x40] = { 0 };
-    int edgeCountA = 0;
-    int edgeCountB = 0;
-    int fixed16Value;
+    ScanConvertEdge edgeTableB[0x40];
+    ScanConvertEdge edgeTableA[0x40];
+    zRndr::SpanNodePartial* spanList[0x141];
+    zVidImagePartial* image;
+    zVidImagePartial* selectedImage;
+    float dx01;
+    float dx21;
+    float dy01;
+    float dy21;
+    float determinant;
+    float inverseDeterminant;
+    float imageWidth;
+    float imageHeight;
+    zVec2 scaledUV[3];
+    zVec2 recipZGrad;
+    zVec2 uGrad;
+    zVec2 vGrad;
+    float dz01;
+    float dz21;
+    float du01;
+    float du21;
+    float dv01;
+    float dv21;
+    int vertexIndex;
+    int topVertexIndex;
+    int bottomVertexIndex;
+    int edgeCountA;
+    int edgeCountB;
     int edgeVertexIndex;
+    int fixed16Value;
     int edgeYStart;
     float edgeSampleY;
-    int edgeStepA;
-    int edgeStepB;
-    if (zRndr::g_scanConvertMode != 0) {
-        edgeStepA = 1;
-        edgeStepB = -1;
+    ScanConvertEdge* edge;
+    int firstScanline;
+    int lastScanline;
+    unsigned char* scanlineBase;
+    zRndr::TexturedQueuedSpanProc spanProc;
+    unsigned short* palette;
+    int edgeIndexA;
+    int edgeIndexB;
+    int currentXFixedA;
+    int currentXFixedB;
+    int xStepFixedA;
+    int xStepFixedB;
+    float originX;
+    float originY;
+    int y;
+    int xMin;
+    int xMax;
+    float planeY;
+    float rowRecipZ;
+    int spanCount;
+    float rowU;
+    float rowV;
+    int spanIndex;
+    zRndr::SpanNodePartial* span;
+    int count;
+    float startX;
+    float endX;
+    float stepScale;
+    float startInvZ;
+    float endInvZ;
+    float startU;
+    float startV;
+    float endU;
+    float endV;
+    double texUStartBits;
+    double texVStartBits;
+    double texUStepBits;
+    double texVStepBits;
+
+    image = entry != 0 ? entry->image : 0;
+    dx21 = triVerts[2].x - triVerts[1].x;
+    dy01 = triVerts[0].y - triVerts[1].y;
+    dx01 = triVerts[0].x - triVerts[1].x;
+    dy21 = triVerts[2].y - triVerts[1].y;
+    determinant = dy21 * dx01 - dx21 * dy01;
+    imageWidth = (float)(image->width);
+    imageHeight = (float)(image->height);
+    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
+    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
+    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
+    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
+    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
+    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    if (determinant != 0.0) {
+        inverseDeterminant = -1.0f / determinant;
+        dz01 = triVerts[0].z - triVerts[1].z;
+        dz21 = triVerts[2].z - triVerts[1].z;
+        du01 = scaledUV[0].x - scaledUV[1].x;
+        du21 = scaledUV[2].x - scaledUV[1].x;
+        dv01 = scaledUV[0].y - scaledUV[1].y;
+        dv21 = scaledUV[2].y - scaledUV[1].y;
+        recipZGrad.x = (dz21 * dy01 - dz01 * dy21) * inverseDeterminant;
+        recipZGrad.y = (dz01 * dx21 - dz21 * dx01) * inverseDeterminant;
+        uGrad.x = (du21 * dy01 - du01 * dy21) * inverseDeterminant;
+        uGrad.y = (du01 * dx21 - du21 * dx01) * inverseDeterminant;
+        vGrad.x = (dv21 * dy01 - dv01 * dy21) * inverseDeterminant;
+        vGrad.y = (dv01 * dx21 - dv21 * dx01) * inverseDeterminant;
     } else {
-        edgeStepA = -1;
-        edgeStepB = 1;
+        recipZGrad.x = recipZGrad.y = uGrad.x = uGrad.y = vGrad.x = vGrad.y = 0.0f;
     }
 
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepA;
-        if (nextIndex < 0) {
-            nextIndex += vertCount;
+    topVertexIndex = 0;
+    bottomVertexIndex = 0;
+    for (vertexIndex = 1; vertexIndex < vertCount; ++vertexIndex) {
+        if (polyVerts[vertexIndex].y < polyVerts[topVertexIndex].y) {
+            topVertexIndex = vertexIndex;
         }
-        if (nextIndex >= vertCount) {
-            nextIndex -= vertCount;
+        // Retail keeps the first lowest vertex (strict compare).
+        if (polyVerts[vertexIndex].y > polyVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = vertexIndex;
         }
-        const zVec3& start = polyVerts[edgeVertexIndex];
-        const zVec3& end = polyVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableA[edgeCountA].yStart = edgeYStart;
-            edgeTableA[edgeCountA].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+    }
+
+    edgeCountA = 0;
+    edgeCountB = 0;
+    // Each walk converts its slope, x intercept and next row through one walk-local double, as retail does.
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
             }
-
-            ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepB;
-        if (nextIndex < 0) {
-            nextIndex += vertCount;
-        }
-        if (nextIndex >= vertCount) {
-            nextIndex -= vertCount;
-        }
-        const zVec3& start = polyVerts[edgeVertexIndex];
-        const zVec3& end = polyVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableB[edgeCountB].yStart = edgeYStart;
-            edgeTableB[edgeCountB].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                double fixedBits;
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
 
-            ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                double fixedBits;
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    } else {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                double fixedBits;
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                double fixedBits;
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
     }
 
-    if (edgeCountA == 0 || edgeCountB == 0) {
-        return;
-    }
-
+    currentXFixedA = edgeTableA[0].currentXFixed;
+    currentXFixedB = edgeTableB[0].currentXFixed;
+    xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
-    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[bottomVertexIndex].y);
-    const int lastScanline = (fixed16Value - 0x8041) >> 16;
-    if (firstScanline > lastScanline) {
-        return;
+    lastScanline = (fixed16Value - 0x8041) >> 16;
+    edgeIndexA = 0;
+    edgeIndexB = 0;
+    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+
+    if (entry != 0 && entry->nextVariant != 0) {
+        selectedImage = zRndrTextureMipSelectVariantImage(entry, triVerts, 3, scaledUV, &recipZGrad, &uGrad, &vGrad);
+    } else {
+        selectedImage = image;
     }
 
     zRndr::g_spanActiveTexPixels = (unsigned char*)(selectedImage->pixels);
-
-    zRndr::TexturedQueuedSpanProc spanOpMode0;
-    zRndr::TexturedQueuedSpanProc spanOpMode1;
     if (selectedImage->alphaMap != 0) {
         zRndr::g_spanActiveTexAlphaMap = selectedImage->alphaMap;
-        spanOpMode0 = zRndr::g_pfnFlatQueuedSpanOp_Mode0;
-        spanOpMode1 = zRndr::g_pfnFlatQueuedSpanOpAlt_Mode0;
+        zRndr::g_pfnSelectedSpanOp_Mode0 = zRndr::g_pfnFlatQueuedSpanOp_Mode0;
+        zRndr::g_pfnSelectedSpanOp_Mode1 = zRndr::g_pfnFlatQueuedSpanOpAlt_Mode0;
     } else {
         zRndr::g_spanActiveTexAlphaMap = 0;
-        spanOpMode0 = zRndr::g_pfnFlatQueuedSpanOp_Mode1;
-        spanOpMode1 = zRndr::g_pfnFlatQueuedSpanOpAlt_Mode1;
+        zRndr::g_pfnSelectedSpanOp_Mode0 = zRndr::g_pfnFlatQueuedSpanOp_Mode1;
+        zRndr::g_pfnSelectedSpanOp_Mode1 = zRndr::g_pfnFlatQueuedSpanOpAlt_Mode1;
     }
-    zRndr::g_pfnSelectedSpanOp_Mode0 = spanOpMode0;
-    zRndr::g_pfnSelectedSpanOp_Mode1 = spanOpMode1;
 
-    zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
-    unsigned short* palette = (unsigned short*)(selectedImage->palette);
-    if (palette != 0) {
+    palette = (unsigned short*)(selectedImage->palette);
+    if (palette == 0) {
+        spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
+    } else {
         zRndr::g_spanActiveTexPalette = paletteIndex == -1 ? palette : &palette[(paletteIndex + 1) * 0x100];
         spanProc = zRndr::g_pfnSelectedSpanOp_Mode1;
-    } else {
-        zRndr::g_spanActiveTexPalette = 0;
     }
     zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
-    zRndr::SpanNodePartial* visibleSpans[0x40] = { 0 };
-    int edgeIndexA = 0;
-    int edgeIndexB = 0;
-    int currentXFixedA = edgeTableA[0].currentXFixed;
-    int currentXFixedB = edgeTableB[0].currentXFixed;
-    int xStepFixedA = edgeTableA[0].xStepFixed;
-    int xStepFixedB = edgeTableB[0].xStepFixed;
-    unsigned char* scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
-    const int texVShift = zRndr::g_spanActiveTexShift;
+    originX = triVerts[0].x - 0.5f;
+    originY = triVerts[0].y - 0.5f;
 
-    for (int y = firstScanline; y <= lastScanline; ++y) {
-        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
-            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+    for (y = firstScanline; y <= lastScanline; ++y) {
+        while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {
             currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
             ++edgeIndexA;
         }
 
-        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
-            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+        while (y >= edgeTableB[edgeIndexB].yStart && edgeIndexB < edgeCountB) {
             currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
             ++edgeIndexB;
         }
 
-        int xMin;
-        int xMax;
-        if (currentXFixedA > currentXFixedB) {
-            xMin = (currentXFixedB + 0x7fff) >> 16;
-            xMax = (currentXFixedA - 0x8001) >> 16;
-        } else {
+        if (currentXFixedA <= currentXFixedB) {
             xMin = (currentXFixedA + 0x7fff) >> 16;
             xMax = (currentXFixedB - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
         }
 
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-            const float rowReciprocalZ = (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+            planeY = (float)(y)-originY;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
+            rowRecipZ = planeY * recipZGrad.y + triVerts[0].z;
             zRndr::g_spanAllocCursor->invDepth
-                = ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
+                = (((float)(xMin)-originX) * recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale
                 + zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep
-                = ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
+                = (((float)(xMax)-originX) * recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale
                 + zRndr::g_inverseDepthBias;
-            zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
-
-            int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial* span = visibleSpans[spanIndex];
-                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                        continue;
-                    }
-
+            zRndr::g_spanAllocCursor->depthSlope = recipZGrad.x;
+            zRndr::g_pfnBuildSpanListSecondary(spanList, y, &spanCount);
+            if (spanCount != 0) {
+                rowU = planeY * uGrad.y + scaledUV[0].x;
+                rowV = planeY * vGrad.y + scaledUV[0].y;
+                for (spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    span = spanList[spanIndex];
+                    count = span->sampleXMax - span->sampleXMin + 1;
                     zRndr::g_spanCurrentSpanBaseAddr
-                        = (unsigned short*)(scanlineBase + (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    const int count = span->sampleXMax - span->sampleXMin + 1;
-                    const float startX = (float)(span->sampleXMin);
-                    const float endX = (float)(span->sampleXMin + count);
-                    const float sampleY = (float)(y);
-                    const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                    const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                    const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                    const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                        + gRndr_PerspInvDepthBase;
-                    const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                        + gRndr_PerspInvDepthBase;
-                    if (startInvZ != 0.0f && endInvZ != 0.0f) {
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const float texUStep = (endU - startU) * 1048576.0f / (float)(count);
-                        const float texVStep = (endV - startV) * 1048576.0f / (float)(count);
-                        const float texUStart = startU * 1048576.0f;
-                        const float texVStart = startV * 1048576.0f;
-                        const double texUStepBits = (double)(texUStep) - -6755399441055744.0;
-                        const double texVStepBits = (double)(texVStep) - -6755399441055744.0;
-                        const double texUStartBits = (double)(texUStart) - -6755399441055744.0;
-                        const double texVStartBits = (double)(texVStart) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&texUStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&texVStepBits);
-                        spanProc(*(const int*)(&texUStartBits), *(const int*)(&texVStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
-                    }
+                        = (unsigned short*)(scanlineBase + span->sampleXMin * zRndr::g_bytesPerPixel);
+                    startX = (float)(span->sampleXMin) - originX;
+                    endX = (float)(span->sampleXMax) - originX;
+                    stepScale = 1048576.0f / (float)(count);
+                    startInvZ = 1.0f / (startX * recipZGrad.x + rowRecipZ);
+                    startU = (startX * uGrad.x + rowU) * startInvZ;
+                    startV = (startX * vGrad.x + rowV) * startInvZ;
+                    texUStartBits = 6755399441055744.0 - (double)(startU * -1048576.0f);
+                    texVStartBits = 6755399441055744.0 - (double)(startV * -1048576.0f);
+                    endInvZ = 1.0f / (endX * recipZGrad.x + rowRecipZ);
+                    endU = (endX * uGrad.x + rowU) * endInvZ;
+                    endV = (endX * vGrad.x + rowV) * endInvZ;
+                    texUStepBits = (double)((endU - startU) * stepScale) - -6755399441055744.0;
+                    texVStepBits = (double)((endV - startV) * stepScale) - -6755399441055744.0;
+                    zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&texUStepBits);
+                    zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&texVStepBits);
+                    spanProc(*(int*)(&texUStartBits), *(int*)(&texVStartBits), count, zRndr::g_spanActiveTexShift);
                 }
             }
         }
@@ -2668,337 +2712,350 @@ void __fastcall RendererDrawPolyTLV(
     int texKey
 )
 {
-    if (entry == 0 || entry->image == 0 || polyVerts == 0 || triVerts == 0 || triUVs == 0 || vertexCount <= 0
-        || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
-        return;
-    }
-
-    zVidImagePartial* selectedImage = entry->image;
-    const float imageWidth = (float)(selectedImage->width);
-    const float imageHeight = (float)(selectedImage->height);
-
-    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
-    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
-    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
-    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
-    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
-    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
-
-    const float reciprocalValues[3] = { triVerts[0].z, triVerts[1].z, triVerts[2].z };
-    const float uValues[3] = { gRndr_PerspTexScaledUOverZ0, gRndr_PerspTexScaledUOverZ1, gRndr_PerspTexScaledUOverZ2 };
-    const float vValues[3] = { gRndr_PerspTexScaledVOverZ0, gRndr_PerspTexScaledVOverZ1, gRndr_PerspTexScaledVOverZ2 };
-    const float planeDx10 = triVerts[0].x - triVerts[1].x;
-    const float planeDx12 = triVerts[2].x - triVerts[1].x;
-    const float planeDy10 = triVerts[0].y - triVerts[1].y;
-    const float planeDy12 = triVerts[2].y - triVerts[1].y;
-    const float planeDeterminant = planeDy12 * planeDx10 - planeDy10 * planeDx12;
-    Plane2f reciprocalZ = { 0 };
-    Plane2f uOverZ = { 0 };
-    Plane2f vOverZ = { 0 };
-    if (planeDeterminant != 0.0f) {
-        const float inversePlaneDeterminant = -1.0f / planeDeterminant;
-        const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
-        const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
-        const float u10 = uValues[0] - uValues[1];
-        const float u12 = uValues[2] - uValues[1];
-        const float v10 = vValues[0] - vValues[1];
-        const float v12 = vValues[2] - vValues[1];
-        reciprocalZ.gradient.x = (planeDy12 * reciprocal10 - planeDy10 * reciprocal12) * inversePlaneDeterminant;
-        reciprocalZ.gradient.y = (planeDx10 * reciprocal12 - planeDx12 * reciprocal10) * inversePlaneDeterminant;
-        uOverZ.gradient.x = (planeDy12 * u10 - planeDy10 * u12) * inversePlaneDeterminant;
-        uOverZ.gradient.y = (planeDx10 * u12 - planeDx12 * u10) * inversePlaneDeterminant;
-        vOverZ.gradient.x = (planeDy12 * v10 - planeDy10 * v12) * inversePlaneDeterminant;
-        vOverZ.gradient.y = (planeDx10 * v12 - planeDx12 * v10) * inversePlaneDeterminant;
-    }
-    reciprocalZ.base = reciprocalValues[0];
-    uOverZ.base = uValues[0];
-    vOverZ.base = vValues[0];
-    gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
-    gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
-    gRndr_PerspInvDepthBase = reciprocalZ.base;
-    gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
-    gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
-    gRndr_PerspTexScaledUOverZBase = uOverZ.base;
-    gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
-    gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
-    gRndr_PerspTexScaledVOverZBase = vOverZ.base;
-    gRndr_PerspPlaneOriginX = triVerts[0].x;
-    gRndr_PerspPlaneOriginY = triVerts[0].y;
-
-    TexturedPlanes planes = { 0 };
-    planes.reciprocalZ = reciprocalZ;
-    planes.uOverZ = uOverZ;
-    planes.vOverZ = vOverZ;
-    planes.originX = gRndr_PerspPlaneOriginX;
-    planes.originY = gRndr_PerspPlaneOriginY;
-    const float adjustX = planes.originX - 0.5f;
-    const float adjustY = planes.originY - 0.5f;
-    planes.reciprocalZ.base -= adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
-    planes.uOverZ.base -= adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
-    planes.vOverZ.base -= adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
-
-    if (entry->nextVariant != 0) {
-        selectedImage = zRndrTextureMipSelectVariantImage(
-            entry,
-            triVerts,
-            3,
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZ0),
-            (const zVec2*)(&gRndr_PerspInvDepthStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledVOverZStepX)
-        );
-        if (selectedImage == 0) {
-            return;
-        }
-    }
-
-    int topVertexIndex = 0;
-    int bottomVertexIndex = 0;
-    for (int i_4720 = 1; i_4720 < vertexCount; ++i_4720) {
-        if (polyVerts[i_4720].y < polyVerts[topVertexIndex].y) {
-            topVertexIndex = i_4720;
-        }
-        if (polyVerts[i_4720].y > polyVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i_4720;
-        }
-    }
-
-    ScanConvertEdge edgeTableA[0x40] = { 0 };
-    ScanConvertEdge edgeTableB[0x40] = { 0 };
-    int edgeCountA = 0;
-    int edgeCountB = 0;
-    int fixed16Value;
+    ScanConvertEdge edgeTableB[0x40];
+    ScanConvertEdge edgeTableA[0x40];
+    zRndr::SpanNodePartial* spanList[0x141];
+    zVidImagePartial* image;
+    zVidImagePartial* selectedImage;
+    float dx01;
+    float dx21;
+    float dy01;
+    float dy21;
+    float determinant;
+    float inverseDeterminant;
+    float imageWidth;
+    float imageHeight;
+    zVec2 scaledUV[3];
+    zVec2 recipZGrad;
+    zVec2 uGrad;
+    zVec2 vGrad;
+    float dz01;
+    float dz21;
+    float du01;
+    float du21;
+    float dv01;
+    float dv21;
+    int vertexIndex;
+    int topVertexIndex;
+    int bottomVertexIndex;
+    int edgeCountA;
+    int edgeCountB;
     int edgeVertexIndex;
+    int fixed16Value;
+    double fixedBits;
     int edgeYStart;
     float edgeSampleY;
-    int edgeStepA;
-    int edgeStepB;
-    if (zRndr::g_scanConvertMode != 0) {
-        edgeStepA = 1;
-        edgeStepB = -1;
+    ScanConvertEdge* edge;
+    int firstScanline;
+    int lastScanline;
+    unsigned char* scanlineBase;
+    zRndr::TexturedQueuedSpanProc spanProc;
+    unsigned short* palette;
+    int edgeIndexA;
+    int edgeIndexB;
+    int currentXFixedA;
+    int currentXFixedB;
+    int xStepFixedA;
+    int xStepFixedB;
+    int y;
+    int xMin;
+    int xMax;
+    float planeY;
+    float rowRecipZ;
+    int spanCount;
+    float rowU;
+    float rowV;
+    int spanIndex;
+    zRndr::SpanNodePartial* span;
+    int count;
+    float startX;
+    float endX;
+    float startInvZ;
+    float endInvZ;
+    float startU;
+    float startV;
+    float endU;
+    float endV;
+    double alphaBits;
+    double texUStartBits;
+    double texVStartBits;
+    double texUStepBits;
+    double texVStepBits;
+
+    image = entry != 0 ? entry->image : 0;
+    dx21 = triVerts[2].x - triVerts[1].x;
+    dy01 = triVerts[0].y - triVerts[1].y;
+    dx01 = triVerts[0].x - triVerts[1].x;
+    dy21 = triVerts[2].y - triVerts[1].y;
+    determinant = dy21 * dx01 - dx21 * dy01;
+    imageWidth = (float)(image->width);
+    imageHeight = (float)(image->height);
+    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
+    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
+    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
+    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
+    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
+    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    if (determinant != 0.0) {
+        inverseDeterminant = -1.0f / determinant;
+        dz01 = triVerts[0].z - triVerts[1].z;
+        dz21 = triVerts[2].z - triVerts[1].z;
+        du01 = scaledUV[0].x - scaledUV[1].x;
+        du21 = scaledUV[2].x - scaledUV[1].x;
+        dv01 = scaledUV[0].y - scaledUV[1].y;
+        dv21 = scaledUV[2].y - scaledUV[1].y;
+        recipZGrad.x = (dz21 * dy01 - dz01 * dy21) * inverseDeterminant;
+        recipZGrad.y = (dz01 * dx21 - dz21 * dx01) * inverseDeterminant;
+        uGrad.x = (du21 * dy01 - du01 * dy21) * inverseDeterminant;
+        uGrad.y = (du01 * dx21 - du21 * dx01) * inverseDeterminant;
+        vGrad.x = (dv21 * dy01 - dv01 * dy21) * inverseDeterminant;
+        vGrad.y = (dv01 * dx21 - dv21 * dx01) * inverseDeterminant;
     } else {
-        edgeStepA = -1;
-        edgeStepB = 1;
+        recipZGrad.x = recipZGrad.y = uGrad.x = uGrad.y = vGrad.x = vGrad.y = 0.0f;
     }
 
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepA;
-        if (nextIndex < 0) {
-            nextIndex += vertexCount;
+    topVertexIndex = 0;
+    bottomVertexIndex = 0;
+    for (vertexIndex = 1; vertexIndex < vertexCount; ++vertexIndex) {
+        if (polyVerts[vertexIndex].y < polyVerts[topVertexIndex].y) {
+            topVertexIndex = vertexIndex;
         }
-        if (nextIndex >= vertexCount) {
-            nextIndex -= vertexCount;
+        // Retail keeps the first lowest vertex (strict compare).
+        if (polyVerts[vertexIndex].y > polyVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = vertexIndex;
         }
-        const zVec3& start = polyVerts[edgeVertexIndex];
-        const zVec3& end = polyVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableA[edgeCountA].yStart = edgeYStart;
-            edgeTableA[edgeCountA].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, xSlope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+    }
+
+    edgeCountA = 0;
+    edgeCountB = 0;
+    // The walks convert slope, x intercept and next row through the shared fixedBits double.
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertexCount) {
+                nextIndex -= vertexCount;
             }
-            ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepB;
-        if (nextIndex < 0) {
-            nextIndex += vertexCount;
-        }
-        if (nextIndex >= vertexCount) {
-            nextIndex -= vertexCount;
-        }
-        const zVec3& start = polyVerts[edgeVertexIndex];
-        const zVec3& end = polyVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableB[edgeCountB].yStart = edgeYStart;
-            edgeTableB[edgeCountB].reserved = 0;
-            if (dy != 0.0f) {
-                const float xSlope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, xSlope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * xSlope
-                );
-            } else {
-                edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
-            ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertexCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    } else {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertexCount) {
+                nextIndex -= vertexCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertexCount;
+            }
+            if (edgeSampleY <= polyVerts[nextIndex].y) {
+                const float dy = polyVerts[nextIndex].y - polyVerts[edgeVertexIndex].y;
+                const zVec3& start = polyVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (polyVerts[nextIndex].x - start.x) / dy;
+                    fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
+                    edge->xStepFixed = *(int*)(&fixedBits);
+                    fixedBits = 6755399441055744.0
+                        - (double)((start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope) * -65536.0f);
+                    edge->currentXFixed = *(int*)(&fixedBits);
+                }
+                fixedBits = 6755399441055744.0 - (double)(polyVerts[nextIndex].y * -65536.0f);
+                fixed16Value = *(int*)(&fixedBits);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
     }
 
-    if (edgeCountA == 0 || edgeCountB == 0) {
-        return;
-    }
-
+    currentXFixedA = edgeTableA[0].currentXFixed;
+    currentXFixedB = edgeTableB[0].currentXFixed;
+    xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
-    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[bottomVertexIndex].y);
-    const int lastScanline = (fixed16Value - 0x8041) >> 16;
-    if (firstScanline > lastScanline) {
-        return;
+    lastScanline = (fixed16Value - 0x8041) >> 16;
+    edgeIndexA = 0;
+    edgeIndexB = 0;
+    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+
+    if (entry != 0 && entry->nextVariant != 0) {
+        selectedImage = zRndrTextureMipSelectVariantImage(entry, triVerts, 3, scaledUV, &recipZGrad, &uGrad, &vGrad);
+    } else {
+        selectedImage = image;
     }
 
     zRndr::g_spanActiveTexPixels = (unsigned char*)(selectedImage->pixels);
-
-    zRndr::TexturedQueuedSpanProc spanProc = 0;
-    zRndr::TexturedQueuedSpanProc paletteSpanProc = 0;
     if (selectedImage->alphaMap != 0) {
+        // The alpha-mapped span routines take the raw float bits of the constant alpha.
+        zRndr::g_spanActiveConstAlphaBits = *(int*)(&alpha);
         zRndr::g_spanActiveTexAlphaMap = selectedImage->alphaMap;
-        int alphaBits = 0;
-        memcpy(&alphaBits, &alpha, sizeof(alphaBits));
-        zRndr::g_spanActiveConstAlphaBits = alphaBits;
-        spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode0;
-        paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode0;
+        zRndr::g_pfnSelectedSpanOp_Mode0 = zRndr::g_pfnPolyTlvSpanOp_Mode0;
+        zRndr::g_pfnSelectedSpanOp_Mode1 = zRndr::g_pfnPolyTlvSpanOpAlt_Mode0;
     } else {
+        alphaBits = (double)(alpha * 255.0f) - -6755399441055744.0;
+        zRndr::g_spanActiveConstAlphaBits = *(int*)(&alphaBits);
         zRndr::g_spanActiveTexAlphaMap = 0;
-        const double alphaScaled = (double)(alpha) * 255.0;
-        const double alphaFixedBits = alphaScaled - -6755399441055744.0;
-        zRndr::g_spanActiveConstAlphaBits = *(const int*)(&alphaFixedBits);
-        spanProc = zRndr::g_pfnPolyTlvSpanOp_Mode1;
-        paletteSpanProc = zRndr::g_pfnPolyTlvSpanOpAlt_Mode1;
+        zRndr::g_pfnSelectedSpanOp_Mode0 = zRndr::g_pfnPolyTlvSpanOp_Mode1;
+        zRndr::g_pfnSelectedSpanOp_Mode1 = zRndr::g_pfnPolyTlvSpanOpAlt_Mode1;
     }
-    zRndr::g_pfnSelectedSpanOp_Mode0 = spanProc;
-    zRndr::g_pfnSelectedSpanOp_Mode1 = paletteSpanProc;
-    spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
 
-    unsigned short* palette = (unsigned short*)(selectedImage->palette);
-    if (palette != 0) {
+    palette = (unsigned short*)(selectedImage->palette);
+    if (palette == 0) {
+        spanProc = zRndr::g_pfnSelectedSpanOp_Mode0;
+    } else {
         zRndr::g_spanActiveTexPalette = texKey == -1 ? palette : &palette[(texKey + 1) * 0x100];
         spanProc = zRndr::g_pfnSelectedSpanOp_Mode1;
-    } else {
-        zRndr::g_spanActiveTexPalette = 0;
     }
     zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
     zRndr::g_spanActiveTexUMask = selectedImage->uMask;
     zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
 
-    zRndr::SpanNodePartial* visibleSpans[0x40] = { 0 };
-    int edgeIndexA = 0;
-    int edgeIndexB = 0;
-    int currentXFixedA = edgeTableA[0].currentXFixed;
-    int currentXFixedB = edgeTableB[0].currentXFixed;
-    int xStepFixedA = edgeTableA[0].xStepFixed;
-    int xStepFixedB = edgeTableB[0].xStepFixed;
-    unsigned char* scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
-    const int texVShift = zRndr::g_spanActiveTexShift;
-
-    for (int y = firstScanline; y <= lastScanline; ++y) {
-        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
-            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
+    for (y = firstScanline; y <= lastScanline; ++y) {
+        while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {
             currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
+            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
             ++edgeIndexA;
         }
 
-        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
-            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
+        while (y >= edgeTableB[edgeIndexB].yStart && edgeIndexB < edgeCountB) {
             currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
+            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
             ++edgeIndexB;
         }
 
-        int xMin;
-        int xMax;
-        if (currentXFixedA > currentXFixedB) {
-            xMin = (currentXFixedB + 0x7fff) >> 16;
-            xMax = (currentXFixedA - 0x8001) >> 16;
-        } else {
+        if (currentXFixedA <= currentXFixedB) {
             xMin = (currentXFixedA + 0x7fff) >> 16;
             xMax = (currentXFixedB - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
         }
 
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-            const float rowReciprocalZ = (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
+            planeY = ((float)(y) + 0.5f) - triVerts[0].y;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
+            rowRecipZ = planeY * recipZGrad.y + triVerts[0].z;
             zRndr::g_spanAllocCursor->invDepth
-                = ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
+                = ((((float)(xMin) + 0.5f) - triVerts[0].x) * recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale
                 + zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep
-                = ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
+                = ((((float)(xMax) + 0.5f) - triVerts[0].x) * recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale
                 + zRndr::g_inverseDepthBias;
-            zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
-
-            int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial* span = visibleSpans[spanIndex];
-                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                        continue;
-                    }
-
-                    zRndr::g_spanCurrentSpanBaseAddr
-                        = (unsigned short*)(scanlineBase + (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    const int count = span->sampleXMax - span->sampleXMin + 1;
-                    const float startX = (float)(span->sampleXMin);
-                    const float endX = (float)(span->sampleXMin + count);
-                    const float sampleY = (float)(y);
-                    const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                    const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                    const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                    const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                        + gRndr_PerspInvDepthBase;
-                    const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                        + gRndr_PerspInvDepthBase;
-                    if (startInvZ != 0.0f && endInvZ != 0.0f) {
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const float texUStep = (endU - startU) * 1048576.0f / (float)(count);
-                        const float texVStep = (endV - startV) * 1048576.0f / (float)(count);
-                        const float texUStart = startU * 1048576.0f;
-                        const float texVStart = startV * 1048576.0f;
-                        const double texUStepBits = (double)(texUStep) - -6755399441055744.0;
-                        const double texVStepBits = (double)(texVStep) - -6755399441055744.0;
-                        const double texUStartBits = (double)(texUStart) - -6755399441055744.0;
-                        const double texVStartBits = (double)(texVStart) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&texUStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&texVStepBits);
-                        spanProc(*(const int*)(&texUStartBits), *(const int*)(&texVStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
+            zRndr::g_spanAllocCursor->depthSlope = recipZGrad.x;
+            zRndr::g_pfnBuildSpanListSecondary(spanList, y, &spanCount);
+            if (spanCount != 0) {
+                rowU = planeY * uGrad.y + scaledUV[0].x;
+                rowV = planeY * vGrad.y + scaledUV[0].y;
+                for (spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    span = spanList[spanIndex];
+                    count = span->sampleXMax - span->sampleXMin + 1;
+                    if (count > 0) {
+                        zRndr::g_spanCurrentSpanBaseAddr
+                            = (unsigned short*)(scanlineBase + span->sampleXMin * zRndr::g_bytesPerPixel);
+                        startX = ((float)(span->sampleXMin) + 0.5f) - triVerts[0].x;
+                        endX = ((float)(span->sampleXMax) + 0.5f) - triVerts[0].x;
+                        startInvZ = 1.0f / (startX * recipZGrad.x + rowRecipZ);
+                        startU = (startX * uGrad.x + rowU) * startInvZ;
+                        startV = (startX * vGrad.x + rowV) * startInvZ;
+                        texUStartBits = 6755399441055744.0 - (double)(startU * -1048576.0f);
+                        texVStartBits = 6755399441055744.0 - (double)(startV * -1048576.0f);
+                        endInvZ = 1.0f / (endX * recipZGrad.x + rowRecipZ);
+                        endU = (endX * uGrad.x + rowU) * endInvZ;
+                        endV = (endX * vGrad.x + rowV) * endInvZ;
+                        texUStepBits = 6755399441055744.0 - (double)((endU - startU) * -1048576.0f);
+                        texVStepBits = 6755399441055744.0 - (double)((endV - startV) * -1048576.0f);
+                        // Retail divides the fixed-point delta by the pixel count (idiv).
+                        zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&texUStepBits) / count;
+                        zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&texVStepBits) / count;
+                        spanProc(*(int*)(&texUStartBits), *(int*)(&texVStartBits), count, zRndr::g_spanActiveTexShift);
                     }
                 }
             }
@@ -3542,413 +3599,470 @@ void __fastcall zRndrDrawTexturedQueuedAlpha(
     int variantIndex
 )
 {
-    if (entry == 0 || entry->image == 0 || projectedVerts == 0 || triVerts == 0 || triUVs == 0 || vertCount <= 0
-        || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
-        return;
-    }
+    ScanConvertEdge edgeTableB[0x40];
+    ScanConvertEdge edgeTableA[0x40];
+    zRndr::SpanNodePartial* spanList[0x141];
+    zVidImagePartial* image;
+    float imageWidth;
+    float imageHeight;
+    zVec2 scaledUV[3];
+    zVec2 recipZGrad;
+    zVec2 uGrad;
+    zVec2 vGrad;
+    float recipZBase;
+    float uBase;
+    float vBase;
+    float originX;
+    float originY;
+    float dx01;
+    float dx21;
+    float dy01;
+    float dy21;
+    float determinant;
+    float inverseDeterminant;
+    float dz01;
+    float dz21;
+    float du01;
+    float du21;
+    float dv01;
+    float dv21;
+    float textureScale;
+    float minPositiveZ;
+    float vertexZ;
+    float adjustX;
+    float adjustY;
+    int vertexIndex;
+    int topVertexIndex;
+    int bottomVertexIndex;
+    int edgeCountA;
+    int edgeCountB;
+    int edgeVertexIndex;
+    int fixed16Value;
+    int edgeYStart;
+    float edgeSampleY;
+    ScanConvertEdge* edge;
+    int firstScanline;
+    int lastScanline;
+    unsigned char* scanlineBase;
+    int chunkPixels;
+    int chunkBytes;
+    float chunkWidth;
+    double chunkBits;
+    float chunkScale;
+    float chunkZStep;
+    float chunkUStep;
+    float chunkVStep;
+    zRndr::TexturedQueuedSpanProc spanProc;
+    unsigned short* palette;
+    int* nextEdgeA;
+    int* nextEdgeB;
+    int currentXFixedA;
+    int currentXFixedB;
+    int xStepFixedA;
+    int xStepFixedB;
+    int endScanline;
+    int nextEventScanline;
+    int y;
+    int xMin;
+    int xMax;
+    float sampleY;
+    float rowRecipZ;
+    float rowU;
+    float rowV;
+    int spanCount;
+    int spanIndex;
+    zRndr::SpanNodePartial* span;
+    int remaining;
+    float startX;
+    float z;
+    float invZ;
+    float uz;
+    float vz;
+    float startU;
+    float startV;
+    float endU;
+    float endV;
+    float endX;
+    float countF;
+    float endZ;
+    float endScale;
+    double uStartBits;
+    double vStartBits;
+    double uStepBits;
+    double vStepBits;
 
-    zVidImagePartial* selectedImage = entry->image;
-    const float imageWidth = (float)(selectedImage->width);
-    const float imageHeight = (float)(selectedImage->height);
-
-    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
-    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
-    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
-    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
-    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
-    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
-
-    const bool useClippedNearPlane = clippedTriVerts != 0
-        && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f);
-    if (useClippedNearPlane) {
+    image = entry != 0 ? entry->image : 0;
+    imageWidth = (float)(image->width);
+    imageHeight = (float)(image->height);
+    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
+    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
+    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
+    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
+    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
+    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    if (clippedTriVerts != 0
+        && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f)) {
         zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
-            (zVec2*)(&gRndr_PerspInvDepthStepX),
-            &gRndr_PerspInvDepthBase,
-            (zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            &gRndr_PerspTexScaledUOverZBase,
-            (zVec2*)(&gRndr_PerspTexScaledVOverZStepX),
-            &gRndr_PerspTexScaledVOverZBase
+            &recipZGrad,
+            &recipZBase,
+            &uGrad,
+            &uBase,
+            &vGrad,
+            &vBase
         );
-        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
-        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
-        gRndr_PerspTexScaledUOverZBase *= imageWidth;
-        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
-        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
-        gRndr_PerspTexScaledVOverZBase *= imageHeight;
-        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
-        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
+        uGrad.x *= imageWidth;
+        uGrad.y *= imageWidth;
+        uBase *= imageWidth;
+        vGrad.x *= imageHeight;
+        vGrad.y *= imageHeight;
+        vBase *= imageHeight;
+        originX = g_zMath_ProjOffsetX;
+        originY = g_zMath_ProjOffsetY;
     } else {
-        const float reciprocalValues[3] = { triVerts[0].z, triVerts[1].z, triVerts[2].z };
-        const float uValues[3]
-            = { gRndr_PerspTexScaledUOverZ0, gRndr_PerspTexScaledUOverZ1, gRndr_PerspTexScaledUOverZ2 };
-        const float vValues[3]
-            = { gRndr_PerspTexScaledVOverZ0, gRndr_PerspTexScaledVOverZ1, gRndr_PerspTexScaledVOverZ2 };
-        const float dx10 = triVerts[0].x - triVerts[1].x;
-        const float dx12 = triVerts[2].x - triVerts[1].x;
-        const float dy10 = triVerts[0].y - triVerts[1].y;
-        const float dy12 = triVerts[2].y - triVerts[1].y;
-        const float determinant = dy12 * dx10 - dy10 * dx12;
-        Plane2f reciprocalZ = { 0 };
-        Plane2f uOverZ = { 0 };
-        Plane2f vOverZ = { 0 };
-        if (determinant != 0.0f) {
-            const float inverseDeterminant = -1.0f / determinant;
-            const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
-            const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
-            const float u10 = uValues[0] - uValues[1];
-            const float u12 = uValues[2] - uValues[1];
-            const float v10 = vValues[0] - vValues[1];
-            const float v12 = vValues[2] - vValues[1];
-            reciprocalZ.gradient.x = (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
-            reciprocalZ.gradient.y = (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
-            uOverZ.gradient.x = (dy12 * u10 - dy10 * u12) * inverseDeterminant;
-            uOverZ.gradient.y = (dx10 * u12 - dx12 * u10) * inverseDeterminant;
-            vOverZ.gradient.x = (dy12 * v10 - dy10 * v12) * inverseDeterminant;
-            vOverZ.gradient.y = (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+        dx21 = triVerts[2].x - triVerts[1].x;
+        dy01 = triVerts[0].y - triVerts[1].y;
+        dx01 = triVerts[0].x - triVerts[1].x;
+        dy21 = triVerts[2].y - triVerts[1].y;
+        determinant = dy21 * dx01 - dx21 * dy01;
+        if (determinant != 0.0) {
+            inverseDeterminant = -1.0f / determinant;
+            dz01 = triVerts[0].z - triVerts[1].z;
+            dz21 = triVerts[2].z - triVerts[1].z;
+            du01 = scaledUV[0].x - scaledUV[1].x;
+            du21 = scaledUV[2].x - scaledUV[1].x;
+            dv01 = scaledUV[0].y - scaledUV[1].y;
+            dv21 = scaledUV[2].y - scaledUV[1].y;
+            recipZGrad.x = (dz21 * dy01 - dz01 * dy21) * inverseDeterminant;
+            recipZGrad.y = (dz01 * dx21 - dz21 * dx01) * inverseDeterminant;
+            uGrad.x = (du21 * dy01 - du01 * dy21) * inverseDeterminant;
+            uGrad.y = (du01 * dx21 - du21 * dx01) * inverseDeterminant;
+            vGrad.x = (dv21 * dy01 - dv01 * dy21) * inverseDeterminant;
+            vGrad.y = (dv01 * dx21 - dv21 * dx01) * inverseDeterminant;
+        } else {
+            recipZGrad.x = recipZGrad.y = uGrad.x = uGrad.y = vGrad.x = vGrad.y = 0.0f;
         }
-        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
-        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
-        gRndr_PerspInvDepthBase = reciprocalValues[0];
-        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
-        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
-        gRndr_PerspTexScaledUOverZBase = uValues[0];
-        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
-        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
-        gRndr_PerspTexScaledVOverZBase = vValues[0];
-        gRndr_PerspPlaneOriginX = triVerts[0].x;
-        gRndr_PerspPlaneOriginY = triVerts[0].y;
+        recipZBase = triVerts[0].z;
+        uBase = scaledUV[0].x;
+        vBase = scaledUV[0].y;
+        originX = triVerts[0].x;
+        originY = triVerts[0].y;
     }
 
-    TexturedPlanes planes = { 0 };
-    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
-    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
-    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
-    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
-    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
-    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
-    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
-    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
-    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
-    planes.originX = gRndr_PerspPlaneOriginX;
-    planes.originY = gRndr_PerspPlaneOriginY;
-    const float adjustX = planes.originX - 0.5f;
-    const float adjustY = planes.originY - 0.5f;
-    planes.reciprocalZ.base -= adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
-    planes.uOverZ.base -= adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
-    planes.vOverZ.base -= adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
-
-    float textureScale = 1048576.0f;
-    if (entry->nextVariant != 0) {
-        selectedImage = zRndrTextureMipSelectVariantImage(
-            entry,
-            triVerts,
-            3,
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZ0),
-            (const zVec2*)(&gRndr_PerspInvDepthStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledVOverZStepX)
-        );
-        if (selectedImage == 0) {
-            return;
-        }
-
-        const float widthScale = selectedImage->widthScale != 0.0f ? selectedImage->widthScale : 1.0f;
-        textureScale = 1048576.0f / widthScale;
+    if (entry != 0 && entry->nextVariant != 0) {
+        image = zRndrTextureMipSelectVariantImage(entry, triVerts, 3, scaledUV, &recipZGrad, &uGrad, &vGrad);
+        textureScale = 1048576.0f / image->widthScale;
+    } else {
+        textureScale = 1048576.0f;
     }
 
-    int topVertexIndex = 0;
-    int bottomVertexIndex = 0;
-    float minPositiveReciprocalZ = 1000.0f;
-    for (int i_4890 = 0; i_4890 < vertCount; ++i_4890) {
-        const float reciprocalZ = projectedVerts[i_4890].x * planes.reciprocalZ.gradient.x
-            + projectedVerts[i_4890].y * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
-        if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
-            minPositiveReciprocalZ = reciprocalZ;
+    // Retail estimates the nearest positive depth from the x term of the reciprocal-Z plane only.
+    minPositiveZ = 1000.0f;
+    topVertexIndex = 0;
+    bottomVertexIndex = 0;
+    for (vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+        vertexZ = (projectedVerts[vertexIndex].x - originX) * recipZGrad.x + recipZBase;
+        if (vertexZ > 0.0f && vertexZ < minPositiveZ) {
+            minPositiveZ = vertexZ;
         }
-
-        if (projectedVerts[i_4890].y < projectedVerts[topVertexIndex].y) {
-            topVertexIndex = i_4890;
+    }
+    for (vertexIndex = 1; vertexIndex < vertCount; ++vertexIndex) {
+        if (projectedVerts[vertexIndex].y < projectedVerts[topVertexIndex].y) {
+            topVertexIndex = vertexIndex;
         }
-        if (projectedVerts[i_4890].y > projectedVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i_4890;
+        // Retail keeps the first lowest vertex (strict compare).
+        if (projectedVerts[vertexIndex].y > projectedVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = vertexIndex;
         }
     }
 
-    ScanConvertEdge edgeTableA[0x40] = { 0 };
-    ScanConvertEdge edgeTableB[0x40] = { 0 };
-    int edgeCountA = 0;
-    int edgeCountB = 0;
-    int fixed16Value;
-    int edgeVertexIndex;
-    int edgeYStart;
-    float edgeSampleY;
-    const int edgeStepA = zRndr::g_scanConvertMode != 0 ? 1 : -1;
-    const int edgeStepB = -edgeStepA;
+    adjustX = originX - 0.5f;
+    adjustY = originY - 0.5f;
+    recipZBase -= adjustX * recipZGrad.x + adjustY * recipZGrad.y;
+    uBase -= adjustX * uGrad.x + adjustY * uGrad.y;
+    vBase -= adjustX * vGrad.x + adjustY * vGrad.y;
 
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepA;
-        if (nextIndex < 0)
-            nextIndex += vertCount;
-        if (nextIndex >= vertCount)
-            nextIndex -= vertCount;
-        const zVec3& start = projectedVerts[edgeVertexIndex];
-        const zVec3& end = projectedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableA[edgeCountA].yStart = edgeYStart;
-            edgeTableA[edgeCountA].reserved = 0;
-            if (dy != 0.0f) {
-                const float slope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, slope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * slope
-                );
-            } else {
-                edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+    edgeCountA = 0;
+    edgeCountB = 0;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
             }
-            ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepB;
-        if (nextIndex < 0)
-            nextIndex += vertCount;
-        if (nextIndex >= vertCount)
-            nextIndex -= vertCount;
-        const zVec3& start = projectedVerts[edgeVertexIndex];
-        const zVec3& end = projectedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableB[edgeCountB].yStart = edgeYStart;
-            edgeTableB[edgeCountB].reserved = 0;
-            if (dy != 0.0f) {
-                const float slope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, slope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * slope
-                );
-            } else {
-                edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
-            ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-    if (edgeCountA == 0 || edgeCountB == 0)
-        return;
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
 
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    } else {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    }
+
+    // Retail terminates both edge tables with a far-below sentinel start row.
+    edgeTableA[edgeCountA].yStart = 9999;
+    edgeTableB[edgeCountB].yStart = 9999;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
-    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[bottomVertexIndex].y);
-    const int lastScanline = (fixed16Value - 0x8041) >> 16;
-    if (firstScanline > lastScanline) {
-        return;
+    lastScanline = (fixed16Value - 0x8041) >> 16;
+    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+
+    if (zRndr::g_perspectiveAdaptiveMinSpan != 0) {
+        if (recipZGrad.x == 0.0f) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+        } else {
+            chunkBits = fabs(minPositiveZ * zRndr::g_perspectiveAdaptiveSlope / recipZGrad.x) - -6755399441055744.0;
+            chunkPixels = *(int*)(&chunkBits);
+            if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
+                chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+            } else if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
+                chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
+            }
+        }
+        chunkBytes = chunkPixels * zRndr::g_bytesPerPixel;
+        chunkWidth = (float)(chunkPixels);
+    } else {
+        chunkBytes = zRndr::g_perspectiveTextureDeltaXBytes;
+        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
+        chunkWidth = zRndr::g_perspectiveTextureDeltaXPow2F;
     }
+    chunkScale = textureScale / chunkWidth;
 
-    zRndr::g_spanActiveTexPixels = (unsigned char*)(selectedImage->pixels);
-    zRndr::g_spanQueuedTexAlphaMap = selectedImage->queuedAlphaMap;
-    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
-    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
-    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
-    zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnTexturedQueuedSpanOp_Mode0;
-
-    unsigned short* palette = (unsigned short*)(selectedImage->palette);
-    if (palette != 0) {
+    zRndr::g_spanActiveTexPixels = (unsigned char*)(image->pixels);
+    zRndr::g_spanQueuedTexAlphaMap = image->queuedAlphaMap;
+    zRndr::g_spanActiveTexShift = image->uShiftFrom20;
+    zRndr::g_spanActiveTexUMask = image->uMask;
+    zRndr::g_spanActiveTexVMask = image->vMaskFixed20;
+    chunkZStep = chunkWidth * recipZGrad.x;
+    chunkUStep = chunkWidth * uGrad.x;
+    chunkVStep = chunkWidth * vGrad.x;
+    palette = (unsigned short*)(image->palette);
+    if (palette == 0) {
+        spanProc = zRndr::g_pfnTexturedQueuedSpanOp_Mode0;
+    } else {
         zRndr::g_spanActiveTexPalette = variantIndex == -1 ? palette : &palette[(variantIndex + 1) * 0x100];
         spanProc = zRndr::g_pfnTexturedQueuedSpanOp_Mode1;
-    } else {
-        zRndr::g_spanActiveTexPalette = 0;
     }
 
-    if (spanProc == 0) {
-        return;
+    xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
+    currentXFixedA = edgeTableA[0].currentXFixed;
+    currentXFixedB = edgeTableB[0].currentXFixed;
+    endScanline = lastScanline + 1;
+    nextEventScanline = endScanline;
+    if (edgeTableA[1].yStart < nextEventScanline) {
+        nextEventScanline = edgeTableA[1].yStart;
     }
-
-    zRndr::SpanNodePartial* visibleSpans[0x40] = { 0 };
-    int edgeIndexA = 0;
-    int edgeIndexB = 0;
-    int currentXFixedA = edgeTableA[0].currentXFixed;
-    int currentXFixedB = edgeTableB[0].currentXFixed;
-    int xStepFixedA = edgeTableA[0].xStepFixed;
-    int xStepFixedB = edgeTableB[0].xStepFixed;
-    unsigned char* scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
-    int chunkPixels;
-    if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
-        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
-    } else {
-        float selectedChunk = (float)(zRndr::g_perspectiveAdaptiveMaxSpan);
-        if (planes.reciprocalZ.gradient.x != 0.0f) {
-            selectedChunk = minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope / planes.reciprocalZ.gradient.x;
-            if (selectedChunk < 0.0f)
-                selectedChunk = -selectedChunk;
-        }
-        const double selectedChunkBits = (double)(selectedChunk) - -6755399441055744.0;
-        chunkPixels = *(const int*)(&selectedChunkBits);
-        if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
-            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
-        }
-        if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
-            chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
-        }
+    if (edgeTableB[1].yStart < nextEventScanline) {
+        nextEventScanline = edgeTableB[1].yStart;
     }
-    if (chunkPixels < 1)
-        chunkPixels = 1;
-    const int texVShift = zRndr::g_spanActiveTexShift;
+    nextEdgeB = &edgeTableB[1].yStart;
+    nextEdgeA = &edgeTableA[1].yStart;
 
-    for (int y = firstScanline; y <= lastScanline; ++y) {
-        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
-            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
-            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
-            ++edgeIndexA;
+    // Retail advances the edges only at the precomputed next event row and exits there past the last row.
+    for (y = firstScanline;; ++y) {
+        if (y >= nextEventScanline) {
+            if (y >= endScanline) {
+                return;
+            }
+            if (y >= *nextEdgeA) {
+                currentXFixedA = nextEdgeA[1];
+                xStepFixedA = nextEdgeA[-1];
+                nextEdgeA += 4;
+            }
+            if (y >= *nextEdgeB) {
+                currentXFixedB = nextEdgeB[1];
+                xStepFixedB = nextEdgeB[-1];
+                nextEdgeB += 4;
+            }
+            nextEventScanline = endScanline;
+            if (*nextEdgeA < nextEventScanline) {
+                nextEventScanline = *nextEdgeA;
+            }
+            if (*nextEdgeB < nextEventScanline) {
+                nextEventScanline = *nextEdgeB;
+            }
         }
-        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
-            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
-            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
-            ++edgeIndexB;
-        }
-        int xMin;
-        int xMax;
-        if (currentXFixedA > currentXFixedB) {
-            xMin = (currentXFixedB + 0x7fff) >> 16;
-            xMax = (currentXFixedA - 0x8001) >> 16;
-        } else {
+
+        if (currentXFixedA <= currentXFixedB) {
             xMin = (currentXFixedA + 0x7fff) >> 16;
             xMax = (currentXFixedB - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
         }
+
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-
-            const float rowReciprocalZ = (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
+            sampleY = (float)(y);
+            rowRecipZ = sampleY * recipZGrad.y + recipZBase;
             zRndr::g_spanAllocCursor->invDepth
-                = ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
-                + zRndr::g_inverseDepthBias;
+                = ((float)(xMin)*recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale + zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep
-                = ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
-                + zRndr::g_inverseDepthBias;
-            zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
-
-            int spanCount = 0;
-            zRndr::g_pfnBuildSpanList(visibleSpans, y, &spanCount);
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial* span = visibleSpans[spanIndex];
-                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                        continue;
-                    }
-
+                = ((float)(xMax)*recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale + zRndr::g_inverseDepthBias;
+            zRndr::g_spanAllocCursor->depthSlope = recipZGrad.x;
+            zRndr::g_pfnBuildSpanList(spanList, y, &spanCount);
+            if (spanCount != 0) {
+                rowU = sampleY * uGrad.y + uBase;
+                rowV = sampleY * vGrad.y + vBase;
+                for (spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    span = spanList[spanIndex];
                     zRndr::g_spanCurrentSpanBaseAddr
-                        = (unsigned short*)(scanlineBase + (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    int remaining = span->sampleXMax - span->sampleXMin + 1;
-                    int x = span->sampleXMin;
+                        = (unsigned short*)(scanlineBase + span->sampleXMin * zRndr::g_bytesPerPixel);
+                    remaining = span->sampleXMax - span->sampleXMin + 1;
+                    startX = (float)(span->sampleXMin);
+                    z = startX * recipZGrad.x + rowRecipZ;
+                    uz = startX * uGrad.x + rowU;
+                    vz = startX * vGrad.x + rowV;
+                    invZ = 1.0f / z;
+                    startU = invZ * uz;
+                    startV = invZ * vz;
+                    // Each chunk is handed to the span routine from its far end, stepping back toward its start.
                     while (remaining > chunkPixels) {
-                        const int count = chunkPixels;
-                        const float startX = (float)(x);
-                        const float endX = (float)(x + count);
-                        const float sampleY = (float)(y);
-                        const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                        const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX
-                            + planeY * gRndr_PerspInvDepthStepY + gRndr_PerspInvDepthBase;
-                        const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                            + gRndr_PerspInvDepthBase;
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const double uStepBits
-                            = (double)((endU - startU) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double vStepBits
-                            = (double)((endV - startV) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
-                        const double vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&uStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&vStepBits);
-                        spanProc(*(const int*)(&uStartBits), *(const int*)(&vStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
-                        x += count;
-                        remaining -= count;
+                        z += chunkZStep;
+                        invZ = 1.0f / z;
+                        uz += chunkUStep;
+                        vz += chunkVStep;
+                        endU = invZ * uz;
+                        endV = invZ * vz;
+                        uStartBits = (double)(endU * textureScale) - -6755399441055744.0;
+                        vStartBits = (double)(endV * textureScale) - -6755399441055744.0;
+                        uStepBits = (double)((startU - endU) * chunkScale) - -6755399441055744.0;
+                        vStepBits = (double)((startV - endV) * chunkScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&vStepBits);
+                        spanProc(*(int*)(&uStartBits), *(int*)(&vStartBits), chunkPixels, zRndr::g_spanActiveTexShift);
+                        startU = endU;
+                        startV = endV;
+                        remaining -= chunkPixels;
+                        zRndr::g_spanCurrentSpanBaseAddr
+                            = (unsigned short*)((unsigned char*)(zRndr::g_spanCurrentSpanBaseAddr) + chunkBytes);
                     }
-
-                    if (remaining > 0) {
-                        const int count = remaining;
-                        const float startX = (float)(x);
-                        const float endX = (float)(x + count);
-                        const float sampleY = (float)(y);
-                        const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                        const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX
-                            + planeY * gRndr_PerspInvDepthStepY + gRndr_PerspInvDepthBase;
-                        const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                            + gRndr_PerspInvDepthBase;
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const double uStepBits
-                            = (double)((endU - startU) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double vStepBits
-                            = (double)((endV - startV) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
-                        const double vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&uStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&vStepBits);
-                        spanProc(*(const int*)(&uStartBits), *(const int*)(&vStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
-                    }
+                    endX = (float)(span->sampleXMax);
+                    countF = (float)(remaining);
+                    endZ = endX * recipZGrad.x + rowRecipZ;
+                    endScale = textureScale / (countF * endZ);
+                    uz = endX * uGrad.x + rowU;
+                    vz = endX * vGrad.x + rowV;
+                    uStartBits = (double)(countF * endScale * uz) - -6755399441055744.0;
+                    vStartBits = (double)(countF * endScale * vz) - -6755399441055744.0;
+                    uStepBits = (double)((startU * endZ - uz) * endScale) - -6755399441055744.0;
+                    vStepBits = (double)((startV * endZ - vz) * endScale) - -6755399441055744.0;
+                    zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&uStepBits);
+                    zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&vStepBits);
+                    spanProc(*(int*)(&uStartBits), *(int*)(&vStartBits), remaining, zRndr::g_spanActiveTexShift);
                 }
             }
         }
+
         scanlineBase += zRndr::g_pitchBytes;
     }
 }
@@ -3971,414 +4085,470 @@ void __fastcall zRndrDrawTexturedFanTri(
     int variantIndex
 )
 {
-    if (entry == 0 || entry->image == 0 || projectedVerts == 0 || triVerts == 0 || triUVs == 0 || vertCount <= 0
-        || zRndr::g_spanAllocCursor == 0 || zRndr::g_frameBuffer == 0) {
-        return;
-    }
+    ScanConvertEdge edgeTableB[0x40];
+    ScanConvertEdge edgeTableA[0x40];
+    zRndr::SpanNodePartial* spanList[0x141];
+    zVidImagePartial* image;
+    float imageWidth;
+    float imageHeight;
+    zVec2 scaledUV[3];
+    zVec2 recipZGrad;
+    zVec2 uGrad;
+    zVec2 vGrad;
+    float recipZBase;
+    float uBase;
+    float vBase;
+    float originX;
+    float originY;
+    float dx01;
+    float dx21;
+    float dy01;
+    float dy21;
+    float determinant;
+    float inverseDeterminant;
+    float dz01;
+    float dz21;
+    float du01;
+    float du21;
+    float dv01;
+    float dv21;
+    float textureScale;
+    float minPositiveZ;
+    float vertexZ;
+    float adjustX;
+    float adjustY;
+    int vertexIndex;
+    int topVertexIndex;
+    int bottomVertexIndex;
+    int edgeCountA;
+    int edgeCountB;
+    int edgeVertexIndex;
+    int fixed16Value;
+    int edgeYStart;
+    float edgeSampleY;
+    ScanConvertEdge* edge;
+    int firstScanline;
+    int lastScanline;
+    unsigned char* scanlineBase;
+    int chunkPixels;
+    int chunkBytes;
+    float chunkWidth;
+    double chunkBits;
+    float chunkScale;
+    float chunkZStep;
+    float chunkUStep;
+    float chunkVStep;
+    zRndr::TexturedQueuedSpanProc spanProc;
+    unsigned short* palette;
+    int* nextEdgeA;
+    int* nextEdgeB;
+    int currentXFixedA;
+    int currentXFixedB;
+    int xStepFixedA;
+    int xStepFixedB;
+    int endScanline;
+    int nextEventScanline;
+    int y;
+    int xMin;
+    int xMax;
+    float sampleY;
+    float rowRecipZ;
+    float rowU;
+    float rowV;
+    int spanCount;
+    int spanIndex;
+    zRndr::SpanNodePartial* span;
+    int remaining;
+    float startX;
+    float z;
+    float invZ;
+    float uz;
+    float vz;
+    float startU;
+    float startV;
+    float endU;
+    float endV;
+    float endX;
+    float countF;
+    float endZ;
+    float endScale;
+    double uStartBits;
+    double vStartBits;
+    double uStepBits;
+    double vStepBits;
 
-    zVidImagePartial* selectedImage = entry->image;
-    const float imageWidth = (float)(selectedImage->width);
-    const float imageHeight = (float)(selectedImage->height);
-
-    gRndr_PerspTexScaledUOverZ0 = imageWidth * triVerts[0].z * triUVs[0].x;
-    gRndr_PerspTexScaledVOverZ0 = imageHeight * triVerts[0].z * triUVs[0].y;
-    gRndr_PerspTexScaledUOverZ1 = imageWidth * triVerts[1].z * triUVs[1].x;
-    gRndr_PerspTexScaledVOverZ1 = imageHeight * triVerts[1].z * triUVs[1].y;
-    gRndr_PerspTexScaledUOverZ2 = imageWidth * triVerts[2].z * triUVs[2].x;
-    gRndr_PerspTexScaledVOverZ2 = imageHeight * triVerts[2].z * triUVs[2].y;
-
-    const bool useClippedNearPlane = clippedTriVerts != 0
-        && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f);
-    if (useClippedNearPlane) {
+    image = entry != 0 ? entry->image : 0;
+    imageWidth = (float)(image->width);
+    imageHeight = (float)(image->height);
+    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
+    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
+    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
+    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
+    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
+    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    if (clippedTriVerts != 0
+        && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f)) {
         zMathBuildPerspectiveTextureInterpolants(
             clippedTriVerts,
             triUVs,
-            (zVec2*)(&gRndr_PerspInvDepthStepX),
-            &gRndr_PerspInvDepthBase,
-            (zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            &gRndr_PerspTexScaledUOverZBase,
-            (zVec2*)(&gRndr_PerspTexScaledVOverZStepX),
-            &gRndr_PerspTexScaledVOverZBase
+            &recipZGrad,
+            &recipZBase,
+            &uGrad,
+            &uBase,
+            &vGrad,
+            &vBase
         );
-        gRndr_PerspTexScaledUOverZStepX *= imageWidth;
-        gRndr_PerspTexScaledUOverZStepY *= imageWidth;
-        gRndr_PerspTexScaledUOverZBase *= imageWidth;
-        gRndr_PerspTexScaledVOverZStepX *= imageHeight;
-        gRndr_PerspTexScaledVOverZStepY *= imageHeight;
-        gRndr_PerspTexScaledVOverZBase *= imageHeight;
-        gRndr_PerspPlaneOriginX = g_zMath_ProjOffsetX;
-        gRndr_PerspPlaneOriginY = g_zMath_ProjOffsetY;
+        uGrad.x *= imageWidth;
+        uGrad.y *= imageWidth;
+        uBase *= imageWidth;
+        vGrad.x *= imageHeight;
+        vGrad.y *= imageHeight;
+        vBase *= imageHeight;
+        originX = g_zMath_ProjOffsetX;
+        originY = g_zMath_ProjOffsetY;
     } else {
-        const float reciprocalValues[3] = { triVerts[0].z, triVerts[1].z, triVerts[2].z };
-        const float uValues[3]
-            = { gRndr_PerspTexScaledUOverZ0, gRndr_PerspTexScaledUOverZ1, gRndr_PerspTexScaledUOverZ2 };
-        const float vValues[3]
-            = { gRndr_PerspTexScaledVOverZ0, gRndr_PerspTexScaledVOverZ1, gRndr_PerspTexScaledVOverZ2 };
-        const float dx10 = triVerts[0].x - triVerts[1].x;
-        const float dx12 = triVerts[2].x - triVerts[1].x;
-        const float dy10 = triVerts[0].y - triVerts[1].y;
-        const float dy12 = triVerts[2].y - triVerts[1].y;
-        const float determinant = dy12 * dx10 - dy10 * dx12;
-        Plane2f reciprocalZ = { 0 };
-        Plane2f uOverZ = { 0 };
-        Plane2f vOverZ = { 0 };
-        if (determinant != 0.0f) {
-            const float inverseDeterminant = -1.0f / determinant;
-            const float reciprocal10 = reciprocalValues[0] - reciprocalValues[1];
-            const float reciprocal12 = reciprocalValues[2] - reciprocalValues[1];
-            const float u10 = uValues[0] - uValues[1];
-            const float u12 = uValues[2] - uValues[1];
-            const float v10 = vValues[0] - vValues[1];
-            const float v12 = vValues[2] - vValues[1];
-            reciprocalZ.gradient.x = (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
-            reciprocalZ.gradient.y = (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
-            uOverZ.gradient.x = (dy12 * u10 - dy10 * u12) * inverseDeterminant;
-            uOverZ.gradient.y = (dx10 * u12 - dx12 * u10) * inverseDeterminant;
-            vOverZ.gradient.x = (dy12 * v10 - dy10 * v12) * inverseDeterminant;
-            vOverZ.gradient.y = (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+        dx21 = triVerts[2].x - triVerts[1].x;
+        dy01 = triVerts[0].y - triVerts[1].y;
+        dx01 = triVerts[0].x - triVerts[1].x;
+        dy21 = triVerts[2].y - triVerts[1].y;
+        determinant = dy21 * dx01 - dx21 * dy01;
+        if (determinant != 0.0) {
+            inverseDeterminant = -1.0f / determinant;
+            dz01 = triVerts[0].z - triVerts[1].z;
+            dz21 = triVerts[2].z - triVerts[1].z;
+            du01 = scaledUV[0].x - scaledUV[1].x;
+            du21 = scaledUV[2].x - scaledUV[1].x;
+            dv01 = scaledUV[0].y - scaledUV[1].y;
+            dv21 = scaledUV[2].y - scaledUV[1].y;
+            recipZGrad.x = (dz21 * dy01 - dz01 * dy21) * inverseDeterminant;
+            recipZGrad.y = (dz01 * dx21 - dz21 * dx01) * inverseDeterminant;
+            uGrad.x = (du21 * dy01 - du01 * dy21) * inverseDeterminant;
+            uGrad.y = (du01 * dx21 - du21 * dx01) * inverseDeterminant;
+            vGrad.x = (dv21 * dy01 - dv01 * dy21) * inverseDeterminant;
+            vGrad.y = (dv01 * dx21 - dv21 * dx01) * inverseDeterminant;
+        } else {
+            recipZGrad.x = recipZGrad.y = uGrad.x = uGrad.y = vGrad.x = vGrad.y = 0.0f;
         }
-        gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
-        gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
-        gRndr_PerspInvDepthBase = reciprocalValues[0];
-        gRndr_PerspTexScaledUOverZStepX = uOverZ.gradient.x;
-        gRndr_PerspTexScaledUOverZStepY = uOverZ.gradient.y;
-        gRndr_PerspTexScaledUOverZBase = uValues[0];
-        gRndr_PerspTexScaledVOverZStepX = vOverZ.gradient.x;
-        gRndr_PerspTexScaledVOverZStepY = vOverZ.gradient.y;
-        gRndr_PerspTexScaledVOverZBase = vValues[0];
-        gRndr_PerspPlaneOriginX = triVerts[0].x;
-        gRndr_PerspPlaneOriginY = triVerts[0].y;
+        recipZBase = triVerts[0].z;
+        uBase = scaledUV[0].x;
+        vBase = scaledUV[0].y;
+        originX = triVerts[0].x;
+        originY = triVerts[0].y;
     }
 
-    TexturedPlanes planes = { 0 };
-    planes.reciprocalZ.gradient.x = gRndr_PerspInvDepthStepX;
-    planes.reciprocalZ.gradient.y = gRndr_PerspInvDepthStepY;
-    planes.reciprocalZ.base = gRndr_PerspInvDepthBase;
-    planes.uOverZ.gradient.x = gRndr_PerspTexScaledUOverZStepX;
-    planes.uOverZ.gradient.y = gRndr_PerspTexScaledUOverZStepY;
-    planes.uOverZ.base = gRndr_PerspTexScaledUOverZBase;
-    planes.vOverZ.gradient.x = gRndr_PerspTexScaledVOverZStepX;
-    planes.vOverZ.gradient.y = gRndr_PerspTexScaledVOverZStepY;
-    planes.vOverZ.base = gRndr_PerspTexScaledVOverZBase;
-    planes.originX = gRndr_PerspPlaneOriginX;
-    planes.originY = gRndr_PerspPlaneOriginY;
-    const float adjustX = planes.originX - 0.5f;
-    const float adjustY = planes.originY - 0.5f;
-    planes.reciprocalZ.base -= adjustX * planes.reciprocalZ.gradient.x + adjustY * planes.reciprocalZ.gradient.y;
-    planes.uOverZ.base -= adjustX * planes.uOverZ.gradient.x + adjustY * planes.uOverZ.gradient.y;
-    planes.vOverZ.base -= adjustX * planes.vOverZ.gradient.x + adjustY * planes.vOverZ.gradient.y;
-
-    float textureScale = 1048576.0f;
-    if (entry->nextVariant != 0) {
-        selectedImage = zRndrTextureMipSelectVariantImage(
-            entry,
-            triVerts,
-            3,
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZ0),
-            (const zVec2*)(&gRndr_PerspInvDepthStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledUOverZStepX),
-            (const zVec2*)(&gRndr_PerspTexScaledVOverZStepX)
-        );
-        if (selectedImage == 0) {
-            return;
-        }
-
-        const float widthScale = selectedImage->widthScale != 0.0f ? selectedImage->widthScale : 1.0f;
-        textureScale = 1048576.0f / widthScale;
+    if (entry != 0 && entry->nextVariant != 0) {
+        image = zRndrTextureMipSelectVariantImage(entry, triVerts, 3, scaledUV, &recipZGrad, &uGrad, &vGrad);
+        textureScale = 1048576.0f / image->widthScale;
+    } else {
+        textureScale = 1048576.0f;
     }
 
-    int topVertexIndex = 0;
-    int bottomVertexIndex = 0;
-    float minPositiveReciprocalZ = 1000.0f;
-    for (int i_5057 = 0; i_5057 < vertCount; ++i_5057) {
-        const float reciprocalZ = projectedVerts[i_5057].x * planes.reciprocalZ.gradient.x
-            + projectedVerts[i_5057].y * planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
-        if (reciprocalZ > 0.0f && reciprocalZ < minPositiveReciprocalZ) {
-            minPositiveReciprocalZ = reciprocalZ;
+    // Retail estimates the nearest positive depth from the x term of the reciprocal-Z plane only.
+    minPositiveZ = 1000.0f;
+    topVertexIndex = 0;
+    bottomVertexIndex = 0;
+    for (vertexIndex = 0; vertexIndex < vertCount; ++vertexIndex) {
+        vertexZ = (projectedVerts[vertexIndex].x - originX) * recipZGrad.x + recipZBase;
+        if (vertexZ > 0.0f && vertexZ < minPositiveZ) {
+            minPositiveZ = vertexZ;
         }
-
-        if (projectedVerts[i_5057].y < projectedVerts[topVertexIndex].y) {
-            topVertexIndex = i_5057;
+    }
+    for (vertexIndex = 1; vertexIndex < vertCount; ++vertexIndex) {
+        if (projectedVerts[vertexIndex].y < projectedVerts[topVertexIndex].y) {
+            topVertexIndex = vertexIndex;
         }
-        if (projectedVerts[i_5057].y > projectedVerts[bottomVertexIndex].y) {
-            bottomVertexIndex = i_5057;
+        // Retail keeps the first lowest vertex (strict compare).
+        if (projectedVerts[vertexIndex].y > projectedVerts[bottomVertexIndex].y) {
+            bottomVertexIndex = vertexIndex;
         }
     }
 
-    ScanConvertEdge edgeTableA[0x40] = { 0 };
-    ScanConvertEdge edgeTableB[0x40] = { 0 };
-    int edgeCountA = 0;
-    int edgeCountB = 0;
-    int fixed16Value;
-    int edgeVertexIndex;
-    int edgeYStart;
-    float edgeSampleY;
-    const int edgeStepA = zRndr::g_scanConvertMode != 0 ? 1 : -1;
-    const int edgeStepB = -edgeStepA;
+    adjustX = originX - 0.5f;
+    adjustY = originY - 0.5f;
+    recipZBase -= adjustX * recipZGrad.x + adjustY * recipZGrad.y;
+    uBase -= adjustX * uGrad.x + adjustY * uGrad.y;
+    vBase -= adjustX * vGrad.x + adjustY * vGrad.y;
 
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepA;
-        if (nextIndex < 0)
-            nextIndex += vertCount;
-        if (nextIndex >= vertCount)
-            nextIndex -= vertCount;
-        const zVec3& start = projectedVerts[edgeVertexIndex];
-        const zVec3& end = projectedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableA[edgeCountA].yStart = edgeYStart;
-            edgeTableA[edgeCountA].reserved = 0;
-            if (dy != 0.0f) {
-                const float slope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].xStepFixed, slope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableA[edgeCountA].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * slope
-                );
-            } else {
-                edgeTableA[edgeCountA].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableA[edgeCountA].currentXFixed, start.x);
+    edgeCountA = 0;
+    edgeCountB = 0;
+    if (zRndr::g_scanConvertMode != 0) {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
             }
-            ++edgeCountA;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-
-    edgeVertexIndex = topVertexIndex;
-    ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[edgeVertexIndex].y);
-    edgeYStart = (fixed16Value + 0x7fff) >> 16;
-    edgeSampleY = (float)(edgeYStart) + 0.5f;
-    while (edgeVertexIndex != bottomVertexIndex) {
-        int nextIndex = edgeVertexIndex + edgeStepB;
-        if (nextIndex < 0)
-            nextIndex += vertCount;
-        if (nextIndex >= vertCount)
-            nextIndex -= vertCount;
-        const zVec3& start = projectedVerts[edgeVertexIndex];
-        const zVec3& end = projectedVerts[nextIndex];
-        if (edgeSampleY <= end.y) {
-            const float dy = end.y - start.y;
-            edgeTableB[edgeCountB].yStart = edgeYStart;
-            edgeTableB[edgeCountB].reserved = 0;
-            if (dy != 0.0f) {
-                const float slope = (end.x - start.x) / dy;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].xStepFixed, slope);
-                ZRNDR_SET_FIXED16_FROM_FLOAT(
-                    edgeTableB[edgeCountB].currentXFixed,
-                    start.x + (edgeSampleY - start.y) * slope
-                );
-            } else {
-                edgeTableB[edgeCountB].xStepFixed = 0;
-                ZRNDR_SET_FIXED16_FROM_FLOAT(edgeTableB[edgeCountB].currentXFixed, start.x);
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
             }
-            ++edgeCountB;
-            ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, end.y);
-            edgeYStart = (fixed16Value + 0x7fff) >> 16;
-            edgeSampleY = (float)(edgeYStart) + 0.5f;
-        }
-        edgeVertexIndex = nextIndex;
-    }
-    if (edgeCountA == 0 || edgeCountB == 0)
-        return;
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
 
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    } else {
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex + 1;
+            if (nextIndex >= vertCount) {
+                nextIndex -= vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableB[edgeCountB++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+
+        edgeVertexIndex = topVertexIndex;
+        ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
+        edgeYStart = (fixed16Value + 0x7fff) >> 16;
+        edgeSampleY = (float)(edgeYStart) + 0.5f;
+        do {
+            int nextIndex = edgeVertexIndex - 1;
+            if (nextIndex < 0) {
+                nextIndex += vertCount;
+            }
+            if (edgeSampleY <= projectedVerts[nextIndex].y) {
+                const float dy = projectedVerts[nextIndex].y - projectedVerts[edgeVertexIndex].y;
+                const zVec3& start = projectedVerts[edgeVertexIndex];
+                edge = &edgeTableA[edgeCountA++];
+                edge->yStart = edgeYStart;
+                if (dy != 0.0f) {
+                    const float xSlope = (projectedVerts[nextIndex].x - start.x) / dy;
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);
+                    ZRNDR_SET_FIXED16_FROM_FLOAT(
+                        edge->currentXFixed,
+                        start.x + (((float)(edgeYStart) + 0.5f) - start.y) * xSlope
+                    );
+                }
+                ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[nextIndex].y);
+                edgeYStart = (fixed16Value + 0x7fff) >> 16;
+                edgeSampleY = (float)(edgeYStart) + 0.5f;
+            }
+            edgeVertexIndex = nextIndex;
+        } while (edgeVertexIndex != bottomVertexIndex);
+    }
+
+    // Retail terminates both edge tables with a far-below sentinel start row.
+    edgeTableA[edgeCountA].yStart = 9999;
+    edgeTableB[edgeCountB].yStart = 9999;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[topVertexIndex].y);
-    const int firstScanline = (fixed16Value + 0x7fff) >> 16;
+    firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, projectedVerts[bottomVertexIndex].y);
-    const int lastScanline = (fixed16Value - 0x8041) >> 16;
-    if (firstScanline > lastScanline) {
-        return;
+    lastScanline = (fixed16Value - 0x8041) >> 16;
+    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+
+    if (zRndr::g_perspectiveAdaptiveMinSpan != 0) {
+        if (recipZGrad.x == 0.0f) {
+            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+        } else {
+            chunkBits = fabs(minPositiveZ * zRndr::g_perspectiveAdaptiveSlope / recipZGrad.x) - -6755399441055744.0;
+            chunkPixels = *(int*)(&chunkBits);
+            if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
+                chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
+            } else if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
+                chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
+            }
+        }
+        chunkBytes = chunkPixels * zRndr::g_bytesPerPixel;
+        chunkWidth = (float)(chunkPixels);
+    } else {
+        chunkBytes = zRndr::g_perspectiveTextureDeltaXBytes;
+        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
+        chunkWidth = zRndr::g_perspectiveTextureDeltaXPow2F;
     }
+    chunkScale = textureScale / chunkWidth;
 
-    zRndr::g_spanActiveTexPixels = (unsigned char*)(selectedImage->pixels);
-    zRndr::g_spanQueuedTexAlphaMap = selectedImage->queuedAlphaMap;
-    zRndr::g_spanActiveTexShift = selectedImage->uShiftFrom20;
-    zRndr::g_spanActiveTexVMask = selectedImage->vMaskFixed20;
-    zRndr::g_spanActiveTexUMask = selectedImage->uMask;
+    zRndr::g_spanActiveTexPixels = (unsigned char*)(image->pixels);
+    zRndr::g_spanQueuedTexAlphaMap = image->queuedAlphaMap;
+    zRndr::g_spanActiveTexShift = image->uShiftFrom20;
+    zRndr::g_spanActiveTexUMask = image->uMask;
+    zRndr::g_spanActiveTexVMask = image->vMaskFixed20;
     zRndr::g_spanActiveConstAlphaBits = alpha255;
-    zRndr::TexturedQueuedSpanProc spanProc = zRndr::g_pfnTexturedFanTriSpanOp_Mode0;
-
-    unsigned short* palette = (unsigned short*)(selectedImage->palette);
-    if (palette != 0) {
+    chunkZStep = chunkWidth * recipZGrad.x;
+    chunkUStep = chunkWidth * uGrad.x;
+    chunkVStep = chunkWidth * vGrad.x;
+    palette = (unsigned short*)(image->palette);
+    if (palette == 0) {
+        spanProc = zRndr::g_pfnTexturedFanTriSpanOp_Mode0;
+    } else {
         zRndr::g_spanActiveTexPalette = variantIndex == -1 ? palette : &palette[(variantIndex + 1) * 0x100];
         spanProc = zRndr::g_pfnTexturedFanTriSpanOp_Mode1;
-    } else {
-        zRndr::g_spanActiveTexPalette = 0;
     }
 
-    if (spanProc == 0) {
-        return;
+    xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
+    currentXFixedA = edgeTableA[0].currentXFixed;
+    currentXFixedB = edgeTableB[0].currentXFixed;
+    endScanline = lastScanline + 1;
+    nextEventScanline = endScanline;
+    if (edgeTableA[1].yStart < nextEventScanline) {
+        nextEventScanline = edgeTableA[1].yStart;
     }
-
-    zRndr::SpanNodePartial* visibleSpans[0x40] = { 0 };
-    int edgeIndexA = 0;
-    int edgeIndexB = 0;
-    int currentXFixedA = edgeTableA[0].currentXFixed;
-    int currentXFixedB = edgeTableB[0].currentXFixed;
-    int xStepFixedA = edgeTableA[0].xStepFixed;
-    int xStepFixedB = edgeTableB[0].xStepFixed;
-    unsigned char* scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
-    int chunkPixels;
-    if (zRndr::g_perspectiveAdaptiveMinSpan == 0) {
-        chunkPixels = zRndr::g_perspectiveTextureDeltaXPow2;
-    } else {
-        float selectedChunk = (float)(zRndr::g_perspectiveAdaptiveMaxSpan);
-        if (planes.reciprocalZ.gradient.x != 0.0f) {
-            selectedChunk = minPositiveReciprocalZ * zRndr::g_perspectiveAdaptiveSlope / planes.reciprocalZ.gradient.x;
-            if (selectedChunk < 0.0f)
-                selectedChunk = -selectedChunk;
-        }
-        const double selectedChunkBits = (double)(selectedChunk) - -6755399441055744.0;
-        chunkPixels = *(const int*)(&selectedChunkBits);
-        if (chunkPixels > zRndr::g_perspectiveAdaptiveMaxSpan) {
-            chunkPixels = zRndr::g_perspectiveAdaptiveMaxSpan;
-        }
-        if (chunkPixels < zRndr::g_perspectiveAdaptiveMinSpan) {
-            chunkPixels = zRndr::g_perspectiveAdaptiveMinSpan;
-        }
+    if (edgeTableB[1].yStart < nextEventScanline) {
+        nextEventScanline = edgeTableB[1].yStart;
     }
-    if (chunkPixels < 1)
-        chunkPixels = 1;
-    const int texVShift = zRndr::g_spanActiveTexShift;
+    nextEdgeB = &edgeTableB[1].yStart;
+    nextEdgeA = &edgeTableA[1].yStart;
 
-    for (int y = firstScanline; y <= lastScanline; ++y) {
-        while (edgeIndexA < edgeCountA && y >= edgeTableA[edgeIndexA].yStart) {
-            xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
-            currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
-            ++edgeIndexA;
+    // Retail advances the edges only at the precomputed next event row and exits there past the last row.
+    for (y = firstScanline;; ++y) {
+        if (y >= nextEventScanline) {
+            if (y >= endScanline) {
+                return;
+            }
+            if (y >= *nextEdgeA) {
+                currentXFixedA = nextEdgeA[1];
+                xStepFixedA = nextEdgeA[-1];
+                nextEdgeA += 4;
+            }
+            if (y >= *nextEdgeB) {
+                currentXFixedB = nextEdgeB[1];
+                xStepFixedB = nextEdgeB[-1];
+                nextEdgeB += 4;
+            }
+            nextEventScanline = endScanline;
+            if (*nextEdgeA < nextEventScanline) {
+                nextEventScanline = *nextEdgeA;
+            }
+            if (*nextEdgeB < nextEventScanline) {
+                nextEventScanline = *nextEdgeB;
+            }
         }
-        while (edgeIndexB < edgeCountB && y >= edgeTableB[edgeIndexB].yStart) {
-            xStepFixedB = edgeTableB[edgeIndexB].xStepFixed;
-            currentXFixedB = edgeTableB[edgeIndexB].currentXFixed;
-            ++edgeIndexB;
-        }
-        int xMin;
-        int xMax;
-        if (currentXFixedA > currentXFixedB) {
-            xMin = (currentXFixedB + 0x7fff) >> 16;
-            xMax = (currentXFixedA - 0x8001) >> 16;
-        } else {
+
+        if (currentXFixedA <= currentXFixedB) {
             xMin = (currentXFixedA + 0x7fff) >> 16;
             xMax = (currentXFixedB - 0x8001) >> 16;
+        } else {
+            xMin = (currentXFixedB + 0x7fff) >> 16;
+            xMax = (currentXFixedA - 0x8001) >> 16;
         }
+
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-
-            const float rowReciprocalZ = (float)(y)*planes.reciprocalZ.gradient.y + planes.reciprocalZ.base;
             zRndr::g_spanAllocCursor->sampleXMin = xMin;
             zRndr::g_spanAllocCursor->sampleXMax = xMax;
+            sampleY = (float)(y);
+            rowRecipZ = sampleY * recipZGrad.y + recipZBase;
             zRndr::g_spanAllocCursor->invDepth
-                = ((float)(xMin)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
-                + zRndr::g_inverseDepthBias;
+                = ((float)(xMin)*recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale + zRndr::g_inverseDepthBias;
             zRndr::g_spanAllocCursor->invDepthStep
-                = ((float)(xMax)*planes.reciprocalZ.gradient.x + rowReciprocalZ) * zRndr::g_inverseDepthScale
-                + zRndr::g_inverseDepthBias;
-            zRndr::g_spanAllocCursor->depthSlope = planes.reciprocalZ.gradient.x;
-
-            int spanCount = 0;
-            zRndr::g_pfnBuildSpanListSecondary(visibleSpans, y, &spanCount);
-            {
-                for (int spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
-                    zRndr::SpanNodePartial* span = visibleSpans[spanIndex];
-                    if (span == 0 || span->sampleXMin > span->sampleXMax) {
-                        continue;
-                    }
-
+                = ((float)(xMax)*recipZGrad.x + rowRecipZ) * zRndr::g_inverseDepthScale + zRndr::g_inverseDepthBias;
+            zRndr::g_spanAllocCursor->depthSlope = recipZGrad.x;
+            zRndr::g_pfnBuildSpanListSecondary(spanList, y, &spanCount);
+            if (spanCount != 0) {
+                rowU = sampleY * uGrad.y + uBase;
+                rowV = sampleY * vGrad.y + vBase;
+                for (spanIndex = 0; spanIndex < spanCount; ++spanIndex) {
+                    span = spanList[spanIndex];
                     zRndr::g_spanCurrentSpanBaseAddr
-                        = (unsigned short*)(scanlineBase + (int)(span->sampleXMin) * zRndr::g_bytesPerPixel);
-                    int remaining = span->sampleXMax - span->sampleXMin + 1;
-                    int x = span->sampleXMin;
+                        = (unsigned short*)(scanlineBase + span->sampleXMin * zRndr::g_bytesPerPixel);
+                    remaining = span->sampleXMax - span->sampleXMin + 1;
+                    startX = (float)(span->sampleXMin);
+                    z = startX * recipZGrad.x + rowRecipZ;
+                    uz = startX * uGrad.x + rowU;
+                    vz = startX * vGrad.x + rowV;
+                    invZ = 1.0f / z;
+                    startU = invZ * uz;
+                    startV = invZ * vz;
                     while (remaining > chunkPixels) {
-                        const int count = chunkPixels;
-                        const float startX = (float)(x);
-                        const float endX = (float)(x + count);
-                        const float sampleY = (float)(y);
-                        const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                        const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX
-                            + planeY * gRndr_PerspInvDepthStepY + gRndr_PerspInvDepthBase;
-                        const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                            + gRndr_PerspInvDepthBase;
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const double uStepBits
-                            = (double)((endU - startU) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double vStepBits
-                            = (double)((endV - startV) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
-                        const double vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&uStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&vStepBits);
-                        spanProc(*(const int*)(&uStartBits), *(const int*)(&vStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
-                        x += count;
-                        remaining -= count;
+                        z += chunkZStep;
+                        invZ = 1.0f / z;
+                        uz += chunkUStep;
+                        vz += chunkVStep;
+                        endU = invZ * uz;
+                        endV = invZ * vz;
+                        uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
+                        vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
+                        uStepBits = (double)((endU - startU) * chunkScale) - -6755399441055744.0;
+                        vStepBits = (double)((endV - startV) * chunkScale) - -6755399441055744.0;
+                        zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&uStepBits);
+                        zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&vStepBits);
+                        spanProc(*(int*)(&uStartBits), *(int*)(&vStartBits), chunkPixels, zRndr::g_spanActiveTexShift);
+                        startU = endU;
+                        startV = endV;
+                        remaining -= chunkPixels;
+                        zRndr::g_spanCurrentSpanBaseAddr
+                            = (unsigned short*)((unsigned char*)(zRndr::g_spanCurrentSpanBaseAddr) + chunkBytes);
                     }
-
-                    if (remaining > 0) {
-                        const int count = remaining;
-                        const float startX = (float)(x);
-                        const float endX = (float)(x + count);
-                        const float sampleY = (float)(y);
-                        const float startPlaneX = startX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float endPlaneX = endX + 0.5f - gRndr_PerspPlaneOriginX;
-                        const float planeY = sampleY + 0.5f - gRndr_PerspPlaneOriginY;
-                        const float startInvZ = startPlaneX * gRndr_PerspInvDepthStepX
-                            + planeY * gRndr_PerspInvDepthStepY + gRndr_PerspInvDepthBase;
-                        const float endInvZ = endPlaneX * gRndr_PerspInvDepthStepX + planeY * gRndr_PerspInvDepthStepY
-                            + gRndr_PerspInvDepthBase;
-                        const float startU
-                            = (startPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / startInvZ;
-                        const float startV
-                            = (startPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / startInvZ;
-                        const float endU
-                            = (endPlaneX * gRndr_PerspTexScaledUOverZStepX + planeY * gRndr_PerspTexScaledUOverZStepY
-                                  + gRndr_PerspTexScaledUOverZBase)
-                            / endInvZ;
-                        const float endV
-                            = (endPlaneX * gRndr_PerspTexScaledVOverZStepX + planeY * gRndr_PerspTexScaledVOverZStepY
-                                  + gRndr_PerspTexScaledVOverZBase)
-                            / endInvZ;
-                        const double uStepBits
-                            = (double)((endU - startU) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double vStepBits
-                            = (double)((endV - startV) * textureScale / (float)(count)) - -6755399441055744.0;
-                        const double uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
-                        const double vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
-                        zRndr::g_spanActiveTexUStepFixed20 = *(const int*)(&uStepBits);
-                        zRndr::g_spanActiveTexVStepFixed20 = *(const int*)(&vStepBits);
-                        spanProc(*(const int*)(&uStartBits), *(const int*)(&vStartBits), count, texVShift);
-                        zRndr::g_spanCurrentSpanBaseAddr += count;
-                    }
+                    endX = (float)(span->sampleXMax);
+                    countF = (float)(remaining);
+                    endZ = endX * recipZGrad.x + rowRecipZ;
+                    endScale = textureScale / (countF * endZ);
+                    uz = endX * uGrad.x + rowU;
+                    vz = endX * vGrad.x + rowV;
+                    uStartBits = (double)(startU * textureScale) - -6755399441055744.0;
+                    vStartBits = (double)(startV * textureScale) - -6755399441055744.0;
+                    uStepBits = (double)((uz - startU * endZ) * endScale) - -6755399441055744.0;
+                    vStepBits = (double)((vz - startV * endZ) * endScale) - -6755399441055744.0;
+                    zRndr::g_spanActiveTexUStepFixed20 = *(int*)(&uStepBits);
+                    zRndr::g_spanActiveTexVStepFixed20 = *(int*)(&vStepBits);
+                    spanProc(*(int*)(&uStartBits), *(int*)(&vStartBits), remaining, zRndr::g_spanActiveTexShift);
                 }
             }
         }
+
         scanlineBase += zRndr::g_pitchBytes;
     }
 }
@@ -4909,130 +5079,128 @@ void __fastcall zRndrDrawLine16Clipped(
     int color16
 )
 {
-    int outcode0 = 0;
+    int outcode0;
+    int outcode1;
+    int dx;
+    int dy;
+    float yPerX;
+    float xPerY;
+    int rowStep;
+    int startIndex;
+    int xStep;
+    unsigned short* cursor;
+    int error;
+    int count;
+
+    outcode0 = 0;
     if (x0 < clipRect->left) {
         outcode0 = 1;
     } else if (x0 > clipRect->right) {
         outcode0 = 2;
     }
-
     if (y0 < clipRect->top) {
         outcode0 |= 4;
     } else if (y0 > clipRect->bottom) {
         outcode0 |= 8;
     }
-
-    int outcode1 = 0;
+    outcode1 = 0;
     if (x1 < clipRect->left) {
         outcode1 = 1;
     } else if (x1 > clipRect->right) {
         outcode1 = 2;
     }
-
     if (y1 < clipRect->top) {
         outcode1 |= 4;
     } else if (y1 > clipRect->bottom) {
         outcode1 |= 8;
     }
-
     if ((outcode0 & outcode1) != 0) {
         return;
     }
 
-    int dx = x1 - x0;
-    int dy = y1 - y0;
+    dx = x1 - x0;
+    dy = y1 - y0;
     if ((outcode0 | outcode1) != 0) {
-        const float yPerX = dx != 0 ? (float)(dy) / (float)(dx) : 0.0f;
-        const float xPerY = dy != 0 ? (float)(dx) / (float)(dy) : 0.0f;
-
+        yPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
+        xPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
         if (x0 < clipRect->left) {
-            y0 += (int)((float)(clipRect->left - x0) * yPerX);
+            y0 += (int)((clipRect->left - x0) * yPerX);
             x0 = clipRect->left;
         } else if (x0 > clipRect->right) {
-            y0 += (int)((float)(clipRect->right - x0) * yPerX);
+            y0 += (int)((clipRect->right - x0) * yPerX);
             x0 = clipRect->right;
         }
-
         if (x1 < clipRect->left) {
-            y1 += (int)((float)(clipRect->left - x1) * yPerX);
+            y1 += (int)((clipRect->left - x1) * yPerX);
             x1 = clipRect->left;
         } else if (x1 > clipRect->right) {
-            y1 += (int)((float)(clipRect->right - x1) * yPerX);
+            y1 += (int)((clipRect->right - x1) * yPerX);
             x1 = clipRect->right;
         }
-
         if (y0 < clipRect->top) {
             if (y1 < clipRect->top) {
                 return;
             }
-            x0 += (int)((float)(clipRect->top - y0) * xPerY);
+            x0 += (int)((clipRect->top - y0) * xPerY);
             y0 = clipRect->top;
         } else if (y0 > clipRect->bottom) {
             if (y1 > clipRect->bottom) {
                 return;
             }
-            x0 += (int)((float)(clipRect->bottom - y0) * xPerY);
+            x0 += (int)((clipRect->bottom - y0) * xPerY);
             y0 = clipRect->bottom;
         }
-
         if (y1 < clipRect->top) {
-            x1 += (int)((float)(clipRect->top - y1) * xPerY);
+            x1 += (int)((clipRect->top - y1) * xPerY);
             y1 = clipRect->top;
         } else if (y1 > clipRect->bottom) {
-            x1 += (int)((float)(clipRect->bottom - y1) * xPerY);
+            x1 += (int)((clipRect->bottom - y1) * xPerY);
             y1 = clipRect->bottom;
         }
-
         dx = x1 - x0;
         dy = y1 - y0;
     }
 
-    const unsigned int pitchWordsUnsigned = (unsigned int)(zRndr::g_pitchBytes) >> 1;
-    int rowStep = (int)(pitchWordsUnsigned);
-    int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
-
+    rowStep = (unsigned int)(zRndr::g_pitchBytes) >> 1;
+    xStep = 1;
+    startIndex = rowStep * y0 + x0;
     if (dy < 0) {
         dy = -dy;
         rowStep = -rowStep;
     }
-
-    int xStep = 1;
     if (dx < 0) {
         dx = -dx;
         xStep = -1;
     }
 
-    unsigned short* cursor = &dstPixels[startIndex];
-    const unsigned short packedColor = (unsigned short)(color16);
-
     if (dx > dy) {
-        int error = dx >> 1;
-        int count = dx + 1;
+        error = dx >> 1;
+        count = dx + 1;
+        cursor = &dstPixels[startIndex];
         do {
-            *cursor = packedColor;
+            *cursor = (unsigned short)(color16);
             error += dy;
             cursor += xStep;
             if (error > dx) {
                 error -= dx;
                 cursor += rowStep;
             }
-            --count;
-        } while (count != 0);
+        } while (--count);
         return;
     }
 
-    int error = dy >> 1;
-    int count = dy + 1;
+    error = dy >> 1;
+    count = dy + 1;
+    cursor = &dstPixels[startIndex];
     do {
-        *cursor = packedColor;
+        *cursor = (unsigned short)(color16);
         error += dx;
         cursor += rowStep;
         if (error > dy) {
             error -= dy;
             cursor += xStep;
         }
-        --count;
-    } while (count != 0);
+    } while (--count);
 }
 
 /**

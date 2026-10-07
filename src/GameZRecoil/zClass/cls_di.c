@@ -3401,14 +3401,14 @@ namespace CZDisplayInstance
 
         int minCol;
         int startRow;
-        int result = CZWorld::WorldToGridCoordsClamped(world, &minCol, minX, maxZ, &startRow);
+        int result = CZWorld::WorldToGridCoordsClamped(world, minX, maxZ, &minCol, &startRow);
         if (result != 0) {
             return result;
         }
 
         int maxCol;
         int endRow;
-        result = CZWorld::WorldToGridCoordsClamped(world, &maxCol, maxX, minZ, &endRow);
+        result = CZWorld::WorldToGridCoordsClamped(world, maxX, minZ, &maxCol, &endRow);
         if (result != 0) {
             return result;
         }

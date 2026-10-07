@@ -682,7 +682,14 @@ namespace zWeapon
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadoptcatalogfrompath
      * @recoil-artifact defines .text recoil:function:0x4b1190: zWeapon::LoadOptCatalogFromPath
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate recoil:function:0x4b1190
+     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate
      *
+     *
+     * Raw assembly: one in-body fast-sqrt estimate at retail [0x4b1bc5,0x4b1bd2),
+     * transforming the stored bits of velocityProduct into velocityEstimate through
+     * EAX (Pro batch Y, run 0f1cfa97). The block clobbers EAX and the arithmetic
+     * flags; it does not use or alter the x87 stack or control word.
      *
      * Purpose: load weapons.zrd, build the OptCatalog entry table, initialize
      * runtime storage, and publish the loaded runtime globals.
@@ -694,8 +701,10 @@ namespace zWeapon
         zWeaponOptCatalogEntryCallback entryCallback
     )
     {
-        // Retail keeps the last parsed RANGE in one function-scope float: entries
-        // without a RANGE node reuse the previous value in the instance count below.
+        // Retail keeps the last parsed RANGE in one function-scope float: an entry
+        // without a RANGE node reuses a previously parsed value in the instance
+        // count below. It is not entry->range; before any RANGE has been parsed it
+        // is uninitialized, as in retail.
         float range;
         short entryIndex = 0;
 
@@ -1094,12 +1103,21 @@ namespace zWeapon
                         entry->trailSegmentTimeSec = speed * speed / (entry->gravity * 2.0f);
                         float velocityProduct = entry->gravity * entry->range * 2.0f;
                         float velocityEstimate;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                        __asm {
+                            mov eax, velocityProduct
+                            sar eax, 1
+                            add eax, 01fc00000h
+                            mov velocityEstimate, eax
+                        }
+#else
                         {
                             int estimateBits;
                             memcpy(&estimateBits, &velocityProduct, sizeof estimateBits);
                             estimateBits = (estimateBits >> 1) + 0x1fc00000;
                             memcpy(&velocityEstimate, &estimateBits, sizeof velocityEstimate);
                         }
+#endif
                         entry->velocity = velocityEstimate;
                     }
 

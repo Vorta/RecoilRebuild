@@ -186,6 +186,13 @@ struct WeilerPreclassifyContourPacket {
 
 RECOIL_STATIC_ASSERT(sizeof(WeilerPreclassifyContourPacket) == 0x30);
 
+// Retail 0x464f70 tests whether two coincident segments run the same way in both x and y.
+#define WEILER_SAME_DIRECTION_XY(aStart, aEnd, cStart, cEnd)                                                           \
+    ((((aEnd)->x >= (aStart)->x && (cEnd)->x >= (cStart)->x)                                                           \
+         || ((aEnd)->x <= (aStart)->x && (cEnd)->x <= (cStart)->x))                                                    \
+        && (((aEnd)->y >= (aStart)->y && (cEnd)->y >= (cStart)->y)                                                     \
+            || ((aEnd)->y <= (aStart)->y && (cEnd)->y <= (cStart)->y)))
+
 struct WeilerPointBoundsXY {
     float minX;
     float maxX;
@@ -764,413 +771,337 @@ int __fastcall OutputPreclassifiedContourPairResult(
  */
 bool __fastcall PreclassifyInputContourPair(zGeometry_WeilerStatePartial* self)
 {
+    // Recovered from retail 0x464f70: unsigned A/B segment loops (the A bound is re-read from the state), A's
+    // endpoints kept as a two-entry array (retail homes them at the frame top), the four endpoint-on-segment
+    // tests evaluated before the switch, and an x/y direction-agreement test for the coincident cases.
     WeilerPreclassifyContourPacket* const contourPacket = (WeilerPreclassifyContourPacket*)(self->contourBuffer.base);
-
+    const int contourBPointCount = self->inputContourBBuffer.count;
     zGeometry_WeilerContourSegmentPartial* contourA = contourPacket->contourA.firstSegment;
     zGeometry_WeilerContourSegmentPartial* contourB = contourPacket->contourB.firstSegment;
-    zGeometry_WeilerContourSegmentPartial* const contourC = contourPacket->contourC.firstSegment;
-    zGeometry_WeilerContourSegmentPartial* const contourD = contourPacket->contourD.firstSegment;
+    zGeometry_WeilerContourSegmentPartial* const contourCFirst = contourPacket->contourC.firstSegment;
+    zGeometry_WeilerContourSegmentPartial* const contourDFirst = contourPacket->contourD.firstSegment;
+    zGeometry_WeilerContourSegmentPartial* contourC;
+    zGeometry_WeilerContourSegmentPartial* contourD;
+    float* contourASides;
+    unsigned int contourAIndex = 0;
+    float* contourBSides = self->contourBPointSideByContourAEdge;
+    zVec3* aPoint[2]; // [0] start, [1] end of the current A segment
+    zVec3* cStart;
+    zVec3* cEnd;
+    unsigned int contourBIndex;
 
-    float* orientationTableB = self->contourBPointSideByContourAEdge;
-    const int contourAPointCount = self->inputContourABuffer.count;
-    const int contourBPointCount = self->inputContourBBuffer.count;
-    FILE* const coincidentSegmentErrorOutput = stderr;
+    while (contourAIndex < self->inputContourABuffer.count) {
+        contourASides = &self->contourAPointSideByContourBEdge[contourAIndex];
+        contourC = contourCFirst;
+        aPoint[0] = contourA->startPoint;
+        aPoint[1] = contourA->endPoint;
+        contourD = contourDFirst;
 
-    if (contourAPointCount <= 0) {
-        return 1;
-    }
+        for (contourBIndex = 0; contourBIndex < contourBPointCount; ++contourBIndex) {
+            cStart = contourC->startPoint;
+            cEnd = contourC->endPoint;
 
-    {
-        for (int contourAIndex = 0; contourAIndex < contourAPointCount; ++contourAIndex) {
-            float* orientationTableA = &self->contourAPointSideByContourBEdge[contourAIndex];
-            zVec3* contourAStart = contourA->startPoint;
-            zVec3* contourAEnd = contourA->endPoint;
+            if (fabs(contourASides[0]) < 0.0000099999997473787516 && fabs(contourASides[1]) < 0.0000099999997473787516
+                && fabs(contourBSides[0]) < 0.0000099999997473787516
+                && fabs(contourBSides[1]) < 0.0000099999997473787516) {
+                const int aStartOnC = zGeometry_Vec3::IsBetweenEndpointsXY(aPoint[0], cStart, cEnd);
+                const int aEndOnC = zGeometry_Vec3::IsBetweenEndpointsXY(aPoint[1], cStart, cEnd);
+                const int cStartOnA = zGeometry_Vec3::IsBetweenEndpointsXY(cStart, aPoint[0], aPoint[1]);
+                const int cEndOnA = zGeometry_Vec3::IsBetweenEndpointsXY(cEnd, aPoint[0], aPoint[1]);
 
-            zGeometry_WeilerContourSegmentPartial* contourCWalker = contourC;
-            zGeometry_WeilerContourSegmentPartial* contourDWalker = contourD;
-
-            {
-                for (int contourBIndex = 0; contourBIndex < contourBPointCount; ++contourBIndex) {
-                    zVec3* const contourCStart = contourCWalker->startPoint;
-                    zVec3* const contourCEnd = contourCWalker->endPoint;
-
-                    if (fabs((double)(orientationTableA[0])) < 0.0000099999997473787516
-                        && fabs((double)(orientationTableA[1])) < 0.0000099999997473787516
-                        && fabs((double)(orientationTableB[0])) < 0.0000099999997473787516
-                        && fabs((double)(orientationTableB[1])) < 0.0000099999997473787516) {
-                        const int overlapCase
-                            = ((((zGeometry_Vec3::IsBetweenEndpointsXY(contourAStart, contourCStart, contourCEnd) * 2)
-                                    | zGeometry_Vec3::IsBetweenEndpointsXY(contourAEnd, contourCStart, contourCEnd))
-                                   << 1)
-                                  | zGeometry_Vec3::IsBetweenEndpointsXY(contourCStart, contourAStart, contourAEnd))
-                                << 1
-                            | zGeometry_Vec3::IsBetweenEndpointsXY(contourCEnd, contourAStart, contourAEnd);
-                        switch (overlapCase - 3) {
-                        case 0:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourA,
-                                        contourB,
-                                        contourCEnd,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    zError::ReportOld(
-                                        0x100,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x568,
-                                        g_zGeometry_WeedOutErrorFmt,
-                                        g_zGeometry_WeilerCase_BCompletelyInsideA
-                                    );
-                                    return 0;
-                                }
-
-                                contourAEnd = contourCStart;
-                                contourB->endPoint = contourCStart;
-                                contourA->endPoint = contourCStart;
-                                contourCWalker->contourType |= contourA->contourType;
-                                contourDWalker->contourType |= contourB->contourType;
-                            } else {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourA,
-                                        contourB,
-                                        contourCStart,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    zError::ReportOld(
-                                        0x100,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x572,
-                                        g_zGeometry_WeedOutErrorFmt,
-                                        g_zGeometry_WeilerCase_BCompletelyInsideA
-                                    );
-                                    return 0;
-                                }
-
-                                contourAEnd = contourCEnd;
-                                contourB->endPoint = contourCEnd;
-                                contourA->endPoint = contourCEnd;
-                                contourCWalker->contourType |= contourB->contourType;
-                                contourDWalker->contourType |= contourA->contourType;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                            break;
-
-                        case 2:
-                            if (!(fabs((double)(contourAEnd->x) - (double)(contourCEnd->x)) <= 0.0010000000474974513
-                                    && fabs((double)(contourAEnd->y) - (double)(contourCEnd->y))
-                                        <= 0.0010000000474974513)) {
-                                zVec3* const oldContourAEnd = contourAEnd;
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourA,
-                                        contourB,
-                                        contourCEnd,
-                                        contourDWalker->contourType,
-                                        contourCWalker->contourType
-                                    )
-                                    == 0) {
-                                    fprintf(
-                                        coincidentSegmentErrorOutput,
-                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x593
-                                    );
-                                    return 0;
-                                }
-
-                                contourAEnd = contourCEnd;
-                                contourB->endPoint = contourCEnd;
-                                contourA->endPoint = contourCEnd;
-                                contourDWalker->endPoint = oldContourAEnd;
-                                contourCWalker->endPoint = oldContourAEnd;
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            }
-                            break;
-
-                        case 3:
-
-                            if (!(fabs((double)(contourAEnd->x) - (double)(contourCStart->x)) <= 0.0010000000474974513
-                                    && fabs((double)(contourAEnd->y) - (double)(contourCStart->y))
-                                        <= 0.0010000000474974513)) {
-                                zVec3* const oldContourAEnd = contourAEnd;
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourCWalker,
-                                        contourDWalker,
-                                        contourAEnd,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    fprintf(
-                                        stderr,
-                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x5b6
-                                    );
-                                    return 0;
-                                }
-
-                                contourDWalker->endPoint = oldContourAEnd;
-                                contourCWalker->endPoint = oldContourAEnd;
-                                contourAEnd = contourCStart;
-                                contourB->endPoint = contourCStart;
-                                contourA->endPoint = contourCStart;
-                                contourCWalker->contourType |= contourA->contourType;
-                                contourDWalker->contourType |= contourB->contourType;
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            }
-                            break;
-
-                        case 4:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                contourAEnd = contourCEnd;
-                                contourB->endPoint = contourCEnd;
-                                contourA->endPoint = contourCEnd;
-                                contourCWalker->contourType |= contourB->contourType;
-                                contourDWalker->contourType |= contourA->contourType;
-                            } else {
-                                contourAEnd = contourCStart;
-                                contourB->endPoint = contourCStart;
-                                contourA->endPoint = contourCStart;
-                                contourCWalker->contourType |= contourA->contourType;
-                                contourDWalker->contourType |= contourB->contourType;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                            break;
-
-                        case 6:
-                            if (!(fabs((double)(contourAStart->x) - (double)(contourCEnd->x)) <= 0.0010000000474974513
-                                    && fabs((double)(contourAStart->y) - (double)(contourCEnd->y))
-                                        <= 0.0010000000474974513)) {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourA,
-                                        contourB,
-                                        contourCEnd,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    fprintf(
-                                        stderr,
-                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x5f0
-                                    );
-                                    return 0;
-                                }
-
-                                contourAEnd = contourCEnd;
-                                contourB->endPoint = contourCEnd;
-                                contourA->endPoint = contourCEnd;
-                                contourDWalker->endPoint = contourAStart;
-                                contourCWalker->endPoint = contourAStart;
-                                contourA->contourType |= contourCWalker->contourType;
-                                contourB->contourType |= contourDWalker->contourType;
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            }
-                            break;
-
-                        case 7:
-                            if (!(fabs((double)(contourAStart->x) - (double)(contourCStart->x)) <= 0.0010000000474974513
-                                    && fabs((double)(contourAStart->y) - (double)(contourCStart->y))
-                                        <= 0.0010000000474974513)) {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourA,
-                                        contourB,
-                                        contourCStart,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    fprintf(
-                                        stderr,
-                                        g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x610
-                                    );
-                                    return 0;
-                                }
-
-                                contourB->endPoint = contourCStart;
-                                contourA->endPoint = contourCStart;
-                                contourDWalker->startPoint = contourAStart;
-                                contourCWalker->startPoint = contourAStart;
-                                contourAStart = contourCStart;
-                                contourA->contourType |= contourDWalker->contourType;
-                                contourB->contourType |= contourCWalker->contourType;
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                                zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            }
-                            break;
-
-                        case 8:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                contourAStart = contourCEnd;
-                                contourB->startPoint = contourCEnd;
-                                contourA->startPoint = contourCEnd;
-                                contourCWalker->contourType |= contourA->contourType;
-                                contourDWalker->contourType |= contourB->contourType;
-                            } else {
-                                contourAStart = contourCStart;
-                                contourB->startPoint = contourCStart;
-                                contourA->startPoint = contourCStart;
-                                contourCWalker->contourType |= contourB->contourType;
-                                contourDWalker->contourType |= contourA->contourType;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourA);
-                            break;
-
-                        case 9:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourCWalker,
-                                        contourDWalker,
-                                        contourAEnd,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    zError::ReportOld(
-                                        0x100,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x64a,
-                                        g_zGeometry_WeedOutErrorFmt,
-                                        g_zGeometry_ForwardSegmentFailedMsg
-                                    );
-                                    return 0;
-                                }
-
-                                contourDWalker->endPoint = contourAStart;
-                                contourCWalker->endPoint = contourAStart;
-                            } else {
-                                if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
-                                        self,
-                                        contourCWalker,
-                                        contourDWalker,
-                                        contourAStart,
-                                        0,
-                                        0
-                                    )
-                                    == 0) {
-                                    zError::ReportOld(
-                                        0x100,
-                                        g_zGeometry_SourceFile_ZgeoWeilerCpp,
-                                        0x650,
-                                        g_zGeometry_WeedOutErrorFmt,
-                                        g_zGeometry_ForwardSegmentFailedMsg
-                                    );
-                                    return 0;
-                                }
-
-                                contourDWalker->endPoint = contourAEnd;
-                                contourCWalker->endPoint = contourAEnd;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            contourA->contourType |= contourCWalker->contourType;
-                            contourB->contourType |= contourDWalker->contourType;
-                            break;
-
-                        case 10:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                contourDWalker->endPoint = contourAStart;
-                                contourCWalker->endPoint = contourAStart;
-                                contourA->contourType |= contourCWalker->contourType;
-                                contourB->contourType |= contourDWalker->contourType;
-                            } else {
-                                contourDWalker->endPoint = contourAEnd;
-                                contourCWalker->endPoint = contourAEnd;
-                                contourA->contourType |= contourDWalker->contourType;
-                                contourB->contourType |= contourCWalker->contourType;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            break;
-
-                        case 11:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                contourDWalker->startPoint = contourAEnd;
-                                contourCWalker->startPoint = contourAEnd;
-                                contourA->contourType |= contourCWalker->contourType;
-                                contourB->contourType |= contourDWalker->contourType;
-                            } else {
-                                contourDWalker->startPoint = contourAStart;
-                                contourCWalker->startPoint = contourAStart;
-                                contourA->contourType |= contourDWalker->contourType;
-                                contourB->contourType |= contourCWalker->contourType;
-                            }
-
-                            zGeometry_WeilerContourSegment::UpdateBounds(contourCWalker);
-                            break;
-
-                        case 12:
-                            if (contourCEnd->x != contourCStart->x && contourAEnd->x != contourAStart->x
-                                    ? (contourCEnd->x < contourCStart->x) == (contourAEnd->x < contourAStart->x)
-                                    : (contourCEnd->y < contourCStart->y) == (contourAEnd->y < contourAStart->y)) {
-                                contourA->contourType |= contourCWalker->contourType;
-                                contourB->contourType |= contourDWalker->contourType;
-                            } else {
-                                contourB->contourType |= contourCWalker->contourType;
-                                contourA->contourType |= contourDWalker->contourType;
-                            }
-
-                            if (contourCWalker == contourC) {
-                                contourPacket->contourC.firstSegment = contourCWalker->next;
-                                contourPacket->contourD.firstSegment = contourDWalker->next;
-                                contourCWalker->next->contourOutput = &contourPacket->contourC;
-                                contourDWalker->next->contourOutput = &contourPacket->contourD;
-                            }
-
-                            contourCWalker->prev->next = contourCWalker->next;
-                            contourCWalker->next->prev = contourCWalker->prev;
-                            contourDWalker->prev->next = contourDWalker->next;
-                            contourDWalker->next->prev = contourDWalker->prev;
-                            break;
-
-                        default:
-                            break;
+                switch ((((aStartOnC << 1 | aEndOnC) << 1 | cStartOnA) << 1 | cEndOnA)) {
+                case 3:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourA, contourB, cEnd, 0, 0)
+                            == 0) {
+                            zError::ReportOld(
+                                0x100,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x568,
+                                g_zGeometry_WeedOutErrorFmt,
+                                g_zGeometry_WeilerCase_BCompletelyInsideA
+                            );
+                            return 0;
                         }
+
+                        aPoint[1] = cStart;
+                        contourB->endPoint = cStart;
+                        contourA->endPoint = cStart;
+                        contourC->contourType |= contourA->contourType;
+                        contourD->contourType |= contourB->contourType;
+                    } else {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourA, contourB, cStart, 0, 0)
+                            == 0) {
+                            zError::ReportOld(
+                                0x100,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x572,
+                                g_zGeometry_WeedOutErrorFmt,
+                                g_zGeometry_WeilerCase_BCompletelyInsideA
+                            );
+                            return 0;
+                        }
+
+                        aPoint[1] = cEnd;
+                        contourB->endPoint = cEnd;
+                        contourA->endPoint = cEnd;
+                        contourC->contourType |= contourB->contourType;
+                        contourD->contourType |= contourA->contourType;
                     }
 
-                    contourCWalker = contourCWalker + 1;
-                    contourDWalker = contourDWalker + 1;
-                    orientationTableA += contourAPointCount + 1;
-                    ++orientationTableB;
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                    break;
+
+                case 5:
+                    if (!(fabs(aPoint[1]->x - cEnd->x) <= 0.0010000000474974513
+                            && fabs(aPoint[1]->y - cEnd->y) <= 0.0010000000474974513)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(
+                                self,
+                                contourA,
+                                contourB,
+                                cEnd,
+                                contourD->contourType,
+                                contourC->contourType
+                            )
+                            == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x593
+                            );
+                            return 0;
+                        }
+
+                        contourB->endPoint = cEnd;
+                        contourA->endPoint = cEnd;
+                        contourD->endPoint = aPoint[1];
+                        contourC->endPoint = aPoint[1];
+                        aPoint[1] = contourA->endPoint;
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    }
+                    break;
+
+                case 6:
+                    if (!(fabs(aPoint[1]->x - cStart->x) <= 0.0010000000474974513
+                            && fabs(aPoint[1]->y - cStart->y) <= 0.0010000000474974513)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourC, contourD, aPoint[1], 0, 0)
+                            == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x5b6
+                            );
+                            return 0;
+                        }
+
+                        contourD->endPoint = aPoint[1];
+                        contourC->endPoint = aPoint[1];
+                        aPoint[1] = cStart;
+                        contourB->endPoint = cStart;
+                        contourA->endPoint = cStart;
+                        contourC->contourType |= contourA->contourType;
+                        contourD->contourType |= contourB->contourType;
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    }
+                    break;
+
+                case 7:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        aPoint[1] = cEnd;
+                        contourB->endPoint = cEnd;
+                        contourA->endPoint = cEnd;
+                        contourC->contourType |= contourB->contourType;
+                        contourD->contourType |= contourA->contourType;
+                    } else {
+                        aPoint[1] = cStart;
+                        contourB->endPoint = cStart;
+                        contourA->endPoint = cStart;
+                        contourC->contourType |= contourA->contourType;
+                        contourD->contourType |= contourB->contourType;
+                    }
+
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                    break;
+
+                case 9:
+                    if (!(fabs(aPoint[0]->x - cEnd->x) <= 0.0010000000474974513
+                            && fabs(aPoint[0]->y - cEnd->y) <= 0.0010000000474974513)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourA, contourB, cEnd, 0, 0)
+                            == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x5f0
+                            );
+                            return 0;
+                        }
+
+                        aPoint[1] = cEnd;
+                        contourB->endPoint = cEnd;
+                        contourA->endPoint = cEnd;
+                        contourD->endPoint = aPoint[0];
+                        contourC->endPoint = aPoint[0];
+                        contourA->contourType |= contourC->contourType;
+                        contourB->contourType |= contourD->contourType;
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    }
+                    break;
+
+                case 10:
+                    if (!(fabs(aPoint[0]->x - cStart->x) <= 0.0010000000474974513
+                            && fabs(aPoint[0]->y - cStart->y) <= 0.0010000000474974513)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourA, contourB, cStart, 0, 0)
+                            == 0) {
+                            fprintf(
+                                stderr,
+                                g_zGeometry_WeedOutCoincidentSegForwardFailedFmt,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x610
+                            );
+                            return 0;
+                        }
+
+                        contourB->endPoint = cStart;
+                        contourA->endPoint = cStart;
+                        contourD->startPoint = aPoint[0];
+                        contourC->startPoint = aPoint[0];
+                        aPoint[0] = cStart;
+                        contourA->contourType |= contourD->contourType;
+                        contourB->contourType |= contourC->contourType;
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                        zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    }
+                    break;
+
+                case 11:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        aPoint[0] = cEnd;
+                        contourB->startPoint = cEnd;
+                        contourA->startPoint = cEnd;
+                        contourC->contourType |= contourA->contourType;
+                        contourD->contourType |= contourB->contourType;
+                    } else {
+                        aPoint[0] = cStart;
+                        contourB->startPoint = cStart;
+                        contourA->startPoint = cStart;
+                        contourC->contourType |= contourB->contourType;
+                        contourD->contourType |= contourA->contourType;
+                    }
+
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourA);
+                    break;
+
+                case 12:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourC, contourD, aPoint[1], 0, 0)
+                            == 0) {
+                            zError::ReportOld(
+                                0x100,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x64a,
+                                g_zGeometry_WeedOutErrorFmt,
+                                g_zGeometry_ForwardSegmentFailedMsg
+                            );
+                            return 0;
+                        }
+
+                        contourD->endPoint = aPoint[0];
+                        contourC->endPoint = aPoint[0];
+                    } else {
+                        if (zGeometry_Weiler::CreateForwardSegmentPairAtPoint(self, contourC, contourD, aPoint[0], 0, 0)
+                            == 0) {
+                            zError::ReportOld(
+                                0x100,
+                                g_zGeometry_SourceFile_ZgeoWeilerCpp,
+                                0x650,
+                                g_zGeometry_WeedOutErrorFmt,
+                                g_zGeometry_ForwardSegmentFailedMsg
+                            );
+                            return 0;
+                        }
+
+                        contourD->endPoint = aPoint[1];
+                        contourC->endPoint = aPoint[1];
+                    }
+
+                    // Retail merges the type flags before refreshing C's bounds.
+                    contourA->contourType |= contourC->contourType;
+                    contourB->contourType |= contourD->contourType;
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    break;
+
+                case 13:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        contourD->endPoint = aPoint[0];
+                        contourC->endPoint = aPoint[0];
+                        contourA->contourType |= contourC->contourType;
+                        contourB->contourType |= contourD->contourType;
+                    } else {
+                        contourD->endPoint = aPoint[1];
+                        contourC->endPoint = aPoint[1];
+                        contourA->contourType |= contourD->contourType;
+                        contourB->contourType |= contourC->contourType;
+                    }
+
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    break;
+
+                case 14:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        contourD->startPoint = aPoint[1];
+                        contourC->startPoint = aPoint[1];
+                        contourA->contourType |= contourC->contourType;
+                        contourB->contourType |= contourD->contourType;
+                    } else {
+                        contourD->startPoint = aPoint[0];
+                        contourC->startPoint = aPoint[0];
+                        contourA->contourType |= contourD->contourType;
+                        contourB->contourType |= contourC->contourType;
+                    }
+
+                    zGeometry_WeilerContourSegment::UpdateBounds(contourC);
+                    break;
+
+                case 15:
+                    if (WEILER_SAME_DIRECTION_XY(aPoint[0], aPoint[1], cStart, cEnd)) {
+                        contourA->contourType |= contourC->contourType;
+                        contourB->contourType |= contourD->contourType;
+                    } else {
+                        contourB->contourType |= contourC->contourType;
+                        contourA->contourType |= contourD->contourType;
+                    }
+
+                    if (contourC == contourCFirst) {
+                        contourPacket->contourC.firstSegment = contourC->next;
+                        contourPacket->contourD.firstSegment = contourD->next;
+                        contourC->next->contourOutput = &contourPacket->contourC;
+                        contourD->next->contourOutput = &contourPacket->contourD;
+                    }
+
+                    contourC->prev->next = contourC->next;
+                    contourC->next->prev = contourC->prev;
+                    contourD->prev->next = contourD->next;
+                    contourD->next->prev = contourD->prev;
+                    break;
                 }
             }
 
-            ++orientationTableB;
-            contourA = contourA + 1;
-            contourB = contourB + 1;
+            contourASides += self->inputContourABuffer.count + 1;
+            ++contourBSides;
+            ++contourC;
+            ++contourD;
         }
+
+        ++contourBSides;
+        ++contourA;
+        ++contourB;
+        ++contourAIndex;
     }
 
     return 1;
@@ -3162,7 +3093,7 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-buildpointsidetablesforcontourpair
  * @recoil-artifact defines .text recoil:function:0x468470: zGeometry_Weiler::BuildPointSideTablesForContourPair
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Fill the contour A/B point-side tables used by Weiler contour-pair classification.
  */

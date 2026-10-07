@@ -1743,7 +1743,7 @@ namespace CZClass
                 int gridCol;
                 int gridRow;
                 if ((node->flags & 0x80) == 0) {
-                    CZWorld::WorldRectToGridIndex(parent, &gridCol, minX, maxX, minZ, maxZ, &gridRow);
+                    CZWorld::WorldRectToGridIndex(parent, minX, maxX, minZ, maxZ, &gridCol, &gridRow);
                 } else {
                     gridCol = gridRow = -1;
                 }
