@@ -1068,17 +1068,19 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
         }                                                                                                              \
     } while (0)
 
+/* Retail stores the default 1.0 scale first and overwrites it for 3+ entries. */
 #define HUD_ZRD_LOAD_SOUND(parentNode_, outSound_, outScale_)                                                          \
     do {                                                                                                               \
         zReader::Node* const hudSoundNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Sound);                           \
         if (hudSoundNode_ != 0) {                                                                                      \
             zReader::Node* const hudSoundBase_ = hudSoundNode_->value.nodes;                                           \
             const char* const hudSoundName_ = hudSoundBase_[1].value.str;                                              \
-            {                                                                                                          \
-                const float hudSoundScale_ = hudSoundBase_[0].value.i32 >= 3 ? hudSoundBase_[2].value.f32 : 1.0f;      \
-                (outSound_) = zSnd::FindSampleByName(hudSoundName_);                                                   \
-                (outScale_) = hudSoundScale_;                                                                          \
+            float hudSoundScale_ = 1.0f;                                                                               \
+            if (hudSoundBase_[0].value.i32 >= 3) {                                                                     \
+                hudSoundScale_ = hudSoundBase_[2].value.f32;                                                           \
             }                                                                                                          \
+            (outSound_) = zSnd::FindSampleByName(hudSoundName_);                                                       \
+            (outScale_) = hudSoundScale_;                                                                              \
         }                                                                                                              \
     } while (0)
 
@@ -1086,6 +1088,10 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
 
 #define HUD_ZRD_INSERT_LABEL_NATURAL(panels_, panel_) (panels_).insert((panels_).end(), 1, (panel_))
 
+/*
+ * Retail rebuilds the label flags from the zero-extended flag byte and selects
+ * the font style with the branch-free ternary (neg/sbb/and).
+ */
 #define HUD_ZRD_APPEND_LABEL_WITH_INSERT(widget_, panels_, labelSpecBase_, originX_, originY_, insert_)                \
     do {                                                                                                               \
         const int hudLabelOriginX_ = (originX_);                                                                       \
@@ -1094,7 +1100,8 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
         hudPanel_ = (HudUiPanel*)(new HudUiTransitionTextPanel);                                                       \
         HudUiElement* hudElement_;                                                                                     \
         hudElement_ = (HudUiElement*)(hudPanel_);                                                                      \
-        hudElement_->flags = (hudElement_->flags & 0x10u) | 2;                                                         \
+        const unsigned int hudVisibleFlag_ = (unsigned char)(hudElement_->flags);                                      \
+        hudElement_->flags = (unsigned char)((hudVisibleFlag_ & ~0xefu) | 0x02u);                                      \
         const char* const hudLabelKey_ = (labelSpecBase_)[1].value.str;                                                \
         hudPanel_->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(hudLabelKey_));                                        \
         hudElement_->SetPos(                                                                                           \
@@ -1102,10 +1109,9 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
             hudLabelOriginY_ + (labelSpecBase_)[3].value.i32                                                           \
         );                                                                                                             \
         const int hudStyleIndex_ = (labelSpecBase_)[4].value.i32;                                                      \
-        const HudFontStyle* hudStyle_ = &((widget_)->owner->fontStyles[hudStyleIndex_]);                               \
-        if (hudStyle_->validMarker == 0) {                                                                             \
-            hudStyle_ = 0;                                                                                             \
-        }                                                                                                              \
+        const HudFontStyle* const hudStyle_ = (widget_)->owner->fontStyles[hudStyleIndex_].validMarker != 0            \
+            ? &((widget_)->owner->fontStyles[hudStyleIndex_])                                                          \
+            : 0;                                                                                                       \
         if (hudStyle_ != 0) {                                                                                          \
             hudPanel_->alignMode = hudStyle_->alignMode;                                                               \
             hudPanel_->SetFont(hudStyle_->fontName, hudStyle_->fontSize, hudStyle_->fontWeight, 0, 0, 0, 2);           \
@@ -1156,23 +1162,24 @@ inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector& panels, unsigned int c
         ((HudUiTransitionTextPanel*)(*it))->SetFlashColorAndRate(color, rate);
     }
 }
+/* Retail clears the color before the rate lookup and packs it with RGB(). */
 #define HUD_ZRD_APPLY_FLASH_SECTION(parentNode_, panels_)                                                              \
     do {                                                                                                               \
         zReader::Node* const hudFlashNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Flash);                           \
         if (hudFlashNode_ != 0) {                                                                                      \
             float hudFlashRate_ = 0.0f;                                                                                \
+            unsigned int hudFlashColor_ = 0;                                                                           \
             zReader::Node* const hudRateNode_ = zRdrGetNode(hudFlashNode_, g_HudZrd_Key_Rate);                         \
             if (hudRateNode_ != 0) {                                                                                   \
                 hudFlashRate_ = hudRateNode_->value.nodes[1].value.f32;                                                \
             }                                                                                                          \
-            unsigned int hudFlashColor_ = 0;                                                                           \
             zReader::Node* const hudColorNode_ = zRdrGetNode(hudFlashNode_, "COLOR");                                  \
             if (hudColorNode_ != 0) {                                                                                  \
                 zReader::Node* const hudColorBase_ = hudColorNode_->value.nodes;                                       \
-                const unsigned int hudRed_ = (unsigned int)(hudColorBase_[1].value.i32) & 0xffu;                       \
-                const unsigned int hudGreen_ = (unsigned int)(hudColorBase_[2].value.i32) & 0xffu;                     \
-                const unsigned int hudBlue_ = (unsigned int)(hudColorBase_[3].value.i32) & 0xffu;                      \
-                hudFlashColor_ = hudRed_ | (hudGreen_ << 8) | (hudBlue_ << 16);                                        \
+                const int hudRed_ = hudColorBase_[1].value.i32;                                                        \
+                const int hudGreen_ = hudColorBase_[2].value.i32;                                                      \
+                const int hudBlue_ = hudColorBase_[3].value.i32;                                                       \
+                hudFlashColor_ = RGB(hudRed_, hudGreen_, hudBlue_);                                                    \
             }                                                                                                          \
             if (hudFlashRate_ != 0.0f) {                                                                               \
                 ApplyHudPanelVectorFlash((panels_), hudFlashColor_, hudFlashRate_);                                    \

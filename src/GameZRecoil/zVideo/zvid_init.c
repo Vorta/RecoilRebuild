@@ -2,28 +2,9 @@
 
 #include "GameZRecoil/zVideo/zvid.h"
 
-#include "GameZRecoil/include/zclip_rect.h"
-#include "GameZRecoil/include/zdi.h"
-#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zMath/zmth.h"
-#include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRender/zrndr.h"
-#include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "GameZRecoil/zVideo/zvid_state.h"
-#include "zclass.h"
-
-#include <malloc.h>
-#include <math.h>
-#include <new>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /*
  * Recovered literal-backed zvid_init.c physical contribution
@@ -172,7 +153,7 @@ namespace zVideo
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-setup-from-masks
      * @recoil-artifact defines .text recoil:function:0x4a6bf0: zVideo::PixelPackSetupFromMasks.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: initialize the global display pixel-pack bit counts, masks, and
@@ -222,7 +203,7 @@ unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
 /**
  * @recoil-anchor recoil:anchor:zvid.pack-color-rgb
  * @recoil-artifact defines .text recoil:function:0x4a6cf0: zVidPackColorRGB.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
  * BN passes red and green as low-byte fastcall registers and consumes the low

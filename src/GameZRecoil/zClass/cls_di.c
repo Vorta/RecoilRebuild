@@ -2324,14 +2324,13 @@ namespace CZDisplayInstance
                         if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0) {
                             BuildPickCandidatesForSegmentChildFallback(node, area->childCount + 1);
                             if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                                break;
+                                // Retail leaves the walk straight from the child loop (no second hit test),
+                                // keeping the clamped-cell offsets applied.
+                                zMath::MatStackPopPtr();
+                                g_cls_di_StopAfterFirstHit = 0;
+                                return rayData->candidateCount <= 0 ? 1 : 0;
                             }
                         }
-                    }
-
-                    // Retail leaves the clamped-cell offsets applied when the first hit ends the walk.
-                    if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                        break;
                     }
 
                     if (usedClampedCell != 0) {
@@ -2978,11 +2977,13 @@ namespace CZDisplayInstance
                 if (visitCell != 0) {
                     zWorldAreaPartial* area;
                     if (usedClampedCell != 0) {
+                        // Endpoint pairs indexed as i + i and i + i + 1: retail gives the end-point x its
+                        // own induction variable (0x4461da 'mov esi,0xc'); i * 2 + 1 folds it into the shared one.
                         for (int segmentIndex = 0; segmentIndex < g_DiPickPointCount; ++segmentIndex) {
-                            g_DiPickPointArray[segmentIndex * 2].x += offsetX;
-                            g_DiPickPointArray[segmentIndex * 2].z += offsetZ;
-                            g_DiPickPointArray[segmentIndex * 2 + 1].x += offsetX;
-                            g_DiPickPointArray[segmentIndex * 2 + 1].z += offsetZ;
+                            g_DiPickPointArray[segmentIndex + segmentIndex].x += offsetX;
+                            g_DiPickPointArray[segmentIndex + segmentIndex].z += offsetZ;
+                            g_DiPickPointArray[segmentIndex + segmentIndex + 1].x += offsetX;
+                            g_DiPickPointArray[segmentIndex + segmentIndex + 1].z += offsetZ;
                             g_DiSegmentBounds[segmentIndex].minX += offsetX;
                             g_DiSegmentBounds[segmentIndex].minZ += offsetZ;
                             g_DiSegmentBounds[segmentIndex].maxX += offsetX;
@@ -3006,10 +3007,10 @@ namespace CZDisplayInstance
 
                     if (usedClampedCell != 0) {
                         for (int segmentIndex = 0; segmentIndex < g_DiPickPointCount; ++segmentIndex) {
-                            g_DiPickPointArray[segmentIndex * 2].x -= offsetX;
-                            g_DiPickPointArray[segmentIndex * 2].z -= offsetZ;
-                            g_DiPickPointArray[segmentIndex * 2 + 1].x -= offsetX;
-                            g_DiPickPointArray[segmentIndex * 2 + 1].z -= offsetZ;
+                            g_DiPickPointArray[segmentIndex + segmentIndex].x -= offsetX;
+                            g_DiPickPointArray[segmentIndex + segmentIndex].z -= offsetZ;
+                            g_DiPickPointArray[segmentIndex + segmentIndex + 1].x -= offsetX;
+                            g_DiPickPointArray[segmentIndex + segmentIndex + 1].z -= offsetZ;
                             g_DiSegmentBounds[segmentIndex].minX -= offsetX;
                             g_DiSegmentBounds[segmentIndex].minZ -= offsetZ;
                             g_DiSegmentBounds[segmentIndex].maxX -= offsetX;

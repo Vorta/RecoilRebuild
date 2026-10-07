@@ -606,6 +606,20 @@ inline zUtil_PlayerStateStorage* LocalPlayerState()
     return ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
 }
 
+/**
+ * Reconstruction model: a TU-local inline controller update for the 0x385 cheat
+ * loop. Retail loads each controller's flags before storing its ammo
+ * (0x41d477/0x41d479, 0x41d481/0x41d487); VC5 keeps that load/store order only for
+ * stores through an inline-expanded controller pointer. Original-source helper status is inferred; helper spelling and
+ * placement are not established; no standalone retail function exists.
+ * Purpose: give one gun controller the unlimited-ammo value and mark it owned.
+ */
+inline void GrantUnlimitedAmmo(PlayerGunFireController* controller, float amount)
+{
+    controller->ammoOrCharge = amount;
+    controller->flags |= 4;
+}
+
 } // namespace
 
 /**
@@ -1093,10 +1107,8 @@ int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_S
         HudUiMessage::ClearDisplay(playerState->activePrimaryGunController->weaponBankIndex);
 
         for (int bankIndex = 1; bankIndex < 10; ++bankIndex) {
-            playerState->altWeaponBanks[bankIndex].controllerA.ammoOrCharge = kUnlimitedAmmoSentinel;
-            playerState->altWeaponBanks[bankIndex].controllerA.flags |= 4;
-            playerState->altWeaponBanks[bankIndex].controllerB.ammoOrCharge = kUnlimitedAmmoSentinel;
-            playerState->altWeaponBanks[bankIndex].controllerB.flags |= 4;
+            GrantUnlimitedAmmo(&playerState->altWeaponBanks[bankIndex].controllerA, kUnlimitedAmmoSentinel);
+            GrantUnlimitedAmmo(&playerState->altWeaponBanks[bankIndex].controllerB, kUnlimitedAmmoSentinel);
             playerState->altWeaponBanks[bankIndex].selectedSide = 0;
             HudUiMessage::ApplySideImageSwap(bankIndex, 1);
             HudUiMessage::SetValueIfOwnerMatches(bankIndex, 0, kUnlimitedAmmoSentinel);

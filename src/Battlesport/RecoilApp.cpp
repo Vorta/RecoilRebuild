@@ -1192,16 +1192,16 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         fxTop = g_HudUiMgrSensor_FxRectScratch.top;
     }
 
-    HudUiRect* fxRectOrNull;
+    // Each branch sets the pass-3 rect itself; VC5 tail-merges the two calls
+    // (retail 0x42f43e/0x42f445 load edx, then share the call at 0x42f447).
     if (fxBottom > pRenderSection->bottomExclusive) {
         if (fxTop < pRenderSection->bottomExclusive) {
             g_HudUiMgrSensor_FxRectScratch.top = pRenderSection->bottomExclusive;
         }
-        fxRectOrNull = &g_HudUiMgrSensor_FxRectScratch;
+        zVideo::FxPass3SetInputRectByIndex(1, &g_HudUiMgrSensor_FxRectScratch);
     } else {
-        fxRectOrNull = 0;
+        zVideo::FxPass3SetInputRectByIndex(1, 0);
     }
-    zVideo::FxPass3SetInputRectByIndex(1, fxRectOrNull);
 
     const int quitTransition = zInput::KeyboardGetKeyTransitionState(1) & 3;
 
@@ -1241,7 +1241,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
-        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 2.0f);
+        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(2.0f, 0);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
@@ -1260,7 +1260,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
 
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
-        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(0, 1.0f);
+        zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(1.0f, 0);
         HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {

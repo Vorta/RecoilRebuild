@@ -257,14 +257,14 @@ void __cdecl InitFromZrd()
     if (zNetwork::IsHost() != 0) {
         const unsigned int styleColor = g_GameNetPlayerRowStyleColors_00RRGGBB[playerRow->playerColorIndex];
         playerRow->playerColorPackedRgb = styleColor;
-        playerRow->hudWidget.textColor0 = styleColor;
-        playerRow->hudWidget.textColor1 = styleColor;
-        playerRow->hudWidget.textDirty = 1;
+        // Inline setter: retail stores textDirty last (0x432019), after both colors.
+        playerRow->hudWidget.SetTextColorsAndMarkDirty(styleColor, styleColor);
         playerRow->ApplyPlayerColorTint();
         if (g_HudSensorTracker.raceCheckpointMode == 0) {
+            // Retail stores the flag (0x432039) before the float copy's stack store (0x432044).
+            g_GameNetHostHudTimerInitFlag = 0;
             // Retail keeps this float copy in its own stack slot.
             float runtimeTimerSec = g_HudSensorTracker.runtimeTimerSec;
-            g_GameNetHostHudTimerInitFlag = 0;
             HudUiTimerPanel::SetSeconds(runtimeTimerSec, -1.0f);
             g_HudTimerPanelNetState.timerDirectionNeg = 1;
             g_HudTimerPanelNetState.statusBitsResendDeadline = 30.0f;
@@ -883,37 +883,35 @@ int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketH
     hudWidget->SetVisible(0);
     g_HudUiTopMessageStack->RemoveChild((HudUiElement*)(hudWidget));
 
-    if (g_GameNetPlayerRowCount == 0) {
-        return 0;
+    // Only the early row check returns before the end: retail gives it its own
+    // shrink-wrapped epilogue (0x432ee2) and the exhausted search falls through to a
+    // separate no-xor exit (0x432fb2); any further return would merge all exits.
+    if (g_GameNetPlayerRowCount != 0) {
+        if (row == g_GameNetPlayerRowHead) {
+            --g_GameNetPlayerRowCount;
+            GameNetPlayerRow* const next = row->next;
+            g_GameNetPlayerRowHead = next;
+            if (next == 0) {
+                g_GameNetPlayerRowList.flags = 0;
+                g_GameNetPlayerRowTail = 0;
+            }
+            row->DestroyEmbeddedPanel();
+            ::operator delete(row);
+        } else {
+            for (GameNetPlayerRow* previous = g_GameNetPlayerRowHead; previous != 0; previous = previous->next) {
+                if (previous->next == row) {
+                    --g_GameNetPlayerRowCount;
+                    previous->next = row->next;
+                    if (g_GameNetPlayerRowTail == row) {
+                        g_GameNetPlayerRowTail = previous;
+                    }
+                    row->DestroyEmbeddedPanel();
+                    ::operator delete(row);
+                    break;
+                }
+            }
+        }
     }
-
-    if (row == g_GameNetPlayerRowHead) {
-        --g_GameNetPlayerRowCount;
-        GameNetPlayerRow* const next = row->next;
-        g_GameNetPlayerRowHead = next;
-        if (next == 0) {
-            g_GameNetPlayerRowList.flags = 0;
-            g_GameNetPlayerRowTail = 0;
-        }
-    } else {
-        GameNetPlayerRow* previous = g_GameNetPlayerRowHead;
-        while (previous != 0 && previous->next != row) {
-            previous = previous->next;
-        }
-
-        if (previous == 0) {
-            return 0;
-        }
-
-        --g_GameNetPlayerRowCount;
-        previous->next = row->next;
-        if (g_GameNetPlayerRowTail == row) {
-            g_GameNetPlayerRowTail = previous;
-        }
-    }
-
-    row->DestroyEmbeddedPanel();
-    ::operator delete(row);
     return 0;
 }
 
@@ -1436,6 +1434,20 @@ int __fastcall HandlePkt0BChatMessage(int, NetPkt0B_ChatMessage* packet)
 }
 
 /**
+ * Reconstruction model: inline spawn-pose helper taking the position by value.
+ * Retail 0x433939..0x433962 interleaves the spawn position copy into the stack vector
+ * with the yaw product (position.x loaded before the qword fmul); VC5 schedules the
+ * copy that way only for a by-value parameter of an inline-expanded helper. The
+ * degree factor is retail pool constant 0x4d12b8, exactly 0.01745329251994 (as in
+ * player.cpp). Original-source helper status is inferred; helper spelling and placement are not established; no
+ * standalone retail function exists. Purpose: place a player at a spawn position and yaw given in degrees.
+ */
+inline void SetWorldPoseFromSpawn(zUtil_SaveGameState* saveState, zVec3 position, float yawDegrees)
+{
+    Player::SetWorldPoseAndRestartAnchor(saveState, &position, (float)(yawDegrees * 0.01745329251994));
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-respawn-player-and-drop-weapon-pickup-if-allowed
  * @recoil-artifact defines .text recoil:function:0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed.
  *
@@ -1490,13 +1502,7 @@ void __fastcall RespawnPlayerAndDropWeaponPickupIfAllowed(zUtil_SaveGameState* s
     }
 
     if (selectedSpawn != 0) {
-        const double kDegreesToRadians = 0.017453292519943295;
-        zVec3 position = selectedSpawn->position;
-        Player::SetWorldPoseAndRestartAnchor(
-            saveState,
-            &position,
-            (float)(selectedSpawn->yawDegrees * kDegreesToRadians)
-        );
+        SetWorldPoseFromSpawn(saveState, selectedSpawn->position, selectedSpawn->yawDegrees);
     }
 
     if (saveState->primaryModalState->masterModalData->masterType != 3 && g_HudSensorTracker.raceCheckpointMode == 0) {

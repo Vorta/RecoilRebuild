@@ -277,199 +277,272 @@ namespace zVid_Image
         zVidRect32* srcRect
     )
     {
-        int srcLeft = 0;
-        int srcTop = 0;
-        int srcRight = image->width;
-        int srcBottom = image->height;
-        if (srcRect != 0) {
-            srcLeft = srcRect->left;
-            srcTop = srcRect->top;
-            srcRight = srcRect->right;
-            srcBottom = srcRect->bottom;
+        int srcWidth;
+        int srcHeight;
+        if (srcRect == 0) {
+            srcWidth = image->width;
+            srcHeight = image->height;
+        } else {
+            srcWidth = srcRect->right - srcRect->left;
+            srcHeight = srcRect->bottom - srcRect->top;
         }
 
-        const int srcWidth = srcRight - srcLeft;
-        const int srcHeight = srcBottom - srcTop;
-        if (srcWidth < 0 || srcWidth > 2048 || srcHeight < 0 || srcHeight > 2048) {
+        if (srcWidth < 0 || srcWidth > 0x800 || srcHeight < 0 || srcHeight > 0x800) {
             return;
         }
 
-        if (srcWidth == 0 || srcHeight == 0 || zRndr::g_frameBuffer == 0 || image->pixels == 0) {
+        // Retail clamps the inclusive right/bottom edges with unsigned compares (jb/jbe).
+        int left = dstX;
+        int top = dstY;
+        unsigned int right = dstX + srcWidth - 1;
+        unsigned int bottom = dstY + srcHeight - 1;
+        if (dstX + srcWidth <= 0 || dstX >= zRndr::g_activeRegionWidth || dstY + srcHeight <= 0
+            || dstY >= zRndr::g_activeRegionHeight) {
             return;
         }
 
-        const int activeWidth = zRndr::g_activeRegionWidth;
-        const int activeHeight = zRndr::g_activeRegionHeight;
-        const int dstRight = dstX + srcWidth - 1;
-        const int dstBottom = dstY + srcHeight - 1;
-        if (dstX >= activeWidth || dstRight < 0 || dstY >= activeHeight || dstBottom < 0) {
-            return;
+        if (left < 0) {
+            left = 0;
+        }
+        if (right >= (unsigned int)(zRndr::g_activeRegionWidth)) {
+            right = zRndr::g_activeRegionWidth - 1;
+        }
+        if (top < 0) {
+            top = 0;
+        }
+        // Retail (0x48f61d: cmp; jbe) clamps the bottom edge only once it passes the active height.
+        if (bottom > (unsigned int)(zRndr::g_activeRegionHeight)) {
+            bottom = zRndr::g_activeRegionHeight - 1;
         }
 
-        int clippedDstX = dstX;
-        int clippedDstY = dstY;
-        int clippedRight = dstRight;
-        int clippedBottom = dstBottom;
-        if (clippedDstX < 0) {
-            clippedDstX = 0;
-        }
-        if (clippedDstY < 0) {
-            clippedDstY = 0;
-        }
-        if (clippedRight >= activeWidth) {
-            clippedRight = activeWidth - 1;
-        }
-        if (clippedBottom >= activeHeight) {
-            clippedBottom = activeHeight - 1;
-        }
-
-        const int clippedWidth = clippedRight - clippedDstX + 1;
-        const int clippedHeight = clippedBottom - clippedDstY + 1;
-        if (clippedWidth <= 0 || clippedHeight <= 0) {
-            return;
-        }
-
-        const int sourceStartX = srcLeft + clippedDstX - dstX;
-        const int sourceStartY = srcTop + clippedDstY - dstY;
-        const int sourcePitch = image->pitchWords;
+        const int width = right - left + 1;
+        int height = bottom - top + 1;
         const int framebufferPitch = (int)((unsigned int)(zRndr::g_pitchBytes) >> 1);
-        unsigned short* dstRow = (unsigned short*)(zRndr::g_frameBuffer) + framebufferPitch * clippedDstY + clippedDstX;
-        const int alphaSkipThreshold = zRndr::g_pixelPackGreenBits == 6 ? 3 : 7;
+        const int sourcePitch = image->pitchWords;
+        int sourceX;
+        int sourceY;
+        if (srcRect == 0) {
+            sourceX = left - dstX;
+            sourceY = top - dstY;
+        } else {
+            sourceX = srcRect->left + left - dstX;
+            sourceY = srcRect->top + top - dstY;
+        }
 
+        unsigned short* dstRow = (unsigned short*)(zRndr::g_frameBuffer) + framebufferPitch * top + left;
         if (image->palette == 0) {
-            unsigned short* sourceRow = (unsigned short*)(image->pixels) + sourcePitch * sourceStartY + sourceStartX;
-            unsigned char* alphaRow = (unsigned char*)(image->alphaMap);
-            if (alphaRow != 0) {
-                alphaRow += sourcePitch * sourceStartY + sourceStartX;
-                for (int row = 0; row < clippedHeight; ++row) {
-                    for (int x = 0; x < clippedWidth; ++x) {
-                        const int alpha = alphaRow[x];
-                        if (alpha > alphaSkipThreshold) {
-                            const unsigned short sourcePixel = sourceRow[x];
-                            if (alpha >= 252) {
-                                dstRow[x] = sourcePixel;
-                            } else if (zRndr::g_pixelPackGreenBits == 6) {
-                                const int dstColor = (short)(dstRow[x]);
-                                const int srcColor = sourcePixel;
-                                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                                int blended = dstColor + (redDelta & 0xfffff800);
-                                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                                dstRow[x] = (unsigned short)(blended);
+            unsigned short* srcRow = (unsigned short*)(image->pixels) + sourcePitch * sourceY + sourceX;
+            if (image->alphaMap != 0) {
+                unsigned char* alphaRow = (unsigned char*)(image->alphaMap) + sourcePitch * sourceY + sourceX;
+                if (zRndr::g_pixelPackGreenBits == 6) {
+                    for (int row = 0; row < height; ++row) {
+                        unsigned short* dst = dstRow;
+                        unsigned char* alpha = alphaRow;
+                        for (int column = 0; column < width; ++column) {
+                            if (*alpha > 3) {
+                                if (*alpha >= 0xfc) {
+                                    *dst = srcRow[column];
+                                } else {
+                                    int dstColor = (short)(*dst);
+                                    const int srcColor = (short)(srcRow[column]);
+                                    int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * *alpha;
+                                    int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * *alpha;
+                                    redDelta = (redDelta >> 8) & 0xfffff800;
+                                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                                    dstColor += redDelta;
+                                    int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * *alpha;
+                                    blueDelta >>= 8;
+                                    blueDelta += greenDelta;
+                                    dstColor += blueDelta;
+                                    *dst = (unsigned short)(dstColor);
+                                }
+                            }
+
+                            ++dst;
+                            ++alpha;
+                        }
+
+                        dstRow += framebufferPitch;
+                        srcRow += sourcePitch;
+                        alphaRow += sourcePitch;
+                    }
+                    return;
+                }
+
+                for (int row_1 = 0; row_1 < height; ++row_1) {
+                    unsigned short* dst = dstRow;
+                    unsigned char* alpha = alphaRow;
+                    for (int column_1 = 0; column_1 < width; ++column_1) {
+                        if (*alpha > 7) {
+                            if (*alpha >= 0xfc) {
+                                *dst = srcRow[column_1];
                             } else {
-                                const int dstColor = (short)(dstRow[x]);
-                                const int srcColor = sourcePixel;
-                                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                                int blended = dstColor + (redDelta & 0xfffffc00);
-                                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                                dstRow[x] = (unsigned short)(blended);
+                                const int dstColor = (short)(*dst);
+                                const int srcColor = (short)(srcRow[column_1]);
+                                int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * *alpha) >> 8;
+                                int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * *alpha) >> 8;
+                                redDelta &= 0xfffffc00;
+                                greenDelta &= 0xffffffe0;
+                                // Retail folds the red step into a 16-bit read-modify-write, then re-reads the
+                                // alpha byte for the blue term (0x48f85d, 0x48f869).
+                                *dst += redDelta;
+                                const int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * *alpha) >> 8;
+                                *dst += blueDelta + greenDelta;
                             }
                         }
+
+                        ++dst;
+                        ++alpha;
                     }
 
                     dstRow += framebufferPitch;
-                    sourceRow += sourcePitch;
+                    srcRow += sourcePitch;
                     alphaRow += sourcePitch;
                 }
                 return;
             }
 
             if ((image->formatFlagsPacked & 0x02) != 0) {
-                const unsigned short transparentColor = (unsigned short)(clipFlags);
-                for (int row_1 = 0; row_1 < clippedHeight; ++row_1) {
-                    for (int x_1 = 0; x_1 < clippedWidth; ++x_1) {
-                        const unsigned short sourcePixel = sourceRow[x_1];
-                        if (sourcePixel != transparentColor) {
-                            dstRow[x_1] = sourcePixel;
+                for (int row_2 = 0; row_2 < height; ++row_2) {
+                    for (int column_2 = 0; column_2 < width; ++column_2) {
+                        if (srcRow[column_2] != clipFlags) {
+                            dstRow[column_2] = srcRow[column_2];
                         }
                     }
 
                     dstRow += framebufferPitch;
-                    sourceRow += sourcePitch;
+                    srcRow += sourcePitch;
                 }
                 return;
             }
 
-            if (clippedDstX == 0 && clippedRight == activeWidth - 1 && framebufferPitch == sourcePitch) {
-                memcpy(dstRow, sourceRow, (size_t)(clippedWidth * clippedHeight) * sizeof(unsigned short));
+            if (left == 0 && right == (unsigned int)(zRndr::g_activeRegionWidth - 1)
+                && framebufferPitch == sourcePitch) {
+                // Retail [0x48f94f, 0x48f95a): one rep movsd of (width * height) >> 1 dwords.
+                memcpy(dstRow, srcRow, (size_t)((width * height) >> 1) * sizeof(unsigned int));
                 return;
             }
 
-            for (int row_2 = 0; row_2 < clippedHeight; ++row_2) {
-                memcpy(dstRow, sourceRow, (size_t)(clippedWidth) * sizeof(unsigned short));
+            if ((width & 1) == 0) {
+                for (int row_3 = 0; row_3 < height; ++row_3) {
+                    // Retail [0x48f98a, 0x48f995): rep movsd of width / 2 dwords per row.
+                    memcpy(dstRow, srcRow, (size_t)(width >> 1) * sizeof(unsigned int));
+                    dstRow += framebufferPitch;
+                    srcRow += sourcePitch;
+                }
+                return;
+            }
+
+            for (int row_4 = 0; row_4 < height; ++row_4) {
+                // Retail [0x48f9c8, 0x48f9d4): rep movsw of width words per row.
+                memcpy(dstRow, srcRow, (size_t)(width) * sizeof(unsigned short));
                 dstRow += framebufferPitch;
-                sourceRow += sourcePitch;
+                srcRow += sourcePitch;
             }
             return;
         }
 
-        unsigned char* sourceRow8 = (unsigned char*)(image->pixels) + sourcePitch * sourceStartY + sourceStartX;
-        unsigned short* palette = (unsigned short*)(image->palette);
-        unsigned char* alphaRow8 = (unsigned char*)(image->alphaMap);
-        if (alphaRow8 != 0) {
-            alphaRow8 += sourcePitch * sourceStartY + sourceStartX;
-            for (int row_3 = 0; row_3 < clippedHeight; ++row_3) {
-                for (int x_2 = 0; x_2 < clippedWidth; ++x_2) {
-                    const int alpha = alphaRow8[x_2];
-                    if (alpha > alphaSkipThreshold) {
-                        const unsigned short sourcePixel = palette[sourceRow8[x_2]];
-                        if (alpha >= 252) {
-                            dstRow[x_2] = sourcePixel;
-                        } else if (zRndr::g_pixelPackGreenBits == 6) {
-                            const int dstColor = (short)(dstRow[x_2]);
-                            const int srcColor = sourcePixel;
-                            const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                            const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                            int blended = dstColor + (redDelta & 0xfffff800);
-                            const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                            blended += (greenDelta & 0xffffffe0) + blueDelta;
-                            dstRow[x_2] = (unsigned short)(blended);
+        unsigned char* srcRow8 = (unsigned char*)(image->pixels) + sourceX + sourcePitch * sourceY;
+        const unsigned short* palette = (const unsigned short*)(image->palette);
+        if (image->alphaMap != 0) {
+            unsigned char* alphaRow8 = (unsigned char*)(image->alphaMap) + sourceX + sourcePitch * sourceY;
+            if (zRndr::g_pixelPackGreenBits == 6) {
+                for (; height > 0; --height) {
+                    unsigned short* dst = dstRow;
+                    unsigned char* alpha = alphaRow8;
+                    for (int column_3 = 0; column_3 < width; ++column_3) {
+                        if (*alpha > 3) {
+                            if (*alpha >= 0xfc) {
+                                *dst = palette[srcRow8[column_3]];
+                            } else {
+                                int dstColor = (short)(*dst);
+                                const int srcColor = palette[srcRow8[column_3]];
+                                int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * *alpha;
+                                int redDelta = ((srcColor & 0xf800) - (dstColor & 0xf800)) * *alpha;
+                                redDelta = (redDelta >> 8) & 0xfffff800;
+                                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                                dstColor += redDelta;
+                                int blueDelta = ((srcColor & 0x001f) - (dstColor & 0x001f)) * *alpha;
+                                blueDelta >>= 8;
+                                blueDelta += greenDelta;
+                                dstColor += blueDelta;
+                                *dst = (unsigned short)(dstColor);
+                            }
+                        }
+
+                        ++dst;
+                        ++alpha;
+                    }
+
+                    dstRow += framebufferPitch;
+                    srcRow8 += sourcePitch;
+                    alphaRow8 += sourcePitch;
+                }
+                return;
+            }
+
+            for (int row_5 = 0; row_5 < height; ++row_5) {
+                unsigned short* dst = dstRow;
+                unsigned char* alpha = alphaRow8;
+                for (int column_4 = 0; column_4 < width; ++column_4) {
+                    if (*alpha > 7) {
+                        if (*alpha >= 0xfc) {
+                            *dst = palette[srcRow8[column_4]];
                         } else {
-                            const int dstColor = (short)(dstRow[x_2]);
-                            const int srcColor = sourcePixel;
-                            const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                            int blended = dstColor + (redDelta & 0xfffffc00);
-                            const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                            const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                            blended += (greenDelta & 0xffffffe0) + blueDelta;
-                            dstRow[x_2] = (unsigned short)(blended);
+                            const int dstColor = (short)(*dst);
+                            const int srcColor = palette[srcRow8[column_4]];
+                            int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * *alpha) >> 8;
+                            redDelta &= 0xfffffc00;
+                            *dst += redDelta;
+                            int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * *alpha) >> 8;
+                            greenDelta &= 0xffffffe0;
+                            const int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * *alpha) >> 8;
+                            *dst += greenDelta + blueDelta;
                         }
                     }
+
+                    ++dst;
+                    ++alpha;
                 }
 
                 dstRow += framebufferPitch;
-                sourceRow8 += sourcePitch;
+                srcRow8 += sourcePitch;
                 alphaRow8 += sourcePitch;
             }
             return;
         }
 
         if ((image->formatFlagsPacked & 0x02) != 0) {
-            const unsigned short transparentIndex = (unsigned short)(clipFlags);
-            for (int row_4 = 0; row_4 < clippedHeight; ++row_4) {
-                for (int x_3 = 0; x_3 < clippedWidth; ++x_3) {
-                    const unsigned int sourceIndex = sourceRow8[x_3];
-                    if ((unsigned short)(sourceIndex) != transparentIndex) {
-                        dstRow[x_3] = palette[sourceIndex];
+            for (int row_6 = 0; row_6 < height; ++row_6) {
+                for (int column_5 = 0; column_5 < width; ++column_5) {
+                    if ((unsigned short)(srcRow8[column_5]) != clipFlags) {
+                        dstRow[column_5] = palette[srcRow8[column_5]];
                     }
                 }
 
                 dstRow += framebufferPitch;
-                sourceRow8 += sourcePitch;
+                srcRow8 += sourcePitch;
             }
             return;
         }
 
-        for (int row_5 = 0; row_5 < clippedHeight; ++row_5) {
-            for (int x_4 = 0; x_4 < clippedWidth; ++x_4) {
-                dstRow[x_4] = palette[sourceRow8[x_4]];
+        if (left == 0 && right == (unsigned int)(zRndr::g_activeRegionWidth - 1) && framebufferPitch == sourcePitch) {
+            // Retail [0x48fce7, 0x48fd0b): one palette-expand loop over width * height pixels.
+            const int pixelCount = height * width;
+            for (int i = 0; i < pixelCount; ++i) {
+                dstRow[i] = palette[srcRow8[i]];
+            }
+            return;
+        }
+
+        for (int row_7 = 0; row_7 < height; ++row_7) {
+            // Retail [0x48fd27, 0x48fd4b): the same palette-expand loop over one row.
+            for (int column_6 = 0; column_6 < width; ++column_6) {
+                dstRow[column_6] = palette[srcRow8[column_6]];
             }
 
             dstRow += framebufferPitch;
-            sourceRow8 += sourcePitch;
+            srcRow8 += sourcePitch;
         }
     }
 } // namespace zVid_Image

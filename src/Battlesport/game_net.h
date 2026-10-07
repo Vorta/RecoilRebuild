@@ -415,7 +415,7 @@ extern int g_GameNetPkt06InitialSyncGate;
 extern int g_GameNetPkt06InputBit17Latch;
 extern int g_GameNetPkt06InputBit16Latch;
 extern float g_GameNetPkt06NextSendTimeSec;
-extern int g_GameNetHostHudTimerInitFlag;
+extern float g_GameNetHostHudTimerInitFlag;
 extern int g_GameNetHudTimerTenSecondWarningArmed;
 extern int g_GameNetHudTimerPendingSaveReminderArmed;
 extern int g_GameNet_HandlersRegistered;

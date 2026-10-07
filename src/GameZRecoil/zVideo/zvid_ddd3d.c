@@ -94,16 +94,10 @@ namespace zVideo_dd3d
         if ((attr0) != 0) {                                                                                            \
             const float* _attr0Source = &(attr0)[(lastIndex)];                                                         \
             for (_colorIndex = 0; _colorIndex < (vertexCount); ++_colorIndex, --_attr0Source) {                        \
-                DWORD _packed;                                                                                         \
-                DWORD _packedTail;                                                                                     \
+                /* Each branch stores its color; retail shares only the OR/store tail. */                              \
                 if (!(*_attr0Source > (1.0f / 255.0f))) {                                                              \
-                    _packed                                                                                            \
-                        = (((                                                                                          \
-                                ((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5)) << 8)                              \
-                                | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5))                                   \
-                            ) << 8)                                                                                    \
-                            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5)));                                     \
-                    _packedTail = (alphaBits);                                                                         \
+                    g_zVideo_D3DSubmitTempVertices[_colorIndex].color                                                  \
+                        = PackColorAttrConstant((baseColor), (attr1Scale), (alphaBits));                               \
                 } else {                                                                                               \
                     float _channels[3];                                                                                \
                     _channels[0] = (baseColor).r * (attr1Scale) + *_attr0Source * g_zVideo_D3DColorAttrBiasR;          \
@@ -115,11 +109,10 @@ namespace zVideo_dd3d
                         _channels[1] *= _scale;                                                                        \
                         _channels[2] *= _scale;                                                                        \
                     }                                                                                                  \
-                    _packed                                                                                            \
-                        = (((((DWORD)((int)(_channels[0])) << 8) | (DWORD)((int)(_channels[1]))) << 8) | (alphaBits)); \
-                    _packedTail = (DWORD)((int)(_channels[2]));                                                        \
+                    g_zVideo_D3DSubmitTempVertices[_colorIndex].color                                                  \
+                        = (((((DWORD)((int)(_channels[0])) << 8) | (DWORD)((int)(_channels[1]))) << 8) | (alphaBits))  \
+                        | (DWORD)((int)(_channels[2]));                                                                \
                 }                                                                                                      \
-                g_zVideo_D3DSubmitTempVertices[_colorIndex].color = _packed | _packedTail;                             \
             }                                                                                                          \
         } else {                                                                                                       \
             const DWORD _constantColor = PackColorAttrConstant((baseColor), (attr1Scale), (alphaBits));                \
@@ -1469,16 +1462,18 @@ namespace zVideo_dd3d
     {
         (void)packedColor16;
 
+        // Retail computes vertexCount - 1 first (lea eax,[ebp-1]) and recomputes it at each reverse copy.
+        const int lastIndex = vertexCount - 1;
         const float attr1Scale = 1.0f - *attr1;
         const DWORD alphaBits = alpha >= 0xff ? 0xff000000 : (DWORD)(alpha << 24);
 
-        FillColorAttrSpecularReverse(attr2, vertexCount - 1, vertexCount);
-        FillColorAttrColorsReverse(*baseColor, attr0, vertexCount - 1, attr1Scale, alphaBits, vertexCount);
+        FillColorAttrSpecularReverse(attr2, lastIndex, vertexCount);
+        FillColorAttrColorsReverse(*baseColor, attr0, lastIndex, attr1Scale, alphaBits, vertexCount);
         if (alpha < 0xff) {
             return;
         }
 
-        CopyPositionsReverse(g_zVideo_D3DSubmitTempVertices, vertices, vertexCount - 1, vertexCount);
+        CopyPositionsReverse(g_zVideo_D3DSubmitTempVertices, vertices, lastIndex, vertexCount);
 
         if (queueMode != 0) {
             const int queueIndex = g_zVideo_OverwriteQueueCount;

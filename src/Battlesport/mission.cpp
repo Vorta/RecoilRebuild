@@ -3108,7 +3108,7 @@ float g_GameNetPkt06NextSendTimeSec = 0.0f;
  * Purpose: Tracks host-side HUD timer initialization during multiplayer
  * mission startup.
  */
-int g_GameNetHostHudTimerInitFlag = 0;
+float g_GameNetHostHudTimerInitFlag = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenethudtimertensecondwarningarmed
  * @recoil-artifact defines .data recoil:data:0x4dce70: g_GameNetHudTimerTenSecondWarningArmed.

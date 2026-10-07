@@ -185,7 +185,7 @@ int __fastcall zSndSample::InitFromWaveDataA3D(zSndWaveData* waveData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-create.zsndsample-initfromwavedata-directsound
  * @recoil-artifact defines .text recoil:function:0x4a3180: zSndSample::InitFromWaveDataDirectSound.
- *
+ * @recoil-match byte
  *
  * Evidence: BN source comment and assembly show the DirectSound path in
  * zsnd_create.cpp with a 20-byte legacy buffer descriptor, provider calls
@@ -196,50 +196,32 @@ int __fastcall zSndSample::InitFromWaveDataA3D(zSndWaveData* waveData)
  */
 int __fastcall zSndSample::InitFromWaveDataDirectSound(zSndWaveData* waveData)
 {
-    zSndWaveData* const loadedWaveData = waveData;
     if (createGuard != 0) {
         return 0;
     }
 
     zSndDirectSoundLegacyBufferDesc desc;
-    const unsigned int pcmByteCount = (unsigned int)(loadedWaveData->pcmByteCount);
-    WAVEFORMATEX* const fmt = loadedWaveData->fmt;
+    const unsigned int pcmByteCount = (unsigned int)(waveData->pcmByteCount);
+    WAVEFORMATEX* const fmt = waveData->fmt;
     memset(&desc, 0, sizeof(desc));
     desc.dwBufferBytes = pcmByteCount;
 
-    const unsigned int flags = (unsigned int)(replayFields.flags);
-    unsigned int shiftedFlags = flags;
-    shiftedFlags >>= 2;
-    unsigned char shiftedMode = (unsigned char)(shiftedFlags);
     desc.dwSize = 20;
+    desc.lpwfxFormat = fmt;
     desc.dwFlags = 0x80;
-    if ((shiftedMode & 1) != 0) {
+    // Retail tests the replay flags through the bit-field view (shr/test per bit).
+    if (replayFields.flagBits.flag04) {
         desc.dwFlags = 0xc0;
     }
-    desc.lpwfxFormat = fmt;
-    shiftedFlags = flags;
-    shiftedFlags >>= 5;
-    shiftedMode = (unsigned char)(shiftedFlags);
-    if ((shiftedMode & 1) != 0) {
+    if (replayFields.flagBits.flag20) {
         desc.dwFlags |= 0x20;
     }
-    shiftedFlags = flags;
-    shiftedFlags >>= 1;
-    shiftedMode = (unsigned char)(shiftedFlags);
-    if ((shiftedMode & 1) != 0) {
+    if (replayFields.flagBits.flag02) {
         desc.dwFlags |= 0x08;
-    } else {
-        shiftedFlags = flags;
-        shiftedFlags >>= 6;
-        shiftedMode = (unsigned char)(shiftedFlags);
-        if ((shiftedMode & 1) != 0) {
-            desc.dwFlags |= 0x02;
-        }
+    } else if (replayFields.flagBits.flag40) {
+        desc.dwFlags |= 0x02;
     }
-    shiftedFlags = flags;
-    shiftedFlags >>= 8;
-    shiftedMode = (unsigned char)(shiftedFlags);
-    if ((shiftedMode & 1) != 0) {
+    if (replayFields.flagBits.streaming) {
         desc.dwFlags |= 0x10000;
     }
 
@@ -252,7 +234,7 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(zSndWaveData* waveData)
             "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp",
             0xf5,
             "Error creating sound buffer ( %s )",
-            loadedWaveData->nameOrPath
+            waveData->nameOrPath
         );
         zSnd::ReportDirectSoundError(createError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0xf6);
         return 0;
@@ -276,15 +258,16 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(zSndWaveData* waveData)
     void* audioPtr2;
     DWORD audioBytes1;
     DWORD audioBytes2;
+    // Retail re-reads the PCM byte count from the wave data for Lock.
     error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))
-                ->Lock(0, pcmByteCount, &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
+                ->Lock(0, waveData->pcmByteCount, &audioPtr1, &audioBytes1, &audioPtr2, &audioBytes2, 0);
     if (error != 0) {
         return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x11d);
     }
 
-    memcpy(audioPtr1, loadedWaveData->pcmData, audioBytes1);
+    memcpy(audioPtr1, waveData->pcmData, audioBytes1);
     if (audioBytes2 != 0) {
-        memcpy(audioPtr2, (unsigned char*)(loadedWaveData->pcmData) + audioBytes1, audioBytes2);
+        memcpy(audioPtr2, (unsigned char*)(waveData->pcmData) + audioBytes1, audioBytes2);
         audioBytes1 += audioBytes2;
     }
 
@@ -298,9 +281,9 @@ int __fastcall zSndSample::InitFromWaveDataDirectSound(zSndWaveData* waveData)
         return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_create.cpp", 0x130);
     }
 
-    markerCount = loadedWaveData->cuePointCount;
+    markerCount = waveData->cuePointCount;
     if (markerCount != 0) {
-        zSndCuePoint* const cuePoints = loadedWaveData->cuePoints;
+        zSndCuePoint* const cuePoints = waveData->cuePoints;
         if (markerCount > 0) {
             markerTimes = (float*)(malloc((size_t)(markerCount) * sizeof(float) + sizeof(float)));
             markerValues = (float*)(malloc((size_t)(markerCount) * sizeof(float) + sizeof(float)));

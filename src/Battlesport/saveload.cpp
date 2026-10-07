@@ -269,24 +269,39 @@ void HudUiLoadGameDialog::OnPrimaryActionThunk()
     ProcessDialogResult();
 }
 
+namespace {
+/**
+ * Reconstruction model: a TU-local inline row setter. Retail 0x434ee0 keeps the
+ * nine layoutY stores in row order (0x434ef6..0x434f30), holding the shared 0x3fff
+ * value in ecx until the eighth store; VC5 keeps that order only when each store goes
+ * through an inline-expanded row pointer (direct member stores hoist both 0x3fff
+ * stores). Original-source helper status is inferred; helper spelling and placement are not established; no standalone
+ * retail function exists. Purpose: set one save/load list row's layout Y value.
+ */
+inline void SetRowLayoutY(HudUiSaveLoadListItem* item, int layoutY)
+{
+    item->layoutY = layoutY;
+}
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-initialize-file-entries
  * @recoil-artifact defines .text recoil:function:0x434ee0: HudUiSaveLoadDialog::InitializeFileEntries.
- *
+ * @recoil-match byte
  *
  * Purpose: Seeds list-row layout metadata, loads saved-game entries, and binds visible rows.
  */
 void HudUiSaveLoadDialog::InitializeFileEntries()
 {
-    entryWidgets[0].layoutY = (int)(0.3 * 0x7fff);
-    entryWidgets[1].layoutY = (int)(0.5 * 0x7fff);
-    entryWidgets[2].layoutY = (int)(1.0 * 0x7fff);
-    entryWidgets[3].layoutY = (int)(1.0 * 0x7fff);
-    entryWidgets[4].layoutY = (int)(1.0 * 0x7fff);
-    entryWidgets[5].layoutY = (int)(0.9 * 0x7fff);
-    entryWidgets[6].layoutY = (int)(0.7 * 0x7fff);
-    entryWidgets[7].layoutY = (int)(0.5 * 0x7fff);
-    entryWidgets[8].layoutY = (int)(0.3 * 0x7fff);
+    SetRowLayoutY(&entryWidgets[0], (int)(0.3 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[1], (int)(0.5 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[2], (int)(1.0 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[3], (int)(1.0 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[4], (int)(1.0 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[5], (int)(0.9 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[6], (int)(0.7 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[7], (int)(0.5 * 0x7fff));
+    SetRowLayoutY(&entryWidgets[8], (int)(0.3 * 0x7fff));
 
     RefreshSaveFileList();
 
@@ -927,13 +942,3 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RecoilSaveLoa
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
     g_RecoilApp.QueuePushState(&g_RecoilStateSaveLoadTransition, 0);
 }
-
-/**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and 0x4355e0 order(s) code by that counter's
- * parity at code generation. These declarations are never referenced and emit no code,
- * data or symbols. User-authorized exception: match-proofs.md "Per-TU VC5
- * ID-counter parity exception".
- * Purpose: keep this file's ID-counter parity after shared-header changes.
- */
-extern int g_SaveLoadIdCounterAlignment0;

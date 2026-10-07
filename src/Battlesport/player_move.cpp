@@ -1953,6 +1953,19 @@ void __fastcall RebuildSteerBasisFromMotionBasis(zUtil_SaveGameState* saveState)
     zMath::Vec3NormalizeXZ(&playerState->steerBasisNorm, &playerState->steerBasisNorm);
 }
 } // namespace Player
+/**
+ * Reconstruction model: inline cross-product Y component. Retail 0x4295be..0x4295d6
+ * loads steer.z and target.z and multiplies them by target.x and steer.x memory
+ * operands; VC5 orders those operands this way only through the inline-expanded
+ * pointer parameters. Original-source helper status is inferred; helper spelling and placement are not established; no
+ * standalone retail function exists.
+ * Purpose: return the y component of the cross product a x b.
+ */
+inline float Vec3CrossY(const zVec3* a, const zVec3* b)
+{
+    return a->z * b->x - a->x * b->z;
+}
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
@@ -1984,10 +1997,9 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
         return;
     }
 
-    const float cross = playerState->steerBasisNorm.z * playerState->autoTurnTargetDir.x
-        - playerState->autoTurnTargetDir.z * playerState->steerBasisNorm.x;
-    const float dot = playerState->steerBasisNorm.z * playerState->autoTurnTargetDir.z
-        + playerState->autoTurnTargetDir.x * playerState->steerBasisNorm.x;
+    const float cross = Vec3CrossY(&playerState->steerBasisNorm, &playerState->autoTurnTargetDir);
+    const float dot = playerState->steerBasisNorm.x * playerState->autoTurnTargetDir.x
+        + playerState->steerBasisNorm.z * playerState->autoTurnTargetDir.z;
     if (dot < (float)(cos(g_Player_DeltaTime * masterModalData->yawRateMax))) {
         const int turnSign = cross < 0.0f ? -1 : 1;
         const float turnSignFloat = (float)(turnSign);

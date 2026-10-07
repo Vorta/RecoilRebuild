@@ -2121,8 +2121,10 @@ namespace zVideo_FxSurface
                                     dstValue = *spanPixel;
                                     redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
                                     greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
+                                    redDelta &= 0xfffffc00;
+                                    greenDelta &= 0xffffffe0;
                                     blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                                    *spanPixel += (greenDelta & 0xffffffe0) + blueDelta + (redDelta & 0xfffffc00);
+                                    *spanPixel += greenDelta + blueDelta + redDelta;
                                 }
                             }
                         } else if (alpha > 3) {
@@ -2130,11 +2132,16 @@ namespace zVideo_FxSurface
                                 *spanPixel = color16;
                             } else {
                                 dstValue = *spanPixel;
-                                redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha >> 8;
-                                greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha >> 8;
-                                dstValue += redDelta & 0xfffff800;
-                                blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                                *spanPixel = (unsigned short)(dstValue + (blueDelta + (greenDelta & 0xffffffe0)));
+                                greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha;
+                                redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha;
+                                redDelta = (redDelta >> 8) & 0xfffff800;
+                                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                                dstValue += redDelta;
+                                blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha;
+                                blueDelta >>= 8;
+                                blueDelta += greenDelta;
+                                dstValue += blueDelta;
+                                *spanPixel = (unsigned short)(dstValue);
                             }
                         }
                         spanPixel += pitchPixels;
@@ -2169,8 +2176,10 @@ namespace zVideo_FxSurface
                                 dstValue = *spanPixel;
                                 redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
                                 greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
+                                redDelta &= 0xfffffc00;
+                                greenDelta &= 0xffffffe0;
                                 blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                                *spanPixel += (greenDelta & 0xffffffe0) + blueDelta + (redDelta & 0xfffffc00);
+                                *spanPixel += greenDelta + blueDelta + redDelta;
                             }
                         }
                     } else if (alpha > 3) {
@@ -2178,11 +2187,16 @@ namespace zVideo_FxSurface
                             *spanPixel = color16;
                         } else {
                             dstValue = *spanPixel;
-                            redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha >> 8;
-                            greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha >> 8;
-                            dstValue += redDelta & 0xfffff800;
-                            blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                            *spanPixel = (unsigned short)(dstValue + (blueDelta + (greenDelta & 0xffffffe0)));
+                            greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha;
+                            redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha;
+                            redDelta = (redDelta >> 8) & 0xfffff800;
+                            greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                            dstValue += redDelta;
+                            blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha;
+                            blueDelta >>= 8;
+                            blueDelta += greenDelta;
+                            dstValue += blueDelta;
+                            *spanPixel = (unsigned short)(dstValue);
                         }
                     }
                     spanPixel += xStep;

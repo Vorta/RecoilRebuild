@@ -397,7 +397,7 @@ namespace zGeometry_Polygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepointdwordoffsetsrecursive
  * @recoil-artifact defines .text recoil:function:0x46cb50: zGeometry_Polygon::TriangulatePointDwordOffsetsRecursive
- *
+ * @recoil-match byte
  *
  * Purpose: Recursively split a polygon point-dword offset list and append the
  * resulting triangle offset lists.
@@ -450,8 +450,9 @@ zGeometry_TriangleDwordOffsetList* __fastcall TriangulatePointDwordOffsetsRecurs
         }
     }
 
-    // The result buffer doubles as the working offset list.
-    pointDwordOffsets = outTriangleOffsets;
+    // The result buffer doubles as the working offset list; retail re-derives it from the result
+    // (no copy of outTriangleOffsets), keeping it in its own parameter home.
+    pointDwordOffsets = result->triangleDwordOffsets;
     splitPointLists->pointCount0 = pointCount;
     if (TrySplitPointDwordOffsetsAtBestDiagonal(
             pointCount,
@@ -476,15 +477,17 @@ zGeometry_TriangleDwordOffsetList* __fastcall TriangulatePointDwordOffsetsRecurs
 
     if (splitPointLists->pointCount0 == 3) {
         if (splitPointLists->pointCount1 != 3) {
+            // Retail steps past the leading triangle before recursing on the second list (0x46ccd9).
+            pointDwordOffsets += 3 * pointDwordStride;
             triangles = TriangulatePointDwordOffsetsRecursive(
                 splitPointLists->pointCount1,
                 pointDwords,
-                splitPointLists->pointDwordOffsets + 3 * pointDwordStride,
+                splitPointLists->pointDwordOffsets + pointDwordStride * splitPointLists->pointCount0,
                 pointDwordStrideMode
             );
             if (triangles != 0) {
                 memcpy(
-                    pointDwordOffsets + 3 * pointDwordStride,
+                    pointDwordOffsets,
                     triangles->triangleDwordOffsets,
                     pointDwordStride * triangles->triangleCount * 3 * sizeof(int)
                 );

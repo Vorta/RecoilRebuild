@@ -2382,14 +2382,15 @@ namespace CZCamera
     float __fastcall FastAngleXZ(zVec3 * point1, zVec3 * point2)
     {
         const int deltaX = (int)(point2->x - point1->x);
+        // abs() intrinsic: retail forms |dx| and |dz| with cdq/xor/sub (0x44c1cc, 0x44c1da).
+        int denom = abs(deltaX);
         const int deltaZ = (int)(point1->z - point2->z);
+        denom += abs(deltaZ);
 
-        const int absX = deltaX < 0 ? -deltaX : deltaX;
-        const int absZ = deltaZ < 0 ? -deltaZ : deltaZ;
-        const int denom = absX + absZ;
-
-        float angle = 0.0f;
-        if (denom != 0) {
+        float angle;
+        if (denom == 0) {
+            angle = 0.0f;
+        } else {
             angle = (float)(deltaZ) / (float)(denom);
         }
 

@@ -765,7 +765,7 @@ int __fastcall OutputPreclassifiedContourPairResult(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-preclassifyinputcontourpair
  * @recoil-artifact defines .text recoil:function:0x464f70: zGeometry_Weiler::PreclassifyInputContourPair
- *
+ * @recoil-match byte
  *
  * Purpose: Preclassify overlapping input contours by splitting coincident segments and merging contour type flags.
  */
@@ -3478,10 +3478,10 @@ int __fastcall Intersect2d(
         switch (xingType) {
         case 4:
         case 5: {
-            const double edge1ReverseDeltaX = edge1Start.x - edge1End.x;
-            const double edge1ReverseDeltaY = edge1Start.y - edge1End.y;
             const double edge0DeltaX = edge0End.x - edge0Start.x;
             const double edge0DeltaY = edge0End.y - edge0Start.y;
+            const double edge1ReverseDeltaX = edge1Start.x - edge1End.x;
+            const double edge1ReverseDeltaY = edge1Start.y - edge1End.y;
             const double divisor = edge1ReverseDeltaY * edge0DeltaX - edge1ReverseDeltaX * edge0DeltaY;
 
             if (divisor != 0.0) {

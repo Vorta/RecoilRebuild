@@ -558,7 +558,8 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     zMath::MatRotateY(cameraAngles.y);
     zMath::MatRotateX(cameraAngles.x);
 
-    const double gravityScale = gravity * 0.1;
+    // Retail keeps this float scale on the x87 stack and multiplies each component in memory.
+    const float gravityScale = gravity * 0.1;
     zVec3 gravityOffset = basisVector;
     gravityOffset.x *= gravityScale;
     gravityOffset.y *= gravityScale;
@@ -581,8 +582,6 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
         zMath::Vec3Normalize(&particleVelocity);
     }
 
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
     zVec3 probeVelocity = particleVelocity;
     ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
     if (lengthSq > 0.010000000000000002) {
@@ -604,15 +603,16 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
 
         const float sourceDepthFactor = 1.5f - particlePositions[sourceBufferIndex][particleIndex].z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
-        particleQuads[particleIndex].y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * (float)(viewportWidth));
+        particleQuads[particleIndex].y
+            = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * (float)(viewportHeight));
         particleQuads[particleIndex].width
             = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].x) - -0.5f)
-                  * viewportWidthF)
+                  * (float)(viewportWidth))
             - particleQuads[particleIndex].x;
         particleQuads[particleIndex].height
             = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].y) - -0.5f)
-                  * viewportHeightF)
+                  * (float)(viewportHeight))
             - particleQuads[particleIndex].y;
         particleQuads[particleIndex].color16 = packedColor16;
         particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
@@ -712,7 +712,8 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     zMath::MatRotateY(cameraAngles.y);
     zMath::MatRotateX(cameraAngles.x);
 
-    const double gravityScale = gravity * 0.1;
+    // Retail keeps this float scale on the x87 stack and multiplies each component in memory.
+    const float gravityScale = gravity * 0.1;
     zVec3 gravityOffset = basisVector;
     gravityOffset.x *= gravityScale;
     gravityOffset.y *= gravityScale;
@@ -735,8 +736,6 @@ void HudWeatherFxRain::Update(float deltaSeconds)
         zMath::Vec3Normalize(&particleVelocity);
     }
 
-    const float viewportWidthF = (float)(viewportWidth);
-    const float viewportHeightF = (float)(viewportHeight);
     zVec3 probeVelocity = particleVelocity;
     ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
     if (lengthSq > 0.010000000000000002) {
@@ -758,15 +757,16 @@ void HudWeatherFxRain::Update(float deltaSeconds)
 
         const float sourceDepthFactor = 1.5f - particlePositions[sourceBufferIndex][particleIndex].z;
         const float probeDepthFactor = 1.5f - probePosition.z;
-        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * viewportWidthF);
-        particleQuads[particleIndex].y = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * viewportHeightF);
+        particleQuads[particleIndex].x = (int)(((probeDepthFactor * probePosition.x) - -0.5f) * (float)(viewportWidth));
+        particleQuads[particleIndex].y
+            = (int)(((probeDepthFactor * probePosition.y) - -0.5f) * (float)(viewportHeight));
         particleQuads[particleIndex].width
             = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].x) - -0.5f)
-                  * viewportWidthF)
+                  * (float)(viewportWidth))
             - particleQuads[particleIndex].x;
         particleQuads[particleIndex].height
             = (int)(((sourceDepthFactor * particlePositions[sourceBufferIndex][particleIndex].y) - -0.5f)
-                  * viewportHeightF)
+                  * (float)(viewportHeight))
             - particleQuads[particleIndex].y;
         particleQuads[particleIndex].color16 = packedColor16;
         particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;

@@ -1097,8 +1097,9 @@ namespace
             const float dv10 = values[0] - values[1];
             const float dv12 = values[2] - values[1];
             const float inverseDeterminant = -1.0f / determinant;
-            plane.gradient.x = (dy12 * dv10 - dy10 * dv12) * inverseDeterminant;
-            plane.gradient.y = (dx10 * dv12 - dx12 * dv10) * inverseDeterminant;
+            // Retail plane setup (0x495850) negates the cross terms against -1/det.
+            plane.gradient.x = (dv12 * dy10 - dv10 * dy12) * inverseDeterminant;
+            plane.gradient.y = (dv10 * dx12 - dv12 * dx10) * inverseDeterminant;
         }
 
         plane.base = values[0];
@@ -3143,12 +3144,13 @@ void __fastcall zRndrDrawTexturedQueued(
             const float u12 = uValues[2] - uValues[1];
             const float v10 = vValues[0] - vValues[1];
             const float v12 = vValues[2] - vValues[1];
-            reciprocalZ.gradient.x = (dy12 * reciprocal10 - dy10 * reciprocal12) * inverseDeterminant;
-            reciprocalZ.gradient.y = (dx10 * reciprocal12 - dx12 * reciprocal10) * inverseDeterminant;
-            uOverZ.gradient.x = (dy12 * u10 - dy10 * u12) * inverseDeterminant;
-            uOverZ.gradient.y = (dx10 * u12 - dx12 * u10) * inverseDeterminant;
-            vOverZ.gradient.x = (dy12 * v10 - dy10 * v12) * inverseDeterminant;
-            vOverZ.gradient.y = (dx10 * v12 - dx12 * v10) * inverseDeterminant;
+            // Retail (0x495a4e-0x495ac2): (d12*dy10 - d10*dy12) and (d10*dx12 - d12*dx10) times -1/det.
+            reciprocalZ.gradient.x = (reciprocal12 * dy10 - reciprocal10 * dy12) * inverseDeterminant;
+            reciprocalZ.gradient.y = (reciprocal10 * dx12 - reciprocal12 * dx10) * inverseDeterminant;
+            uOverZ.gradient.x = (u12 * dy10 - u10 * dy12) * inverseDeterminant;
+            uOverZ.gradient.y = (u10 * dx12 - u12 * dx10) * inverseDeterminant;
+            vOverZ.gradient.x = (v12 * dy10 - v10 * dy12) * inverseDeterminant;
+            vOverZ.gradient.y = (v10 * dx12 - v12 * dx10) * inverseDeterminant;
         }
         gRndr_PerspInvDepthStepX = reciprocalZ.gradient.x;
         gRndr_PerspInvDepthStepY = reciprocalZ.gradient.y;
@@ -3210,7 +3212,8 @@ void __fastcall zRndrDrawTexturedQueued(
     const float shadeDeterminant = shadeDy12 * shadeDx10 - shadeDy10 * shadeDx12;
     Plane2f shadePlane = { 0 };
     if (shadeDeterminant != 0.0f) {
-        const float inverseShadeDeterminant = -1.0f / shadeDeterminant;
+        // Retail shade plane (0x495bac: fld1; fdivrp) uses +1/det with these cross terms.
+        const float inverseShadeDeterminant = 1.0f / shadeDeterminant;
         const float shade10 = shadeValues[0] - shadeValues[1];
         const float shade12 = shadeValues[2] - shadeValues[1];
         shadePlane.gradient.x = (shadeDy12 * shade10 - shadeDy10 * shade12) * inverseShadeDeterminant;
@@ -4867,37 +4870,36 @@ zVidImagePartial* __fastcall zRndrTextureMipSelectVariantImage(
     }
 
     float selectedZ = triVerts[0].z;
-    const zVec3* candidateVertex = triVerts + 1;
     int selectedVertex = 0;
-    int i = 1;
-    for (; i < vertCount; ++i, ++candidateVertex) {
-        if (selectedZ < candidateVertex->z) {
-            selectedZ = candidateVertex->z;
+    for (int i = 1; i < vertCount; ++i) {
+        if (selectedZ < triVerts[i].z) {
+            selectedZ = triVerts[i].z;
             selectedVertex = i;
         }
     }
 
-    const float selectedVertexZ = triVerts[selectedVertex].z;
-    const float invZ = 1.0f / selectedVertexZ;
-    const float invZAtX = 1.0f / (selectedVertexZ + mipParamsA->x);
-    const float invZAtY = 1.0f / (selectedVertexZ + mipParamsA->y);
+    const zVec3* selected = &triVerts[selectedVertex];
+    const float invZ = 1.0f / selected->z;
+    const float invZAtX = 1.0f / (mipParamsA->x + selected->z);
+    const float invZAtY = 1.0f / (mipParamsA->y + selected->z);
     const float uOverZ = vertexUvPairs[selectedVertex].x * invZ;
+    // Retail keeps the delta pairs in two stack arrays (v pair [esp+0x10], u pair [esp+0x18]).
+    float uDeltas[2];
+    uDeltas[0] = (mipParamsB->x + vertexUvPairs[selectedVertex].x) * invZAtX - uOverZ;
+    uDeltas[1] = (mipParamsB->y + vertexUvPairs[selectedVertex].x) * invZAtY - uOverZ;
     const float vOverZ = vertexUvPairs[selectedVertex].y * invZ;
-
-    const float mipDeltas[4] = { (vertexUvPairs[selectedVertex].x + mipParamsB->x) * invZAtX - uOverZ,
-        (vertexUvPairs[selectedVertex].x + mipParamsB->y) * invZAtY - uOverZ,
-        (vertexUvPairs[selectedVertex].y + mipParamsC->x) * invZAtX - vOverZ,
-        (vertexUvPairs[selectedVertex].y + mipParamsC->y) * invZAtY - vOverZ };
-
-    float mipMetric = mipDeltas[0];
-    if (mipMetric < mipDeltas[1]) {
-        mipMetric = mipDeltas[1];
+    float vDeltas[2];
+    vDeltas[0] = (mipParamsC->x + vertexUvPairs[selectedVertex].y) * invZAtX - vOverZ;
+    vDeltas[1] = (mipParamsC->y + vertexUvPairs[selectedVertex].y) * invZAtY - vOverZ;
+    float mipMetric = uDeltas[0];
+    if (mipMetric <= uDeltas[1]) {
+        mipMetric = uDeltas[1];
     }
-    if (mipMetric < mipDeltas[2]) {
-        mipMetric = mipDeltas[2];
+    if (vDeltas[0] > mipMetric) {
+        mipMetric = vDeltas[0];
     }
-    if (mipMetric < mipDeltas[3]) {
-        mipMetric = mipDeltas[3];
+    if (vDeltas[1] > mipMetric) {
+        mipMetric = vDeltas[1];
     }
 
     const double variantIndexBits = (double)(mipMetric) - -6755399441055744.0;

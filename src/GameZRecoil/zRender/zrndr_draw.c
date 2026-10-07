@@ -817,8 +817,10 @@ namespace zRndr
      *
      * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
      * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
+     * The scale precedes the Y offset: retail callers 0x42f51d/0x42f589 evaluate the
+     * register Y offset (xor ecx) before pushing the stack scale (VC5 right-to-left order).
      */
-    void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(int yOffsetPixels, float screenScale)
+    void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(float screenScale, int yOffsetPixels)
     {
         {
             for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {

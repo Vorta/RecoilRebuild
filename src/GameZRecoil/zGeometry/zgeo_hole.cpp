@@ -300,6 +300,10 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3* outerPoints, int innerPoi
 {
     // One ring edge per combined point; the same count seeds the edge list below.
     int edgeCount = outerPointCount + innerPointCount;
+    // One C-style index pair serves every loop; retail keeps the bridge and vertex
+    // loop counter in a single frame slot ([esp+0x14]).
+    int i;
+    int j;
 
     g_zGeometry_TriangulateHole_TriangleCount = 0;
     g_zGeometry_TriangulateHole_CombinedPointCount = edgeCount;
@@ -335,13 +339,11 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3* outerPoints, int innerPoi
     edge->remainingUseCount = 1;
     ++edge;
 
-    {
-        for (int outerIndex = 1; outerIndex < outerPointCount; ++outerIndex) {
-            edge->vertexIndex0 = outerIndex - 1;
-            edge->vertexIndex1 = outerIndex;
-            edge->remainingUseCount = 1;
-            ++edge;
-        }
+    for (i = 1; i < outerPointCount; ++i) {
+        edge->vertexIndex0 = i - 1;
+        edge->vertexIndex1 = i;
+        edge->remainingUseCount = 1;
+        ++edge;
     }
 
     edge->vertexIndex0 = outerPointCount;
@@ -349,56 +351,42 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3* outerPoints, int innerPoi
     edge->remainingUseCount = 1;
     ++edge;
 
-    {
-        for (int innerIndex = 1; innerIndex < innerPointCount; ++innerIndex) {
-            edge->vertexIndex0 = outerPointCount + innerIndex - 1;
-            edge->vertexIndex1 = outerPointCount + innerIndex;
-            edge->remainingUseCount = 1;
-            ++edge;
-        }
+    for (j = 1; j < innerPointCount; ++j) {
+        edge->vertexIndex0 = outerPointCount + j - 1;
+        edge->vertexIndex1 = outerPointCount + j;
+        edge->remainingUseCount = 1;
+        ++edge;
     }
 
     zGeometry_TriangulateHole_EdgeState bridgeEdge;
     bridgeEdge.remainingUseCount = 2;
-    {
-        for (int outerIndex = 0; outerIndex < outerPointCount; ++outerIndex) {
-            bridgeEdge.vertexIndex0 = outerIndex;
+    for (i = 0; i < outerPointCount; ++i) {
+        bridgeEdge.vertexIndex0 = i;
 
-            {
-                for (int innerIndex = 0; innerIndex < innerPointCount; ++innerIndex) {
-                    bridgeEdge.vertexIndex1 = outerPointCount + innerIndex;
-                    edgeCount = zGeometry_TriangulateHole::TryAppendBridgeEdge(&bridgeEdge, edgeCount, edgeStates);
-                }
-            }
+        for (j = 0; j < innerPointCount; ++j) {
+            bridgeEdge.vertexIndex1 = outerPointCount + j;
+            edgeCount = zGeometry_TriangulateHole::TryAppendBridgeEdge(&bridgeEdge, edgeCount, edgeStates);
         }
     }
 
-    {
-        for (int vertexIndex = 0; vertexIndex < g_zGeometry_TriangulateHole_CombinedPointCount; ++vertexIndex) {
-            int edgeIndices[0x20];
-            const int activeEdgeCount = zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex(
-                vertexIndex,
-                edgeCount,
-                edgeStates,
-                edgeIndices
-            );
+    for (i = 0; i < g_zGeometry_TriangulateHole_CombinedPointCount; ++i) {
+        int edgeIndices[0x20];
+        const int activeEdgeCount
+            = zGeometry_TriangulateHole::CollectActiveEdgeIndicesForVertex(i, edgeCount, edgeStates, edgeIndices);
 
-            {
-                for (int edgeIndex0 = 0; edgeIndex0 < activeEdgeCount; ++edgeIndex0) {
-                    for (int edgeIndex1 = 0; edgeIndex1 < activeEdgeCount; ++edgeIndex1) {
-                        if (edgeIndex0 == edgeIndex1) {
-                            continue;
-                        }
-
-                        zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair(
-                            edgeIndices[edgeIndex0],
-                            edgeIndices[edgeIndex1],
-                            vertexIndex,
-                            edgeCount,
-                            edgeStates
-                        );
-                    }
+        for (int edgeIndex0 = 0; edgeIndex0 < activeEdgeCount; ++edgeIndex0) {
+            for (int edgeIndex1 = 0; edgeIndex1 < activeEdgeCount; ++edgeIndex1) {
+                if (edgeIndex0 == edgeIndex1) {
+                    continue;
                 }
+
+                zGeometry_TriangulateHole::TryEmitTriangleFromEdgePair(
+                    edgeIndices[edgeIndex0],
+                    edgeIndices[edgeIndex1],
+                    i,
+                    edgeCount,
+                    edgeStates
+                );
             }
         }
     }
@@ -409,9 +397,8 @@ TriangulatePolygonWithHole(int outerPointCount, zVec3* outerPoints, int innerPoi
     result->triangleCount = g_zGeometry_TriangulateHole_TriangleCount;
 
     zVec3* outPoint = result->triangleVerts;
-    for (int triangleIndex = 0; triangleIndex < g_zGeometry_TriangulateHole_TriangleCount; ++triangleIndex) {
-        const zGeometry_TriangleIndexTriple* const triangle
-            = &g_zGeometry_TriangulateHole_TriangleIndices[triangleIndex];
+    for (i = 0; i < g_zGeometry_TriangulateHole_TriangleCount; ++i) {
+        const zGeometry_TriangleIndexTriple* const triangle = &g_zGeometry_TriangulateHole_TriangleIndices[i];
         *outPoint++ = g_zGeometry_TriangulateHole_CombinedPoints[triangle->i0];
         *outPoint++ = g_zGeometry_TriangulateHole_CombinedPoints[triangle->i1];
         *outPoint++ = g_zGeometry_TriangulateHole_CombinedPoints[triangle->i2];

@@ -478,7 +478,7 @@ void __fastcall BlendPackedColor565WithFogInPlace(int* ioPackedColor, int blend2
 void __cdecl LensFlareResetSampleQueue();
 void __fastcall
 LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, float screenScale, int yOffsetPixels);
-void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(int yOffsetPixels, float screenScale);
+void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(float screenScale, int yOffsetPixels);
 } // namespace zRndr
 
 void __fastcall
