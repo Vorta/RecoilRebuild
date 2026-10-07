@@ -67,10 +67,10 @@ extern "C" {
  * @recoil-artifact defines .data recoil:data:0x57d0cc: g_zModel_GlobalStateStorage.clipPolyAttr0.
  * @recoil-artifact defines .data recoil:data:0x57d1cc: g_zModel_GlobalStateStorage.clipPolyAttr1.
  * @recoil-artifact defines .data recoil:data:0x57d2cc: g_zModel_GlobalStateStorage.clipPolyAttr2.
- * @recoil-artifact defines .data recoil:data:0x57d3cc: g_zModel_GlobalStateStorage.ambientColorRgb01.
- * @recoil-artifact defines .data recoil:data:0x57d3d8: g_zModel_GlobalStateStorage.fogBaseColorRgb01.
- * @recoil-artifact defines .data recoil:data:0x57d3e4: g_zModel_GlobalStateStorage.ambientIntensityFactor.
- * @recoil-artifact defines .data recoil:data:0x57d3e8: g_zModel_GlobalStateStorage.ambientScale.
+ * @recoil-artifact defines .data recoil:data:0x57d3cc: g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color0.
+ * @recoil-artifact defines .data recoil:data:0x57d3d8: g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color1.
+ * @recoil-artifact defines .data recoil:data:0x57d3e4: g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color0Strength.
+ * @recoil-artifact defines .data recoil:data:0x57d3e8: g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color1Strength.
  * @recoil-artifact defines .data recoil:data:0x57d3ec: g_zModel_GlobalStateStorage.specialLightPaletteRemapRecipe.
  * @recoil-artifact defines .data recoil:data:0x57d40c: g_zModel_GlobalStateStorage.vertexShadingEnabled.
  * @recoil-artifact defines .data recoil:data:0x57d410: g_zModel_GlobalStateStorage.lightInputNodeStates.
@@ -886,19 +886,14 @@ RECOIL_STATIC_ASSERT(
     offsetof(zModel_GlobalState, clipPolyAttr2) == 0x70cc && sizeof(g_zModel_GlobalStateStorage.clipPolyAttr2) == 0x100
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, ambientColorRgb01) == 0x71cc
-    && sizeof(g_zModel_GlobalStateStorage.ambientColorRgb01) == 0xc
+    offsetof(zModel_GlobalState, ambientPaletteRemapRecipe) == 0x71cc
+    && sizeof(g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe) == 0x20
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, fogBaseColorRgb01) == 0x71d8
-    && sizeof(g_zModel_GlobalStateStorage.fogBaseColorRgb01) == 0xc
+    offsetof(zVidPaletteRemapRecipe, color0) == 0x00 && offsetof(zVidPaletteRemapRecipe, color1) == 0x0c
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, ambientIntensityFactor) == 0x71e4
-    && sizeof(g_zModel_GlobalStateStorage.ambientIntensityFactor) == 0x4
-);
-RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, ambientScale) == 0x71e8 && sizeof(g_zModel_GlobalStateStorage.ambientScale) == 0x4
+    offsetof(zVidPaletteRemapRecipe, color0Strength) == 0x18 && offsetof(zVidPaletteRemapRecipe, color1Strength) == 0x1c
 );
 RECOIL_STATIC_ASSERT(
     offsetof(zModel_GlobalState, specialLightPaletteRemapRecipe) == 0x71ec
@@ -1095,3 +1090,20 @@ RECOIL_STATIC_ASSERT(sizeof(zModel_ActiveLightEntryLive) == 0x14);
 RECOIL_STATIC_ASSERT(sizeof(zModel_FogTargetColorOverride) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zTag4Partial) == 0x04);
 RECOIL_STATIC_ASSERT(sizeof(CZRenderFn) == 0x04);
+
+/*
+ * Layout check for the zModel_PointEntryPartial colour word: retail reads and writes
+ * +0x28 as a 16-bit word (0x4770fe, 0x477174, 0x47809e, 0x481da0), +0x2a is padding
+ * before the pointCamList pointer at +0x2c, and point entries are 0x4c apart.
+ */
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_PointEntryPartial, packedColor16) == 0x28
+    && sizeof(((zModel_PointEntryPartial*)0)->packedColor16) == 0x02
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_PointEntryPartial, packedColor16Padding) == 0x2a
+    && sizeof(((zModel_PointEntryPartial*)0)->packedColor16Padding) == 0x02
+);
+RECOIL_STATIC_ASSERT(
+    offsetof(zModel_PointEntryPartial, pointCamList) == 0x2c && sizeof(zModel_PointEntryPartial) == 0x4c
+);

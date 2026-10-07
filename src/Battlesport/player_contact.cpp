@@ -760,11 +760,90 @@ void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState* saveState)
     }
 }
 } // namespace Player
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player-contact.vector-length
+ *
+ * Purpose: write FSQRT of the grouped (x*x + y*y) + z*z sum into the result
+ * float as binary32.
+ * Reconstruction: player_contact.cpp-resident copy of the reviewed Camera.c
+ * Vec3Length body in output-parameter macro form; retail 0x424270 expands it at
+ * [0x4243a6,0x4243c4) and stores straight into the caller's float.
+ * Raw assembly: reviewed (Pro batch Z, run 96d501c4); permission covers only the
+ * listed consumer range.
+ * Contract: vector is captured once and must identify a valid readable zVec3;
+ * result must be a named writable, non-volatile float object. ECX is clobbered;
+ * integer flags and the x87 control word are unchanged by this body; x87
+ * entry/peak/exit depths are 0/3/0 on normal completion. The final store is
+ * binary32; intermediate precision, status and exceptions follow the existing
+ * length-family contract. Arguments must not collide with the internal capture
+ * name lengthVector (a caller variable of that name would turn the capture
+ * initializer into a self-reference).
+ * Fallback: mathematical reference only; identical rounding, NaN handling and
+ * exception behaviour are not promised.
+ */
+#define PLAYER_VECTOR_LENGTH(result, vector)                                                                           \
+    do {                                                                                                               \
+        const zVec3* const lengthVector = (vector);                                                                    \
+        __asm { \
+            __asm mov ecx, lengthVector \
+            __asm fld dword ptr [ecx]zVec3.x \
+            __asm fmul dword ptr [ecx]zVec3.x \
+            __asm fld dword ptr [ecx]zVec3.y \
+            __asm fmul dword ptr [ecx]zVec3.y \
+            __asm fld dword ptr [ecx]zVec3.z \
+            __asm fmul dword ptr [ecx]zVec3.z \
+            __asm fxch st(1) \
+            __asm faddp st(2), st \
+            __asm faddp st(1), st \
+            __asm fsqrt \
+            __asm fstp result }                                                                              \
+    } while (0)
+#else
+#define PLAYER_VECTOR_LENGTH(result, vector)                                                                           \
+    do {                                                                                                               \
+        const zVec3* const lengthVector = (vector);                                                                    \
+        (result) = (float)sqrt(                                                                                        \
+            (lengthVector->x * lengthVector->x + lengthVector->y * lengthVector->y)                                    \
+            + lengthVector->z * lengthVector->z                                                                        \
+        );                                                                                                             \
+    } while (0)
+#endif
+
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Evidence: retail 0x425770 stores surfaceNormal * 20 through the output
+ * pointer and re-reads the stored y for the clamp (same helper shape as
+ * Camera.c Vec3ScaleTo).
+ * Purpose: scale a vector by a scalar into an output vector.
+ */
+inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+{
+    out->x = vec->x * scale;
+    out->y = vec->y * scale;
+    out->z = vec->z * scale;
+}
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingcollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424270: Player::ResolvePendingCollisionContact.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player-contact.vector-length
  *
+ *
+ * Raw assembly: reviewed (Pro batch Z, run 96d501c4), each range separately:
+ * Vec3Subtract [0x4242f7,0x42431a), [0x4243fb,0x42441e), [0x424485,0x4244a8);
+ * vector dot [0x424326,0x424345); vector length [0x4243a6,0x4243c4); Vec3Add
+ * [0x42444d,0x424470), [0x4244c5,0x4244e8), [0x42451d,0x424540),
+ * [0x424727,0x42474d); vector cross [0x4245b6,0x4245f7), [0x42460f,0x424650);
+ * XZ dot [0x42467a,0x42468f), [0x4246c8,0x4246dd); squared length
+ * [0x42479d,0x4247bf) (requires player_contact.cpp /Ob1).
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingCollisionContact from the recovered
@@ -778,12 +857,17 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
 
     zVec3 sweepStart = contact->sweepStart;
     zVec3 sweepEnd = contact->sweepEnd;
-    zVec3 contactPoint = contact->hit.hitPos;
+    zVec3 contactPoint;
+    contactPoint.x = contact->hit.hitPos.x;
+    contactPoint.y = contact->hit.hitPos.y;
+    contactPoint.z = contact->hit.hitPos.z;
     zVec3 contactNormal = contact->hit.surfaceNormal;
 
-    const zVec3 contactToSweepStart
-        = { sweepStart.x - contactPoint.x, sweepStart.y - contactPoint.y, sweepStart.z - contactPoint.z };
-    if (Vec3Dot(contactToSweepStart, contactNormal) < 0.0f) {
+    zVec3 contactToSweepStart;
+    zMath::Vec3Subtract(&sweepStart, &contactPoint, &contactToSweepStart);
+    float sweepStartSide;
+    ZMTH_VECTOR_DOT(sweepStartSide, &contactToSweepStart, &contactNormal);
+    if (sweepStartSide < 0.0f) {
         contactNormal.x *= -1.0f;
         contactNormal.y *= -1.0f;
         contactNormal.z *= -1.0f;
@@ -793,37 +877,37 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
         return;
     }
 
-    const float localSpeed = (float)(sqrt(
-        playerState->localVel.x * playerState->localVel.x + playerState->localVel.y * playerState->localVel.y
-        + playerState->localVel.z * playerState->localVel.z
-    ));
+    // Retail [0x4243a6,0x4243c4): the player_contact.cpp-resident length island.
+    float localSpeed;
+    PLAYER_VECTOR_LENGTH(localSpeed, &playerState->localVel);
     const float originalNormalY = contactNormal.y;
     sweepStart.y = 0.0f;
     sweepEnd.y = 0.0f;
     contactPoint.y = 0.0f;
     contactNormal.y = 0.0f;
 
-    zVec3 contactToSweepEnd = { sweepEnd.x - contactPoint.x, sweepEnd.y - contactPoint.y, sweepEnd.z - contactPoint.z };
+    zVec3 contactToSweepEnd;
+    zMath::Vec3Subtract(&sweepEnd, &contactPoint, &contactToSweepEnd);
     zMath::Vec3NormalizeXZ(&contactNormal, &contactNormal);
 
     zVec3 reflectedSweepDir;
     zMath::Vec3Reflect(&contactNormal, &contactToSweepEnd, &reflectedSweepDir);
-    const zVec3 reflectedContactPoint = { contactPoint.x + reflectedSweepDir.x,
-        contactPoint.y + reflectedSweepDir.y,
-        contactPoint.z + reflectedSweepDir.z };
-    zVec3 worldPosCorrection = { reflectedContactPoint.x - sweepEnd.x,
-        reflectedContactPoint.y - sweepEnd.y,
-        reflectedContactPoint.z - sweepEnd.z };
-    Vec3FastNormalize(&worldPosCorrection);
+    zVec3 reflectedPoint;
+    zMath::Vec3Add(&contactPoint, &reflectedSweepDir, &reflectedPoint);
+    zVec3 positionCorrection;
+    zMath::Vec3Subtract(&reflectedPoint, &sweepEnd, &positionCorrection);
+    Vec3FastNormalize(&positionCorrection);
 
-    playerState->worldPos.x += worldPosCorrection.x;
-    playerState->worldPos.y += worldPosCorrection.y;
-    playerState->worldPos.z += worldPosCorrection.z;
+    zVec3 correctedWorldPos;
+    zMath::Vec3Add(&playerState->worldPos, &positionCorrection, &correctedWorldPos);
+    playerState->worldPos = correctedWorldPos;
 
     for (int i = 0; i < masterModalData->probePointCount; ++i) {
-        playerState->modalProbeWorldByIndex[i].x += worldPosCorrection.x;
-        playerState->modalProbeWorldByIndex[i].y += worldPosCorrection.y;
-        playerState->modalProbeWorldByIndex[i].z += worldPosCorrection.z;
+        zMath::Vec3Add(
+            &playerState->modalProbeWorldByIndex[i],
+            &positionCorrection,
+            &playerState->modalProbeWorldByIndex[i]
+        );
     }
 
     const int probeResolved = TryResolvePendingCollisionProbeSweep(saveState);
@@ -835,30 +919,28 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
         float projectileVelY = playerState->projectileSpawnVel.y;
         zMath::Vec3NormalizeXZ(&reflectedSweepDir, &reflectedSweepDir);
 
+        float tangentSpeed;
+        float normalDot;
         zVec3 surfaceTangent;
-        surfaceTangent.x = reflectedSweepDir.y * contactNormal.z - reflectedSweepDir.z * contactNormal.y;
-        surfaceTangent.y = reflectedSweepDir.z * contactNormal.x - reflectedSweepDir.x * contactNormal.z;
-        surfaceTangent.z = reflectedSweepDir.x * contactNormal.y - reflectedSweepDir.y * contactNormal.x;
-        const zVec3 firstSurfaceTangent = surfaceTangent;
-        surfaceTangent.x = contactNormal.y * firstSurfaceTangent.z - contactNormal.z * firstSurfaceTangent.y;
-        surfaceTangent.y = contactNormal.z * firstSurfaceTangent.x - contactNormal.x * firstSurfaceTangent.z;
-        surfaceTangent.z = contactNormal.x * firstSurfaceTangent.y - contactNormal.y * firstSurfaceTangent.x;
+        ZMTH_VECTOR_CROSS(&reflectedSweepDir, &contactNormal, &surfaceTangent);
+        ZMTH_VECTOR_CROSS(&contactNormal, &surfaceTangent, &surfaceTangent);
 
         reflectedSweepDir.x *= localSpeed;
         reflectedSweepDir.y *= localSpeed;
         reflectedSweepDir.z *= localSpeed;
 
-        const float tangentSpeed = reflectedSweepDir.x * surfaceTangent.x + reflectedSweepDir.z * surfaceTangent.z;
-        const zVec3 tangentVelocityDelta
-            = { surfaceTangent.x * tangentSpeed, surfaceTangent.y * tangentSpeed, surfaceTangent.z * tangentSpeed };
-        const float normalSpeed
-            = collisionDampingA * (reflectedSweepDir.x * contactNormal.x + reflectedSweepDir.z * contactNormal.z);
-        const zVec3 normalVelocityDelta
-            = { contactNormal.x * normalSpeed, contactNormal.y * normalSpeed, contactNormal.z * normalSpeed };
+        ZMTH_VECTOR_DOT_XZ(tangentSpeed, &reflectedSweepDir, &surfaceTangent);
+        zVec3 tangentVelocity;
+        tangentVelocity.x = surfaceTangent.x * tangentSpeed;
+        tangentVelocity.y = surfaceTangent.y * tangentSpeed;
+        tangentVelocity.z = surfaceTangent.z * tangentSpeed;
 
-        playerState->projectileSpawnVel.x = normalVelocityDelta.x + tangentVelocityDelta.x;
-        playerState->projectileSpawnVel.y = normalVelocityDelta.y + tangentVelocityDelta.y;
-        playerState->projectileSpawnVel.z = normalVelocityDelta.z + tangentVelocityDelta.z;
+        ZMTH_VECTOR_DOT_XZ(normalDot, &reflectedSweepDir, &contactNormal);
+        zVec3 normalVelocity;
+        normalVelocity.x = contactNormal.x * (collisionDampingA * normalDot);
+        normalVelocity.y = contactNormal.y * (collisionDampingA * normalDot);
+        normalVelocity.z = contactNormal.z * (collisionDampingA * normalDot);
+        zMath::Vec3Add(&normalVelocity, &tangentVelocity, &playerState->projectileSpawnVel);
 
         if (playerState->airborneFlag != 0) {
             if (originalNormalY > 0.01f) {
@@ -868,10 +950,10 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
                 CZClass::gwNodeSetCellPickable(hitNode, 1);
             }
 
-            if (Vec3Dot(playerState->projectileSpawnVel, playerState->projectileSpawnVel) < 1.0f) {
-                playerState->projectileSpawnVel.x = contactNormal.x * 10.0f;
-                playerState->projectileSpawnVel.y = contactNormal.y * 10.0f;
-                playerState->projectileSpawnVel.z = contactNormal.z * 10.0f;
+            float spawnSpeedSq;
+            ZMTH_VECTOR_LENGTH_SQ(spawnSpeedSq, &playerState->projectileSpawnVel);
+            if (spawnSpeedSq < 1.0f) {
+                Vec3ScaleTo(&contactNormal, 10.0f, &playerState->projectileSpawnVel);
             }
         }
 
@@ -881,18 +963,16 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
 
     const float yawImpulseCross = reflectedSweepDir.x * contactToSweepEnd.z - reflectedSweepDir.z * contactToSweepEnd.x;
     const int yawImpulseSign = yawImpulseCross < 0.0f ? -1 : 1;
-    playerState->angVelYaw += (float)(yawImpulseSign)*localSpeed * masterModalData->collisionDampingB;
+    playerState->angVelYaw += ((float)(yawImpulseSign)*localSpeed) * masterModalData->collisionDampingB;
 
     if (saveState != (zUtil_SaveGameState*)g_GameStateOrMapTable) {
         return;
     }
 
-    float impactGain = localSpeed / masterModalData->maxSpeed;
-    if (impactGain > 1.0f) {
-        impactGain = 1.0f;
-    }
+    const float impactGain = __min(1.0f, localSpeed / masterModalData->maxSpeed);
     saveState->StartModalLoopSfxHandle(4, impactGain);
-    if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0 && g_zInputFfEffectSet != 0) {
+    // Retail 0x4248bc calls through g_zInputFfEffectSet without a second null test.
+    if (zInputDIIsForceFeedbackEnabled(g_zInputFfEffectSet) != 0) {
         g_zInputFfEffectSet->PlayCollisionImpactEffect(&contactNormal, impactGain);
     }
 }
@@ -1324,20 +1404,6 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(zUtil_SaveGameState* 
     return hasContacts;
 }
 } // namespace Player
-/**
- * Original inline helper; no standalone retail function exists.
- * Evidence: retail 0x425770 stores surfaceNormal * 20 through the output
- * pointer and re-reads the stored y for the clamp (same helper shape as
- * Camera.c Vec3ScaleTo).
- * Purpose: scale a vector by a scalar into an output vector.
- */
-inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
-{
-    out->x = vec->x * scale;
-    out->y = vec->y * scale;
-    out->z = vec->z * scale;
-}
-
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applypendingcollisionprobevelocity

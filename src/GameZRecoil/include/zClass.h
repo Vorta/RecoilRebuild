@@ -394,7 +394,7 @@ struct CZLodDistanceState {
     float distanceSq;
 };
 
-typedef void(__fastcall* CZRenderFn)(CZNodePartial* node, int clipMask);
+typedef int(__fastcall* CZRenderFn)(CZNodePartial* node, int clipMask);
 
 RECOIL_STATIC_ASSERT(offsetof(CZNodePartial, name) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(CZNodePartial, flags) == 0x24);

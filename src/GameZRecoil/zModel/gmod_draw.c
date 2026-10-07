@@ -313,7 +313,7 @@ namespace
 #define GMOD_DRAW_FACING_DOT(result, normal, vertex) ZMTH_VECTOR_DOT(result, normal, (const zVec3*)(&(vertex)))
 #else
 #define GMOD_DRAW_FACING_DOT(result, normal, vertex)                                                                   \
-    \n((result) = (normal)->x * (vertex).x + (normal)->y * (vertex).y + (normal)->z * (vertex).z)
+    ((result) = (normal)->x * (vertex).x + (normal)->y * (vertex).y + (normal)->z * (vertex).z)
 #endif
 
 #define ComputeSurfaceNormalAndCull(vertexCount, showBackFace, outNormal, outScanConvertMode, visible)                 \
@@ -366,6 +366,12 @@ namespace
  * Original inline helper observed in zModel software/hardware render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
  * Purpose: project the current scratch polygon into the clip vertex buffer.
+ * Representation contract: g_Clip_PolyVertsScratch and g_Clip_PolyVerts are
+ * zClipVert arrays (zclip_rect.h: three floats, sizeof 0x0c asserted); the zMath
+ * batch projection and the zRndr submit entries take zVec3/zProjectedPoint views
+ * of the same storage (zmth_types.h: three floats each). Retail passes the array
+ * addresses (0x57c5c4/0x57c8c4) directly and the callees access only the float
+ * members at +0/+4/+8 with a 0x0c stride.
  */
 #define ProjectScratchToClipVerts(vertexCount)                                                                         \
     do {                                                                                                               \
@@ -953,22 +959,28 @@ namespace zModel
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodesoftware
      * @recoil-artifact defines .text recoil:function:0x476cf0: zModel::RenderNodeSoftware
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
-     * Raw assembly: the reviewed vector-dot island in this function's sole
-     * ComputeSurfaceNormalAndCull expansion (GMOD_DRAW_FACING_DOT).
+     * Raw assembly: the reviewed vector-dot island in the per-entry backface
+     * test (GMOD_DRAW_FACING_DOT, retail [0x4772ba,0x4772d9)), and the reviewed
+     * transform-point island in the two ZMTH_MAT_TRANSFORM_POINT_BATCH expansions,
+     * retail [0x476dca,0x476e2e) (mode 2) and [0x47700a,0x47706e) (main path);
+     * Pro run 2026-10-07T09-38-31, rows Z5a/Z5b.
      *
      *
      * Purpose: render a display-instance node through the software renderer path.
+     * Retail clears eax on both exits, so the renderer entry returns 0.
      */
-    void __fastcall RenderNodeSoftware(CZNodePartial * node, int clipMask)
+    int __fastcall RenderNodeSoftware(CZNodePartial * node, int clipMask)
     {
-        zDiPartial* const di = NodeDisplayInstance(node);
-        if (di == 0) {
-            return;
-        }
+        zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
+        zMat4x3 matrixScratch;
+        int outDepthFade;
+        int outActiveLightState;
+        int outLensFlareVisible;
+        zVec3 triClipVerts[3];
 
-        zMat4x3 matrixScratch = { 0 };
         zMath::MatStackPushPtr((float*)(&matrixScratch));
         switch (di->mode) {
         default:
@@ -977,47 +989,56 @@ namespace zModel
             break;
         case 2: {
             zMathMatSetupCamera();
+            if ((di->flags & 8) != 0 && di->blendScale != 0.0 && di->blendVertCount != 0) {
+                zMathVec3ArrayAddScaled(
+                    g_zModel_TransformedVerts,
+                    di->verts,
+                    di->blendVerts,
+                    di->blendVertCount,
+                    di->blendScale
+                );
+                zMath::MatTransformPointBatchInPlace(g_zModel_TransformedVerts, di->vertCount);
+            } else {
+                // Retail calls the batch with no count test: requires vertCount > 0, verts and
+                // g_zModel_TransformedVerts each holding vertCount elements, no overlap.
+                ZMTH_MAT_TRANSFORM_POINT_BATCH(di->verts, g_zModel_TransformedVerts, di->vertCount);
+            }
 
-            PrepareTransformedVertices(di);
-
-            {
-                const unsigned int pointColor = di->entries[0].material != 0 ? di->entries[0].material->packedColor : 0;
-                for (int vertexIndex = 0; vertexIndex < di->vertCount; ++vertexIndex) {
-                    zVec3* const transformed = &g_zModel_TransformedVerts[vertexIndex];
-                    if (transformed->z <= gClipRect_Primary.zMin) {
-                        continue;
-                    }
-
-                    zProjectedPoint projectedPoint = { 0 };
-                    if (g_zVideo_ActiveRendererPath != 0) {
+            // Retail reads the first entry's material colour without a null test.
+            const unsigned int pointColor = di->entries->material->packedColor;
+            for (int vertexIndex = 0; vertexIndex < di->vertCount; ++vertexIndex) {
+                zVec3* const transformed = &g_zModel_TransformedVerts[vertexIndex];
+                if (transformed->z > gClipRect_Primary.zMin) {
+                    zProjectedPoint projectedPoint;
+                    const int rendererPath = g_zVideo_ActiveRendererPath;
+                    if (rendererPath != 0) {
                         zMathProjectSphereBatch(transformed, (zProjectedSphere*)(&projectedPoint), 1);
                     } else {
                         zMath::ProjectPointBatch(transformed, &projectedPoint, 1);
                     }
 
-                    if (!ProjectedPointInClipBounds(projectedPoint)) {
-                        continue;
-                    }
-
-                    if (g_zVideo_ActiveRendererPath != 0) {
-                        g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), pointColor & 0xffff, 1);
-                    } else {
-                        zRndrLensFlareQueueProjectedSample(&projectedPoint, (int)(pointColor & 0xffff), 0);
+                    if (ProjectedPointInClipBounds(projectedPoint)) {
+                        if (rendererPath != 0) {
+                            g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), pointColor, 1);
+                        } else {
+                            zRndrLensFlareQueueProjectedSample(&projectedPoint, (int)pointColor, 0);
+                        }
                     }
                 }
             }
 
             zMath::MatStackPopPtr();
             zRndr::g_perspectiveTextureEnabled = 0;
-            return;
+            return 0;
         }
         case 1:
             if ((di->flags & 0x10) != 0) {
                 zMathMatLoadView();
+                zRndr::g_perspectiveTextureEnabled = 0;
             } else {
                 zMathMatLoadProjection(g_zVideo_pActiveProjectionViewContext->eulerAngles.y);
+                zRndr::g_perspectiveTextureEnabled = 0;
             }
-            zRndr::g_perspectiveTextureEnabled = 0;
             break;
         case 0:
             zMathMatSetupCamera();
@@ -1025,38 +1046,29 @@ namespace zModel
             break;
         }
 
-        int outDepthFade = 0;
-        int outActiveLightState = 0;
-        int outLensFlareVisible = 0;
         if (di->entryCount > 0) {
             zDi::EvalBoundingSphereLightingFlags(di, &outDepthFade, &outActiveLightState, &outLensFlareVisible);
-
-            PrepareTransformedVertices(di);
+            if ((di->flags & 8) != 0 && di->blendScale != 0.0 && di->blendVertCount != 0) {
+                zMathVec3ArrayAddScaled(
+                    g_zModel_TransformedVerts,
+                    di->verts,
+                    di->blendVerts,
+                    di->blendVertCount,
+                    di->blendScale
+                );
+                zMath::MatTransformPointBatchInPlace(g_zModel_TransformedVerts, di->vertCount);
+            } else if (di->vertCount != 0) {
+                // The != 0 test is retail's; the batch still requires vertCount > 0, verts and
+                // g_zModel_TransformedVerts each holding vertCount elements, no overlap.
+                ZMTH_MAT_TRANSFORM_POINT_BATCH(di->verts, g_zModel_TransformedVerts, di->vertCount);
+            }
         }
 
-        // Retail sets the software depth scale per point entry and animates the
-        // point-camera state before queueing (no flag-8 gate).
         for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
+            ApplySoftwareDepthScale(di->pointEntries[pointIndex].depthBiasWord);
             zModel_PointEntryPartial* const pointEntry = &di->pointEntries[pointIndex];
-            ApplySoftwareDepthScale(pointEntry->depthBiasWord);
+            zVec3* const pointCams = pointEntry->pointCamList;
             switch (pointEntry->mode) {
-            case 0:
-                if (pointEntry->behavior == 1) {
-                    pointEntry->elapsedTime += g_FrameDeltaTimeSec;
-                    if (pointEntry->elapsedTime > pointEntry->timerSec) {
-                        const unsigned int packedState = (unsigned int)pointEntry->pointCamPackedState;
-                        const unsigned int packedColor = (unsigned short)pointEntry->packedColor16;
-                        pointEntry->elapsedTime = 0.0f;
-                        pointEntry->packedColor16 = (pointEntry->packedColor16 & 0xffff0000) | (packedState >> 16);
-                        pointEntry->pointCamPackedState = (int)((packedState & 0xffff) | (packedColor << 16));
-                    }
-                }
-                zModelRenderPointQueueEntry(
-                    pointEntry->pointCamList,
-                    (unsigned short)pointEntry->packedColor16,
-                    pointEntry
-                );
-                break;
             case 1:
                 pointEntry->elapsedTime += g_FrameDeltaTimeSec;
                 if (pointEntry->elapsedTime > pointEntry->timerSec) {
@@ -1067,8 +1079,8 @@ namespace zModel
                     pointEntry->elapsedTime = 0.0f;
                 }
                 zModelRenderPointQueueEntry(
-                    &pointEntry->pointCamList[(unsigned short)pointEntry->pointCamPackedState],
-                    (unsigned short)pointEntry->packedColor16,
+                    &pointCams[(unsigned short)pointEntry->pointCamPackedState],
+                    pointEntry->packedColor16,
                     pointEntry
                 );
                 if ((unsigned short)pointEntry->pointCamPackedState > 0) {
@@ -1079,111 +1091,168 @@ namespace zModel
                     );
                 }
                 break;
+            case 0:
+                if (pointEntry->behavior == 1) {
+                    pointEntry->elapsedTime += g_FrameDeltaTimeSec;
+                    if (pointEntry->elapsedTime > pointEntry->timerSec) {
+                        const unsigned short packedColor = pointEntry->packedColor16;
+                        const unsigned int packedState = (unsigned int)pointEntry->pointCamPackedState;
+                        pointEntry->elapsedTime = 0.0f;
+                        pointEntry->packedColor16 = (unsigned short)(packedState >> 16);
+                        pointEntry->pointCamPackedState
+                            = (int)((packedState & 0xffff) | ((unsigned int)packedColor << 16));
+                    }
+                }
+                zModelRenderPointQueueEntry(pointCams, pointEntry->packedColor16, pointEntry);
+                break;
             }
         }
 
         gClipRect_Primary.flags = clipMask;
-        for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
-            zDiEntryPartial* const entry = &di->entries[entryIndex];
-            zModel_MaterialPartial* const material = entry->material;
-            int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-            if (material == 0 || vertexCount < 3 || vertexCount > 0x40) {
-                continue;
-            }
-            int entryVerticesCopied = 0;
-            CopyEntryVerticesToScratch(di, entry, vertexCount, entryVerticesCopied);
-            if (entryVerticesCopied == 0) {
-                continue;
-            }
-
+        zDiEntryPartial* entry = di->entries;
+        zDiEntryPartial* const entriesEnd = &entry[di->entryCount];
+        for (; entry < entriesEnd; ++entry) {
             zRndrSetPaletteRemapKeyFromRgb01(0, 0.0f);
             zRndrSetPaletteRemapKey(0, 0.0f);
             zRndrSetPaletteShadeRecipeIndex(0);
-            if ((material->flags & 0x0400) != 0) {
-                zModel_Material::UpdateCycleIfNeeded(material);
+
+            {
+                // Retail gathers without index or count validation (count-down copy).
+                int copyCount = (int)(entry->flagsAndIndexCount & 0xff);
+                const int* copyIndices = (const int*)(entry->vertexIndices);
+                const zVec3* const copySource = g_zModel_TransformedVerts;
+                zClipVert* copyDest = g_Clip_PolyVertsScratch;
+                do {
+                    const zVec3* const copyVertex = &copySource[*copyIndices++];
+                    copyDest->x = copyVertex->x;
+                    copyDest->y = copyVertex->y;
+                    copyDest->z = copyVertex->z;
+                    ++copyDest;
+                } while (--copyCount);
             }
 
-            const int isTextured = (material->flags & 0x0100) != 0;
-            int hasPerVertexShade = 0;
-            int preservePaletteRemapKey = 0;
-            int packedColor = material->packedColor;
-            if (isTextured != 0) {
-                for (int i = 0; i < vertexCount; ++i) {
-                    g_Clip_PolyAttr0[i] = 0.0f;
+            zVec3 surfaceNormal;
+            {
+                const zClipVert& v0 = g_Clip_PolyVertsScratch[0];
+                const zClipVert& v1 = g_Clip_PolyVertsScratch[1];
+                const zClipVert& v2 = g_Clip_PolyVertsScratch[2];
+                const zVec3 edgeA = { v2.x - v1.x, v2.y - v1.y, v2.z - v1.z };
+                const zVec3 edgeB = { v0.x - v1.x, v0.y - v1.y, v0.z - v1.z };
+                surfaceNormal.x = edgeB.z * edgeA.y - edgeB.y * edgeA.z;
+                surfaceNormal.y = edgeB.x * edgeA.z - edgeB.z * edgeA.x;
+                surfaceNormal.z = edgeB.y * edgeA.x - edgeB.x * edgeA.y;
+            }
+            const int showBackFace = (int)((entry->flagsAndIndexCount >> 8) & 1);
+            float facing;
+            GMOD_DRAW_FACING_DOT(facing, &surfaceNormal, g_Clip_PolyVertsScratch[0]);
+            int scanConvertMode;
+            if (facing < -g_zModel_BFETolerance) {
+                scanConvertMode = 1;
+            } else {
+                if (showBackFace == 0 || !(facing > g_zModel_BFETolerance)) {
+                    continue;
                 }
-                if (outDepthFade != 0
-                    && zModel_Light::BuildAttr0DepthFade(vertexCount, &preservePaletteRemapKey) != 0) {
-                    hasPerVertexShade = 1;
-                    zRndrSetPaletteRemapKey(0, 0.0f);
-                    zRndrSetPaletteShadeRecipeIndex(0);
+                surfaceNormal.x = -surfaceNormal.x;
+                surfaceNormal.y = -surfaceNormal.y;
+                surfaceNormal.z = -surfaceNormal.z;
+                scanConvertMode = 0;
+            }
+
+            int clippedCount = (int)(entry->flagsAndIndexCount & 0xff);
+            zModel_MaterialPartial* const material = entry->material;
+            int lightsEnabled = outActiveLightState;
+            if ((material->flags & 0x0100) != 0) {
+                if ((material->flags & 0x0400) != 0) {
+                    zModel_Material::UpdateCycleIfNeeded(material);
                 }
-            }
 
-            zVec3 surfaceNormal = { 0 };
-            int scanConvertMode = 1;
-            int surfaceVisible = 0;
-            ComputeSurfaceNormalAndCull(
-                vertexCount,
-                (entry->flagsAndIndexCount & 0x0100) != 0,
-                &surfaceNormal,
-                &scanConvertMode,
-                surfaceVisible
-            );
-            if (surfaceVisible == 0) {
-                continue;
-            }
-
-            if (isTextured != 0) {
-                CopyEntryUvsToScratch(entry, vertexCount);
-
-                int lightingMode = 0;
-                if (outActiveLightState != 0) {
-                    int lightFlags = 0;
-                    int usePaletteRemap = 0;
-                    if (material->currentTextureDirectoryEntry != 0
-                        && material->currentTextureDirectoryEntry->image != 0
-                        && material->currentTextureDirectoryEntry->image->palette != 0) {
-                        usePaletteRemap = 1;
+                int lightingMode;
+                int shadeMode;
+                int remapKey;
+                int shadeTexture;
+                if (((material->currentTextureDirectoryEntry != 0 ? material->currentTextureDirectoryEntry->image : 0)
+                            ->formatFlagsPacked
+                        & 2)
+                    != 0) {
+                    if (g_zModel_SoftwarePathActive != 0) {
+                        shadeTexture = 1;
+                        lightingMode = 0;
+                    } else {
+                        shadeTexture = 0;
                     }
-                    if (zModel_Light::SetActiveLights(
-                            &surfaceNormal,
-                            vertexCount,
-                            &lightFlags,
-                            &lightingMode,
-                            usePaletteRemap
-                        )
-                        != 0) {
-                        // Retail marks light-driven shading as 2 (per-vertex submit on the alt pass).
-                        hasPerVertexShade = 2;
+                } else {
+                    shadeTexture = 1;
+                    lightingMode = 1;
+                }
+
+                if (shadeTexture != 0) {
+                    for (int i = 0; i < clippedCount; ++i) {
+                        g_Clip_PolyAttr1[i] = 0.0f;
+                        g_Clip_PolyAttr0[i] = 0.0f;
                     }
-                    preservePaletteRemapKey |= lightingMode;
-                    if (lightFlags == 1) {
+                    shadeMode = 0;
+                    remapKey = 0;
+                    if (outDepthFade != 0 && zModel_Light::BuildAttr0DepthFade(clippedCount, &remapKey) != 0) {
+                        remapKey &= lightingMode;
+                        if (g_zModel_SoftwarePathActive != 0 && remapKey == 0
+                            && material->currentTextureDirectoryEntry->image->palette != 0) {
+                            zRndrSetPaletteRemapKey(&gModel_AmbientPaletteRemapRecipe, g_Clip_PolyAttr0[0]);
+                        } else {
+                            zRndrSetPaletteShadeRecipeIndex(&gModel_AmbientPaletteRemapRecipe);
+                            shadeMode = 1;
+                        }
+                        lightsEnabled = 0;
+                    }
+                    if (lightsEnabled != 0
+                        && zModel_Light::SetActiveLights(
+                               &surfaceNormal,
+                               clippedCount,
+                               &shadeMode,
+                               &lightingMode,
+                               (int)(material->currentTextureDirectoryEntry->image->palette)
+                           ) != 0) {
+                        remapKey |= lightingMode;
+                        shadeMode = 2;
+                    }
+                    if (shadeMode == 1) {
                         zRndr::CommitFogColorParamsIfChanged();
                     }
+                } else {
+                    shadeMode = 0;
                 }
 
-                int clippedCount = vertexCount;
-                if (hasPerVertexShade != 0) {
+                memcpy(g_Clip_PolyUvs, entry->uvPairs, (size_t)clippedCount * sizeof(zClipUV));
+
+                if (shadeMode != 0) {
                     if ((clipMask & 0x30) != 0
                         && zClipRect::ClipPolyNearZ_WithAttr0(&gClipRect_Primary, &clippedCount) == 0) {
                         continue;
                     }
                     zRndr::g_scanConvertMode = scanConvertMode;
                     ProjectScratchToClipVerts(clippedCount);
-                    int smallPolyRejected = 0;
-                    RejectProjectedSmallPoly(clippedCount, smallPolyRejected);
-                    if (smallPolyRejected != 0) {
-                        continue;
+                    {
+                        const zClipVert* current = g_Clip_PolyVerts;
+                        float twiceArea = 0.0f;
+                        const zClipVert* previous = &g_Clip_PolyVerts[clippedCount - 1];
+                        int areaCount = clippedCount;
+                        do {
+                            twiceArea += current->y * previous->x - previous->y * current->x;
+                            previous = current;
+                            ++current;
+                        } while (--areaCount);
+                        if (fabsf(twiceArea) < gModel_SmallPolyRejectArea2x) {
+                            continue;
+                        }
                     }
-                    zVec3 triClipVerts[3];
-                    CopyProjectedTriVerts(triClipVerts);
+                    memcpy(triClipVerts, g_Clip_PolyVerts, sizeof(triClipVerts));
                     if ((clipMask & 0x0f) != 0
                         && zClipRect::ClipPoly_NoUV_WithAttr0_Alt(&gClipRect_Primary, &clippedCount) == 0) {
                         continue;
                     }
 
-                    zRndr::g_inverseDepthBias = 0.0f;
+                    const int vertexCount = clippedCount;
                     const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                    zRndr::g_inverseDepthBias = 0.0f;
                     zRndr::g_inverseDepthScale = depthScale;
                     zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
                         (zVec3*)g_Clip_PolyVerts,
@@ -1192,19 +1261,20 @@ namespace zModel
                         (zVec2*)g_Clip_PolyUvs,
                         g_Clip_PolyAttr0,
                         0,
-                        clippedCount,
+                        vertexCount,
                         material->currentTextureDirectoryEntry,
-                        preservePaletteRemapKey,
+                        remapKey,
                         gModel_RenderVertexAlphaEnabled
                     );
 
-                    if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0
+                    clippedCount = vertexCount;
+                    if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, vertexCount) != 0
                         && zClipRect::ClipPoly_NoUV(&gClipRect_Alt, &clippedCount) != 0) {
                         RemapAltProjectedVerts(triClipVerts, 3);
                         RemapAltProjectedVerts(g_Clip_PolyVerts, clippedCount);
                         zRndr::g_inverseDepthBias = gClipRect_Primary.zMin;
                         zRndr::g_inverseDepthScale = depthScale;
-                        if (hasPerVertexShade != 2) {
+                        if (shadeMode != 2) {
                             zRndrSubmitTexturedPolyUniformAlphaOrShade(
                                 (zVec3*)g_Clip_PolyVerts,
                                 0,
@@ -1225,7 +1295,7 @@ namespace zModel
                                 0,
                                 clippedCount,
                                 material->currentTextureDirectoryEntry,
-                                preservePaletteRemapKey,
+                                remapKey,
                                 gModel_RenderVertexAlphaEnabled
                             );
                         }
@@ -1233,38 +1303,47 @@ namespace zModel
                     continue;
                 }
 
-                // Unshaded textured polygons take retail's uniform-alpha path.
                 if ((clipMask & 0x30) != 0 && zClipRect::ClipPolyNearZ(&gClipRect_Primary, &clippedCount) == 0) {
                     continue;
                 }
                 zRndr::g_scanConvertMode = scanConvertMode;
                 ProjectScratchToClipVerts(clippedCount);
-                int smallPolyRejected = 0;
-                RejectProjectedSmallPoly(clippedCount, smallPolyRejected);
-                if (smallPolyRejected != 0) {
-                    continue;
+                {
+                    const zClipVert* current = g_Clip_PolyVerts;
+                    float twiceArea = 0.0f;
+                    const zClipVert* previous = &g_Clip_PolyVerts[clippedCount - 1];
+                    int areaCount = clippedCount;
+                    do {
+                        twiceArea += current->y * previous->x - previous->y * current->x;
+                        previous = current;
+                        ++current;
+                    } while (--areaCount);
+                    if (fabsf(twiceArea) < gModel_SmallPolyRejectArea2x) {
+                        continue;
+                    }
                 }
-                zVec3 triClipVerts[3];
-                CopyProjectedTriVerts(triClipVerts);
+                memcpy(triClipVerts, g_Clip_PolyVerts, sizeof(triClipVerts));
                 if ((clipMask & 0x0f) != 0 && zClipRect::ClipPoly_NoUV(&gClipRect_Primary, &clippedCount) == 0) {
                     continue;
                 }
 
-                zRndr::g_inverseDepthBias = 0.0f;
+                const int vertexCount = clippedCount;
                 const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                zRndr::g_inverseDepthBias = 0.0f;
                 zRndr::g_inverseDepthScale = depthScale;
                 zRndrSubmitTexturedPolyUniformAlphaOrShade(
                     (zVec3*)g_Clip_PolyVerts,
                     (zVec3*)g_Clip_PolyVertsScratch,
                     triClipVerts,
                     (zVec2*)g_Clip_PolyUvs,
-                    clippedCount,
+                    vertexCount,
                     material->currentTextureDirectoryEntry,
                     gModel_RenderAlphaScaleCurrent,
                     gModel_RenderVertexAlphaEnabled
                 );
 
-                if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0
+                clippedCount = vertexCount;
+                if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, vertexCount) != 0
                     && zClipRect::ClipPoly_NoUV(&gClipRect_Alt, &clippedCount) != 0) {
                     RemapAltProjectedVerts(triClipVerts, 3);
                     RemapAltProjectedVerts(g_Clip_PolyVerts, clippedCount);
@@ -1284,55 +1363,63 @@ namespace zModel
                 continue;
             }
 
+            int packedColor = material->packedColor;
+            int shadeMode = 0;
             float outFade = 0.0f;
-            if (outDepthFade != 0) {
-                if (zModel_Light::EvalBatchSphereFade(&outFade) != 0) {
-                    hasPerVertexShade = 1;
-                }
+            if (outDepthFade != 0 && zModel_Light::EvalBatchSphereFade(&outFade) != 0) {
+                shadeMode = 1;
             }
             // Retail passes a literal triangle count of 3 to the light-weight builder.
-            if (outActiveLightState != 0
-                && zModelLightBuildLightWeights(&surfaceNormal, 3, &packedColor, outFade) != 0) {
-                hasPerVertexShade = 2;
+            if (lightsEnabled != 0 && zModelLightBuildLightWeights(&surfaceNormal, 3, &packedColor, outFade) != 0) {
+                shadeMode = 2;
             }
-            if (hasPerVertexShade == 1) {
+            if (shadeMode == 1) {
                 zRndr::CommitFogColorParamsIfChanged();
-                float scale255 = 0.0f;
+                float scale255;
                 zFloat::Set255f(&scale255);
                 scale255 -= 1.0f;
-                zRndr::BlendPackedColor565WithFogInPlace(&packedColor, (int)(outFade * scale255));
+                zRndr::BlendPackedColor565WithFogInPlace(&packedColor, (int)(scale255 * outFade));
             }
 
-            int clippedCount = vertexCount;
             if ((clipMask & 0x30) != 0 && zClipRect::ClipPolyZRange_NoUV(&gClipRect_Primary, &clippedCount) == 0) {
                 continue;
             }
             zRndr::g_scanConvertMode = scanConvertMode;
             ProjectScratchToClipVerts(clippedCount);
-            int smallPolyRejected = 0;
-            RejectProjectedSmallPoly(clippedCount, smallPolyRejected);
-            if (smallPolyRejected != 0) {
-                continue;
+            {
+                const zClipVert* current = g_Clip_PolyVerts;
+                float twiceArea = 0.0f;
+                const zClipVert* previous = &g_Clip_PolyVerts[clippedCount - 1];
+                int areaCount = clippedCount;
+                do {
+                    twiceArea += current->y * previous->x - previous->y * current->x;
+                    previous = current;
+                    ++current;
+                } while (--areaCount);
+                if (fabsf(twiceArea) < gModel_SmallPolyRejectArea2x) {
+                    continue;
+                }
             }
-            zVec3 triClipVerts[3];
-            CopyProjectedTriVerts(triClipVerts);
+            memcpy(triClipVerts, g_Clip_PolyVerts, sizeof(triClipVerts));
             if ((clipMask & 0x0f) != 0 && zClipRect::ClipPoly_NoUV(&gClipRect_Primary, &clippedCount) == 0) {
                 continue;
             }
 
-            zRndr::g_inverseDepthBias = 0.0f;
+            const int vertexCount = clippedCount;
             const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+            zRndr::g_inverseDepthBias = 0.0f;
             zRndr::g_inverseDepthScale = depthScale;
             zRndrSubmitPolyWithSpanList(
                 (zVec3*)g_Clip_PolyVerts,
                 triClipVerts,
                 packedColor,
                 MaterialAlphaInt(material),
-                clippedCount,
+                vertexCount,
                 gModel_RenderVertexAlphaEnabled
             );
 
-            if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0
+            clippedCount = vertexCount;
+            if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, vertexCount) != 0
                 && zClipRect::ClipPoly_NoUV(&gClipRect_Alt, &clippedCount) != 0) {
                 RemapAltProjectedVerts(triClipVerts, 3);
                 RemapAltProjectedVerts(g_Clip_PolyVerts, clippedCount);
@@ -1350,28 +1437,36 @@ namespace zModel
         }
 
         zMath::MatStackPopPtr();
+        return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-rendernodehardware
      * @recoil-artifact defines .text recoil:function:0x477b30: zModel::RenderNodeHardware
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
      *
      *
-     * Raw assembly: the reviewed vector-dot island in this function's sole
-     * ComputeSurfaceNormalAndCull expansion (GMOD_DRAW_FACING_DOT).
+     * Raw assembly: the reviewed vector-dot island in the per-entry backface
+     * test (GMOD_DRAW_FACING_DOT, retail [0x4781d5,0x4781f4)), and the reviewed
+     * transform-point island in the three ZMTH_MAT_TRANSFORM_POINT_BATCH expansions,
+     * retail [0x477c0b,0x477c6f) (mode 2), [0x477e4b,0x477eaf) (main path) and
+     * [0x477f26,0x477f8a) (normals, point form); Pro run 2026-10-07T09-38-31,
+     * rows Z5c/Z5d/Z5e.
      *
      *
      * Purpose: render a display-instance node through the hardware renderer path.
+     * Retail clears eax on both exits, so the renderer entry returns 0.
      */
-    void __fastcall RenderNodeHardware(CZNodePartial * node, int clipMask)
+    int __fastcall RenderNodeHardware(CZNodePartial * node, int clipMask)
     {
-        zDiPartial* const di = NodeDisplayInstance(node);
-        if (di == 0) {
-            return;
-        }
+        zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
+        zMat4x3 matrixScratch;
+        int outDepthFade;
+        int outActiveLightState;
+        int outLensFlareVisible;
+        zClipUV perspectiveUvs[0x400];
 
-        zMat4x3 matrixScratch = { 0 };
         zMath::MatStackPushPtr((float*)(&matrixScratch));
         switch (di->mode) {
         default:
@@ -1380,45 +1475,56 @@ namespace zModel
             break;
         case 2: {
             zMathMatSetupCamera();
+            if ((di->flags & 8) != 0 && di->blendScale != 0.0 && di->blendVertCount != 0) {
+                zMathVec3ArrayAddScaled(
+                    g_zModel_TransformedVerts,
+                    di->verts,
+                    di->blendVerts,
+                    di->blendVertCount,
+                    di->blendScale
+                );
+                zMath::MatTransformPointBatchInPlace(g_zModel_TransformedVerts, di->vertCount);
+            } else {
+                // Retail calls the batch with no count test: requires vertCount > 0, verts and
+                // g_zModel_TransformedVerts each holding vertCount elements, no overlap.
+                ZMTH_MAT_TRANSFORM_POINT_BATCH(di->verts, g_zModel_TransformedVerts, di->vertCount);
+            }
 
-            PrepareTransformedVertices(di);
-
-            {
-                const unsigned int pointColor = di->entries[0].material != 0 ? di->entries[0].material->packedColor : 0;
-                for (int vertexIndex = 0; vertexIndex < di->vertCount; ++vertexIndex) {
-                    zVec3* const transformed = &g_zModel_TransformedVerts[vertexIndex];
-                    if (transformed->z <= gClipRect_Primary.zMin) {
-                        continue;
-                    }
-
-                    zProjectedPoint projectedPoint = { 0 };
-                    if (g_zVideo_ActiveRendererPath != 0) {
+            // Retail reads the first entry's material colour without a null test.
+            const unsigned int pointColor = di->entries->material->packedColor;
+            for (int vertexIndex = 0; vertexIndex < di->vertCount; ++vertexIndex) {
+                zVec3* const transformed = &g_zModel_TransformedVerts[vertexIndex];
+                if (transformed->z > gClipRect_Primary.zMin) {
+                    zProjectedPoint projectedPoint;
+                    const int rendererPath = g_zVideo_ActiveRendererPath;
+                    if (rendererPath != 0) {
                         zMathProjectSphereBatch(transformed, (zProjectedSphere*)(&projectedPoint), 1);
                     } else {
                         zMath::ProjectPointBatch(transformed, &projectedPoint, 1);
                     }
-                    if (!ProjectedPointInClipBounds(projectedPoint)) {
-                        continue;
-                    }
-                    if (g_zVideo_ActiveRendererPath != 0) {
-                        g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), pointColor & 0xffff, 1);
-                    } else {
-                        zRndrLensFlareQueueProjectedSample(&projectedPoint, (int)(pointColor & 0xffff), 0);
+
+                    if (ProjectedPointInClipBounds(projectedPoint)) {
+                        if (rendererPath != 0) {
+                            g_zVideo_pfnDrawPointColor16((zVideo_XyzVertex*)(&projectedPoint), pointColor, 1);
+                        } else {
+                            zRndrLensFlareQueueProjectedSample(&projectedPoint, (int)pointColor, 0);
+                        }
                     }
                 }
             }
 
             zMath::MatStackPopPtr();
             zRndr::g_perspectiveTextureEnabled = 0;
-            return;
+            return 0;
         }
         case 1:
             if ((di->flags & 0x10) != 0) {
                 zMathMatLoadView();
+                zRndr::g_perspectiveTextureEnabled = 0;
             } else {
                 zMathMatLoadProjection(g_zVideo_pActiveProjectionViewContext->eulerAngles.y);
+                zRndr::g_perspectiveTextureEnabled = 0;
             }
-            zRndr::g_perspectiveTextureEnabled = 0;
             break;
         case 0:
             zMathMatSetupCamera();
@@ -1426,127 +1532,182 @@ namespace zModel
             break;
         }
 
-        int outDepthFade = 0;
-        int outActiveLightState = 0;
-        int outLensFlareVisible = 0;
         if (di->entryCount > 0) {
             zDi::EvalBoundingSphereLightingFlags(di, &outDepthFade, &outActiveLightState, &outLensFlareVisible);
+            if ((di->flags & 8) != 0 && di->blendScale != 0.0 && di->blendVertCount != 0) {
+                zMathVec3ArrayAddScaled(
+                    g_zModel_TransformedVerts,
+                    di->verts,
+                    di->blendVerts,
+                    di->blendVertCount,
+                    di->blendScale
+                );
+                zMath::MatTransformPointBatchInPlace(g_zModel_TransformedVerts, di->vertCount);
+            } else if (di->vertCount != 0) {
+                // The != 0 test is retail's; the batch still requires vertCount > 0, verts and
+                // g_zModel_TransformedVerts each holding vertCount elements, no overlap.
+                ZMTH_MAT_TRANSFORM_POINT_BATCH(di->verts, g_zModel_TransformedVerts, di->vertCount);
+            }
 
-            PrepareTransformedVertices(di);
-            PrepareTransformedNormals(di);
+            if (g_zModel_VertexShadingEnabled != 0 && di->normalCount != 0) {
+                zVec3 origin = { 0 };
+                // The != 0 test is retail's; the batch still requires normalCount > 0, normals and
+                // g_zModel_TransformedNormals each holding normalCount elements, no overlap.
+                ZMTH_MAT_TRANSFORM_POINT_BATCH(di->normals, g_zModel_TransformedNormals, di->normalCount);
+                zMath::MatTransformPointBatchInPlace(&origin, 1);
+                zVec3* normal = g_zModel_TransformedNormals;
+                for (int normalIndex = 0; normalIndex < di->normalCount; ++normalIndex, ++normal) {
+                    normal->x -= origin.x;
+                    normal->y -= origin.y;
+                    normal->z -= origin.z;
+                    zMath::Vec3Normalize(normal);
+                }
+            }
         }
 
-        if ((di->flags & 8) != 0 && di->pointEntries != 0) {
-            for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
-                zModel_PointEntryPartial* const pointEntry = &di->pointEntries[pointIndex];
-                if (pointEntry->pointCamList == 0 || pointEntry->pointCamCount <= 0) {
-                    continue;
+        // Retail animates the point-camera entries exactly as the software path does.
+        for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
+            zModel_PointEntryPartial* const pointEntry = &di->pointEntries[pointIndex];
+            zVec3* const pointCams = pointEntry->pointCamList;
+            switch (pointEntry->mode) {
+            case 1:
+                pointEntry->elapsedTime += g_FrameDeltaTimeSec;
+                if (pointEntry->elapsedTime > pointEntry->timerSec) {
+                    ++pointEntry->pointCamPackedState;
+                    if ((unsigned short)pointEntry->pointCamPackedState >= pointEntry->pointCamCount) {
+                        pointEntry->pointCamPackedState &= 0xffff0000;
+                    }
+                    pointEntry->elapsedTime = 0.0f;
                 }
-
-                if (pointEntry->pointCamCount == 1) {
-                    zModelRenderPointQueueEntry(&pointEntry->pointCamList[0], pointEntry->packedColor16, pointEntry);
-                } else {
-                    for (int pointCamIndex = 0; pointCamIndex < pointEntry->pointCamCount; ++pointCamIndex) {
-                        zModelRenderPointQueueEntry(
-                            &pointEntry->pointCamList[pointCamIndex],
-                            pointEntry->packedColor16,
-                            pointEntry
-                        );
+                zModelRenderPointQueueEntry(
+                    &pointCams[(unsigned short)pointEntry->pointCamPackedState],
+                    pointEntry->packedColor16,
+                    pointEntry
+                );
+                if ((unsigned short)pointEntry->pointCamPackedState > 0) {
+                    zModelRenderPointQueueEntry(
+                        &pointEntry->pointCamList[(unsigned short)pointEntry->pointCamPackedState - 1],
+                        (unsigned short)((unsigned int)pointEntry->pointCamPackedState >> 16),
+                        pointEntry
+                    );
+                }
+                break;
+            case 0:
+                if (pointEntry->behavior == 1) {
+                    pointEntry->elapsedTime += g_FrameDeltaTimeSec;
+                    if (pointEntry->elapsedTime > pointEntry->timerSec) {
+                        const unsigned short packedColor = pointEntry->packedColor16;
+                        const unsigned int packedState = (unsigned int)pointEntry->pointCamPackedState;
+                        pointEntry->packedColor16 = (unsigned short)(packedState >> 16);
+                        pointEntry->pointCamPackedState
+                            = (int)((packedState & 0xffff) | ((unsigned int)packedColor << 16));
+                        pointEntry->elapsedTime = 0.0f;
                     }
                 }
+                zModelRenderPointQueueEntry(pointCams, pointEntry->packedColor16, pointEntry);
+                break;
             }
         }
 
         gClipRect_Primary.flags = clipMask;
-        for (int entryIndex = 0; entryIndex < di->entryCount; ++entryIndex) {
-            zDiEntryPartial* const entry = &di->entries[entryIndex];
-            zModel_MaterialPartial* const material = entry->material;
-            int vertexCount = (int)(entry->flagsAndIndexCount & 0xff);
-            if (material == 0 || vertexCount < 3 || vertexCount > 0x40) {
-                continue;
-            }
-            int entryVerticesCopied = 0;
-            CopyEntryVerticesToScratch(di, entry, vertexCount, entryVerticesCopied);
-            if (entryVerticesCopied == 0) {
-                continue;
-            }
-
-            zVec3 surfaceNormal = { 0 };
-            int surfaceVisible = 0;
-            ComputeSurfaceNormalAndCull(
-                vertexCount,
-                (entry->flagsAndIndexCount & 0x0100) != 0,
-                &surfaceNormal,
-                0,
-                surfaceVisible
-            );
-            if (surfaceVisible == 0) {
-                continue;
+        zDiEntryPartial* entry = di->entries;
+        zDiEntryPartial* const entriesEnd = &entry[di->entryCount];
+        for (; entry < entriesEnd; ++entry) {
+            {
+                // Retail gathers without index or count validation (count-down copy).
+                int copyCount = (int)(entry->flagsAndIndexCount & 0xff);
+                const int* copyIndices = (const int*)(entry->vertexIndices);
+                const zVec3* const copySource = g_zModel_TransformedVerts;
+                zClipVert* copyDest = g_Clip_PolyVertsScratch;
+                do {
+                    const zVec3* const copyVertex = &copySource[*copyIndices++];
+                    copyDest->x = copyVertex->x;
+                    copyDest->y = copyVertex->y;
+                    copyDest->z = copyVertex->z;
+                    ++copyDest;
+                } while (--copyCount);
             }
 
-            g_zModel_CurrentPolyNormals = 0;
-            if (g_zModel_VertexShadingEnabled != 0 && di->normalCount > 0 && (entry->flagsAndIndexCount & 0x0200) != 0
-                && entry->normalIndices != 0) {
-                int* normalIndices = (int*)(entry->normalIndices);
-                g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
-                for (int normalSlot = 0; normalSlot < vertexCount; ++normalSlot) {
-                    const int normalIndex = normalIndices[normalSlot];
-                    if (normalIndex < 0 || normalIndex >= di->normalCount) {
-                        g_zModel_CurrentPolyNormals = 0;
-                        break;
-                    }
-                    g_zModel_CurrentPolyNormalsStorage[normalSlot] = g_zModel_TransformedNormals[normalIndex];
+            zVec3 surfaceNormal;
+            {
+                const zClipVert& v0 = g_Clip_PolyVertsScratch[0];
+                const zClipVert& v1 = g_Clip_PolyVertsScratch[1];
+                const zClipVert& v2 = g_Clip_PolyVertsScratch[2];
+                const zVec3 edgeA = { v2.x - v1.x, v2.y - v1.y, v2.z - v1.z };
+                const zVec3 edgeB = { v0.x - v1.x, v0.y - v1.y, v0.z - v1.z };
+                surfaceNormal.x = edgeB.z * edgeA.y - edgeB.y * edgeA.z;
+                surfaceNormal.y = edgeB.x * edgeA.z - edgeB.z * edgeA.x;
+                surfaceNormal.z = edgeB.y * edgeA.x - edgeB.x * edgeA.y;
+            }
+            const int showBackFace = (int)((entry->flagsAndIndexCount >> 8) & 1);
+            float facing;
+            GMOD_DRAW_FACING_DOT(facing, &surfaceNormal, g_Clip_PolyVertsScratch[0]);
+            if (!(facing < -g_zModel_BFETolerance)) {
+                if (showBackFace == 0 || !(facing > g_zModel_BFETolerance)) {
+                    continue;
                 }
+                surfaceNormal.x = -surfaceNormal.x;
+                surfaceNormal.y = -surfaceNormal.y;
+                surfaceNormal.z = -surfaceNormal.z;
             }
 
-            for (int attrIndex = 0; attrIndex < vertexCount; ++attrIndex) {
-                g_Clip_PolyAttr0[attrIndex] = 0.0f;
+            if (g_zModel_VertexShadingEnabled != 0 && di->normalCount != 0
+                && (entry->flagsAndIndexCount & 0x0200) != 0) {
+                // Retail gathers the normals without index validation.
+                g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
+                int copyCount = (int)(entry->flagsAndIndexCount & 0xff);
+                const int* copyIndices = (const int*)(entry->normalIndices);
+                const zVec3* const copySource = g_zModel_TransformedNormals;
+                zVec3* copyDest = g_zModel_CurrentPolyNormalsStorage;
+                do {
+                    *copyDest++ = copySource[*copyIndices++];
+                } while (--copyCount);
+            } else {
+                g_zModel_CurrentPolyNormals = 0;
+            }
+
+            int clippedCount = (int)(entry->flagsAndIndexCount & 0xff);
+            zModel_MaterialPartial* const material = entry->material;
+            for (int attrIndex = 0; attrIndex < clippedCount; ++attrIndex) {
                 g_Clip_PolyAttr1[attrIndex] = 0.0f;
+                g_Clip_PolyAttr0[attrIndex] = 0.0f;
             }
 
-            int lightingFlags = 0;
             int lightingVaries = 0;
-            int clippedCount = vertexCount;
-            int polygonVisible = 1;
-            zClipUV perspectiveUvs[0x400];
-
+            int lightingFlags = 0;
             if ((material->flags & 0x0100) != 0) {
                 if ((material->flags & 0x0400) != 0) {
                     zModel_Material::UpdateCycleIfNeeded(material);
                 }
-                if (outDepthFade != 0) {
-                    if (zModel_Light::BuildAttr1Falloff(vertexCount, &lightingVaries) != 0) {
-                        lightingFlags = 1;
-                    }
+                if (outDepthFade != 0 && zModel_Light::BuildAttr1Falloff(clippedCount, &lightingVaries) != 0) {
+                    lightingFlags = 1;
                 }
                 int lightVaries = lightingVaries;
-                if (outActiveLightState != 0) {
-                    if (zModel_Light::SetActiveLights(&surfaceNormal, vertexCount, &lightingFlags, &lightVaries, 0)
+                if (outActiveLightState != 0
+                    && zModel_Light::SetActiveLights(&surfaceNormal, clippedCount, &lightingFlags, &lightVaries, 0)
                         != 0) {
-                        lightingFlags |= 2;
-                        lightingVaries |= lightVaries;
-                    }
+                    lightingFlags |= 2;
+                    lightingVaries |= lightVaries;
                 }
                 if ((lightingFlags & ~0x0c) == 0) {
-                    for (int attrIndex = 0; attrIndex < vertexCount; ++attrIndex) {
-                        g_Clip_PolyAttr0[attrIndex] = 1.0f;
+                    for (int attrIndex = 0; attrIndex < clippedCount; ++attrIndex) {
                         g_Clip_PolyAttr1[attrIndex] = 1.0f;
+                        g_Clip_PolyAttr0[attrIndex] = 1.0f;
                     }
                 }
 
-                CopyEntryUvsToScratch(entry, vertexCount);
+                memcpy(g_Clip_PolyUvs, entry->uvPairs, (size_t)clippedCount * sizeof(zClipUV));
 
                 if (lightingFlags != 0) {
-                    clippedCount = vertexCount;
-                    polygonVisible = 1;
-                    if ((gClipRect_Primary.flags & 0x30) != 0) {
+                    if ((clipMask & 0x30) != 0) {
                         const int previousCount = clippedCount;
-                        if (lightingVaries != 0) {
-                            polygonVisible = zClipRect::ClipPolyZRange_WithAttr012(&gClipRect_Primary, &clippedCount);
-                        } else {
-                            polygonVisible = zClipRect::ClipPolyNearZ(&gClipRect_Primary, &clippedCount);
+                        if ((lightingVaries != 0
+                                    ? zClipRect::ClipPolyZRange_WithAttr012(&gClipRect_Primary, &clippedCount)
+                                    : zClipRect::ClipPolyNearZ(&gClipRect_Primary, &clippedCount))
+                            == 0) {
+                            continue;
                         }
-                        if (polygonVisible != 0 && lightingVaries == 0 && previousCount < clippedCount) {
+                        if (lightingVaries == 0 && previousCount < clippedCount) {
                             for (int attrIndex = previousCount; attrIndex < clippedCount; ++attrIndex) {
                                 g_Clip_PolyAttr0[attrIndex] = g_Clip_PolyAttr0[0];
                                 g_Clip_PolyAttr1[attrIndex] = g_Clip_PolyAttr1[0];
@@ -1554,48 +1715,44 @@ namespace zModel
                             }
                         }
                     }
-                    if (polygonVisible != 0) {
-                        zMathProjectSphereBatch(
-                            (const zVec3*)g_Clip_PolyVertsScratch,
-                            (zProjectedSphere*)g_Clip_PolyVerts,
-                            clippedCount
-                        );
-                        for (int uvIndex = 0; uvIndex < clippedCount; ++uvIndex) {
-                            g_Clip_PolyUvs[uvIndex].u *= g_Clip_PolyVerts[uvIndex].z;
-                            g_Clip_PolyUvs[uvIndex].v *= g_Clip_PolyVerts[uvIndex].z;
-                        }
+                    zMathProjectSphereBatch(
+                        (const zVec3*)g_Clip_PolyVertsScratch,
+                        (zProjectedSphere*)g_Clip_PolyVerts,
+                        clippedCount
+                    );
+                    for (int uvIndex = 0; uvIndex < clippedCount; ++uvIndex) {
+                        g_Clip_PolyUvs[uvIndex].u *= g_Clip_PolyVerts[uvIndex].z;
+                        g_Clip_PolyUvs[uvIndex].v *= g_Clip_PolyVerts[uvIndex].z;
                     }
-                    if (polygonVisible != 0 && (gClipRect_Primary.flags & 0x0f) != 0) {
+                    if ((clipMask & 0x0f) != 0) {
                         const int previousCount = clippedCount;
-                        if (lightingVaries != 0) {
-                            polygonVisible = zClipRect::ClipPoly_WithAttr012(&gClipRect_Primary, &clippedCount);
-                        } else {
-                            polygonVisible = zClipRect::ClipPoly(&gClipRect_Primary, &clippedCount);
+                        if ((lightingVaries != 0 ? zClipRect::ClipPoly_WithAttr012(&gClipRect_Primary, &clippedCount)
+                                                 : zClipRect::ClipPoly(&gClipRect_Primary, &clippedCount))
+                            == 0) {
+                            continue;
                         }
-                        if (polygonVisible != 0 && lightingVaries == 0 && previousCount < clippedCount) {
+                        if (lightingVaries == 0 && previousCount < clippedCount) {
                             for (int attrIndex = previousCount; attrIndex < clippedCount; ++attrIndex) {
                                 g_Clip_PolyAttr0[attrIndex] = g_Clip_PolyAttr0[0];
                                 g_Clip_PolyAttr1[attrIndex] = g_Clip_PolyAttr1[0];
                                 g_Clip_PolyAttr2[attrIndex] = g_Clip_PolyAttr2[0];
                             }
                         }
-                    }
-                    if (polygonVisible == 0) {
-                        continue;
                     }
 
-                    for (int uvIndex = 0; uvIndex < clippedCount; ++uvIndex) {
-                        const float depth = 1.0f / g_Clip_PolyVerts[uvIndex].z;
-                        perspectiveUvs[uvIndex].u = g_Clip_PolyUvs[uvIndex].u * depth;
-                        perspectiveUvs[uvIndex].v = g_Clip_PolyUvs[uvIndex].v * depth;
+                    for (int perspectiveIndex = 0; perspectiveIndex < clippedCount; ++perspectiveIndex) {
+                        const float depth = 1.0f / g_Clip_PolyVerts[perspectiveIndex].z;
+                        perspectiveUvs[perspectiveIndex].u = depth * g_Clip_PolyUvs[perspectiveIndex].u;
+                        perspectiveUvs[perspectiveIndex].v = g_Clip_PolyUvs[perspectiveIndex].v * depth;
                     }
-                    for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
-                        g_Clip_PolyVerts[depthIndex].z
-                            *= (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                    if (entry->drawFlags != 0) {
+                        const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                        for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
+                            g_Clip_PolyVerts[depthIndex].z = depthScale * g_Clip_PolyVerts[depthIndex].z;
+                        }
                     }
                     if (g_zModel_CurrentPolyNormals != 0) {
-                        SubmitPolygonLitProc* submitSlot = (SubmitPolygonLitProc*)&g_zVideo_pfnSubmitPolygonLit;
-                        (*submitSlot)(
+                        g_zVideo_pfnSubmitPolygonLit(
                             (zVideo_XyzVertex*)g_Clip_PolyVerts,
                             (zVideo_TexCoord*)perspectiveUvs,
                             g_Clip_PolyAttr1,
@@ -1610,8 +1767,7 @@ namespace zModel
                             gModel_RenderVertexAlphaEnabled
                         );
                     } else {
-                        SubmitPolygonProc* submitSlot = (SubmitPolygonProc*)&g_zVideo_pfnSubmitPolygon;
-                        (*submitSlot)(
+                        g_zVideo_pfnSubmitPolygon(
                             (zVideo_XyzVertex*)g_Clip_PolyVerts,
                             (zVideo_TexCoord*)perspectiveUvs,
                             g_Clip_PolyAttr1,
@@ -1627,75 +1783,63 @@ namespace zModel
                         );
                     }
 
-                    if (gAltClipPassEnabled != 0) {
-                        polygonVisible = zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount);
+                    if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0) {
                         const int previousCount = clippedCount;
-                        if (polygonVisible != 0) {
-                            if (lightingVaries != 0) {
-                                polygonVisible = zClipRect::ClipPoly_WithAttr012(&gClipRect_Alt, &clippedCount);
-                            } else {
-                                polygonVisible = zClipRect::ClipPoly(&gClipRect_Alt, &clippedCount);
-                            }
+                        if ((lightingVaries != 0 ? zClipRect::ClipPoly_WithAttr012(&gClipRect_Alt, &clippedCount)
+                                                 : zClipRect::ClipPoly(&gClipRect_Alt, &clippedCount))
+                            == 0) {
+                            continue;
                         }
-                        if (polygonVisible != 0 && lightingVaries == 0 && previousCount < clippedCount) {
+                        if (lightingVaries == 0 && previousCount < clippedCount) {
                             for (int attrIndex = previousCount; attrIndex < clippedCount; ++attrIndex) {
                                 g_Clip_PolyAttr0[attrIndex] = g_Clip_PolyAttr0[0];
                                 g_Clip_PolyAttr1[attrIndex] = g_Clip_PolyAttr1[0];
                                 g_Clip_PolyAttr2[attrIndex] = g_Clip_PolyAttr2[0];
                             }
                         }
-                        if (polygonVisible != 0) {
-                            for (int remapIndex = 0; remapIndex < clippedCount; ++remapIndex) {
-                                const float depth = 1.0f / g_Clip_PolyVerts[remapIndex].z;
-                                g_Clip_PolyVerts[remapIndex].x
-                                    = g_zClipAlt_RemapScaleX * g_Clip_PolyVerts[remapIndex].x + g_zClipAlt_RemapBiasX;
-                                g_Clip_PolyVerts[remapIndex].y
-                                    = g_zClipAlt_RemapScaleY * g_Clip_PolyVerts[remapIndex].y + g_zClipAlt_RemapBiasY;
-                                g_Clip_PolyVerts[remapIndex].z += 1.0f / gClipRect_Primary.zMin;
-                                perspectiveUvs[remapIndex].u = g_Clip_PolyUvs[remapIndex].u * depth;
-                                perspectiveUvs[remapIndex].v = g_Clip_PolyUvs[remapIndex].v * depth;
-                            }
-                            if ((lightingFlags & 2) != 0) {
-                                SubmitPolygonProc* submitSlot = (SubmitPolygonProc*)&g_zVideo_pfnSubmitPolygon;
-                                (*submitSlot)(
-                                    (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                                    (zVideo_TexCoord*)perspectiveUvs,
-                                    g_Clip_PolyAttr1,
-                                    (lightingFlags & 4) != 0 ? g_Clip_PolyAttr0 : 0,
-                                    0,
-                                    clippedCount,
-                                    material->currentTextureDirectoryEntry != 0
-                                        ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
-                                        : 0,
-                                    entry->drawFlags,
-                                    gModel_RenderAlphaScaleCurrent,
-                                    gModel_RenderVertexAlphaEnabled
-                                );
-                            } else {
-                                zVideo_RenderClass* const renderClass = material->currentTextureDirectoryEntry != 0
-                                    ? (zVideo_RenderClass*)material->currentTextureDirectoryEntry->texture
-                                    : 0;
-                                (*g_zVideo_pfnSubmitPolyRenderClass)(
-                                    (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                                    (zVideo_TexCoord*)perspectiveUvs,
-                                    clippedCount,
-                                    renderClass,
-                                    entry->drawFlags,
-                                    gModel_RenderAlphaScaleCurrent,
-                                    gModel_RenderVertexAlphaEnabled
-                                );
-                            }
+                        for (int remapIndex = 0; remapIndex < clippedCount; ++remapIndex) {
+                            const float depth = 1.0f / g_Clip_PolyVerts[remapIndex].z;
+                            g_Clip_PolyVerts[remapIndex].x
+                                = g_zClipAlt_RemapScaleX * g_Clip_PolyVerts[remapIndex].x + g_zClipAlt_RemapBiasX;
+                            g_Clip_PolyVerts[remapIndex].y
+                                = g_zClipAlt_RemapScaleY * g_Clip_PolyVerts[remapIndex].y + g_zClipAlt_RemapBiasY;
+                            g_Clip_PolyVerts[remapIndex].z += 1.0f / gClipRect_Primary.zMin;
+                            perspectiveUvs[remapIndex].u = depth * g_Clip_PolyUvs[remapIndex].u;
+                            perspectiveUvs[remapIndex].v = g_Clip_PolyUvs[remapIndex].v * depth;
+                        }
+                        if ((lightingFlags & 2) != 0) {
+                            g_zVideo_pfnSubmitPolygon(
+                                (zVideo_XyzVertex*)g_Clip_PolyVerts,
+                                (zVideo_TexCoord*)perspectiveUvs,
+                                g_Clip_PolyAttr1,
+                                (lightingFlags & 4) != 0 ? g_Clip_PolyAttr0 : 0,
+                                0,
+                                clippedCount,
+                                material->currentTextureDirectoryEntry != 0
+                                    ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
+                                    : 0,
+                                entry->drawFlags,
+                                gModel_RenderAlphaScaleCurrent,
+                                gModel_RenderVertexAlphaEnabled
+                            );
+                        } else {
+                            g_zVideo_pfnSubmitPolyRenderClass(
+                                (zVideo_XyzVertex*)g_Clip_PolyVerts,
+                                (zVideo_TexCoord*)perspectiveUvs,
+                                clippedCount,
+                                material->currentTextureDirectoryEntry != 0
+                                    ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
+                                    : 0,
+                                entry->drawFlags,
+                                gModel_RenderAlphaScaleCurrent,
+                                gModel_RenderVertexAlphaEnabled
+                            );
                         }
                     }
                     continue;
                 }
 
-                clippedCount = vertexCount;
-                polygonVisible = 1;
-                if ((gClipRect_Primary.flags & 0x30) != 0) {
-                    polygonVisible = zClipRect::ClipPolyNearZ(&gClipRect_Primary, &clippedCount);
-                }
-                if (polygonVisible == 0) {
+                if ((clipMask & 0x30) != 0 && zClipRect::ClipPolyNearZ(&gClipRect_Primary, &clippedCount) == 0) {
                     continue;
                 }
                 zMathProjectSphereBatch(
@@ -1707,180 +1851,158 @@ namespace zModel
                     g_Clip_PolyUvs[uvIndex].u *= g_Clip_PolyVerts[uvIndex].z;
                     g_Clip_PolyUvs[uvIndex].v *= g_Clip_PolyVerts[uvIndex].z;
                 }
-                if ((gClipRect_Primary.flags & 0x0f) != 0) {
-                    polygonVisible = zClipRect::ClipPoly(&gClipRect_Primary, &clippedCount);
-                }
-                if (polygonVisible == 0) {
+                if ((clipMask & 0x0f) != 0 && zClipRect::ClipPoly(&gClipRect_Primary, &clippedCount) == 0) {
                     continue;
                 }
 
                 // Retail divides by the projected reciprocal depth without a zero test.
                 for (int perspectiveIndex = 0; perspectiveIndex < clippedCount; ++perspectiveIndex) {
                     const float depth = 1.0f / g_Clip_PolyVerts[perspectiveIndex].z;
-                    perspectiveUvs[perspectiveIndex].u = g_Clip_PolyUvs[perspectiveIndex].u * depth;
+                    perspectiveUvs[perspectiveIndex].u = depth * g_Clip_PolyUvs[perspectiveIndex].u;
                     perspectiveUvs[perspectiveIndex].v = g_Clip_PolyUvs[perspectiveIndex].v * depth;
                 }
-                for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
-                    g_Clip_PolyVerts[depthIndex].z *= (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                if (entry->drawFlags != 0) {
+                    const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                    for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
+                        g_Clip_PolyVerts[depthIndex].z = depthScale * g_Clip_PolyVerts[depthIndex].z;
+                    }
                 }
-                zVideo_RenderClass* const renderClass = material->currentTextureDirectoryEntry != 0
-                    ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
-                    : 0;
-                SubmitPolyRenderClassProc* submitSlot = (SubmitPolyRenderClassProc*)&g_zVideo_pfnSubmitPolyRenderClass;
-                (*submitSlot)(
+                g_zVideo_pfnSubmitPolyRenderClass(
                     (zVideo_XyzVertex*)g_Clip_PolyVerts,
                     (zVideo_TexCoord*)perspectiveUvs,
                     clippedCount,
-                    renderClass,
+                    material->currentTextureDirectoryEntry != 0
+                        ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
+                        : 0,
                     entry->drawFlags,
                     gModel_RenderAlphaScaleCurrent,
                     gModel_RenderVertexAlphaEnabled
                 );
 
-                if (gAltClipPassEnabled != 0) {
-                    if (zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0
-                        && zClipRect::ClipPoly(&gClipRect_Alt, &clippedCount) != 0) {
-                        for (int remapIndex = 0; remapIndex < clippedCount; ++remapIndex) {
-                            const float depth = 1.0f / g_Clip_PolyVerts[remapIndex].z;
-                            g_Clip_PolyVerts[remapIndex].x
-                                = g_zClipAlt_RemapScaleX * g_Clip_PolyVerts[remapIndex].x + g_zClipAlt_RemapBiasX;
-                            g_Clip_PolyVerts[remapIndex].y
-                                = g_zClipAlt_RemapScaleY * g_Clip_PolyVerts[remapIndex].y + g_zClipAlt_RemapBiasY;
-                            g_Clip_PolyVerts[remapIndex].z += 1.0f / gClipRect_Primary.zMin;
-                            perspectiveUvs[remapIndex].u = g_Clip_PolyUvs[remapIndex].u * depth;
-                            perspectiveUvs[remapIndex].v = g_Clip_PolyUvs[remapIndex].v * depth;
-                        }
-                        SubmitPolyRenderClassProc* altSubmitSlot
-                            = (SubmitPolyRenderClassProc*)&g_zVideo_pfnSubmitPolyRenderClass;
-                        (*altSubmitSlot)(
-                            (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                            (zVideo_TexCoord*)perspectiveUvs,
-                            clippedCount,
-                            material->currentTextureDirectoryEntry != 0
-                                ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
-                                : 0,
-                            entry->drawFlags,
-                            gModel_RenderAlphaScaleCurrent,
-                            gModel_RenderVertexAlphaEnabled
-                        );
-                    }
-                }
-                continue;
-            }
-
-            if (outDepthFade != 0) {
-                if (zModel_Light::BuildAttr1Falloff(vertexCount, &lightingVaries) != 0) {
-                    lightingFlags = 1;
-                }
-            }
-            int lightVaries = lightingVaries;
-            if (outActiveLightState != 0) {
-                if (zModel_Light::SetActiveLights(&surfaceNormal, vertexCount, &lightingFlags, &lightVaries, 0) != 0) {
-                    lightingFlags |= 2;
-                    lightingVaries |= lightVaries;
-                }
-            }
-            clippedCount = vertexCount;
-            if (lightingFlags != 0) {
-                if ((gClipRect_Primary.flags & 0x30) != 0) {
-                    polygonVisible = zClipRect::ClipPolyZRange_NoUV_WithAttribs(&gClipRect_Primary, &clippedCount);
-                }
-                if (polygonVisible != 0) {
-                    zMathProjectSphereBatch(
-                        (const zVec3*)g_Clip_PolyVertsScratch,
-                        (zProjectedSphere*)g_Clip_PolyVerts,
-                        clippedCount
-                    );
-                    if ((gClipRect_Primary.flags & 0x0f) != 0) {
-                        polygonVisible = zClipRect::ClipPoly_NoUV_WithAttr012_Alt(&gClipRect_Primary, &clippedCount);
-                    }
-                }
-                if (polygonVisible != 0) {
-                    if (entry->drawFlags != 0) {
-                        const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
-                        for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
-                            g_Clip_PolyVerts[depthIndex].z *= depthScale;
-                        }
-                    }
-                    const int materialAlpha = MaterialAlphaInt(material);
-                    SubmitPolyColorAttrProc* colorAttrSubmitSlot
-                        = (SubmitPolyColorAttrProc*)&g_zVideo_pfnSubmitPolyColorAttr;
-                    (*colorAttrSubmitSlot)(
-                        (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                        material->packedColor & 0xffff,
-                        (zVideo_ColorRgbFloat*)&material->colorRgb,
-                        g_Clip_PolyAttr1,
-                        (lightingFlags & 4) != 0 ? g_Clip_PolyAttr0 : 0,
-                        (lightingFlags & 1) != 0 ? g_Clip_PolyAttr2 : 0,
-                        materialAlpha,
-                        clippedCount,
-                        entry->drawFlags,
-                        gModel_RenderVertexAlphaEnabled
-                    );
-                }
-            } else {
-                if ((gClipRect_Primary.flags & 0x30) != 0) {
-                    polygonVisible = zClipRect::ClipPolyZRange_NoUV(&gClipRect_Primary, &clippedCount);
-                }
-                if (polygonVisible != 0) {
-                    zMathProjectSphereBatch(
-                        (const zVec3*)g_Clip_PolyVertsScratch,
-                        (zProjectedSphere*)g_Clip_PolyVerts,
-                        clippedCount
-                    );
-                    if ((gClipRect_Primary.flags & 0x0f) != 0) {
-                        polygonVisible = zClipRect::ClipPoly_NoUV_Alt(&gClipRect_Primary, &clippedCount);
-                    }
-                }
-                if (polygonVisible != 0) {
-                    if (entry->drawFlags != 0) {
-                        const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
-                        for (int depthIndex = 0; depthIndex < clippedCount; ++depthIndex) {
-                            g_Clip_PolyVerts[depthIndex].z *= depthScale;
-                        }
-                    }
-                    const int materialAlpha = MaterialAlphaInt(material);
-                    SubmitPolyFlatColor16Proc* flatSubmitSlot
-                        = (SubmitPolyFlatColor16Proc*)&g_zVideo_pfnSubmitPolyFlatColor16;
-                    (*flatSubmitSlot)(
-                        (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                        material->packedColor & 0xffff,
-                        materialAlpha,
-                        clippedCount,
-                        entry->drawFlags,
-                        gModel_RenderVertexAlphaEnabled
-                    );
-                }
-            }
-            if (polygonVisible != 0 && gAltClipPassEnabled != 0) {
-                polygonVisible = zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount);
-                if (polygonVisible != 0) {
-                    polygonVisible = zClipRect::ClipPoly_NoUV_Alt(&gClipRect_Alt, &clippedCount);
-                }
-                if (polygonVisible != 0) {
+                if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, clippedCount) != 0
+                    && zClipRect::ClipPoly(&gClipRect_Alt, &clippedCount) != 0) {
                     for (int remapIndex = 0; remapIndex < clippedCount; ++remapIndex) {
+                        const float depth = 1.0f / g_Clip_PolyVerts[remapIndex].z;
                         g_Clip_PolyVerts[remapIndex].x
                             = g_zClipAlt_RemapScaleX * g_Clip_PolyVerts[remapIndex].x + g_zClipAlt_RemapBiasX;
                         g_Clip_PolyVerts[remapIndex].y
                             = g_zClipAlt_RemapScaleY * g_Clip_PolyVerts[remapIndex].y + g_zClipAlt_RemapBiasY;
                         g_Clip_PolyVerts[remapIndex].z += 1.0f / gClipRect_Primary.zMin;
+                        perspectiveUvs[remapIndex].u = depth * g_Clip_PolyUvs[remapIndex].u;
+                        perspectiveUvs[remapIndex].v = g_Clip_PolyUvs[remapIndex].v * depth;
                     }
-                    const int materialAlpha = MaterialAlphaInt(material);
-                    SubmitPolyFlatColor16Proc* altFlatSubmitSlot
-                        = (SubmitPolyFlatColor16Proc*)&g_zVideo_pfnSubmitPolyFlatColor16;
-                    (*altFlatSubmitSlot)(
+                    g_zVideo_pfnSubmitPolyRenderClass(
                         (zVideo_XyzVertex*)g_Clip_PolyVerts,
-                        material->packedColor & 0xffff,
-                        materialAlpha,
+                        (zVideo_TexCoord*)perspectiveUvs,
                         clippedCount,
+                        material->currentTextureDirectoryEntry != 0
+                            ? (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture)
+                            : 0,
                         entry->drawFlags,
+                        gModel_RenderAlphaScaleCurrent,
                         gModel_RenderVertexAlphaEnabled
                     );
                 }
+                continue;
+            }
+
+            if (outDepthFade != 0 && zModel_Light::BuildAttr1Falloff(clippedCount, &lightingVaries) != 0) {
+                lightingFlags = 1;
+            }
+            int lightVaries = lightingVaries;
+            if (outActiveLightState != 0
+                && zModel_Light::SetActiveLights(&surfaceNormal, clippedCount, &lightingFlags, &lightVaries, 0) != 0) {
+                lightingFlags |= 2;
+                lightingVaries |= lightVaries;
+            }
+
+            int vertexCount;
+            if (lightingFlags != 0) {
+                if ((clipMask & 0x30) != 0
+                    && zClipRect::ClipPolyZRange_NoUV_WithAttribs(&gClipRect_Primary, &clippedCount) == 0) {
+                    continue;
+                }
+                zMathProjectSphereBatch(
+                    (const zVec3*)g_Clip_PolyVertsScratch,
+                    (zProjectedSphere*)g_Clip_PolyVerts,
+                    clippedCount
+                );
+                if ((clipMask & 0x0f) != 0
+                    && zClipRect::ClipPoly_NoUV_WithAttr012_Alt(&gClipRect_Primary, &clippedCount) == 0) {
+                    continue;
+                }
+                vertexCount = clippedCount;
+                if (entry->drawFlags != 0) {
+                    const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                    for (int depthIndex = 0; depthIndex < vertexCount; ++depthIndex) {
+                        g_Clip_PolyVerts[depthIndex].z = depthScale * g_Clip_PolyVerts[depthIndex].z;
+                    }
+                }
+                g_zVideo_pfnSubmitPolyColorAttr(
+                    (zVideo_XyzVertex*)g_Clip_PolyVerts,
+                    material->packedColor,
+                    (zVideo_ColorRgbFloat*)&material->colorRgb,
+                    g_Clip_PolyAttr1,
+                    (lightingFlags & 4) != 0 ? g_Clip_PolyAttr0 : 0,
+                    (lightingFlags & 1) != 0 ? g_Clip_PolyAttr2 : 0,
+                    MaterialAlphaInt(material),
+                    vertexCount,
+                    entry->drawFlags,
+                    gModel_RenderVertexAlphaEnabled
+                );
+            } else {
+                if ((clipMask & 0x30) != 0 && zClipRect::ClipPolyZRange_NoUV(&gClipRect_Primary, &clippedCount) == 0) {
+                    continue;
+                }
+                zMathProjectSphereBatch(
+                    (const zVec3*)g_Clip_PolyVertsScratch,
+                    (zProjectedSphere*)g_Clip_PolyVerts,
+                    clippedCount
+                );
+                if ((clipMask & 0x0f) != 0 && zClipRect::ClipPoly_NoUV_Alt(&gClipRect_Primary, &clippedCount) == 0) {
+                    continue;
+                }
+                vertexCount = clippedCount;
+                if (entry->drawFlags != 0) {
+                    const float depthScale = (float)(int)entry->drawFlags * g_zRndr_InverseZTolerance + 1.0f;
+                    for (int depthIndex = 0; depthIndex < vertexCount; ++depthIndex) {
+                        g_Clip_PolyVerts[depthIndex].z = depthScale * g_Clip_PolyVerts[depthIndex].z;
+                    }
+                }
+                g_zVideo_pfnSubmitPolyFlatColor16(
+                    (zVideo_XyzVertex*)g_Clip_PolyVerts,
+                    material->packedColor,
+                    MaterialAlphaInt(material),
+                    vertexCount,
+                    entry->drawFlags,
+                    gModel_RenderVertexAlphaEnabled
+                );
+            }
+
+            // Retail rewrites the clip count from the submitted count before the alternate pass.
+            clippedCount = vertexCount;
+            if (gAltClipPassEnabled != 0 && zClipRect::TrivialRejectPolyXY(&gClipRect_Alt, vertexCount) != 0
+                && zClipRect::ClipPoly_NoUV_Alt(&gClipRect_Alt, &clippedCount) != 0) {
+                for (int remapIndex = 0; remapIndex < clippedCount; ++remapIndex) {
+                    g_Clip_PolyVerts[remapIndex].x
+                        = g_zClipAlt_RemapScaleX * g_Clip_PolyVerts[remapIndex].x + g_zClipAlt_RemapBiasX;
+                    g_Clip_PolyVerts[remapIndex].y
+                        = g_zClipAlt_RemapScaleY * g_Clip_PolyVerts[remapIndex].y + g_zClipAlt_RemapBiasY;
+                    g_Clip_PolyVerts[remapIndex].z += 1.0f / gClipRect_Primary.zMin;
+                }
+                g_zVideo_pfnSubmitPolyFlatColor16(
+                    (zVideo_XyzVertex*)g_Clip_PolyVerts,
+                    material->packedColor,
+                    MaterialAlphaInt(material),
+                    clippedCount,
+                    entry->drawFlags,
+                    gModel_RenderVertexAlphaEnabled
+                );
             }
         }
 
         zMath::MatStackPopPtr();
+        return 0;
     }
 } // namespace zModel
 
@@ -2079,12 +2201,13 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
     if (scrollRates[0] != 0.0f && scrollRates[1] != 0.0f) {
         const float deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
         const float deltaV = g_FrameDeltaTimeSec * scrollRates[1];
-        uvs[0].u = deltaU + uvs[0].u;
-        uvs[0].v = deltaV + uvs[0].v;
-        float minU = uvs[0].u;
-        float maxU = uvs[0].u;
-        float minV = uvs[0].v;
-        float maxV = uvs[0].v;
+        // Retail seeds the bounds from the scrolled first UV before storing it (as in the one-axis paths).
+        float minU = deltaU + uvs[0].u;
+        float minV = deltaV + uvs[0].v;
+        float maxU = minU;
+        float maxV = minV;
+        uvs[0].u = minU;
+        uvs[0].v = minV;
         for (i = 1; i < uvCount; ++i) {
             uvs[i].u = deltaU + uvs[i].u;
             uvs[i].v = deltaV + uvs[i].v;

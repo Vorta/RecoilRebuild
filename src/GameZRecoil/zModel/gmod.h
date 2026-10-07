@@ -140,8 +140,9 @@ void __fastcall SetSoftwarePathActive(int active);
 void __stdcall SetTextureWorldPerMeter(float worldPerMeterU, float worldPerMeterV);
 void __stdcall SetTextureWorldBase(float worldBaseU, float worldBaseV);
 int __fastcall SetDiTextureWorldPerMeter(zDiPartial* di, int worldSpaceEnabled, float scrollRateU, float scrollRateV);
-void __fastcall RenderNodeHardware(CZNodePartial* node, int clipMask);
-void __fastcall RenderNodeSoftware(CZNodePartial* node, int clipMask);
+// Both render-node entries clear eax before returning (retail 0x476f14/0x477b23, 0x477d55/0x478c5b).
+int __fastcall RenderNodeHardware(CZNodePartial* node, int clipMask);
+int __fastcall RenderNodeSoftware(CZNodePartial* node, int clipMask);
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
 float __cdecl GetBackfaceEliminationToleranceScalar();
 void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
@@ -330,10 +331,12 @@ struct zModel_GlobalState {
     float clipPolyAttr0[0x40]; /* +0x6ecc 0x57d0cc */
     float clipPolyAttr1[0x40]; /* +0x6fcc 0x57d1cc */
     float clipPolyAttr2[0x40]; /* +0x70cc 0x57d2cc */
-    zColorRgb ambientColorRgb01; /* +0x71cc 0x57d3cc */
-    zColorRgb fogBaseColorRgb01; /* +0x71d8 0x57d3d8 */
-    float ambientIntensityFactor; /* +0x71e4 0x57d3e4 */
-    float ambientScale; /* +0x71e8 0x57d3e8 */
+    /*
+     * Ambient/fog palette remap recipe: color0 = ambient colour, color1 = fog
+     * base colour, color0Strength = ambient intensity, color1Strength = scale.
+     * Retail 0x4773f9/0x477406 pass 0x57d3cc to the recipe consumers.
+     */
+    zVidPaletteRemapRecipe ambientPaletteRemapRecipe; /* +0x71cc 0x57d3cc */
     zVidPaletteRemapRecipe specialLightPaletteRemapRecipe; /* +0x71ec 0x57d3ec */
     int vertexShadingEnabled; /* +0x720c 0x57d40c */
     CZNodePartial** lightInputNodeStates; /* +0x7210 0x57d410 */
@@ -431,10 +434,11 @@ extern zModel_GlobalState g_zModel_GlobalStateStorage;
 #define g_Clip_PolyAttr0 (g_zModel_GlobalStateStorage.clipPolyAttr0)
 #define g_Clip_PolyAttr1 (g_zModel_GlobalStateStorage.clipPolyAttr1)
 #define g_Clip_PolyAttr2 (g_zModel_GlobalStateStorage.clipPolyAttr2)
-#define gModel_AmbientColorRgb01 (g_zModel_GlobalStateStorage.ambientColorRgb01)
-#define gModel_FogBaseColorRgb01 (g_zModel_GlobalStateStorage.fogBaseColorRgb01)
-#define gModel_AmbientIntensityFactor (g_zModel_GlobalStateStorage.ambientIntensityFactor)
-#define gModel_AmbientScale (g_zModel_GlobalStateStorage.ambientScale)
+#define gModel_AmbientPaletteRemapRecipe (g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe)
+#define gModel_AmbientColorRgb01 (g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color0)
+#define gModel_FogBaseColorRgb01 (g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color1)
+#define gModel_AmbientIntensityFactor (g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color0Strength)
+#define gModel_AmbientScale (g_zModel_GlobalStateStorage.ambientPaletteRemapRecipe.color1Strength)
 #define gModel_SpecialLightPaletteRemapRecipe (g_zModel_GlobalStateStorage.specialLightPaletteRemapRecipe)
 #define g_zModel_VertexShadingEnabled (g_zModel_GlobalStateStorage.vertexShadingEnabled)
 #define gModel_LightInputNodeStates (g_zModel_GlobalStateStorage.lightInputNodeStates)

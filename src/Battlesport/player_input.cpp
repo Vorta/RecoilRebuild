@@ -128,11 +128,33 @@ void __cdecl RegisterGameplayCommandCallbacksAndCreateFfEffects()
     g_zInputFfEffectSet = new zInput_FFEffectSet;
 }
 } // namespace Player
+/**
+ * Retail inline-expansion evidence: 0x425a20 scales autoTurnTargetDir by the
+ * negated camera back offset with the Vec3ScaleTo shape (fld st0; fmul [x];
+ * fld [y]; fmul st1) and keeps the y store that the following cameraLerpEnd.y
+ * copy overwrites; no standalone retail function exists. Reconstruction model
+ * (original-source helper status inferred): the same TU-resident inline helper as player_move.cpp, player_contact.cpp
+ * and Camera.c; its historical declaration location is not established. Purpose: scale a vector by a scalar into an
+ * output vector.
+ */
+inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+{
+    out->x = vec->x * scale;
+    out->y = vec->y * scale;
+    out->z = vec->z * scale;
+}
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-ticklocalplayercontrols
  * @recoil-artifact defines .text recoil:function:0x425a20: Player::TickLocalPlayerControls.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-match byte
  *
+ * Raw assembly: reviewed (Pro batch Z, run 96d501c4): the zMath::FastExp integer
+ * bridge [0x425aca,0x425ad5) supplying cursorBlend and the zMath::Vec3Subtract
+ * expansion [0x4260af,0x4260d2) writing cameraLerpStart (requires player_input.cpp /Ob1).
  *
  * Purpose: advance local player control input, camera, movement, weapon, and
  * HUD interaction state for the current frame.
@@ -147,19 +169,24 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
 
-    zInput::MouseStateSnapshot mouseState = { 0 };
+    // Retail does not initialise the snapshot; only the mouse-snapshot path fills it.
+    // The cursor-mode steering read of mouseState.deltaX below does not re-check that
+    // path, so with the joystick off and runtime input flag 2 clear it reads an
+    // uninitialised value: retained retail behaviour outside the supported input state.
+    zInput::MouseStateSnapshot mouseState;
     if (zInp::GetJoystickOption() != 0) {
         DIJOYSTATE2* const joyState = zInput::DIGetCurrentState();
         if (playerState->cameraState == kPlayerCameraStateProjectileAttached) {
+            const float joyCursorY = (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
+            const float joyCursorX = (float)(joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
             playerState->cursorDeltaX = 0.0f;
             playerState->cursorDeltaY = 0.0f;
-            playerState->cursorNormX = (float)(joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
-            playerState->cursorNormY = (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
+            playerState->cursorNormX = joyCursorX;
+            playerState->cursorNormY = joyCursorY;
         } else {
             playerState->cursorNormX = 0.0f;
-            const float joyCursorY = (float)(-joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale;
-            const int cursorBlendBits = (int)(g_Player_DeltaTime * -3.2f * 12102200.0f) + 0x3f800000;
-            const float cursorBlend = PLAYER_FLOAT_FROM_BITS(cursorBlendBits);
+            const float joyCursorY = -((float)(joyState->lY) * g_zInput_JoystickAxisConfig_Gameplay.axes[1].normScale);
+            const float cursorBlend = zMath::FastExp(g_Player_DeltaTime * -3.2f);
             playerState->cursorNormY = cursorBlend * playerState->cursorNormY + (1.0f - cursorBlend) * joyCursorY;
             playerState->steeringInput
                 = (float)(-joyState->lX) * g_zInput_JoystickAxisConfig_Gameplay.axes[0].normScale;
@@ -201,16 +228,18 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     }
 
     if (zOpt::GetSteeringMode() == 0 && playerState->steeringInput == 0.0f && zInp::GetJoystickOption() == 0) {
-        if (zOpt::GetCursorMode() == 0) {
-            if (playerState->cursorNormX > g_Player_CameraZone) {
-                playerState->steeringInput
-                    = (playerState->cursorNormX - g_Player_CameraZone) * -g_Player_CameraZoneInvRange;
-            } else if (playerState->cursorNormX < -g_Player_CameraZone) {
-                playerState->steeringInput
-                    = (g_Player_CameraZone + playerState->cursorNormX) * -g_Player_CameraZoneInvRange;
+        if (zOpt::GetCursorMode() != 0) {
+            if (playerState->cursorDeltaX == 0.0f && mouseState.deltaX != 0) {
+                playerState->steeringInput = (float)(-mouseState.deltaX) * g_Player_GameplayInputStepScale;
             }
-        } else if (playerState->cursorDeltaX == 0.0f && mouseState.deltaX != 0) {
-            playerState->steeringInput = (float)(-mouseState.deltaX) * g_Player_GameplayInputStepScale;
+        } else {
+            const float cameraZone = g_Player_CameraZone;
+            const float zoneScale = -g_Player_CameraZoneInvRange;
+            if (playerState->cursorNormX > cameraZone) {
+                playerState->steeringInput = (playerState->cursorNormX - cameraZone) * zoneScale;
+            } else if (playerState->cursorNormX < -cameraZone) {
+                playerState->steeringInput = (cameraZone + playerState->cursorNormX) * zoneScale;
+            }
         }
     }
 
@@ -222,14 +251,15 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
         playerState->subVerticalInput = 0.0f;
     }
 
+    const float pitchZone = g_Player_CameraZone;
+    const float pitchScale = -g_Player_CameraZoneInvRange;
     playerState->subPitchInput = 0.0f;
-    if (masterModalData->masterType == kPlayerMasterTypeSub && (float)(fabs(playerState->localVel.z)) >= 10.0f) {
-        if (playerState->cursorNormY > g_Player_CameraZone) {
-            playerState->subPitchInput
-                = (playerState->cursorNormY - g_Player_CameraZone) * -g_Player_CameraZoneInvRange;
-        } else if (playerState->cursorNormY < -g_Player_CameraZone) {
-            playerState->subPitchInput
-                = (g_Player_CameraZone + playerState->cursorNormY) * -g_Player_CameraZoneInvRange;
+    // Retail 0x425cfe compares fabs(localVel.z) with 10.0f using a strict greater-than test (test ah,0x41).
+    if (masterModalData->masterType == kPlayerMasterTypeSub && (float)(fabs(playerState->localVel.z)) > 10.0f) {
+        if (playerState->cursorNormY > pitchZone) {
+            playerState->subPitchInput = (playerState->cursorNormY - pitchZone) * pitchScale;
+        } else if (playerState->cursorNormY < -pitchZone) {
+            playerState->subPitchInput = (pitchZone + playerState->cursorNormY) * pitchScale;
         }
     }
 
@@ -239,9 +269,9 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     PLAYER_CLAMP_SIGNED(playerState->subPitchInput, 1.0f);
 
     playerState->throttleInputCopy = playerState->throttleInput;
+    playerState->steeringInputCopy = playerState->steeringInput;
     playerState->subVerticalInputCopy = playerState->subVerticalInput;
     playerState->subPitchInputCopy = playerState->subPitchInput;
-    playerState->steeringInputCopy = playerState->steeringInput;
     HudUiMgr::UpdateTargetReticleFromCursor(
         2,
         playerState->cursorNormX,
@@ -252,27 +282,28 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     const int altFireState = zInput::BindMapCurrentReadCommandInputState(12);
     if ((altFireState & 3) != 0) {
         PlayerGunFireController* const activeAltGun = playerState->activeAltGunController;
-        if ((activeAltGun->optCatalogEntry->flags & 2u) != 0) {
-            if (activeAltGun->ammoOrCharge > 0.0f) {
-                playerState->altGunDispatchRequested = 1;
-            } else if (altFireState == 1) {
-                playerState->altGunDispatchRequested = altFireState;
-            }
-        } else if ((playerState->altGunTransitionState & 0x180) == 0) {
-            if (g_Player_TotalTimeSecScaled >= activeAltGun->nextDispatchTime && playerState->playerOrdinal != 0
+        if ((activeAltGun->optCatalogEntry->flags & 2u) == 0) {
+            if ((playerState->altGunTransitionState & 0x180) != 0) {
+                if ((altFireState & 1) != 0) {
+                    playerState->pendingAltCameraToggle = 1;
+                }
+            } else if (g_Player_TotalTimeSecScaled >= activeAltGun->nextDispatchTime && playerState->playerOrdinal != 0
                 && activeAltGun != &playerState->altWeaponBanks[1].controllerA) {
                 playerState->altGunDispatchRequested = 1;
                 activeAltGun->nextDispatchTime = activeAltGun->dispatchRepeatDelay + g_Player_TotalTimeSecScaled;
             }
-        } else if ((altFireState & 1) != 0) {
-            playerState->pendingAltCameraToggle = 1;
+        } else if (activeAltGun->ammoOrCharge > 0.0f) {
+            playerState->altGunDispatchRequested = 1;
+        } else if (altFireState == 1) {
+            playerState->altGunDispatchRequested = altFireState;
         }
     } else {
         playerState->altGunDispatchRequested = 0;
     }
 
+    const int primaryFireState = zInput::BindMapCurrentReadCommandInputState(11);
     playerState->usePresetGunFireDir = 0;
-    if ((zInput::BindMapCurrentReadCommandInputState(11) & 3) != 0) {
+    if ((primaryFireState & 3) != 0) {
         PlayerGunFireController* const activePrimaryGun = playerState->activePrimaryGunController;
         if ((playerState->altGunTransitionState & 0x180) != 0) {
             playerState->usePresetGunFireDir = 1;
@@ -303,8 +334,9 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
         TransitionToMasterTypeTrack(g_LocalPlayerSaveState, 0);
     }
 
+    // Retail 0x425fe6 tests offset 0x34 as an int (mov eax,[esi+0x34]; test eax,eax).
     if ((zInput::BindMapCurrentReadCommandInputState(38) & 3) != 0
-        && masterModalData->masterType == kPlayerMasterTypeHover && playerState->nextModeSwitchAllowedTime != 0.0f) {
+        && masterModalData->masterType == kPlayerMasterTypeHover && playerState->probeImpactSlot1SeenFlag != 0) {
         TransitionToMasterTypeAmphib(g_LocalPlayerSaveState, 1, 0);
     }
 
@@ -326,16 +358,12 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     playerState->autoTurnTargetWorldPos = playerState->storedTargetPos;
     SetAutoTurnTargetDirFromWorldPoint(saveState, &playerState->autoTurnTargetWorldPos);
 
-    zVec3 cameraTarget = { 0 };
+    // Retail passes the uninitialised target straight to gwCameraGetTarget.
+    zVec3 cameraTarget;
     CZCamera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
-    playerState->cameraLerpStart.x = cameraTarget.x - playerState->worldPos.x;
-    playerState->cameraLerpStart.y = cameraTarget.y - playerState->worldPos.y;
-    playerState->cameraLerpStart.z = cameraTarget.z - playerState->worldPos.z;
+    zMath::Vec3Subtract(&cameraTarget, &playerState->worldPos, &playerState->cameraLerpStart);
 
-    const float cameraDistance = -playerState->cameraBackOffset.z;
-    playerState->cameraLerpEnd.x = cameraDistance * playerState->autoTurnTargetDir.x;
-    playerState->cameraLerpEnd.y = cameraDistance * playerState->autoTurnTargetDir.y;
-    playerState->cameraLerpEnd.z = cameraDistance * playerState->autoTurnTargetDir.z;
+    Vec3ScaleTo(&playerState->autoTurnTargetDir, -playerState->cameraBackOffset.z, &playerState->cameraLerpEnd);
     playerState->cameraLerpEnd.y = playerState->cameraLerpStart.y;
     ApplyCameraState(kPlayerCameraStateTargeting);
 }

@@ -852,7 +852,12 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-findthirdprobeandcomputenormal
  * @recoil-artifact defines .text recoil:function:0x42d320: Player::FindThirdProbeAndComputeNormal.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  *
+ *
+ * Raw assembly: reviewed (Pro batch Z, run 96d501c4): the transform-point
+ * expansion [0x42d3b2,0x42d416) and the vector dot [0x42d514,0x42d533).
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::FindThirdProbeAndComputeNormal from the recovered
@@ -862,14 +867,11 @@ void __fastcall FindThirdProbeAndComputeNormal(zUtil_SaveGameState* saveState, P
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
-    int thirdProbeCandidateScanCount = 4;
-    if (g_PlayerEnvProbeSampleCount <= 4) {
-        thirdProbeCandidateScanCount = g_PlayerEnvProbeSampleCount;
-    }
+    int bestThirdProbeSampleIndex = 0;
+    const int thirdProbeCandidateScanCount = __min(4, g_PlayerEnvProbeSampleCount);
 
     const int firstAboveGroundSampleIndex = g_PlayerEnvProbe_AboveGroundIndices[0];
     const int secondAboveGroundSampleIndex = g_PlayerEnvProbe_AboveGroundIndices[1];
-    int bestThirdProbeSampleIndex = 0;
     float bestThirdProbeHeightDelta = 0.0f;
     for (int candidateProbeSampleIndex = 0; candidateProbeSampleIndex < thirdProbeCandidateScanCount;
         ++candidateProbeSampleIndex) {
@@ -879,10 +881,10 @@ void __fastcall FindThirdProbeAndComputeNormal(zUtil_SaveGameState* saveState, P
         }
 
         zVec3 transformedCandidateProbePoint;
-        PLAYER_TRANSFORM_POINT_BY_MATRIX(
-            transformedCandidateProbePoint,
-            masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + candidateProbeSampleIndex],
-            playerState->motionBasis
+        ZMTH_VECTOR_TRANSFORM_POINT(
+            &playerState->motionBasis,
+            &transformedCandidateProbePoint,
+            &masterModalData->probePoints[kPlayerEnvProbeBasePointOffset + candidateProbeSampleIndex]
         );
         const float candidateHeightDelta
             = probeResult->candidateScoreBySample[candidateProbeSampleIndex] - transformedCandidateProbePoint.y;
@@ -897,21 +899,21 @@ void __fastcall FindThirdProbeAndComputeNormal(zUtil_SaveGameState* saveState, P
         }
     }
 
-    if (bestThirdProbeHeightDelta <= g_Player_DeltaTime) {
+    const float minimumHeightDelta = g_Player_DeltaTime;
+    if (bestThirdProbeHeightDelta <= minimumHeightDelta) {
         return;
     }
 
-    zVec3 firstSynthSupportPoint = g_PlayerEnvProbeWorldPoints[firstAboveGroundSampleIndex];
-    zVec3 secondSynthSupportPoint = g_PlayerEnvProbeWorldPoints[secondAboveGroundSampleIndex];
-    zVec3 thirdSynthSupportPoint = g_PlayerEnvProbeWorldPoints[bestThirdProbeSampleIndex];
-    firstSynthSupportPoint.y = probeResult->candidateScoreBySample[firstAboveGroundSampleIndex];
-    secondSynthSupportPoint.y = probeResult->candidateScoreBySample[secondAboveGroundSampleIndex];
-    thirdSynthSupportPoint.y = probeResult->candidateScoreBySample[bestThirdProbeSampleIndex];
+    zVec3 firstAboveGroundPoint = g_PlayerEnvProbeWorldPoints[firstAboveGroundSampleIndex];
+    firstAboveGroundPoint.y = probeResult->candidateScoreBySample[firstAboveGroundSampleIndex];
+    zVec3 secondAboveGroundPoint = g_PlayerEnvProbeWorldPoints[secondAboveGroundSampleIndex];
+    secondAboveGroundPoint.y = probeResult->candidateScoreBySample[secondAboveGroundSampleIndex];
+    zVec3 bestThirdProbePoint = g_PlayerEnvProbeWorldPoints[bestThirdProbeSampleIndex];
+    bestThirdProbePoint.y = probeResult->candidateScoreBySample[bestThirdProbeSampleIndex];
 
-    ComputeTriangleNormal(saveState, &firstSynthSupportPoint, &secondSynthSupportPoint, &thirdSynthSupportPoint);
-    const float surfaceDot = playerState->steerBasisRef.x * firstSynthSupportPoint.x
-        + playerState->steerBasisRef.y * firstSynthSupportPoint.y
-        + playerState->steerBasisRef.z * firstSynthSupportPoint.z;
+    ComputeTriangleNormal(saveState, &firstAboveGroundPoint, &secondAboveGroundPoint, &bestThirdProbePoint);
+    float surfaceDot;
+    ZMTH_VECTOR_DOT(surfaceDot, &playerState->steerBasisRef, &firstAboveGroundPoint);
     playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
     RebuildOrientationFromNormal(saveState);
 }

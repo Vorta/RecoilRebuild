@@ -221,7 +221,11 @@ struct OptCatalogEntryDef {
     float timedStatusUpdateDelay;
     zColorRgb timedStatusLightSpecularColor;
     float trailSegmentTimeSec;
-    unsigned char unknown_154[0x08];
+    unsigned char unknown_154[0x04];
+    // Tether-guided height above ground: projectile Y minus the sampled
+    // ground Y, stored by OptCatalog::ProcessRuntimeInstances (retail
+    // 0x4af274) and read back for the altitude clamp (0x4af5c4, 0x4af5dd).
+    float tetherAltitude;
     OptCatalogImpactCallback impactCallback;
     char* killVerbString;
 };
@@ -535,6 +539,7 @@ RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, timedStatusLightRangeMax) == 0
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, timedStatusUpdateDelay) == 0x140);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, timedStatusLightSpecularColor) == 0x144);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, trailSegmentTimeSec) == 0x150);
+RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, tetherAltitude) == 0x158);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, impactCallback) == 0x15c);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogEntryDef, killVerbString) == 0x160);
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogEntryDef) == 0x164);

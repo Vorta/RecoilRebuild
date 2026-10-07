@@ -30,7 +30,8 @@ struct zModel_PointEntryPartial {
     float colorB;
     float colorG;
     float colorR;
-    int packedColor16;
+    unsigned short packedColor16;
+    unsigned short packedColor16Padding;
     zVec3* pointCamList;
     unsigned char lensFlareSource[0x1c];
 };

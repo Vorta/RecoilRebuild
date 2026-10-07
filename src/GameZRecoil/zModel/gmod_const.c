@@ -661,7 +661,7 @@ namespace zModel_DiPool
                         (unsigned char)((int)(point->colorG + 0.5f)),
                         (unsigned char)((int)(point->colorR + 0.5f))
                     ));
-                    point->packedColor16 = (point->packedColor16 & 0xffff0000) | packedColor;
+                    point->packedColor16 = packedColor;
 
                     if (point->pointCamCount > 0) {
                         const int pointCamBytes = point->pointCamCount * (int)(sizeof(zVec3));
