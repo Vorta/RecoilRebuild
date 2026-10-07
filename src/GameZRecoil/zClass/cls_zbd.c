@@ -445,14 +445,14 @@ namespace CZZbd
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writesinglenodeclassdata
-     * @recoil-artifact defines .text recoil:function:0x4544b0: CZZbd::WriteSingleNodeClassData.
+     * @recoil-artifact defines .text recoil:function:0x4544b0: CZZbd::gClsWriteNode.
      *
      *
      * Evidence: BN name/source-file comment and class-id switch serialize the
      * node class payloads and nested node-reference lists.
      * Purpose: write one node's class-specific ZBD payload.
      */
-    RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(CZNodePartial * node, void* stream)
+    RECOIL_NO_GS int __fastcall gClsWriteNode(CZNodePartial * node, void* stream)
     {
         int result = 0;
         if (node->actionCallback != 0) {
@@ -661,7 +661,7 @@ namespace CZZbd
         if (result > 0) {
             for (int i = 0; i < result; ++i) {
                 const long classDataOffset = ftell(file);
-                if (WriteSingleNodeClassData(&nodeBuffer[i].node, stream) != 0) {
+                if (gClsWriteNode(&nodeBuffer[i].node, stream) != 0) {
                     nodeBuffer[i].classDataOffset = classDataOffset;
                 }
             }
@@ -782,14 +782,14 @@ namespace CZZbd
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.readsinglenodeclassdata
-     * @recoil-artifact defines .text recoil:function:0x454c60: CZZbd::ReadSingleNodeClassData.
+     * @recoil-artifact defines .text recoil:function:0x454c60: CZZbd::gClsReadNode.
      *
      *
      * Evidence: BN name/source-file comment and class-id switch allocate/read
      * the node class payloads, node-reference lists, and type-list entries.
      * Purpose: read one node's class-specific ZBD payload.
      */
-    int __fastcall ReadSingleNodeClassData(CZNodePartial * node, void* stream)
+    int __fastcall gClsReadNode(CZNodePartial * node, void* stream)
     {
         int result = 0;
         switch (node->classId) {
@@ -1047,7 +1047,7 @@ namespace CZZbd
                 = (unsigned int)((unsigned int)(zDi::IndexToPtrOrNull((int)(slot->node.userDataOrDiRef))));
             slot->node.actionCallback = 0;
 
-            if (ReadSingleNodeClassData(&slot->node, stream) > 0) {
+            if (gClsReadNode(&slot->node, stream) > 0) {
                 ++g_CZClass_ActiveNodeCount;
                 slot->freeTag |= 0x01000000u;
             } else {

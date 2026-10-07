@@ -358,9 +358,9 @@ void __fastcall TickLocalPlayerControls(zUtil_SaveGameState* saveState)
     playerState->autoTurnTargetWorldPos = playerState->storedTargetPos;
     SetAutoTurnTargetDirFromWorldPoint(saveState, &playerState->autoTurnTargetWorldPos);
 
-    // Retail passes the uninitialised target straight to gwCameraGetTarget.
+    // Retail passes the uninitialised target straight to gwCameraGetPosition.
     zVec3 cameraTarget;
-    CZCamera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetPosition(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
     zMath::Vec3Subtract(&cameraTarget, &playerState->worldPos, &playerState->cameraLerpStart);
 
     Vec3ScaleTo(&playerState->autoTurnTargetDir, -playerState->cameraBackOffset.z, &playerState->cameraLerpEnd);

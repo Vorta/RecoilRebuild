@@ -499,13 +499,13 @@ void __cdecl zMathMatLoadView()
     zMathMatExtractEulerAngles(current, &cameraEuler);
 
     zQuat parentQuat = { 0 };
-    zMathQuatFromEuler(&parentQuat, parentEuler.y, parentEuler.x, parentEuler.z);
+    zMathQuatFromEulerYXZ(&parentQuat, parentEuler.y, parentEuler.x, parentEuler.z);
 
     zQuat cameraQuat = { 0 };
-    zMathQuatFromEuler(&cameraQuat, cameraEuler.y, cameraEuler.x, cameraEuler.z);
+    zMathQuatFromEulerYXZ(&cameraQuat, cameraEuler.y, cameraEuler.x, cameraEuler.z);
 
     zQuat relativeQuat = { 0 };
-    zMathQuatMultiplyInverse(&cameraQuat, &parentQuat, &relativeQuat);
+    zMathQuatMultiplyConjugate(&cameraQuat, &parentQuat, &relativeQuat);
 
     zMat4x3 viewMatrix = { 0 };
     zMathQuatToMatrix(&relativeQuat, &viewMatrix);
@@ -1200,12 +1200,12 @@ namespace zMath
 {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3perpxz
-     * @recoil-artifact defines .text recoil:function:0x4745c0: zMath::Vec3PerpXZ.
+     * @recoil-artifact defines .text recoil:function:0x4745c0: zMath::Vec3ToRightXZ.
      * @recoil-match byte
      *
      * Purpose: builds the XZ-plane perpendicular vector with a zero Y component.
      */
-    void __fastcall Vec3PerpXZ(const zVec3* in, zVec3* out)
+    void __fastcall Vec3ToRightXZ(const zVec3* in, zVec3* out)
     {
         out->x = -in->z;
         out->z = in->x;
@@ -1282,7 +1282,7 @@ namespace zMath
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3array-untransformdirection
- * @recoil-artifact defines .text recoil:function:0x4745e0: zMathVec3ArrayUntransformDirection.
+ * @recoil-artifact defines .text recoil:function:0x4745e0: zMathVec3ArrayTransformDirection.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-direction-in-place
  * @recoil-match byte
  *
@@ -1294,7 +1294,7 @@ namespace zMath
  * Purpose: applies the current matrix rotation columns to direction vectors
  * in place when the matrix stack slot is not identity.
  */
-void __fastcall zMathVec3ArrayUntransformDirection(zVec3* vectors, int count)
+void __fastcall zMathVec3ArrayTransformDirection(zVec3* vectors, int count)
 {
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         return;
@@ -1309,13 +1309,13 @@ namespace zMath
 {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arraytransformdirection
-     * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirection.
-     * @recoil-match source
+     * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirectionTranspose.
      *
-     * Purpose: transforms direction vectors in place by the current matrix
+     *
+     * Purpose: transforms direction vectors in place by the transposed current matrix
      * rotation when the matrix stack slot is non-identity.
      */
-    void __fastcall Vec3ArrayTransformDirection(zVec3 * vectors, int count)
+    void __fastcall Vec3ArrayTransformDirectionTranspose(zVec3 * vectors, int count)
     {
         if (*g_currentMatrixIdentityFlagSlot != 0 || count <= 0) {
             return;
@@ -1336,14 +1336,14 @@ namespace zMath
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-transformnormalbatch
- * @recoil-artifact defines .text recoil:function:0x474710: zMathMatTransformNormalBatch
+ * @recoil-artifact defines .text recoil:function:0x474710: zMathMatTransformDirectionBatch
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
  * @recoil-match byte
  *
- * Purpose: transforms normal batches through the current matrix rotation, or
- * copies the input normals unchanged when the current matrix is identity.
+ * Purpose: transforms direction batches through the current matrix rotation, or
+ * copies the input directions unchanged when the current matrix is identity.
  */
-void __fastcall zMathMatTransformNormalBatch(const zVec3* normals, zVec3* outNormals, int count)
+void __fastcall zMathMatTransformDirectionBatch(const zVec3* normals, zVec3* outNormals, int count)
 {
     if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {
         memcpy(outNormals, normals, count * sizeof(zVec3));

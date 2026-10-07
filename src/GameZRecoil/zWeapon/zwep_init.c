@@ -506,7 +506,7 @@ namespace zWeapon
             return -1;
         }
 
-        zReader::Node* const versionNode = zRdrGetNode(rootNode, "VERSION");
+        zReader::Node* const versionNode = zRdrFindTag(rootNode, "VERSION");
         if (versionNode != 0) {
             const int version = versionNode->value.nodes[1].value.i32;
             if (version != kOptCatalogRequiredVersion) {
@@ -521,32 +521,32 @@ namespace zWeapon
                 return -1;
             }
 
-            zReader::Node* node = zRdrGetNode(rootNode, "LOCK_ON_WARNING");
+            zReader::Node* node = zRdrFindTag(rootNode, "LOCK_ON_WARNING");
             if (node != 0) {
                 g_OptCatalogSndLockOnWarning = zSnd::FindSampleByName(node->value.nodes[1].value.str);
             }
 
-            node = zRdrGetNode(rootNode, "NO_AMMO_WARNING");
+            node = zRdrFindTag(rootNode, "NO_AMMO_WARNING");
             if (node != 0) {
                 g_OptCatalogSndTriggerInactive = zSnd::FindSampleByName(node->value.nodes[1].value.str);
             }
 
-            node = zRdrGetNode(rootNode, "TRIGGER_INACTIVE");
+            node = zRdrFindTag(rootNode, "TRIGGER_INACTIVE");
             if (node != 0) {
                 g_OptCatalogSndWeaponInactive = zSnd::FindSampleByName(node->value.nodes[1].value.str);
             }
 
-            node = zRdrGetNode(rootNode, "WEAPON_INACTIVE");
+            node = zRdrFindTag(rootNode, "WEAPON_INACTIVE");
             if (node != 0) {
                 g_OptCatalogSndNoAmmoWarning = zSnd::FindSampleByName(node->value.nodes[1].value.str);
             }
 
-            node = zRdrGetNode(rootNode, "MAX_CRATER_RADIUS");
+            node = zRdrFindTag(rootNode, "MAX_CRATER_RADIUS");
             if (node != 0) {
                 g_OptCatalogMaxCraterRadius = node->value.nodes[1].value.f32;
             }
 
-            zReader::Node* const ballisticsNode = zRdrGetNode(rootNode, "BALLISTICS");
+            zReader::Node* const ballisticsNode = zRdrFindTag(rootNode, "BALLISTICS");
             if (ballisticsNode != 0) {
                 g_OptCatalog_EntryCount = (ballisticsNode->value.nodes[0].value.i32 - 1) / 2;
                 g_OptCatalog_EntryTable
@@ -566,40 +566,40 @@ namespace zWeapon
 
                     // Each weapon block follows its name inside the BALLISTICS array.
                     zReader::Node* const entryNode
-                        = zRdrGetNode(ballisticsNode, ballisticsNode->value.nodes[itemIndex].value.str);
+                        = zRdrFindTag(ballisticsNode, ballisticsNode->value.nodes[itemIndex].value.str);
                     if (entryNode != 0) {
                         entry->keyName = (char*)(ballisticsNode->value.nodes[itemIndex].value.str);
 
-                        zReader::Node* fieldNode = zRdrGetNode(entryNode, "NAME");
+                        zReader::Node* fieldNode = zRdrFindTag(entryNode, "NAME");
                         if (fieldNode != 0) {
                             entry->displayName = (char*)(fieldNode->value.nodes[1].value.str);
                         } else {
                             entry->displayName = entry->keyName;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "DESC");
+                        fieldNode = zRdrFindTag(entryNode, "DESC");
                         entry->description = _strdup(
                             fieldNode != 0 ? zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str)
                                            : entry->keyName
                         );
 
-                        fieldNode = zRdrGetNode(entryNode, "MILITARY_NAME");
+                        fieldNode = zRdrFindTag(entryNode, "MILITARY_NAME");
                         entry->militaryName = _strdup(
                             fieldNode != 0 ? zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str)
                                            : entry->keyName
                         );
 
-                        fieldNode = zRdrGetNode(entryNode, "ACCELERATION");
+                        fieldNode = zRdrFindTag(entryNode, "ACCELERATION");
                         if (fieldNode != 0) {
                             entry->acceleration = fieldNode->value.nodes[1].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "AMMO_LIMIT");
+                        fieldNode = zRdrFindTag(entryNode, "AMMO_LIMIT");
                         if (fieldNode != 0) {
                             entry->ammoOrChargeMax = (float)(fieldNode->value.nodes[1].value.i32);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "BEAM");
+                        fieldNode = zRdrFindTag(entryNode, "BEAM");
                         if (fieldNode != 0) {
                             entry->flags |= kOptCatalogFlagTrailRuntime;
                             entry->velocity = 1.0f / fieldNode->value.nodes[1].value.f32;
@@ -607,13 +607,13 @@ namespace zWeapon
                             entry->flags ^= (fieldNode->value.nodes[3].value.i32 ^ entry->flags) & 1u;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "CATCHES_FIRE");
+                        fieldNode = zRdrFindTag(entryNode, "CATCHES_FIRE");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagImmediateProbeImpact)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "CRATER");
+                        fieldNode = zRdrFindTag(entryNode, "CRATER");
                         if (fieldNode != 0) {
                             if (fieldNode->value.nodes[1].value.i32 != 0) {
                                 entry->flags |= kOptCatalogFlagCraterImpact;
@@ -627,82 +627,82 @@ namespace zWeapon
                             }
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "DAMAGE");
+                        fieldNode = zRdrFindTag(entryNode, "DAMAGE");
                         if (fieldNode != 0) {
                             entry->damage = fieldNode->value.nodes[1].value.f32;
                         }
 
                         float floatValue;
-                        fieldNode = zRdrGetNode(entryNode, "DETONATION_DISTANCE");
+                        fieldNode = zRdrFindTag(entryNode, "DETONATION_DISTANCE");
                         if (fieldNode != 0) {
                             floatValue = fieldNode->value.nodes[1].value.f32;
                             entry->detonationDistSq = floatValue * floatValue;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "EXPIRES");
+                        fieldNode = zRdrFindTag(entryNode, "EXPIRES");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagExpires)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "FIRE_RATE");
+                        fieldNode = zRdrFindTag(entryNode, "FIRE_RATE");
                         if (fieldNode != 0) {
                             entry->fireRateInterval = 1.0f / fieldNode->value.nodes[1].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "FIXED_ROTATE");
+                        fieldNode = zRdrFindTag(entryNode, "FIXED_ROTATE");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagFixedRotate)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "GRAVITY");
+                        fieldNode = zRdrFindTag(entryNode, "GRAVITY");
                         if (fieldNode != 0 && (entry->flags & kOptCatalogFlagLockOn) == 0) {
                             entry->gravity = fieldNode->value.nodes[1].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "IMPACT_PROXIMITY");
+                        fieldNode = zRdrFindTag(entryNode, "IMPACT_PROXIMITY");
                         if (fieldNode != 0) {
                             entry->impactProximity = fieldNode->value.nodes[1].value.f32;
                             floatValue = fieldNode->value.nodes[1].value.f32;
                             entry->damageFalloffRange = floatValue * floatValue;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "IMPACT_TYPE");
+                        fieldNode = zRdrFindTag(entryNode, "IMPACT_TYPE");
                         if (fieldNode != 0) {
                             entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "INSTANT");
+                        fieldNode = zRdrFindTag(entryNode, "INSTANT");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagInstant)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "LOCK_ON");
+                        fieldNode = zRdrFindTag(entryNode, "LOCK_ON");
                         if (fieldNode != 0) {
                             entry->lockOnTime = fieldNode->value.nodes[1].value.f32;
                             entry->flags |= kOptCatalogFlagLockOn;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "LOCK_ON_LEAD");
+                        fieldNode = zRdrFindTag(entryNode, "LOCK_ON_LEAD");
                         if (fieldNode != 0) {
                             entry->flags |= kOptCatalogFlagLockOnLead;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "MINE");
+                        fieldNode = zRdrFindTag(entryNode, "MINE");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagFullProbeDamage)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 13) | 1u;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "MULTI_TARGET");
+                        fieldNode = zRdrFindTag(entryNode, "MULTI_TARGET");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagMultiTarget)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "QUICKSAND");
+                        fieldNode = zRdrFindTag(entryNode, "QUICKSAND");
                         if (fieldNode != 0) {
                             if (fieldNode->value.nodes[1].value.i32 != 0) {
                                 entry->flags |= kOptCatalogFlagQuickSandImpact;
@@ -716,55 +716,55 @@ namespace zWeapon
                             }
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, g_zEffectAnim_TokenRange);
+                        fieldNode = zRdrFindTag(entryNode, g_zEffectAnim_TokenRange);
                         if (fieldNode != 0) {
                             range = fieldNode->value.nodes[1].value.f32;
                             entry->range = range;
                             entry->rangeSq = range * range;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "RELATIVE_SPEED");
+                        fieldNode = zRdrFindTag(entryNode, "RELATIVE_SPEED");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagRelativeSpeed)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "REMOTE_DETONATE");
+                        fieldNode = zRdrFindTag(entryNode, "REMOTE_DETONATE");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagRemoteDetonate)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "TETHER_GUIDED");
+                        fieldNode = zRdrFindTag(entryNode, "TETHER_GUIDED");
                         if (fieldNode != 0) {
                             entry->flags |= kOptCatalogFlagTetherGuided;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "TURN_RATE");
+                        fieldNode = zRdrFindTag(entryNode, "TURN_RATE");
                         if (fieldNode != 0) {
                             entry->turnRate = fieldNode->value.nodes[1].value.f32;
                         } else {
                             entry->turnRate = 0.159999996f;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "TURN_SUSPEND_TIME");
+                        fieldNode = zRdrFindTag(entryNode, "TURN_SUSPEND_TIME");
                         if (fieldNode != 0) {
                             entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "PITCH_RATE");
+                        fieldNode = zRdrFindTag(entryNode, "PITCH_RATE");
                         if (fieldNode != 0) {
                             entry->pitchRate = fieldNode->value.nodes[1].value.f32;
                         } else {
                             entry->pitchRate = 0.159999996f;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "VELOCITY");
+                        fieldNode = zRdrFindTag(entryNode, "VELOCITY");
                         if (fieldNode != 0 && (entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
                             entry->velocity = fieldNode->value.nodes[1].value.f32;
                         }
 
-                        fieldNode = zRdrGetNode(entryNode, "RELOAD");
+                        fieldNode = zRdrFindTag(entryNode, "RELOAD");
                         if (fieldNode != 0) {
                             entry->flags = (entry->flags & ~kOptCatalogFlagReload)
                                 | ((fieldNode->value.nodes[1].value.i32 & 1) << 18);
@@ -778,7 +778,7 @@ namespace zWeapon
                         OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->fireFxSpec, "FIRE");
                         OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->flyoutFxSpec, "FLYOUT");
 
-                        fieldNode = zRdrGetNode(entryNode, "FLYOUT_HEALTH");
+                        fieldNode = zRdrFindTag(entryNode, "FLYOUT_HEALTH");
                         if (fieldNode != 0) {
                             entry->flags |= kOptCatalogFlagImpactWhenScaleExpired;
                             entry->flyoutHealth = (float)(fieldNode->value.nodes[1].value.i32);
@@ -787,7 +787,7 @@ namespace zWeapon
                             }
                         }
 
-                        zReader::Node* const impactNode = zRdrGetNode(entryNode, "IMPACT");
+                        zReader::Node* const impactNode = zRdrFindTag(entryNode, "IMPACT");
                         if (impactNode != 0) {
                             OptCatalog::LoadFxSpecFromReaderNode(
                                 impactNode,
@@ -795,7 +795,7 @@ namespace zWeapon
                                 g_zRndr_GlobalStringTable[0]
                             );
                             for (int materialIndex = 1; materialIndex < g_zRndr_GlobalStringCount; ++materialIndex) {
-                                if (zRdrGetNode(impactNode, g_zRndr_GlobalStringTable[materialIndex]) != 0) {
+                                if (zRdrFindTag(impactNode, g_zRndr_GlobalStringTable[materialIndex]) != 0) {
                                     OptCatalog::LoadFxSpecFromReaderNode(
                                         impactNode,
                                         &entry->impactFxTable[materialIndex],
@@ -806,11 +806,11 @@ namespace zWeapon
                                 }
                             }
 
-                            if (zRdrGetNode(impactNode, "ANIMATION_ALWAYS") != 0) {
+                            if (zRdrFindTag(impactNode, "ANIMATION_ALWAYS") != 0) {
                                 entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
                             }
 
-                            fieldNode = zRdrGetNode(impactNode, "FREEZE");
+                            fieldNode = zRdrFindTag(impactNode, "FREEZE");
                             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
                                 entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
                                 entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
@@ -822,7 +822,7 @@ namespace zWeapon
                                     |= kOptCatalogFlagTimedStatusSubtractive | kOptCatalogFlagAppliesTimedHitStatus;
                             }
 
-                            fieldNode = zRdrGetNode(impactNode, "HEAT");
+                            fieldNode = zRdrFindTag(impactNode, "HEAT");
                             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
                                 entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
                                 entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
@@ -833,7 +833,7 @@ namespace zWeapon
                                 entry->flags |= kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus;
                             }
 
-                            fieldNode = zRdrGetNode(impactNode, "DESIGNATE");
+                            fieldNode = zRdrFindTag(impactNode, "DESIGNATE");
                             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
                                 entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
                                 entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
@@ -847,13 +847,13 @@ namespace zWeapon
                                 entry->detonationDistSq = fieldNode->value.nodes[6].value.f32;
                             }
 
-                            fieldNode = zRdrGetNode(impactNode, "KILL_ANIMATION");
+                            fieldNode = zRdrFindTag(impactNode, "KILL_ANIMATION");
                             if (fieldNode != 0) {
                                 entry->damageContextEffect
                                     = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
                             }
 
-                            fieldNode = zRdrGetNode(impactNode, "DAMAGE_ANIMATION");
+                            fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIMATION");
                             if (fieldNode != 0) {
                                 entry->damageFeedbackVariantCount = 1;
                                 entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
@@ -862,7 +862,7 @@ namespace zWeapon
                             }
 
                             if (g_zVideo_ActiveRendererPath != 0) {
-                                fieldNode = zRdrGetNode(impactNode, "DAMAGE_ANIM_ON_HEALTH");
+                                fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIM_ON_HEALTH");
                                 if (fieldNode != 0) {
                                     entry->damageFeedbackVariantCount = fieldNode->value.nodes[0].value.i32 - 1;
                                     for (unsigned int feedbackIndex = 0;
@@ -1124,44 +1124,44 @@ namespace OptCatalog
      */
     void __fastcall LoadFxSpecFromReaderNode(zReader::Node * parentNode, OptCatalogFxSpec * spec, const char* childName)
     {
-        zReader::Node* const specNode = zRdrGetNode(parentNode, childName);
+        zReader::Node* const specNode = zRdrFindTag(parentNode, childName);
         if (specNode == 0) {
             return;
         }
 
-        zReader::Node* fieldNode = zRdrGetNode(specNode, "EFFECT");
+        zReader::Node* fieldNode = zRdrFindTag(specNode, "EFFECT");
         if (fieldNode != 0) {
             if (fieldNode->value.nodes[0].value.i32 > 1) {
                 spec->effectTemplateIndex = zEffect::FindTemplateIndexByName(fieldNode->value.nodes[1].value.str);
             }
         } else {
-            fieldNode = zRdrGetNode(specNode, "MODEL");
+            fieldNode = zRdrFindTag(specNode, "MODEL");
             if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
                 spec->modelNode = CZClass::FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
             }
         }
 
-        fieldNode = zRdrGetNode(specNode, "ANIMATION_ATTACHED");
+        fieldNode = zRdrFindTag(specNode, "ANIMATION_ATTACHED");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->attachedAnimationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
         }
 
-        fieldNode = zRdrGetNode(specNode, "MODEL_ANIMATION");
+        fieldNode = zRdrFindTag(specNode, "MODEL_ANIMATION");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->modelAnimationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
         }
 
-        fieldNode = zRdrGetNode(specNode, "ANIMATION");
+        fieldNode = zRdrFindTag(specNode, "ANIMATION");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
             spec->animationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
         }
 
-        fieldNode = zRdrGetNode(specNode, "RANDOM_ROTATE");
+        fieldNode = zRdrFindTag(specNode, "RANDOM_ROTATE");
         if (fieldNode != 0) {
             spec->flags = (((unsigned int)(fieldNode->value.nodes[1].value.i32) ^ spec->flags) & 1) ^ spec->flags;
         }
 
-        fieldNode = zRdrGetNode(specNode, g_HudZrd_Key_Sound);
+        fieldNode = zRdrFindTag(specNode, g_HudZrd_Key_Sound);
         if (fieldNode != 0) {
             spec->soundCount = fieldNode->value.nodes[0].value.i32 - 1;
             for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
@@ -1169,7 +1169,7 @@ namespace OptCatalog
             }
         }
 
-        fieldNode = zRdrGetNode(specNode, g_zEffectAnim_TokenBounceSound);
+        fieldNode = zRdrFindTag(specNode, g_zEffectAnim_TokenBounceSound);
         if (fieldNode != 0) {
             spec->bounceSoundCount = fieldNode->value.nodes[0].value.i32 - 1;
             for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {

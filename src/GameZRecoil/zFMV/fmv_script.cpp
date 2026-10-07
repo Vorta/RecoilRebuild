@@ -305,10 +305,10 @@ int zFMV_Script::LoadActionsFromZrd(const char* zrdPath, const char* tagPrefix)
         return -1;
     }
 
-    m_fmvPath = _strdup(zReader::GetString(root, g_zFMV_PathKey));
-    zImageInitMissionResources(zReader::GetString(root, zHudCfgKey_IMAGE_PATH));
+    m_fmvPath = _strdup(zReader::FindString(root, g_zFMV_PathKey));
+    zImageInitMissionResources(zReader::FindString(root, zHudCfgKey_IMAGE_PATH));
 
-    zReader::Node* sequenceNode = zRdrGetNode(root, tagPrefix);
+    zReader::Node* sequenceNode = zRdrFindTag(root, tagPrefix);
     if (sequenceNode == 0) {
         return 0;
     }

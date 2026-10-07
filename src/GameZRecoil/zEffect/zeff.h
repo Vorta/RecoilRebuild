@@ -925,8 +925,8 @@ void __fastcall
 LoadRunningAnimRecords(void* unused, const char* sectionToken, void* data, int dataSize, void* extraCtx);
 int __fastcall SaveAnimRecords(zZbdSectionCallbackCtx* callbackCtx);
 void __fastcall LoadAnimRecords(void* unused, const char* sectionToken, void* data, int dataSize, void* extraCtx);
-void __fastcall ResetFromActivationRecord(zEffectAnimActivationRecord* record);
-zEffectAnimEntry* __fastcall ProcessActivationRecord(zEffectAnimActivationRecord* record);
+void __fastcall zEffResetActivationRecord(zEffectAnimActivationRecord* record);
+zEffectAnimEntry* __fastcall zEffProcessActivationRecord(zEffectAnimActivationRecord* record);
 int __fastcall CaptureNodeStates(zEffectAnimEntry* self);
 int __fastcall RestoreNodeStates(zEffectAnimEntry* self);
 int __fastcall AdvanceKeyframeSample(
@@ -954,7 +954,7 @@ int __fastcall RunKeyframes(
 );
 int __fastcall RunSequenceEvents(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime);
 void __fastcall RunSequence(CZNodePartial* node);
-int __fastcall NodeActionCallback(zEffectAnimEntry* self, CZNodePartial* rootNode);
+int __fastcall zEffAnimReset(zEffectAnimEntry* self, CZNodePartial* rootNode);
 int __fastcall GetActivationRecordPackedSize(zEffectAnimActivationRecord* record);
 void __cdecl DiscardLastActivationRecord();
 void __fastcall SetZbdFilename(const char* filename);
@@ -1085,7 +1085,7 @@ int __fastcall ShutdownEntry(zEffectAnimEntry* self);
 } // namespace zEffectAnim
 
 namespace zEffect {
-int __fastcall Init();
+int __fastcall zEffInit();
 int __fastcall InitFromPath(CZNodePartial* worldNode, CZNodePartial* cameraNode, const char* path);
 void __fastcall SetWorldNode(CZNodePartial* worldNode);
 void __fastcall SetResourceNode(CZNodePartial* resourceNode);

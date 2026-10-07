@@ -755,7 +755,7 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
         return 0;
     }
 
-    zReader::Node* const pickupDataNode = zRdrGetNode(rootNode, "PICKUP_DATA");
+    zReader::Node* const pickupDataNode = zRdrFindTag(rootNode, "PICKUP_DATA");
     if (pickupDataNode != 0) {
         for (int fieldIndex = 1; fieldIndex < pickupDataNode->value.nodes[0].value.i32; fieldIndex += 2) {
             int pickupTypeIndex;
@@ -765,10 +765,10 @@ int __fastcall Pickup::Init(CZNodePartial* sceneNode, const char* pickupsCfgPath
             }
 
             zReader::Node* const entryNode
-                = zRdrGetNode(pickupDataNode, pickupDataNode->value.nodes[fieldIndex].value.str);
+                = zRdrFindTag(pickupDataNode, pickupDataNode->value.nodes[fieldIndex].value.str);
             PickupType& pickupType = g_PickupTypes[pickupTypeIndex];
-            zReader::Node* const soundNode = zRdrGetNode(entryNode, g_HudZrd_Key_Sound);
-            zReader::Node* const imageNode = zRdrGetNode(entryNode, "IMAGE");
+            zReader::Node* const soundNode = zRdrFindTag(entryNode, g_HudZrd_Key_Sound);
+            zReader::Node* const imageNode = zRdrFindTag(entryNode, "IMAGE");
             if (soundNode != 0) {
                 pickupType.pickupSound = zSnd::FindSampleByName(soundNode->value.nodes[1].value.str);
                 if (pickupType.pickupSound == 0) {

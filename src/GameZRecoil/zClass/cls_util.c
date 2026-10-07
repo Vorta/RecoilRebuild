@@ -744,16 +744,21 @@ namespace CZUtil
         if ((result = CZCamera::gwCameraSetWindow(camera, data->windowNode)) != 0) {
             return 0;
         }
-        if ((result = CZCamera::gwCameraSetTarget(
+        if ((result = CZCamera::gwCameraSetPosition(
                  camera,
-                 data->targetOrEuler.x,
-                 data->targetOrEuler.y,
-                 data->targetOrEuler.z
+                 data->localPosition.x,
+                 data->localPosition.y,
+                 data->localPosition.z
              ))
             != 0) {
             return 0;
         }
-        if ((result = CZCamera::gwCameraSetPosition(camera, data->posOffset.x, data->posOffset.y, data->posOffset.z))
+        if ((result = CZCamera::gwCameraSetEulerAngles(
+                 camera,
+                 data->localRotation.x,
+                 data->localRotation.y,
+                 data->localRotation.z
+             ))
             != 0) {
             return 0;
         }

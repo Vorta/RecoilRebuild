@@ -61,8 +61,8 @@ void __fastcall zMathBuildPerspectiveTextureInterpolants(
 );
 void __fastcall zMathUnprojectPointBatch(const zProjectedPoint* projectedPoints, zVec3* outPoints, int count);
 void __fastcall zMathUnprojectPointBatchZBuf(const zProjectedPoint* projectedPoints, zVec3* outPoints, int count);
-void __fastcall zMathMatTransformNormalBatch(const zVec3* normals, zVec3* outNormals, int count);
-void __fastcall zMathVec3ArrayUntransformDirection(zVec3* vectors, int count);
+void __fastcall zMathMatTransformDirectionBatch(const zVec3* normals, zVec3* outNormals, int count);
+void __fastcall zMathVec3ArrayTransformDirection(zVec3* vectors, int count);
 void __stdcall zMathSetScreenSize(int screenWidthPx, int screenHeightPx);
 void __stdcall zMathSetupProjection(
     float viewportOriginX,
@@ -85,11 +85,11 @@ void __fastcall zMathMatExtractEulerAngles(const zMat4x3* matrix, zVec3* outEule
 void __fastcall zMathVec3RotateX(zVec3* outVec, const zVec3* inVec, float angleX);
 void __fastcall zMathVec3DirFromYaw(zVec3* outDir, float yawAngle);
 void __fastcall zMathCameraStageInverseRotation(const zMat4x3* worldMatrix);
-void __fastcall zMathQuatFromEuler(zQuat* outQuat, float angle0, float angle1, float angle2);
+void __fastcall zMathQuatFromEulerYXZ(zQuat* outQuat, float angle0, float angle1, float angle2);
 void __fastcall zMathQuatMultiply(const zQuat* quatA, const zQuat* quatB, zQuat* outAB);
-void __fastcall zMathQuatMultiplyInverse(const zQuat* quatA, const zQuat* quatB, zQuat* outAConjB);
+void __fastcall zMathQuatMultiplyConjugate(const zQuat* quatA, const zQuat* quatB, zQuat* outAConjB);
 void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3);
-void __fastcall zMathQuatFromRotationVector(const zVec3* rotationVector, zQuat* outQuat);
+void __fastcall zMathQuatExp(const zVec3* rotationVector, zQuat* outQuat);
 zVec2 __cdecl zMathProjectGetLastScreenScaleXY();
 
 namespace zMath {
@@ -110,11 +110,11 @@ void __cdecl MatLoadIdentity();
 inline float __fastcall Vec3Normalize(zVec3* vec);
 void __fastcall Vec3NormalizeXZ(zVec3* vec, zVec3* out);
 void __fastcall Vec3Perp2D(const zVec3* in, zVec3* out);
-void __fastcall Vec3PerpXZ(const zVec3* in, zVec3* out);
+void __fastcall Vec3ToRightXZ(const zVec3* in, zVec3* out);
 void __fastcall Vec3ScaleAdd(const zVec3* vec, const zVec3* delta, float scale, zVec3* out);
 void __fastcall Vec3Reflect(zVec3* normal, zVec3* incident, zVec3* reflected);
-void __fastcall Vec3Lerp(zVec3* inOut, const zVec3* other, float t);
-void __fastcall Vec3LerpNormalize(zVec3* inOut, const zVec3* other, float t);
+void __fastcall Vec3BlendByFirstWeight(zVec3* inOut, const zVec3* other, float t);
+void __fastcall Vec3BlendByFirstWeightNormalize(zVec3* inOut, const zVec3* other, float t);
 float __fastcall Vec3DirectionTo(const zVec3* from, const zVec3* to, zVec3* outDir);
 void __fastcall Vec3Slerp(const zVec3* a, const zVec3* b, float t, zVec3* out);
 int __fastcall LineVsSphereHit(
@@ -154,7 +154,7 @@ extern "C" void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec
 #else
 extern "C" void __fastcall Vec3RotateY(zVec3* outVec, const zVec3* inVec, float yawAngle);
 #endif
-void __fastcall Vec3ArrayTransformDirection(zVec3* vectors, int count);
+void __fastcall Vec3ArrayTransformDirectionTranspose(zVec3* vectors, int count);
 void __fastcall MatTransformPointBatchInPlace(zVec3* points, int count);
 void __fastcall ProjectPointBatch(const zVec3* viewPoints, zProjectedPoint* projectedPoints, int count);
 int __fastcall ClipLineSegmentToZRange(zVec3* pointA, zVec3* pointB);

@@ -477,7 +477,7 @@ void HudUiSaveGameDialog::ProcessDialogResult()
         }
     }
 
-    while (zUtil::ZBDLoadEntriesGlobal(saveGamePath) == 0) {
+    while (zUtil::zZarWriteFileGlobal(saveGamePath) == 0) {
         DeleteSaveFile(0);
 
         strcpy(titleText, zLoc::GetMessageString(136));

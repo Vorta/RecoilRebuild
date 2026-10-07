@@ -346,7 +346,7 @@ void __fastcall
 ShowPlayerKillMessage(GameNetPlayerRow* victimRow, OptCatalogEntryDef* killEntry, GameNetPlayerRow* killerRow);
 int __cdecl ReassignPlayerColorsAndRefreshRows(int senderPlayerId, zNetworkPacketHeader* packet);
 int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketHeader* packet);
-void __fastcall RefreshPlayerListMenu(GameNetPlayerRow* playerRow);
+void __fastcall AddPlayerRowToScoreboard(GameNetPlayerRow* playerRow);
 int __fastcall HandlePkt0CHudTimerStatusBits(int senderPlayerId, NetPkt0C_HudTimerStatusBits* packet);
 int __fastcall HandlePkt0BChatMessage(int senderPlayerId, NetPkt0B_ChatMessage* packet);
 void __fastcall SendPkt0BChatMessage(const char* message);

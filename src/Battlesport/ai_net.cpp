@@ -1508,7 +1508,7 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
     int directionMode
 )
 {
-    using CZCamera::gwCameraGetTarget;
+    using CZCamera::gwCameraGetPosition;
     using CZClass::gwNodeSetRaycastable;
     using CZDisplayInstance::RaycastFindClosest;
     using CZDisplayInstance::SetBreakOnFirstCandidate;
@@ -1529,7 +1529,7 @@ __declspec(naked) int __fastcall AINet::HasLineOfSightFromCameraTarget(
         mov     ecx, dword ptr [g_MainCamera]
         push    edx
         lea     edx, [esp]AiNetLosCamFrame2.frame.locals.cameraTarget.x
-        call    gwCameraGetTarget
+        call    gwCameraGetPosition
         mov     eax, dword ptr [edi]zUtil_PlayerStateStorage.variantTag
         xor     edx, edx
         mov     ecx, ebx
@@ -1618,7 +1618,7 @@ int __fastcall AINet::HasLineOfSightFromCameraTarget(CZNodePartial* node, const 
     zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
 
     zVec3 cameraTarget;
-    CZCamera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetPosition(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     g_Variant_CurrentTag = playerState->variantTag;
     CZClass::gwNodeSetRaycastable(node, 0);
@@ -2450,7 +2450,7 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
         return 0;
     }
 
-    zReader::Node* versionNode = zRdrGetNode(root, "version");
+    zReader::Node* versionNode = zRdrFindTag(root, "version");
     if (versionNode != 0 && versionNode->value.nodes[1].value.i32 != 105) {
         zError::ReportOld(0x200, "D:\\Proj\\Battlesport\\ai_net.cpp", 0x8c, "Wrong ai_paths.zrd version number!");
         return 0;
@@ -2459,7 +2459,7 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
     AINet* const aiNet = AINet::Alloc();
     aiNet->netId = netId;
 
-    zReader::Node* nameNode = zRdrGetNode(root, "name");
+    zReader::Node* nameNode = zRdrFindTag(root, "name");
     if (nameNode != 0) {
         strcpy(aiNet->name, nameNode->value.nodes[1].value.str);
     } else {
@@ -2467,7 +2467,7 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
     }
 
     char token[0x18];
-    zReader::Node* typeNode = zRdrGetNode(root, "type");
+    zReader::Node* typeNode = zRdrFindTag(root, "type");
     if (typeNode != 0) {
         strcpy(token, typeNode->value.nodes[1].value.str);
         _strupr(token);
@@ -2485,48 +2485,48 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
         aiNet->aiType = AINET_TYPE_ST;
     }
 
-    zReader::Node* pathWidthNode = zRdrGetNode(root, "path_width");
+    zReader::Node* pathWidthNode = zRdrFindTag(root, "path_width");
     if (pathWidthNode != 0) {
         aiNet->pathWidth = pathWidthNode->value.nodes[1].value.f32;
     } else {
         aiNet->pathWidth = 10.0f;
     }
 
-    zReader::Node* activateRadiusNode = zRdrGetNode(root, "activate_rad");
+    zReader::Node* activateRadiusNode = zRdrFindTag(root, "activate_rad");
     if (activateRadiusNode != 0) {
         aiNet->activateRadius = activateRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node* attackRadiusNode = zRdrGetNode(root, "attack_rad");
+    zReader::Node* attackRadiusNode = zRdrFindTag(root, "attack_rad");
     if (attackRadiusNode != 0) {
         aiNet->attackRadius = attackRadiusNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node* attackDwellNode = zRdrGetNode(root, "attack_dwell");
+    zReader::Node* attackDwellNode = zRdrFindTag(root, "attack_dwell");
     if (attackDwellNode != 0) {
         aiNet->attackDwell = attackDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node* pursuitNode = zRdrGetNode(root, "pursuit_params");
+    zReader::Node* pursuitNode = zRdrFindTag(root, "pursuit_params");
     if (pursuitNode == 0) {
-        pursuitNode = zRdrGetNode(root, "pursuit_range");
+        pursuitNode = zRdrFindTag(root, "pursuit_range");
     }
     if (pursuitNode != 0) {
         aiNet->pursuitParam0 = pursuitNode->value.nodes[1].value.f32;
         aiNet->pursuitParam1 = pursuitNode->value.nodes[2].value.f32;
     }
 
-    zReader::Node* notPursuitDwellNode = zRdrGetNode(root, "not_pursuit_dwell");
+    zReader::Node* notPursuitDwellNode = zRdrFindTag(root, "not_pursuit_dwell");
     if (notPursuitDwellNode != 0) {
         aiNet->notPursuitDwell = notPursuitDwellNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node* returnRangeNode = zRdrGetNode(root, "return_range");
+    zReader::Node* returnRangeNode = zRdrFindTag(root, "return_range");
     if (returnRangeNode != 0) {
         aiNet->returnRange = returnRangeNode->value.nodes[1].value.f32;
     }
 
-    zReader::Node* hideTimesNode = zRdrGetNode(root, "hide_times");
+    zReader::Node* hideTimesNode = zRdrFindTag(root, "hide_times");
     if (hideTimesNode != 0) {
         aiNet->hideTime0 = hideTimesNode->value.nodes[1].value.f32;
         aiNet->hideTime1 = hideTimesNode->value.nodes[2].value.f32;
@@ -2535,21 +2535,21 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
         aiNet->hideTime1 = 4.0f;
     }
 
-    zReader::Node* attackBuddyNode = zRdrGetNode(root, "attack_buddy");
+    zReader::Node* attackBuddyNode = zRdrFindTag(root, "attack_buddy");
     if (attackBuddyNode != 0) {
         aiNet->attackBuddyNetId = attackBuddyNode->value.nodes[1].value.i32;
     } else {
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node* activateBuddyNode = zRdrGetNode(root, "activate_buddy");
+    zReader::Node* activateBuddyNode = zRdrFindTag(root, "activate_buddy");
     if (activateBuddyNode != 0) {
         aiNet->activateBuddyNetId = activateBuddyNode->value.nodes[1].value.i32;
     } else {
         aiNet->attackBuddyNetId = 0;
     }
 
-    zReader::Node* attackStrategyNode = zRdrGetNode(root, "attack_strategy");
+    zReader::Node* attackStrategyNode = zRdrFindTag(root, "attack_strategy");
     if (attackStrategyNode != 0) {
         strcpy(token, attackStrategyNode->value.nodes[1].value.str);
         _strupr(token);
@@ -2574,7 +2574,7 @@ AINet* __fastcall AINet::LoadFromZrd(int netId)
     for (int nodeIndex = 0; nodeIndex < 99; ++nodeIndex) {
         sprintf(nodeName, "node_%02d", nodeIndex);
 
-        zReader::Node* node = zRdrGetNode(root, nodeName);
+        zReader::Node* node = zRdrFindTag(root, nodeName);
         if (node == 0) {
             continue;
         }
@@ -2721,7 +2721,7 @@ void AINetPathProbeFan::InitFromSegment(zVec3 fromPosition, zVec3 toPosition, fl
 
     zMath::Vec3NormalizeXZ(&delta, &delta);
     zVec3* const perpendicularPtr = &perpendicular;
-    zMath::Vec3PerpXZ(&delta, perpendicularPtr);
+    zMath::Vec3ToRightXZ(&delta, perpendicularPtr);
     zMath::Vec3RotateY(45.0f, &probeDirPlus45, perpendicularPtr);
     zMath::Vec3RotateY(-45.0f, &probeDirMinus45, perpendicularPtr);
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100

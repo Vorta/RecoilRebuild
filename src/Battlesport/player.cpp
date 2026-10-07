@@ -1418,7 +1418,7 @@ struct HitOwnerOrContextPartial {
  */
 #define PlayerLoadSoundSample(parentNode, name, outSample)                                                             \
     do {                                                                                                               \
-        zReader::Node* const playerSoundNode = zRdrGetNode((parentNode), (name));                                      \
+        zReader::Node* const playerSoundNode = zRdrFindTag((parentNode), (name));                                      \
         if (playerSoundNode != 0) {                                                                                    \
             *(outSample) = zSnd::FindSampleByName(PlayerZrdArrayString(playerSoundNode, 1));                           \
         }                                                                                                              \
@@ -1458,7 +1458,7 @@ struct HitOwnerOrContextPartial {
  */
 #define PlayerLoadModalFxList(modalNode, name, entries)                                                                \
     do {                                                                                                               \
-        zReader::Node* const playerFxListNode = zRdrGetNode((modalNode), (name));                                      \
+        zReader::Node* const playerFxListNode = zRdrFindTag((modalNode), (name));                                      \
         if (playerFxListNode != 0) {                                                                                   \
             int playerFxCount = PlayerZrdArrayCount(playerFxListNode);                                                 \
             if (playerFxCount >= 2) {                                                                                  \
@@ -1480,7 +1480,7 @@ struct HitOwnerOrContextPartial {
  */
 #define PlayerLoadModalWaveParams(modalData, modalNode, name)                                                          \
     do {                                                                                                               \
-        zReader::Node* const playerWaveNode = zRdrGetNode((modalNode), (name));                                        \
+        zReader::Node* const playerWaveNode = zRdrFindTag((modalNode), (name));                                        \
         if (playerWaveNode != 0) {                                                                                     \
             (modalData)->hoverPitchWaveBaseRate = PlayerZrdArrayFloat(playerWaveNode, 1);                              \
             (modalData)->hoverPitchWaveSpeedRate = PlayerZrdArrayFloat(playerWaveNode, 2);                             \
@@ -2022,13 +2022,13 @@ void __fastcall BuildMissionSaveData(PlayerMissionSaveData* outData)
     outData->bankInput = playerState->bankInput;
     outData->playerMasterType = masterModalData->masterType;
 
-    CZCamera::gwCameraGetTarget(
+    CZCamera::gwCameraGetPosition(
         g_MainCamera,
         &outData->cameraTarget.x,
         &outData->cameraTarget.y,
         &outData->cameraTarget.z
     );
-    CZCamera::gwCameraGetPosition(
+    CZCamera::gwCameraGetEulerAngles(
         g_MainCamera,
         &outData->cameraPosition.x,
         &outData->cameraPosition.y,
@@ -2161,13 +2161,13 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
     ApplyMasterTypeTransition(g_LocalPlayerSaveState, saveData->playerMasterType, 1);
     playerState->primaryGunGateUntilTime = 0.0f;
 
-    CZCamera::gwCameraSetTarget(
+    CZCamera::gwCameraSetPosition(
         g_MainCamera,
         saveData->cameraTarget.x,
         saveData->cameraTarget.y,
         saveData->cameraTarget.z
     );
-    CZCamera::gwCameraSetPosition(
+    CZCamera::gwCameraSetEulerAngles(
         g_MainCamera,
         saveData->cameraPosition.x,
         saveData->cameraPosition.y,
@@ -2267,7 +2267,7 @@ void __fastcall zZarReadMissionSaveDataSection(
     g_Player_LastValidCameraVariantTag = saveData->lastValidCameraVariantTag;
 
     if (playerState->lifecycleState == kPlayerLifecycleInactive) {
-        zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry, playerState->rootNode);
+        zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnFxEntry, playerState->rootNode);
     }
 
     RefreshHudFromState((zUtil_SaveGameState*)(g_GameStateOrMapTable));
@@ -2423,9 +2423,9 @@ void __fastcall zZarReadVehicleListSection(
         }
 
         if (playerState->destroyedRespawnAsyncHandle != 0) {
-            zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnAsyncHandle, 0);
+            zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnAsyncHandle, 0);
         } else {
-            zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry, playerState->rootNode);
+            zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnFxEntry, playerState->rootNode);
         }
     }
 
@@ -2697,8 +2697,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     float fovX;
     float fovY;
     CZCamera::gwCameraGetFOV(g_MainCamera, &fovX, &fovY);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, 0.0f, 0.0f, 0.0f);
     CZCamera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
-    CZCamera::gwCameraSetTarget(g_MainCamera, 0.0f, 0.0f, 0.0f);
     if (g_Player_HorizonNode != 0) {
         g_Player_HorizonNodeFollowCameraEnabled = 1;
         CZObject3D::gwObject3DSetPosition(g_Player_HorizonNode, 0.0f, 0.0f, 0.0f);
@@ -2723,7 +2723,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     zReader::Node* playerRoot = zReader::Load(g_Player_ConfigArchiveName, 0, 0);
     {
         zReader::Node* const root = playerRoot;
-        zReader::Node* node = zRdrGetNode(root, g_Player_ConfigKey_CameraZone);
+        zReader::Node* node = zRdrFindTag(root, g_Player_ConfigKey_CameraZone);
         if (node != 0) {
             const float cameraZone = PlayerZrdArrayFloat(node, 1);
             if (cameraZone > 0.0f && cameraZone < 1.0f) {
@@ -2732,10 +2732,10 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             }
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MaxCamYawRate);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MaxCamYawRate);
         g_Player_MaxCamYawRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 2.0f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MousePush);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MousePush);
         if (node != 0) {
             g_Player_MousePushX = PlayerZrdArrayFloat(node, 1);
             g_Player_MousePushY = PlayerZrdArrayFloat(node, 2);
@@ -2744,10 +2744,10 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             g_Player_MousePushY = 0.00999999978f;
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_FirstPersonCamElevationRate);
+        node = zRdrFindTag(root, g_Player_ConfigKey_FirstPersonCamElevationRate);
         g_Player_FpCamElevationRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 5.0f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_FirstPersonCamElevationLimit);
+        node = zRdrFindTag(root, g_Player_ConfigKey_FirstPersonCamElevationLimit);
         if (node != 0) {
             g_Player_FpCamElevationMin = PlayerZrdArrayFloat(node, 1);
             g_Player_FpCamElevationMax = PlayerZrdArrayFloat(node, 2);
@@ -2756,7 +2756,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             g_Player_FpCamElevationMax = 1.0f;
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_UnderwaterCam);
+        node = zRdrFindTag(root, g_Player_ConfigKey_UnderwaterCam);
         if (node != 0) {
             int rBits;
             int gBits;
@@ -2778,50 +2778,50 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             g_Player_UnderwaterCamAlpha = 0.5f;
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_CameraElastic);
+        node = zRdrFindTag(root, g_Player_ConfigKey_CameraElastic);
         if (node != 0) {
             g_Player_CameraElastic = PlayerZrdArrayFloat(node, 1);
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MaxCamTetherAngle);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MaxCamTetherAngle);
         if (node != 0) {
             g_Player_MaxCamTetherAngleRad = PlayerZrdArrayFloat(node, 1) * 0.01745329251994;
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_NormalGravity);
+        node = zRdrFindTag(root, g_Player_ConfigKey_NormalGravity);
         g_Player_NominalGravity = node != 0 ? PlayerZrdArrayFloat(node, 1) : 28.0f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_WaterGravity);
+        node = zRdrFindTag(root, g_Player_ConfigKey_WaterGravity);
         g_Player_WaterGravity = node != 0 ? PlayerZrdArrayFloat(node, 1) : g_Player_NominalGravity * 0.333333343f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_QuicksandGravity);
+        node = zRdrFindTag(root, g_Player_ConfigKey_QuicksandGravity);
         g_Player_QuicksandGravity = node != 0 ? PlayerZrdArrayFloat(node, 1) : g_Player_NominalGravity * 0.166666672f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_QuicksandSink);
+        node = zRdrFindTag(root, g_Player_ConfigKey_QuicksandSink);
         g_Player_QuicksandSinkRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.899999976f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_LavaSink);
+        node = zRdrFindTag(root, g_Player_ConfigKey_LavaSink);
         g_Player_LavaSinkRate = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.600000024f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MaxSlope);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MaxSlope);
         g_Player_MaxSlope = node != 0 ? PlayerZrdArrayFloat(node, 1) : 0.707000017f;
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MakeHot);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MakeHot);
         if (node != 0) {
             g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(node, 1));
         }
 
-        node = zRdrGetNode(root, g_Player_ConfigKey_MakeCold);
+        node = zRdrFindTag(root, g_Player_ConfigKey_MakeCold);
         if (node != 0) {
             g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(node, 1));
         }
 
-        node = zRdrGetNode(root, g_Player_BurningAnimName);
+        node = zRdrFindTag(root, g_Player_BurningAnimName);
         if (node != 0) {
             g_PlayerRecentHitFxAnimEntry = zEffectAnim::FindEntryByName(PlayerZrdArrayString(node, 1));
         }
 
-        node = zRdrGetNode(root, g_Player_LowShieldSndName);
+        node = zRdrFindTag(root, g_Player_LowShieldSndName);
         if (node != 0) {
             g_Hud_LowMeterBeepSample = zSnd::FindSampleByName(PlayerZrdArrayString(node, 1));
             g_Hud_LowMeterBeepInterval = PlayerZrdArrayFloat(node, 2);
@@ -2862,7 +2862,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             commonData->next = 0;
             ++g_PlayerMasterCommonDataList.count;
         }
-        zReader::Node* const vehicleNode = zRdrGetNode(vehicleRoot, vehicleName);
+        zReader::Node* const vehicleNode = zRdrFindTag(vehicleRoot, vehicleName);
         LoadMasterCommonDataFromNode(commonData, vehicleNode, vehicleName);
 
         for (int modalIndex = 0; modalIndex < commonData->modalCount; ++modalIndex) {
@@ -2909,7 +2909,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     CZClass::gwNodeSetPriority(stealthPlayerState->rootNode, 1);
     CZClass::gwNodeSetRaycastable(stealthPlayerState->rootNode, 0);
     CZClass::gwNodeSetCellPickable(stealthPlayerState->rootNode, 0);
-    zRdrGetNode(zRdrGetNode(vehicleRoot, g_Player_ConfigNode_Stealth), g_Player_ConfigNode_CommonMode);
+    zRdrFindTag(zRdrFindTag(vehicleRoot, g_Player_ConfigNode_Stealth), g_Player_ConfigNode_CommonMode);
     InitStateFromNameAndMasterCommonData(stealthSaveState, g_Player_ConfigNode_Stealth, g_Player_ConfigNode_Stealth);
     BindModalStateFromMasterModalData(
         stealthSaveState,
@@ -2940,8 +2940,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
         strcpy(aivName, PlayerZrdArrayString(aivList, aivIndex * 2 + 1));
         ExtractVehicleNameFromAivName(aivName, vehicleName);
 
-        if (zRdrGetNode(vehicleRoot, vehicleName) != 0) {
-            zReader::Node* const aivNode = zRdrGetNode(aivRoot, aivName);
+        if (zRdrFindTag(vehicleRoot, vehicleName) != 0) {
+            zReader::Node* const aivNode = zRdrFindTag(aivRoot, aivName);
             if (aivNode != 0) {
                 zReader::Node* const spawnNode = PlayerZrdArrayNode(aivNode, 2);
                 zVec3 spawnPos;
@@ -3871,8 +3871,8 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
 
     commonData->modalCount = ((PlayerZrdArrayCount(vehicleNode) - 1) / 2) - 1;
 
-    zReader::Node* const commonModeNode = zRdrGetNode(vehicleNode, g_Player_ConfigNode_CommonMode);
-    zReader::Node* node = zRdrGetNode(commonModeNode, g_Player_NodeName_Nanite);
+    zReader::Node* const commonModeNode = zRdrFindTag(vehicleNode, g_Player_ConfigNode_CommonMode);
+    zReader::Node* node = zRdrFindTag(commonModeNode, g_Player_NodeName_Nanite);
     if (node != 0) {
         commonData->naniteBuildRate = PlayerZrdArrayInt(node, 1);
         commonData->naniteMaxLevel = PlayerZrdArrayInt(node, 2);
@@ -3881,14 +3881,14 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->naniteMaxLevel = 0;
     }
 
-    zReader::Node* const soundsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Sounds);
+    zReader::Node* const soundsNode = zRdrFindTag(commonModeNode, g_Player_NodeName_Sounds);
     if (soundsNode != 0) {
         PlayerLoadSoundSample(soundsNode, g_Player_NodeName_WeaponUp, &commonData->sfxWeaponUp[0]);
         PlayerLoadSoundSample(soundsNode, g_Player_NodeName_WeaponSelect, &commonData->sfxWeaponUp[2]);
         PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Pinging, &commonData->sfxWeaponUp[3]);
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_Activation);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_Activation);
     if (node != 0) {
         const float activationRange = PlayerZrdArrayFloat(node, 1);
         commonData->activationRangeSq = activationRange * activationRange;
@@ -3896,14 +3896,14 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->activationRangeSq = 100.0f * 100.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, "not_pursuit_dwell");
+    node = zRdrFindTag(commonModeNode, "not_pursuit_dwell");
     if (node != 0) {
         commonData->notPursuitDwellTime = PlayerZrdArrayFloat(node, 1);
     } else {
         commonData->notPursuitDwellTime = 3.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, "return_range");
+    node = zRdrFindTag(commonModeNode, "return_range");
     if (node != 0) {
         const float returnRange = PlayerZrdArrayFloat(node, 1);
         commonData->returnRangeSq = returnRange * returnRange;
@@ -3911,12 +3911,12 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->returnRangeSq = 250.0f * 250.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_StartAnims);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_StartAnims);
     if (node != 0) {
         PlayerCopyZrdArrayString(commonData->startAnimsName, node, 1);
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_CamBack);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_CamBack);
     if (node != 0) {
         commonData->cameraBackOffset.x = PlayerZrdArrayBase(node)[1].value.nodes[1].value.f32;
         commonData->cameraBackOffset.y = PlayerZrdArrayBase(node)[1].value.nodes[2].value.f32;
@@ -3939,7 +3939,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->camback2.z = 2.25f;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_AimY);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_AimY);
     if (node != 0) {
         commonData->aimYawRate = PlayerZrdArrayFloat(node, 1);
         commonData->aimYawMax = PlayerZrdArrayFloat(node, 2);
@@ -3948,7 +3948,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->aimYawMax = 2.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_CameraUdSwing);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_CameraUdSwing);
     if (node != 0) {
         commonData->cameraUdSwing[0] = PlayerZrdArrayFloat(node, 1);
         commonData->cameraUdSwing[1] = PlayerZrdArrayFloat(node, 2);
@@ -3961,7 +3961,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->cameraUdSwing[3] = 0.0f;
     }
 
-    node = zRdrGetNode(commonModeNode, g_Player_NodeName_TrackSwitch);
+    node = zRdrFindTag(commonModeNode, g_Player_NodeName_TrackSwitch);
     if (node != 0) {
         commonData->trackSwitchDist0 = PlayerZrdArrayFloat(node, 1);
         commonData->trackSwitchDist1 = PlayerZrdArrayFloat(node, 2);
@@ -3972,7 +3972,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->trackSwitchDist2 = 10000.0f;
     }
 
-    zReader::Node* const healthNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Health);
+    zReader::Node* const healthNode = zRdrFindTag(commonModeNode, g_Player_NodeName_Health);
     if (healthNode != 0) {
         if (zOpt::GetNetworkEnabled() != 0) {
             commonData->maxHealth = PlayerZrdArrayFloat(healthNode, 2);
@@ -3984,7 +3984,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
     }
     commonData->invMaxHealth = 1.0f / commonData->maxHealth;
 
-    zReader::Node* const pickupsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Pickups);
+    zReader::Node* const pickupsNode = zRdrFindTag(commonModeNode, g_Player_NodeName_Pickups);
     if (pickupsNode != 0) {
         PickupType::FindByLogicalName(PlayerZrdArrayString(pickupsNode, 1), &commonData->pickupType);
         commonData->pickupCapacity = PlayerZrdArrayInt(pickupsNode, 2);
@@ -3993,7 +3993,7 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         commonData->pickupCapacity = 0;
     }
 
-    zReader::Node* const weaponsNode = zRdrGetNode(commonModeNode, g_Player_NodeName_Weapons);
+    zReader::Node* const weaponsNode = zRdrFindTag(commonModeNode, g_Player_NodeName_Weapons);
     if (weaponsNode == 0) {
         return;
     }
@@ -4046,7 +4046,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
 {
     strcpy(modalData->modalName, modalName);
 
-    zReader::Node* node = zRdrGetNode(modalNode, g_Player_ConfigNode_Mode);
+    zReader::Node* node = zRdrFindTag(modalNode, g_Player_ConfigNode_Mode);
     if (node != 0) {
         PlayerCopyZrdArrayString(modalData->modeName, node, 1);
         if (strncmp(modalData->modeName, g_Player_ConfigNode_Basic, 2) == 0) {
@@ -4068,17 +4068,17 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     }
 
     PlayerLoadModalPointList(
-        zRdrGetNode(modalNode, g_Player_ConfigKey_Platform),
+        zRdrFindTag(modalNode, g_Player_ConfigKey_Platform),
         &modalData->probePoints[15],
         &modalData->platformPointCount
     );
     PlayerLoadModalPointList(
-        zRdrGetNode(modalNode, g_Player_ConfigKey_Collision),
+        zRdrFindTag(modalNode, g_Player_ConfigKey_Collision),
         modalData->probePoints,
         &modalData->probePointCount
     );
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Rates);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_Rates);
     if (node != 0) {
         modalData->accelRate = PlayerZrdArrayFloat(node, 1);
         modalData->maxSpeed = PlayerZrdArrayFloat(node, 2);
@@ -4087,7 +4087,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->maxSpeed = 30.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Friction);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_Friction);
     if (node != 0) {
         modalData->frictionStatic = PlayerZrdArrayFloat(node, 1);
         modalData->frictionDynamic = PlayerZrdArrayFloat(node, 2);
@@ -4098,7 +4098,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->frictionSlide = 0.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Stopping);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_Stopping);
     if (node != 0) {
         modalData->stoppingForce = PlayerZrdArrayFloat(node, 1);
     } else {
@@ -4109,21 +4109,21 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->frictionDynamic = modalData->frictionStatic * 0.899999976f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_QuicksandSlowdown);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_QuicksandSlowdown);
     if (node != 0) {
         modalData->quicksandSlowdown = PlayerZrdArrayFloat(node, 1);
     } else {
         modalData->quicksandSlowdown = 0.899999976f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_LavaSlowdown);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_LavaSlowdown);
     if (node != 0) {
         modalData->lavaSlowdown = PlayerZrdArrayFloat(node, 1);
     } else {
         modalData->lavaSlowdown = 0.800000012f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Turns);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_Turns);
     if (node != 0) {
         modalData->yawAccel = PlayerZrdArrayFloat(node, 1);
         modalData->yawRateMax = PlayerZrdArrayFloat(node, 2);
@@ -4132,14 +4132,14 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->yawRateMax = 2.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_TurnDamping);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_TurnDamping);
     if (node != 0) {
         modalData->yawDamping = PlayerZrdArrayFloat(node, 1);
     } else {
         modalData->yawDamping = 30.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_RateDamping);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_RateDamping);
     if (node != 0) {
         modalData->rateDampingAccel = PlayerZrdArrayFloat(node, 1);
         modalData->rateDampingDecel = PlayerZrdArrayFloat(node, 2);
@@ -4148,14 +4148,14 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->rateDampingDecel = 30.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_AccelDamping);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_AccelDamping);
     if (node != 0) {
         modalData->aDamping = PlayerZrdArrayFloat(node, 1);
     } else {
         modalData->aDamping = 8.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_AltControl);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_AltControl);
     if (node != 0) {
         modalData->hoverLiftDampingRate = PlayerZrdArrayFloat(node, 1);
         modalData->hoverLiftScale = PlayerZrdArrayFloat(node, 2);
@@ -4166,7 +4166,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->hoverNormalLerpRate = -3.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_Mass);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_Mass);
     if (node != 0) {
         modalData->mass = PlayerZrdArrayFloat(node, 1);
     } else {
@@ -4174,7 +4174,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     }
     modalData->invMass = 1.0f / modalData->mass;
 
-    node = zRdrGetNode(modalNode, g_Player_ConfigKey_GunPitch);
+    node = zRdrFindTag(modalNode, g_Player_ConfigKey_GunPitch);
     if (node != 0) {
         modalData->gunPitchMin = PlayerZrdArrayFloat(node, 1);
         modalData->gunPitchRate = PlayerZrdArrayFloat(node, 2);
@@ -4187,21 +4187,21 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_HoverWave);
     PlayerLoadModalWaveParams(modalData, modalNode, g_Player_ConfigKey_SubWave);
 
-    node = zRdrGetNode(modalNode, g_Player_NodeName_ModeAlt);
+    node = zRdrFindTag(modalNode, g_Player_NodeName_ModeAlt);
     if (node != 0) {
         modalData->modeAltTransitionTime = PlayerZrdArrayFloat(node, 1);
     } else {
         modalData->modeAltTransitionTime = 2.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisSmooth);
+    node = zRdrFindTag(modalNode, g_Player_NodeName_ChassisSmooth);
     if (node != 0) {
         modalData->chassisSmoothFactor = (float)(fabs(PlayerZrdArrayFloat(node, 1)));
     } else {
         modalData->chassisSmoothFactor = 0.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisPitch);
+    node = zRdrFindTag(modalNode, g_Player_NodeName_ChassisPitch);
     if (node != 0) {
         modalData->chassisPitchRate = PlayerZrdArrayFloat(node, 1);
         modalData->chassisPitchMax = PlayerZrdArrayFloat(node, 2);
@@ -4212,7 +4212,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_NodeName_ChassisRoll);
+    node = zRdrFindTag(modalNode, g_Player_NodeName_ChassisRoll);
     if (node != 0) {
         modalData->chassisRollRate = PlayerZrdArrayFloat(node, 1);
         modalData->chassisRollMax = PlayerZrdArrayFloat(node, 2);
@@ -4224,7 +4224,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
         modalData->chassisPitchDamping = 0.0f;
     }
 
-    node = zRdrGetNode(modalNode, g_Player_NodeName_CollisionDamage);
+    node = zRdrFindTag(modalNode, g_Player_NodeName_CollisionDamage);
     if (node != 0) {
         modalData->collisionDampingA = PlayerZrdArrayFloat(node, 1);
         modalData->collisionDampingB = PlayerZrdArrayFloat(node, 2);
@@ -4242,7 +4242,7 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_A2SAnims, modalData->fxList_fromAmphibToSub);
     PlayerLoadModalFxList(modalNode, g_Player_NodeName_S2AAnims, modalData->fxList_fromSubToAmphib);
 
-    zReader::Node* const soundsNode = zRdrGetNode(modalNode, g_Player_NodeName_Sounds);
+    zReader::Node* const soundsNode = zRdrFindTag(modalNode, g_Player_NodeName_Sounds);
     if (soundsNode == 0) {
         return;
     }
@@ -4254,12 +4254,12 @@ LoadMasterModalDataFromNode(PlayerMasterModalData* modalData, zReader::Node* mod
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Collide, &modalData->sfxCollide);
     PlayerLoadSoundSample(soundsNode, g_Player_NodeName_Land, &modalData->sfxLand);
 
-    node = zRdrGetNode(soundsNode, g_Player_NodeName_PitchScale);
+    node = zRdrFindTag(soundsNode, g_Player_NodeName_PitchScale);
     if (node != 0) {
         modalData->sfxPitchScale = PlayerZrdArrayFloat(node, 1);
     }
 
-    node = zRdrGetNode(soundsNode, g_Player_NodeName_VolumeScale);
+    node = zRdrFindTag(soundsNode, g_Player_NodeName_VolumeScale);
     if (node != 0) {
         modalData->sfxVolumeScale = PlayerZrdArrayFloat(node, 1);
     }

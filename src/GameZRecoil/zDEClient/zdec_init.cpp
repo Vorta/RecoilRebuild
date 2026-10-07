@@ -278,7 +278,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
         );
     }
 
-    zReader::Node* const craterNode = zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_CraterNodeName);
+    zReader::Node* const craterNode = zRdrFindTag(g_zDEClient_ConfigReaderRoot, g_zDEClient_CraterNodeName);
     g_zDEClient_CraterEventTemplateDefaults.featureFlags = 0x100c;
     g_zDEClient_CraterEventTemplateDefaults.pointCount = 7;
     g_zDEClient_CraterEventTemplateDefaults.slope = 0.0f;
@@ -297,16 +297,16 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
     zDEClient_CraterDisplaySourceEntry* defaultDisplaySource = g_zDEClient_CraterDisplaySourceList;
     if (LoadMaterialFromTexturePath_Local(
             &defaultDisplaySource->craterMaterial,
-            (char*)(zReader::GetString(craterNode, g_zDEClient_DefaultTextureNodeName))
+            (char*)(zReader::FindString(craterNode, g_zDEClient_DefaultTextureNodeName))
         )
         != 0) {
         textureLoadPending = 1;
     }
 
     defaultDisplaySource->effectAnimEntry
-        = zEffectAnim::FindEntryByName(zReader::GetString(craterNode, g_zDEClient_DefaultAnimNodeName));
+        = zEffectAnim::FindEntryByName(zReader::FindString(craterNode, g_zDEClient_DefaultAnimNodeName));
 
-    zReader::Node* const textureAnimNode = zRdrGetNode(craterNode, g_zDEClient_TextureAnimNodeName);
+    zReader::Node* const textureAnimNode = zRdrFindTag(craterNode, g_zDEClient_TextureAnimNodeName);
     if (textureAnimNode != 0) {
         g_zDEClient_CraterDisplaySourceCount += (textureAnimNode->value.nodes[0].value.i32 - 1) / 2;
 
@@ -325,7 +325,7 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
                 textureLoadPending = 1;
             }
 
-            zReader::Node* const entryNode = zRdrGetNode(textureAnimNode, textureAnimNode->value.nodes[i].value.str);
+            zReader::Node* const entryNode = zRdrFindTag(textureAnimNode, textureAnimNode->value.nodes[i].value.str);
             if (entryNode != 0) {
                 if (LoadMaterialFromTexturePath_Local(
                         &displaySource->craterMaterial,
@@ -346,11 +346,11 @@ int __fastcall LoadConfigResources(CZNodePartial* worldNode, int /*reserved*/)
         }
     }
 
-    zReader::Node* const quickSandNode = zRdrGetNode(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
+    zReader::Node* const quickSandNode = zRdrFindTag(g_zDEClient_ConfigReaderRoot, g_zDEClient_QuickSandNodeName);
     if (quickSandNode != 0) {
         int i;
         int textureCount;
-        zReader::Node* const defaultTextureNode = zRdrGetNode(quickSandNode, g_zDEClient_DefaultTextureNodeName);
+        zReader::Node* const defaultTextureNode = zRdrFindTag(quickSandNode, g_zDEClient_DefaultTextureNodeName);
         if (defaultTextureNode != 0) {
             g_zDEClient_QuickSandAnimSpeed = defaultTextureNode->value.nodes[1].value.f32;
             textureCount = defaultTextureNode->value.nodes[0].value.i32 - 2;

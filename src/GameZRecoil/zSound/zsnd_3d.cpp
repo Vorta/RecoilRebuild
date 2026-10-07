@@ -148,7 +148,7 @@ int __fastcall zSndPlayHandle::Update3DA3D(zVec3* worldPos, zVec3* velocity, int
     if (zSnd::IsMuted() != 0) {
         ((zA3dProviderSource*)backendBuffer)->SetGain(0.0f);
     } else {
-        ((zA3dProviderSource*)backendBuffer)->SetGain(zSndSamplePlaySimple(*(float*)&gainScaled));
+        ((zA3dProviderSource*)backendBuffer)->SetGain(zSndGainScaleIdentity(*(float*)&gainScaled));
     }
 
     ((zA3dProviderSource*)backendBuffer)->SetDopplerScale(velocityScaleMode != 0 ? 1.0 : 0.0);

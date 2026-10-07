@@ -832,7 +832,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     playerState->localVel = playerState->projectileSpawnVel;
     ZMTH_VECTOR_ROTATE_ROWS_IN_PLACE(&playerState->motionBasis, &playerState->localVel);
 
-    zMath::Vec3LerpNormalize(
+    zMath::Vec3BlendByFirstWeightNormalize(
         &playerState->steerBasisRef,
         &probePlaneNormal,
         zMath::FastExp(masterModalData->hoverNormalLerpRate * g_FrameDeltaTimeSec)
@@ -1040,7 +1040,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match source
+ *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1100,7 +1100,7 @@ void __fastcall UpdateMasterTypeAmphibFromModalProbe(zUtil_SaveGameState* saveSt
     zVec3 amphibUpVector = g_Player_AmphibBasisUpRef;
     ApplyAmphibSpeedOscillation(saveState, &amphibUpVector, 1);
 
-    zMath::Vec3LerpNormalize(
+    zMath::Vec3BlendByFirstWeightNormalize(
         &playerState->steerBasisRef,
         &amphibUpVector,
         zMath::FastExp(-(g_FrameDeltaTimeSec * g_Player_AmphibSteerBasisLerpRate))
@@ -1917,7 +1917,7 @@ void __fastcall ApplyPitchRollVelocityImpulseFromDirection(
     zMat4x3 slotBuffer;
     zMath::MatStackPushPtr((float*)(&slotBuffer));
     zMath::MatLoadRotationFrom3x3((const zMat4x3*)(CZObject3D::gwObject3DGetMatrixPtr(playerState->rootNode)));
-    zMath::Vec3ArrayTransformDirection(&localDirection, 1);
+    zMath::Vec3ArrayTransformDirectionTranspose(&localDirection, 1);
     zMath::MatStackPopPtr();
 
     playerState->vehiclePitchRad -= localDirection.z * angleScale;
@@ -2014,7 +2014,7 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
             playerState->autoTurnCursorNormY = normalizedCursor.y;
             zInput::MouseSetNormalizedCursorPos(normalizedCursor.x, normalizedCursor.y);
 
-            zMath::Vec3Lerp(
+            zMath::Vec3BlendByFirstWeight(
                 &playerState->cameraLerpStart,
                 &playerState->cameraLerpEnd,
                 zMath::FastExp(g_FrameDeltaTimeSec * -2.0f)

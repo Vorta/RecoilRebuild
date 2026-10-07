@@ -143,7 +143,7 @@ void zTurret_Runtime::InitFromReaderNode(
         defaultDestroyAnim = namedDestroyAnim;
     }
 
-    zReader::Node* node = zRdrGetNode(readerNode, "PARTS");
+    zReader::Node* node = zRdrFindTag(readerNode, "PARTS");
     if (node != 0) {
         healthyNode = CZClass::FindNodeRecursiveByName(turretWorldNode, g_Player_HealthySubNodeName);
         if (healthyNode != 0) {
@@ -169,7 +169,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(readerNode, "DEACTIVATE");
+    node = zRdrFindTag(readerNode, "DEACTIVATE");
     if (node != 0) {
         deactivateNode = CZClass::FindByTypeAndName(kZClassNodeObject3D, node->value.nodes[1].value.str);
         for (int i = 2; i < node->value.nodes[0].value.i32; ++i) {
@@ -177,7 +177,7 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(readerNode, "EFFECT");
+    node = zRdrFindTag(readerNode, "EFFECT");
     if (node != 0) {
         fireEffectNode = CZClass::FindNodeRecursiveByName(turretWorldNode, node->value.nodes[1].value.str);
         fireEffectDurationSec = node->value.nodes[2].value.f32;
@@ -186,108 +186,108 @@ void zTurret_Runtime::InitFromReaderNode(
         }
     }
 
-    node = zRdrGetNode(readerNode, "ACTIVATE_ON_HIT");
+    node = zRdrFindTag(readerNode, "ACTIVATE_ON_HIT");
     if (node != 0) {
         activateOnHitDamage = node->value.nodes[1].value.f32;
         activateOnHitTimeout = 0.0f;
     }
 
-    node = zRdrGetNode(readerNode, "ALWAYS_LOOK_AT");
+    node = zRdrFindTag(readerNode, "ALWAYS_LOOK_AT");
     if (node != 0) {
         alwaysLookAtTarget = node->value.nodes[1].value.i32;
     }
 
-    node = zRdrGetNode(readerNode, "DAMAGE_PART");
+    node = zRdrFindTag(readerNode, "DAMAGE_PART");
     if (node != 0) {
         damagePartNode = CZClass::FindNodeRecursiveByName(turretWorldNode, node->value.nodes[1].value.str);
     }
 
-    node = zRdrGetNode(readerNode, "DESTROY_ANIM");
+    node = zRdrFindTag(readerNode, "DESTROY_ANIM");
     if (node != 0) {
         destroyAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zRdrGetNode(readerNode, "FIRE_ANIM");
+    node = zRdrFindTag(readerNode, "FIRE_ANIM");
     if (node != 0) {
         fireAnimEntry = zEffectAnim::FindEntryByName(node->value.nodes[1].value.str);
     }
 
-    node = zRdrGetNode(readerNode, "HEALTH");
+    node = zRdrFindTag(readerNode, "HEALTH");
     if (node != 0) {
         healthMax = healthCurrent = node->value.nodes[1].value.f32;
     }
 
-    node = zRdrGetNode(readerNode, "INTERSECT_BVOL");
+    node = zRdrFindTag(readerNode, "INTERSECT_BVOL");
     if (node != 0) {
         intersectBvolEnabled = node->value.nodes[1].value.i32;
     }
 
-    node = zRdrGetNode(readerNode, "LOS");
+    node = zRdrFindTag(readerNode, "LOS");
     if (node != 0) {
         enableLosCheck = node->value.nodes[1].value.i32;
     }
 
-    zReader::Node* parentNode = zRdrGetNode(readerNode, "SOUNDS");
+    zReader::Node* parentNode = zRdrFindTag(readerNode, "SOUNDS");
     if (parentNode != 0) {
-        node = zRdrGetNode(parentNode, "ON");
+        node = zRdrFindTag(parentNode, "ON");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(parentNode, "START");
+        node = zRdrFindTag(parentNode, "START");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(parentNode, "STOP");
+        node = zRdrFindTag(parentNode, "STOP");
         if (node != 0) {
             zSnd::FindSampleByName(node->value.nodes[1].value.str);
         }
     }
 
-    parentNode = zRdrGetNode(readerNode, g_HudCfgKey_Weapon);
+    parentNode = zRdrFindTag(readerNode, g_HudCfgKey_Weapon);
     if (parentNode != 0) {
-        node = zRdrGetNode(parentNode, "NAME");
+        node = zRdrFindTag(parentNode, "NAME");
         if (node != 0) {
             weaponCatalogEntry = OptCatalog::FindEntryByName(node->value.nodes[1].value.str);
         }
-        node = zRdrGetNode(parentNode, g_HudCfgKey_Ammo);
+        node = zRdrFindTag(parentNode, g_HudCfgKey_Ammo);
         if (node != 0) {
             weaponAmmo = node->value.nodes[1].value.i32;
         }
-        node = zRdrGetNode(parentNode, "BASE_MOVES");
+        node = zRdrFindTag(parentNode, "BASE_MOVES");
         if (node != 0) {
             weaponBaseMoves = node->value.nodes[1].value.i32;
         }
-        node = zRdrGetNode(parentNode, "DAMAGE_MODIFIER");
+        node = zRdrFindTag(parentNode, "DAMAGE_MODIFIER");
         if (node != 0) {
             damageModifier = node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(parentNode, "DETECTION_RANGE");
+        node = zRdrFindTag(parentNode, "DETECTION_RANGE");
         if (node != 0) {
             detectionRange = node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(parentNode, "FIRE_DWELL");
+        node = zRdrFindTag(parentNode, "FIRE_DWELL");
         if (node != 0) {
             fireDwellTime = node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(parentNode, "FIRE_RATE");
+        node = zRdrFindTag(parentNode, "FIRE_RATE");
         if (node != 0) {
             fireRateSeconds = node->value.nodes[1].value.f32;
         }
-        node = zRdrGetNode(parentNode, "FIRE_LIMITS");
+        node = zRdrFindTag(parentNode, "FIRE_LIMITS");
         if (node != 0) {
             fireBurstDuration = node->value.nodes[1].value.f32;
             postBurstCooldown = node->value.nodes[2].value.f32;
         }
     }
 
-    node = zRdrGetNode(readerNode, "TARGETS");
+    node = zRdrFindTag(readerNode, "TARGETS");
     if (node != 0) {
         for (int i = 1; i < node->value.nodes[0].value.i32; ++i) {
             targetTypes[i - 1] = CZClass::FindByTypeAndName(kZClassNodeObject3D, node->value.nodes[i].value.str);
         }
     }
 
-    if (zRdrGetNode(readerNode, "MSL_LOCK") != 0) {
+    if (zRdrFindTag(readerNode, "MSL_LOCK") != 0) {
         hasMissileLock = 1;
         HudUiMgrSensor::TrackListAdd(HUD_SENSOR_TRACK_KIND_TURRET, this);
     }
@@ -361,7 +361,7 @@ void zTurret_Runtime::InitFromReaderNode(
     }
 
     if (destroyAnimEntry != 0) {
-        zEffect_Anim::NodeActionCallback(destroyAnimEntry, turretNode);
+        zEffect_Anim::zEffAnimReset(destroyAnimEntry, turretNode);
         if (healthCurrent > 0.0f) {
             CZNode::SetDamageHitCallback(this, healthyNode, (void*)zTurret_Runtime::OnDamage);
         }
@@ -685,7 +685,7 @@ void zTurret_Runtime::UpdateFirePositionFromParts()
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate recoil:function:0x4374a0
  * @recoil-raw-asm recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate
- * @recoil-match source
+ *
  *
  * Raw assembly: inline zMath::Vec3Subtract [0x4374f3,0x437516) and
  * zMath::FastExp [0x4375ba,0x4375c5) expansions (requires turret.cpp /Ob1),
@@ -708,7 +708,7 @@ void zTurret_Runtime::UpdateAimAndPartMatrices(const zVec3* targetPos)
 
     zMath::Vec3Subtract(targetPos, &localAimDir, &localAimDir);
     zMath::Vec3Normalize(&localAimDir);
-    zMath::Vec3ArrayTransformDirection(&localAimDir, 1);
+    zMath::Vec3ArrayTransformDirectionTranspose(&localAimDir, 1);
     zMath::MatStackPopPtr();
 
     if (alwaysLookAtTarget == 0) {
@@ -1006,16 +1006,16 @@ int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* pat
 
     g_zTurret_LoadedDefRoot = rootNode;
 
-    zReader::Node* destroyAnimNode = zRdrGetNode(rootNode, "DESTROY_ANIM");
+    zReader::Node* destroyAnimNode = zRdrFindTag(rootNode, "DESTROY_ANIM");
     if (destroyAnimNode != 0) {
         defaultDestroyAnim = zEffectAnim::FindEntryByName(destroyAnimNode->value.nodes[1].value.str);
     }
 
     zEffectAnimEntry* const napalmDestroyAnim = zEffectAnim::FindEntryByName(g_Player_NapalmVehicleEffectName);
-    zReader::Node* const turretListNode = zRdrGetNode(rootNode, "TURRET");
+    zReader::Node* const turretListNode = zRdrFindTag(rootNode, "TURRET");
     if (turretListNode != 0) {
         for (int index = 1; index < turretListNode->value.nodes[0].value.i32; index += 2) {
-            zReader::Node* const readerNode = zRdrGetNode(turretListNode, turretListNode->value.nodes[index].value.str);
+            zReader::Node* const readerNode = zRdrFindTag(turretListNode, turretListNode->value.nodes[index].value.str);
             if (readerNode != 0) {
                 char* searchName = zRdrInitWildcardPath(turretListNode->value.nodes[index].value.str);
                 do {

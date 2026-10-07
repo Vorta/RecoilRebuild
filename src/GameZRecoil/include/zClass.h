@@ -330,8 +330,8 @@ struct CZCameraDataPartial {
     CZNodePartial* horizonNode;
     CZNodePartial* horizonXZNode;
     int cameraFlags;
-    zVec3 targetOrEuler;
-    zVec3 posOffset;
+    zVec3 localPosition;
+    zVec3 localRotation;
     zVec3 cameraPos;
     zVec3 eulerAngles;
     float worldTransform[12];
@@ -627,8 +627,8 @@ RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, windowNode) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, horizonNode) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, horizonXZNode) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, cameraFlags) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, targetOrEuler) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, posOffset) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, localPosition) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, localRotation) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, cameraPos) == 0x2c);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, eulerAngles) == 0x38);
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, worldTransform) == 0x44);
@@ -997,12 +997,12 @@ int __fastcall gwCameraSetWorld(CZNodePartial* camera, CZNodePartial* world);
 CZNodePartial* __fastcall gwCameraGetWorld(CZNodePartial* camera);
 int __fastcall gwCameraSetWindow(CZNodePartial* camera, CZNodePartial* window);
 int __fastcall ActivateChildren(CZNodePartial* camera, CZCameraDataPartial* data);
+int __fastcall gwCameraSetEulerAngles(CZNodePartial* camera, float x, float y, float z);
+int __fastcall gwCameraAddEulerAngles(CZNodePartial* camera, float dx, float dy, float dz);
+int __fastcall gwCameraGetEulerAngles(CZNodePartial* camera, float* outX, float* outY, float* outZ);
 int __fastcall gwCameraSetPosition(CZNodePartial* camera, float x, float y, float z);
 int __fastcall gwCameraTranslate(CZNodePartial* camera, float dx, float dy, float dz);
 int __fastcall gwCameraGetPosition(CZNodePartial* camera, float* outX, float* outY, float* outZ);
-int __fastcall gwCameraSetTarget(CZNodePartial* camera, float x, float y, float z);
-int __fastcall gwCameraTranslateTarget(CZNodePartial* camera, float dx, float dy, float dz);
-int __fastcall gwCameraGetTarget(CZNodePartial* camera, float* outX, float* outY, float* outZ);
 int __fastcall gwCameraSetNearFarClip(CZNodePartial* camera, float nearClip, float farClip);
 int __fastcall gwCameraGetNearFarClip(CZNodePartial* camera, float* outNear, float* outFar);
 int __fastcall gwCameraSetViewport(CZNodePartial* camera, float viewportWidth, float viewportHeight);
@@ -1014,8 +1014,8 @@ int __fastcall gwCameraSetClipDistance(CZNodePartial* camera, float clipDistance
 int __fastcall gwCameraSetHorizon(CZNodePartial* camera, CZNodePartial* horizonNode);
 int __fastcall gwCameraSetHorizonXZ(CZNodePartial* camera, CZNodePartial* horizonXZNode);
 void __fastcall SetViewDistance(int enableAutoClip, float distance);
-float __fastcall FastAngleXZ(zVec3* point1, zVec3* point2);
-int __fastcall FindConvexHullXZ(zVec3* points, int count);
+float __fastcall theta_x_z(zVec3* point1, zVec3* point2);
+int __fastcall find_convex_hull_xz(zVec3* points, int count);
 int __fastcall
 BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
 int __fastcall
@@ -1246,10 +1246,10 @@ namespace CZZbd {
 int __fastcall NodePtrToIndex(CZNodePartial* node);
 CZNodePartial* __fastcall NodeIndexToPtr(int index);
 int __fastcall WriteNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
-RECOIL_NO_GS int __fastcall WriteSingleNodeClassData(CZNodePartial* node, void* stream);
+RECOIL_NO_GS int __fastcall gClsWriteNode(CZNodePartial* node, void* stream);
 int __fastcall WriteNodeTable(void* stream);
 int __fastcall ReadNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
-int __fastcall ReadSingleNodeClassData(CZNodePartial* node, void* stream);
+int __fastcall gClsReadNode(CZNodePartial* node, void* stream);
 int __fastcall ReadNodeTable(int nodeCount, void* stream);
 RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(CZNodePartial* node, int recurseChildren);
 RECOIL_NO_GS int __fastcall

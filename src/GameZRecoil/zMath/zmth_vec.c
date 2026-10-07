@@ -261,12 +261,12 @@ namespace zMath
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerp-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3Lerp (GameZRecoil/zMath/zmath_vec3.cpp).
+     * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3BlendByFirstWeight (GameZRecoil/zMath/zmath_vec3.cpp).
      * @recoil-match byte
      *
      * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
      */
-    void __fastcall Vec3Lerp(zVec3 * inOut, const zVec3* other, float t)
+    void __fastcall Vec3BlendByFirstWeight(zVec3 * inOut, const zVec3* other, float t)
     {
         const float otherScale = 1.0f - t;
         inOut->x = t * inOut->x + otherScale * other->x;
@@ -292,14 +292,14 @@ namespace zMath
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerpnormalize-gamezrecoil-zmath-zmath-vec3-cpp
-     * @recoil-artifact defines .text recoil:function:0x4729f0: zMath::Vec3LerpNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
+     * @recoil-artifact defines .text recoil:function:0x4729f0: zMath::Vec3BlendByFirstWeightNormalize (GameZRecoil/zMath/zmath_vec3.cpp).
      * @recoil-match byte
      *
      * Purpose: Blends the first vector toward a second vector and normalizes the result.
      */
-    void __fastcall Vec3LerpNormalize(zVec3 * inOut, const zVec3* other, float t)
+    void __fastcall Vec3BlendByFirstWeightNormalize(zVec3 * inOut, const zVec3* other, float t)
     {
-        Vec3Lerp(inOut, other, t);
+        Vec3BlendByFirstWeight(inOut, other, t);
         Vec3Normalize(inOut);
     }
 

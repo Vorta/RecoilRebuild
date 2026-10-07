@@ -505,7 +505,7 @@ int __fastcall TransitionToMasterTypeTrack(zUtil_SaveGameState* saveState, int f
         playerState->masterTypeTransitionToAmphibLightHandle = 0;
     }
 
-    zEffect_Anim::NodeActionCallback(playerState->masterTypeTransitionToTrackNodeAction, playerState->rootNode);
+    zEffect_Anim::zEffAnimReset(playerState->masterTypeTransitionToTrackNodeAction, playerState->rootNode);
     playerState->masterTypeTransitionToTrackLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToTrackNodeAction,
         playerState->rootNode,
@@ -613,7 +613,7 @@ int __fastcall TransitionToMasterTypeAmphib(zUtil_SaveGameState* saveState, int 
         playerState->masterTypeTransitionToTrackLightHandle = 0;
     }
 
-    zEffect_Anim::NodeActionCallback(playerState->masterTypeTransitionToAmphibNodeAction, playerState->rootNode);
+    zEffect_Anim::zEffAnimReset(playerState->masterTypeTransitionToAmphibNodeAction, playerState->rootNode);
     playerState->masterTypeTransitionToAmphibLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToAmphibNodeAction,
         playerState->rootNode,
@@ -796,7 +796,7 @@ int __fastcall TransitionToMasterTypeSub(zUtil_SaveGameState* saveState, int fla
         playerState->masterTypeTransitionToAmphibLightHandle = 0;
     }
 
-    zEffect_Anim::NodeActionCallback(playerState->masterTypeTransitionToSubNodeAction, playerState->rootNode);
+    zEffect_Anim::zEffAnimReset(playerState->masterTypeTransitionToSubNodeAction, playerState->rootNode);
     playerState->masterTypeTransitionToSubLightHandle = zEffectAnim::SetVelocityThunk(
         playerState->masterTypeTransitionToSubNodeAction,
         playerState->rootNode,

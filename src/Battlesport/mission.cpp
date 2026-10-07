@@ -1008,12 +1008,12 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
     objectiveReadTimeSecRaw = 4.0f;
     objectiveReadSoundDelaySecRaw = 2.0f;
 
-    zReader::Node* readTimeNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReadTime);
+    zReader::Node* readTimeNode = zRdrFindTag(rootNode, g_HudSensorTracker_ObjectiveNode_ReadTime);
     if (readTimeNode != 0) {
         objectiveReadTimeSecRaw = (float)(readTimeNode->value.nodes[1].value.i32);
     }
 
-    zReader::Node* reviewDelayNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_ReviewDelay);
+    zReader::Node* reviewDelayNode = zRdrFindTag(rootNode, g_HudSensorTracker_ObjectiveNode_ReviewDelay);
     if (reviewDelayNode != 0) {
         objectiveReviewDelaySecRaw = (float)(reviewDelayNode->value.nodes[1].value.i32);
     }
@@ -1022,7 +1022,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         return 0;
     }
 
-    zReader::Node* finalMissionNode = zRdrGetNode(rootNode, g_HudSensorTracker_ObjectiveNode_FinalMission);
+    zReader::Node* finalMissionNode = zRdrFindTag(rootNode, g_HudSensorTracker_ObjectiveNode_FinalMission);
     if (finalMissionNode != 0) {
         finalMissionFlag = finalMissionNode->value.nodes[1].value.i32;
     } else {
@@ -1046,7 +1046,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         char objectiveName[0x20];
         sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
 
-        zReader::Node* objectiveNode = zRdrGetNode(rootNode, objectiveName);
+        zReader::Node* objectiveNode = zRdrFindTag(rootNode, objectiveName);
         if (objectiveNode == 0) {
             break;
         }
@@ -1089,7 +1089,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
         objectiveSlots[lastObjectiveIndex].objectiveSummary[0xff] = '\0';
 
         objectiveSlots[lastObjectiveIndex].completedFlag = 0;
-        if (zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Autoplay) != 0) {
+        if (zRdrFindTag(objectiveNode, g_HudSensorTracker_ObjectiveNode_Autoplay) != 0) {
             objectiveSlots[lastObjectiveIndex].autoplayFlag = 1;
         }
 
@@ -1114,7 +1114,7 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
  */
 int HudSensorTracker::LoadObjectivesFromZrd(const char*)
 {
-    zReader::Node* reviewSoundNode = zRdrGetNode(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ReviewSound);
+    zReader::Node* reviewSoundNode = zRdrFindTag(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ReviewSound);
     if (reviewSoundNode != 0) {
         objectiveReviewSfx = zSnd::FindSampleByName(reviewSoundNode->value.nodes[1].value.str);
     }
@@ -1127,10 +1127,10 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
     int objectiveNumber = 1;
     sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
 
-    zReader::Node* objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
+    zReader::Node* objectiveNode = zRdrFindTag(objectivesRootNode, objectiveName);
     while (objectiveNode != 0) {
         const int objectiveIndex = objectiveNumber - 1;
-        zReader::Node* activeNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Active);
+        zReader::Node* activeNode = zRdrFindTag(objectiveNode, g_HudSensorTracker_ObjectiveNode_Active);
         if (activeNode != 0) {
             objectiveSlots[objectiveIndex].activationNode = ResolveObjectiveNodePath(
                 activeNode,
@@ -1140,7 +1140,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
             );
             objectiveSlots[objectiveIndex].inactivationNode = 0;
         } else {
-            zReader::Node* inactiveNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_Inactive);
+            zReader::Node* inactiveNode = zRdrFindTag(objectiveNode, g_HudSensorTracker_ObjectiveNode_Inactive);
             if (inactiveNode != 0) {
                 CZNodePartial* const inactivationNode = ResolveObjectiveNodePath(
                     inactiveNode,
@@ -1157,7 +1157,7 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
         }
 
         objectiveSlots[objectiveIndex].objectiveReadFlag = 0;
-        zReader::Node* readSoundNode = zRdrGetNode(objectiveNode, g_HudSensorTracker_ObjectiveNode_ReadSound);
+        zReader::Node* readSoundNode = zRdrFindTag(objectiveNode, g_HudSensorTracker_ObjectiveNode_ReadSound);
         if (readSoundNode != 0) {
             objectiveSlots[objectiveIndex].readSoundSample
                 = zSnd::FindSampleByName(readSoundNode->value.nodes[1].value.str);
@@ -1171,11 +1171,11 @@ int HudSensorTracker::LoadObjectivesFromZrd(const char*)
 
         ++objectiveNumber;
         sprintf(objectiveName, g_HudSensorTracker_ObjectiveNodeNameFmt, objectiveNumber);
-        objectiveNode = zRdrGetNode(objectivesRootNode, objectiveName);
+        objectiveNode = zRdrFindTag(objectivesRootNode, objectiveName);
     }
 
     zReader::Node* objectiveSoundNode
-        = zRdrGetNode(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ObjectiveSound);
+        = zRdrFindTag(objectivesRootNode, g_HudSensorTracker_ObjectiveNode_ObjectiveSound);
     if (objectiveSoundNode != 0) {
         objectiveCompleteSfx = zSnd::FindSampleByName(objectiveSoundNode->value.nodes[1].value.str);
     }
@@ -1700,15 +1700,15 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
 
     char missionNodeName[0x40];
     sprintf(missionNodeName, g_HudWeatherFx_MissionNodeNameFmt, missionId);
-    zReader::Node* missionNode = zRdrGetNode(rootNode, missionNodeName);
+    zReader::Node* missionNode = zRdrFindTag(rootNode, missionNodeName);
     if (missionNode != 0) {
         int particleCount = 100;
-        zReader::Node* particleNode = zRdrGetNode(missionNode, g_HudWeatherFx_ParticlesNodeName);
+        zReader::Node* particleNode = zRdrFindTag(missionNode, g_HudWeatherFx_ParticlesNodeName);
         if (particleNode != 0) {
             particleCount = particleNode->value.i32;
         }
 
-        zReader::Node* typeNode = zRdrGetNode(missionNode, g_HudWeatherFx_TypeNodeName);
+        zReader::Node* typeNode = zRdrFindTag(missionNode, g_HudWeatherFx_TypeNodeName);
         if (typeNode != 0) {
             const char* const weatherType = typeNode->value.str;
             if (strcmp(weatherType, g_HudWeatherFx_TypeValue_Snow) == 0) {
@@ -1719,29 +1719,29 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
         }
 
         if (fxPass3Obj != 0) {
-            zReader::Node* colorNode = zRdrGetNode(missionNode, "COLOR");
+            zReader::Node* colorNode = zRdrFindTag(missionNode, "COLOR");
             if (colorNode != 0) {
                 zReader::Node* const colorFields = colorNode->value.nodes;
                 ((HudWeatherFx*)(fxPass3Obj))->packedColor16
                     = zVidPackColorRGB(colorFields[1].value.i32, colorFields[2].value.i32, colorFields[3].value.i32);
             }
 
-            zReader::Node* windDirNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindDirectionNodeName);
+            zReader::Node* windDirNode = zRdrFindTag(missionNode, g_HudWeatherFx_WindDirectionNodeName);
             if (windDirNode != 0) {
                 SetWeatherFxWindDirection((HudWeatherFx*)(fxPass3Obj), windDirNode->value.f32);
             }
 
-            zReader::Node* windVelNode = zRdrGetNode(missionNode, g_HudWeatherFx_WindVelocityNodeName);
+            zReader::Node* windVelNode = zRdrFindTag(missionNode, g_HudWeatherFx_WindVelocityNodeName);
             if (windVelNode != 0) {
                 SetWeatherFxWindVelocity((HudWeatherFx*)(fxPass3Obj), windVelNode->value.f32);
             }
 
-            zReader::Node* gravityNode = zRdrGetNode(missionNode, "GRAVITY");
+            zReader::Node* gravityNode = zRdrFindTag(missionNode, "GRAVITY");
             if (gravityNode != 0) {
                 SetWeatherFxGravity((HudWeatherFx*)(fxPass3Obj), gravityNode->value.f32);
             }
 
-            zReader::Node* alphaGradientNode = zRdrGetNode(missionNode, g_HudWeatherFx_AlphaGradientNodeName);
+            zReader::Node* alphaGradientNode = zRdrFindTag(missionNode, g_HudWeatherFx_AlphaGradientNodeName);
             if (alphaGradientNode != 0) {
                 zReader::Node* const alphaFields = alphaGradientNode->value.nodes;
                 SetWeatherFxAlphaGradient(
@@ -1788,7 +1788,7 @@ void HudSensorTracker::RunStartAnimsFromZrd(const char* zrdPath, const char* nam
         return;
     }
 
-    zReader::Node* startAnimList = zRdrGetNode(rootNode, namedNodeName);
+    zReader::Node* startAnimList = zRdrFindTag(rootNode, namedNodeName);
     if (startAnimList != 0) {
         const int startAnimCount = startAnimList->value.nodes[0].value.i32 - 1;
         {
@@ -1849,7 +1849,7 @@ int HudSensorTracker::LoadRaceCheckpointMeta()
     int raceCheckpointMode = 0;
     zReader::Node* raceRoot = zReader::Load(kHudSensorTrackerRaceCheckpointArchiveName, raceZrdrSearchPath, 0);
     if (raceRoot != 0) {
-        zReader::Node* cpCountNode = zRdrGetNode(raceRoot, kHudSensorTrackerRaceCheckpointCountNodeName);
+        zReader::Node* cpCountNode = zRdrFindTag(raceRoot, kHudSensorTrackerRaceCheckpointCountNodeName);
         if (cpCountNode != 0) {
             raceCheckpointMode = 1;
             checkpointCount = cpCountNode->value.nodes[1].value.i32;
@@ -3714,7 +3714,7 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
     GameNet::UpdateRemotePlayerHudWidgetScreenPos(saveState);
 
     if (playerState->cameraTransitionTimer == 0) {
-        zMath::Vec3Lerp(&playerState->worldPos, &playerState->netReceivedPos, 0.649999976f);
+        zMath::Vec3BlendByFirstWeight(&playerState->worldPos, &playerState->netReceivedPos, 0.649999976f);
         playerState->vehicleRotationAngles = playerState->netReceivedAngles;
 
         if (playerState->lifecycleState != kPlayerLifecycleDestroyed) {
@@ -3817,7 +3817,7 @@ void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry*, zUtil_SaveGameS
     }
 
     if (playerState->destroyedRespawnAsyncHandle != 0) {
-        zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnAsyncHandle, playerState->rootNode);
+        zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnAsyncHandle, playerState->rootNode);
     }
 
     ResetDamageStateAndTimedHitStatus(saveState);
@@ -3844,7 +3844,7 @@ void __fastcall DestroyedStateRespawnCallback(zEffectAnimEntry*, zUtil_SaveGameS
 void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameState* saveState, int)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    zEffect_Anim::NodeActionCallback(playerState->destroyedRespawnFxEntry, playerState->rootNode);
+    zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnFxEntry, playerState->rootNode);
     ResetDamageStateAndTimedHitStatus(saveState);
 
     playerState->statusMeterValue = saveState->playerState->masterCommonData->maxHealth;

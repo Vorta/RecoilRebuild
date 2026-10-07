@@ -74,7 +74,12 @@ void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState)
     if (g_Player_RebuildCameraDirFlatFromCurrentTarget != 0) {
         zVec3 targetWorldPos = playerState->worldPos;
         zVec3 activeCameraTarget;
-        CZCamera::gwCameraGetTarget(g_MainCamera, &activeCameraTarget.x, &activeCameraTarget.y, &activeCameraTarget.z);
+        CZCamera::gwCameraGetPosition(
+            g_MainCamera,
+            &activeCameraTarget.x,
+            &activeCameraTarget.y,
+            &activeCameraTarget.z
+        );
 
         playerState->cameraTargetDistance = zMath::Vec3DeltaLength(&activeCameraTarget, &targetWorldPos);
 
@@ -128,7 +133,7 @@ void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState)
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ *
  *
  * Purpose: Update the player chase camera from controls, motion, and obstructions.
  * Shared camera scalars require the complete camera consumer population.
@@ -211,7 +216,7 @@ void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState* saveState)
     zVec3 cameraScratch = playerState->steerBasisNorm;
     float headingBlend;
     headingBlend = zMath::FastExp(-headingLerpRate * g_FrameDeltaTimeSec);
-    zMath::Vec3LerpNormalize(&playerState->cameraDirFlat, &cameraScratch, headingBlend);
+    zMath::Vec3BlendByFirstWeightNormalize(&playerState->cameraDirFlat, &cameraScratch, headingBlend);
     float headingDot;
     ZMTH_VECTOR_DOT_XZ(headingDot, &cameraScratch, &playerState->cameraDirFlat);
     g_Player_CameraHeadingDotAbs = (float)fabs(headingDot);
@@ -272,9 +277,9 @@ void __fastcall UpdateChaseCameraFromInput(zUtil_SaveGameState* saveState)
 
     AdjustThirdPersonCameraBySideProbes(saveState, &cameraPos, &cameraScratch, &playerState->cameraDirNext);
 
-    CZCamera::gwCameraSetTarget(g_MainCamera, cameraPos.x, cameraPos.y, cameraPos.z);
+    CZCamera::gwCameraSetPosition(g_MainCamera, cameraPos.x, cameraPos.y, cameraPos.z);
     const zVec3 cameraOrientation = zMath::Vec3DirectionAnglesBetweenPoints(&cameraPos, &cameraScratch);
-    CZCamera::gwCameraSetPosition(g_MainCamera, cameraOrientation.x, cameraOrientation.y, cameraOrientation.z);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, cameraOrientation.x, cameraOrientation.y, cameraOrientation.z);
 
     playerState->cameraTarget = cameraPos;
     playerState->cameraDir = playerState->cameraDirNext;
@@ -296,7 +301,7 @@ void __fastcall UpdateThirdPersonCamera(zUtil_SaveGameState* saveState)
     zVec3 cameraTarget;
     zMath::Vec3Add(&playerState->worldPos, &playerState->cameraLerpStart, &cameraTarget);
 
-    CZCamera::gwCameraSetTarget(g_MainCamera, cameraTarget.x, cameraTarget.y, cameraTarget.z);
+    CZCamera::gwCameraSetPosition(g_MainCamera, cameraTarget.x, cameraTarget.y, cameraTarget.z);
     if (g_Player_HorizonNode != 0) {
         CZObject3D::gwObject3DSetPosition(g_Player_HorizonNode, cameraTarget.x, cameraTarget.y, cameraTarget.z);
     }
@@ -305,7 +310,7 @@ void __fastcall UpdateThirdPersonCamera(zUtil_SaveGameState* saveState)
     cameraLookAt.y += playerState->cameraYOffset;
 
     const zVec3 cameraAngles = zMath::Vec3DirectionAnglesBetweenPoints(&cameraTarget, &cameraLookAt);
-    CZCamera::gwCameraSetPosition(g_MainCamera, cameraAngles.x, cameraAngles.y, cameraAngles.z);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, cameraAngles.x, cameraAngles.y, cameraAngles.z);
 
     ZMTH_VECTOR_DIRECTION(&playerState->cameraDirNext, &cameraTarget, &playerState->autoTurnTargetWorldPos);
 
@@ -349,13 +354,13 @@ void __fastcall UpdateTopDownCameraState(zUtil_SaveGameState* saveState)
     z += playerState->cameraState2TargetOffset.z;
     playerState->cameraTarget.z = z;
 
-    CZCamera::gwCameraSetTarget(
+    CZCamera::gwCameraSetPosition(
         g_MainCamera,
         playerState->cameraTarget.x,
         playerState->cameraTarget.y,
         playerState->cameraTarget.z
     );
-    CZCamera::gwCameraSetPosition(g_MainCamera, -1.54999995f, 0.0f, 0.0f);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, -1.54999995f, 0.0f, 0.0f);
     playerState->cameraDir.x = 0.0f;
     playerState->cameraDir.y = -1.0f;
     playerState->cameraDir.z = 0.0f;
@@ -380,7 +385,7 @@ void __fastcall UpdateCameraFromStoredTargetTowardPlayer(zUtil_SaveGameState* sa
     ZMTH_VECTOR_DIRECTION(&playerState->cameraDirNext, &cameraTarget, &lookAt);
 
     const zVec3 cameraAngles = zMath::Vec3DirectionAnglesBetweenPoints(&cameraTarget, &lookAt);
-    CZCamera::gwCameraSetPosition(g_MainCamera, cameraAngles.x, cameraAngles.y, cameraAngles.z);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, cameraAngles.x, cameraAngles.y, cameraAngles.z);
 
     playerState->cameraDir = playerState->cameraDirNext;
     playerState->cameraDirFlat = playerState->cameraDirNext;
@@ -448,12 +453,12 @@ void __fastcall UpdateFirstPersonCameraFromInput(zUtil_SaveGameState* saveState)
     ZMTH_VECTOR_TRANSFORM_DIRECTION(&motionBasis, &cameraLocalOffsetWorld, &localOffset);
     zMath::Vec3Add(&cameraPoint, &cameraLocalOffsetWorld, &cameraPoint);
 
-    CZCamera::gwCameraSetTarget(g_MainCamera, cameraPoint.x, cameraPoint.y, cameraPoint.z);
+    CZCamera::gwCameraSetPosition(g_MainCamera, cameraPoint.x, cameraPoint.y, cameraPoint.z);
     playerState->cameraTarget = cameraPoint;
 
     cameraPoint = playerState->cameraState6BasePos;
     cameraPoint.x -= playerState->cameraElevationOffset * kElevationCameraPosScale;
-    CZCamera::gwCameraSetPosition(g_MainCamera, cameraPoint.x, cameraPoint.y, cameraPoint.z);
+    CZCamera::gwCameraSetEulerAngles(g_MainCamera, cameraPoint.x, cameraPoint.y, cameraPoint.z);
 
     playerState->cameraDirNext = playerState->steerBasisRaw;
     playerState->cameraDirFlat = playerState->steerBasisRaw;
@@ -528,8 +533,8 @@ void __fastcall ApplyCameraState(int newState)
         OptCatalogRuntimeInstanceStorage* const attachState
             = (OptCatalogRuntimeInstanceStorage*)(playerState->activeAltGunController->attachState);
         CZNodePartial* const projectileNode = attachState->projectileNode;
-        CZCamera::gwCameraSetTarget(g_MainCamera, 0.0f, 1.0f, 1.0f);
-        CZCamera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
+        CZCamera::gwCameraSetPosition(g_MainCamera, 0.0f, 1.0f, 1.0f);
+        CZCamera::gwCameraSetEulerAngles(g_MainCamera, 0.0f, 0.0f, 0.0f);
         CZClass::AddChild(projectileNode, g_MainCamera);
         CZObject3D::gwObject3DSetAlphaScale(projectileNode, 0.5f);
         CZObject3D::gwObject3DSetLitFlag(projectileNode, 1);
@@ -608,7 +613,7 @@ AdjustThirdPersonCameraByOffsetProbes(zUtil_SaveGameState* saveState, zVec3* cam
 
     int result = 0;
     zVec3 perpDir;
-    zMath::Vec3PerpXZ(sideDir, &perpDir);
+    zMath::Vec3ToRightXZ(sideDir, &perpDir);
     zVec3 normalizedPerp;
     zMath::Vec3NormalizeXZ(&perpDir, &normalizedPerp);
     normalizedPerp.y = 0.0f;
@@ -958,7 +963,7 @@ void UpdateCameraWeatherFxEmitterVisibility()
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         CZNodePartial* const rootNode = playerState->rootNode;
         zVec3 cameraTarget;
-        CZCamera::gwCameraGetTarget(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+        CZCamera::gwCameraGetPosition(g_MainCamera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
         CZClass::gwNodeSetRaycastable(rootNode, 0);
         CZDisplayInstance::SetStopAfterFirstHit(0x40000);
         CZDisplayInstance::SetBreakOnFirstCandidate(1);

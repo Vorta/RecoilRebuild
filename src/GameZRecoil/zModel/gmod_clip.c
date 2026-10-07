@@ -184,7 +184,7 @@ void __fastcall zVideoUpdateProjectionStateFromCameraData(CZCameraDataPartial* c
     cameraData->localFrustumLeftNormal.y = 0.0f;
     cameraData->localFrustumLeftNormal.z = 0.0f;
     zMath::MatRotateY(cameraData->frustumYaw);
-    zMathVec3ArrayUntransformDirection(&cameraData->localFrustumLeftNormal, 1);
+    zMathVec3ArrayTransformDirection(&cameraData->localFrustumLeftNormal, 1);
     zMath::MatStackPopPtr();
 
     cameraData->localFrustumRightNormal.x = -cameraData->localFrustumLeftNormal.x;
@@ -195,7 +195,7 @@ void __fastcall zVideoUpdateProjectionStateFromCameraData(CZCameraDataPartial* c
     cameraData->localFrustumBottomNormal.y = -1.0f;
     cameraData->localFrustumBottomNormal.z = 0.0f;
     zMath::MatRotateX(cameraData->frustumPitch);
-    zMathVec3ArrayUntransformDirection(&cameraData->localFrustumBottomNormal, 1);
+    zMathVec3ArrayTransformDirection(&cameraData->localFrustumBottomNormal, 1);
     zMath::MatStackPopPtr();
 
     cameraData->localFrustumTopNormal.x = cameraData->localFrustumBottomNormal.x;
@@ -221,7 +221,7 @@ void __fastcall zVideoUpdateProjectionStateFromCameraData(CZCameraDataPartial* c
 void __fastcall zClipAltBuildFrustumPlanes(CZCameraDataPartial* cameraData)
 {
     zMath::MatStackPushPtr(cameraData->worldTransform);
-    zMathMatTransformNormalBatch(&cameraData->localFrustumLeftNormal, cameraData->worldFrustumNormals, 6);
+    zMathMatTransformDirectionBatch(&cameraData->localFrustumLeftNormal, cameraData->worldFrustumNormals, 6);
     zMath::MatStackPopPtr();
 }
 

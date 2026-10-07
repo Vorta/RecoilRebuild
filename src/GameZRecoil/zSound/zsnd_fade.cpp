@@ -85,7 +85,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
             currentValue = 0.0f;
         }
 
-        ((zA3dProviderSource*)(handle->backendBuffer))->SetGain(zSndSamplePlaySimple(currentValue));
+        ((zA3dProviderSource*)(handle->backendBuffer))->SetGain(zSndGainScaleIdentity(currentValue));
         break;
     }
     }

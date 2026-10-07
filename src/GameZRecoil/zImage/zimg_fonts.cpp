@@ -58,7 +58,7 @@ int __fastcall FontsLoadFromPath(const char* path)
     }
 
     zImageInitMissionResources("..\\data\\common\\fonts");
-    zReader::Node* fontsNode = zRdrGetNode(tree, g_HudCfgKey_Fonts);
+    zReader::Node* fontsNode = zRdrFindTag(tree, g_HudCfgKey_Fonts);
     if (fontsNode == 0) {
         zError::ReportOld(0x800, "D:\\Proj\\GameZRecoil\\zImage\\zimg_fonts.cpp", 0x52, "%s file empty", path);
         return -1;

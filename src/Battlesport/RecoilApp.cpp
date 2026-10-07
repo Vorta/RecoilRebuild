@@ -1125,7 +1125,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
     if (g_Player_ActiveDebugScriptAsyncEntry != 0 && zInput::KeyboardWaitForAnyKeyPress(0) != 0) {
         zEffectAnimEntry* const entry = g_Player_ActiveDebugScriptAsyncEntry;
         g_Player_ActiveDebugScriptAsyncEntry = 0;
-        zEffect_Anim::NodeActionCallback(entry, 0);
+        zEffect_Anim::zEffAnimReset(entry, 0);
     }
 
     zInput::PollActiveDevices(1);
@@ -2133,7 +2133,7 @@ int RecoilApp::EngineInit(HWND hwnd)
 
     PrintEngineInitZeroStatus(g_RecoilApp_GModInitStatusFmt, zModelDisplayInit());
     PrintEngineInitZeroStatus(g_RecoilApp_GClsInitStatusFmt, zVideo::ReturnSuccessStub());
-    PrintEngineInitZeroStatus(g_RecoilApp_ZEffInitStatusFmt, zEffect::Init());
+    PrintEngineInitZeroStatus(g_RecoilApp_ZEffInitStatusFmt, zEffect::zEffInit());
     PrintEngineInitZeroStatus(g_RecoilApp_ZRndrInitStatusFmt, zRndr::InitGlobals());
     PrintEngineInitNonzeroStatus(
         g_RecoilApp_ZSndInitStatusFmt,

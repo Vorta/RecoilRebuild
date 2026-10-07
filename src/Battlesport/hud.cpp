@@ -781,7 +781,7 @@ int __fastcall ExecuteCommandString(CString* commandString)
             zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
             Player::ApplyCameraState(g_PlayerPrevCameraState);
             Player::ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState*)g_GameStateOrMapTable);
-            zEffect_Anim::NodeActionCallback(
+            zEffect_Anim::zEffAnimReset(
                 ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->destroyedRespawnFxEntry,
                 playerState->rootNode
             );
@@ -1748,7 +1748,7 @@ int __fastcall SelectProfileValueForSystem(zReader::Node* parentNode, const char
         return defaultValue;
     }
 
-    zReader::Node* const profileRuleListNode = zRdrGetNode(parentNode, profileName);
+    zReader::Node* const profileRuleListNode = zRdrFindTag(parentNode, profileName);
     if (profileRuleListNode == 0) {
         return defaultValue;
     }
@@ -4270,7 +4270,7 @@ inline void HudUiPanelSpan::clear()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x409570: HudUiZrdScrollingText::LoadFromZrd.
- * @recoil-match source
+ *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
  * Purpose: load scrolling credits rows from ZRD layout data and compute stacked row heights.
@@ -4279,7 +4279,7 @@ int HudUiZrdScrollingText::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
 {
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    zReader::Node* const rectNode = zRdrGetNode(zrdSection, "RECT");
+    zReader::Node* const rectNode = zRdrFindTag(zrdSection, "RECT");
     if (rectNode != 0) {
         rect.left = rectNode->value.nodes[1].value.nodes[1].value.i32 + originX;
         rect.top = rectNode->value.nodes[1].value.nodes[2].value.i32 + originY;
@@ -4287,12 +4287,12 @@ int HudUiZrdScrollingText::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
         rect.bottom = rectNode->value.nodes[2].value.nodes[2].value.i32 + originY;
     }
 
-    zReader::Node* const scrollRateNode = zRdrGetNode(zrdSection, "SCROLL_RATE");
+    zReader::Node* const scrollRateNode = zRdrFindTag(zrdSection, "SCROLL_RATE");
     if (scrollRateNode != 0) {
         ((HudUiCreditsPanel*)(ownerDialog))->fadeStep = scrollRateNode->value.f32;
     }
 
-    zReader::Node* const scrollingTextNode = zRdrGetNode(zrdSection, "SCROLLING_TEXT");
+    zReader::Node* const scrollingTextNode = zRdrFindTag(zrdSection, "SCROLLING_TEXT");
     if (scrollingTextNode == 0) {
         return 1;
     }
@@ -8736,15 +8736,15 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     HudUiRect objectiveDescriptionFont = { 0 };
     HudUiRect ammoFont = { 0 };
 
-    zReader::Node* const fontsNode = zRdrGetNode(root, g_HudCfgKey_Fonts);
+    zReader::Node* const fontsNode = zRdrFindTag(root, g_HudCfgKey_Fonts);
     if (fontsNode != 0) {
-        if (zReader::Node* const node = zRdrGetNode(fontsNode, g_HudCfgKey_ObjectiveSummary)) {
+        if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_ObjectiveSummary)) {
             HudUiLayoutNode::ReadRect(node, &objectiveSummaryFont);
         }
-        if (zReader::Node* const node = zRdrGetNode(fontsNode, g_HudCfgKey_ObjectiveDescription)) {
+        if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_ObjectiveDescription)) {
             HudUiLayoutNode::ReadRect(node, &objectiveDescriptionFont);
         }
-        if (zReader::Node* const node = zRdrGetNode(fontsNode, g_HudCfgKey_Strings)) {
+        if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_Strings)) {
             HudUiPanelFontParams* const fontArgs = (HudUiPanelFontParams*)(&g_HudUiMgrStringMenu->unknown_10[0]);
             HudUiLayoutNode::ReadRect(node, (HudUiRect*)(fontArgs));
             {
@@ -8757,7 +8757,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
                 }
             }
         }
-        if (zReader::Node* const node = zRdrGetNode(fontsNode, "MESSAGES")) {
+        if (zReader::Node* const node = zRdrFindTag(fontsNode, "MESSAGES")) {
             HudUiRect messagesFont = { 0 };
             HudUiLayoutNode::ReadRect(node, &messagesFont);
             if (g_HudUiTopMessageStack != 0) {
@@ -8777,16 +8777,16 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
                 );
             }
         }
-        if (zReader::Node* const node = zRdrGetNode(fontsNode, g_HudCfgKey_Ammo)) {
+        if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_Ammo)) {
             HudUiLayoutNode::ReadRect(node, &ammoFont);
         }
     }
 
-    if (zReader::Node* const naniteNode = zRdrGetNode(root, g_HudCfgKey_Nanite)) {
+    if (zReader::Node* const naniteNode = zRdrFindTag(root, g_HudCfgKey_Nanite)) {
         g_HudUiMgrNanitePanel.InitLayout(naniteNode);
     }
 
-    zReader::Node* const sensorNode = zRdrGetNode(root, g_HudCfgKey_Sensor);
+    zReader::Node* const sensorNode = zRdrFindTag(root, g_HudCfgKey_Sensor);
     int sensorCenterX = 0;
     int sensorCenterY = 0;
     if (sensorNode != 0) {
@@ -8843,7 +8843,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         g_HudUiMgr.AddChild((HudUiElement*)(&g_HudUiMgrSensorMeter));
     }
 
-    if (zReader::Node* const objectiveNode = zRdrGetNode(root, g_HudCfgKey_Objective)) {
+    if (zReader::Node* const objectiveNode = zRdrFindTag(root, g_HudCfgKey_Objective)) {
         zReader::Node* const objectivePayload = objectiveNode->value.nodes;
         g_HudUiMgrObjectivePhaseDurationSec = objectivePayload[1].value.f32;
 
@@ -8936,7 +8936,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         );
     }
 
-    if (zReader::Node* const reticleNode = zRdrGetNode(root, g_HudCfgKey_Reticule)) {
+    if (zReader::Node* const reticleNode = zRdrFindTag(root, g_HudCfgKey_Reticule)) {
         zReader::Node* const reticlePayload = reticleNode->value.nodes;
         g_HudUiMgrReticleImages[0] = zImage::TexDirFindOrCreateByPath(reticlePayload[1].value.str);
         g_HudUiMgrReticleImages[1] = zImage::TexDirFindOrCreateByPath(reticlePayload[2].value.str);
@@ -8950,7 +8950,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         ((HudUiElement*)(&g_HudUiMgrReticleWidget))->SetVisible(0);
     }
 
-    if (zReader::Node* const statsNode = zRdrGetNode(root, g_HudCfgKey_Stats)) {
+    if (zReader::Node* const statsNode = zRdrFindTag(root, g_HudCfgKey_Stats)) {
         zReader::Node* const statsPayload = statsNode->value.nodes;
         HudUiWidget* const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
@@ -9001,11 +9001,11 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         triplet->RebuildDisplay();
     }
 
-    if (zReader::Node* const shieldNode = zRdrGetNode(root, g_HudCfgKey_Shield)) {
+    if (zReader::Node* const shieldNode = zRdrFindTag(root, g_HudCfgKey_Shield)) {
         HudUiShieldMessageWidget::ApplyLayout(shieldNode);
     }
 
-    if (zReader::Node* const targetNode = zRdrGetNode(root, g_HudCfgKey_Target)) {
+    if (zReader::Node* const targetNode = zRdrFindTag(root, g_HudCfgKey_Target)) {
         zReader::Node* const targetPayload = targetNode->value.nodes;
         g_HudUiMgrSensorTargetMarkerImages[0] = zImage::TexDirFindOrCreateByPath(targetPayload[1].value.str);
         g_HudUiMgrSensorTargetMarkerImages[1] = zImage::TexDirFindOrCreateByPath(targetPayload[2].value.str);
@@ -9038,7 +9038,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         g_HudUiMgrWeaponState = 0;
     }
 
-    zReader::Node* weaponNode = zRdrGetNode(root, g_HudCfgKey_Weapon);
+    zReader::Node* weaponNode = zRdrFindTag(root, g_HudCfgKey_Weapon);
     if (weaponNode != 0) {
         zReader::Node* const weaponPayload = weaponNode->value.nodes;
         {
@@ -9051,7 +9051,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         }
     }
 
-    zReader::Node* modesNode = zRdrGetNode(root, g_HudCfgKey_Modes);
+    zReader::Node* modesNode = zRdrFindTag(root, g_HudCfgKey_Modes);
     if (modesNode != 0) {
         zReader::Node* const modesPayload = modesNode->value.nodes;
         {
@@ -10484,7 +10484,7 @@ void HudLayoutBase::Disable()
  */
 int HudLayoutBase::LoadTypeIFromZarRoot(zReader::Node* parentNode)
 {
-    zReader::Node* const typeINode = zRdrGetNode(parentNode, g_HudLayout_TypeISectionName);
+    zReader::Node* const typeINode = zRdrFindTag(parentNode, g_HudLayout_TypeISectionName);
     if (typeINode != 0) {
         HudUiLayoutNode::ReadRectOffsetAndSize(&typeINode->value.nodes[1], &layoutRect, 0, 0, 0);
         activeRect = layoutRect;
@@ -10658,7 +10658,7 @@ static inline void HudLayoutHWLoadImageSet(
  */
 int HudLayoutHW::LoadTypeIIFromZarRoot(zReader::Node* parentNode)
 {
-    zReader::Node* const typeIINode = zRdrGetNode(parentNode, g_HudLayout_TypeIISectionName);
+    zReader::Node* const typeIINode = zRdrFindTag(parentNode, g_HudLayout_TypeIISectionName);
     if (typeIINode != 0) {
         HudLayoutBase* const layout = (HudLayoutBase*)(this);
 
@@ -11963,14 +11963,14 @@ ShowPlayerKillMessage(GameNetPlayerRow* victimRow, OptCatalogEntryDef* killEntry
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.refreshplayerlistmenu
- * @recoil-artifact defines .text recoil:function:0x414390: GameNet::RefreshPlayerListMenu
+ * @recoil-artifact defines .text recoil:function:0x414390: GameNet::AddPlayerRowToScoreboard
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Forward a player row to the HUD stats list triplet for scoreboard
  * entry insertion.
  */
-void __fastcall RefreshPlayerListMenu(GameNetPlayerRow* playerRow)
+void __fastcall AddPlayerRowToScoreboard(GameNetPlayerRow* playerRow)
 {
     g_HudUiMgrStatsList->triplet->AddEntry(playerRow);
 }

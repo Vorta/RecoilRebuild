@@ -12,13 +12,13 @@ struct zZbdSectionCallbackCtx;
 
 struct zZbdSectionHandler {
     const char* sectionName;
-    zZbdSectionCallback onPreLoad;
+    zZbdSectionCallback onWrite;
     zZbdSectionCallback onDataReady;
     int sortOrder;
     void* userData;
 
     static bool __fastcall CompareSortOrderLessThan(const zZbdSectionHandler* nodeA, const zZbdSectionHandler* nodeB);
-    int InvokePreLoad(zZbdSectionCallbackCtx* callbackCtx);
+    int InvokeWriteCallback(zZbdSectionCallbackCtx* callbackCtx);
     void
     InvokeDataReady(zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken, void* buffer, unsigned int size);
 
@@ -53,12 +53,12 @@ struct zZbdManager {
     ~zZbdManager();
     void RegisterSectionHandler(
         const char* sectionName,
-        zZbdSectionCallback onPreLoad,
+        zZbdSectionCallback onWrite,
         zZbdSectionCallback onDataReady,
         int sortOrder,
         void* userData
     );
-    int LoadEntries(const char* filename);
+    int WriteZarFile(const char* filename);
     int LoadZarFile(const char* filepath);
     void RequestStop();
     int WriteSectionRecord(
@@ -84,7 +84,7 @@ extern zZbdManager* g_zUtil_ZbdManager;
 }
 
 namespace zUtil {
-int __fastcall ZBDLoadEntriesGlobal(const char* filename);
+int __fastcall zZarWriteFileGlobal(const char* filename);
 int __fastcall zZarLoadFileGlobal(const char* filepath);
 void __cdecl zZarRequestStopGlobal();
 int __cdecl ZBDInit();
@@ -94,7 +94,7 @@ void __cdecl ZBDDestroyGlobalManager();
 namespace zUtil_ZAR {
 void __fastcall RegisterSectionHandler(
     const char* sectionName,
-    zZbdSectionCallback onPreLoad,
+    zZbdSectionCallback onWrite,
     zZbdSectionCallback onDataReady,
     int sortOrder,
     void* userData

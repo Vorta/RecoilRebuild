@@ -221,8 +221,8 @@ namespace
         CZNodePartial* horizonNode;
         CZNodePartial* horizonXZNode;
         int cameraFlags;
-        zVec3 targetOrEuler;
-        zVec3 posOffset;
+        zVec3 localPosition;
+        zVec3 localRotation;
         zVec3 worldPos;
         zVec3 eulerAngles;
         zMat4x3 worldTransform;
@@ -1599,7 +1599,7 @@ namespace CZClass
                         (float*)(&((CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix)
                     );
                     zMath::MatLoadIdentity();
-                    zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
+                    zMath::MatApplyLocalTRS(&cameraData->localRotation, &cameraData->localPosition, &unitScale);
                     zMath::MatStackPopPtr();
                 }
                 gwNodeRecalcBBox(node);
@@ -2015,7 +2015,7 @@ namespace CZNode
             case 1: {
                 CZCameraDataPartial* cameraData = (CZCameraDataPartial*)(ancestor->classData);
                 if ((cameraData->cameraFlags & 0x02) == 0) {
-                    zMath::MatApplyLocalTRS(&cameraData->posOffset, &cameraData->targetOrEuler, &unitScale);
+                    zMath::MatApplyLocalTRS(&cameraData->localRotation, &cameraData->localPosition, &unitScale);
                 } else {
                     zMath::MatMultiply(&((CZCameraBBoxQueryDataPartial*)(cameraData))->viewOverlay.cachedViewMatrix, 1);
                 }

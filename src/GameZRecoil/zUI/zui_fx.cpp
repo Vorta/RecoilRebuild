@@ -530,10 +530,10 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     }
 
     zVec3 cameraTarget;
-    CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetPosition(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
+    CZCamera::gwCameraGetEulerAngles(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     zMath::Vec3Subtract((const zVec3*)(&g_HudWeatherFxSnow_LastCameraTarget), &cameraTarget, &cameraTargetDrift);
@@ -684,10 +684,10 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     }
 
     zVec3 cameraTarget;
-    CZCamera::gwCameraGetTarget(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
+    CZCamera::gwCameraGetPosition(camera, &cameraTarget.x, &cameraTarget.y, &cameraTarget.z);
 
     zVec3 cameraAngles;
-    CZCamera::gwCameraGetPosition(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
+    CZCamera::gwCameraGetEulerAngles(camera, &cameraAngles.x, &cameraAngles.y, &cameraAngles.z);
 
     zVec3 cameraTargetDrift;
     zMath::Vec3Subtract((const zVec3*)(&g_HudWeatherFxRain_LastCameraTarget), &cameraTarget, &cameraTargetDrift);

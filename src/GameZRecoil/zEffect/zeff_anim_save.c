@@ -299,7 +299,7 @@ namespace zEffect_Anim
         if (strcmp(sectionToken, g_zEffectAnim_ActivationSectionName0) == 0) {
             for (int i = 0; i < GetActivationRecordCount(); ++i) {
                 zEffectAnimActivationRecord* const queued = GetActivationRecordAt(i);
-                ResetFromActivationRecord(queued);
+                zEffResetActivationRecord(queued);
                 zError::ReportOld(
                     0x100,
                     g_zEffect_SourceFile_ZeffAnimSaveC,
@@ -325,8 +325,8 @@ namespace zEffect_Anim
                 entry = entry->runtimeSibling;
             }
 
-            NodeActionCallback(entry, rootNode);
-            entry = ProcessActivationRecord(&record->base);
+            zEffAnimReset(entry, rootNode);
+            entry = zEffProcessActivationRecord(&record->base);
         }
 
         if (entry == 0) {
@@ -336,8 +336,8 @@ namespace zEffect_Anim
         entry->flags |= 0x4000u;
         if (record->savedActivationState == 2) {
             if (entry->activationState != 2) {
-                NodeActionCallback(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
-                entry = ProcessActivationRecord(&record->base);
+                zEffAnimReset(entry, CZZbd::NodeIndexToPtr(record->base.nodeToken));
+                entry = zEffProcessActivationRecord(&record->base);
                 zError::ReportOld(
                     0x100,
                     g_zEffect_SourceFile_ZeffAnimSaveC,
@@ -366,7 +366,7 @@ namespace zEffect_Anim
                 if (entry->activationState == 4) {
                     entry->activationState = 3;
                 }
-                NodeActionCallback(entry, node);
+                zEffAnimReset(entry, node);
                 zError::ReportOld(0x100, g_zEffect_SourceFile_ZeffAnimSaveC, 0x1d3, g_zEffectAnim_ResetFunctionName);
             }
             if (record->base.nodeToken == -1) {
@@ -379,8 +379,8 @@ namespace zEffect_Anim
                 CZNodePartial* const node = CZZbd::NodeIndexToPtr(record->base.nodeToken);
                 if (entry->activationState == 4) {
                     entry->activationState = 3;
-                    NodeActionCallback(entry, node);
-                    entry = ProcessActivationRecord(&record->base);
+                    zEffAnimReset(entry, node);
+                    entry = zEffProcessActivationRecord(&record->base);
                     zError::ReportOld(
                         0x100,
                         g_zEffect_SourceFile_ZeffAnimSaveC,
@@ -872,13 +872,13 @@ namespace zEffect_Anim
             if (entry->activationState == 4) {
                 entry->activationState = 3;
             }
-            NodeActionCallback(entry, entry->boundNode);
+            zEffAnimReset(entry, entry->boundNode);
             zError::ReportOld(0x100, g_zEffect_SourceFile_ZeffAnimSaveC, 0x419, g_zEffectAnim_ResetTraceFmt, entry);
         }
 
         for (zEffectAnimEntry* cursor = entry; cursor != 0; cursor = cursor->runtimeSibling) {
             if ((cursor->flags & 0x4000u) == 0 && cursor->activationState == 2) {
-                NodeActionCallback(cursor, cursor->boundNode);
+                zEffAnimReset(cursor, cursor->boundNode);
                 zError::ReportOld(
                     0x100,
                     g_zEffect_SourceFile_ZeffAnimSaveC,
@@ -957,29 +957,29 @@ namespace zEffect_Anim
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.resetfromactivationrecord
-     * @recoil-artifact defines .text recoil:function:0x461840: zEffect_Anim::ResetFromActivationRecord.
+     * @recoil-artifact defines .text recoil:function:0x461840: zEffect_Anim::zEffResetActivationRecord.
      * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: restart the named animation against the node stored in an activation record.
      */
-    void __fastcall ResetFromActivationRecord(zEffectAnimActivationRecord * record)
+    void __fastcall zEffResetActivationRecord(zEffectAnimActivationRecord * record)
     {
         zEffectAnimEntry* const entry = zEffectAnim::FindEntryByName(record->animName);
         CZNodePartial* const node = CZZbd::NodeIndexToPtr(record->nodeToken);
-        NodeActionCallback(entry, node);
+        zEffAnimReset(entry, node);
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-save.processactivationrecord
-     * @recoil-artifact defines .text recoil:function:0x461870: zEffect_Anim::ProcessActivationRecord.
+     * @recoil-artifact defines .text recoil:function:0x461870: zEffect_Anim::zEffProcessActivationRecord.
      * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_save.c.
      * Purpose: dispatch a queued activation record to the matching animation
      * activation command.
      */
-    zEffectAnimEntry* __fastcall ProcessActivationRecord(zEffectAnimActivationRecord * record)
+    zEffectAnimEntry* __fastcall zEffProcessActivationRecord(zEffectAnimActivationRecord * record)
     {
         zEffectAnimEntry* result = 0;
         zEffectAnimEntry* const entry = zEffectAnim::FindEntryByName(record->animName);

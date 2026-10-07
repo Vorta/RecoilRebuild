@@ -3,15 +3,15 @@
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromeuler
- * @recoil-artifact defines .text recoil:function:0x4757c0: zMathQuatFromEuler
+ * @recoil-artifact defines .text recoil:function:0x4757c0: zMathQuatFromEulerYXZ
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  * @recoil-match byte
  *
- * Purpose: converts three Euler rotation angles into a quaternion.
+ * Purpose: converts three Euler rotation angles into a quaternion using Y-X-Z composition.
  * Data: reads no authored zMath globals; VC5 materializes literal and x87
  * range-check constants while lowering the sin/cos half-angle calls.
  */
-void __fastcall zMathQuatFromEuler(zQuat* outQuat, float angle0, float angle1, float angle2)
+void __fastcall zMathQuatFromEulerYXZ(zQuat* outQuat, float angle0, float angle1, float angle2)
 {
     float sy;
     float cy;
@@ -54,12 +54,12 @@ void __fastcall zMathQuatMultiply(const zQuat* quatA, const zQuat* quatB, zQuat*
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiplyinverse
- * @recoil-artifact defines .text recoil:function:0x4759d0: zMathQuatMultiplyInverse
+ * @recoil-artifact defines .text recoil:function:0x4759d0: zMathQuatMultiplyConjugate
  * @recoil-match byte
  *
- * Purpose: multiplies a quaternion by the inverse/conjugate form used by camera-view composition.
+ * Purpose: multiplies a quaternion by the conjugate of a second quaternion (its inverse only for unit quaternions).
  */
-void __fastcall zMathQuatMultiplyInverse(const zQuat* quatA, const zQuat* quatB, zQuat* outAConjB)
+void __fastcall zMathQuatMultiplyConjugate(const zQuat* quatA, const zQuat* quatB, zQuat* outAConjB)
 {
     outAConjB->w = quatB->w * quatA->w + quatB->x * quatA->x + quatA->y * quatB->y + quatB->z * quatA->z;
     outAConjB->x = quatB->w * quatA->x - quatA->w * quatB->x - quatB->z * quatA->y + quatA->z * quatB->y;
@@ -154,7 +154,7 @@ namespace zMath
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromrotationvector
- * @recoil-artifact defines .text recoil:function:0x475b80: zMathQuatFromRotationVector
+ * @recoil-artifact defines .text recoil:function:0x475b80: zMathQuatExp
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.quat.vector-length
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  * @recoil-match byte
@@ -163,9 +163,9 @@ namespace zMath
  * and the inline zMath::SinCos fsincos arm [0x475c01,0x475c10)
  * (requires zmth_quat.c /Ob1).
  *
- * Purpose: converts a rotation vector into a quaternion, returning identity for a zero vector.
+ * Purpose: computes the quaternion exponential of a half-angle rotation vector, returning identity for zero.
  */
-void __fastcall zMathQuatFromRotationVector(const zVec3* rotationVector, zQuat* outQuat)
+void __fastcall zMathQuatExp(const zVec3* rotationVector, zQuat* outQuat)
 {
     float sinLength;
     const float length = zMath::Vec3Length(rotationVector);

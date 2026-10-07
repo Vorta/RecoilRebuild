@@ -1397,7 +1397,7 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZCamera::gwCameraSetPosition((CZNodePartial*)(currentNode), x, y, z);
+            CZCamera::gwCameraSetEulerAngles((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 
@@ -1406,7 +1406,7 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
                 return 1;
             }
 
-            CZCamera::gwCameraGetTarget((CZNodePartial*)(currentNode), &x, &y, &z);
+            CZCamera::gwCameraGetPosition((CZNodePartial*)(currentNode), &x, &y, &z);
             Logf(this, "%s --> ( %.2f %.2f %.2f )", ((CZNodePartial*)(currentNode))->name, x, y, z);
             return 1;
         }
@@ -1495,7 +1495,7 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
             x = ParseFloatToken();
             y = ParseFloatToken();
             z = ParseFloatToken();
-            CZCamera::gwCameraSetTarget((CZNodePartial*)(currentNode), x, y, z);
+            CZCamera::gwCameraSetPosition((CZNodePartial*)(currentNode), x, y, z);
             return 1;
         }
 

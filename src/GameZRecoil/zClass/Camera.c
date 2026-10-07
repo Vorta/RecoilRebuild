@@ -382,7 +382,7 @@ namespace
      * that switches between world target and Euler/target storage.
      */
 #define GetSelectedTargetVector(data)                                                                                  \
-    (((data)->cameraFlags & 0x02) != 0 ? &(data)->worldTarget : &(data)->targetOrEuler)
+    (((data)->cameraFlags & 0x02) != 0 ? &(data)->worldTarget : &(data)->localPosition)
 }
 
 namespace CZCamera
@@ -423,13 +423,13 @@ namespace CZCamera
         node->classId = kZClassNodeCamera;
         CZCameraDataPartial* data = (CZCameraDataPartial*)(calloc(1, sizeof(CZCameraDataPartial)));
         node->classData = data;
-        // Retail zeroes posOffset through its own zero register (VC5 intrinsic memset expansion).
-        memset(&data->posOffset, 0, sizeof(data->posOffset));
+        // Retail zeroes localRotation through its own zero register (VC5 intrinsic memset expansion).
+        memset(&data->localRotation, 0, sizeof(data->localRotation));
         data->viewportWidth = 1.0f;
         data->viewportHeight = 1.0f;
-        data->targetOrEuler.x = 0.0f;
-        data->targetOrEuler.y = 0.0f;
-        data->targetOrEuler.z = 0.0f;
+        data->localPosition.x = 0.0f;
+        data->localPosition.y = 0.0f;
+        data->localPosition.z = 0.0f;
         data->frustumVectorsDirty = 1;
         data->transformDirty = 1;
         data->localFrustumNormalsDirty = 1;
@@ -642,20 +642,20 @@ namespace CZCamera
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasetposition
-     * @recoil-artifact defines .text recoil:function:0x449ea0: CZCamera::gwCameraSetPosition.
+     * @recoil-artifact defines .text recoil:function:0x449ea0: CZCamera::gwCameraSetEulerAngles.
      * @recoil-match byte
      *
-     * Purpose: set the camera position offset and dirty dependent transforms.
+     * Purpose: set the camera Euler angles and dirty dependent transforms.
      */
-    gwCameraSetPosition(CZNodePartial * camera, float x, float y, float z)
+    gwCameraSetEulerAngles(CZNodePartial * camera, float x, float y, float z)
     {
         ValidateCameraNode(camera, 0x3a7, 0x3a8, 0x3a9);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
         data->transformDirty = 1;
-        data->posOffset.x = x;
-        data->posOffset.y = y;
-        data->posOffset.z = z;
+        data->localRotation.x = x;
+        data->localRotation.y = y;
+        data->localRotation.z = z;
         data->cameraFlags &= ~0x02;
         if (camera->listCountA > 0) {
             ActivateChildren(camera, data);
@@ -692,19 +692,19 @@ namespace CZCamera
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslate
-     * @recoil-artifact defines .text recoil:function:0x449fb0: CZCamera::gwCameraTranslate.
+     * @recoil-artifact defines .text recoil:function:0x449fb0: CZCamera::gwCameraAddEulerAngles.
      * @recoil-match byte
      *
-     * Purpose: translate the camera position offset and dirty dependent transforms.
+     * Purpose: add deltas to the camera Euler angles and dirty dependent transforms.
      */
-    gwCameraTranslate(CZNodePartial * camera, float dx, float dy, float dz)
+    gwCameraAddEulerAngles(CZNodePartial * camera, float dx, float dy, float dz)
     {
         ValidateCameraNode(camera, 0x3df, 0x3e0, 0x3e1);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
-        data->posOffset.x += dx;
-        data->posOffset.y += dy;
-        data->posOffset.z += dz;
+        data->localRotation.x += dx;
+        data->localRotation.y += dy;
+        data->localRotation.z += dz;
         data->transformDirty = 1;
         if (camera->listCountA > 0) {
             ActivateChildren(camera, data);
@@ -716,31 +716,31 @@ namespace CZCamera
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragetposition
-     * @recoil-artifact defines .text recoil:function:0x44a060: CZCamera::gwCameraGetPosition.
+     * @recoil-artifact defines .text recoil:function:0x44a060: CZCamera::gwCameraGetEulerAngles.
      * @recoil-match byte
      *
-     * Purpose: return the camera position offset components.
+     * Purpose: return the camera Euler angle components.
      */
-    gwCameraGetPosition(CZNodePartial * camera, float* outX, float* outY, float* outZ)
+    gwCameraGetEulerAngles(CZNodePartial * camera, float* outX, float* outY, float* outZ)
     {
         ValidateCameraNode(camera, 0x414, 0x415, 0x416);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
 
-        *outX = data->posOffset.x;
-        *outY = data->posOffset.y;
-        *outZ = data->posOffset.z;
+        *outX = data->localRotation.x;
+        *outY = data->localRotation.y;
+        *outZ = data->localRotation.z;
         return 0;
     }
 
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcamerasettarget
-     * @recoil-artifact defines .text recoil:function:0x44a0f0: CZCamera::gwCameraSetTarget.
+     * @recoil-artifact defines .text recoil:function:0x44a0f0: CZCamera::gwCameraSetPosition.
      * @recoil-match byte
      *
-     * Purpose: set the selected camera target vector and update children.
+     * Purpose: set the camera position (matrix translation in matrix mode) and update children.
      */
-    gwCameraSetTarget(CZNodePartial * camera, float x, float y, float z)
+    gwCameraSetPosition(CZNodePartial * camera, float x, float y, float z)
     {
         ValidateCameraNode(camera, 0x43c, 0x43d, 0x43e);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
@@ -759,12 +759,12 @@ namespace CZCamera
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslatetarget
-     * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslateTarget.
+     * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslate.
      * @recoil-match byte
      *
-     * Purpose: translate the selected camera target vector and update children.
+     * Purpose: translate the camera position (matrix translation in matrix mode) and update children.
      */
-    gwCameraTranslateTarget(CZNodePartial * camera, float dx, float dy, float dz)
+    gwCameraTranslate(CZNodePartial * camera, float dx, float dy, float dz)
     {
         ValidateCameraNode(camera, 0x46f, 0x470, 0x471);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
@@ -783,12 +783,12 @@ namespace CZCamera
     int __fastcall
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameragettarget
-     * @recoil-artifact defines .text recoil:function:0x44a250: CZCamera::gwCameraGetTarget.
+     * @recoil-artifact defines .text recoil:function:0x44a250: CZCamera::gwCameraGetPosition.
      * @recoil-match byte
      *
-     * Purpose: return the selected camera target vector components.
+     * Purpose: return the camera position components (matrix translation in matrix mode).
      */
-    gwCameraGetTarget(CZNodePartial * camera, float* outX, float* outY, float* outZ)
+    gwCameraGetPosition(CZNodePartial * camera, float* outX, float* outY, float* outZ)
     {
         ValidateCameraNode(camera, 0x4a1, 0x4a2, 0x4a3);
         CZCameraDataPartial* const data = (CZCameraDataPartial*)(camera->classData);
@@ -1231,7 +1231,7 @@ namespace CZCamera
         if (result == 0) {
             node->flags |= 0x80000000;
             zMath::MatStackPushAndCloneParent(data->worldTransform);
-            zMath::MatApplyLocalTRS(&data->posOffset, &data->targetOrEuler, &unitScale);
+            zMath::MatApplyLocalTRS(&data->localRotation, &data->localPosition, &unitScale);
             if (g_CZClass_RenderBoundsContextActive == 0) {
                 boundsContextPushed = 1;
                 g_CZClass_RenderBoundsContextActive = 1;
@@ -2374,12 +2374,12 @@ namespace CZCamera
 {
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.fastanglexz
-     * @recoil-artifact defines .text recoil:function:0x44c1b0: CZCamera::FastAngleXZ.
+     * @recoil-artifact defines .text recoil:function:0x44c1b0: CZCamera::theta_x_z.
      *
      *
      * Purpose: approximate the XZ-plane angle between two points.
      */
-    float __fastcall FastAngleXZ(zVec3 * point1, zVec3 * point2)
+    float __fastcall theta_x_z(zVec3 * point1, zVec3 * point2)
     {
         const int deltaX = (int)(point2->x - point1->x);
         // abs() intrinsic: retail forms |dx| and |dz| with cdq/xor/sub (0x44c1cc, 0x44c1da).
@@ -2407,12 +2407,12 @@ namespace CZCamera
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.findconvexhullxz
-     * @recoil-artifact defines .text recoil:function:0x44c230: CZCamera::FindConvexHullXZ.
+     * @recoil-artifact defines .text recoil:function:0x44c230: CZCamera::find_convex_hull_xz.
      * @recoil-match byte
      *
      * Purpose: build the XZ convex hull ordering for frustum footprint points.
      */
-    int __fastcall FindConvexHullXZ(zVec3 * points, int count)
+    int __fastcall find_convex_hull_xz(zVec3 * points, int count)
     {
         int selectedIndex = 0;
         for (int candidateIndex = 1; candidateIndex < count; ++candidateIndex) {
@@ -2436,7 +2436,7 @@ namespace CZCamera
             previousAngle = 6.28318548f;
 
             for (int scanIndex = scanStart; scanIndex <= count; ++scanIndex) {
-                const float angle = FastAngleXZ(hullPoint, &points[scanIndex]);
+                const float angle = theta_x_z(hullPoint, &points[scanIndex]);
                 if (angle > minAngle && angle < previousAngle) {
                     previousAngle = angle;
                     selectedIndex = scanIndex;
@@ -2510,7 +2510,7 @@ namespace CZCamera
         );
         if (g_zCamera_FrustumFootprintPointCount > 3) {
             g_zCamera_FrustumFootprintPointCount
-                = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
+                = CZCamera::find_convex_hull_xz(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
         }
         if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
                 g_zCamera_FrustumFootprintPoints,
@@ -2725,7 +2725,7 @@ namespace CZCamera
         );
         if (g_zCamera_FrustumFootprintPointCount > 3) {
             g_zCamera_FrustumFootprintPointCount
-                = CZCamera::FindConvexHullXZ(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
+                = CZCamera::find_convex_hull_xz(g_zCamera_FrustumFootprintPoints, g_zCamera_FrustumFootprintPointCount);
         }
         if (CZDisplayInstance::FilterRegionsAgainstMeshFaces(
                 g_zCamera_FrustumFootprintPoints,

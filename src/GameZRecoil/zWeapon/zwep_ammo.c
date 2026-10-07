@@ -482,7 +482,7 @@ namespace OptCatalog
     {
         zEffectAnimEntry* const asyncFxHandle = runtimeInstance->asyncFxHandle;
         if (asyncFxHandle != 0) {
-            zEffect_Anim::NodeActionCallback(asyncFxHandle, 0);
+            zEffect_Anim::zEffAnimReset(asyncFxHandle, 0);
         }
 
         CZObject3D::RemoveChild(runtimeInstance->projectileNode, runtimeInstance->attachCloneChild);
@@ -830,13 +830,13 @@ namespace OptCatalog
 
         zEffectAnimEntry* const flyoutAnimPrimary = runtimeInstance->flyoutAnimPrimary;
         if (flyoutAnimPrimary != 0) {
-            zEffect_Anim::NodeActionCallback(flyoutAnimPrimary, 0);
+            zEffect_Anim::zEffAnimReset(flyoutAnimPrimary, 0);
             runtimeInstance->flyoutAnimPrimary = 0;
         }
 
         zEffectAnimEntry* const flyoutAnimSecondary = runtimeInstance->flyoutAnimSecondary;
         if (flyoutAnimSecondary != 0) {
-            zEffect_Anim::NodeActionCallback(flyoutAnimSecondary, 0);
+            zEffect_Anim::zEffAnimReset(flyoutAnimSecondary, 0);
             runtimeInstance->flyoutAnimSecondary = 0;
         }
 
@@ -1617,11 +1617,11 @@ namespace OptCatalog
                         runtimeInstance->lifetime = 0.0f;
                         *link = runtimeInstance->next;
                         if (runtimeInstance->flyoutAnimPrimary != 0) {
-                            zEffect_Anim::NodeActionCallback(runtimeInstance->flyoutAnimPrimary, 0);
+                            zEffect_Anim::zEffAnimReset(runtimeInstance->flyoutAnimPrimary, 0);
                             runtimeInstance->flyoutAnimPrimary = 0;
                         }
                         if (runtimeInstance->flyoutAnimSecondary != 0) {
-                            zEffect_Anim::NodeActionCallback(runtimeInstance->flyoutAnimSecondary, 0);
+                            zEffect_Anim::zEffAnimReset(runtimeInstance->flyoutAnimSecondary, 0);
                             runtimeInstance->flyoutAnimSecondary = 0;
                         }
                         CZClass::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);

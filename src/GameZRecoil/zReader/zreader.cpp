@@ -683,12 +683,12 @@ extern "C" void __fastcall zRdrFreeContents(zReader::Node* node)
 }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-findchildrecursive
- * @recoil-artifact defines .text recoil:function:0x48cec0: zRdrFindNode (GameZRecoil/zReader/zreader.cpp).
+ * @recoil-artifact defines .text recoil:function:0x48cec0: zRdrFindTagStartIdx (GameZRecoil/zReader/zreader.cpp).
  * @recoil-match byte
  *
  * Purpose: Recursively finds a named zReader child and returns the value node adjacent to the matching name string.
  */
-extern "C" zReader::Node* __fastcall zRdrFindNode(zReader::Node* node, const char* searchName, int startIndex)
+extern "C" zReader::Node* __fastcall zRdrFindTagStartIdx(zReader::Node* node, const char* searchName, int startIndex)
 {
     if (node == 0 || node->type != zReader::ZRDR_NODE_ARRAY) {
         return 0;
@@ -704,7 +704,7 @@ extern "C" zReader::Node* __fastcall zRdrFindNode(zReader::Node* node, const cha
         zReader::Node* child = &node->value.nodes[index];
         int childType = child->type;
         if (childType == zReader::ZRDR_NODE_ARRAY) {
-            zReader::Node* result = zRdrFindNode(child, searchName, 1);
+            zReader::Node* result = zRdrFindTagStartIdx(child, searchName, 1);
             if (result != 0) {
                 return result;
             }
@@ -720,28 +720,28 @@ extern "C" zReader::Node* __fastcall zRdrFindNode(zReader::Node* node, const cha
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-zreader-getnamednode
- * @recoil-artifact defines .text recoil:function:0x48cf70: zRdrGetNode (GameZRecoil/zReader/zreader.cpp).
+ * @recoil-artifact defines .text recoil:function:0x48cf70: zRdrFindTag (GameZRecoil/zReader/zreader.cpp).
  * @recoil-match byte
  *
  * Purpose: Starts the recursive named-node lookup at the first payload child of an array node.
  */
-extern "C" zReader::Node* __fastcall zRdrGetNode(zReader::Node* parentNode, const char* name)
+extern "C" zReader::Node* __fastcall zRdrFindTag(zReader::Node* parentNode, const char* name)
 {
-    return zRdrFindNode(parentNode, name, 1);
+    return zRdrFindTagStartIdx(parentNode, name, 1);
 }
 
 namespace zReader {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zreader-zreader-readnamedstring
- * @recoil-artifact defines .text recoil:function:0x48cf80: zReader::GetString.
+ * @recoil-artifact defines .text recoil:function:0x48cf80: zReader::FindString.
  * @recoil-match byte
  *
  * Purpose: read a named string value from a node or the first payload item of a
  * named array node.
  */
-const char* __fastcall GetString(Node* parentNode, const char* name)
+const char* __fastcall FindString(Node* parentNode, const char* name)
 {
-    Node* node = zRdrGetNode(parentNode, name);
+    Node* node = zRdrFindTag(parentNode, name);
     if (node == 0) {
         return 0;
     }
@@ -772,7 +772,7 @@ namespace zReader {
  */
 int __fastcall GetFloat(Node* parentNode, const char* name, float* outValue)
 {
-    Node* node = zRdrGetNode(parentNode, name);
+    Node* node = zRdrFindTag(parentNode, name);
     if (node == 0) {
         return 0;
     }
@@ -818,7 +818,7 @@ namespace zReader {
  */
 int __fastcall GetInt(Node* parentNode, const char* name, int* outValue)
 {
-    Node* node = zRdrGetNode(parentNode, name);
+    Node* node = zRdrFindTag(parentNode, name);
     if (node == 0) {
         return 0;
     }

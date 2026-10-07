@@ -1182,11 +1182,11 @@ namespace zEffect
 
         case 1:
             if ((event->flags & 0x01) != 0) {
-                CZCamera::gwCameraTranslate(targetNode, event->vecX, event->vecY, event->vecZ);
+                CZCamera::gwCameraAddEulerAngles(targetNode, event->vecX, event->vecY, event->vecZ);
                 return 2;
             }
 
-            CZCamera::gwCameraSetPosition(targetNode, event->vecX, event->vecY, event->vecZ);
+            CZCamera::gwCameraSetEulerAngles(targetNode, event->vecX, event->vecY, event->vecZ);
             break;
         }
 
@@ -1257,9 +1257,9 @@ namespace zEffect
                 break;
             case 1:
                 if ((event->flags & 0x01) != 0) {
-                    CZCamera::gwCameraTranslateTarget(targetNode, point.x, point.y, point.z);
+                    CZCamera::gwCameraTranslate(targetNode, point.x, point.y, point.z);
                 } else {
-                    CZCamera::gwCameraSetTarget(targetNode, point.x, point.y, point.z);
+                    CZCamera::gwCameraSetPosition(targetNode, point.x, point.y, point.z);
                 }
                 break;
             }
@@ -1473,7 +1473,7 @@ namespace zEffect
             if (node->classId == 5) {
                 CZObject3D::gwObject3DTranslatePosition(node, dx, dy, dz);
             } else if (node->classId == 1) {
-                CZCamera::gwCameraTranslateTarget(node, dx, dy, dz);
+                CZCamera::gwCameraTranslate(node, dx, dy, dz);
             }
 
             if (movementClamped != 0) {
@@ -1532,7 +1532,7 @@ namespace zEffect
             if (node->classId == 5) {
                 CZObject3D::gwObject3DTranslateRotation(node, dx, dy, dz);
             } else if (node->classId == 1) {
-                CZCamera::gwCameraTranslate(node, dx, dy, dz);
+                CZCamera::gwCameraAddEulerAngles(node, dx, dy, dz);
             }
             animEvent->runtimeVecB.x += animEvent->runtimeVecA.x * frameStepSec;
             animEvent->runtimeVecB.y += animEvent->runtimeVecA.y * frameStepSec;
@@ -1554,7 +1554,7 @@ namespace zEffect
             if (node->classId == 5) {
                 CZObject3D::gwObject3DTranslateRotation(node, dx, 0.0f, dz);
             } else if (node->classId == 1) {
-                CZCamera::gwCameraTranslate(node, dx, 0.0f, dz);
+                CZCamera::gwCameraAddEulerAngles(node, dx, 0.0f, dz);
             }
             animEvent->scaleRate.y += animEvent->scaleRate.x * frameStepSec;
         }
@@ -1679,7 +1679,7 @@ namespace zEffect
                     );
                     break;
                 case 1:
-                    CZCamera::gwCameraSetPosition(
+                    CZCamera::gwCameraSetEulerAngles(
                         node,
                         nodeAnimEvent->rotationOrCameraPosStart.x,
                         nodeAnimEvent->rotationOrCameraPosStart.y,
@@ -1699,7 +1699,7 @@ namespace zEffect
                     );
                     break;
                 case 1:
-                    CZCamera::gwCameraSetTarget(
+                    CZCamera::gwCameraSetPosition(
                         node,
                         nodeAnimEvent->positionOrTargetStart.x,
                         nodeAnimEvent->positionOrTargetStart.y,
@@ -1738,7 +1738,7 @@ namespace zEffect
                 );
                 break;
             case 1:
-                CZCamera::gwCameraTranslateTarget(
+                CZCamera::gwCameraTranslate(
                     node,
                     nodeAnimEvent->positionOrTargetRate.x * deltaTimeSec,
                     nodeAnimEvent->positionOrTargetRate.y * deltaTimeSec,
@@ -1759,7 +1759,7 @@ namespace zEffect
                 );
                 break;
             case 1:
-                CZCamera::gwCameraTranslate(
+                CZCamera::gwCameraAddEulerAngles(
                     node,
                     nodeAnimEvent->rotationOrCameraPosRate.x * deltaTimeSec,
                     nodeAnimEvent->rotationOrCameraPosRate.y * deltaTimeSec,
@@ -1826,7 +1826,7 @@ namespace zEffect
                     );
                     break;
                 case 1:
-                    CZCamera::gwCameraSetTarget(
+                    CZCamera::gwCameraSetPosition(
                         node,
                         nodeAnimEvent->positionOrTargetEnd.x,
                         nodeAnimEvent->positionOrTargetEnd.y,
@@ -1893,7 +1893,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.animatekeyframesample
      * @recoil-artifact defines .text recoil:function:0x45ae90: zEffect_Anim::AnimateKeyframeSample.
-     * @recoil-match source
+     *
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: apply position, rotation, and scale channels for one keyframe
@@ -1966,7 +1966,7 @@ namespace zEffect_Anim
                 CZObject3D::gwObject3DSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
                 break;
             case 1:
-                CZCamera::gwCameraSetTarget(targetNode, outEuler.x, outEuler.y, outEuler.z);
+                CZCamera::gwCameraSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
                 break;
             }
 
@@ -1979,7 +1979,7 @@ namespace zEffect_Anim
             const zVec3 rotationVector = { rate->x * localTimeSec, rate->y * localTimeSec, rate->z * localTimeSec };
 
             zQuat deltaQuat;
-            zMathQuatFromRotationVector(&rotationVector, &deltaQuat);
+            zMathQuatExp(&rotationVector, &deltaQuat);
 
             zQuat blendedQuat;
             zMathQuatMultiply(&deltaQuat, &sampleChannel->baseQuat, &blendedQuat);
@@ -1993,7 +1993,7 @@ namespace zEffect_Anim
                 CZObject3D::gwObject3DSetRotation(targetNode, outEuler.x, outEuler.y, outEuler.z);
                 break;
             case 1:
-                CZCamera::gwCameraSetPosition(targetNode, outEuler.x, outEuler.y, outEuler.z);
+                CZCamera::gwCameraSetEulerAngles(targetNode, outEuler.x, outEuler.y, outEuler.z);
                 break;
             }
 
@@ -2865,7 +2865,7 @@ namespace zEffect
         }
         const int entryIndex = event->cachedEntryIndex;
         if (entryIndex > 0) {
-            zEffect_Anim::NodeActionCallback(&g_zEffectAnim_State.entryList[entryIndex], 0);
+            zEffect_Anim::zEffAnimReset(&g_zEffectAnim_State.entryList[entryIndex], 0);
         }
 
         return 2;
@@ -4136,14 +4136,14 @@ namespace zEffect_Anim
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.nodeactioncallback
-     * @recoil-artifact defines .text recoil:function:0x45d6b0: zEffect_Anim::NodeActionCallback.
+     * @recoil-artifact defines .text recoil:function:0x45d6b0: zEffect_Anim::zEffAnimReset.
      * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: handle runtime node action callbacks by stopping and cleaning up the
      * owning animation entry.
      */
-    int __fastcall NodeActionCallback(zEffectAnimEntry * self, CZNodePartial * rootNode)
+    int __fastcall zEffAnimReset(zEffectAnimEntry * self, CZNodePartial * rootNode)
     {
         return zEffectAnim::StopAndCleanup(self, rootNode, 1);
     }
@@ -4212,7 +4212,7 @@ namespace zEffectAnim
 
         entry->triggerCurrentValue += g_FrameDeltaTimeSec;
         if (entry->triggerCurrentValue > entry->triggerBaseValue) {
-            zEffect_Anim::NodeActionCallback(entry, 0);
+            zEffect_Anim::zEffAnimReset(entry, 0);
         }
     }
 
@@ -4266,9 +4266,9 @@ namespace zEffectAnim
                 }
                 break;
             case 1:
-                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, posX, posY, posZ);
+                CZCamera::gwCameraSetPosition(activatedEntry->boundNode, posX, posY, posZ);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, rotX, rotY, rotZ);
+                    CZCamera::gwCameraSetEulerAngles(activatedEntry->boundNode, rotX, rotY, rotZ);
                 }
                 break;
             }
@@ -4550,9 +4550,9 @@ namespace zEffectAnim
                 }
                 break;
             case 1:
-                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetEulerAngles(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
                 break;
             }
@@ -4626,9 +4626,9 @@ namespace zEffectAnim
                 }
                 break;
             case 1:
-                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetEulerAngles(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
                 break;
             }
@@ -4714,9 +4714,9 @@ namespace zEffectAnim
                 }
                 break;
             case 1:
-                CZCamera::gwCameraSetTarget(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 if ((activatedEntry->flags & 0x00000200u) == 0) {
-                    CZCamera::gwCameraSetPosition(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
+                    CZCamera::gwCameraSetEulerAngles(activatedEntry->boundNode, 0.0f, 0.0f, 0.0f);
                 }
                 break;
             }

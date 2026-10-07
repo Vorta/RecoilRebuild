@@ -520,7 +520,7 @@ extern "C" int __fastcall zSndStreamRequestStopIfActive(zSndPlayHandle* request)
 extern "C" int __fastcall zSndPlayHandleTryEnableManaged(zSndPlayHandle* handle);
 extern "C" int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle);
 extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(void* payload, void* group);
-extern "C" float __stdcall zSndSamplePlaySimple(float value);
+extern "C" float __stdcall zSndGainScaleIdentity(float value);
 extern "C" zSndSample* __fastcall zSndPendingListFindByName(const char* sampleName);
 extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void* sampleName);
 extern "C" int __cdecl zSndStreamMgrEnsureInit();

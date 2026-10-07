@@ -511,13 +511,13 @@ int __stdcall zSnd::GainScaleToDirectSoundAttenuation(float gainScale)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playsimple
- * @recoil-artifact defines .text recoil:function:0x49fa00: zSndSamplePlaySimple.
+ * @recoil-artifact defines .text recoil:function:0x49fa00: zSndGainScaleIdentity.
  * @recoil-match byte
  *
  * Purpose: return the supplied gain scale through the x87 floating-point
  * return path unchanged.
  */
-extern "C" float __stdcall zSndSamplePlaySimple(float value)
+extern "C" float __stdcall zSndGainScaleIdentity(float value)
 {
     return value;
 }
@@ -587,7 +587,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
         if (zSnd::IsMuted() != 0) {
             ((zA3dProviderSource*)(result->backendBuffer))->SetGain(0.0f);
         } else {
-            ((zA3dProviderSource*)(result->backendBuffer))->SetGain(zSndSamplePlaySimple(*(float*)&result->gainScaled));
+            ((zA3dProviderSource*)(result->backendBuffer))
+                ->SetGain(zSndGainScaleIdentity(*(float*)&result->gainScaled));
         }
     }
 
@@ -1032,7 +1033,7 @@ void __fastcall zSndPlayHandle::PlayWithDeltaA3D(
         gainDelta += *(float*)&playHandle->gainScaled;
         *(float*)&playHandle->gainScaled = gainDelta;
 
-        ((zA3dProviderSource*)playHandle->backendBuffer)->SetGain(zSndSamplePlaySimple(gainDelta));
+        ((zA3dProviderSource*)playHandle->backendBuffer)->SetGain(zSndGainScaleIdentity(gainDelta));
     }
 
     if (restartBeforePlay != 0) {
@@ -1271,7 +1272,7 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(int enableMute)
                 } else {
                     zSndPlayHandle* const playHandle = item->payload.playHandle;
                     zA3dProviderSource* const source = (zA3dProviderSource*)(playHandle->backendBuffer);
-                    source->SetGain(zSndSamplePlaySimple(*(float*)&playHandle->gainScaled));
+                    source->SetGain(zSndGainScaleIdentity(*(float*)&playHandle->gainScaled));
                 }
 
                 item = item->next;

@@ -464,7 +464,7 @@ namespace CZLight
         zMath::MatLoadCameraScratchB();
 
         if (data->isDirectedSource != 0 || data->isDirectional != 0) {
-            zMathMatTransformNormalBatch(&data->worldDir, &data->viewDir, 1);
+            zMathMatTransformDirectionBatch(&data->worldDir, &data->viewDir, 1);
             data->viewDir.x = -data->viewDir.x;
             data->viewDir.y = -data->viewDir.y;
             data->viewDir.z = -data->viewDir.z;

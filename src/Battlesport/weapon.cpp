@@ -2016,7 +2016,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
         memcpy(&smoothingFactor, &smoothingFloatBits, sizeof smoothingFactor);
     }
 #endif
-    zMath::Vec3LerpNormalize(&playerState->altGunAimOrigin, &aimDirection, smoothingFactor);
+    zMath::Vec3BlendByFirstWeightNormalize(&playerState->altGunAimOrigin, &aimDirection, smoothingFactor);
     aimDirection = playerState->altGunAimOrigin;
 
     UpdateGunAndTurretAimNodes(&aimDirection, playerState->gunNode, playerState->turretNode);
@@ -3003,7 +3003,7 @@ int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState)
     );
 
     if (playerState->recentHitValid != 0) {
-        zEffect_Anim::NodeActionCallback(playerState->recentHitLightHandle, 0);
+        zEffect_Anim::zEffAnimReset(playerState->recentHitLightHandle, 0);
         playerState->recentHitLightHandle = 0;
         playerState->recentHitValid = 0;
     }
@@ -3063,7 +3063,7 @@ void __fastcall StartDestroyedStateVehicleEffect(zUtil_SaveGameState* saveState,
     playerState->destroyedRespawnAsyncHandle = asyncHandle;
 
     if (playerState->recentHitValid != 0) {
-        zEffect_Anim::NodeActionCallback(playerState->recentHitLightHandle, 0);
+        zEffect_Anim::zEffAnimReset(playerState->recentHitLightHandle, 0);
         playerState->recentHitLightHandle = 0;
         playerState->recentHitValid = 0;
     }
@@ -3564,7 +3564,7 @@ void __fastcall LoadKillVerbString(zReader::Node* entryNode, OptCatalogEntryDef*
     char* const killVerbString = (char*)(calloc(1, kOptCatalogKillVerbStringBytes));
     entry->killVerbString = killVerbString;
 
-    zReader::Node* const killVerbNode = zRdrGetNode(entryNode, g_Player_KillVerbToken);
+    zReader::Node* const killVerbNode = zRdrFindTag(entryNode, g_Player_KillVerbToken);
     if (killVerbNode != 0) {
         strncpy(
             killVerbString,

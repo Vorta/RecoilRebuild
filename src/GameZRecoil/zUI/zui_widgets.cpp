@@ -990,7 +990,7 @@ inline HudUiPanel* CreateHudZrdTextPanel(HudUiZrdWidget* widget, zReader::Node* 
  */
 inline void ApplyHudZrdFlashSection(zReader::Node* parentNode, HudUiPanelPtrVector& panels)
 {
-    zReader::Node* const flashNode = zRdrGetNode(parentNode, g_HudZrd_Key_Flash);
+    zReader::Node* const flashNode = zRdrFindTag(parentNode, g_HudZrd_Key_Flash);
     if (flashNode == 0) {
         return;
     }
@@ -999,7 +999,7 @@ inline void ApplyHudZrdFlashSection(zReader::Node* parentNode, HudUiPanelPtrVect
     zReader::GetFloat(flashNode, g_HudZrd_Key_Rate, &flashRate);
 
     unsigned int flashColor = 0;
-    zReader::Node* const colorNode = zRdrGetNode(flashNode, "COLOR");
+    zReader::Node* const colorNode = zRdrFindTag(flashNode, "COLOR");
     zReader::Node* const colorBase = ZrdArrayBase(colorNode);
     if (colorBase != 0) {
         const unsigned int red = (unsigned int)(ZrdArrayInt(colorBase, 1, 0)) & 0xffu;
@@ -1024,7 +1024,7 @@ inline void ApplyHudZrdFlashSection(zReader::Node* parentNode, HudUiPanelPtrVect
  */
 inline void LoadHudZrdBitmap(zReader::Node* parentNode, const char* sectionName, zVidImagePartial** outImage)
 {
-    zReader::Node* const bitmapNode = zRdrGetNode(parentNode, sectionName);
+    zReader::Node* const bitmapNode = zRdrFindTag(parentNode, sectionName);
     zReader::Node* const bitmapBase = ZrdArrayBase(bitmapNode);
     const char* const path = ZrdArrayString(bitmapBase, 1);
     if (path != 0) {
@@ -1039,7 +1039,7 @@ inline void LoadHudZrdBitmap(zReader::Node* parentNode, const char* sectionName,
  */
 inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, float* outScale)
 {
-    zReader::Node* const soundNode = zRdrGetNode(parentNode, g_HudZrd_Key_Sound);
+    zReader::Node* const soundNode = zRdrFindTag(parentNode, g_HudZrd_Key_Sound);
     zReader::Node* const soundBase = ZrdArrayBase(soundNode);
     const char* const name = ZrdArrayString(soundBase, 1);
     if (name == 0) {
@@ -1058,7 +1058,7 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
  */
 #define HUD_ZRD_LOAD_BITMAP(parentNode_, sectionName_, outImage_)                                                      \
     do {                                                                                                               \
-        zReader::Node* const hudBitmapNode_ = zRdrGetNode((parentNode_), (sectionName_));                              \
+        zReader::Node* const hudBitmapNode_ = zRdrFindTag((parentNode_), (sectionName_));                              \
         if (hudBitmapNode_ != 0) {                                                                                     \
             zReader::Node* const hudBitmapBase_ = hudBitmapNode_->value.nodes;                                         \
             const char* const hudBitmapPath_ = hudBitmapBase_[1].value.str;                                            \
@@ -1071,7 +1071,7 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
 /* Retail stores the default 1.0 scale first and overwrites it for 3+ entries. */
 #define HUD_ZRD_LOAD_SOUND(parentNode_, outSound_, outScale_)                                                          \
     do {                                                                                                               \
-        zReader::Node* const hudSoundNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Sound);                           \
+        zReader::Node* const hudSoundNode_ = zRdrFindTag((parentNode_), g_HudZrd_Key_Sound);                           \
         if (hudSoundNode_ != 0) {                                                                                      \
             zReader::Node* const hudSoundBase_ = hudSoundNode_->value.nodes;                                           \
             const char* const hudSoundName_ = hudSoundBase_[1].value.str;                                              \
@@ -1133,7 +1133,7 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
 inline void LoadHudZrdExpandedLabelArray(HudUiZrdWidget* widget, zReader::Node* labelBase, HudUiPanelPtrVector& panels);
 #define HUD_ZRD_LOAD_LABEL_SECTION_WITH_APPEND(widget_, parentNode_, panels_, append_)                                 \
     do {                                                                                                               \
-        zReader::Node* const hudLabelNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Label);                           \
+        zReader::Node* const hudLabelNode_ = zRdrFindTag((parentNode_), g_HudZrd_Key_Label);                           \
         if (hudLabelNode_ != 0) {                                                                                      \
             if (hudLabelNode_->value.nodes[1].type == zReader::ZRDR_NODE_ARRAY) {                                      \
                 LoadHudZrdExpandedLabelArray((widget_), hudLabelNode_, (panels_));                                     \
@@ -1165,15 +1165,15 @@ inline void ApplyHudPanelVectorFlash(HudUiPanelPtrVector& panels, unsigned int c
 /* Retail clears the color before the rate lookup and packs it with RGB(). */
 #define HUD_ZRD_APPLY_FLASH_SECTION(parentNode_, panels_)                                                              \
     do {                                                                                                               \
-        zReader::Node* const hudFlashNode_ = zRdrGetNode((parentNode_), g_HudZrd_Key_Flash);                           \
+        zReader::Node* const hudFlashNode_ = zRdrFindTag((parentNode_), g_HudZrd_Key_Flash);                           \
         if (hudFlashNode_ != 0) {                                                                                      \
             float hudFlashRate_ = 0.0f;                                                                                \
             unsigned int hudFlashColor_ = 0;                                                                           \
-            zReader::Node* const hudRateNode_ = zRdrGetNode(hudFlashNode_, g_HudZrd_Key_Rate);                         \
+            zReader::Node* const hudRateNode_ = zRdrFindTag(hudFlashNode_, g_HudZrd_Key_Rate);                         \
             if (hudRateNode_ != 0) {                                                                                   \
                 hudFlashRate_ = hudRateNode_->value.nodes[1].value.f32;                                                \
             }                                                                                                          \
-            zReader::Node* const hudColorNode_ = zRdrGetNode(hudFlashNode_, "COLOR");                                  \
+            zReader::Node* const hudColorNode_ = zRdrFindTag(hudFlashNode_, "COLOR");                                  \
             if (hudColorNode_ != 0) {                                                                                  \
                 zReader::Node* const hudColorBase_ = hudColorNode_->value.nodes;                                       \
                 const int hudRed_ = hudColorBase_[1].value.i32;                                                        \
@@ -2288,7 +2288,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
         return 0;
     }
 
-    zReader::Node* const positionNode = zRdrGetNode(zrdSection, "POSITION");
+    zReader::Node* const positionNode = zRdrFindTag(zrdSection, "POSITION");
     if (positionNode != 0) {
         originX += positionNode->value.nodes[1].value.i32;
         originY += positionNode->value.nodes[2].value.i32;
@@ -2296,7 +2296,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
 
     int widgetX = originX;
     int widgetY = originY;
-    zReader::Node* const bitmapNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+    zReader::Node* const bitmapNode = zRdrFindTag(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
     if (bitmapNode != 0) {
         const char* const bitmapPath = bitmapNode->value.nodes[1].value.str;
         {
@@ -2320,7 +2320,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
         }
     }
 
-    zReader::Node* const rolloverNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Rollover);
+    zReader::Node* const rolloverNode = zRdrFindTag(zrdSection, g_HudZrd_Key_Rollover);
     if (rolloverNode != 0) {
         HUD_ZRD_LOAD_BITMAP(rolloverNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, rolloverImage);
         HUD_ZRD_LOAD_SOUND(rolloverNode, rolloverSound, rolloverSoundScale);
@@ -2328,7 +2328,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
         HUD_ZRD_APPLY_FLASH_SECTION(rolloverNode, rolloverLabelPanels);
     }
 
-    zReader::Node* const disableNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Disable);
+    zReader::Node* const disableNode = zRdrFindTag(zrdSection, g_HudZrd_Key_Disable);
     if (disableNode != 0) {
         HUD_ZRD_LOAD_BITMAP(disableNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, disabledImage);
         HUD_ZRD_LOAD_SOUND(disableNode, disabledSound, disabledSoundScale);
@@ -2336,7 +2336,7 @@ int HudUiZrdWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* owne
         HUD_ZRD_APPLY_FLASH_SECTION(disableNode, disabledLabelPanels);
     }
 
-    zReader::Node* const activateNode = zRdrGetNode(zrdSection, g_HudZrd_Key_Activate);
+    zReader::Node* const activateNode = zRdrFindTag(zrdSection, g_HudZrd_Key_Activate);
     if (activateNode != 0) {
         HUD_ZRD_LOAD_BITMAP(activateNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap, activateImage);
         HUD_ZRD_LOAD_SOUND(activateNode, activateSound, activateSoundScale);
@@ -2566,13 +2566,13 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
     uncheckedImage = image;
 
-    zReader::Node* const checkedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_Checked);
+    zReader::Node* const checkedNode = zRdrFindTag(zrdSection, g_HudUiZrdKey_Checked);
     if (checkedNode != 0) {
-        zReader::Node* const bitmapNode = zRdrGetNode(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrFindTag(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             checkedImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node* const textNode = zRdrGetNode(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+        zReader::Node* const textNode = zRdrFindTag(checkedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
@@ -2595,13 +2595,13 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
         }
     }
 
-    zReader::Node* const disabledUnselectedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_DisableUnsel);
+    zReader::Node* const disabledUnselectedNode = zRdrFindTag(zrdSection, g_HudUiZrdKey_DisableUnsel);
     if (disabledUnselectedNode != 0) {
-        zReader::Node* const bitmapNode = zRdrGetNode(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrFindTag(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             disabledCheckedFallbackImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node* const textNode = zRdrGetNode(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+        zReader::Node* const textNode = zRdrFindTag(disabledUnselectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
@@ -2626,13 +2626,13 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
         HUD_ZRD_LOAD_LABEL_SECTION(this, zrdSection, disabledLabelPanels);
     }
 
-    zReader::Node* const disabledSelectedNode = zRdrGetNode(zrdSection, g_HudUiZrdKey_DisableSel);
+    zReader::Node* const disabledSelectedNode = zRdrFindTag(zrdSection, g_HudUiZrdKey_DisableSel);
     if (disabledSelectedNode != 0) {
-        zReader::Node* const bitmapNode = zRdrGetNode(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrFindTag(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             disabledCheckedImage = zImage::TexDirFindOrCreateByPath(bitmapNode->value.nodes[1].value.str);
         }
-        zReader::Node* const textNode = zRdrGetNode(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+        zReader::Node* const textNode = zRdrFindTag(disabledSelectedNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             const int textOriginX = originX;
             const int textOriginY = originY;
@@ -3009,18 +3009,18 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
 {
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    zReader::Node* const fontNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Font);
+    zReader::Node* const fontNode = zRdrFindTag(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Font);
     if (fontNode != 0) {
         fontStyleRef = (void*)((unsigned int)(fontNode->value.u32));
     }
 
-    zReader::Node* const textOffsetNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_TextOffset);
+    zReader::Node* const textOffsetNode = zRdrFindTag(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_TextOffset);
     if (textOffsetNode != 0) {
         textOffsetX = textOffsetNode->value.nodes[1].value.i32;
         textOffsetY = textOffsetNode->value.nodes[2].value.i32;
     }
 
-    zReader::Node* const cycleNode = zRdrGetNode(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Cycle);
+    zReader::Node* const cycleNode = zRdrFindTag(zrdSection, g_HudUiCycleSelectorWidget_ZrdKey_Cycle);
     if (cycleNode == 0) {
         return 1;
     }
@@ -3039,7 +3039,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
         // Unsigned slot index: VC5 then forms the entry address as scaled index + array base, as in retail.
         zReader::Node* const entryNode = &cycleNode->value.nodes[(unsigned int)(index + 1)];
 
-        zReader::Node* const textNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
+        zReader::Node* const textNode = zRdrFindTag(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Text);
         if (textNode != 0) {
             AddTextEntry(
                 index,
@@ -3050,7 +3050,7 @@ int HudUiCycleSelectorWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgr
             ApplyFontStyleForEntry(index, textNode->value.nodes[4].value.i32);
         }
 
-        zReader::Node* const bitmapNode = zRdrGetNode(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* const bitmapNode = zRdrFindTag(entryNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             zReader::Node* const bitmapItems = bitmapNode->value.nodes;
             int bitmapX = originX;
@@ -3161,7 +3161,7 @@ int HudUiFillBitmap::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground* own
 {
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    zReader::Node* const fillBitmapNode = zRdrGetNode(zrdSection, g_HudUiFillBitmap_ZrdKey_FillBitmap);
+    zReader::Node* const fillBitmapNode = zRdrFindTag(zrdSection, g_HudUiFillBitmap_ZrdKey_FillBitmap);
     if (fillBitmapNode != 0) {
         int posX = originX;
         int posY = originY;
@@ -3388,7 +3388,7 @@ int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
     mouseRectValid = 1;
     mouseRect = boundsRect;
 
-    zReader::Node* const mouseRectNode = zRdrGetNode(zrdSection, g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect);
+    zReader::Node* const mouseRectNode = zRdrFindTag(zrdSection, g_HudUiZrdWidgetEx17C_Item_ZrdKey_MouseRect);
     if (mouseRectNode != 0) {
         mouseRect.top += mouseRectNode->value.nodes[1].value.i32;
         mouseRect.left += mouseRectNode->value.nodes[2].value.i32;
@@ -3515,7 +3515,7 @@ int CHudRadioGroupWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
 {
     owner = ownerDialog;
 
-    zReader::Node* const radioNode = zRdrGetNode(zrdSection, g_HudUiZrdToken_Radio);
+    zReader::Node* const radioNode = zRdrFindTag(zrdSection, g_HudUiZrdToken_Radio);
     if (radioNode != 0) {
         int count = radioNode->value.nodes[0].value.i32 - 1;
         if (count >= 10) {
@@ -3609,7 +3609,7 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
 
     void* const clipSource = ownerDialog->capturedCompositeImage;
 
-    zReader::Node* const selectedFontNode = zRdrGetNode(zrdSection, "SELECTED_FONT");
+    zReader::Node* const selectedFontNode = zRdrFindTag(zrdSection, "SELECTED_FONT");
     if (selectedFontNode != 0) {
         selectedFontStyleRef = selectedFontNode->value.i32;
         // Retail tests the style pointer after the inline select (neg/sbb/and then a compare).
@@ -3628,17 +3628,17 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
         }
     }
 
-    zReader::Node* const listFontNode = zRdrGetNode(zrdSection, "LIST_FONT");
+    zReader::Node* const listFontNode = zRdrFindTag(zrdSection, "LIST_FONT");
     if (listFontNode != 0) {
         listFontStyleRef = listFontNode->value.i32;
     }
 
-    zReader::Node* const spacingNode = zRdrGetNode(zrdSection, "SPACING");
+    zReader::Node* const spacingNode = zRdrFindTag(zrdSection, "SPACING");
     if (spacingNode != 0) {
         bindingSlotSpacing = spacingNode->value.i32;
     }
 
-    zReader::Node* const listOffsetNode = zRdrGetNode(zrdSection, "LIST_OFFSET");
+    zReader::Node* const listOffsetNode = zRdrFindTag(zrdSection, "LIST_OFFSET");
     if (listOffsetNode != 0) {
         visibleListOffsetX = (float)listOffsetNode->value.nodes[1].value.nodes[1].value.i32;
         visibleListOffsetY = (float)listOffsetNode->value.nodes[1].value.nodes[2].value.i32;
@@ -3646,7 +3646,7 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
         overflowListOffsetY = (float)listOffsetNode->value.nodes[2].value.nodes[2].value.i32;
     }
 
-    zReader::Node* const listSizeNode = zRdrGetNode(zrdSection, "LISTSIZE");
+    zReader::Node* const listSizeNode = zRdrFindTag(zrdSection, "LISTSIZE");
     if (listSizeNode != 0) {
         zReader::Node* const listSizeBase = listSizeNode->value.nodes;
         const int totalCount = listSizeBase[1].value.i32;
@@ -3959,21 +3959,21 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
     if (loadedRootNode != 0) {
         result = loadedRootNode;
 
-        zReader::Node* const sharedImagePath = zRdrGetNode(loadedRootNode, zHudCfgKey_SHARED_IMAGE_PATH);
+        zReader::Node* const sharedImagePath = zRdrFindTag(loadedRootNode, zHudCfgKey_SHARED_IMAGE_PATH);
         if (sharedImagePath != 0) {
             zImageInitMissionResources(sharedImagePath->value.nodes[1].value.str);
         }
 
-        zReader::Node* const sectionRoot = zRdrGetNode(loadedRootNode, sectionName);
+        zReader::Node* const sectionRoot = zRdrFindTag(loadedRootNode, sectionName);
         cfgRoot = sectionRoot;
 
         if (sectionRoot != 0) {
-            zReader::Node* const imagePath = zRdrGetNode(sectionRoot, "IMAGE_PATH");
+            zReader::Node* const imagePath = zRdrFindTag(sectionRoot, "IMAGE_PATH");
             if (imagePath != 0) {
                 zImageInitMissionResources(imagePath->value.nodes[1].value.str);
             }
 
-            zReader::Node* const fontListNode = zRdrGetNode(cfgRoot, g_HudCfgKey_Fonts);
+            zReader::Node* const fontListNode = zRdrFindTag(cfgRoot, g_HudCfgKey_Fonts);
             if (fontListNode != 0) {
                 const int fontCount
                     = fontListNode->value.nodes[0].value.i32 < 20 ? fontListNode->value.nodes[0].value.i32 : 20;
@@ -4031,7 +4031,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 }
             }
 
-            zReader::Node* const imageListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
+            zReader::Node* const imageListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
             if (imageListNode != 0) {
                 int imageCount = imageListNode->value.nodes[0].value.i32;
                 if (imageCount >= 20) {
@@ -4060,7 +4060,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 }
             }
 
-            zReader::Node* const videoListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_VIDEOS);
+            zReader::Node* const videoListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_VIDEOS);
             if (videoListNode != 0) {
                 const int videoCount
                     = videoListNode->value.nodes[0].value.i32 < 10 ? videoListNode->value.nodes[0].value.i32 : 10;
@@ -4102,7 +4102,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 }
             }
 
-            zReader::Node* const textListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
+            zReader::Node* const textListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
             if (textListNode != 0) {
                 const int textCount
                     = textListNode->value.nodes[0].value.i32 < 50 ? textListNode->value.nodes[0].value.i32 : 50;
@@ -4141,15 +4141,15 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 ((HudUiDialogController*)(this))->BlitOwnedSurfaceToPrimary();
             }
 
-            zReader::Node* const cursorNode = zRdrGetNode(cfgRoot, zHudCfgKey_CURSOR);
+            zReader::Node* const cursorNode = zRdrFindTag(cfgRoot, zHudCfgKey_CURSOR);
             if (cursorNode != 0) {
-                zReader::Node* const bitmapNode = zRdrGetNode(cursorNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+                zReader::Node* const bitmapNode = zRdrFindTag(cursorNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
                 if (bitmapNode != 0) {
                     cursorWidget.SetImageByPathOwnedAndRefresh(bitmapNode->value.nodes[1].value.str);
                     SetInputFocus((HudUiElement*)(&cursorWidget));
                 }
 
-                zReader::Node* const centerNode = zRdrGetNode(cursorNode, "CENTER");
+                zReader::Node* const centerNode = zRdrFindTag(cursorNode, "CENTER");
                 if (centerNode != 0) {
                     // Original 0x4b9f69 stores CENTER's string pointer into HudUiWidget::alignFlags;
                     // GetCenterX/Y only test the slot for nonzero on this cursor path.
@@ -4161,7 +4161,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 cursorWidget.SetImageOwnedAndRefresh(cursorCapture);
             }
 
-            zReader::Node* const soundListNode = zRdrGetNode(cfgRoot, zHudCfgKey_BACKGROUND_SOUNDS);
+            zReader::Node* const soundListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_SOUNDS);
             if (soundListNode != 0) {
                 int soundCount = soundListNode->value.nodes[0].value.i32;
                 if (soundCount >= 10) {
@@ -4202,8 +4202,8 @@ unsigned char __fastcall HudUiBackground::BindButtonsNodeToWidgetByName(
 )
 {
     if (parentNode != 0) {
-        zReader::Node* const buttonsNode = zRdrGetNode(parentNode, "BUTTONS");
-        zReader::Node* const widgetNode = zRdrGetNode(buttonsNode, name);
+        zReader::Node* const buttonsNode = zRdrFindTag(parentNode, "BUTTONS");
+        zReader::Node* const widgetNode = zRdrFindTag(buttonsNode, name);
         if (widgetNode != 0) {
             ((HudUiZrdWidget*)widget)->LoadFromZrd(widgetNode, this);
             ((HudUiZrdWidget*)widget)->PostLoadFromZrd();
@@ -4242,26 +4242,26 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
         return 0;
     }
 
-    zReader::Node* primitiveNode = zRdrGetNode(cfgRoot, "PRIMITIVES");
+    zReader::Node* primitiveNode = zRdrFindTag(cfgRoot, "PRIMITIVES");
     if (primitiveNode != 0) {
-        primitiveNode = zRdrGetNode(primitiveNode, name);
+        primitiveNode = zRdrFindTag(primitiveNode, name);
     }
 
     if (primitiveNode != 0) {
         ((HudUiContainer*)(this))->AddChild(element);
 
-        zReader::Node* bitmapNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
+        zReader::Node* bitmapNode = zRdrFindTag(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Bitmap);
         if (bitmapNode != 0) {
             ((HudUiWidget*)(element))->SetImageByPathOwned(bitmapNode->value.nodes[1].value.str);
         }
 
-        zReader::Node* positionNode = zRdrGetNode(primitiveNode, "POSITION");
+        zReader::Node* positionNode = zRdrFindTag(primitiveNode, "POSITION");
         if (positionNode != 0) {
             zReader::Node* const positionBase = positionNode->value.nodes;
             element->SetPos(uiOriginX + positionBase[1].value.i32, uiOriginY + positionBase[2].value.i32);
         }
 
-        zReader::Node* wordWrapNode = zRdrGetNode(primitiveNode, "WORDWRAP");
+        zReader::Node* wordWrapNode = zRdrFindTag(primitiveNode, "WORDWRAP");
         if (wordWrapNode != 0) {
             zReader::Node* const wordWrapBase = wordWrapNode->value.nodes;
             HudUiRect wordWrapRect;
@@ -4272,7 +4272,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
             element->EnableWordWrapWithRect(&wordWrapRect);
         }
 
-        zReader::Node* fontNode = zRdrGetNode(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Font);
+        zReader::Node* fontNode = zRdrFindTag(primitiveNode, g_HudUiCycleSelectorWidget_ZrdKey_Font);
         if (fontNode != 0) {
             const int fontIndex = fontNode->value.i32;
             const HudFontStyle* style = fontStyles[fontIndex].validMarker != 0 ? &fontStyles[fontIndex] : 0;
@@ -4291,7 +4291,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
             }
         }
 
-        zReader::Node* colorNode = zRdrGetNode(primitiveNode, "COLOR");
+        zReader::Node* colorNode = zRdrFindTag(primitiveNode, "COLOR");
         if (colorNode != 0) {
             zReader::Node* const colorBase = colorNode->value.nodes;
             ((HudUiPrimitiveBindTarget*)(element))->color565 = zVidPackColorRGB(
@@ -4302,7 +4302,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
                 & 0xffffu;
         }
 
-        zReader::Node* relativeEndNode = zRdrGetNode(primitiveNode, "ENDP_REL");
+        zReader::Node* relativeEndNode = zRdrFindTag(primitiveNode, "ENDP_REL");
         if (relativeEndNode != 0) {
             ((HudUiPrimitiveBindTarget*)(element))
                 ->SetSegmentEndpoints(
@@ -4313,7 +4313,7 @@ int HudUiBackground::BindPrimitiveNodeToElement(zReader::Node*, HudUiElement* el
                 );
         }
 
-        zReader::Node* absoluteEndNode = zRdrGetNode(primitiveNode, "ENDP_ABS");
+        zReader::Node* absoluteEndNode = zRdrFindTag(primitiveNode, "ENDP_ABS");
         if (absoluteEndNode != 0) {
             zReader::Node* const absoluteEndBase = absoluteEndNode->value.nodes;
             ((HudUiPrimitiveBindTarget*)(element))

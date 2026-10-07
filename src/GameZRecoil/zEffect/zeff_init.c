@@ -35,14 +35,14 @@ namespace zEffect
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-init.init
-     * @recoil-artifact defines .text recoil:function:0x460020: zEffect::Init.
+     * @recoil-artifact defines .text recoil:function:0x460020: zEffect::zEffInit.
      * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_init.c.
      * Purpose: reset the runtime effect manager and initialize zEffect animation
      * state.
      */
-    int __fastcall Init()
+    int __fastcall zEffInit()
     {
         g_zEffect_RuntimeManager.initialized = 0;
         g_zEffect_RuntimeManager.templateCount = 0;
@@ -92,7 +92,7 @@ namespace zEffect
             return -1;
         }
 
-        zReader::Node* const effectsNode = zRdrGetNode(rootNode, g_EffectsZrdNodeName);
+        zReader::Node* const effectsNode = zRdrFindTag(rootNode, g_EffectsZrdNodeName);
         g_zEffect_RuntimeManager.templateCount = effectsNode->value.nodes->value.i32 - 1;
         g_zEffect_RuntimeManager.templates
             = (zEffect_RuntimeEntry*)(calloc(g_zEffect_RuntimeManager.templateCount, sizeof(zEffect_RuntimeEntry)));
@@ -102,11 +102,11 @@ namespace zEffect
         for (int i = 0; i < g_zEffect_RuntimeManager.templateCount; ++i) {
             float textureSpeed = 0.0f;
             zReader::Node* const effectNode = &effectsNode->value.nodes[i + 1];
-            zReader::Node* const mapsNode = zRdrGetNode(effectNode, g_zEffect_TokenMaps);
+            zReader::Node* const mapsNode = zRdrFindTag(effectNode, g_zEffect_TokenMaps);
             zEffect_RuntimeEntry* const runtimeEntry = &g_zEffect_RuntimeManager.templates[i];
             runtimeEntry->effectIndex = -1;
             runtimeEntry->modelNodeName = effectNode->value.nodes[1].value.str;
-            runtimeEntry->effectName = (char*)(zReader::GetString(effectNode, "NAME"));
+            runtimeEntry->effectName = (char*)(zReader::FindString(effectNode, "NAME"));
 
             CZNodePartial* const templateNode = CZClass::FindByTypeAndName(6, runtimeEntry->modelNodeName);
             runtimeEntry->effectNode = templateNode;
@@ -148,7 +148,7 @@ namespace zEffect
             zReader::GetFloat(effectNode, g_zEffectAnim_TokenSpeed, &textureSpeed);
             zDi::SetCurrentVariantCycleTextureSpeed(displayInstance, textureSpeed);
 
-            zReader::Node* const loopingNode = zRdrGetNode(effectNode, g_zEffectAnim_TokenLooping);
+            zReader::Node* const loopingNode = zRdrFindTag(effectNode, g_zEffectAnim_TokenLooping);
             if (loopingNode != 0) {
                 if (strcmp(loopingNode->value.nodes[1].value.str, "ON") == 0) {
                     zModel_Instance::SetCycleTextureLoop(displayInstance, 1);
@@ -210,7 +210,7 @@ namespace zEffect
             g_zEffect_RuntimeManager.recycleCount = 0;
         }
 
-        Init();
+        zEffInit();
         return 0;
     }
 

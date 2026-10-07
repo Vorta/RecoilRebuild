@@ -273,7 +273,7 @@ void __cdecl InitFromZrd()
 
     g_HudTimerPanelNetState.timeWarningShown = 0;
     g_HudTimerPanelNetState.oneMinuteWarningShown = 0;
-    GameNet::RefreshPlayerListMenu(playerRow);
+    GameNet::AddPlayerRowToScoreboard(playerRow);
     localSaveState->netPlayerRow = playerRow;
     GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed(localSaveState, 1);
     if (g_HudSensorTracker.raceCheckpointMode != 0) {
@@ -674,7 +674,7 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     }
     CZClass::gwNodeSetActive(row->playerNode, 1);
 
-    RefreshPlayerListMenu(row);
+    AddPlayerRowToScoreboard(row);
     ReassignPlayerColorsAndRefreshRows(0, 0);
 
     if (zNetwork::IsHost() != 0) {
@@ -2057,7 +2057,7 @@ int __fastcall HandlePkt13EffectAnimActivationRecord(int, zNetworkPacketHeader* 
         = (zEffectAnimActivationRecord*)((unsigned char*)(packet) + sizeof(zNetworkPacketHeader));
     if (zEffect_Anim::HasActivationRecord(record) == 0) {
         g_GameNetSuppressPkt13ActivationEcho = 1;
-        zEffect_Anim::ProcessActivationRecord(record);
+        zEffect_Anim::zEffProcessActivationRecord(record);
         g_GameNetSuppressPkt13ActivationEcho = 0;
     }
 
