@@ -257,12 +257,12 @@ int __fastcall zSndPlayHandle::Update3D(zVec3* worldPos, zVec3* velocity, int ve
 
     int error = ((LPDIRECTSOUNDBUFFER)backendBuffer)->SetPan(pan);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, "D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp", 0x160);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp", 0x160);
     }
 
     error = ((LPDIRECTSOUNDBUFFER)backendBuffer)->SetVolume(gain);
     if (error != 0) {
-        return zSnd::ReportDirectSoundError(error, "D:\Proj\GameZRecoil\zSound\zsnd_3d.cpp", 0x164);
+        return zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_3d.cpp", 0x164);
     }
 
     return 1;

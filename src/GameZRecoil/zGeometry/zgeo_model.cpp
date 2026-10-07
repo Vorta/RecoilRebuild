@@ -1046,15 +1046,19 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 zGeometry_Vec3Array::RotateNeg90AroundX(convexSet->totalPointCount, convexSet->points);
 
                 zGeometry_PolygonPointSpanPartial* convexPolygon = convexSet->polygons;
-                for (int convexIndex = 0; convexIndex < convexSet->polygonCount; ++convexIndex, ++convexPolygon) {
-                    if (convexPolygon->pointCount >= 3) {
+                for (unsigned int convexIndex = 0; convexIndex < (unsigned int)(convexSet->polygonCount);
+                    ++convexIndex) {
+                    const unsigned int convexPointCount = convexPolygon->pointCount;
+                    if (convexPointCount >= 3) {
                         zGeometry_Model::AddPointListPolygonToDi(
                             di,
-                            convexPolygon->pointCount,
+                            convexPointCount,
                             (zVec3*)((float*)(convexSet->points) + convexPolygon->pointDwordOffset),
                             model,
                             polygon
                         );
+                        // Retail advances the span pointer only past emitted polygons.
+                        ++convexPolygon;
                     }
                 }
 

@@ -1112,7 +1112,7 @@ namespace zImage {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-invalidateloadedvariantchain
  * @recoil-artifact defines .text recoil:function:0x46e250: zImage::InvalidateLoadedVariantChain.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
@@ -1124,12 +1124,15 @@ namespace zImage {
  */
 void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHead)
 {
-    zImage_TexDirEntryPartial* entry = texDirHead;
-    while (entry != 0 && entry->loadState == 1) {
-        zVid_Image::ReleaseIfNotDefault(entry->image);
-        entry->image = 0;
-        entry->loadState = 3;
-        entry = entry->nextVariant;
+    if (texDirHead != 0 && texDirHead->loadState == 1) {
+        zVid_Image::ReleaseIfNotDefault(texDirHead->image);
+        texDirHead->image = 0;
+        texDirHead->loadState = 3;
+        // Guarded tail recursion: VC5 turns it into retail's loop with the
+        // otherwise unique 'je exit; jne top' bottom.
+        if (texDirHead->nextVariant != 0) {
+            InvalidateLoadedVariantChain(texDirHead->nextVariant);
+        }
     }
 }
 } // namespace zImage
@@ -1239,7 +1242,7 @@ void __fastcall TexDirSetBaseNameFromPath(const char* sourcePath, char* destBase
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentry-buildmipchain
  * @recoil-artifact defines .text recoil:function:0x46e3e0: zImage_TexDirEntry::BuildMipChain.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.

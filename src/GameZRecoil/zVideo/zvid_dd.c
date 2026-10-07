@@ -22,6 +22,7 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zTime/time.h"
+#include "GameZRecoil/zVideo/zvid_state.h"
 #include "zclass.h"
 
 #include <malloc.h>
@@ -136,11 +137,12 @@ namespace zVideo_dd
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-present-display-mode-surface
      * @recoil-artifact defines .text recoil:function:0x4a7b60: zVideo_dd::PresentDisplayModeSurface.
-     *
+     * @recoil-match byte
      */
     PresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
     {
-        DWORD presentBltFlags = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
+        // Retail reuses the waitForPresent parameter as the Blt flags word.
+        waitForPresent = waitForPresent != 0 ? DDBLT_WAIT : DDBLT_WAIT | DDBLT_ASYNC;
 
         if (g_zVideo_DisplayModeSurfaceState.surf == 0 || g_zVideo_PrimarySurfaceState.surf == 0) {
             return kPresentMissingSurfaceResult;
@@ -155,7 +157,7 @@ namespace zVideo_dd
                         (RECT*)(dstRect),
                         g_zVideo_PrimarySurfaceState.surf,
                         (RECT*)(srcRect),
-                        presentBltFlags,
+                        waitForPresent,
                         0
                     );
                 } else {
@@ -163,7 +165,7 @@ namespace zVideo_dd
                         (RECT*)(dstRect),
                         g_zVideo_PrimarySurfaceState.surf,
                         (RECT*)(srcRect),
-                        presentBltFlags,
+                        waitForPresent,
                         0
                     );
                 }
@@ -219,7 +221,7 @@ namespace zVideo_dd
                     (RECT*)(dstRect),
                     g_zVideo_PrimarySurfaceState.surf,
                     (RECT*)(srcRect),
-                    presentBltFlags,
+                    waitForPresent,
                     0
                 );
             }

@@ -14,6 +14,7 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
+#include "GameZRecoil/zVideo/zvid_state.h"
 #include "zclass.h"
 
 #include <malloc.h>
@@ -278,27 +279,25 @@ namespace zVideo
         unsigned int alphaMask
     )
     {
+        // Plain member stores; this order reproduces retail's parameter-load registers.
         g_zVideo_TexturePixelPack_ABits = alphaBits;
-        g_zVideo_TexturePixelPack_RMask = redMask;
         g_zVideo_TexturePixelPack_AMask = alphaMask;
-        g_zVideo_TexturePixelPack_BMask = blueMask;
-        const int greenBlueBits = greenBits + blueBits;
+        g_zVideo_TexturePixelPack_RMask = redMask;
         g_zVideo_TexturePixelPack_GMask = greenMask;
+        g_zVideo_TexturePixelPack_BMask = blueMask;
         g_zVideo_TexturePixelPack_RBits = redBits;
-        const int rgbBitsTotal = redBits + greenBlueBits;
-        g_zVideo_TexturePixelPack_RGBBitsTotal = rgbBitsTotal;
-        g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 = rgbBitsTotal - 8;
-        g_zVideo_TexturePixelPack_GBBitsTotalMinus8 = greenBlueBits - 8;
+        g_zVideo_TexturePixelPack_RGBBitsTotal = redBits + greenBits + blueBits;
+        g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 = redBits + greenBits + blueBits - 8;
+        g_zVideo_TexturePixelPack_GBBitsTotalMinus8 = greenBits + blueBits - 8;
         g_zVideo_TexturePixelPack_GBits = greenBits;
         g_zVideo_TexturePixelPack_BBits = blueBits;
         g_zVideo_TexturePixelPack_BShiftTo8 = 8 - blueBits;
-        const int rMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
-        g_zVideo_TexturePixelPack_RMaskShifted = rMaskShifted;
-        const int gMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
-        g_zVideo_TexturePixelPack_GMaskShifted = gMaskShifted;
-        const int bMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
-        g_zVideo_TexturePixelPack_BMaskShifted = bMaskShifted;
-        g_zVideo_TexturePixelPack_NonRgbMaskShifted = ~(rMaskShifted | gMaskShifted | bMaskShifted);
+        g_zVideo_TexturePixelPack_RMaskShifted = ((1 << redBits) - 1) << (8 - redBits);
+        g_zVideo_TexturePixelPack_GMaskShifted = ((1 << greenBits) - 1) << (8 - greenBits);
+        g_zVideo_TexturePixelPack_BMaskShifted = ((1 << blueBits) - 1) << (8 - blueBits);
+        g_zVideo_TexturePixelPack_NonRgbMaskShifted
+            = ~(g_zVideo_TexturePixelPack_RMaskShifted | g_zVideo_TexturePixelPack_GMaskShifted
+                | g_zVideo_TexturePixelPack_BMaskShifted);
     }
 
 } // namespace zVideo
@@ -862,152 +861,9 @@ namespace zVideo
      */
     int __cdecl ModuleInit()
     {
-        g_zVideo_RendererType = 0;
-        g_zVideo_ActiveRendererPath = 0;
         g_zVideo_FrameTick = 0;
-        g_zVideo_pActiveViewContext = 0;
-        g_zVideo_pActiveProjectionViewContext = 0;
-        memset(&g_zVideo_ActiveViewVariantTag, 0, sizeof(g_zVideo_ActiveViewVariantTag));
-        g_zVideo_ProjectClipLeft = 0.0f;
-        g_zVideo_ProjectClipTop = 0.0f;
-        g_zVideo_ProjectClipRight = 0.0f;
-        g_zVideo_ProjectClipBottom = 0.0f;
-        gVideo_resolutionMenuValid = 0;
-        g_zVideo_ClearColorPacked16 = 0;
-        g_zVideo_ClearScreenBufferEnabled = 0;
-        g_zVid_CachedClientRectUpdateMask = 0;
-        g_zVideo_IsInitialized = 0;
-        g_zVideo_AdjustSurfacesDisableGate = 0;
-        g_zVideo_FullscreenOption = 0;
-        g_zVideo_PrimaryHasAttachedBackbuffer = 0;
-        g_zVideo_UseHalfResBackbuffer = 0;
-        g_zVideo_HalfResAdjustMode = 0;
-        g_zVideo_CachedFogModeLightState = 0;
-        g_zVideo_CachedFogEnableRenderState = 0;
-        g_zVideo_CachedFogStartLightStateValue = 0.0f;
-        g_zVideo_CachedFogEndLightStateValue = 0.0f;
-        g_zVideo_D3DColorNormalizeChannelIndex = 0;
-        g_zVideo_FogColorPendingR255 = 0.0f;
-        g_zVideo_FogColorPendingG255 = 0.0f;
-        g_zVideo_FogColorPendingB255 = 0.0f;
-        g_zVideo_D3DColorAttrBiasR = 0.0f;
-        g_zVideo_D3DColorAttrBiasG = 0.0f;
-        g_zVideo_D3DColorAttrBiasB = 0.0f;
-        g_zVideo_FogTargetColorR255 = 0.0f;
-        g_zVideo_FogTargetColorG255 = 0.0f;
-        g_zVideo_FogTargetColorB255 = 0.0f;
-        g_zVideo_FogColorAppliedR255 = 0.0f;
-        g_zVideo_FogColorAppliedG255 = 0.0f;
-        g_zVideo_FogColorAppliedB255 = 0.0f;
-        g_zVideo_PendingDitherEnable = 0;
-        g_zVideo_InverseZTolerancePending = 0.0f;
-        g_zVideo_D3DAppendFanCloseVertexPending = 0;
-        g_zVideo_PendingWireframeState = 0;
-        g_zVideo_D3DSceneDepth = 0;
-        g_zVid_AcceptedHardwareRendererCount = 0;
-        g_zVideo_NumAcceptedDirectDrawDevices = 0;
-        g_zVideo_DirectDrawEnumOrdinal = 0;
-        memset(&g_zVideo_DDrawCapsHal, 0, sizeof(g_zVideo_DDrawCapsHal));
-        memset(&g_zVideo_DDrawCapsHel, 0, sizeof(g_zVideo_DDrawCapsHel));
-        g_zVideo_DefaultTextureRecord = 0;
-        memset(g_zVideo_PalettePathBuffer, 0, sizeof(g_zVideo_PalettePathBuffer));
-        g_zVideo_PaletteBrightnessLevel = 0;
-        memset(g_zVideo_PaletteFileEntries, 0, sizeof(g_zVideo_PaletteFileEntries));
-        memset(g_zVideo_SystemPaletteEntries, 0, sizeof(g_zVideo_SystemPaletteEntries));
-        g_zVideo_pfnOpenVideoMode = 0;
-        g_zVideo_pfnShutdownVideoSystem = 0;
-        g_zVideo_pfnPaletteSetEntries = 0;
-        g_zVideo_pfnSetVideoMode = 0;
-        g_zVideo_pfnAdjustSurfaces = 0;
-        g_zVideo_pfnLockSurfaceState = 0;
-        g_zVideo_pfnUnlockSurfaceState = 0;
-        g_zVideo_pfnClearZBufferRect = 0;
-        g_zVideo_pfnClearSwSurfaceAndZBuffer = 0;
-        g_zVideo_pfnClearStateSurfaceAndZBuffer = 0;
-        g_zVideo_pfnUpdateFogColor = 0;
-        g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
-        g_zVideo_pfnQueryTextureMemoryBytes = 0;
-        g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
-        g_zVideo_pfnBltPrimaryToSwRectDirect = 0;
-        g_zVideo_pfnBltSwToPrimaryRect = 0;
-        g_zVideo_pfnGetHwApiDeviceFeatureFlags = 0;
-        g_zVideo_pfnImageUploadPixelsToSurface = 0;
-        g_zVideo_pfnImageReleaseSurface = 0;
-        g_zVideo_pfnCreateTextureRecord = 0;
-        g_zVideo_pfnTextureRecordLockUploadSurface = 0;
-        g_zVideo_pfnTextureRecordUnlockUploadSurface = 0;
-        g_zVideo_pfnTextureRecordReleaseUploadSurfaceRef = 0;
-        g_zVideo_pfnTextureRecordFinalizeUpload = 0;
-        g_zVideo_pfnTextureRecordDestroy = 0;
-        g_zVideo_pfnTextureRecordReleaseAllUploadSurfaces = 0;
-        g_zVideo_pfnImageLazyCreateVideoMemorySurface = 0;
-        g_zVideo_pfnImageEnsureSurfaceForCurrentDevice = 0;
-        g_zVideo_pfnSetFogEnable = 0;
-        g_zVideo_pfnSetFogStart = 0;
-        g_zVideo_pfnSetFogEnd = 0;
-        g_zVideo_pfnApplyFogStateFromGlobals = 0;
-        g_zVideo_pfnSubmitPolyFlatColor16 = 0;
-        g_zVideo_pfnSubmitPolyGouraudColor16 = 0;
-        g_zVideo_pfnSubmitPolyColorAttr = 0;
-        g_zVideo_pfnSubmitPolyRenderClass = 0;
-        g_zVideo_pfnSubmitPolygon = 0;
-        g_zVideo_pfnSubmitPolygonLit = 0;
-        g_zVideo_pfnDrawPointColor16 = 0;
-        g_zVideo_pfnFlushSortedPolys = 0;
-        g_zVideo_pfnFlushOverwritePolys = 0;
-        g_zVideo_pfnFlushQuadBatch = 0;
-        memset(g_zVideo_HwApiDeviceTable, 0, sizeof(g_zVideo_HwApiDeviceTable));
-        g_zVideo_pSelectedHwApiDeviceRecord = 0;
-        g_zVideo_pSelectedD3DDeviceInfo = 0;
-        memset(&g_zVideo_D3DHalDeviceDesc, 0, sizeof(g_zVideo_D3DHalDeviceDesc));
-        memset(&g_zVideo_D3DHelDeviceDesc, 0, sizeof(g_zVideo_D3DHelDeviceDesc));
-        g_zVideo_D3DMaterialHandle = 0;
-        g_zVideo_QuadBatchCount = 0;
-        memset(g_zVideo_QuadBatchItemsBase, 0, sizeof(g_zVideo_QuadBatchItemsBase));
-        memset(g_zVideo_D3DSubmitTempVertices, 0, sizeof(g_zVideo_D3DSubmitTempVertices));
-        memset(g_zVideo_SortedPolyDrawOrder, 0, sizeof(g_zVideo_SortedPolyDrawOrder));
-        memset(g_zVideo_SortedPolyQueueBase, 0, sizeof(g_zVideo_SortedPolyQueueBase));
-        memset(g_zVideo_OverwriteQueueBase, 0, sizeof(g_zVideo_OverwriteQueueBase));
-        g_zVideo_SortedPolyQueueCount = 0;
-        g_zVideo_OverwriteQueueCount = 0;
-        memset(&g_zVideo_D3DRenderStateCache, 0, sizeof(g_zVideo_D3DRenderStateCache));
-        g_zVideo_pD3DMaterial2 = 0;
-        g_zVideo_pD3DViewport2 = 0;
-        g_zVideo_pD3DDevice = 0;
-        g_zVideo_pD3D2 = 0;
-        g_zVideo_pClipper = 0;
-        g_zVideo_pDirectDraw2 = 0;
-        g_zVideo_pZBufferSurface = 0;
-        g_zVideo_pZBufferAttachSurface = 0;
-        g_zVideo_pPageUnlockSurface = 0;
-        g_zVideo_pSurfaceLockVerifier = 0;
-        g_zVideo_SurfaceLockVerifyContext = 0;
-        g_zVideo_SurfaceLockVerifyFlags = 0;
-        memset(&g_zVideo_SwSurfaceState, 0, sizeof(g_zVideo_SwSurfaceState));
-        memset(&g_zVideo_PrimarySurfaceState, 0, sizeof(g_zVideo_PrimarySurfaceState));
-        memset(&g_zVideo_DisplayModeSurfaceState, 0, sizeof(g_zVideo_DisplayModeSurfaceState));
-        memset(&g_zVideo_SurfaceStateSwapScratch, 0, sizeof(g_zVideo_SurfaceStateSwapScratch));
-        memset(&g_zVideo_PrimarySurfaceRectScratch, 0, sizeof(g_zVideo_PrimarySurfaceRectScratch));
-        g_zVideo_DisplayModeBpp = 0;
-        g_zVid_NoiseByteTableSize = 0;
-        g_zVid_NoiseByteTable = 0;
-        g_zVideo_FxPass3_ScratchPixels16 = 0;
-        g_zVideo_FxSurfacePixels16 = 0;
-        g_zVideo_FxSurfaceWidth = 0;
-        g_zVideo_FxSurfaceHeight = 0;
-        g_zVideo_FxSurfacePitchBytes = 0;
-        g_zVideo_FxSurfacePitchPixels16 = 0;
-        g_zVideo_FxPass3_ScratchOffsetX = 0;
-        g_zVideo_FxPass3_ScratchOffsetY = 0;
-        g_zVideo_FxPass3_ClipMinX = 0;
-        g_zVideo_FxPass3_ClipMinY = 0;
-        g_zVideo_FxPass3_ClipMaxX = 0;
-        g_zVideo_FxPass3_ClipMaxY = 0;
-        g_zVideo_pDDPalette = 0;
-        g_zVideo_hWnd = 0;
-        memset(&g_zVideo_CachedClientRectScreen, 0, sizeof(g_zVideo_CachedClientRectScreen));
+        memset(&g_zVideo_GlobalStateStorage, 0, sizeof(g_zVideo_GlobalStateStorage));
 
-        g_zVideo_FrameTick = 0;
         gVideo_resolutionMenuValid = 0;
         g_zVideo_PaletteBrightnessLevel = 4;
         g_zVideo_ClearColorPacked16 = 0;

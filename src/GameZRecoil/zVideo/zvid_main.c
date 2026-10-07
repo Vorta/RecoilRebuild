@@ -14,6 +14,7 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid_fx_pass3.h"
+#include "GameZRecoil/zVideo/zvid_state.h"
 #include "zclass.h"
 
 #include <malloc.h>
@@ -138,27 +139,26 @@ namespace zVid_Image
 } // namespace zVid_Image
 
 extern "C" {
-zVideo_PixelPackParams g_zVideo_PixelPack = { 0 };
-/*
- * BN models the texture pixel-pack BSS block at 0x632188..0x6321c4 as the
- * scalar field order below; TexturePixelPackSetupFromMasks is the writer.
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-globalstatestorage
+ * @recoil-artifact defines .data recoil:data:0x632134: g_zVideo_GlobalStateStorage.primaryHasAttachedBackbuffer.
+ * @recoil-artifact defines .data recoil:data:0x63213c: g_zVideo_GlobalStateStorage.pendingDitherEnable.
+ * @recoil-artifact defines .data recoil:data:0x632148: g_zVideo_GlobalStateStorage.d3dSceneDepth.
+ * @recoil-artifact defines .data recoil:data:0x632150: g_zVideo_GlobalStateStorage.displayModeBpp.
+ * @recoil-artifact defines .data recoil:data:0x6321c8: g_zVideo_GlobalStateStorage.hWnd.
+ * @recoil-artifact defines .data recoil:data:0x632360: g_zVideo_GlobalStateStorage.paletteBrightnessLevel.
+ * @recoil-artifact defines .data recoil:data:0x632f88: g_zVideo_GlobalStateStorage.cachedClientRectScreen.
+ * @recoil-artifact defines .data recoil:data:0x6333a8: g_zVideo_GlobalStateStorage.defaultTextureRecord.
+ * @recoil-artifact defines .data recoil:data:0x633404: g_zVideo_GlobalStateStorage.d3dMaterialHandle.
+ * @recoil-artifact defines .data recoil:data:0x633408: g_zVideo_GlobalStateStorage.d3dRenderStateCache.
+ * @recoil-artifact defines .data recoil:data:0x633638: g_zVideo_GlobalStateStorage.quadBatchCount.
+ * @recoil-artifact defines .data recoil:data:0x633e40: g_zVideo_GlobalStateStorage.pSelectedHwApiDeviceRecord.
+ * @recoil-artifact defines .data recoil:data:0x633e44: g_zVideo_GlobalStateStorage.hwApiDeviceTable.
+ * @recoil-artifact defines .data recoil:data:0x6359f4: g_zVideo_GlobalStateStorage.pSelectedD3DDeviceInfo.
+ * Storage group: g_zVideo_GlobalStateStorage, retail [0x632120, 0x778918).
+ * Purpose: own the zero-filled zVideo module state that zVideo::ModuleInit clears.
  */
-int g_zVideo_TexturePixelPack_RBits = 0;
-int g_zVideo_TexturePixelPack_GBits = 0;
-int g_zVideo_TexturePixelPack_BBits = 0;
-int g_zVideo_TexturePixelPack_ABits = 0;
-unsigned int g_zVideo_TexturePixelPack_RMask = 0;
-unsigned int g_zVideo_TexturePixelPack_GMask = 0;
-unsigned int g_zVideo_TexturePixelPack_BMask = 0;
-unsigned int g_zVideo_TexturePixelPack_AMask = 0;
-int g_zVideo_TexturePixelPack_RGBBitsTotalMinus8 = 0;
-int g_zVideo_TexturePixelPack_GBBitsTotalMinus8 = 0;
-int g_zVideo_TexturePixelPack_BShiftTo8 = 0;
-int g_zVideo_TexturePixelPack_RGBBitsTotal = 0;
-int g_zVideo_TexturePixelPack_RMaskShifted = 0;
-int g_zVideo_TexturePixelPack_GMaskShifted = 0;
-int g_zVideo_TexturePixelPack_BMaskShifted = 0;
-int g_zVideo_TexturePixelPack_NonRgbMaskShifted = 0;
+zVideo_GlobalState g_zVideo_GlobalStateStorage = { 0 };
 /**
  * Palette-remap recipe owner: BuildPaletteVariant grows this bank before
  * rebuilding per-image and standalone palette variant tables.
@@ -169,7 +169,6 @@ zVidPaletteRemapRecipe* g_zVid_PaletteRemapRecipes = 0;
 /**
  * Purpose: cache the selected renderer path and current video frame tick.
  */
-int g_zVideo_RendererType = 0;
 int g_zVideo_ActiveRendererPath = 0;
 int g_zVideo_FrameTick = 0;
 /**
@@ -191,12 +190,6 @@ CZCameraDataPartial* g_zVideo_pActiveViewContext = 0;
  */
 zTag4Partial g_zVideo_ActiveViewVariantTag = { 0 };
 /**
- * Purpose: cache global video initialization and clear-screen options.
- */
-int gVideo_resolutionMenuValid = 0;
-unsigned int g_zVideo_ClearColorPacked16 = 0;
-int g_zVideo_ClearScreenBufferEnabled = 0;
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvid-cachedclientrectupdatemask
  * @recoil-artifact defines .data recoil:data:0x56b564: g_zVid_CachedClientRectUpdateMask.
  * BN xrefs identify this zero-initialized int32 as the cached-client-rect
@@ -204,72 +197,6 @@ int g_zVideo_ClearScreenBufferEnabled = 0;
  * Purpose: gate refreshes of the cached client rectangle.
  */
 int g_zVid_CachedClientRectUpdateMask = 0;
-/**
- * Purpose: cache video initialization, adjust-surface, and fullscreen state.
- */
-int g_zVideo_IsInitialized = 0;
-int g_zVideo_AdjustSurfacesDisableGate = 0;
-int g_zVideo_FullscreenOption = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-displaymodebpp
- * @recoil-artifact defines .data recoil:data:0x632150: g_zVideo_DisplayModeBpp.
- * BN models this as the zero-initialized int32 written when mode geometry is
- * applied.
- * Purpose: cache the active display mode bit depth.
- */
-int g_zVideo_DisplayModeBpp = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-hwnd
- * @recoil-artifact defines .data recoil:data:0x6321c8: g_zVideo_hWnd.
- * Purpose: hold the active video target window handle.
- */
-HWND g_zVideo_hWnd = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-primaryhasattachedbackbuffer
- * @recoil-artifact defines .data recoil:data:0x632134: g_zVideo_PrimaryHasAttachedBackbuffer.
- * Purpose: remember whether the primary DirectDraw surface has an attached
- * backbuffer that can be flipped back to GDI during shutdown or mode changes.
- *
- * DirectDraw primary-surface state owner data. BN xrefs show the flag is set
- * by the surface creation paths when the primary surface owns an attached
- * backbuffer, cleared by the fullscreen surface path without one, and checked
- * by FlipToGDIIfAttached before calling IDirectDraw2::FlipToGDISurface.
- */
-int g_zVideo_PrimaryHasAttachedBackbuffer = 0;
-/**
- * Purpose: cache half-resolution backbuffer presentation state.
- */
-int g_zVideo_UseHalfResBackbuffer = 0;
-int g_zVideo_HalfResAdjustMode = 0;
-/**
- * D3D fog/color-attribute bias owner data. Current BN models the channel index
- * at 0x632140 separately from the adjacent RGB bias floats at 0x6321dc-0x6321e4;
- * 0x4a7250 writes them and the submitters at 0x4ab320, 0x4abb20, and 0x4ac370
- * consume them while packing D3D TLVERTEX colors.
- * Purpose: stage pending fog color and color-attribute bias for D3D submitters.
- */
-int g_zVideo_D3DColorNormalizeChannelIndex = 0;
-float g_zVideo_FogColorPendingR255 = 0.0f;
-float g_zVideo_FogColorPendingG255 = 0.0f;
-float g_zVideo_FogColorPendingB255 = 0.0f;
-float g_zVideo_D3DColorAttrBiasR = 0.0f;
-float g_zVideo_D3DColorAttrBiasG = 0.0f;
-float g_zVideo_D3DColorAttrBiasB = 0.0f;
-/**
- * Purpose: cache target and applied D3D fog color channels.
- */
-float g_zVideo_FogTargetColorR255 = 0.0f;
-float g_zVideo_FogTargetColorG255 = 0.0f;
-float g_zVideo_FogTargetColorB255 = 0.0f;
-float g_zVideo_FogColorAppliedR255 = 0.0f;
-float g_zVideo_FogColorAppliedG255 = 0.0f;
-float g_zVideo_FogColorAppliedB255 = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-pendingditherenable
- * @recoil-artifact defines .data recoil:data:0x63213c: g_zVideo_PendingDitherEnable.
- * Purpose: stage the Direct3D dither render-state value before scene entry.
- */
-int g_zVideo_PendingDitherEnable = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-f-0x56bbf4
  * @recoil-artifact defines .data recoil:data:0x56bbf4: g_zVideo_InverseZTolerancePending.
@@ -282,15 +209,6 @@ float g_zVideo_InverseZTolerancePending = 0.0f;
  * Purpose: stage Direct3D fan-closing and wireframe render state.
  */
 int g_zVideo_D3DAppendFanCloseVertexPending = 0;
-int g_zVideo_PendingWireframeState = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-d3dscenedepth
- * @recoil-artifact defines .data recoil:data:0x632148: g_zVideo_D3DSceneDepth.
- * BN types this 4-byte .data slot as an int32, zero-initialized, and confines
- * its xrefs to zVideoD3D::SceneEnter/SceneLeave nesting.
- * Purpose: track nested Direct3D scene entry/leave ownership.
- */
-int g_zVideo_D3DSceneDepth = 0;
 /**
  * DirectDraw/D3D enumeration counters. BN ties the accepted DirectDraw count
  * at 0x632f98 to the public zVid thunk at 0x4a7480, the accepted renderer
@@ -298,8 +216,6 @@ int g_zVideo_D3DSceneDepth = 0;
  * ordinal at 0x56bc98 only to DirectDrawEnumCallback logging.
  * Purpose: cache startup DirectDraw and Direct3D enumeration totals.
  */
-int g_zVideo_NumAcceptedDirectDrawDevices = 0;
-int g_zVid_AcceptedHardwareRendererCount = 0;
 int g_zVideo_DirectDrawEnumOrdinal = 0;
 /**
  * Retail starts with texture-pack loading enabled; zVid accessors toggle this
@@ -858,56 +774,7 @@ RECOIL_STATIC_ASSERT(sizeof(g_zVideo_DDErrorName_Unsupported) == 0x12);
  * palette loader returns its failure code.
  */
 char g_zVideo_PaletteOpenFailedFormat[0x21] = "ZVID: could not open palette %s\n";
-/*
- * BN models these as zero-initialized 0x20-byte zVideo_SurfaceState records:
- * the software, primary, and display-mode globals are adjacent at 0x632200,
- * 0x632220, and 0x632240.
- */
-zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState = { 0 };
-zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState = { 0 };
-zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState = { 0 };
-char g_zVideo_PalettePathBuffer[0x100] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-palettebrightnesslevel
- * @recoil-artifact defines .data recoil:data:0x632360: g_zVideo_PaletteBrightnessLevel.
- * Purpose: cache the palette brightness adjustment used by palette loading.
- */
-int g_zVideo_PaletteBrightnessLevel = 0;
-PALETTEENTRY g_zVideo_PaletteFileEntries[0x100] = { 0 };
-PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100] = { 0 };
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteOpenFailedFormat) == 0x21);
-RECOIL_STATIC_ASSERT(sizeof(g_zVideo_PaletteBrightnessLevel) == 4);
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-cachedclientrectscreen
- * @recoil-artifact defines .data recoil:data:0x632f88: g_zVideo_CachedClientRectScreen.
- * Purpose: cache the client rectangle converted to screen coordinates.
- */
-RECT g_zVideo_CachedClientRectScreen = { 0 };
-
-/**
- * Purpose: track the queued sorted polygon count and draw order.
- */
-int g_zVideo_SortedPolyQueueCount = 0;
-int g_zVideo_SortedPolyDrawOrder[256] = { 0 };
-/**
- * Purpose: tracks the active overwrite polygon queue count.
- */
-int g_zVideo_OverwriteQueueCount = 0;
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-defaulttexturerecord
- * @recoil-artifact defines .data recoil:data:0x6333a8: g_zVideo_DefaultTextureRecord.
- * Data owner: render_video.zvideo_default_texture_record_runtime.
- * Purpose: hold the hardware default texture record created by zVideo startup
- * and used by zVideo Direct3D texture fallback/destruction paths.
- *
- * Retail 0x6333a8: zero-initialized zVideo runtime pointer. BN currently
- * names this storage g_zImage_DefaultTextureRecord, but xrefs are only from
- * zVideo::InitVideoSystem, zVideo_dd::ShutdownVideoSystem, and zVideo_dd3d
- * texture-record helpers. The zImage texture-directory pointer at 0x4e071c is
- * separate storage owned by zImage::InitTextureDirectory.
- */
-zVideo_TextureRecordPartial* g_zVideo_DefaultTextureRecord = 0;
 
 /**
  * Renderer dispatch owner: BN 0x4a77a0 initializes this backend function
@@ -915,17 +782,6 @@ zVideo_TextureRecordPartial* g_zVideo_DefaultTextureRecord = 0;
  * zero-initialized before BindRendererDispatch runs.
  * Purpose: hold the active renderer dispatch vector.
  */
-zVideo_StatusProc g_zVideo_pfnOpenVideoMode = 0;
-zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem = 0;
-zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries = 0;
-zVideo_StatusProc g_zVideo_pfnSetVideoMode = 0;
-zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces = 0;
-zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState = 0;
-zVideo_SurfaceStateProc g_zVideo_pfnUnlockSurfaceState = 0;
-zVideo_ClearZBufferRectProc g_zVideo_pfnClearZBufferRect = 0;
-zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer = 0;
-zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer = 0;
-zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes = 0;
 zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes = 0;
 zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect = 0;
@@ -979,98 +835,6 @@ zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys = 0;
  * Purpose: dispatch the active renderer's queued quad-batch flush routine.
  */
 zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
-
-/**
- * Purpose: hold active DirectDraw and Direct3D provider interfaces.
- */
-IDirectDraw2* g_zVideo_pDirectDraw2 = 0;
-IDirectDrawClipper* g_zVideo_pClipper = 0;
-IDirectDrawSurface3* g_zVideo_pPageUnlockSurface = 0;
-IDirectDrawPalette* g_zVideo_pDDPalette = 0;
-zVideo_SurfaceLockVerifier* g_zVideo_pSurfaceLockVerifier = 0;
-IDirect3D2* g_zVideo_pD3D2 = 0;
-IDirect3DDevice2* g_zVideo_pD3DDevice = 0;
-IDirectDrawSurface3* g_zVideo_pZBufferSurface = 0;
-IDirectDrawSurface* g_zVideo_pZBufferAttachSurface = 0;
-IDirect3DViewport2* g_zVideo_pD3DViewport2 = 0;
-IDirect3DMaterial2* g_zVideo_pD3DMaterial2 = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-d3dmaterialhandle
- * @recoil-artifact defines .data recoil:data:0x633404: g_zVideo_D3DMaterialHandle.
- * Purpose: cache the active Direct3D material handle.
- */
-D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-d3drenderstatecache
- * @recoil-artifact defines .data recoil:data:0x633408: g_zVideo_D3DRenderStateCache.
- * Purpose: cache the Direct3D render states most recently applied to the
- * active device.
- */
-zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache = { 0 };
-/**
- * Purpose: cache the Direct3D fog render-state values already applied.
- */
-int g_zVideo_CachedFogEnableRenderState = 0;
-int g_zVideo_CachedFogModeLightState = 0;
-float g_zVideo_CachedFogStartLightStateValue = 0.0f;
-float g_zVideo_CachedFogEndLightStateValue = 0.0f;
-/**
- * Purpose: hold Direct3D HAL and HEL device capability snapshots.
- */
-D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc = { 0 };
-D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-quadbatchcount
- * @recoil-artifact defines .data recoil:data:0x633638: g_zVideo_QuadBatchCount.
- * Purpose: cache the queued Direct3D quad count.
- */
-int g_zVideo_QuadBatchCount = 0;
-zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-pselectedhwapidevicerecord
- * @recoil-artifact defines .data recoil:data:0x633e40: g_zVideo_pSelectedHwApiDeviceRecord.
- * Purpose: point at the selected DirectDraw hardware API record.
- */
-zVidHwApiDeviceRecordPartial* g_zVideo_pSelectedHwApiDeviceRecord = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-hwapidevicetable
- * @recoil-artifact defines .data recoil:data:0x633e44: g_zVideo_HwApiDeviceTable.
- * Cached DirectDraw hardware-device owner: BN models four 0x6ec-byte records
- * at 0x633e44. The DirectDraw enumeration callbacks populate the records;
- * memory-query, renderer-selection, and DirectDraw surface paths consume the
- * cached record fields.
- * Purpose: cache accepted DirectDraw hardware API records.
- */
-zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4] = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-pselectedd3ddeviceinfo
- * @recoil-artifact defines .data recoil:data:0x6359f4: g_zVideo_pSelectedD3DDeviceInfo.
- * Selected Direct3D device-info pointer. BN types the retail 4-byte
- * zero-initialized slot as a zVidD3DDeviceInfo pointer; zVideo stores either
- * the selected hardware record's first D3D driver record or null.
- * Purpose: cache the active Direct3D device info record for name and device
- * creation queries.
- */
-zVidD3DDriverRecordPartial* g_zVideo_pSelectedD3DDeviceInfo = 0;
-/**
- * DirectDraw enumeration capability scratch buffers. EnumDirectDrawDeviceCallback
- * clears these zero-initialized 0x17c-byte provider records, sets dwSize, and
- * passes them to IDirectDraw2::GetCaps before accepting a hardware API record.
- * Purpose: hold HAL and HEL DirectDraw capability snapshots during enumeration.
- */
-DDCAPS g_zVideo_DDrawCapsHal = { 0 };
-DDCAPS g_zVideo_DDrawCapsHel = { 0 };
-/**
- * Purpose: hold DirectDraw surface-lock verification state.
- */
-unsigned char g_zVideo_SurfaceLockVerifyFlags = 0;
-int g_zVideo_SurfaceLockVerifyContext = 0;
-/**
- * Purpose: store Direct3D submit scratch vertices and queued polygons.
- */
-D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64] = { 0 };
-zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256] = { 0 };
-zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180] = { 0 };
 
 #if defined(_M_IX86) || defined(__i386__)
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
@@ -1800,3 +1564,113 @@ namespace zVideo_dd
  */
 
 #include "recoil/Mfc42Abi.h"
+
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, rendererType) == 0x0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fullscreenOption) == 0x4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, useHalfResBackbuffer) == 0x8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, halfResAdjustMode) == 0xc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, clearScreenBufferEnabled) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, primaryHasAttachedBackbuffer) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pendingWireframeState) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pendingDitherEnable) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dColorNormalizeChannelIndex) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, adjustSurfacesDisableGate) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dSceneDepth) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, resolutionMenuValid) == 0x2c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, displayModeBpp) == 0x30);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, isInitialized) == 0x34);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pixelPack) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackRBits) == 0x68);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackGBits) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackBBits) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackABits) == 0x74);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackRMask) == 0x78);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackGMask) == 0x7c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackBMask) == 0x80);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackAMask) == 0x84);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackRGBBitsTotalMinus8) == 0x88);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackGBBitsTotalMinus8) == 0x8c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackBShiftTo8) == 0x90);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackRGBBitsTotal) == 0x94);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackRMaskShifted) == 0x98);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackGMaskShifted) == 0x9c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackBMaskShifted) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, texturePixelPackNonRgbMaskShifted) == 0xa4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, hWnd) == 0xa8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, clearColorPacked16) == 0xac);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorPendingR255) == 0xb0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorPendingG255) == 0xb4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorPendingB255) == 0xb8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dColorAttrBiasR) == 0xbc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dColorAttrBiasG) == 0xc0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dColorAttrBiasB) == 0xc4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogTargetColorR255) == 0xc8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogTargetColorG255) == 0xcc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogTargetColorB255) == 0xd0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorAppliedR255) == 0xd4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorAppliedG255) == 0xd8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fogColorAppliedB255) == 0xdc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, swSurfaceState) == 0xe0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, primarySurfaceState) == 0x100);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, displayModeSurfaceState) == 0x120);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, palettePathBuffer) == 0x140);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, paletteBrightnessLevel) == 0x240);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_0241) == 0x241);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_0244) == 0x244);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, paletteFileEntries) == 0x248);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, systemPaletteEntries) == 0x648);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_0a48) == 0xa48);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, cachedClientRectScreen) == 0xe68);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, numAcceptedDirectDrawDevices) == 0xe78);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, acceptedHardwareRendererCount) == 0xe7c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, sortedPolyQueueCount) == 0xe80);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, sortedPolyDrawOrder) == 0xe84);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, overwriteQueueCount) == 0x1284);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, defaultTextureRecord) == 0x1288);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnOpenVideoMode) == 0x128c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnShutdownVideoSystem) == 0x1290);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnAdjustSurfaces) == 0x1294);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnPaletteSetEntries) == 0x1298);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnSetVideoMode) == 0x129c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnUnlockSurfaceState) == 0x12a0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnLockSurfaceState) == 0x12a4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnClearStateSurfaceAndZBuffer) == 0x12a8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnClearSwSurfaceAndZBuffer) == 0x12ac);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnClearZBufferRect) == 0x12b0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pfnUpdateFogColor) == 0x12b4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pDirectDraw2) == 0x12b8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pClipper) == 0x12bc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pPageUnlockSurface) == 0x12c0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pDDPalette) == 0x12c4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pSurfaceLockVerifier) == 0x12c8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pD3D2) == 0x12cc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pD3DDevice) == 0x12d0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pZBufferSurface) == 0x12d4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pZBufferAttachSurface) == 0x12d8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pD3DViewport2) == 0x12dc);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pD3DMaterial2) == 0x12e0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dMaterialHandle) == 0x12e4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dRenderStateCache) == 0x12e8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, cachedFogEnableRenderState) == 0x1310);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, cachedFogModeLightState) == 0x1314);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, cachedFogStartLightStateValue) == 0x1318);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, cachedFogEndLightStateValue) == 0x131c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dHalDeviceDesc) == 0x1320);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dHelDeviceDesc) == 0x141c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, quadBatchCount) == 0x1518);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, quadBatchItems) == 0x151c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_1d1c) == 0x1d1c);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pSelectedHwApiDeviceRecord) == 0x1d20);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, hwApiDeviceTable) == 0x1d24);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, pSelectedD3DDeviceInfo) == 0x38d4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, ddrawCapsHal) == 0x38d8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, ddrawCapsHel) == 0x3a54);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_3bd0) == 0x3bd0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, surfaceLockVerifyFlags) == 0x3bd4);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_3bd5) == 0x3bd5);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, surfaceLockVerifyContext) == 0x3bec);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, unknown_3bf0) == 0x3bf0);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, d3dSubmitTempVertices) == 0x3bf8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, sortedPolyQueue) == 0x43f8);
+RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, overwriteQueue) == 0x84ff8);
+RECOIL_STATIC_ASSERT(sizeof(zVideo_GlobalState) == 0x1467f8);

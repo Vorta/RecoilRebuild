@@ -161,6 +161,7 @@ namespace CZAnimate
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.animate.sampletransform
      * @recoil-artifact defines .text recoil:function:0x453d20: CZAnimate::SampleTransform
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-lerp
      *
      *
      * Purpose: sample interpolated rotation, position, and scale keyframe data
@@ -168,36 +169,45 @@ namespace CZAnimate
      */
     short __fastcall SampleTransform(CZAnimateRuntimePartial * runtime)
     {
+        const float duration = runtime->duration;
+        const float currentTime = runtime->currentTime;
+        const float lastFrame = (float)runtime->maxFrameIndex - 1.0f;
         if (runtime->state == kAnimateStateStopped) {
             return kAnimateStateStopped;
         }
 
-        const float frame = runtime->currentTime * (float)(runtime->maxFrameIndex - 1) / runtime->duration;
-        const int frameIndex = (int)(frame);
-        const float fraction = frame - (float)(frameIndex);
+        const float frame = lastFrame * currentTime / duration;
+        const short frameIndex = (short)frame;
+        float fraction = frame - (float)frameIndex;
         const CZAnimateKeyframePartial* key0 = &runtime->keyframes[frameIndex];
         const CZAnimateKeyframePartial* key1 = &runtime->keyframes[frameIndex + 1];
+        zVec3* dest;
+        const zVec3* from;
+        const zVec3* to;
 
-        runtime->sampledRotation.x
-            = ((key1->rotation.x - key0->rotation.x) * fraction + key0->rotation.x) * runtime->outputRotationScale.x;
-        runtime->sampledRotation.y
-            = ((key1->rotation.y - key0->rotation.y) * fraction + key0->rotation.y) * runtime->outputRotationScale.y;
-        runtime->sampledRotation.z
-            = ((key1->rotation.z - key0->rotation.z) * fraction + key0->rotation.z) * runtime->outputRotationScale.z;
+        dest = &runtime->sampledRotation;
+        from = &key0->rotation;
+        to = &key1->rotation;
+        ZMTH_VECTOR_LERP_BOUND(dest, from, to, fraction);
+        dest->x *= runtime->outputRotationScale.x;
+        dest->y *= runtime->outputRotationScale.y;
+        dest->z *= runtime->outputRotationScale.z;
 
-        runtime->sampledPosition.x
-            = ((key1->position.x - key0->position.x) * fraction + key0->position.x) * runtime->outputPositionScale.x;
-        runtime->sampledPosition.y
-            = ((key1->position.y - key0->position.y) * fraction + key0->position.y) * runtime->outputPositionScale.y;
-        runtime->sampledPosition.z
-            = ((key1->position.z - key0->position.z) * fraction + key0->position.z) * runtime->outputPositionScale.z;
+        dest = &runtime->sampledPosition;
+        from = &key0->position;
+        to = &key1->position;
+        ZMTH_VECTOR_LERP_BOUND(dest, from, to, fraction);
+        dest->x *= runtime->outputPositionScale.x;
+        dest->y *= runtime->outputPositionScale.y;
+        dest->z *= runtime->outputPositionScale.z;
 
-        runtime->sampledScale.x
-            = ((key1->scale.x - key0->scale.x) * fraction + key0->scale.x) * runtime->outputScaleScale.x;
-        runtime->sampledScale.y
-            = ((key1->scale.y - key0->scale.y) * fraction + key0->scale.y) * runtime->outputScaleScale.y;
-        runtime->sampledScale.z
-            = ((key1->scale.z - key0->scale.z) * fraction + key0->scale.z) * runtime->outputScaleScale.z;
+        dest = &runtime->sampledScale;
+        from = &key0->scale;
+        to = &key1->scale;
+        ZMTH_VECTOR_LERP_BOUND(dest, from, to, fraction);
+        dest->x *= runtime->outputScaleScale.x;
+        dest->y *= runtime->outputScaleScale.y;
+        dest->z *= runtime->outputScaleScale.z;
 
         return kAnimateAdvanceActive;
     }

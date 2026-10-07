@@ -1076,7 +1076,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: normalize the steering direction projected onto the reference plane.
  */

@@ -70,8 +70,8 @@ namespace
         zVideo_XyzVertex * vertices,
         unsigned int packedColor16,
         int alpha,
-        int renderParam,
         int vertexCount,
+        int renderParam,
         int queueMode
     );
     typedef void(__fastcall * SubmitPolyColorAttrProc)(
@@ -1846,8 +1846,8 @@ namespace zModel
                         (zVideo_XyzVertex*)g_Clip_PolyVerts,
                         material->packedColor & 0xffff,
                         materialAlpha,
-                        entry->drawFlags,
                         clippedCount,
+                        entry->drawFlags,
                         gModel_RenderVertexAlphaEnabled
                     );
                 }
@@ -1872,8 +1872,8 @@ namespace zModel
                         (zVideo_XyzVertex*)g_Clip_PolyVerts,
                         material->packedColor & 0xffff,
                         materialAlpha,
-                        entry->drawFlags,
                         clippedCount,
+                        entry->drawFlags,
                         gModel_RenderVertexAlphaEnabled
                     );
                 }
@@ -2205,156 +2205,179 @@ namespace OptCatalog
      */
     void __fastcall ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial * hitEvent)
     {
+        OptCatalogSurfaceTextureHandle* handle;
+        OptCatalogDamageMaskSurface* srcSurface;
+        OptCatalogDamageMaskSurface* dstSurface;
+        unsigned short* dstPixels;
+        unsigned int dstPitch;
+        RECT stampRect;
+        int srcXBegin;
+        int srcXEnd;
+        int srcYBegin;
+        int srcYEnd;
+        int srcX;
+        int srcY;
+        int outY;
+
         if (OptCatalogIsDamageMaskEnabled() == 0) {
             return;
         }
 
-        OptCatalogSurfaceMaterialRef* const surfaceRef = hitEvent->surfaceRef;
-        if (surfaceRef == 0) {
+        if (hitEvent->surfaceRef == 0) {
             return;
         }
 
-        const unsigned int materialFlags = surfaceRef->flags;
-        if ((materialFlags & 0x0100) == 0 || (materialFlags & 0x0200) == 0 || (materialFlags & 0x0400) != 0) {
+        if ((hitEvent->surfaceRef->flags & 0x0100) == 0 || (hitEvent->surfaceRef->flags & 0x0200) == 0
+            || (hitEvent->surfaceRef->flags & 0x0400) != 0) {
             return;
         }
 
         while (g_OptCatalogDamageMaskPhaseU > 1.01f) {
             g_OptCatalogDamageMaskPhaseU -= 1.0f;
         }
-        while (g_OptCatalogDamageMaskPhaseU < -0.01f) {
-            g_OptCatalogDamageMaskPhaseU += 1.0f;
-        }
         while (g_OptCatalogDamageMaskPhaseV > 1.01f) {
             g_OptCatalogDamageMaskPhaseV -= 1.0f;
+        }
+        while (g_OptCatalogDamageMaskPhaseU < -0.01f) {
+            g_OptCatalogDamageMaskPhaseU += 1.0f;
         }
         while (g_OptCatalogDamageMaskPhaseV < -0.01f) {
             g_OptCatalogDamageMaskPhaseV += 1.0f;
         }
 
-        OptCatalogSurfaceTextureHandle* const srcHandle
-            = (OptCatalogSurfaceTextureHandle*)g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex];
-        OptCatalogDamageMaskSurface* const srcSurface = srcHandle != 0 ? srcHandle->surface : 0;
-        OptCatalogSurfaceTextureHandle* const dstHandle = surfaceRef->textureHandle;
-        OptCatalogDamageMaskSurface* const dstSurface = dstHandle != 0 ? dstHandle->surface : 0;
+        handle = (OptCatalogSurfaceTextureHandle*)g_OptCatalogDamageMaskHandles[g_OptCatalogDamageMaskSlotIndex];
+        srcSurface = handle != 0 ? handle->surface : 0;
+        handle = hitEvent->surfaceRef->textureHandle;
+        dstSurface = handle != 0 ? handle->surface : 0;
         if (srcSurface == 0 || dstSurface == 0 || srcSurface->format != 0 || dstSurface->format != 0) {
             return;
         }
 
-        const int dstWidth = dstSurface->width;
-        const int dstHeight = dstSurface->height;
-        const int srcWidth = srcSurface->width;
-        const int srcHeight = srcSurface->height;
-        int dstX = (int)(dstWidth * g_OptCatalogDamageMaskPhaseU) - (srcWidth >> 1);
-        int dstY = (int)(dstHeight * g_OptCatalogDamageMaskPhaseV) - (srcHeight >> 1);
-        int srcXBegin = 0;
-        int srcXEnd = 0;
-        int srcYBegin = 0;
-        int srcYEnd = 0;
-        if (srcWidth > dstWidth) {
-            dstX = 0;
-            srcXBegin = (srcWidth - dstWidth) >> 1;
-            srcXEnd = srcWidth - srcXBegin;
+        int dstX = (int)(dstSurface->width * g_OptCatalogDamageMaskPhaseU) - (srcSurface->width >> 1);
+        int dstY = (int)(dstSurface->height * g_OptCatalogDamageMaskPhaseV) - (srcSurface->height >> 1);
+
+        // Retail centres an oversized stamp and shifts, rather than clips, one that overhangs an edge.
+        if (srcSurface->width > dstSurface->width) {
+            srcXBegin = (srcSurface->width - dstSurface->width) >> 1;
+            srcXEnd = srcSurface->width - srcXBegin;
+            stampRect.left = 0;
+            stampRect.right = dstSurface->width;
         } else {
             srcXBegin = 0;
-            srcXEnd = srcWidth;
+            srcXEnd = srcSurface->width;
+            stampRect.left = dstX;
+            stampRect.right = dstX + srcXEnd;
             if (dstX < 0) {
-                dstX = 0;
-                srcXEnd = srcWidth;
-            } else if (dstX + srcWidth > dstWidth) {
-                dstX = dstX - (dstX + srcWidth) + dstWidth;
-            }
-        }
-        if (srcHeight > dstHeight) {
-            dstY = 0;
-            srcYBegin = (srcHeight - dstHeight) >> 1;
-            srcYEnd = srcHeight - srcYBegin;
-        } else {
-            srcYBegin = 0;
-            srcYEnd = srcHeight;
-            if (dstY < 0) {
-                dstY = 0;
-                srcYEnd = srcHeight;
-            } else if (dstY + srcHeight > dstHeight) {
-                dstY = dstY - (dstY + srcHeight) + dstHeight;
+                stampRect.right -= dstX;
+                stampRect.left = 0;
+            } else if (stampRect.right > dstSurface->width) {
+                stampRect.left = stampRect.left - stampRect.right + dstSurface->width;
+                stampRect.right = dstSurface->width;
             }
         }
 
-        unsigned short* dstPixels = dstSurface->pixels;
-        int dstStride = dstWidth;
-        const bool hasTextureRecord = dstHandle->textureRecord != 0;
-        if (hasTextureRecord) {
-            if (g_zVideo_pfnTextureRecordLockUploadSurface(dstHandle->textureRecord, (void**)&dstPixels, &dstStride)
+        if (srcSurface->height > dstSurface->height) {
+            srcYBegin = (srcSurface->height - dstSurface->height) >> 1;
+            srcYEnd = srcSurface->height - srcYBegin;
+            stampRect.top = 0;
+            stampRect.bottom = dstSurface->height;
+        } else {
+            srcYBegin = 0;
+            srcYEnd = srcSurface->height;
+            stampRect.top = dstY;
+            stampRect.bottom = dstY + srcYEnd;
+            if (dstY < 0) {
+                stampRect.bottom -= dstY;
+                stampRect.top = 0;
+            } else if (stampRect.bottom > dstSurface->height) {
+                stampRect.top = stampRect.top - stampRect.bottom + dstSurface->height;
+                stampRect.bottom = dstSurface->height;
+            }
+        }
+
+        if (hitEvent->surfaceRef->textureHandle->textureRecord == 0) {
+            dstPixels = dstSurface->pixels;
+            dstPitch = dstSurface->width;
+        } else {
+            if (g_zVideo_pfnTextureRecordLockUploadSurface(
+                    hitEvent->surfaceRef->textureHandle->textureRecord,
+                    (void**)&dstPixels,
+                    (int*)&dstPitch
+                )
                 == 0) {
                 return;
             }
-            dstStride >>= 1;
+            dstPitch >>= 1;
         }
 
-        if (srcSurface->alpha == 0) {
-            for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
-                unsigned short* dst = dstPixels + outY * dstWidth + dstX;
-                unsigned short* src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
-                for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src) {
-                    if (*src != 0) {
-                        *dst = *src;
+        if (srcSurface->alpha != 0) {
+            if (zRndr::g_pixelPackGreenBits == 6) {
+                for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
+                    unsigned short* dst = dstPixels + outY * dstPitch + stampRect.left;
+                    const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
+                    const unsigned char* const alphaRow = srcSurface->alpha + srcY * srcSurface->width;
+                    for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
+                        const int alpha = alphaRow[srcX];
+                        if (alpha != 0) {
+                            const int srcPixel = *src;
+                            if (alpha <= 3) {
+                                continue;
+                            }
+                            if (alpha >= 0xfc) {
+                                *dst = (unsigned short)srcPixel;
+                            } else {
+                                const int dstPixel = *dst;
+                                const int blended = dstPixel
+                                    + ((((srcPixel & 0xf800) - (dstPixel & 0xf800)) * alpha >> 8) & 0xfffff800);
+                                const int green
+                                    = (((srcPixel & 0x07e0) - (dstPixel & 0x07e0)) * alpha >> 8) & 0xffffffe0;
+                                const int blue = ((srcPixel & 0x001f) - (blended & 0x001f)) * alpha >> 8;
+                                *dst = (unsigned short)(blended + (blue + green));
+                            }
+                        }
                     }
-                    ++dst;
                 }
-            }
-        } else if (zRndr::g_pixelPackGreenBits == 6) {
-            for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
-                unsigned short* dst = dstPixels + outY * dstStride + dstX;
-                unsigned short* src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
-                unsigned char* alpha = srcSurface->alpha + srcY * srcWidth + srcXBegin;
-                for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++alpha, ++dst) {
-                    const int alphaValue = *alpha;
-                    if (alphaValue == 0 || alphaValue <= 3) {
-                        continue;
-                    }
-                    if (alphaValue >= 0xfc) {
-                        *dst = *src;
-                    } else {
-                        const unsigned int dstPixel = *dst;
-                        const unsigned int srcPixel = *src;
-                        unsigned int blended = dstPixel;
-                        blended += ((((srcPixel & 0xf800) - (dstPixel & 0xf800)) * alphaValue) >> 8) & 0xfffff800;
-                        const unsigned int green
-                            = ((((srcPixel & 0x07e0) - (dstPixel & 0x07e0)) * alphaValue) >> 8) & 0xffffffe0;
-                        const unsigned int blue = (((srcPixel & 0x001f) - (blended & 0x001f)) * alphaValue) >> 8;
-                        *dst = (unsigned short)(blended + green + blue);
+            } else {
+                for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
+                    unsigned short* dst = dstPixels + outY * dstPitch + stampRect.left;
+                    const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
+                    const unsigned char* const alphaRow = srcSurface->alpha + srcY * srcSurface->width;
+                    for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
+                        const int alpha = alphaRow[srcX];
+                        if (alpha != 0) {
+                            const int srcPixel = *src;
+                            if (alpha <= 7) {
+                                continue;
+                            }
+                            if (alpha >= 0xfc) {
+                                *dst = (unsigned short)srcPixel;
+                            } else {
+                                const int dstPixel = *dst;
+                                const int red = (((srcPixel & 0x7c00) - (dstPixel & 0x7c00)) * alpha >> 8) & 0xfffffc00;
+                                const int green
+                                    = (((srcPixel & 0x03e0) - (dstPixel & 0x03e0)) * alpha >> 8) & 0xffffffe0;
+                                const int blue = ((srcPixel & 0x001f) - (dstPixel & 0x001f)) * alpha >> 8;
+                                *dst = (unsigned short)(blue + green + red + dstPixel);
+                            }
+                        }
                     }
                 }
             }
         } else {
-            for (int srcY = srcYBegin, outY = dstY; srcY < srcYEnd; ++srcY, ++outY) {
-                unsigned short* dst = dstPixels + outY * dstStride + dstX;
-                unsigned short* src = srcSurface->pixels + srcY * srcWidth + srcXBegin;
-                unsigned char* alpha = srcSurface->alpha + srcY * srcWidth + srcXBegin;
-                for (int srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++alpha, ++dst) {
-                    const int alphaValue = *alpha;
-                    if (alphaValue == 0 || alphaValue <= 7) {
-                        continue;
-                    }
-                    if (alphaValue >= 0xfc) {
+            for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
+                unsigned short* dst = dstPixels + outY * dstSurface->width + stampRect.left;
+                const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
+                for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
+                    if (*src != 0) {
                         *dst = *src;
-                    } else {
-                        const unsigned int dstPixel = *dst;
-                        const unsigned int srcPixel = *src;
-                        const unsigned int red
-                            = ((((srcPixel & 0x7c00) - (dstPixel & 0x7c00)) * alphaValue) >> 8) & 0xfffffc00;
-                        const unsigned int green
-                            = ((((srcPixel & 0x03e0) - (dstPixel & 0x03e0)) * alphaValue) >> 8) & 0xffffffe0;
-                        const unsigned int blue = (((srcPixel & 0x001f) - (dstPixel & 0x001f)) * alphaValue) >> 8;
-                        *dst = (unsigned short)(dstPixel + red + green + blue);
                     }
                 }
             }
         }
 
-        if (hasTextureRecord) {
-            g_zVideo_pfnTextureRecordUnlockUploadSurface(dstHandle->textureRecord);
-            g_zVideo_pfnTextureRecordFinalizeUpload(dstHandle->textureRecord, &dstX, 0);
+        if (hitEvent->surfaceRef->textureHandle->textureRecord != 0) {
+            g_zVideo_pfnTextureRecordUnlockUploadSurface(hitEvent->surfaceRef->textureHandle->textureRecord);
+            g_zVideo_pfnTextureRecordFinalizeUpload(hitEvent->surfaceRef->textureHandle->textureRecord, &stampRect, 0);
         }
     }
 

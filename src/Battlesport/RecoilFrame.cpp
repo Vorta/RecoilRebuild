@@ -257,8 +257,9 @@ CZRecoilFrame::CZRecoilFrame()
 
     m_mainMenu.GetSubMenu(2)->RemoveMenu(kFullscreenMenuCommandId, MF_BYCOMMAND);
 
-    g_RecoilApp_hInstance = (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance));
+    // Retail reads this->m_hWnd before the global hInstance copy.
     g_RecoilApp_hWndMain = m_hWnd;
+    g_RecoilApp_hInstance = (HINSTANCE)((unsigned int)(g_RecoilApp.m_hInstance));
 
     CString formattedTitle;
     formattedTitle.Format("%s", (const char*)BuildWindowTitle());

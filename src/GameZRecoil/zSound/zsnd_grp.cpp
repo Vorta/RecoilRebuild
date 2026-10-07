@@ -160,7 +160,7 @@ extern "C" zSndSample* __fastcall zSndPendingListFindByName(const char* sampleNa
  */
 extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void* sampleName)
 {
-    return strcmp(((zSndGroup*)(payload))->groupName, (const char*)(sampleName)) != 0 ? 1 : 0;
+    return strcmp(((zSndGroup*)(payload))->fields.groupName, (const char*)(sampleName)) != 0 ? 1 : 0;
 }
 
 /**
@@ -212,119 +212,133 @@ extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* read
         return 0;
     }
 
+    zSndGroupRuntimeFields* const groupFields = &result->fields;
     result->createGuard = 1;
-    zReader::Node* nodeArray = readerNode->value.nodes;
-    {
-        for (int childIndex = 1; childIndex < nodeArray[0].value.i32; ++childIndex) {
-            zReader::Node* childNode = &nodeArray[childIndex];
-            if (childNode->type == zReader::ZRDR_NODE_ARRAY) {
-                zSndGroupConfigBlock* blocks = (zSndGroupConfigBlock*)(realloc(
-                    result->configBlocks,
-                    (size_t)(result->configBlockCount + 1) * sizeof(zSndGroupConfigBlock)
-                ));
-                result->configBlocks = blocks;
-                if (blocks != 0) {
-                    zSndGroupConfigBlock* block = &blocks[result->configBlockCount];
-                    memset(block, 0, sizeof(*block));
-                    zSndGroupLoadConfigBlock(childNode, (zSndGroupRuntimeFields*)(&result->groupName), block);
-                    ++result->configBlockCount;
-                }
-                continue;
-            }
+    groupFields->dynamicWeightsEnabled = 0;
 
-            if (childNode->type != zReader::ZRDR_NODE_STRING) {
-                continue;
-            }
+    for (int childIndex = 1; childIndex < readerNode->value.nodes[0].value.i32; ++childIndex) {
+        zReader::Node* const childNode = &readerNode->value.nodes[childIndex];
+        switch (childNode->type) {
+        case zReader::ZRDR_NODE_INT:
+            break;
 
-            const char* key = childNode->value.str;
-            zReader::Node* valueNode = &nodeArray[childIndex + 1];
+        case zReader::ZRDR_NODE_STRING: {
+            const char* const key = childNode->value.str;
             if (strcmp(key, g_zSnd_SoundGroupDelayRepeatKey) == 0) {
+                zReader::Node* const valueNode = &readerNode->value.nodes[childIndex + 1];
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-                    result->delayRepeatSec = valueNode->value.f32;
+                    groupFields->delayRepeatSec = valueNode->value.f32;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                    result->delayRepeatSec = (float)(valueNode->value.i32);
+                    groupFields->delayRepeatSec = (float)(valueNode->value.i32);
                 } else {
                     zError::ReportOld(
                         0x200,
                         g_zSnd_SourceFile_ZsndGrpCpp,
                         0x141,
                         g_zSnd_SoundGroupDelayRepeatLoadErrorFmt,
-                        result->groupName
+                        groupFields->groupName
                     );
                 }
                 ++childIndex;
             } else if (strcmp(key, g_zSnd_SoundGroupDelayTerminationKey) == 0) {
+                zReader::Node* const valueNode = &readerNode->value.nodes[childIndex + 1];
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-                    result->delayTerminationSec = valueNode->value.f32;
+                    groupFields->delayTerminationSec = valueNode->value.f32;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                    result->delayTerminationSec = (float)(valueNode->value.i32);
+                    groupFields->delayTerminationSec = (float)(valueNode->value.i32);
                 } else {
                     zError::ReportOld(
                         0x200,
                         g_zSnd_SourceFile_ZsndGrpCpp,
                         0x14f,
                         g_zSnd_SoundGroupDelayTerminationLoadErrorFmt,
-                        result->groupName
+                        groupFields->groupName
                     );
                 }
                 ++childIndex;
             } else if (strcmp(key, g_zSnd_SoundGroupDynamicWeightsKey) == 0) {
-                result->dynamicWeightsEnabled = 1;
+                groupFields->dynamicWeightsEnabled = 1;
+                zReader::Node* const valueNode = &readerNode->value.nodes[childIndex + 1];
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-                    result->dynamicWeightScale = valueNode->value.f32;
+                    groupFields->dynamicWeightScale = valueNode->value.f32;
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                    result->dynamicWeightScale = (float)(valueNode->value.i32);
+                    groupFields->dynamicWeightScale = (float)(valueNode->value.i32);
                 } else {
                     zError::ReportOld(
                         0x200,
                         g_zSnd_SourceFile_ZsndGrpCpp,
                         0x15f,
                         g_zSnd_SoundGroupDynamicWeightsLoadErrorFmt,
-                        result->groupName
+                        groupFields->groupName
                     );
                 }
 
-                if (result->dynamicWeightScale <= 0.0f) {
-                    result->dynamicWeightScale = 0.0f;
-                } else if (result->dynamicWeightScale >= 1.0f) {
-                    result->dynamicWeightScale = 1.0f;
+                // Retail clamps with two independent tests (<= 0, then > 1).
+                if (groupFields->dynamicWeightScale <= 0.0f) {
+                    groupFields->dynamicWeightScale = 0.0f;
+                }
+                if (groupFields->dynamicWeightScale > 1.0f) {
+                    groupFields->dynamicWeightScale = 1.0f;
                 }
                 ++childIndex;
             } else if (strcmp(key, g_zSnd_SoundGroupPlaySoloKey) == 0) {
-                result->playSolo = 1;
+                groupFields->playSolo = 1;
             } else if (strcmp(key, g_zSnd_SoundGroupRepeatKey) == 0) {
+                zReader::Node* const valueNode = &readerNode->value.nodes[childIndex + 1];
                 if (valueNode->type == zReader::ZRDR_NODE_FLOAT) {
-                    result->repeatCount = (unsigned short)(valueNode->value.f32);
+                    groupFields->repeatCount = (unsigned short)(valueNode->value.f32);
                 } else if (valueNode->type == zReader::ZRDR_NODE_INT) {
-                    result->repeatCount = (unsigned short)(valueNode->value.i32);
+                    groupFields->repeatCount = (unsigned short)(valueNode->value.i32);
                 } else {
                     zError::ReportOld(
                         0x200,
                         g_zSnd_SourceFile_ZsndGrpCpp,
                         0x174,
                         g_zSnd_SoundGroupRepeatLoadErrorFmt,
-                        result->groupName
+                        groupFields->groupName
                     );
                 }
                 ++childIndex;
             } else {
-                result->groupName = key;
+                groupFields->groupName = key;
             }
+            break;
         }
-    }
 
-    int needsDefaultWeights = 0;
-    for (int i = 0; i < result->configBlockCount; ++i) {
-        if (result->configBlocks[i].weight < 0.0001f) {
-            needsDefaultWeights = 1;
+        case zReader::ZRDR_NODE_ARRAY:
+            groupFields->configBlocks = (zSndGroupConfigBlock*)(realloc(
+                groupFields->configBlocks,
+                (size_t)(groupFields->configBlockCount + 1) * sizeof(zSndGroupConfigBlock)
+            ));
+            if (groupFields->configBlocks != 0) {
+                memset(&groupFields->configBlocks[groupFields->configBlockCount], 0, sizeof(zSndGroupConfigBlock));
+                zSndGroupLoadConfigBlock(
+                    childNode,
+                    groupFields,
+                    &groupFields->configBlocks[groupFields->configBlockCount]
+                );
+                ++groupFields->configBlockCount;
+            }
             break;
         }
     }
 
-    if (needsDefaultWeights != 0 && result->configBlockCount > 0) {
-        const float defaultWeight = 100.0f / (float)(result->configBlockCount);
-        for (int defaultIndex = 0; defaultIndex < result->configBlockCount; ++defaultIndex) {
-            result->configBlocks[defaultIndex].weight = defaultWeight;
+    // Retail 0x4a4934 guards the weight pass with a null test of the field block.
+    if (groupFields != 0) {
+        int needsDefaultWeights = 0;
+        for (int i = 0; i < groupFields->configBlockCount; ++i) {
+            // Retail treats a weight equal to the epsilon as unset too.
+            if (groupFields->configBlocks[i].weight <= 0.0001f) {
+                needsDefaultWeights = 1;
+                break;
+            }
+        }
+
+        if (needsDefaultWeights != 0) {
+            const float defaultWeight = 100.0f / (float)(groupFields->configBlockCount);
+            for (int defaultIndex = 0; defaultIndex < groupFields->configBlockCount; ++defaultIndex) {
+                groupFields->configBlocks[defaultIndex].weight = defaultWeight;
+            }
         }
     }
 
@@ -481,7 +495,7 @@ int zSndStreamRequest::StateBeginGroup()
     playIndex = 0;
     currentEntry = 0;
 
-    if (group->configBlockCount <= 0) {
+    if (group->fields.configBlockCount <= 0) {
         currentEntry = 0;
         streamState = 4;
         return 1;
@@ -507,14 +521,14 @@ int zSndStreamRequest::StateBeginGroup()
 zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
 {
     zSndGroupConfigBlock* result = 0;
-    if (configBlockCount == 1) {
-        return configBlocks[0].maxPlayCount != 0 ? configBlocks : 0;
+    if (fields.configBlockCount == 1) {
+        return fields.configBlocks[0].maxPlayCount != 0 ? fields.configBlocks : 0;
     }
 
     float totalWeight = 0.0f;
-    for (int i = 0; i < configBlockCount; ++i) {
-        if (configBlocks[i].maxPlayCount != 0) {
-            totalWeight += configBlocks[i].weight;
+    for (int i = 0; i < fields.configBlockCount; ++i) {
+        if (fields.configBlocks[i].maxPlayCount != 0) {
+            totalWeight += fields.configBlocks[i].weight;
         }
     }
 
@@ -524,35 +538,35 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
     // Retail 0x4a4dc9 reads this index unassigned when no entry is selected.
     int selectedIndex;
     cumulativeWeight = 0.0f;
-    for (i = 0; i < configBlockCount; ++i) {
-        if (configBlocks[i].maxPlayCount != 0) {
-            cumulativeWeight += configBlocks[i].weight;
+    for (i = 0; i < fields.configBlockCount; ++i) {
+        if (fields.configBlocks[i].maxPlayCount != 0) {
+            cumulativeWeight += fields.configBlocks[i].weight;
             if (cumulativeWeight + selectSlop >= selection) {
-                result = &configBlocks[i];
+                result = &fields.configBlocks[i];
                 selectedIndex = i;
-                if (dynamicWeightsEnabled != 0) {
-                    result->weight = dynamicWeightScale * result->weight;
+                if (fields.dynamicWeightsEnabled != 0) {
+                    result->weight = fields.dynamicWeightScale * result->weight;
                 }
                 break;
             }
         }
     }
 
-    if (dynamicWeightsEnabled != 0) {
+    if (fields.dynamicWeightsEnabled != 0) {
         float renormalizeTotal = 0.0f;
-        for (int i = 0; i < configBlockCount; ++i) {
-            if (configBlocks[i].maxPlayCount != 0) {
-                if (i != selectedIndex && configBlocks[i].weight < 0.00100000005f) {
-                    configBlocks[i].weight = 0.00100000005f;
+        for (int i = 0; i < fields.configBlockCount; ++i) {
+            if (fields.configBlocks[i].maxPlayCount != 0) {
+                if (i != selectedIndex && fields.configBlocks[i].weight < 0.00100000005f) {
+                    fields.configBlocks[i].weight = 0.00100000005f;
                 }
-                renormalizeTotal += configBlocks[i].weight;
+                renormalizeTotal += fields.configBlocks[i].weight;
             }
         }
 
         totalWeight = 100.0f / renormalizeTotal;
-        for (i = 0; i < configBlockCount; ++i) {
-            if (configBlocks[i].maxPlayCount != 0) {
-                configBlocks[i].weight = totalWeight * configBlocks[i].weight;
+        for (i = 0; i < fields.configBlockCount; ++i) {
+            if (fields.configBlocks[i].maxPlayCount != 0) {
+                fields.configBlocks[i].weight = totalWeight * fields.configBlocks[i].weight;
             }
         }
     }
@@ -609,9 +623,9 @@ void zSndStreamRequest::StatePlayCurrentEntry()
         return;
     }
 
-    const short repeatCount = (short)(group->repeatCount);
+    const short repeatCount = (short)(group->fields.repeatCount);
     if (playIndex == repeatCount) {
-        if (group->delayTerminationSec > 0.0f) {
+        if (group->fields.delayTerminationSec > 0.0f) {
             elapsedSec = 0.0f;
             streamState = 3;
         } else {
@@ -636,7 +650,7 @@ void zSndStreamRequest::StatePlayCurrentEntry()
 void zSndStreamRequest::StateWaitRepeatDelay()
 {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
-    if (elapsedSec < group->delayRepeatSec) {
+    if (elapsedSec < group->fields.delayRepeatSec) {
         return;
     }
 
@@ -660,7 +674,7 @@ void zSndStreamRequest::StateWaitRepeatDelay()
 void zSndStreamRequest::StateWaitTerminationDelay()
 {
     elapsedSec = elapsedSec + g_FrameDeltaTimeSec;
-    if (elapsedSec < group->delayTerminationSec) {
+    if (elapsedSec < group->fields.delayTerminationSec) {
         return;
     }
 
@@ -731,8 +745,8 @@ int __cdecl Shutdown()
         zSndGroup* pendingConfig = (zSndGroup*)(zArchiveListRemoveHead(g_zSndStream_PendingList));
         while (pendingConfig != 0) {
             if (pendingConfig->createGuard == 1) {
-                for (int i = 0; i < pendingConfig->configBlockCount; ++i) {
-                    zSndGroupConfigBlock* child = pendingConfig->configBlocks[i].child;
+                for (int i = 0; i < pendingConfig->fields.configBlockCount; ++i) {
+                    zSndGroupConfigBlock* child = pendingConfig->fields.configBlocks[i].child;
                     while (child != 0) {
                         zSndGroupConfigBlock* const freeBlock = child;
                         child = child->child;
@@ -740,7 +754,7 @@ int __cdecl Shutdown()
                     }
                 }
 
-                free(pendingConfig->configBlocks);
+                free(pendingConfig->fields.configBlocks);
                 free(pendingConfig);
             }
             pendingConfig = (zSndGroup*)(zArchiveListRemoveHead(g_zSndStream_PendingList));
@@ -826,7 +840,7 @@ zSndPlayHandle* __fastcall zSndGroup::QueueStreamRequest(float gain, int hasWorl
         zSndStreamMgrEnsureInit();
     }
 
-    if (playSolo != 0
+    if (fields.playSolo != 0
         && zArchiveListFindCompare(g_zSndStream_ActiveList, &zSndStreamRequestMatchGroupPredicate, this) != 0) {
         return 0;
     }

@@ -2971,7 +2971,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
      * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: evaluate a conditional event chain and skip to the matching branch

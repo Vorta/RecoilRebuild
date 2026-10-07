@@ -138,7 +138,7 @@ zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* n
 /**
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-invalidate-rect
  * @recoil-artifact defines .text recoil:function:0x4b3e90: HudUiWidget::InvalidateRect.
- *
+ * @recoil-match byte
  */
 void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
 {
@@ -183,7 +183,13 @@ void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
     }
 
     ++dirtyRectCount;
-    slot->framesRemaining = (g_HudUi_InvalidateMask == 0x0c ? 1u : 0u) + 1u;
+    // VC5 if-converts this if/else to retail's sete/inc only after scheduling,
+    // so the drawX/drawY loads stay behind the framesRemaining store.
+    if (g_HudUi_InvalidateMask == 0x0c) {
+        slot->framesRemaining = 2;
+    } else {
+        slot->framesRemaining = 1;
+    }
     slot->drawX = slot->srcRect.left;
     slot->drawY = slot->srcRect.top;
 

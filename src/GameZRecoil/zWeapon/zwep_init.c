@@ -586,19 +586,17 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-zwepinit
  * @recoil-artifact defines .text recoil:function:0x4b1090: zWepInit.
- *
+ * @recoil-match byte
  *
  * Purpose: reset weapon and OptCatalog runtime globals, restore weapon
  * defaults, and optionally register the Weapons ZAR section callbacks.
  */
 extern "C" int __cdecl zWepInit()
 {
+    // Clearing EntryCount first keeps 0 in EAX and 1 in ECX, as in retail.
+    g_OptCatalog_EntryCount = 0;
     g_OptCatalog_FallbackImpactProbeEnabled = 1;
     g_OptCatalog_CaptureHitSnapshotEnabled = 1;
-
-    const int shouldRegisterZarHandler = g_zWeapon_ZarHandlerRegistered;
-
-    g_OptCatalog_EntryCount = 0;
     g_OptCatalog_EntryTable = 0;
     g_OptCatalogRuntimeInstanceCount = 0;
     g_OptCatalogRuntimeInstancePool = 0;
@@ -617,7 +615,7 @@ extern "C" int __cdecl zWepInit()
     g_OptCatalogDamageFeedbackTrackedNode = 0;
     g_OptCatalogNextSpawnScale = 1.0f;
 
-    if (shouldRegisterZarHandler != 0) {
+    if (g_zWeapon_ZarHandlerRegistered != 0) {
         zUtil_ZAR::RegisterSectionHandler(
             g_zWeapon_ArchiveName,
             (zZbdSectionCallback)(&zWeapon::OnWeaponsSectionPreLoad),

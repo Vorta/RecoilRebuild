@@ -1394,8 +1394,8 @@ void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance
 {
     if (visible != 0) {
 
-        char featureText[0x40];
-        strcpy(featureText, g_HudUiWeaponFeaturesLabel);
+        // Retail copies this 10-byte literal and zero-fills the rest of the buffer.
+        char featureText[0x40] = "Features:";
 
         const unsigned int flags = optEntry->flags;
         if ((flags & 0x00080000) != 0) {

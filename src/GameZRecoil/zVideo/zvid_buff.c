@@ -1,6 +1,7 @@
 #include "recoil/Mfc42Abi.h"
 
 #include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zVideo/zvid_state.h"
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-buff-g-zvideo-sourcefile-zvidbuffc
@@ -60,8 +61,8 @@ namespace zVideo_buff
 
         zVidRect32 dstRectLocal;
         dstRectLocal.left = dstX;
-        dstRectLocal.top = dstY;
         dstRectLocal.right = srcRectLocal.right - srcRectLocal.left + dstX;
+        dstRectLocal.top = dstY;
         dstRectLocal.bottom = srcRectLocal.bottom - srcRectLocal.top + dstY;
 
         int clipped = ClipCoordToRange(&dstRectLocal.left, 0, g_zVideo_PrimarySurfaceState.width - 1);

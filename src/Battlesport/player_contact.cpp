@@ -1324,12 +1324,26 @@ int __fastcall CollectPendingCollisionContactsForQuadProbe(zUtil_SaveGameState* 
     return hasContacts;
 }
 } // namespace Player
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Evidence: retail 0x425770 stores surfaceNormal * 20 through the output
+ * pointer and re-reads the stored y for the clamp (same helper shape as
+ * Camera.c Vec3ScaleTo).
+ * Purpose: scale a vector by a scalar into an output vector.
+ */
+inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+{
+    out->x = vec->x * scale;
+    out->y = vec->y * scale;
+    out->z = vec->z * scale;
+}
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applypendingcollisionprobevelocity
  * @recoil-artifact defines .text recoil:function:0x425770: Player::ApplyPendingCollisionProbeVelocity.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ApplyPendingCollisionProbeVelocity from the recovered
@@ -1366,9 +1380,7 @@ void __fastcall ApplyPendingCollisionProbeVelocity(zUtil_SaveGameState* saveStat
 
     const float previousY = playerState->projectileSpawnVel.y;
     const zVec3 surfaceNormal = contact->hit.surfaceNormal;
-    playerState->projectileSpawnVel.x = surfaceNormal.x * 20.0f;
-    playerState->projectileSpawnVel.y = surfaceNormal.y * 20.0f;
-    playerState->projectileSpawnVel.z = surfaceNormal.z * 20.0f;
+    Vec3ScaleTo(&surfaceNormal, 20.0f, &playerState->projectileSpawnVel);
 
     playerState->projectileSpawnVel.y = playerState->projectileSpawnVel.y <= 0.0f
         ? __min(previousY, playerState->projectileSpawnVel.y)

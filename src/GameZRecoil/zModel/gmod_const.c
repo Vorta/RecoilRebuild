@@ -411,8 +411,8 @@ namespace zModel_DiPool
                     break;
                 }
 
-                for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex) {
-                    zModel_PointEntryPartial* const point = &di->pointEntries[pointIndex];
+                zModel_PointEntryPartial* point = di->pointEntries;
+                for (int pointIndex = 0; pointIndex < di->pointCount; ++pointIndex, ++point) {
                     if (point->pointCamCount > 0
                         && fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file)
                             != (size_t)(point->pointCamCount)) {
@@ -435,11 +435,11 @@ namespace zModel_DiPool
                 zDiEntryPartial* serializedEntries = (zDiEntryPartial*)(malloc(entryBytes));
                 memcpy(serializedEntries, di->entries, entryBytes);
 
-                for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex) {
-                    serializedEntries[entryIndex].material
-                        = (zModel_MaterialPartial*)(zModel_MatlSlot::IndexFromPtrOrMinus1(
-                            (zModel_MaterialSlot*)(serializedEntries[entryIndex].material)
-                        ));
+                zDiEntryPartial* convertedEntry = serializedEntries;
+                for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex, ++convertedEntry) {
+                    convertedEntry->material = (zModel_MaterialPartial*)(zModel_MatlSlot::IndexFromPtrOrMinus1(
+                        (zModel_MaterialSlot*)(convertedEntry->material)
+                    ));
                 }
 
                 if (fwrite(serializedEntries, entryBytes, 1, file) != 1) {
@@ -453,6 +453,7 @@ namespace zModel_DiPool
                     break;
                 }
 
+                zDiEntryPartial* const sourceEntries = di->entries;
                 for (int writeIndex = 0; writeIndex < entryCount; ++writeIndex) {
                     zDiEntryPartial* const entry = &serializedEntries[writeIndex];
                     if ((entry->flagsAndIndexCount & 0xff) > 0) {
@@ -481,7 +482,7 @@ namespace zModel_DiPool
                         }
                     }
 
-                    if ((di->entries[writeIndex].material->flags & 0x0100) != 0
+                    if ((sourceEntries[writeIndex].material->flags & 0x0100) != 0
                         && fwrite(entry->uvPairs, 8, entry->flagsAndIndexCount & 0xff, file)
                             != (entry->flagsAndIndexCount & 0xff)) {
                         zError::ReportOld(
@@ -600,9 +601,10 @@ namespace zModel_DiPool
     int __fastcall ReadEntryDynamicDataFromStream(void* stream, zDiPartial* entry)
     {
         FILE* const file = (FILE*)(stream);
+        int byteCount;
 
         if (entry->vertCount > 0) {
-            const int byteCount = entry->vertCount * (int)(sizeof(zVec3));
+            byteCount = entry->vertCount * (int)(sizeof(zVec3));
             entry->verts = (zVec3*)(malloc(byteCount));
             if (fread(entry->verts, byteCount, 1, file) != 1) {
                 zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x31c, g_zModel_ReadModel3dVertexDataErrorMsg);
@@ -611,7 +613,7 @@ namespace zModel_DiPool
         }
 
         if (entry->normalCount > 0) {
-            const int byteCount = entry->normalCount * (int)(sizeof(zVec3));
+            byteCount = entry->normalCount * (int)(sizeof(zVec3));
             entry->normals = (zVec3*)(malloc(byteCount));
             if (fread(entry->normals, byteCount, 1, file) != 1) {
                 zError::ReportOld(
@@ -625,7 +627,7 @@ namespace zModel_DiPool
         }
 
         if (entry->blendVertCount > 0) {
-            const int byteCount = entry->blendVertCount * (int)(sizeof(zVec3));
+            byteCount = entry->blendVertCount * (int)(sizeof(zVec3));
             entry->blendVerts = (zVec3*)(malloc(byteCount));
             if (fread(entry->blendVerts, byteCount, 1, file) != 1) {
                 zError::ReportOld(
@@ -639,7 +641,7 @@ namespace zModel_DiPool
         }
 
         if (entry->pointCount > 0) {
-            const int byteCount = entry->pointCount * (int)(sizeof(zModel_PointEntryPartial));
+            byteCount = entry->pointCount * (int)(sizeof(zModel_PointEntryPartial));
             entry->pointEntries = (zModel_PointEntryPartial*)(malloc(byteCount));
             if (fread(entry->pointEntries, byteCount, 1, file) != 1) {
                 zError::ReportOld(
@@ -652,8 +654,8 @@ namespace zModel_DiPool
             }
 
             {
-                for (int pointIndex = 0; pointIndex < entry->pointCount; ++pointIndex) {
-                    zModel_PointEntryPartial* const point = &entry->pointEntries[pointIndex];
+                zModel_PointEntryPartial* point = entry->pointEntries;
+                for (int pointIndex = 0; pointIndex < entry->pointCount; ++pointIndex, ++point) {
                     const unsigned short packedColor = (unsigned short)(zVidPackColorRGB(
                         (unsigned char)((int)(point->colorB + 0.5f)),
                         (unsigned char)((int)(point->colorG + 0.5f)),
@@ -678,31 +680,32 @@ namespace zModel_DiPool
             }
         }
 
-        if (entry->entryCount <= 0) {
+        const int entryCount = entry->entryCount;
+        if (entryCount <= 0) {
             return 0;
         }
 
-        const int entryBytes = entry->entryCount * (int)(sizeof(zDiEntryPartial));
-        entry->entries = (zDiEntryPartial*)(malloc(entryBytes));
-        if (fread(entry->entries, entryBytes, 1, file) != 1) {
+        const int entryBytes = entryCount * (int)(sizeof(zDiEntryPartial));
+        zDiEntryPartial* const entries = (zDiEntryPartial*)(malloc(entryBytes));
+        entry->entries = entries;
+        if (fread(entries, entryBytes, 1, file) != 1) {
             zError::ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x38f, g_zModel_ReadModel3dPolygonBufferErrorMsg);
             return -1;
         }
 
         {
-            for (int entryIndex = 0; entryIndex < entry->entryCount; ++entryIndex) {
-                zDiEntryPartial* const diEntry = &entry->entries[entryIndex];
+            zDiEntryPartial* diEntry = entries;
+            for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex, ++diEntry) {
                 diEntry->material
                     = (zModel_MaterialPartial*)(zModel_Matl::GetPoolEntry((int)((int)(diEntry->material))));
             }
         }
 
         {
-            for (int entryIndex = 0; entryIndex < entry->entryCount; ++entryIndex) {
-                zDiEntryPartial* const diEntry = &entry->entries[entryIndex];
-                const unsigned int indexCount = diEntry->flagsAndIndexCount & 0xff;
-                if (indexCount != 0) {
-                    const unsigned int indexBytes = indexCount * 4;
+            zDiEntryPartial* diEntry = entries;
+            for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex, ++diEntry) {
+                if ((diEntry->flagsAndIndexCount & 0xff) != 0) {
+                    const unsigned int indexBytes = (diEntry->flagsAndIndexCount & 0xff) * 4;
                     diEntry->vertexIndices = malloc(indexBytes);
                     if (fread(diEntry->vertexIndices, indexBytes, 1, file) != 1) {
                         zError::ReportOld(
@@ -713,24 +716,25 @@ namespace zModel_DiPool
                         );
                         return -1;
                     }
-                }
 
-                if ((diEntry->flagsAndIndexCount & 0x0200) != 0) {
-                    const unsigned int indexBytes = indexCount * 4;
-                    diEntry->normalIndices = malloc(indexBytes);
-                    if (fread(diEntry->normalIndices, indexBytes, 1, file) != 1) {
-                        zError::ReportOld(
-                            0x200,
-                            g_zModel_SourceFile_GmodConstC,
-                            0x3c0,
-                            g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg
-                        );
-                        return -1;
+                    if ((diEntry->flagsAndIndexCount & 0x0200) != 0) {
+                        const unsigned int normalBytes = (diEntry->flagsAndIndexCount & 0xff) * 4;
+                        diEntry->normalIndices = malloc(normalBytes);
+                        if (fread(diEntry->normalIndices, normalBytes, 1, file) != 1) {
+                            zError::ReportOld(
+                                0x200,
+                                g_zModel_SourceFile_GmodConstC,
+                                0x3c0,
+                                g_zModel_ReadModel3dPolyVertNormalIndexErrorMsg
+                            );
+                            return -1;
+                        }
                     }
                 }
 
-                if ((diEntry->material->flags & 0x0100) != 0) {
-                    const unsigned int uvBytes = indexCount * (unsigned int)(sizeof(zModel_Uv));
+                if ((entry->entries[entryIndex].material->flags & 0x0100) != 0) {
+                    const unsigned int uvBytes
+                        = (diEntry->flagsAndIndexCount & 0xff) * (unsigned int)(sizeof(zModel_Uv));
                     diEntry->uvPairs = malloc(uvBytes);
                     if (fread(diEntry->uvPairs, uvBytes, 1, file) != 1) {
                         zError::ReportOld(
@@ -1141,7 +1145,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertex
      * @recoil-artifact defines .text recoil:function:0x482720: zModel_Const::AddOrMergeVertex
-     *
+     * @recoil-match byte
      *
      * Purpose: find an existing nearby vertex or append a new display-instance vertex.
      */
@@ -1192,7 +1196,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addormergevertexandnormal
      * @recoil-artifact defines .text recoil:function:0x482860: zModel_Const::AddOrMergeVertexAndNormal
-     *
+     * @recoil-match byte
      *
      * Purpose: find or append a vertex plus its blend-normal delta.
      */
@@ -1253,7 +1257,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.findorappendnormalindex
      * @recoil-artifact defines .text recoil:function:0x482a10: zModel_Const::FindOrAppendNormalIndex
-     *
+     * @recoil-match byte
      *
      * Purpose: find an existing nearby normal or append a new normal.
      */
@@ -1408,7 +1412,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
      * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
      */
@@ -2057,53 +2061,60 @@ namespace zDi
         int j;
 
         if (self->vertCount > 0) {
-            outBoundsMinMax->min = self->verts[0];
-            outBoundsMinMax->max = self->verts[0];
+            outBoundsMinMax->min.x = self->verts[0].x;
+            outBoundsMinMax->max.x = self->verts[0].x;
+            outBoundsMinMax->min.y = self->verts[0].y;
+            outBoundsMinMax->max.y = self->verts[0].y;
+            outBoundsMinMax->min.z = self->verts[0].z;
+            outBoundsMinMax->max.z = self->verts[0].z;
         } else if (self->pointCount > 0) {
-            outBoundsMinMax->min = self->pointEntries[0].pointCamList[0];
-            outBoundsMinMax->max = self->pointEntries[0].pointCamList[0];
+            outBoundsMinMax->min.x = self->pointEntries[0].pointCamList[0].x;
+            outBoundsMinMax->max.x = self->pointEntries[0].pointCamList[0].x;
+            outBoundsMinMax->min.y = self->pointEntries[0].pointCamList[0].y;
+            outBoundsMinMax->max.y = self->pointEntries[0].pointCamList[0].y;
+            outBoundsMinMax->min.z = self->pointEntries[0].pointCamList[0].z;
+            outBoundsMinMax->max.z = self->pointEntries[0].pointCamList[0].z;
         }
 
-        for (i = 0; i < self->pointCount; ++i) {
-            zModel_PointEntryPartial* entry = &self->pointEntries[i];
+        zModel_PointEntryPartial* entry = self->pointEntries;
+        for (i = 0; i < self->pointCount; ++i, ++entry) {
             for (j = 0; j < entry->pointCamCount; ++j) {
-                const zVec3* const point = &entry->pointCamList[j];
-                if (point->x < outBoundsMinMax->min.x) {
-                    outBoundsMinMax->min.x = point->x;
+                if (entry->pointCamList[j].x < outBoundsMinMax->min.x) {
+                    outBoundsMinMax->min.x = entry->pointCamList[j].x;
                 }
-                if (outBoundsMinMax->max.x < point->x) {
-                    outBoundsMinMax->max.x = point->x;
+                if (outBoundsMinMax->max.x < entry->pointCamList[j].x) {
+                    outBoundsMinMax->max.x = entry->pointCamList[j].x;
                 }
-                if (point->y < outBoundsMinMax->min.y) {
-                    outBoundsMinMax->min.y = point->y;
+                if (outBoundsMinMax->min.y > entry->pointCamList[j].y) {
+                    outBoundsMinMax->min.y = entry->pointCamList[j].y;
                 }
-                if (outBoundsMinMax->max.y < point->y) {
-                    outBoundsMinMax->max.y = point->y;
+                if (outBoundsMinMax->max.y < entry->pointCamList[j].y) {
+                    outBoundsMinMax->max.y = entry->pointCamList[j].y;
                 }
-                if (point->z < outBoundsMinMax->min.z) {
-                    outBoundsMinMax->min.z = point->z;
+                if (outBoundsMinMax->min.z > entry->pointCamList[j].z) {
+                    outBoundsMinMax->min.z = entry->pointCamList[j].z;
                 }
-                if (outBoundsMinMax->max.z < point->z) {
-                    outBoundsMinMax->max.z = point->z;
+                if (outBoundsMinMax->max.z < entry->pointCamList[j].z) {
+                    outBoundsMinMax->max.z = entry->pointCamList[j].z;
                 }
             }
         }
 
-        for (i = 1; i < self->vertCount; ++i) {
-            const zVec3* const point = &self->verts[i];
+        const zVec3* point = self->verts + 1;
+        for (i = 1; i < self->vertCount; ++i, ++point) {
             if (point->x < outBoundsMinMax->min.x) {
                 outBoundsMinMax->min.x = point->x;
             }
-            if (outBoundsMinMax->max.x < point->x) {
+            if (point->x > outBoundsMinMax->max.x) {
                 outBoundsMinMax->max.x = point->x;
             }
-            if (point->y < outBoundsMinMax->min.y) {
+            if (outBoundsMinMax->min.y > point->y) {
                 outBoundsMinMax->min.y = point->y;
             }
             if (outBoundsMinMax->max.y < point->y) {
                 outBoundsMinMax->max.y = point->y;
             }
-            if (point->z < outBoundsMinMax->min.z) {
+            if (outBoundsMinMax->min.z > point->z) {
                 outBoundsMinMax->min.z = point->z;
             }
             if (outBoundsMinMax->max.z < point->z) {
@@ -2111,7 +2122,7 @@ namespace zDi
             }
         }
 
-        if (self->blendVertCount > 0) {
+        if (self->blendVertCount != 0) {
             zMathVec3ArrayAddScaled(
                 g_zModel_SharedVec3ScratchA,
                 self->verts,
@@ -2119,21 +2130,21 @@ namespace zDi
                 self->blendVertCount,
                 1.0f
             );
-            for (i = 0; i < self->blendVertCount; ++i) {
-                const zVec3* const point = &g_zModel_SharedVec3ScratchA[i];
+            point = g_zModel_SharedVec3ScratchA;
+            for (i = 0; i < self->blendVertCount; ++i, ++point) {
                 if (point->x < outBoundsMinMax->min.x) {
                     outBoundsMinMax->min.x = point->x;
                 }
-                if (outBoundsMinMax->max.x < point->x) {
+                if (point->x > outBoundsMinMax->max.x) {
                     outBoundsMinMax->max.x = point->x;
                 }
-                if (point->y < outBoundsMinMax->min.y) {
+                if (outBoundsMinMax->min.y > point->y) {
                     outBoundsMinMax->min.y = point->y;
                 }
                 if (outBoundsMinMax->max.y < point->y) {
                     outBoundsMinMax->max.y = point->y;
                 }
-                if (point->z < outBoundsMinMax->min.z) {
+                if (outBoundsMinMax->min.z > point->z) {
                     outBoundsMinMax->min.z = point->z;
                 }
                 if (outBoundsMinMax->max.z < point->z) {
@@ -2192,7 +2203,9 @@ namespace zDi
         outBoundsMinMax->min.x = -extent.x;
         outBoundsMinMax->min.y = -extent.y;
         outBoundsMinMax->min.z = -extent.z;
-        outBoundsMinMax->max = extent;
+        outBoundsMinMax->max.x = extent.x;
+        outBoundsMinMax->max.y = extent.y;
+        outBoundsMinMax->max.z = extent.z;
     }
 
     /**

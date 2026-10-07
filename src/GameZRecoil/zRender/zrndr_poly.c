@@ -4427,9 +4427,24 @@ namespace zRndr
         int yOffsetPixels
     )
     {
-        zRndr_LensFlareSource* lensFlareSource = (zRndr_LensFlareSource*)((unsigned int)(sample->lensFlareSource));
-        int blendTowardFramebuffer = 0;
+        int packedColor;
+        int redDelta;
         float reciprocalZ;
+        int y;
+        int x;
+        unsigned short* pixel;
+        zRndr_LensFlareSource* lensFlareSource;
+        int overlayAlpha;
+        int overlayColor;
+        int blended;
+        int greenDelta;
+        int blueDelta;
+        int blendTowardFramebuffer;
+        int fadeAlpha;
+        int frameColor;
+
+        lensFlareSource = (zRndr_LensFlareSource*)((unsigned int)(sample->lensFlareSource));
+        blendTowardFramebuffer = 0;
         if (lensFlareSource != 0 && lensFlareSource->depthFadeInvZMax != 0.0f) {
             if (sample->reciprocalZ == 0.0f) {
                 return;
@@ -4445,75 +4460,92 @@ namespace zRndr
             }
         }
 
-        const int y = (int)(sample->y * screenScale) + yOffsetPixels;
-        const int x = (int)(screenScale * sample->x);
+        y = (int)(sample->y * screenScale) + yOffsetPixels;
+        x = (int)(screenScale * sample->x);
         if ((unsigned int)(x) > (unsigned int)(g_activeRegionWidth)
             || (unsigned int)(y) > (unsigned int)(g_activeRegionHeight)) {
             return;
         }
 
-        unsigned short* const pixel = (unsigned short*)(g_frameBuffer) + ((unsigned int)(g_pitchBytes) >> 1) * y + x;
-        int packedColor = sample->packedColor16;
+        pixel = (unsigned short*)(g_frameBuffer) + ((unsigned int)(g_pitchBytes) >> 1) * y + x;
+        packedColor = sample->packedColor16;
 
         if (g_overlayBlendEnabled != 0) {
-            const int overlayAlpha = (int)(g_overlayBlendAlpha * 255.0);
+            overlayAlpha = (int)(g_overlayBlendAlpha * 255.0);
             if (g_pixelPackGreenBits == 6) {
                 if (overlayAlpha > 3) {
                     if (overlayAlpha >= 0xfc) {
                         packedColor = g_overlayBlendPackedColor16 & 0xffff;
                     } else {
-                        const int overlayColor = g_overlayBlendPackedColor16;
-                        packedColor
-                            += (((overlayColor & 0xf800) - (packedColor & 0xf800)) * overlayAlpha >> 8) & ~0x7ff;
-                        packedColor += (((overlayColor & 0x7e0) - (packedColor & 0x7e0)) * overlayAlpha >> 8) & ~0x1f;
-                        packedColor += ((overlayColor & 0x1f) - (packedColor & 0x1f)) * overlayAlpha >> 8;
+                        overlayColor = g_overlayBlendPackedColor16;
+                        redDelta
+                            = ((((overlayColor & 0xf800) - (packedColor & 0xf800)) * overlayAlpha) >> 8) & 0xfffff800;
+                        blended = packedColor + redDelta;
+                        greenDelta = ((overlayColor & 0x07e0) - (packedColor & 0x07e0)) * overlayAlpha;
+                        blueDelta = ((overlayColor & 0x001f) - (blended & 0x001f)) * overlayAlpha;
+                        greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                        blueDelta >>= 8;
+                        packedColor = greenDelta + blueDelta + blended;
                     }
                 }
             } else if (overlayAlpha > 7) {
                 if (overlayAlpha >= 0xfc) {
                     packedColor = g_overlayBlendPackedColor16 & 0xffff;
                 } else {
-                    const int overlayColor = g_overlayBlendPackedColor16;
-                    packedColor += ((((overlayColor & 0x7c00) - (packedColor & 0x7c00)) * overlayAlpha >> 8) & ~0x3ff)
-                        + ((((overlayColor & 0x3e0) - (packedColor & 0x3e0)) * overlayAlpha >> 8) & ~0x1f)
-                        + (((overlayColor & 0x1f) - (packedColor & 0x1f)) * overlayAlpha >> 8);
+                    overlayColor = g_overlayBlendPackedColor16;
+                    greenDelta = ((overlayColor & 0x03e0) - (packedColor & 0x03e0)) * overlayAlpha;
+                    blueDelta = ((overlayColor & 0x001f) - (packedColor & 0x001f)) * overlayAlpha;
+                    redDelta = ((overlayColor & 0x7c00) - (packedColor & 0x7c00)) * overlayAlpha;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    blueDelta >>= 8;
+                    redDelta = (redDelta >> 8) & 0xfffffc00;
+                    greenDelta += blueDelta;
+                    redDelta += greenDelta;
+                    packedColor += redDelta;
                 }
             }
         }
 
-        if (blendTowardFramebuffer == 0) {
-            *pixel = (unsigned short)(packedColor);
-            return;
+        // Retail shares one packed-colour store for the unblended and fully faded exits; the fade blends return early.
+        if (blendTowardFramebuffer != 0) {
+            fadeAlpha = (int)((lensFlareSource->depthFadeInvZMax - reciprocalZ) * lensFlareSource->depthFadeScale);
+            if (g_pixelPackGreenBits == 6) {
+                if (fadeAlpha <= 3) {
+                    return;
+                }
+                if (fadeAlpha < 0xfc) {
+                    frameColor = *pixel;
+                    greenDelta = ((packedColor & 0x07e0) - (frameColor & 0x07e0)) * fadeAlpha;
+                    redDelta = ((((packedColor & 0xf800) - (frameColor & 0xf800)) * fadeAlpha) >> 8) & 0xfffff800;
+                    frameColor += redDelta;
+                    blueDelta = ((packedColor & 0x001f) - (frameColor & 0x001f)) * fadeAlpha;
+                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    blueDelta >>= 8;
+                    blueDelta += greenDelta;
+                    frameColor += blueDelta;
+                    *pixel = (unsigned short)(frameColor);
+                    return;
+                }
+            } else {
+                if (fadeAlpha <= 7) {
+                    return;
+                }
+                if (fadeAlpha < 0xfc) {
+                    frameColor = *pixel;
+                    redDelta = (((packedColor & 0x7c00) - (frameColor & 0x7c00)) * fadeAlpha) >> 8;
+                    greenDelta = (((packedColor & 0x03e0) - (frameColor & 0x03e0)) * fadeAlpha) >> 8;
+                    redDelta &= 0xfffffc00;
+                    greenDelta &= 0xffffffe0;
+                    // Retail folds both destination updates into one 16-bit read-modify-write add.
+                    *pixel += redDelta;
+                    blueDelta = (((packedColor & 0x001f) - (frameColor & 0x001f)) * fadeAlpha) >> 8;
+                    *pixel += blueDelta + greenDelta;
+                    return;
+                }
+            }
         }
 
-        const int fadeAlpha
-            = (int)((lensFlareSource->depthFadeInvZMax - reciprocalZ) * lensFlareSource->depthFadeScale);
-        if (g_pixelPackGreenBits == 6) {
-            if (fadeAlpha <= 3) {
-                return;
-            }
-            if (fadeAlpha >= 0xfc) {
-                *pixel = (unsigned short)(packedColor);
-                return;
-            }
-            int frameColor = *pixel;
-            frameColor += (((packedColor & 0xf800) - (frameColor & 0xf800)) * fadeAlpha >> 8) & ~0x7ff;
-            frameColor += (((packedColor & 0x7e0) - (frameColor & 0x7e0)) * fadeAlpha >> 8) & ~0x1f;
-            frameColor += ((packedColor & 0x1f) - (frameColor & 0x1f)) * fadeAlpha >> 8;
-            *pixel = (unsigned short)(frameColor);
-        } else {
-            if (fadeAlpha <= 7) {
-                return;
-            }
-            if (fadeAlpha >= 0xfc) {
-                *pixel = (unsigned short)(packedColor);
-                return;
-            }
-            const int frameColor = *pixel;
-            *pixel += ((((packedColor & 0x7c00) - (frameColor & 0x7c00)) * fadeAlpha >> 8) & ~0x3ff)
-                + ((((packedColor & 0x3e0) - (frameColor & 0x3e0)) * fadeAlpha >> 8) & ~0x1f)
-                + (((packedColor & 0x1f) - (frameColor & 0x1f)) * fadeAlpha >> 8);
-        }
+        *pixel = (unsigned short)(packedColor);
     }
 } // namespace zRndr
 
@@ -4988,7 +5020,7 @@ void __fastcall zRndrFillSpan16Opaque(int packedColor16, int pixelCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
  * @recoil-artifact defines .text recoil:function:0x499810: zRndrFillSpan555Solid
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *

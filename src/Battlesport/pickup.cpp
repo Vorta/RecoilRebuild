@@ -592,6 +592,20 @@ const float kStatusPickupFullThreshold = 0.99000001f;
  */
 const float kPickupAltAmmoDisabledSentinel = 123456792.0f;
 
+/**
+ * Reconstruction model: a TU-local inline accessor returns the local player
+ * state for the HUD argument expressions (Pro batch X, run b8586622; this TU
+ * compiles at /Ob1). Retail sites 0x41d4bf and 0x41d4e3 (pickup.cpp) contain the corresponding state
+ * lookup and controller reload/copy patterns. Historical helper spelling,
+ * existence as a distinct original-source helper, and placement are not
+ * established; no standalone retail function exists.
+ * Purpose: return the local player's state record from the game-state table.
+ */
+inline zUtil_PlayerStateStorage* LocalPlayerState()
+{
+    return ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
+}
+
 } // namespace
 
 /**
@@ -1090,20 +1104,14 @@ int __fastcall Pickup::ApplyEffect(int pickupTypeId, int overrideAmount, zUtil_S
         }
 
         HudUiMessage::UpdateSelectedWeaponDisplay(
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activeAltGunController->weaponBankIndex,
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activeAltGunController->weaponSideIndex,
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activeAltGunController->ammoOrCharge
+            LocalPlayerState()->activeAltGunController->weaponBankIndex,
+            LocalPlayerState()->activeAltGunController->weaponSideIndex,
+            LocalPlayerState()->activeAltGunController->ammoOrCharge
         );
         HudUiMessage::UpdateSelectedWeaponDisplay(
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activePrimaryGunController->weaponBankIndex,
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activePrimaryGunController->weaponSideIndex,
-            ((zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState)))
-                ->activePrimaryGunController->ammoOrCharge
+            LocalPlayerState()->activePrimaryGunController->weaponBankIndex,
+            LocalPlayerState()->activePrimaryGunController->weaponSideIndex,
+            LocalPlayerState()->activePrimaryGunController->ammoOrCharge
         );
         break;
     }

@@ -266,16 +266,8 @@ struct zSndGroupRuntimeFields {
 
 struct zSndGroup {
     int createGuard;
-    const char* groupName;
-    int dynamicWeightsEnabled;
-    int playSolo;
-    float dynamicWeightScale;
-    unsigned short repeatCount;
-    unsigned short unknown_16;
-    float delayRepeatSec;
-    float delayTerminationSec;
-    int configBlockCount;
-    zSndGroupConfigBlock* configBlocks;
+    // Retail passes &fields (lea [group+4]) to zSndGroupLoadConfigBlock.
+    zSndGroupRuntimeFields fields;
     char unknown_28[0x90];
 
     zSndGroupConfigBlock* SelectWeightedEntry();
@@ -373,8 +365,8 @@ RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, sampleCount) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, samples) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, cachedSample) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, child) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zSndGroup, groupName) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndGroup, configBlocks) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroup, fields) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(zSndGroupRuntimeFields, configBlocks) == 0x20);
 RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, hasWorldPos) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, gain) == 0x24);
 RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, streamState) == 0x34);

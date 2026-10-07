@@ -157,6 +157,82 @@ vec3_normalize_zero_length:
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-lerp
+ *
+ * Raw assembly: reviewed after VC5 C++ lerp spellings failed (Pro batch X,
+ * run b8586622). The normal wrapper captures destination/from/to/t once in that
+ * order; BOUND uses existing named, non-volatile pointer objects and a named,
+ * non-volatile float whose value is stable during the block. Arguments must not
+ * name the wrapper's lerpDest, lerpFrom, lerpTo or lerpT (BOUND's fallback
+ * delegates to the wrapper). Historical macro syntax, identifier and header
+ * ownership remain unresolved.
+ * Contract: loads and clobbers EAX, ECX and EDX; integer flags and the x87
+ * control word are unchanged; x87 stack depth 0/3/0 on normal completion;
+ * floating-point status and exceptions are not preserved. Operands are complete
+ * zVec3 objects or subobjects; destination may be disjoint from a source or
+ * coincide exactly with a whole source vector, but partial overlap is not
+ * supported (X is stored before from.z is reread for Z).
+ * Purpose: Store from + (to - from) * t into destination with x87-resident
+ * intermediates, storing x, y, z in order as binary32. Inputs and outputs are
+ * binary32 storage; arithmetic precision and rounding follow the ambient x87
+ * control word.
+ */
+#define ZMTH_VECTOR_LERP_BODY(destVar, fromVar, toVar, tVar)                                                           \
+    __asm {                                                                                                            \
+            __asm mov eax, destVar                                                                                     \
+            __asm mov ecx, fromVar                                                                                     \
+            __asm mov edx, toVar                                                                                       \
+            __asm fld dword ptr [edx]zVec3.x                                                                           \
+            __asm fsub dword ptr [ecx]zVec3.x                                                                          \
+            __asm fld dword ptr [edx]zVec3.y                                                                           \
+            __asm fsub dword ptr [ecx]zVec3.y                                                                          \
+            __asm fxch st(1)                                                                                           \
+            __asm fmul tVar                                                                                            \
+            __asm fxch st(1)                                                                                           \
+            __asm fmul tVar                                                                                            \
+            __asm fxch st(1)                                                                                           \
+            __asm fadd dword ptr [ecx]zVec3.x                                                                          \
+            __asm fld dword ptr [edx]zVec3.z                                                                           \
+            __asm fsub dword ptr [ecx]zVec3.z                                                                          \
+            __asm fxch st(2)                                                                                           \
+            __asm fadd dword ptr [ecx]zVec3.y                                                                          \
+            __asm fxch st(2)                                                                                           \
+            __asm fmul tVar                                                                                            \
+            __asm fxch st(1)                                                                                           \
+            __asm fstp dword ptr [eax]zVec3.x                                                                          \
+            __asm fadd dword ptr [ecx]zVec3.z                                                                          \
+            __asm fxch st(1)                                                                                           \
+            __asm fstp dword ptr [eax]zVec3.y                                                                          \
+            __asm fstp dword ptr [eax]zVec3.z }
+#define ZMTH_VECTOR_LERP(destination, from, to, t)                                                                     \
+    do {                                                                                                               \
+        zVec3* const lerpDest = (destination);                                                                         \
+        const zVec3* const lerpFrom = (from);                                                                          \
+        const zVec3* const lerpTo = (to);                                                                              \
+        const float lerpT = (t);                                                                                       \
+        ZMTH_VECTOR_LERP_BODY(lerpDest, lerpFrom, lerpTo, lerpT);                                                      \
+    } while (0)
+// Only named pointer objects and a named float may be passed to the direct binding wrapper.
+#define ZMTH_VECTOR_LERP_BOUND(destVar, fromVar, toVar, tVar)                                                          \
+    do {                                                                                                               \
+        ZMTH_VECTOR_LERP_BODY(destVar, fromVar, toVar, tVar);                                                          \
+    } while (0)
+#else
+#define ZMTH_VECTOR_LERP(destination, from, to, t)                                                                     \
+    do {                                                                                                               \
+        zVec3* const lerpDest = (destination);                                                                         \
+        const zVec3* const lerpFrom = (from);                                                                          \
+        const zVec3* const lerpTo = (to);                                                                              \
+        const float lerpT = (t);                                                                                       \
+        lerpDest->x = (lerpTo->x - lerpFrom->x) * lerpT + lerpFrom->x;                                                 \
+        lerpDest->y = (lerpTo->y - lerpFrom->y) * lerpT + lerpFrom->y;                                                 \
+        lerpDest->z = (lerpTo->z - lerpFrom->z) * lerpT + lerpFrom->z;                                                 \
+    } while (0)
+#define ZMTH_VECTOR_LERP_BOUND(destVar, fromVar, toVar, tVar) ZMTH_VECTOR_LERP(destVar, fromVar, toVar, tVar)
+#endif
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-length-xz
  *
  * Raw assembly: Reviewed at [0x405219,0x40522d) and [0x405a73,0x405a87).

@@ -384,9 +384,10 @@ void __cdecl OnAppDeactivate();
  * bounded unknown storage.
  */
 struct zInput_DeviceRegistry {
-    unsigned char keyboardFlags;
-    unsigned char joystickFlags;
-    unsigned char mouseFlags;
+    // Plain char: retail's !(flags & 2) tests compile as 'not al; and eax,2; shr eax,1'.
+    char keyboardFlags;
+    char joystickFlags;
+    char mouseFlags;
     unsigned char unknown_03;
     unsigned short keyboardRefCount;
     unsigned short joystickRefCount;

@@ -2322,6 +2322,10 @@ namespace CZDisplayInstance
         zModel_PickFaceEntry* faceEntry
     )
     {
+        union {
+            float f;
+            unsigned int u;
+        } startBits, endBits;
         zVec3 scratch;
         int segmentIndex;
         int edgeIndex;
@@ -2352,12 +2356,14 @@ namespace CZDisplayInstance
             if (localActive[segmentIndex] != 0) {
                 zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
                 ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
+                endBits.f = endSide;
                 if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                     localActive[segmentIndex] = 0;
                 } else {
                     zMath::Vec3Subtract(&segment->start, polygonVertices, &scratch);
                     ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
-                    if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
+                    startBits.f = startSide;
+                    if (((endBits.u ^ startBits.u) & 0x80000000u) == 0) {
                         localActive[segmentIndex] = 0;
                     } else {
                         anyActive = 1;
@@ -2566,6 +2572,10 @@ namespace CZDisplayInstance
         zModel_PickFaceEntry* faceEntry
     )
     {
+        union {
+            float f;
+            unsigned int u;
+        } startBits, endBits;
         float absZ;
         int dominantAxis;
         float endSide;
@@ -2598,12 +2608,14 @@ namespace CZDisplayInstance
             if (localActive[segmentIndex] != 0) {
                 zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
                 ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
+                endBits.f = endSide;
                 if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                     localActive[segmentIndex] = 0;
                 } else {
                     zMath::Vec3Subtract(&segment->start, polygonVertices, &scratch);
                     ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
-                    if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
+                    startBits.f = startSide;
+                    if (((endBits.u ^ startBits.u) & 0x80000000u) == 0) {
                         localActive[segmentIndex] = 0;
                     } else {
                         anyActive = 1;

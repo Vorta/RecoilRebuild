@@ -1525,7 +1525,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8
  * @recoil-artifact defines .text recoil:function:0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
  * palette copy path, but the partial-alpha path reloads the current destination
@@ -1721,7 +1721,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN samples a 16-bit texel through the active U/V
  * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
@@ -1733,6 +1733,8 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
     do {
+        // Declared ahead of srcColor: retail evaluates the source channel operand of each delta first.
+        int dstColor;
         const int vIndex = (unsigned int)(texV & g_spanActiveTexVMask) >> texVShift;
         const int uIndex = (texU >> 20) & g_spanActiveTexUMask;
         const int srcColor = (short)(texels16[vIndex + uIndex]);
@@ -1740,7 +1742,7 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
             if ((unsigned int)(g_spanActiveConstAlphaBits) >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                int dstColor = (short)(*dst);
+                dstColor = (short)(*dst);
                 // Retail shifts each unsigned channel product, then masks and accumulates in int registers.
                 int greenDelta
                     = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
@@ -1881,6 +1883,8 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     // Retail runs the span as a do-while (no zero-count guard).
     do {
+        // Declared ahead of srcColor: retail evaluates the source channel operand of the red/green deltas first.
+        int dstColor;
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int srcColor = (short)(texels16[sourceIndex]);
@@ -1893,8 +1897,8 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
             if (alpha >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                int redDelta, blueDelta, greenDelta;
+                int greenDelta, redDelta, blueDelta;
+                dstColor = (short)(*dst);
                 redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 redDelta &= 0xfffffc00;

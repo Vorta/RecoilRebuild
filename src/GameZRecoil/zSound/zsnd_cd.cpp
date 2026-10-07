@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "recoil/recoil_types.h"
+#include <algorithm>
 #include <list>
 #include <stdio.h>
 #include <stdlib.h>
@@ -204,6 +205,27 @@ int __cdecl ResetTrackState()
     return state.track;
 }
 
+namespace {
+    /**
+     * Original-source helper: std::transform functor that releases one CD track
+     * entry and returns null; expanded inline into zSndCd::Shutdown (retail walks
+     * the list with separate read and write node cursors).
+     */
+    struct zSndCdTrackEntryDelete {
+        zSndCdTrackEntry* operator()(zSndCdTrackEntry* entry) const
+        {
+            if (entry != 0) {
+                if (entry->archiveName != 0) {
+                    free(entry->archiveName);
+                    entry->archiveName = 0;
+                }
+                delete entry;
+            }
+            return 0;
+        }
+    };
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a24d0: zSndCd::Shutdown.
@@ -224,19 +246,12 @@ int __cdecl Shutdown()
 
     g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
 
-    const std::list<zSndCdTrackEntry*>::iterator end = g_zSndCdTrackList.end();
-    std::list<zSndCdTrackEntry*>::iterator entryIt = g_zSndCdTrackList.begin();
-    while (entryIt != end) {
-        zSndCdTrackEntry* const entry = *entryIt;
-        if (entry != 0) {
-            if (entry->archiveName != 0) {
-                free(entry->archiveName);
-                entry->archiveName = 0;
-            }
-            delete entry;
-        }
-        *entryIt++ = 0;
-    }
+    std::transform(
+        g_zSndCdTrackList.begin(),
+        g_zSndCdTrackList.end(),
+        g_zSndCdTrackList.begin(),
+        zSndCdTrackEntryDelete()
+    );
     g_zSndCdTrackList.clear();
 
     return 1;

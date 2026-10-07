@@ -9895,7 +9895,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
@@ -10000,7 +10000,7 @@ int __fastcall PlaceTrackCounterWidget(HudUiMgrSensorTrackNode* trackNode, const
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackmarker
  * @recoil-artifact defines .text recoil:function:0x4122c0: HudUiMgrSensor::PlaceTrackMarker.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * The recovered source model walks the typed HudUiSlot sensor-marker range,
@@ -10017,7 +10017,6 @@ int __fastcall PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime*
 
     HudUiSlot* const endSlot = &g_HudUiMgrWeaponSlots[g_HudUiMgrSensorTargetMarkerCount];
     HudUiSlot* slot = &g_HudUiMgrWeaponSlots[0];
-    PlayerProgressTargetSlotRuntime* const firstOutputSlot = outputSlots;
     int result = 0;
     int nearestDistSq = 0x98967f;
     g_HudUiMgrSensorTrackedProgressSlot = 0;
@@ -10028,16 +10027,14 @@ int __fastcall PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime*
                 HudUiMgrSensorTrackNode* const trackNode = (HudUiMgrSensorTrackNode*)(slot->trackNode);
                 if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
                     zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(trackNode->payload);
-                    outputSlots->targetPos = &saveState->playerState->fxOffsetWorld;
-                    outputSlots->targetVelocity = &saveState->playerState->projectileSpawnVel;
+                    outputSlots[result].targetPos = &saveState->playerState->fxOffsetWorld;
+                    outputSlots[result].targetVelocity = &saveState->playerState->projectileSpawnVel;
                     ++result;
-                    ++outputSlots;
                 } else if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
                     zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
-                    outputSlots->targetPos = &turretRuntime->firePos;
-                    outputSlots->targetVelocity = 0;
+                    outputSlots[result].targetPos = &turretRuntime->firePos;
+                    outputSlots[result].targetVelocity = 0;
                     ++result;
-                    ++outputSlots;
                 }
             }
 
@@ -10053,34 +10050,33 @@ int __fastcall PlaceTrackMarker(int markerMode, PlayerProgressTargetSlotRuntime*
         ++slot;
     }
 
-    outputSlots = firstOutputSlot;
-    if (markerMode != HUD_SENSOR_MARKER_MODE_NEAREST || nearestDistSq >= g_HudUiMgrReticleSnapRadiusSq) {
-        return result;
+    if (markerMode == HUD_SENSOR_MARKER_MODE_NEAREST && nearestDistSq < g_HudUiMgrReticleSnapRadiusSq) {
+        g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetImageBorrowedAndInvalidate(
+            g_HudUiMgrSensorTargetMarkerImages[0]
+        );
+
+        const zVidImagePartial* const image = g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.image;
+        g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetPos(
+            ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterX() - image->width / 2,
+            ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterY() - image->height / 2
+        );
+        g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetVisible(1);
+
+        HudUiMgrSensorTrackNode* const trackNode
+            = (HudUiMgrSensorTrackNode*)(g_HudUiMgrSensorTrackedProgressSlot->trackNode);
+        if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
+            zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(trackNode->payload);
+            outputSlots->targetPos = &saveState->playerState->fxOffsetWorld;
+            outputSlots->targetVelocity = &saveState->playerState->projectileSpawnVel;
+        } else if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
+            zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
+            outputSlots->targetVelocity = 0;
+            outputSlots->targetPos = &turretRuntime->firePos;
+        }
+
+        result = 1;
     }
 
-    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetImageBorrowedAndInvalidate(
-        g_HudUiMgrSensorTargetMarkerImages[0]
-    );
-
-    const zVidImagePartial* const image = g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.image;
-    const int markerY = ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterY() - image->height / 2;
-    const int markerX = ((HudUiElement*)(g_HudUiMgrSensorTrackedProgressSlot))->GetCenterX() - image->width / 2;
-    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetPos(markerX, markerY);
-    g_HudUiMgrSensorTrackedProgressSlot->trackMarkerWidget.SetVisible(1);
-
-    HudUiMgrSensorTrackNode* const trackNode
-        = (HudUiMgrSensorTrackNode*)(g_HudUiMgrSensorTrackedProgressSlot->trackNode);
-    if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_PLAYER) {
-        zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(trackNode->payload);
-        outputSlots->targetPos = &saveState->playerState->fxOffsetWorld;
-        outputSlots->targetVelocity = &saveState->playerState->projectileSpawnVel;
-    } else if (trackNode->trackKind == HUD_SENSOR_TRACK_KIND_TURRET) {
-        zTurret_Runtime* const turretRuntime = (zTurret_Runtime*)(trackNode->payload);
-        outputSlots->targetVelocity = 0;
-        outputSlots->targetPos = &turretRuntime->firePos;
-    }
-
-    result = 1;
     return result;
 }
 
@@ -12098,7 +12094,7 @@ namespace HudUiListMenuEntry {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.sortrange
  * @recoil-artifact defines .text recoil:function:0x414710: HudUiListMenuEntry::SortRange.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: partition larger scoreboard-entry ranges before the final insertion-sort pass.

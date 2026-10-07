@@ -2694,8 +2694,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     g_MainCamera = cameraNode;
     g_Player_HorizonNode = CZClass::FindSubNodeByName(g_HudSensorTracker.worldNode, g_Player_NodeName_Horizon);
 
-    float fovX = 0.0f;
-    float fovY = 0.0f;
+    float fovX;
+    float fovY;
     CZCamera::gwCameraGetFOV(g_MainCamera, &fovX, &fovY);
     CZCamera::gwCameraSetPosition(g_MainCamera, 0.0f, 0.0f, 0.0f);
     CZCamera::gwCameraSetTarget(g_MainCamera, 0.0f, 0.0f, 0.0f);
@@ -2758,9 +2758,9 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
 
         node = zRdrGetNode(root, g_Player_ConfigKey_UnderwaterCam);
         if (node != 0) {
-            int rBits = 0;
-            int gBits = 0;
-            int bBits = 0;
+            int rBits;
+            int gBits;
+            int bBits;
             g_Player_UnderwaterCamDistance = PlayerZrdArrayFloat(node, 1);
             g_Player_UnderwaterCamHeight = PlayerZrdArrayFloat(node, 2);
             g_Player_UnderwaterCamStepCount = PlayerZrdArrayInt(node, 3);
@@ -2851,14 +2851,17 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
         PlayerMasterCommonData* const commonData
             = (PlayerMasterCommonData*)(::operator new(sizeof(PlayerMasterCommonData)));
         memset(commonData, 0, sizeof(PlayerMasterCommonData));
-        commonData->next = 0;
-        if (g_PlayerMasterCommonDataList.count == 0) {
-            g_PlayerMasterCommonDataList.head = commonData;
-        } else {
-            g_PlayerMasterCommonDataList.tail->next = commonData;
+        if (commonData != 0) {
+            commonData->next = 0;
+            if (g_PlayerMasterCommonDataList.count == 0) {
+                g_PlayerMasterCommonDataList.head = commonData;
+            } else {
+                g_PlayerMasterCommonDataList.tail->next = commonData;
+            }
+            g_PlayerMasterCommonDataList.tail = commonData;
+            commonData->next = 0;
+            ++g_PlayerMasterCommonDataList.count;
         }
-        g_PlayerMasterCommonDataList.tail = commonData;
-        ++g_PlayerMasterCommonDataList.count;
         zReader::Node* const vehicleNode = zRdrGetNode(vehicleRoot, vehicleName);
         LoadMasterCommonDataFromNode(commonData, vehicleNode, vehicleName);
 
@@ -2866,14 +2869,17 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             PlayerMasterModalData* const modalData
                 = (PlayerMasterModalData*)(::operator new(sizeof(PlayerMasterModalData)));
             memset(modalData, 0, sizeof(PlayerMasterModalData));
-            modalData->next = 0;
-            if (g_PlayerMasterModalDataList.count == 0) {
-                g_PlayerMasterModalDataList.head = modalData;
-            } else {
-                g_PlayerMasterModalDataList.tail->next = modalData;
+            if (modalData != 0) {
+                modalData->next = 0;
+                if (g_PlayerMasterModalDataList.count == 0) {
+                    g_PlayerMasterModalDataList.head = modalData;
+                } else {
+                    g_PlayerMasterModalDataList.tail->next = modalData;
+                }
+                g_PlayerMasterModalDataList.tail = modalData;
+                modalData->next = 0;
+                ++g_PlayerMasterModalDataList.count;
             }
-            g_PlayerMasterModalDataList.tail = modalData;
-            ++g_PlayerMasterModalDataList.count;
             zReader::Node* const modalNode = PlayerZrdArrayNode(vehicleNode, modalIndex * 2 + 4);
             LoadMasterModalDataFromNode(modalData, modalNode, vehicleName);
             strcpy(commonData->modalNames[modalIndex], modalData->modeName);
@@ -2881,14 +2887,17 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     }
 
     zUtil_SaveGameState* const stealthSaveState = new zUtil_SaveGameState;
-    stealthSaveState->next = 0;
-    if (g_PlayerSaveStateList.count == 0) {
-        g_PlayerSaveStateList.head = stealthSaveState;
-    } else {
-        g_PlayerSaveStateList.tail->next = stealthSaveState;
+    if (stealthSaveState != 0) {
+        stealthSaveState->next = 0;
+        if (g_PlayerSaveStateList.count == 0) {
+            g_PlayerSaveStateList.head = stealthSaveState;
+        } else {
+            g_PlayerSaveStateList.tail->next = stealthSaveState;
+        }
+        g_PlayerSaveStateList.tail = stealthSaveState;
+        stealthSaveState->next = 0;
+        ++g_PlayerSaveStateList.count;
     }
-    g_PlayerSaveStateList.tail = stealthSaveState;
-    ++g_PlayerSaveStateList.count;
     zUtil_PlayerStateStorage* const stealthPlayerState = stealthSaveState->playerState;
     memset(stealthPlayerState, 0, sizeof(*stealthPlayerState));
     PlayerModalState* const stealthModalState = (PlayerModalState*)zUtilSaveGameStateListAllocAppend(stealthSaveState);

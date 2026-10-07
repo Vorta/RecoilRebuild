@@ -35,9 +35,9 @@ inline void __fastcall BindMapOverlayDeleteNodeList(zInput_BindMapOverlayStackNo
  * 0x471c80.
  * Purpose: Convert a device registry flag byte into an unsuspended boolean.
  */
-inline int IsUnsuspended(unsigned char flags)
+inline int IsUnsuspended(char flags)
 {
-    return (~flags & kSuspendFlag) >> 1;
+    return !(flags & kSuspendFlag);
 }
 
 /**
@@ -288,7 +288,7 @@ void __cdecl ResetAllTransitionState()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-mouse-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c60: zInput::MouseIsUnsuspended.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the mouse suspend bit in the zInput device registry
@@ -302,7 +302,7 @@ int __cdecl MouseIsUnsuspended()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-joystick-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c70: zInput::JoystickIsUnsuspended.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the joystick suspend bit in the zInput device
@@ -317,7 +317,7 @@ int __cdecl JoystickIsUnsuspended()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-zinput-keyboard-isunsuspended
  * @recoil-artifact defines .text recoil:function:0x471c80: zInputKeyboardIsUnsuspended.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
  * Purpose: report whether the keyboard device registry suspend bit is clear.
@@ -327,7 +327,7 @@ int __cdecl JoystickIsUnsuspended()
  */
 int __cdecl zInputKeyboardIsUnsuspended()
 {
-    return (~g_zInput_DeviceRegistry & 2U) >> 1;
+    return !(g_zInput_DeviceRegistry & 2);
 }
 namespace zInput {
 

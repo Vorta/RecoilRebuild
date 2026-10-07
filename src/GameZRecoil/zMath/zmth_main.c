@@ -1070,6 +1070,7 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
      * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
+     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
      *
      *
      * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
@@ -1077,18 +1078,21 @@ namespace zMath
      */
     void __fastcall MatBuildEulerRotation3x3(float angleX, float angleY, float angleZ, zMat4x3* outBasis)
     {
-        const float sx = sin(angleX);
-        const float cx = cos(angleX);
-        const float sy = sin(angleY);
-        const float cy = cos(angleY);
-        const float sz = sin(angleZ);
-        const float cz = cos(angleZ);
+        float sx;
+        float cx;
+        float sy;
+        float cy;
+        float sz;
+        float cz;
+        SinCos(angleX, &sx, &cx);
+        SinCos(angleY, &sy, &cy);
+        SinCos(angleZ, &sz, &cz);
 
         const float sySx = sy * sx;
         const float szCy = sz * cy;
         const float czCy = cz * cy;
 
-        outBasis->xx = sySx * sz + cz * cy;
+        outBasis->xx = sySx * sz + czCy;
         outBasis->xy = sz * cx;
         outBasis->xz = szCy * sx - cz * sy;
         outBasis->yx = sySx * cz - szCy;

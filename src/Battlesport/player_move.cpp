@@ -378,6 +378,20 @@ void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState* saveState)
     }
 }
 } // namespace Player
+/**
+ * Original inline helper; no standalone retail function exists.
+ * Evidence: retail 0x426770 and 0x427c64 scale projectileSpawnVel by
+ * g_Player_InvDeltaTime through a separate output pointer after the
+ * Vec3Subtract island (same helper shape as Camera.c Vec3ScaleTo).
+ * Purpose: scale a vector by a scalar into an output vector.
+ */
+inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+{
+    out->x = vec->x * scale;
+    out->y = vec->y * scale;
+    out->z = vec->z * scale;
+}
+
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypetrack
@@ -437,8 +451,10 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(&playerState->yawRotatedLocalVel, &playerState->localVel, playerState->poseCache.y);
-        playerState->environmentAttachmentLocalOffset.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
-        playerState->environmentAttachmentLocalOffset.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
+        const float offsetDx = g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
+        const float offsetDz = playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
+        playerState->environmentAttachmentLocalOffset.x += offsetDx;
+        playerState->environmentAttachmentLocalOffset.z += offsetDz;
 
         zVec3 attachedWorld;
         ZMTH_VECTOR_TRANSFORM_POINT(
@@ -447,9 +463,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
             &playerState->environmentAttachmentLocalOffset
         );
         zMath::Vec3Subtract(&attachedWorld, &playerState->worldPos, &playerState->projectileSpawnVel);
-        playerState->projectileSpawnVel.x *= g_Player_InvDeltaTime;
-        playerState->projectileSpawnVel.y *= g_Player_InvDeltaTime;
-        playerState->projectileSpawnVel.z *= g_Player_InvDeltaTime;
+        Vec3ScaleTo(&playerState->projectileSpawnVel, g_Player_InvDeltaTime, &playerState->projectileSpawnVel);
         playerState->worldPos = attachedWorld;
     } else {
         if (playerState->airborneFlag != 0) {
@@ -941,9 +955,11 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
 
     if (playerState->environmentAttachmentActive != 0) {
         zMath::Vec3RotateY(&playerState->yawRotatedLocalVel, &playerState->localVel, playerState->poseCache.y);
-        playerState->environmentAttachmentLocalOffset.x += g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
+        const float offsetDx = g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
+        const float offsetDz = playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
+        playerState->environmentAttachmentLocalOffset.x += offsetDx;
         playerState->environmentAttachmentLocalOffset.y = 0.0f;
-        playerState->environmentAttachmentLocalOffset.z += playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
+        playerState->environmentAttachmentLocalOffset.z += offsetDz;
 
         zVec3 attachedWorld;
         ZMTH_VECTOR_TRANSFORM_POINT(
@@ -952,10 +968,7 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
             &playerState->environmentAttachmentLocalOffset
         );
         zMath::Vec3Subtract(&attachedWorld, &playerState->worldPos, &playerState->projectileSpawnVel);
-        const float invDeltaTime = g_Player_InvDeltaTime;
-        playerState->projectileSpawnVel.x *= invDeltaTime;
-        playerState->projectileSpawnVel.y *= invDeltaTime;
-        playerState->projectileSpawnVel.z *= invDeltaTime;
+        Vec3ScaleTo(&playerState->projectileSpawnVel, g_Player_InvDeltaTime, &playerState->projectileSpawnVel);
         playerState->worldPos = attachedWorld;
     } else {
         const float negSteerZ = -playerState->steerBasisNorm.z;
@@ -964,8 +977,8 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
         playerState->projectileSpawnVel.y = playerState->localVel.y;
         playerState->projectileSpawnVel.z = negSteerZ * playerState->localVel.z - negSteerX * playerState->localVel.x;
         playerState->worldPos.x += playerState->projectileSpawnVel.x * g_Player_DeltaTime;
-        playerState->yawRotatedLocalVel = playerState->projectileSpawnVel;
         playerState->worldPos.z += playerState->projectileSpawnVel.z * g_Player_DeltaTime;
+        playerState->yawRotatedLocalVel = playerState->projectileSpawnVel;
     }
 
     playerState->motionBasis.posX = playerState->worldPos.x;
@@ -1026,7 +1039,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1113,7 +1126,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
  * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered
@@ -1194,7 +1207,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasicortrack-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x428350: Player::UpdateMasterTypeBasicOrTrackFromModalProbe.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasicOrTrackFromModalProbe from the recovered
@@ -1208,21 +1221,19 @@ void __fastcall UpdateMasterTypeBasicOrTrackFromModalProbe(zUtil_SaveGameState* 
 
     // This caller consumes the heights; the helper also requires these outputs.
     float sampleHeights[PLAYER_MAX_MODAL_PROBE_POINTS];
-    {
-        CZNodePartial* unusedAttachmentNode;
-        float unusedBestHeight;
-        int unusedAttachmentCandidateCount;
-        PlayerProbeTypeHistogram unusedHistogram;
-        ProbeModalSampleHeights(
-            saveState,
-            sampleHeights,
-            &unusedBestHeight,
-            0,
-            &unusedHistogram,
-            &unusedAttachmentCandidateCount,
-            &unusedAttachmentNode
-        );
-    }
+    CZNodePartial* unusedAttachmentNode;
+    float unusedBestHeight;
+    int unusedAttachmentCandidateCount;
+    PlayerProbeTypeHistogram unusedHistogram;
+    ProbeModalSampleHeights(
+        saveState,
+        sampleHeights,
+        &unusedBestHeight,
+        0,
+        &unusedHistogram,
+        &unusedAttachmentCandidateCount,
+        &unusedAttachmentNode
+    );
 
     playerState->yawVelocityLimit = masterModalData->yawRateMax;
 
@@ -1308,7 +1319,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
@@ -1527,7 +1538,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
@@ -2021,7 +2032,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
@@ -2063,7 +2074,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered
@@ -2197,7 +2208,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-computeturnslipdelta
  * @recoil-artifact defines .text recoil:function:0x429d30: Player::ComputeTurnSlipDelta.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ComputeTurnSlipDelta from the recovered

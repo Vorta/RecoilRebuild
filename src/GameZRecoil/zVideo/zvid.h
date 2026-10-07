@@ -107,16 +107,16 @@ typedef void(__fastcall* zVideo_SubmitPolyFlatColor16Proc)(
     zVideo_XyzVertex* vertices,
     unsigned int packedColor16,
     int alpha,
-    int renderParam,
     int vertexCount,
+    int renderParam,
     int queueMode
 );
 typedef void(__fastcall* zVideo_SubmitPolyGouraudColor16Proc)(
     zVideo_XyzVertex* vertices,
     unsigned int* packedColors16,
     int alpha,
-    int renderParam,
     int vertexCount,
+    int renderParam,
     int queueMode
 );
 typedef void(__fastcall* zVideo_SubmitPolyColorAttrProc)(
@@ -307,7 +307,7 @@ struct zVideo_RenderClass {
 
 struct zVideo_SortedPolyQueueEntry {
     int vertexCount;
-    int renderClass;
+    zVideo_RenderClass* renderClass;
     int renderParam;
     D3DTLVERTEX vertices[64];
 };
@@ -315,7 +315,7 @@ struct zVideo_SortedPolyQueueEntry {
 struct zVideo_OverwriteQueueEntry {
     int type;
     int vertexCount;
-    int renderClass;
+    zVideo_RenderClass* renderClass;
     int renderParam;
     D3DTLVERTEX vertices[64];
 };
@@ -352,65 +352,134 @@ struct zVideo_PixelPackParams {
     int bMaskShifted;
 };
 
-extern zVideo_PixelPackParams g_zVideo_PixelPack;
-extern int g_zVideo_TexturePixelPack_RBits;
-extern int g_zVideo_TexturePixelPack_GBits;
-extern int g_zVideo_TexturePixelPack_BBits;
-extern int g_zVideo_TexturePixelPack_ABits;
-extern unsigned int g_zVideo_TexturePixelPack_RMask;
-extern unsigned int g_zVideo_TexturePixelPack_GMask;
-extern unsigned int g_zVideo_TexturePixelPack_BMask;
-extern unsigned int g_zVideo_TexturePixelPack_AMask;
-extern int g_zVideo_TexturePixelPack_RGBBitsTotalMinus8;
-extern int g_zVideo_TexturePixelPack_GBBitsTotalMinus8;
-extern int g_zVideo_TexturePixelPack_BShiftTo8;
-extern int g_zVideo_TexturePixelPack_RGBBitsTotal;
-extern int g_zVideo_TexturePixelPack_RMaskShifted;
-extern int g_zVideo_TexturePixelPack_GMaskShifted;
-extern int g_zVideo_TexturePixelPack_BMaskShifted;
-extern int g_zVideo_TexturePixelPack_NonRgbMaskShifted;
+/*
+ * zVideo module state recovered as one zero-filled aggregate: retail
+ * zVideo::ModuleInit (0x4a7530) clears [0x632120, 0x778918) with a single
+ * rep stosd, and VC5 treats stores into its array members as clobbering the
+ * sibling counters (FlushSortedPolys reloads the count after each draw-order
+ * store). Offsets are relative to 0x632120; unknown_* are unrecovered spans.
+ */
+struct zVideo_GlobalState {
+    int rendererType; /* +0x00000 0x632120 */
+    int fullscreenOption; /* +0x00004 0x632124 */
+    int useHalfResBackbuffer; /* +0x00008 0x632128 */
+    int halfResAdjustMode; /* +0x0000c 0x63212c */
+    int clearScreenBufferEnabled; /* +0x00010 0x632130 */
+    int primaryHasAttachedBackbuffer; /* +0x00014 0x632134 */
+    int pendingWireframeState; /* +0x00018 0x632138 */
+    int pendingDitherEnable; /* +0x0001c 0x63213c */
+    int d3dColorNormalizeChannelIndex; /* +0x00020 0x632140 */
+    int adjustSurfacesDisableGate; /* +0x00024 0x632144 */
+    int d3dSceneDepth; /* +0x00028 0x632148 */
+    int resolutionMenuValid; /* +0x0002c 0x63214c */
+    int displayModeBpp; /* +0x00030 0x632150 */
+    int isInitialized; /* +0x00034 0x632154 */
+    zVideo_PixelPackParams pixelPack; /* +0x00038 0x632158 */
+    int texturePixelPackRBits; /* +0x00068 0x632188 */
+    int texturePixelPackGBits; /* +0x0006c 0x63218c */
+    int texturePixelPackBBits; /* +0x00070 0x632190 */
+    int texturePixelPackABits; /* +0x00074 0x632194 */
+    unsigned int texturePixelPackRMask; /* +0x00078 0x632198 */
+    unsigned int texturePixelPackGMask; /* +0x0007c 0x63219c */
+    unsigned int texturePixelPackBMask; /* +0x00080 0x6321a0 */
+    unsigned int texturePixelPackAMask; /* +0x00084 0x6321a4 */
+    int texturePixelPackRGBBitsTotalMinus8; /* +0x00088 0x6321a8 */
+    int texturePixelPackGBBitsTotalMinus8; /* +0x0008c 0x6321ac */
+    int texturePixelPackBShiftTo8; /* +0x00090 0x6321b0 */
+    int texturePixelPackRGBBitsTotal; /* +0x00094 0x6321b4 */
+    int texturePixelPackRMaskShifted; /* +0x00098 0x6321b8 */
+    int texturePixelPackGMaskShifted; /* +0x0009c 0x6321bc */
+    int texturePixelPackBMaskShifted; /* +0x000a0 0x6321c0 */
+    int texturePixelPackNonRgbMaskShifted; /* +0x000a4 0x6321c4 */
+    HWND hWnd; /* +0x000a8 0x6321c8 */
+    unsigned int clearColorPacked16; /* +0x000ac 0x6321cc */
+    float fogColorPendingR255; /* +0x000b0 0x6321d0 */
+    float fogColorPendingG255; /* +0x000b4 0x6321d4 */
+    float fogColorPendingB255; /* +0x000b8 0x6321d8 */
+    float d3dColorAttrBiasR; /* +0x000bc 0x6321dc */
+    float d3dColorAttrBiasG; /* +0x000c0 0x6321e0 */
+    float d3dColorAttrBiasB; /* +0x000c4 0x6321e4 */
+    float fogTargetColorR255; /* +0x000c8 0x6321e8 */
+    float fogTargetColorG255; /* +0x000cc 0x6321ec */
+    float fogTargetColorB255; /* +0x000d0 0x6321f0 */
+    float fogColorAppliedR255; /* +0x000d4 0x6321f4 */
+    float fogColorAppliedG255; /* +0x000d8 0x6321f8 */
+    float fogColorAppliedB255; /* +0x000dc 0x6321fc */
+    zVideo_SurfaceStatePartial swSurfaceState; /* +0x000e0 0x632200 */
+    zVideo_SurfaceStatePartial primarySurfaceState; /* +0x00100 0x632220 */
+    zVideo_SurfaceStatePartial displayModeSurfaceState; /* +0x00120 0x632240 */
+    char palettePathBuffer[0x100]; /* +0x00140 0x632260 */
+    unsigned char paletteBrightnessLevel; /* +0x00240 0x632360 */
+    unsigned char unknown_0241[3]; /* +0x00241 0x632361 */
+    unsigned char unknown_0244[4]; /* +0x00244 0x632364 */
+    PALETTEENTRY paletteFileEntries[0x100]; /* +0x00248 0x632368 */
+    PALETTEENTRY systemPaletteEntries[0x100]; /* +0x00648 0x632768 */
+    unsigned char unknown_0a48[0x420]; /* +0x00a48 0x632b68 */
+    RECT cachedClientRectScreen; /* +0x00e68 0x632f88 */
+    int numAcceptedDirectDrawDevices; /* +0x00e78 0x632f98 */
+    int acceptedHardwareRendererCount; /* +0x00e7c 0x632f9c */
+    unsigned int sortedPolyQueueCount; /* +0x00e80 0x632fa0 */
+    int sortedPolyDrawOrder[256]; /* +0x00e84 0x632fa4 */
+    int overwriteQueueCount; /* +0x01284 0x6333a4 */
+    zVideo_TextureRecordPartial* defaultTextureRecord; /* +0x01288 0x6333a8 */
+    zVideo_StatusProc pfnOpenVideoMode; /* +0x0128c 0x6333ac */
+    zVideo_ShutdownVideoSystemProc pfnShutdownVideoSystem; /* +0x01290 0x6333b0 */
+    zVideo_AdjustSurfacesProc pfnAdjustSurfaces; /* +0x01294 0x6333b4 */
+    zVideo_PaletteSetEntriesProc pfnPaletteSetEntries; /* +0x01298 0x6333b8 */
+    zVideo_StatusProc pfnSetVideoMode; /* +0x0129c 0x6333bc */
+    zVideo_SurfaceStateProc pfnUnlockSurfaceState; /* +0x012a0 0x6333c0 */
+    zVideo_SurfaceStateProc pfnLockSurfaceState; /* +0x012a4 0x6333c4 */
+    zVideo_ClearStateSurfaceAndZBufferProc pfnClearStateSurfaceAndZBuffer; /* +0x012a8 0x6333c8 */
+    zVideo_ClearSwSurfaceAndZBufferProc pfnClearSwSurfaceAndZBuffer; /* +0x012ac 0x6333cc */
+    zVideo_ClearZBufferRectProc pfnClearZBufferRect; /* +0x012b0 0x6333d0 */
+    zVideo_UpdateFogColorProc pfnUpdateFogColor; /* +0x012b4 0x6333d4 */
+    IDirectDraw2* pDirectDraw2; /* +0x012b8 0x6333d8 */
+    IDirectDrawClipper* pClipper; /* +0x012bc 0x6333dc */
+    IDirectDrawSurface3* pPageUnlockSurface; /* +0x012c0 0x6333e0 */
+    IDirectDrawPalette* pDDPalette; /* +0x012c4 0x6333e4 */
+    zVideo_SurfaceLockVerifier* pSurfaceLockVerifier; /* +0x012c8 0x6333e8 */
+    IDirect3D2* pD3D2; /* +0x012cc 0x6333ec */
+    IDirect3DDevice2* pD3DDevice; /* +0x012d0 0x6333f0 */
+    IDirectDrawSurface3* pZBufferSurface; /* +0x012d4 0x6333f4 */
+    IDirectDrawSurface* pZBufferAttachSurface; /* +0x012d8 0x6333f8 */
+    IDirect3DViewport2* pD3DViewport2; /* +0x012dc 0x6333fc */
+    IDirect3DMaterial2* pD3DMaterial2; /* +0x012e0 0x633400 */
+    D3DMATERIALHANDLE d3dMaterialHandle; /* +0x012e4 0x633404 */
+    zVideo_D3DRenderStateCacheLive d3dRenderStateCache; /* +0x012e8 0x633408 */
+    int cachedFogEnableRenderState; /* +0x01310 0x633430 */
+    int cachedFogModeLightState; /* +0x01314 0x633434 */
+    float cachedFogStartLightStateValue; /* +0x01318 0x633438 */
+    float cachedFogEndLightStateValue; /* +0x0131c 0x63343c */
+    D3DDEVICEDESC d3dHalDeviceDesc; /* +0x01320 0x633440 */
+    D3DDEVICEDESC d3dHelDeviceDesc; /* +0x0141c 0x63353c */
+    int quadBatchCount; /* +0x01518 0x633638 */
+    zVideo_QuadBatchItemPartial quadBatchItems[16]; /* +0x0151c 0x63363c */
+    unsigned char unknown_1d1c[4]; /* +0x01d1c 0x633e3c */
+    zVidHwApiDeviceRecordPartial* pSelectedHwApiDeviceRecord; /* +0x01d20 0x633e40 */
+    zVidHwApiDeviceRecordPartial hwApiDeviceTable[4]; /* +0x01d24 0x633e44 */
+    zVidD3DDriverRecordPartial* pSelectedD3DDeviceInfo; /* +0x038d4 0x6359f4 */
+    DDCAPS ddrawCapsHal; /* +0x038d8 0x6359f8 */
+    DDCAPS ddrawCapsHel; /* +0x03a54 0x635b74 */
+    unsigned char unknown_3bd0[4]; /* +0x03bd0 0x635cf0 */
+    unsigned char surfaceLockVerifyFlags; /* +0x03bd4 0x635cf4 */
+    unsigned char unknown_3bd5[0x17]; /* +0x03bd5 0x635cf5 */
+    int surfaceLockVerifyContext; /* +0x03bec 0x635d0c */
+    unsigned char unknown_3bf0[8]; /* +0x03bf0 0x635d10 */
+    D3DTLVERTEX d3dSubmitTempVertices[64]; /* +0x03bf8 0x635d18 */
+    zVideo_SortedPolyQueueEntry sortedPolyQueue[256]; /* +0x043f8 0x636518 */
+    zVideo_OverwriteQueueEntry overwriteQueue[0x180]; /* +0x84ff8 0x6b7118 */
+};
+
 extern int g_zVid_PaletteRemapRecipeCount;
 extern zVidPaletteRemapRecipe* g_zVid_PaletteRemapRecipes;
-extern int g_zVideo_RendererType;
 extern int g_zVideo_ActiveRendererPath;
 extern int g_zVideo_FrameTick;
 extern CZCameraDataPartial* g_zVideo_pActiveViewContext;
 extern zTag4Partial g_zVideo_ActiveViewVariantTag;
-extern int gVideo_resolutionMenuValid;
-extern unsigned int g_zVideo_ClearColorPacked16;
-extern int g_zVideo_ClearScreenBufferEnabled;
 extern int g_zVid_CachedClientRectUpdateMask;
-extern int g_zVideo_IsInitialized;
-extern int g_zVideo_AdjustSurfacesDisableGate;
-extern int g_zVideo_FullscreenOption;
-extern int g_zVideo_PrimaryHasAttachedBackbuffer;
-extern int g_zVideo_UseHalfResBackbuffer;
-extern int g_zVideo_HalfResAdjustMode;
 extern int g_zVideo_SoftwareModeHotkeyEnabled;
-extern int g_zVideo_CachedFogModeLightState;
-extern int g_zVideo_CachedFogEnableRenderState;
-extern float g_zVideo_CachedFogStartLightStateValue;
-extern float g_zVideo_CachedFogEndLightStateValue;
-extern int g_zVideo_D3DColorNormalizeChannelIndex;
-extern float g_zVideo_FogColorPendingR255;
-extern float g_zVideo_FogColorPendingG255;
-extern float g_zVideo_FogColorPendingB255;
-extern float g_zVideo_D3DColorAttrBiasR;
-extern float g_zVideo_D3DColorAttrBiasG;
-extern float g_zVideo_D3DColorAttrBiasB;
-extern float g_zVideo_FogTargetColorR255;
-extern float g_zVideo_FogTargetColorG255;
-extern float g_zVideo_FogTargetColorB255;
-extern float g_zVideo_FogColorAppliedR255;
-extern float g_zVideo_FogColorAppliedG255;
-extern float g_zVideo_FogColorAppliedB255;
-extern int g_zVideo_PendingDitherEnable;
 extern float g_zVideo_InverseZTolerancePending;
 extern int g_zVideo_D3DAppendFanCloseVertexPending;
-extern int g_zVideo_PendingWireframeState;
-extern int g_zVideo_D3DSceneDepth;
-extern int g_zVideo_NumAcceptedDirectDrawDevices;
-extern int g_zVid_AcceptedHardwareRendererCount;
 extern int g_zVideo_DirectDrawEnumOrdinal;
 extern int g_zVid_TexturePackLoadState;
 extern int g_zVid_BuiltinTexturePackCount;
@@ -419,16 +488,6 @@ extern int g_zVid_TexturePackCount;
 extern zVidTexturePackEntry* g_zVid_TexturePacks;
 extern int g_zVid_PaletteRemapVariantTableCount;
 extern unsigned short** g_zVid_PaletteRemapVariantTables;
-extern DDCAPS g_zVideo_DDrawCapsHal;
-extern DDCAPS g_zVideo_DDrawCapsHel;
-extern char g_zVideo_PalettePathBuffer[0x100];
-extern int g_zVideo_PaletteBrightnessLevel;
-extern PALETTEENTRY g_zVideo_PaletteFileEntries[0x100];
-extern PALETTEENTRY g_zVideo_SystemPaletteEntries[0x100];
-extern int g_zVideo_SortedPolyQueueCount;
-extern int g_zVideo_SortedPolyDrawOrder[256];
-extern int g_zVideo_OverwriteQueueCount;
-extern zVideo_TextureRecordPartial* g_zVideo_DefaultTextureRecord;
 extern zVidImagePartial g_zVideo_DefaultTextureImage;
 extern char g_zVideo_DefaultHwApiDescription[8];
 extern char g_zVideo_InitFailSetModeMsg[0x19];
@@ -449,22 +508,11 @@ extern char g_zVideo_D3DEnumSkipNoRgbColorMsg[0x2b];
 extern char g_zVideo_D3DEnumSkipNoHardwareMsg[0x31];
 extern char g_zVideo_D3DEnumDriverPrintfFmt[0x10];
 extern char g_zVideo_DefaultD3DDeviceName[0x6];
-extern zVideo_StatusProc g_zVideo_pfnOpenVideoMode;
-extern zVideo_ShutdownVideoSystemProc g_zVideo_pfnShutdownVideoSystem;
-extern zVideo_PaletteSetEntriesProc g_zVideo_pfnPaletteSetEntries;
-extern zVideo_StatusProc g_zVideo_pfnSetVideoMode;
-extern zVideo_AdjustSurfacesProc g_zVideo_pfnAdjustSurfaces;
-extern zVideo_SurfaceStateProc g_zVideo_pfnLockSurfaceState;
-extern zVideo_SurfaceStateProc g_zVideo_pfnUnlockSurfaceState;
-extern zVideo_ClearZBufferRectProc g_zVideo_pfnClearZBufferRect;
 extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryDeviceVideoMemoryBytes;
 extern zVideo_QueryMemoryBytesProc g_zVideo_pfnQueryTextureMemoryBytes;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltSwToPrimaryRectDirect;
 extern zVideo_BltRectDirectProc g_zVideo_pfnBltPrimaryToSwRectDirect;
 extern zVideo_BltImageRectProc g_zVideo_pfnBltSwToPrimaryRect;
-extern zVideo_ClearSwSurfaceAndZBufferProc g_zVideo_pfnClearSwSurfaceAndZBuffer;
-extern zVideo_ClearStateSurfaceAndZBufferProc g_zVideo_pfnClearStateSurfaceAndZBuffer;
-extern zVideo_UpdateFogColorProc g_zVideo_pfnUpdateFogColor;
 extern zVideo_CreateTextureRecordProc g_zVideo_pfnCreateTextureRecord;
 extern zVideo_TextureRecordLockUploadSurfaceProc g_zVideo_pfnTextureRecordLockUploadSurface;
 extern zVideo_TextureRecordUnlockUploadSurfaceProc g_zVideo_pfnTextureRecordUnlockUploadSurface;
@@ -488,41 +536,10 @@ extern zVideo_SubmitPolyRenderClassProc g_zVideo_pfnSubmitPolyRenderClass;
 extern zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygon;
 extern zVideo_SubmitPolygonProc g_zVideo_pfnSubmitPolygonLit;
 extern zVideo_DrawPointColor16Proc g_zVideo_pfnDrawPointColor16;
-extern zVidHwApiDeviceRecordPartial g_zVideo_HwApiDeviceTable[4];
-extern zVidHwApiDeviceRecordPartial* g_zVideo_pSelectedHwApiDeviceRecord;
-extern zVidD3DDriverRecordPartial* g_zVideo_pSelectedD3DDeviceInfo;
-extern D3DDEVICEDESC g_zVideo_D3DHalDeviceDesc;
-extern D3DDEVICEDESC g_zVideo_D3DHelDeviceDesc;
-extern D3DMATERIALHANDLE g_zVideo_D3DMaterialHandle;
-extern int g_zVideo_QuadBatchCount;
-extern zVideo_QuadBatchItemPartial g_zVideo_QuadBatchItemsBase[16];
-extern D3DTLVERTEX g_zVideo_D3DSubmitTempVertices[64];
-extern zVideo_SortedPolyQueueEntry g_zVideo_SortedPolyQueueBase[256];
-extern zVideo_OverwriteQueueEntry g_zVideo_OverwriteQueueBase[0x180];
-extern zVideo_D3DRenderStateCacheLive g_zVideo_D3DRenderStateCache;
-extern IDirect3DMaterial2* g_zVideo_pD3DMaterial2;
-extern IDirect3DViewport2* g_zVideo_pD3DViewport2;
-extern IDirect3DDevice2* g_zVideo_pD3DDevice;
-extern IDirect3D2* g_zVideo_pD3D2;
-extern IDirectDrawClipper* g_zVideo_pClipper;
-extern IDirectDraw2* g_zVideo_pDirectDraw2;
-extern IDirectDrawSurface3* g_zVideo_pZBufferSurface;
-extern IDirectDrawSurface* g_zVideo_pZBufferAttachSurface;
-extern IDirectDrawSurface3* g_zVideo_pPageUnlockSurface;
-extern zVideo_SurfaceLockVerifier* g_zVideo_pSurfaceLockVerifier;
-extern int g_zVideo_SurfaceLockVerifyContext;
-extern unsigned char g_zVideo_SurfaceLockVerifyFlags;
-extern zVideo_SurfaceStatePartial g_zVideo_SwSurfaceState;
-extern zVideo_SurfaceStatePartial g_zVideo_PrimarySurfaceState;
-extern zVideo_SurfaceStatePartial g_zVideo_DisplayModeSurfaceState;
 extern zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
-extern int g_zVideo_DisplayModeBpp;
 extern zVideo_ImageUploadPixelsProc g_zVideo_pfnImageUploadPixelsToSurface;
 extern zVideo_ImageReleaseSurfaceProc g_zVideo_pfnImageReleaseSurface;
 extern zVideo_GetHwApiDeviceFeatureFlagsProc g_zVideo_pfnGetHwApiDeviceFeatureFlags;
-extern IDirectDrawPalette* g_zVideo_pDDPalette;
-extern HWND g_zVideo_hWnd;
-extern RECT g_zVideo_CachedClientRectScreen;
 extern unsigned int g_zVideo_OpaqueWhiteArgb;
 extern char g_zVideo_SourceFile_ZvidDdd3dC[0x28];
 extern char g_zVideo_TextureTooLargeUsingDefaultFmt[0x49];

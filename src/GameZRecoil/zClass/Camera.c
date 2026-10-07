@@ -423,14 +423,13 @@ namespace CZCamera
         node->classId = kZClassNodeCamera;
         CZCameraDataPartial* data = (CZCameraDataPartial*)(calloc(1, sizeof(CZCameraDataPartial)));
         node->classData = data;
+        // Retail zeroes posOffset through its own zero register (VC5 intrinsic memset expansion).
+        memset(&data->posOffset, 0, sizeof(data->posOffset));
+        data->viewportWidth = 1.0f;
+        data->viewportHeight = 1.0f;
         data->targetOrEuler.x = 0.0f;
         data->targetOrEuler.y = 0.0f;
         data->targetOrEuler.z = 0.0f;
-        data->posOffset.x = 0.0f;
-        data->posOffset.y = 0.0f;
-        data->posOffset.z = 0.0f;
-        data->viewportWidth = 1.0f;
-        data->viewportHeight = 1.0f;
         data->frustumVectorsDirty = 1;
         data->transformDirty = 1;
         data->localFrustumNormalsDirty = 1;
@@ -2435,14 +2434,12 @@ namespace CZCamera
             const float minAngle = previousAngle;
             previousAngle = 6.28318548f;
 
-            zVec3* candidate = hullPoint + 1;
             for (int scanIndex = scanStart; scanIndex <= count; ++scanIndex) {
-                const float angle = FastAngleXZ(hullPoint, candidate);
+                const float angle = FastAngleXZ(hullPoint, &points[scanIndex]);
                 if (angle > minAngle && angle < previousAngle) {
                     previousAngle = angle;
                     selectedIndex = scanIndex;
                 }
-                ++candidate;
             }
 
             if (selectedIndex == count) {

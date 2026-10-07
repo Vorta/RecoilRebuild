@@ -499,16 +499,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(int selectedEntryIndexValue)
         const int entryIndex = selectedEntryIndexValue + row - 3;
         HudUiSaveLoadListItem* listItem = &entryWidgets[row];
         if (entryIndex >= 0) {
-            unsigned int entryCount;
-            if (fileEntries.begin() == 0) {
-                entryCount = 0;
-            } else {
-                entryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
-            }
-
-            if ((unsigned int)entryIndex < entryCount) {
-                listItem->layoutX = entryIndex;
-                listItem->SetTextFmt("%s", fileEntries.begin()[entryIndex].cFileName);
+            if ((unsigned int)entryIndex < fileEntries.size()) {
+                HudUiSaveLoadEntry& entry = fileEntries[entryIndex];
+                entryWidgets[row].layoutX = entryIndex;
+                listItem->SetTextFmt("%s", entry.cFileName);
                 listItem->SetVisible(1);
                 listItem->Invalidate();
                 continue;
@@ -519,15 +513,8 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(int selectedEntryIndexValue)
     }
 
     if (selectedEntryIndexValue >= 0) {
-        unsigned int selectedEntryCount;
-        if (fileEntries.begin() == 0) {
-            selectedEntryCount = 0;
-        } else {
-            selectedEntryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
-        }
-
-        if ((unsigned int)selectedEntryIndexValue < selectedEntryCount) {
-            gameNameInput.Update(fileEntries.begin()[selectedEntryIndexValue].cFileName);
+        if ((unsigned int)selectedEntryIndexValue < fileEntries.size()) {
+            gameNameInput.Update(fileEntries[selectedEntryIndexValue].cFileName);
         }
     }
 
@@ -535,16 +522,10 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(int selectedEntryIndexValue)
         const int entryIndex = selectedEntryIndexValue + lowerRow - 2;
         HudUiSaveLoadListItem* listItem = &entryWidgets[lowerRow];
         if (entryIndex >= 0) {
-            unsigned int entryCount;
-            if (fileEntries.begin() == 0) {
-                entryCount = 0;
-            } else {
-                entryCount = (unsigned int)(fileEntries.end() - fileEntries.begin());
-            }
-
-            if ((unsigned int)entryIndex < entryCount) {
-                listItem->layoutX = entryIndex;
-                listItem->SetTextFmt("%s", fileEntries.begin()[entryIndex].cFileName);
+            if ((unsigned int)entryIndex < fileEntries.size()) {
+                HudUiSaveLoadEntry& entry = fileEntries[entryIndex];
+                entryWidgets[lowerRow].layoutX = entryIndex;
+                listItem->SetTextFmt("%s", entry.cFileName);
                 listItem->SetVisible(1);
                 listItem->Invalidate();
                 continue;

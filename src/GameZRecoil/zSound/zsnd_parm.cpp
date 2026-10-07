@@ -81,15 +81,19 @@ int zSndPlayHandle::SetEnableScale(float scale)
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 0:
-        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(*(float*)(g_zSnd_GlobalVolumeScalePtr)*scale);
+    case 0: {
+        const float volume = *(float*)(g_zSnd_GlobalVolumeScalePtr);
+        gainScaled = zSnd::GainScaleToDirectSoundAttenuation(volume * scale);
         result = Update3DDispatch(0, 0, 0);
         break;
-    case 1:
+    }
+    case 1: {
         // A3D keeps the raw float gain bits in the int-backed gain field.
-        *(float*)&gainScaled = *(float*)(g_zSnd_GlobalVolumeScalePtr)*scale;
+        const float volume = *(float*)(g_zSnd_GlobalVolumeScalePtr);
+        *(float*)&gainScaled = volume * scale;
         result = Update3DDispatch(0, 0, 0);
         break;
+    }
     }
 
     return result;

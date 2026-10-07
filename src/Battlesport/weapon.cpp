@@ -584,6 +584,20 @@ void TickAltGunLocalSlotAndPrimaryState(zUtil_SaveGameState* saveState)
     }
 }
 
+/**
+ * Reconstruction model: a TU-local inline accessor returns the local player
+ * state for the HUD argument expressions (Pro batch X, run b8586622; this TU
+ * compiles at /Ob1). Retail sites 0x43942b and 0x439518 (weapon.cpp) contain the corresponding state
+ * lookup and controller reload/copy patterns. Historical helper spelling,
+ * existence as a distinct original-source helper, and placement are not
+ * established; no standalone retail function exists.
+ * Purpose: return the local player's state record from the game-state table.
+ */
+inline zUtil_PlayerStateStorage* LocalPlayerState()
+{
+    return ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
+}
+
 } // namespace
 
 namespace Player {
@@ -987,13 +1001,10 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
         HudUi::ShowTopMessageLine(failedController->optCatalogEntry->description, 5.0f);
     }
 
-    zUtil_PlayerStateStorage* const displayPlayerState
-        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
-    PlayerGunFireController* const activeController = displayPlayerState->activeAltGunController;
     HudUiMessage::UpdateSelectedWeaponDisplay(
-        activeController->weaponBankIndex,
-        activeController->weaponSideIndex,
-        activeController->ammoOrCharge
+        LocalPlayerState()->activeAltGunController->weaponBankIndex,
+        LocalPlayerState()->activeAltGunController->weaponSideIndex,
+        LocalPlayerState()->activeAltGunController->ammoOrCharge
     );
 }
 /**
@@ -1036,12 +1047,10 @@ void __fastcall HandlePrimaryWeaponVariantToggleInput(int keyCode)
     ApplyPrimaryWeaponSwitch(saveState, previousController, newController);
     HudUi::ShowTopMessageLine(newController->optCatalogEntry->description, 5.0f);
 
-    zUtil_PlayerStateStorage* const displayPlayerState
-        = (zUtil_PlayerStateStorage*)((void*)(g_GameStateOrMapTable->playerState));
     HudUiMessage::UpdateSelectedWeaponDisplay(
-        displayPlayerState->activePrimaryGunController->weaponBankIndex,
-        displayPlayerState->activePrimaryGunController->weaponSideIndex,
-        displayPlayerState->activePrimaryGunController->ammoOrCharge
+        LocalPlayerState()->activePrimaryGunController->weaponBankIndex,
+        LocalPlayerState()->activePrimaryGunController->weaponSideIndex,
+        LocalPlayerState()->activePrimaryGunController->ammoOrCharge
     );
 }
 /**
@@ -1598,11 +1607,11 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
                 break;
             }
 
-            if ((activeController->flags & kPlayerGunControllerDualMountFlag) != 0) {
+            if ((unsigned char)(activeController->flags >> 1) & 1) {
                 saveState->StartMasterTypeLoopSfxHandle(2, 1.0f);
-                PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[activeController->weaponBankIndex];
                 PlayerGunFireController* const oppositeController
-                    = activeController->weaponSideIndex == 0 ? &bank->controllerB : &bank->controllerA;
+                    = &playerState->altWeaponBanks[activeController->weaponBankIndex].controllerA
+                    + (activeController->weaponSideIndex == 0);
                 if (oppositeController->attachNodePrimary != 0) {
                     CZClass::gwNodeSetActive(oppositeController->attachNodePrimary, 0);
                 }
@@ -1999,7 +2008,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
  * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits recoil:function:0x43a900
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
@@ -2310,7 +2319,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -3314,7 +3323,7 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-autoswitchtonextusablealtweapon
  * @recoil-artifact defines .text recoil:function:0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered

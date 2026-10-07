@@ -414,7 +414,7 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-tick-local-player-pkt06-replication-and-hud-timer
  * @recoil-artifact defines .text recoil:function:0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Replicate the local pkt06 player-state snapshot and drive host HUD
  * timer warning/status packet updates.
@@ -1241,7 +1241,7 @@ int __fastcall HandlePkt0CHudTimerStatusBits(int, NetPkt0C_HudTimerStatusBits* p
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
  * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09PlayerScoreboardSnapshot.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */

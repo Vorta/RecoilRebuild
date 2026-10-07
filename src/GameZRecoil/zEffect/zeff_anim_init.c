@@ -440,6 +440,7 @@ namespace zEffectAnim
             return 0;
         }
 
+        int i;
         zEffectAnimEntry* const clonedEntry = (zEffectAnimEntry*)(calloc(1, sizeof(zEffectAnimEntry)));
         memcpy(clonedEntry, self, sizeof(zEffectAnimEntry));
 
@@ -505,7 +506,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimRuntimeNodeRef) * clonedEntry->lightRefCount
             );
 
-            for (int i = 0; i < clonedEntry->lightRefCount; ++i) {
+            for (i = 0; i < clonedEntry->lightRefCount; ++i) {
                 zEffectAnimRuntimeNodeRef* const lightRef = &clonedEntry->lightRefList[i];
                 if (self->lightRefList[i].runtimeNode != 0) {
                     CZNodePartial* const lightNode = CZLight::gwLightNew();
@@ -525,7 +526,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimRuntimeNodeRef) * clonedEntry->soundRefCount
             );
 
-            for (int i = 0; i < clonedEntry->soundRefCount; ++i) {
+            for (i = 0; i < clonedEntry->soundRefCount; ++i) {
                 zEffectAnimRuntimeNodeRef* const soundRef = &clonedEntry->soundRefList[i];
                 if (self->soundRefList[i].runtimeNode != 0) {
                     soundRef->runtimeNode = CZSound::gwSoundNew();
@@ -545,7 +546,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimTrackedNode) * clonedEntry->trackedNodeCount
             );
 
-            for (int i = 0; i < clonedEntry->trackedNodeCount; ++i) {
+            for (i = 0; i < clonedEntry->trackedNodeCount; ++i) {
                 if (self->trackedNodeList[i].trackedNode != 0) {
                     clonedEntry->trackedNodeList[i].trackedNode
                         = ResolveNodeByName(clonedEntry, clonedEntry->trackedNodeList[i].trackedNodeName);
@@ -562,7 +563,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimNodeRef28) * clonedEntry->nodeRefCount
             );
 
-            for (int i = 0; i < clonedEntry->nodeRefCount; ++i) {
+            for (i = 0; i < clonedEntry->nodeRefCount; ++i) {
                 if (self->nodeRefList[i].node != 0) {
                     clonedEntry->nodeRefList[i].node
                         = ResolveNodeByName(clonedEntry, clonedEntry->nodeRefList[i].name.text);
@@ -576,7 +577,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimSurfaceRuntime)
             ));
 
-            for (int i = 0; i < clonedEntry->runtimeSequenceCount; ++i) {
+            for (i = 0; i < clonedEntry->runtimeSequenceCount; ++i) {
                 memcpy(&clonedEntry->runtimeList[i], &self->runtimeList[i], sizeof(zEffectAnimSurfaceRuntime));
 
                 if (self->runtimeList[i].eventStreamSize > 0) {
@@ -642,7 +643,7 @@ namespace zEffectAnim
                 sizeof(zEffectAnimRuntimeRef) * clonedEntry->runtimeRefCount
             );
 
-            for (int i = 0; i < clonedEntry->runtimeRefCount; ++i) {
+            for (i = 0; i < clonedEntry->runtimeRefCount; ++i) {
                 clonedEntry->runtimeRefList[i].cachedChildEntry = 0;
             }
         }

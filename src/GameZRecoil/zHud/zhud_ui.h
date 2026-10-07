@@ -1912,7 +1912,7 @@ struct HudUiMgrData : HudUiContainer {
     HudUiMgrObjectiveBlock objective;
     HudUiMgrSensorBlock sensor;
     HudUiSlot weaponSlots[32];
-    unsigned int reticleSnapRadiusSq;
+    int reticleSnapRadiusSq;
     unsigned int weaponState;
     unsigned int unknown_4704[32];
     HudUiTimerPanel* timerPanel;

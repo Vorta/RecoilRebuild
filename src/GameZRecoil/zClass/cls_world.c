@@ -166,9 +166,20 @@ namespace CZWorld
     }
 
     /**
+     * Complete 0xc0-byte scene-node record (header, cached bounds, damage handler);
+     * 0x4500b0 steps child records by this size.
+     */
+    struct CZNodeRecord {
+        CZNodePartial node;
+        zBBox3f primaryBounds;
+        zBBox3f secondaryBounds;
+        void* damageHandler;
+    };
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.rebuildareabounds
      * @recoil-artifact defines .text recoil:function:0x4500b0: CZWorld::RebuildAreaBounds.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
      * Purpose: recompute an area's active Y bounds and bounding sphere from
@@ -185,12 +196,16 @@ namespace CZWorld
         }
 
         zBBoxCorners corners;
-        int childIndex = 0;
-        for (; childIndex < childCount; ++childIndex) {
-            CZNodePartial* child = area->childList[childIndex];
-            if ((child->flags & 0x100) != 0) {
+        // Retail walks the first search by node record from childList[0]
+        // (0xc0-byte stride), not through childList[]; preserved as shipped.
+        CZNodeRecord* record = (CZNodeRecord*)(area->childList[0]);
+        // Only read after a bounded child sets 0x100; retail keeps the count here.
+        int childIndex = childCount;
+        for (int searchIndex = 0; searchIndex < childCount; ++searchIndex, ++record) {
+            if ((record->node.flags & 0x100) != 0) {
                 area->areaFlags |= 0x100;
-                CZClass::gwNodeGetWorldBBoxCorners(child, &corners);
+                childIndex = searchIndex + 1;
+                CZClass::gwNodeGetWorldBBoxCorners(&record->node, &corners);
                 area->bbox[1] = corners.corners[0].y;
                 area->bbox[4] = corners.corners[0].y;
                 for (int i = 1; i < 8; ++i) {
@@ -200,7 +215,6 @@ namespace CZWorld
                         area->bbox[4] = corners.corners[i].y;
                     }
                 }
-                ++childIndex;
                 break;
             }
         }
@@ -298,7 +312,7 @@ namespace CZWorld
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.initvirtualareapartitions
      * @recoil-artifact defines .text recoil:function:0x4502b0: CZWorld::InitVirtualAreaPartitions.
-     *
+     * @recoil-match byte
      *
      * BN source path evidence: GameZRecoil/zClass/cls_world.c.
      * Purpose: initialize virtual area partition edge cells by moving their
@@ -320,8 +334,11 @@ namespace CZWorld
 
         CZTypeList::UpdateQueuedTrees();
 
-        zWorldAreaPartial* area = data->areaGridRows[0];
-        for (int col = 0; col < data->areaGridColCount; ++col, ++area) {
+        int i;
+        int edgeRow;
+        zWorldAreaPartial** row = data->areaGridRows;
+        zWorldAreaPartial* area = *row;
+        for (i = 0; i < data->areaGridColCount; ++area, ++i) {
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
@@ -334,8 +351,9 @@ namespace CZWorld
             }
         }
 
-        area = data->areaGridRows[data->areaGridRowCount - 1];
-        for (int lastCol = 0; lastCol < data->areaGridColCount; ++lastCol, ++area) {
+        row = &data->areaGridRows[data->areaGridRowCount - 1];
+        area = *row;
+        for (i = 0; i < data->areaGridColCount; ++area, ++i) {
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
@@ -348,8 +366,9 @@ namespace CZWorld
             }
         }
 
-        for (int firstEdgeRow = 1; firstEdgeRow < data->areaGridRowCount - 1; ++firstEdgeRow) {
-            area = &data->areaGridRows[firstEdgeRow][0];
+        row = &data->areaGridRows[1];
+        for (edgeRow = 1; edgeRow < data->areaGridRowCount - 1; ++row, ++edgeRow) {
+            area = *row;
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
@@ -362,8 +381,9 @@ namespace CZWorld
             }
         }
 
-        for (int lastEdgeRow = 1; lastEdgeRow < data->areaGridRowCount - 1; ++lastEdgeRow) {
-            area = &data->areaGridRows[lastEdgeRow][data->areaGridColCount - 1];
+        row = &data->areaGridRows[1];
+        for (edgeRow = 1; edgeRow < data->areaGridRowCount - 1; ++row, ++edgeRow) {
+            area = *row + data->areaGridColCount - 1;
             if (area->childCount > 0) {
                 CZNodePartial* statics = CZObject3D::gwObject3DInit();
                 CZClass::gwNodeSetName(statics, g_CZClass_VapStaticsNodeName);
