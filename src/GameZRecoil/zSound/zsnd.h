@@ -379,6 +379,10 @@ RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, sentinel) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, count) == 0x08);
 
 namespace zSnd {
+// Audio API option and active sound backend values: the Options audio-API
+// setting, the RecoilFrame audio menu and every g_zSnd_ActiveBackend dispatch.
+#define ZSND_AUDIO_API_DIRECTSOUND 0
+#define ZSND_AUDIO_API_A3D 1
 int __fastcall ReportMciError(unsigned int mciError, const char* sourceFile, int lineNumber);
 int __fastcall ReportA3DError(int a3dError, const char* sourceFile, int sourceLine);
 int __fastcall ReportDirectSoundError(int directSoundError, const char* sourceFile, int sourceLine);

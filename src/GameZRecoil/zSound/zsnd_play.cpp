@@ -46,9 +46,10 @@ const float g_zSnd_DirectSoundAttenRoundBias = 0.5f;
  * @recoil-anchor recoil:anchor:src-gamezrecoil-zsound-zsnd_play-data-f
  * @recoil-artifact defines .data recoil:data:0x4e2204: g_zSnd_DirectSoundAttenScale.
  * Purpose: DirectSound 3D attenuation distance scale used by
- * zSndPlayHandle::Update3D.
+ * zSndPlayHandle::Update3D. Not const: retail keeps it in writable .data
+ * (0x4e2204), unlike the .rdata attenuation constants above.
  */
-const float g_zSnd_DirectSoundAttenScale = 1000.0f;
+float g_zSnd_DirectSoundAttenScale = 1000.0f;
 
 /**
  * Original static helper recovered from the zSound playback source cluster.
@@ -144,11 +145,11 @@ inline bool A3dSourceIsPlaying(zSndBuffer* backendBuffer)
  */
 bool BackendHandleIsPlaying(zSndPlayHandle* handle)
 {
-    if (g_zSnd_ActiveBackend == 0) {
+    if (g_zSnd_ActiveBackend == ZSND_AUDIO_API_DIRECTSOUND) {
         return DirectSoundBufferIsPlaying(handle->backendBuffer);
     }
 
-    if (g_zSnd_ActiveBackend == 1) {
+    if (g_zSnd_ActiveBackend == ZSND_AUDIO_API_A3D) {
         return A3dSourceIsPlaying(handle->backendBuffer);
     }
 
@@ -231,7 +232,7 @@ inline zSndPlayHandleSnapshot::zSndPlayHandleSnapshot(unsigned char tag)
  */
 extern "C" void __fastcall zSndTick(int skipA3dCommit)
 {
-    if (g_zSnd_ActiveBackend == 1 && skipA3dCommit == 0) {
+    if (g_zSnd_ActiveBackend == ZSND_AUDIO_API_A3D && skipA3dCommit == 0) {
         ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Flush();
         ((zA3dProviderDevice*)(g_zSnd_BackendDevice))->Clear();
     }
@@ -298,11 +299,11 @@ zSndPlayHandle* zSndSample::AcquirePlayHandleDispatch()
     zSndPlayHandle* voice = 0;
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         voice = AcquireA3dVoice();
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         voice = AcquireVoice();
         break;
     }
@@ -539,11 +540,11 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
     zSndPlayHandle* result = 0;
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         result = PlayOnA3D(worldPos, gainScale, velocity, backendArg);
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         result = PlayOnDirectSound(zSnd::GainScaleToDirectSoundAttenuation(gainScale), worldPos, velocity, backendArg);
         break;
     }
@@ -774,7 +775,7 @@ int zSndPlayHandle::StopIfActive()
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         source = (zA3dProviderSource*)(playHandle->backendBuffer);
         if (source == 0) {
             return -1;
@@ -787,7 +788,7 @@ int zSndPlayHandle::StopIfActive()
 
         return error;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
         if (buffer == 0) {
             return -1;
@@ -836,7 +837,7 @@ int zSndSample::StopActiveVoicesIfPlaying()
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         zA3dProviderSource* const primarySource = (zA3dProviderSource*)(primaryVoice.backendBuffer);
         if (primarySource == 0) {
             return 0;
@@ -867,7 +868,7 @@ int zSndSample::StopActiveVoicesIfPlaying()
         return 1;
     }
 
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         LPDIRECTSOUNDBUFFER const primaryBuffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
         if (primaryBuffer == 0) {
             return 0;
@@ -928,7 +929,7 @@ zSndPlayHandleSnapshot* zSndPlayHandleSnapshot::CreateFromActiveSamples()
         for (int sampleIndex = 0; (unsigned int)(sampleIndex) < (unsigned int)(sampleSet->sampleCount); ++sampleIndex) {
             zSndSample* const sample = sampleSet->GetSampleAt(sampleIndex);
             switch (g_zSnd_ActiveBackend) {
-            case 1: {
+            case ZSND_AUDIO_API_A3D: {
                 if (sample->primaryVoice.backendBuffer != 0
                     && A3dSourceIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
                     payload.CaptureFromPlayHandle(&sample->primaryVoice);
@@ -953,7 +954,7 @@ zSndPlayHandleSnapshot* zSndPlayHandleSnapshot::CreateFromActiveSamples()
                 break;
             }
 
-            case 0: {
+            case ZSND_AUDIO_API_DIRECTSOUND: {
                 if (sample->primaryVoice.backendBuffer != 0
                     && DirectSoundBufferIsPlaying(sample->primaryVoice.backendBuffer, &status)) {
                     payload.CaptureFromPlayHandle(&sample->primaryVoice);
@@ -994,10 +995,10 @@ void __fastcall zSndPlayHandleSnapshotPayload::CaptureFromPlayHandle(zSndPlayHan
     sourceSample = playHandle->ownerSample;
 
     switch (g_zSnd_ActiveBackend) {
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         volumeScaleRaw = (unsigned int)(sourceSample->primaryVoice.gainScaled);
         break;
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         volumeScaleRaw = (unsigned int)(sourceSample->primaryVoice.gainScaled);
         break;
     }
@@ -1103,13 +1104,13 @@ void __fastcall zSndPlayHandle::PlayWithDeltaBackendDispatch(
 {
     zSndSampleReplayFields* const replayFields = &sourceSample->replayFields;
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         if (playHandle->backendBuffer != 0 && *(float*)&playHandle->gainScaled != 0.0f) {
             PlayWithDeltaA3D(replayFields, playHandle, restartBeforePlay, gainDelta);
         }
         break;
 
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         const int directSoundGainDelta = (int)(gainDelta * 10000.0f);
         if (playHandle->backendBuffer != 0) {
             PlayWithDeltaDirectSound(replayFields, playHandle, restartBeforePlay, directSoundGainDelta);
@@ -1139,7 +1140,7 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying()
     if ((hasItem & 0xff) != 0) {
         do {
             switch (g_zSnd_ActiveBackend) {
-            case 0: {
+            case ZSND_AUDIO_API_DIRECTSOUND: {
                 LPDIRECTSOUNDBUFFER const buffer
                     = (LPDIRECTSOUNDBUFFER)(snapshotItem->payload.playHandle->backendBuffer);
                 buffer->GetStatus((LPDWORD)&status);
@@ -1148,7 +1149,7 @@ int zSndPlayHandleSnapshot::StopAllIfPlaying()
                 }
                 break;
             }
-            case 1: {
+            case ZSND_AUDIO_API_A3D: {
                 zA3dProviderSource* const source
                     = (zA3dProviderSource*)(snapshotItem->payload.playHandle->backendBuffer);
                 source->GetStatus((LPDWORD)&status);
@@ -1260,7 +1261,7 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(int enableMute)
     int hasItem;
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         item = volumeAnchor->next;
         hasItem = (unsigned char)(item == listHead) == 0;
         if ((hasItem & 0xff) != 0) {
@@ -1280,7 +1281,7 @@ int __fastcall zSnd::ApplyMuteStateToActiveVoices(int enableMute)
             } while ((hasItem & 0xff) != 0);
         }
         break;
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         item = volumeAnchor->next;
         hasItem = (unsigned char)(item == listHead) == 0;
         if ((hasItem & 0xff) != 0) {
@@ -1702,7 +1703,7 @@ zSndSample* zSndSampleSet::FindSampleByName(const char* sampleName)
 {
     if (this != 0) {
         switch (g_zSnd_ActiveBackend) {
-        case 0: {
+        case ZSND_AUDIO_API_DIRECTSOUND: {
             zSndSample* sample = samples;
             for (int index = 0; index < sampleCount; ++index, ++sample) {
                 if (strcmp(sampleName, sample->replayFields.sampleId) == 0 && sample->primaryVoice.backendBuffer != 0) {
@@ -1711,7 +1712,7 @@ zSndSample* zSndSampleSet::FindSampleByName(const char* sampleName)
             }
             break;
         }
-        case 1: {
+        case ZSND_AUDIO_API_A3D: {
             zSndSample* sample = samples;
             for (int index = 0; index < sampleCount; ++index, ++sample) {
                 if (strcmp(sampleName, sample->replayFields.sampleId) == 0 && sample->primaryVoice.backendBuffer != 0) {

@@ -329,11 +329,11 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
     g_zSnd_WindowHandle = hwnd;
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         g_zSnd_BackendDevice = 0;
         g_zSnd_BackendListenerHandle = 0;
         break;
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         g_zSnd_BackendDevice = 0;
         g_zSnd_BackendListenerHandle = 0;
         break;
@@ -421,13 +421,13 @@ extern "C" int __fastcall zSndSystemInit(unsigned int hwnd, const char* zrdPath)
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         if (zSndBackendInitA3D() == 0) {
-            g_zSnd_ActiveBackend = 0;
+            g_zSnd_ActiveBackend = ZSND_AUDIO_API_DIRECTSOUND;
             return zSndSystemInit(hwnd, zrdPath);
         }
         break;
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         if (zSndBackendInitDirectSound() == 0) {
             return 0;
         }
@@ -860,7 +860,7 @@ int __cdecl Shutdown()
     zSndSampleSetRegistryDestroyAll();
 
     switch (g_zSnd_ActiveBackend) {
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         void*& auxObject = *(void**)&g_zSnd_BackendAuxHandleOrConfig;
         if (auxObject != 0) {
             ((IUnknown*)auxObject)->Release();
@@ -881,7 +881,7 @@ int __cdecl Shutdown()
         break;
     }
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         if (g_zSnd_BackendListenerHandle != 0) {
             g_zSnd_BackendListenerHandle->Release();
             g_zSnd_BackendListenerHandle = 0;

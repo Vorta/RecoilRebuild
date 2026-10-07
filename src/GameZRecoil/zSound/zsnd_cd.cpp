@@ -37,7 +37,7 @@ extern "C" zSndCdTrackState g_zSndCdPlayFrom = { 0 };
 extern "C" zSndCdTrackState g_zSndCdCurrent = { 0 };
 extern "C" zSndCdTrackState g_zSndCdPlayTo = { 0 };
 extern "C" int g_zSnd_IsInitialized = 0;
-extern "C" int g_zSnd_ActiveBackend = 0;
+extern "C" int g_zSnd_ActiveBackend = ZSND_AUDIO_API_DIRECTSOUND;
 extern "C" unsigned int g_zSnd_WindowHandle = 0;
 /**
  * Purpose: Stores the archive-bank selector used by sound-bank loading and

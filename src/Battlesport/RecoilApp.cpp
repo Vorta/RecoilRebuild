@@ -1279,7 +1279,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-on-update-should-quit
  * @recoil-artifact defines .text recoil:function:0x42f5e0: CRecoilAppPlayState::OnUpdateShouldQuit.
- *
+ * @recoil-match byte
  *
  * Purpose: Advances gameplay and completes any active fade-driven state transition.
  */

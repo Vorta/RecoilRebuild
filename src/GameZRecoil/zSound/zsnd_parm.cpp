@@ -36,7 +36,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
         if (source == 0) {
             return -1;
@@ -47,7 +47,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
         );
         return 1;
     }
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
         if (buffer == 0) {
             return -1;
@@ -81,13 +81,13 @@ int __fastcall zSndPlayHandle::SetEnableScale(float scale)
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         const float volume = *(float*)(g_zSnd_GlobalVolumeScalePtr);
         gainScaled = zSnd::GainScaleToDirectSoundAttenuation(volume * scale);
         result = Update3DDispatch(0, 0, 0);
         break;
     }
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         // A3D keeps the raw float gain bits in the int-backed gain field.
         const float volume = *(float*)(g_zSnd_GlobalVolumeScalePtr);
         *(float*)&gainScaled = volume * scale;

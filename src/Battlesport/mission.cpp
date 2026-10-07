@@ -1675,7 +1675,7 @@ int HudSensorTracker::QueueMissionFmvStateForMissionId(int missionId)
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-mission-weather-fx
  * @recoil-artifact defines .text recoil:function:0x419050: HudSensorTracker::LoadMissionWeatherFx.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Source model: mission weather FX loader creates the recovered
@@ -1722,8 +1722,11 @@ void HudSensorTracker::LoadMissionWeatherFx(const char* zrdPath)
             zReader::Node* colorNode = zRdrFindTag(missionNode, "COLOR");
             if (colorNode != 0) {
                 zReader::Node* const colorFields = colorNode->value.nodes;
-                ((HudWeatherFx*)(fxPass3Obj))->packedColor16
-                    = zVidPackColorRGB(colorFields[1].value.i32, colorFields[2].value.i32, colorFields[3].value.i32);
+                // Retail loads full dwords for the packed-color channels (0x419209).
+                const int red = colorFields[1].value.i32;
+                const int green = colorFields[2].value.i32;
+                const int blue = colorFields[3].value.i32;
+                ((HudWeatherFx*)(fxPass3Obj))->packedColor16 = zVidPackColorRGB(red, green, blue);
             }
 
             zReader::Node* windDirNode = zRdrFindTag(missionNode, g_HudWeatherFx_WindDirectionNodeName);

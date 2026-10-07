@@ -713,7 +713,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState);
 void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3* outBasisOrigin);
 void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4x3* outMatrix34);
 void __fastcall
-DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, CZNodePartial* slotNode, float slotAimY, int applyMatrix);
+DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, float slotAimY, CZNodePartial* slotNode, int applyMatrix);
 void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState);
 void __fastcall SelectAltGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSlot** outActiveFireSlotPtr);
 void __fastcall

@@ -555,24 +555,24 @@ void TickAltGunLocalSlotAndPrimaryState(zUtil_SaveGameState* saveState)
         if (playerState->altFireSlotLeft.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotLeft,
-                playerState->altFireSlotLeft.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotLeft.attachNode,
                 1
             );
         }
         if (playerState->altFireSlotRight.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotRight,
-                playerState->altFireSlotRight.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotRight.attachNode,
                 1
             );
         }
         if (playerState->altFireSlotCenter.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotCenter,
-                playerState->altFireSlotCenter.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotCenter.attachNode,
                 0
             );
         }
@@ -943,15 +943,17 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
         return;
     }
 
-    int bankIndex = inputCode - 14;
-    if (inputCode < 14 || inputCode > 23) {
-        // Retail 0x4392a2 reloads the spilled previous-controller slot as the bank index.
-        bankIndex = (int)previousController;
+    // Out-of-range codes leave bankIndex unset: retail 0x4392a2 then reads its shared
+    // stack slot (the previous-controller spill). The bound inputs are 14..23.
+    int bankIndex;
+    if (inputCode >= 14 && inputCode <= 23) {
+        bankIndex = inputCode - 14;
     }
 
     PlayerAltWeaponBank* const bank = &playerState->altWeaponBanks[bankIndex];
     if (bankIndex == playerState->activeAltBankIndex) {
-        if (bank->selectedSide == 0) {
+        const int selectedSide = bank->selectedSide;
+        if (selectedSide == 0) {
             if (bank->controllerB.optCatalogEntry != 0 && (bank->controllerB.flags & 4) != 0
                 && bank->controllerB.ammoOrCharge != 0.0f) {
                 newController = &bank->controllerB;
@@ -969,16 +971,16 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
             }
         }
     } else {
-        const int selectedSide = bank->selectedSide;
-        if ((&bank->controllerA)[selectedSide].optCatalogEntry != 0
-            && ((&bank->controllerA)[selectedSide].flags & 4) != 0
-            && (&bank->controllerA)[selectedSide].ammoOrCharge != 0.0f) {
-            newController = &(&bank->controllerA)[selectedSide];
+        // Retail indexes the other bank through selectedSide reloads (lea eax,[edx*8] at 0x439315).
+        if ((&bank->controllerA)[bank->selectedSide].optCatalogEntry != 0
+            && ((&bank->controllerA)[bank->selectedSide].flags & 4) != 0
+            && (&bank->controllerA)[bank->selectedSide].ammoOrCharge != 0.0f) {
+            newController = &(&bank->controllerA)[bank->selectedSide];
             switchAccepted = 1;
         } else {
-            failedController = &(&bank->controllerA)[selectedSide];
+            failedController = &(&bank->controllerA)[bank->selectedSide];
             if (failedController->optCatalogEntry != 0) {
-                bank->selectedSide = selectedSide == 0;
+                bank->selectedSide = bank->selectedSide == 0;
             }
         }
     }
@@ -1759,24 +1761,24 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         if (playerState->altFireSlotLeft.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotLeft,
-                playerState->altFireSlotLeft.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotLeft.attachNode,
                 1
             );
         }
         if (playerState->altFireSlotRight.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotRight,
-                playerState->altFireSlotRight.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotRight.attachNode,
                 1
             );
         }
         if (playerState->altFireSlotCenter.offset != 0.0f) {
             Player::DecayAndApplyAltFireSlotOffsetToNode(
                 &playerState->altFireSlotCenter,
-                playerState->altFireSlotCenter.attachNode,
                 playerState->gunFireDir.y,
+                playerState->altFireSlotCenter.attachNode,
                 0
             );
         }
@@ -2036,7 +2038,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
  * here (same construct as the reviewed 0x43a600 island).
  */
 void __fastcall
-DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, CZNodePartial* slotNode, float slotAimY, int applyMatrix)
+DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, float slotAimY, CZNodePartial* slotNode, int applyMatrix)
 {
     const float dampingRate = g_FrameDeltaTimeSec * -8.09f;
     const int dampingBits = (int)(dampingRate * 12102200.0f);
@@ -2096,8 +2098,8 @@ void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState)
         playerState->altFireSlotLeft.offset = 0.0f;
         DecayAndApplyAltFireSlotOffsetToNode(
             &playerState->altFireSlotLeft,
-            playerState->altFireSlotLeft.attachNode,
             playerState->gunFireDir.y,
+            playerState->altFireSlotLeft.attachNode,
             1
         );
     }
@@ -2105,8 +2107,8 @@ void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState)
         playerState->altFireSlotRight.offset = 0.0f;
         DecayAndApplyAltFireSlotOffsetToNode(
             &playerState->altFireSlotRight,
-            playerState->altFireSlotRight.attachNode,
             playerState->gunFireDir.y,
+            playerState->altFireSlotRight.attachNode,
             1
         );
     }
@@ -2114,8 +2116,8 @@ void __fastcall ApplyGunFireSlotOffsetToNode(zUtil_SaveGameState* saveState)
         playerState->altFireSlotCenter.offset = 0.0f;
         DecayAndApplyAltFireSlotOffsetToNode(
             &playerState->altFireSlotCenter,
-            playerState->altFireSlotCenter.attachNode,
             playerState->gunFireDir.y,
+            playerState->altFireSlotCenter.attachNode,
             0
         );
     }
@@ -2701,7 +2703,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
         playerState->lifecycleState = kPlayerLifecycleInactive;
         playerState->statusMeterValue = 0.0f;
 
-        if (zSnd::GetAudioApiOption() == 1) {
+        if (zSnd::GetAudioApiOption() == ZSND_AUDIO_API_A3D) {
             saveState->UpdateModalLoopSfx(0);
         }
         AINet::AiDiscardNegativeBranchPathNodes(saveState);

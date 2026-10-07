@@ -1343,7 +1343,7 @@ void __stdcall EnableAlways(CCmdUI* cmdUi)
  */
 void CZRecoilFrame::OnMenuSelectDirectSound()
 {
-    zSnd::SetAudioApiOption(0);
+    zSnd::SetAudioApiOption(ZSND_AUDIO_API_DIRECTSOUND);
 }
 
 /**
@@ -1356,7 +1356,7 @@ void CZRecoilFrame::OnMenuSelectDirectSound()
 void CZRecoilFrame::OnUpdateDirectSoundCmdUI(CCmdUI* cmdUi)
 {
     cmdUi->Enable(1);
-    cmdUi->SetCheck(zSnd::GetAudioApiOption() == 0 ? 1 : 0);
+    cmdUi->SetCheck(zSnd::GetAudioApiOption() == ZSND_AUDIO_API_DIRECTSOUND ? 1 : 0);
 }
 
 /**
@@ -1368,7 +1368,7 @@ void CZRecoilFrame::OnUpdateDirectSoundCmdUI(CCmdUI* cmdUi)
  */
 void CZRecoilFrame::OnMenuSelectA3D()
 {
-    zSnd::SetAudioApiOption(1);
+    zSnd::SetAudioApiOption(ZSND_AUDIO_API_A3D);
 }
 
 /**
@@ -1381,7 +1381,7 @@ void CZRecoilFrame::OnMenuSelectA3D()
 void CZRecoilFrame::OnUpdateA3DCmdUI(CCmdUI* cmdUi)
 {
     cmdUi->Enable(1);
-    cmdUi->SetCheck(zSnd::GetActiveBackend() == 1 ? 1 : 0);
+    cmdUi->SetCheck(zSnd::GetActiveBackend() == ZSND_AUDIO_API_A3D ? 1 : 0);
 }
 
 /**

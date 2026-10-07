@@ -1574,22 +1574,13 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
         newAlphaMap = (char*)(malloc(sideLength * sideLength));
     }
 
-    {
-        for (int dstY = 0; dstY < sideLength; ++dstY) {
-            const int srcY = (int)((float)(dstY)*yScale);
-            unsigned short* newPixelCursor = &newPixels[dstY * sideLength];
-            char* newAlphaCursor = &newAlphaMap[dstY * sideLength];
-
-            {
-                for (int dstX = 0; dstX < sideLength; ++dstX) {
-                    const int sourceIndex = srcY * image->width + (int)((float)(dstX)*xScale);
-                    *newPixelCursor = oldPixels[sourceIndex];
-                    if (oldAlphaMap != 0) {
-                        *newAlphaCursor = oldAlphaMap[sourceIndex];
-                    }
-                    ++newPixelCursor;
-                    ++newAlphaCursor;
-                }
+    // Index form: VC5 keeps the image in EBX and sideLength in EBP as in retail.
+    for (int dstY = 0; dstY < sideLength; ++dstY) {
+        for (int dstX = 0; dstX < sideLength; ++dstX) {
+            const int sourceIndex = (int)((float)(dstY)*yScale) * image->width + (int)((float)(dstX)*xScale);
+            newPixels[dstY * sideLength + dstX] = oldPixels[sourceIndex];
+            if (oldAlphaMap != 0) {
+                newAlphaMap[dstY * sideLength + dstX] = oldAlphaMap[sourceIndex];
             }
         }
     }

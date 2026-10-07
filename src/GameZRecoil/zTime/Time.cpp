@@ -81,20 +81,22 @@ void __cdecl Reset()
  */
 void __cdecl Tick()
 {
-    const float newTimeSec = (float)((__int64)(GetTickCount())) * g_Time_MillisecondsToSecondsScale;
+    g_Time_RuntimeConfig.newTimeSec = (float)((__int64)(GetTickCount())) * g_Time_MillisecondsToSecondsScale;
 
-    g_Time_RuntimeConfig.newTimeSec = newTimeSec;
-    g_Time_UnscaledDeltaTimeSec = newTimeSec - g_Time_RuntimeConfig.currentTimeSec;
-    g_Time_UnscaledAccumulatedTimeSec += g_Time_UnscaledDeltaTimeSec;
-    g_FrameDeltaTimeSec = g_Time_RuntimeConfig.timeScaleFactor * g_Time_UnscaledDeltaTimeSec;
+    // Retail reads the pending scale before resetting it (integer 1.0f store ahead of the
+    // delta) and re-reads the stored unscaled delta for both the scale and the accumulation.
+    const float timeScale = g_Time_RuntimeConfig.timeScaleFactor;
     g_Time_RuntimeConfig.timeScaleFactor = 1.0f;
+    g_Time_UnscaledDeltaTimeSec = g_Time_RuntimeConfig.newTimeSec - g_Time_RuntimeConfig.currentTimeSec;
+    g_FrameDeltaTimeSec = timeScale * g_Time_UnscaledDeltaTimeSec;
+    g_Time_UnscaledAccumulatedTimeSec += g_Time_UnscaledDeltaTimeSec;
 
     if (g_Time_RuntimeConfig.deltaTimeClampEnabled != 0
         && g_FrameDeltaTimeSec > g_Time_RuntimeConfig.maximumDeltaTimeSec) {
         g_FrameDeltaTimeSec = g_Time_RuntimeConfig.maximumDeltaTimeSec;
     }
 
-    g_Time_RuntimeConfig.currentTimeSec = newTimeSec;
+    g_Time_RuntimeConfig.currentTimeSec = g_Time_RuntimeConfig.newTimeSec;
     g_Time_AccumulatedTimeSec += g_FrameDeltaTimeSec;
 }
 } // namespace Time

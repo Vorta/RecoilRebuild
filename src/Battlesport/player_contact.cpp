@@ -984,7 +984,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-preparependingworldcollisionresponse
  * @recoil-artifact defines .text recoil:function:0x4248e0: Player::PreparePendingWorldCollisionResponse.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::PreparePendingWorldCollisionResponse from the recovered
@@ -1038,7 +1038,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
@@ -1173,7 +1173,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-processtransfercontactqueue
  * @recoil-artifact defines .text recoil:function:0x424d00: Player::ProcessTransferContactQueue.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ProcessTransferContactQueue from the recovered

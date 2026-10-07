@@ -1989,7 +1989,7 @@ RECOIL_NO_GS int __fastcall OptionsLoadGameOptions()
         OptionsGetOrCreateOption(g_zOpt_OptionName_SoundApi, ZGAME_OPTION_INLINE_DWORD, 0, ZGAME_OPTION_SCOPE_USER)
     );
     if (g_zGame_Options_PointerCache.audioApi != 0) {
-        zSnd::SetAudioApiOption(0);
+        zSnd::SetAudioApiOption(ZSND_AUDIO_API_DIRECTSOUND);
     }
 
     g_zGame_Options_PointerCache.playerName = OptionsGetOrCreateOption(

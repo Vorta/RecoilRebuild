@@ -997,7 +997,7 @@ void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, double alph
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-flushsw
  * @recoil-artifact defines .text recoil:function:0x48d7a0: zRndrOverlayRectFlushSw
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
@@ -1489,8 +1489,11 @@ namespace zVideo
         rbMask = redMask | blueMask;
 
         rowDelta = surfaceWidth - g_zVideo_FxSurfacePitchPixels16;
-        scratch = g_zVideo_FxPass3_ScratchPixels16 + rect.top * surfaceWidth + rect.left - surfaceWidth;
-        src = g_zVideo_FxSurfacePixels16 + rect.top * g_zVideo_FxSurfacePitchPixels16 + rect.left - surfaceWidth;
+        // Retail forms both row pointers first, then steps each back one row (a shared width*2 byte step).
+        scratch = g_zVideo_FxPass3_ScratchPixels16 + rect.top * surfaceWidth + rect.left;
+        src = g_zVideo_FxSurfacePixels16 + rect.top * g_zVideo_FxSurfacePitchPixels16 + rect.left;
+        scratch -= surfaceWidth;
+        src -= surfaceWidth;
 
         if (columnCount > 0) {
             int count = columnCount;
@@ -1589,10 +1592,11 @@ namespace zVideo
         int right;
         int surfaceWidth;
         int columnCount;
+        // rbMask precedes the channel masks: this order gives retail's register and frame allocation.
+        unsigned int rbMask;
         unsigned int redMask;
         unsigned int greenMask;
         unsigned int blueMask;
-        unsigned int rbMask;
         unsigned short* src;
         unsigned short* scratch;
         int rowDelta;
@@ -1628,7 +1632,8 @@ namespace zVideo
 
         src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
         scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
-        rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+        // Retail derives the row delta from the cached surfaceWidth local ([esp+0x18]), not a second global read.
+        rowDelta = surfaceWidth - g_zVideo_FxSurfacePitchPixels16;
 
         if (top < bottom) {
             int rowCount = bottom - top;

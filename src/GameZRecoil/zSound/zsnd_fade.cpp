@@ -67,7 +67,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
     currentValue = currentValue + step;
 
     switch (g_zSnd_ActiveBackend) {
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         if (currentValue > 0.0f) {
             currentValue = 0.0f;
         } else if (currentValue < -10000.0f) {
@@ -78,7 +78,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
         buffer->SetVolume((int)(currentValue));
         break;
     }
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         if (currentValue > 1.0) {
             currentValue = 1.0f;
         } else if (currentValue < 0.0) {

@@ -52,7 +52,7 @@ namespace {
 extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity)
 {
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         if (g_zSnd_BackendListenerHandle == 0) {
             return -1;
         }
@@ -77,7 +77,7 @@ extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerSta
         }
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         if (listenerState != 0) {
             memcpy(&g_zSnd_ListenerState, listenerState, sizeof(g_zSnd_ListenerState));
         }
@@ -104,11 +104,11 @@ int __fastcall zSndPlayHandle::Update3DDispatch(zVec3* worldPos, zVec3* velocity
     int result = 0;
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         result = Update3DA3D(worldPos, velocity, velocityScaleMode);
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         result = Update3D(worldPos, velocity, velocityScaleMode);
         break;
     }

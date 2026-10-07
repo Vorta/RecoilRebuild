@@ -257,7 +257,7 @@ void __cdecl TickAllPlayers()
                     if (playerState->cameraTickEnabled != 0) {
                         TickActiveCameraState(saveState);
                     }
-                    if (zSnd::GetAudioApiOption() == 1) {
+                    if (zSnd::GetAudioApiOption() == ZSND_AUDIO_API_A3D) {
                         saveState->UpdateModalLoopSfx(0);
                     }
 
@@ -301,13 +301,13 @@ void __cdecl TickAllPlayers()
                 TickActiveCameraState(saveState);
             }
 
-            if (zSnd::GetAudioApiOption() == 1) {
+            if (zSnd::GetAudioApiOption() == ZSND_AUDIO_API_A3D) {
                 saveState->UpdateModalLoopSfx(1);
             }
         }
     }
 
-    if (zSnd::GetAudioApiOption() != 1) {
+    if (zSnd::GetAudioApiOption() != ZSND_AUDIO_API_A3D) {
         zUtil_SaveGameState* const localSaveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
         if (localSaveState->playerState->lifecycleState != kPlayerLifecycleInactive) {
             localSaveState->UpdateModalLoopSfx(1);
@@ -1320,7 +1320,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
@@ -1539,7 +1539,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
@@ -1971,7 +1971,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
  * @recoil-artifact defines .text recoil:function:0x429560: Player::RebuildSteerBasisFromMotionAxes.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
@@ -2045,7 +2045,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
@@ -2087,7 +2087,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered

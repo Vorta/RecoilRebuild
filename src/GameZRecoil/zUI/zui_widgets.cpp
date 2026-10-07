@@ -2652,25 +2652,19 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
         boundsRect.left = x;
         boundsRect.bottom = y + uncheckedImage->height;
         boundsRect.right = x + uncheckedImage->width;
-    } else if (labelPanels.begin() != labelPanels.end()) {
-        HudUiPanelPtrVector::iterator panelIt = labelPanels.begin();
-        HudUiPanel* const firstPanel = *panelIt;
-        boundsRect.top = firstPanel->GetCenterY();
-        boundsRect.left = firstPanel->GetCenterX();
-        boundsRect.bottom = firstPanel->QueryTextHeight() + boundsRect.top;
+    } else if (labelPanels.begin() != 0) {
+        boundsRect.top = labelPanels[0]->GetCenterY();
+        boundsRect.left = labelPanels[0]->GetCenterX();
+        boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
 
-        while (panelIt != labelPanels.end()) {
-            HudUiPanel* const panel = *panelIt;
-            boundsRect.bottom += panel->QueryTextHeight();
-
-            if (panel->QueryTextWidth() + boundsRect.left > boundsRect.right) {
-                boundsRect.right = panel->QueryTextWidth() + boundsRect.left;
-            }
-
-            ++panelIt;
+        for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
+            boundsRect.bottom += (*panelIt)->QueryTextHeight();
+            boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right
+                ? (*panelIt)->QueryTextWidth() + boundsRect.left
+                : boundsRect.right;
         }
 
-        boundsRect.bottom -= firstPanel->QueryTextHeight();
+        boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
     }
 
     return 1;

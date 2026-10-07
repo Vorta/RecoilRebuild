@@ -574,8 +574,10 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     }
 
     zVec3 probeVelocity = particleVelocity;
-    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
-    if (lengthSq > 0.010000000000000002) {
+    // A separate local for the probe check reproduces retail's frame-slot packing.
+    float probeLengthSq;
+    ZMTH_VECTOR_LENGTH_SQ(probeLengthSq, &probeVelocity);
+    if (probeLengthSq > 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
         probeVelocity.x *= 0.100000001f;
         probeVelocity.y *= 0.100000001f;
@@ -608,7 +610,8 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
         particleQuads[particleIndex].color16 = packedColor16;
         particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
         particleQuads[particleIndex].texCoordUEnd = sourceDepthFactor * alphaEndScale;
-        particleQuads[particleIndex].slantOffset = (int)(((float)(activeParticleCount + 1)) * sourceDepthFactor * 3.5);
+        // Retail multiplies by the constant last and consumes sourceDepthFactor here (fxch/fmulp).
+        particleQuads[particleIndex].slantOffset = (int)(3.5 * sourceDepthFactor * (float)(activeParticleCount + 1));
 
         if (HudWeatherFxSnowNeedsReset(&particlePositions[destBufferIndex][particleIndex]) != 0) {
             ResetParticleSlot(particleIndex, 0);
@@ -617,8 +620,10 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
 
     HudUiElement::Update(deltaSeconds);
 
+    // Both buffer indices are read before either is stored, as in retail.
     const int oldSourceBufferIndex = sourceBufferIndex;
-    sourceBufferIndex = destBufferIndex;
+    const int oldDestBufferIndex = destBufferIndex;
+    sourceBufferIndex = oldDestBufferIndex;
     destBufferIndex = oldSourceBufferIndex;
 }
 
@@ -728,8 +733,10 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     }
 
     zVec3 probeVelocity = particleVelocity;
-    ZMTH_VECTOR_LENGTH_SQ(lengthSq, &probeVelocity);
-    if (lengthSq > 0.010000000000000002) {
+    // A separate local for the probe check reproduces retail's frame-slot packing.
+    float probeLengthSq;
+    ZMTH_VECTOR_LENGTH_SQ(probeLengthSq, &probeVelocity);
+    if (probeLengthSq > 0.010000000000000002) {
         zMath::Vec3Normalize(&probeVelocity);
         probeVelocity.x *= 0.100000001f;
         probeVelocity.y *= 0.100000001f;
@@ -769,8 +776,10 @@ void HudWeatherFxRain::Update(float deltaSeconds)
 
     HudUiElement::Update(deltaSeconds);
 
+    // Both buffer indices are read before either is stored, as in retail.
     const int oldSourceBufferIndex = sourceBufferIndex;
-    sourceBufferIndex = destBufferIndex;
+    const int oldDestBufferIndex = destBufferIndex;
+    sourceBufferIndex = oldDestBufferIndex;
     destBufferIndex = oldSourceBufferIndex;
 }
 

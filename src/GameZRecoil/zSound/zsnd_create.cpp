@@ -57,10 +57,10 @@ int __fastcall zSndSample::InitFromWaveData(zSndWaveData* waveData)
 {
     int initResult = 0;
     switch (g_zSnd_ActiveBackend) {
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         initResult = InitFromWaveDataDirectSound(waveData);
         break;
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         initResult = InitFromWaveDataA3D(waveData);
         break;
     }
@@ -337,7 +337,7 @@ int __fastcall zSndSample::LockBackendBuffers(
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         error = ((zA3dProviderSource*)(primaryVoice.backendBuffer))
                     ->Lock(offset, bytes, buffer1, (LPDWORD)buffer1Bytes, buffer2, (LPDWORD)buffer2Bytes, 0);
         if (error != 0) {
@@ -345,7 +345,7 @@ int __fastcall zSndSample::LockBackendBuffers(
         }
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         error = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))
                     ->Lock(offset, bytes, buffer1, (LPDWORD)buffer1Bytes, buffer2, (LPDWORD)buffer2Bytes, 0);
         if (error != 0) {
@@ -377,7 +377,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(void* buffer1, void* buffer2, in
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1:
+    case ZSND_AUDIO_API_A3D:
         error
             = ((zA3dProviderSource*)(primaryVoice.backendBuffer))->Unlock(buffer1, buffer1Bytes, buffer2, buffer2Bytes);
         if (error != 0) {
@@ -385,7 +385,7 @@ int __fastcall zSndSample::UnlockBackendBuffers(void* buffer1, void* buffer2, in
         }
         break;
 
-    case 0:
+    case ZSND_AUDIO_API_DIRECTSOUND:
         error
             = ((LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer))->Unlock(buffer1, buffer1Bytes, buffer2, buffer2Bytes);
         if (error != 0) {
@@ -413,13 +413,13 @@ unsigned int __fastcall zSndSample::GetPlayCursorBytes()
 
     unsigned int playCursorBytes;
     switch (g_zSnd_ActiveBackend) {
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         unsigned int writeCursorBytes;
         LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(primaryVoice.backendBuffer);
         result = buffer->GetCurrentPosition((LPDWORD)&playCursorBytes, (LPDWORD)&writeCursorBytes);
         break;
     }
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         zA3dProviderSource* const source = (zA3dProviderSource*)(primaryVoice.backendBuffer);
         source->GetWavePosition((LPDWORD)&playCursorBytes);
         break;
@@ -471,7 +471,7 @@ int zSndSample::DestroyOwnedData()
     }
 
     switch (g_zSnd_ActiveBackend) {
-    case 1: {
+    case ZSND_AUDIO_API_A3D: {
         for (int i = 0; i < duplicateVoiceCount; ++i) {
             zSndBuffer** const voiceBuffer = &duplicateVoices[i]->backendBuffer;
             if (*voiceBuffer != 0) {
@@ -498,7 +498,7 @@ int zSndSample::DestroyOwnedData()
         }
         break;
     }
-    case 0: {
+    case ZSND_AUDIO_API_DIRECTSOUND: {
         for (int i = 0; i < duplicateVoiceCount; ++i) {
             zSndBuffer** const voiceBuffer = &duplicateVoices[i]->backendBuffer;
             if (*voiceBuffer != 0) {
