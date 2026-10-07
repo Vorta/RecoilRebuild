@@ -1,21 +1,13 @@
 // Inferred current implementation path; original filenames and the
 // historical staged-fog/span compiler-input boundary remain unresolved.
 
-#include "recoil/Mfc42Abi.h"
-
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "zclass.h"
 
-#include <malloc.h>
 #include <math.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 namespace zRndr {
@@ -1524,7 +1516,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8
  * @recoil-artifact defines .text recoil:function:0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
  * palette copy path, but the partial-alpha path reloads the current destination
@@ -1896,7 +1888,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
             if (alpha >= 0xfc) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                int greenDelta, redDelta, blueDelta;
+                int redDelta, greenDelta, blueDelta;
                 dstColor = (short)(*dst);
                 redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
@@ -2660,7 +2652,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
- * @recoil-match source
+ *
  *
  * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
  * active palette expansion and 555-specific alpha > 7 gate.
@@ -2687,7 +2679,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(int texU, int texV, in
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                int redDelta, blueDelta, greenDelta;
+                int redDelta, greenDelta, blueDelta;
                 redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 redDelta &= 0xfffffc00;
@@ -2892,7 +2884,8 @@ void __fastcall SpanAlphaBlend565MmxFromPal8Alpha8(int texU, int texV, int pixel
                 if ((short)(scratch.alphas[i]) >= 0xfc) {
                     dst[i] = scratch.texels[i];
                 } else {
-                    int srcColor, dstColor;
+                    // dstColor is declared first: retail copies the source operand of each channel delta first.
+                    int dstColor, srcColor;
                     dstColor = (short)(dst[i]);
                     srcColor = (short)(scratch.texels[i]);
                     int greenDelta = ((srcColor & 0x07e0) - (dstColor & 0x07e0)) * (short)(scratch.alphas[i]);
@@ -2950,7 +2943,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49ddb0: zRndr::SpanAlphaBlend555MmxFromPal8Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-pal8-alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN retail evidence: BN matches the pal8 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
@@ -3183,7 +3176,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogtarget565-setpackedcolorandramp
  * @recoil-artifact defines .text recoil:function:0x49e0e0: zRndr::FogTarget565SetPackedColorAndRamp
- *
+ * @recoil-match byte
  *
  * Inferred placement: renderer span family; the original filename is unresolved.
  * Data evidence: stores RGB565 component fields, writes packedColor16 as a

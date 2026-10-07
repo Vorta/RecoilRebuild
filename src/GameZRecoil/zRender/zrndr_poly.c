@@ -5,23 +5,12 @@
 // .rdata run [0x4d2de0, 0x4d2df0) precedes them and is not modeled. Original
 // filename unresolved; zrndr_poly.c is a provisional name (2026-10-02).
 
-#include "recoil/Mfc42Abi.h"
-
 #include "GameZRecoil/zRender/zrndr.h"
 
 #include "GameZRecoil/include/zimage.h"
-#include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "zclass.h"
 
-#include <malloc.h>
 #include <math.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
 
 namespace
 {
@@ -5249,7 +5238,7 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
                 *cursor = (unsigned short)(packedColor16);
             } else {
                 const int dst = (short)(*cursor);
-                int greenDelta, redDelta, blueDelta;
+                int redDelta, greenDelta, blueDelta;
                 redDelta = (((packedColor16 & 0x7c00) - (dst & 0x7c00)) * blendAlpha) >> 8;
                 greenDelta = (((packedColor16 & 0x03e0) - (dst & 0x03e0)) * blendAlpha) >> 8;
                 redDelta &= 0xfffffc00;

@@ -67,7 +67,7 @@ struct zSndPlayHandle {
 
     int StopIfActive();
     int SetFreqScaled(float scale);
-    int SetEnableScale(float scale);
+    int __fastcall SetEnableScale(float scale);
     int __fastcall Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
@@ -192,7 +192,7 @@ struct zSndSample {
     zSndPlayHandle* AcquirePlayHandleDispatch();
     zSndPlayHandle* AcquireA3dVoice();
     zSndPlayHandle* AcquireVoice();
-    zSndPlayHandle* __fastcall PlayOnActiveBackend(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
+    zSndPlayHandle* __fastcall PlayOnActiveBackend(float gainScale, zVec3* worldPos, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnDirectSound(int attenuation, zVec3* worldPos, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayA3D(float gainScale, zVec3* worldPos, zVec3* velocity);

@@ -1,19 +1,12 @@
-#include "recoil/Mfc42Abi.h"
-
 #include "GameZRecoil/zRender/zrndr.h"
 
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "zclass.h"
 
-#include <malloc.h>
-#include <math.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -957,7 +950,7 @@ void __fastcall zRndrLensFlareSetVisibleSampleStage(int stageIndex, zImage_TexDi
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawsamplestageclipped
  * @recoil-artifact defines .text recoil:function:0x49aa90: zRndrLensFlareDrawSampleStageClipped
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.

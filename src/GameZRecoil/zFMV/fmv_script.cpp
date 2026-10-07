@@ -803,7 +803,7 @@ int CZFMVActionFade::Update(double timeSec)
         zVideo::DispatchUnlockSwSurfaceState();
     }
 
-    zRndrOverlayRectSubmit(fadeColorPacked16, 0, maxAlpha * (double)fadeProgress);
+    zRndrOverlayRectSubmit(fadeColorPacked16, maxAlpha * (double)fadeProgress, 0);
 
     if (g_zVideo_ActiveRendererPath != k_zFMV_RendererBackendSoftware) {
         zVideoD3D::SceneEnter();

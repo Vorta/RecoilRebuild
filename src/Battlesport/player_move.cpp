@@ -1040,7 +1040,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1988,7 +1988,7 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
 
     if (playerState->steeringInput != 0.0f) {
         playerState->autoTurnActive = 0;
-        if (saveState == g_LocalPlayerSaveState) {
+        if (saveState == g_CurrentPlayerSaveState) {
             ApplyCameraState(playerState->previousCameraState);
         }
     }
@@ -2007,7 +2007,7 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
         playerState->steeringInputCopy = turnSignFloat;
         playerState->angVelYaw = turnSignFloat * masterModalData->yawRateMax;
 
-        if (saveState == g_LocalPlayerSaveState && playerState->lifecycleState != 2) {
+        if (saveState == g_CurrentPlayerSaveState && playerState->lifecycleState != 2) {
             zVec3 normalizedCursor;
             HudUiMgr::ProjectPointToNormalizedClamped(&playerState->autoTurnTargetWorldPos, &normalizedCursor);
             playerState->autoTurnCursorNormX = normalizedCursor.x;
@@ -2028,7 +2028,7 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
     playerState->cameraDirFlat.y = 0.0f;
     zMath::Vec3NormalizeXZ(&playerState->cameraDirFlat, &playerState->cameraDirFlat);
 
-    if (saveState == (zUtil_SaveGameState*)(g_GameStateOrMapTable) && saveState == g_LocalPlayerSaveState) {
+    if (saveState == (zUtil_SaveGameState*)(g_GameStateOrMapTable) && saveState == g_CurrentPlayerSaveState) {
         ApplyCameraState(playerState->previousCameraState);
         zInput::MouseRecenterCursorX();
     }

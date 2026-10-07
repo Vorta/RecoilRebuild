@@ -1498,7 +1498,7 @@ namespace zInput {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmapsystem-init
  * @recoil-artifact defines .text recoil:function:0x4710a0: zInput::BindMapSystemInit.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zInput\zinput.cpp.
  * Binary Ninja shows this bootstrap allocating the current bind-map context,
@@ -1526,7 +1526,7 @@ void __fastcall BindMapSystemInit(int commandCount)
  * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.
  * Purpose: Populate the DirectInput key-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitDikKeyNameTable()
+void __fastcall BindMapInitDikKeyNameTable()
 {
     g_zInput_DikKeyNames[1] = g_zInput_KeyNameEscape;
     g_zInput_DikKeyNames[2] = "1";
@@ -1659,7 +1659,7 @@ void __cdecl BindMapInitDikKeyNameTable()
  * g_zInput_JoystickButtonNames slots 1..8 with Button 1..Button 8 literals.
  * Purpose: Populate the joystick button-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitJoystickButtonNameTable()
+void __fastcall BindMapInitJoystickButtonNameTable()
 {
     g_zInput_JoystickButtonNames[1] = g_zInput_JoystickButtonName1;
     g_zInput_JoystickButtonNames[2] = g_zInput_JoystickButtonName2;
@@ -1680,7 +1680,7 @@ void __cdecl BindMapInitJoystickButtonNameTable()
  * g_zInput_MouseButtonNames slots 1..3 with Left, Right, and Middle literals.
  * Purpose: Populate the mouse button-name lookup table used by bind-map UI.
  */
-void __cdecl BindMapInitMouseButtonNameTable()
+void __fastcall BindMapInitMouseButtonNameTable()
 {
     g_zInput_MouseButtonNames[1] = g_zInput_MouseButtonNameLeft;
     g_zInput_MouseButtonNames[2] = g_zInput_MouseButtonNameRight;

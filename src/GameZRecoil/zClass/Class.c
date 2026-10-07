@@ -1,6 +1,5 @@
 #include "zclass.h"
 
-#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"

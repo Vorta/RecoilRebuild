@@ -133,7 +133,7 @@ void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState)
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- *
+ * @recoil-match source
  *
  * Purpose: Update the player chase camera from controls, motion, and obstructions.
  * Shared camera scalars require the complete camera consumer population.

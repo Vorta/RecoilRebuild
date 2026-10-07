@@ -3,27 +3,10 @@
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include "GameZRecoil/include/zclip_rect.h"
-#include "GameZRecoil/include/zdi.h"
-#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zMath/zmth.h"
-#include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRender/zrndr.h"
-#include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "GameZRecoil/zVideo/zvid_state.h"
-#include "zclass.h"
 
 #include <malloc.h>
-#include <math.h>
-#include <new>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 namespace zVideo_dd3d
 {
@@ -616,6 +599,11 @@ namespace zVideo_dd3d
      * on failure.
      */
     zVideo_TextureRecordPartial* __fastcall
+    /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-create-texture-record
+     * @recoil-artifact defines .text recoil:function:0x4aa0f0: zVideo_dd3d::CreateTextureRecord.
+     * @recoil-match source
+     */
     CreateTextureRecord(register const char* textureName, zVidImagePartial* image, int useAlpha, int clampU, int clampV)
     {
         DDSURFACEDESC desc = { 0 };
@@ -675,7 +663,7 @@ namespace zVideo_dd3d
         }
 
         if ((g_zVideo_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps & D3DPTEXTURECAPS_SQUAREONLY) != 0
-            && image->height != image->width) {
+            && image->width != image->height) {
             const int squareSide = FloorPowerOfTwo((int)(sqrt((double)(image->height * image->width))));
             zVid_Image::ResampleSquare(image, squareSide);
         }
@@ -1814,6 +1802,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon-lit
+     * @recoil-artifact defines .text recoil:function:0x4ac370: zVideo_dd3d::SubmitPolygonLit.
+     *
+     *
      * Purpose: Build lit textured polygon TL vertices with fog color-attribute bias
      * and route them to immediate, overwrite, or sorted transparent submission.
      */

@@ -18,27 +18,10 @@
 
 #include "GameZRecoil/zVideo/zvid.h"
 
-#include "GameZRecoil/include/zclip_rect.h"
-#include "GameZRecoil/include/zdi.h"
-#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zMath/zmth.h"
-#include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid_state.h"
-#include "zclass.h"
-
-#include <malloc.h>
-#include <math.h>
-#include <new>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /*
  * Writable option-name strings owned by the HUD option table; retail surface

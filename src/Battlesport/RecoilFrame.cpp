@@ -55,6 +55,8 @@
 extern "C" HINSTANCE g_RecoilApp_hInstance;
 HINSTANCE __stdcall AfxFindResourceHandle(LPCSTR resourceName, LPCSTR resourceType);
 extern "C" HWND g_RecoilApp_hWndMain;
+// Retail reads RecoilApp.cpp's shared class-name pointer (0x4dcac0); this file has no copy.
+extern const char* g_RecoilApp_WndClassNamePtr;
 
 extern "C" {
 /**
@@ -159,7 +161,6 @@ const unsigned int kVidMem800x600Threshold = 0x2bf200;
 const unsigned int kVidMem1024x768Threshold = 4718592;
 const unsigned int kFullscreenMenuCommandId = 0x9c4e;
 const DWORD kMainWindowStyle = 0x82ca0000;
-const char* kRecoilWndClassName = "RecoilClass";
 
 /**
  * Original helper evidence: no standalone retail function; observed in
@@ -208,6 +209,9 @@ inline void UpdateCmdUiFromState(CCmdUI* cmdUi, const int& state)
 IMPLEMENT_DYNCREATE(CZRecoilFrame, CZGameFrame)
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-czrecoil-frame
+ * @recoil-artifact defines .text recoil:function:0x430250: CZRecoilFrame::CZRecoilFrame.
+ * @recoil-match source
  *
  * Purpose: construct the MFC-derived Recoil frame, including the menu, window,
  * launch options, renderer menu state, and Westwood Online availability.
@@ -217,7 +221,7 @@ CZRecoilFrame::CZRecoilFrame()
 {
     CreateEx(
         0x20000,
-        kRecoilWndClassName,
+        g_RecoilApp_WndClassNamePtr,
         BuildWindowTitle(),
         kMainWindowStyle,
         CW_USEDEFAULT,

@@ -1,22 +1,10 @@
 #include "GameZRecoil/zEffect/zeff.h"
 
-// Initialize MFC before the graphics headers include Windows declarations.
-#include "GameZRecoil/zHud/zhud_ui.h"
-
-#include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zLoc/zloc.h"
-#include "GameZRecoil/zMath/zmth.h"
-#include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zUtil/zbd.h"
-#include "GameZRecoil/zUtil/zutil.h"
-#include "GameZRecoil/zVideo/zvid.h"
-#include "zdi.h"
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

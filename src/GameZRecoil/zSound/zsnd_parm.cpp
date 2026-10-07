@@ -68,12 +68,12 @@ int zSndPlayHandle::SetFreqScaled(float scale)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setenablescale
  * @recoil-artifact defines .text recoil:function:0x4a11d0: zSndPlayHandle::SetEnableScale
- *
+ * @recoil-match byte
  *
  * Purpose: apply global volume scaling to the backend handle and refresh its
  * active 3D/backend state.
  */
-int zSndPlayHandle::SetEnableScale(float scale)
+int __fastcall zSndPlayHandle::SetEnableScale(float scale)
 {
     int result = 0;
     if (handleKind != ZSND_PLAYHANDLE_BACKEND) {

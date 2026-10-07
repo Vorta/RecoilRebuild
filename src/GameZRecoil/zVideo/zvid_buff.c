@@ -95,7 +95,8 @@ namespace zVideo_buff
             srcRectLocal.bottom -= clipped;
         }
 
-        const DWORD bltFlags = DDBLT_WAIT | DDBLT_ASYNC | ((srcImage->formatFlagsPacked & 0x02u) << 14);
+        // Image format flag 0x02 selects the source color key (DDBLT_KEYSRC).
+        const DWORD bltFlags = DDBLT_WAIT | DDBLT_ASYNC | (((srcImage->formatFlagsPacked & 0x02) != 0) * DDBLT_KEYSRC);
         if (g_zVideo_PrimarySurfaceState.surf == 0) {
             return;
         }

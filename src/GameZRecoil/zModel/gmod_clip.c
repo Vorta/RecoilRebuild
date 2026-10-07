@@ -4,24 +4,12 @@
 // separately. Original filename unresolved; gmod_clip.c is a provisional name
 // (2026-10-02).
 
-#include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclip_alt.h"
 #include "GameZRecoil/include/zclip_rect.h"
-#include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zGeometry/zgeo.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
-#include "GameZRecoil/zReader/zreader.h"
-#include "GameZRecoil/zRender/zrndr.h"
-#include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "recoil/recoil_types.h"
 #include "zclass.h"
-#include <ctype.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 namespace

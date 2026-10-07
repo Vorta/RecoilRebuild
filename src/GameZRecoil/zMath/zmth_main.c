@@ -1310,7 +1310,7 @@ namespace zMath
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arraytransformdirection
      * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirectionTranspose.
-     *
+     * @recoil-match source
      *
      * Purpose: transforms direction vectors in place by the transposed current matrix
      * rotation when the matrix stack slot is non-identity.

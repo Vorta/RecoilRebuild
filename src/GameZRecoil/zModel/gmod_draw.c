@@ -16,12 +16,8 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zTime/time.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "recoil/recoil_types.h"
 #include "zclass.h"
-#include <ctype.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 namespace
@@ -211,88 +207,6 @@ namespace
         }                                                                                                              \
     } while (0)
 
-    /**
-     * Original static helper observed in zModel polygon render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: gather an entry's transformed normals for the current polygon when present.
-     */
-    void CopyEntryNormalsToCurrent(zDiPartial * di, zDiEntryPartial * entry, int vertexCount)
-    {
-        g_zModel_CurrentPolyNormals = 0;
-        if (g_zModel_VertexShadingEnabled == 0 || di->normalCount <= 0 || (entry->flagsAndIndexCount & 0x0200) == 0
-            || entry->normalIndices == 0) {
-            return;
-        }
-
-        int* indices = (int*)(entry->normalIndices);
-        for (int i = 0; i < vertexCount; ++i) {
-            const int normalIndex = indices[i];
-            if (normalIndex < 0 || normalIndex >= di->normalCount) {
-                g_zModel_CurrentPolyNormals = 0;
-                return;
-            }
-            g_zModel_CurrentPolyNormalsStorage[i] = g_zModel_TransformedNormals[normalIndex];
-        }
-        g_zModel_CurrentPolyNormals = g_zModel_CurrentPolyNormalsStorage;
-    }
-
-    /**
-     * Original static helper observed in zModel polygon render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: clear the three clip-attribute arrays for a polygon.
-     */
-    void ClearPolyAttributes(int vertexCount)
-    {
-        for (int i = 0; i < vertexCount; ++i) {
-            g_Clip_PolyAttr0[i] = 0.0f;
-            g_Clip_PolyAttr1[i] = 0.0f;
-            g_Clip_PolyAttr2[i] = 0.0f;
-        }
-    }
-
-    /**
-     * Original static helper observed in zModel polygon render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: fill the three clip-attribute arrays with one constant value.
-     */
-    void FillPolyAttributes(float value, int vertexCount)
-    {
-        for (int i = 0; i < vertexCount; ++i) {
-            g_Clip_PolyAttr0[i] = value;
-            g_Clip_PolyAttr1[i] = value;
-            g_Clip_PolyAttr2[i] = value;
-        }
-    }
-
-    /**
-     * Original static helper observed in zModel polygon render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: build fog/light clip attributes for a polygon and fill defaults when unused.
-     */
-    int BuildPolyAttributes(const zVec3* surfaceNormal, int vertexCount)
-    {
-        int attrFlags = 0;
-        int lightingMode = 0;
-
-        if (gModel_FogEnabled != 0) {
-            attrFlags |= zModel_Light::BuildAttr1Falloff(vertexCount, &lightingMode) != 0 ? 1 : 0;
-        }
-
-        if (gModel_HasActiveLights != 0) {
-            int lightFlags = 0;
-            attrFlags
-                |= zModel_Light::SetActiveLights((zVec3*)(surfaceNormal), vertexCount, &lightFlags, &lightingMode, 0)
-                    != 0
-                ? 1
-                : 0;
-        }
-
-        if (attrFlags == 0) {
-            FillPolyAttributes(1.0f, vertexCount);
-        }
-        return attrFlags;
-    }
-
 /**
  * Original inline helper observed in zModel software/hardware render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
@@ -382,94 +296,6 @@ namespace
         );                                                                                                             \
     } while (0)
 
-    /**
-     * Original static helper observed in zModel untextured polygon render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: clip and project a polygon without UV coordinates.
-     */
-    int ClipAndProjectNoUv(zClipRectPartial * clipRect, int* vertexCount, int hasAttributes)
-    {
-        if (hasAttributes != 0) {
-            if (zClipRect::ClipPolyZRange_NoUV_WithAttribs(clipRect, vertexCount) == 0) {
-                return 0;
-            }
-        } else if (zClipRect::ClipPolyZRange_NoUV(clipRect, vertexCount) == 0) {
-            return 0;
-        }
-
-        ProjectScratchToClipVerts(*vertexCount);
-
-        if (hasAttributes != 0) {
-            return zClipRect::ClipPoly_NoUV_WithAttr012_Alt(clipRect, vertexCount);
-        }
-        return zClipRect::ClipPoly_NoUV(clipRect, vertexCount);
-    }
-
-    /**
-     * Original static helper observed in zModel hardware textured render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: multiply current clip UVs by projected reciprocal depth.
-     */
-    void MultiplyUvsByProjectedReciprocalZ(int vertexCount)
-    {
-        for (int i = 0; i < vertexCount; ++i) {
-            g_Clip_PolyUvs[i].u *= g_Clip_PolyVerts[i].z;
-            g_Clip_PolyUvs[i].v *= g_Clip_PolyVerts[i].z;
-        }
-    }
-
-    /**
-     * Original static helper observed in zModel hardware clip paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: initialize attributes for clip-generated vertices from the first source vertex.
-     */
-    void FillConstantAttrsForGeneratedClipVerts(int previousCount, int vertexCount)
-    {
-        for (int i = previousCount; i < vertexCount; ++i) {
-            g_Clip_PolyAttr0[i] = g_Clip_PolyAttr0[0];
-            g_Clip_PolyAttr1[i] = g_Clip_PolyAttr1[0];
-            g_Clip_PolyAttr2[i] = g_Clip_PolyAttr2[0];
-        }
-    }
-
-    /**
-     * Original static helper observed in zModel hardware textured render paths
-     * (D:\Proj\GameZRecoil\zModel\zmodel.cpp).
-     * Purpose: clip UVs as u*rhw, then submit u/rhw on the DD3D path.
-     */
-    int ClipAndProjectHardwareUv(zClipRectPartial * clipRect, int* vertexCount, int hasAttributes)
-    {
-        if ((clipRect->flags & 0x30) != 0) {
-            if (hasAttributes != 0) {
-                if (zClipRect::ClipPolyZRange_WithAttr012(clipRect, vertexCount) == 0) {
-                    return 0;
-                }
-            } else if (zClipRect::ClipPolyNearZ(clipRect, vertexCount) == 0) {
-                return 0;
-            }
-        }
-
-        ProjectScratchToClipVerts(*vertexCount);
-        MultiplyUvsByProjectedReciprocalZ(*vertexCount);
-
-        if ((clipRect->flags & 0x0f) != 0) {
-            const int previousCount = *vertexCount;
-            if (hasAttributes != 0) {
-                if (zClipRect::ClipPoly_WithAttr012(clipRect, vertexCount) == 0) {
-                    return 0;
-                }
-            } else if (zClipRect::ClipPoly(clipRect, vertexCount) == 0) {
-                return 0;
-            }
-
-            if (hasAttributes == 0 && previousCount < *vertexCount) {
-                FillConstantAttrsForGeneratedClipVerts(previousCount, *vertexCount);
-            }
-        }
-
-        return 1;
-    }
-
 /**
  * Original inline helper observed in zModel software textured render paths
  * (D:\Proj\GameZRecoil\zModel\zmodel.cpp); no standalone retail body.
@@ -547,20 +373,6 @@ namespace
  * Purpose: convert material alpha flags to the current integer render alpha.
  */
 #define MaterialAlphaInt(material) ((int)((float)((int)((material)->flags & 0xff)) * gModel_RenderAlphaScaleCurrent))
-
-    /**
-     * Recovered original static helper in D:\Proj\GameZRecoil\zModel\zmodel.cpp.
-     * No standalone retail function; observed callers are address-backed zModel
-     * material render paths in this source file.
-     * Purpose: return the current render-class pointer for a material texture entry.
-     */
-    zVideo_RenderClass* MaterialRenderClass(zModel_MaterialPartial * material)
-    {
-        if (material == 0 || material->currentTextureDirectoryEntry == 0) {
-            return 0;
-        }
-        return (zVideo_RenderClass*)(material->currentTextureDirectoryEntry->texture);
-    }
 
 /**
  * Original source helper expression observed in zModel_Display projected-sphere callers

@@ -1301,7 +1301,7 @@ int CRecoilAppPlayState::OnUpdateShouldQuit()
         } else {
             const double overlayAlpha
                 = g_RecoilApp.m_transitionFadeTimer > 0.0 ? (double)(g_RecoilApp.m_transitionFadeTimer) : 0.0;
-            zRndrOverlayRectSubmit(0, 0, overlayAlpha);
+            zRndrOverlayRectSubmit(0, overlayAlpha, 0);
         }
 
         zVideo::AdjustSurfacesIfEnabled((zVidRect32*)pWindowSection, (zVidRect32*)pWindowSection, 0, 0);

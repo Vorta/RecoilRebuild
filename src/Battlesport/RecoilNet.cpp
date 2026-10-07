@@ -5,7 +5,6 @@
 // .bss [0x4f3f10, 0x4f3fac) and two CRT initializers are its own. Original
 // filename unresolved; RecoilNet.cpp is a provisional name (2026-10-02).
 
-#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/about.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
@@ -410,7 +409,7 @@ void __cdecl ResetHudTimerPanelNetStateLongCountdown()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-tick-local-player-pkt06-replication-and-hud-timer
  * @recoil-artifact defines .text recoil:function:0x432300: GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Replicate the local pkt06 player-state snapshot and drive host HUD
  * timer warning/status packet updates.
@@ -1235,7 +1234,7 @@ int __fastcall HandlePkt0CHudTimerStatusBits(int, NetPkt0C_HudTimerStatusBits* p
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.gamenet-send-pkt09-player-scoreboard-snapshot
  * @recoil-artifact defines .text recoil:function:0x4334f0: GameNet::SendPkt09PlayerScoreboardSnapshot.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Send the host's packed player score and lap snapshot to peers.
  */
@@ -1450,7 +1449,7 @@ inline void SetWorldPoseFromSpawn(zUtil_SaveGameState* saveState, zVec3 position
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilnet.game-net-respawn-player-and-drop-weapon-pickup-if-allowed
  * @recoil-artifact defines .text recoil:function:0x433840: GameNet::RespawnPlayerAndDropWeaponPickupIfAllowed.
- *
+ * @recoil-match byte
  *
  * Purpose: Choose a multiplayer respawn point, optionally drop the player's
  * current weapon pickup, reset transient player state, and refresh mission

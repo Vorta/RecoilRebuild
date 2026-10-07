@@ -2,20 +2,14 @@
 
 #include "GameZRecoil/zHud/zhud_ui.h"
 
-#include "Battlesport/CZRecoilFrame.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
-#include "Battlesport/player.h"
 #include "Battlesport/recoil_state_credits.h"
-#include "Battlesport/recoil_state_main_menu_transition.h"
 #include "GameZRecoil/include/opt_catalog.h"
-#include "GameZRecoil/include/zdi.h"
 #include "GameZRecoil/include/zimage.h"
-#include "GameZRecoil/zClass/cls_stubs.h"
-#include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zInput/zinput.h"
@@ -24,12 +18,10 @@
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 
 #include "Battlesport/turret.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zSys/zsys.h"
-#include "GameZRecoil/zUtil/zbd.h"
 
 #include <cctype>
 #include <cstdarg>
@@ -1489,7 +1481,7 @@ void HudUiTextInput::SetCursorPosition(int position)
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
  * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
- * @recoil-match source
+ * @recoil-match byte
  */
 void HudUiTextInput::DispatchKeyAction(int key)
 {
@@ -1594,7 +1586,7 @@ void HudUiTextInput::MoveCursorRight()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduitextinput-shifttextright
  * @recoil-artifact defines .text recoil:function:0x4b4590: HudUiTextInput::ShiftTextRight.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: make room in the input buffer by shifting its suffix right.
  */

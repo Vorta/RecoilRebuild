@@ -4,7 +4,6 @@
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd_a3d_provider.h"
-#include "GameZRecoil/zSys/zsys.h"
 
 #include "recoil/recoil_types.h"
 #include <stdio.h>

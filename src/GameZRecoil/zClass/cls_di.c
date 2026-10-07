@@ -1,12 +1,10 @@
 #include "recoil/Mfc42Abi.h"
 #include "zdi.h"
 
-#include "Battlesport/player.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zModel/gmod.h"
 
-#include <malloc.h>
 #include <math.h>
 #include <string.h>
 
@@ -1254,7 +1252,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.buildpickcandidatelistbelowpoint
      * @recoil-artifact defines .text recoil:function:0x443d20: CZDisplayInstance::BuildPickCandidateListBelowPoint.
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.

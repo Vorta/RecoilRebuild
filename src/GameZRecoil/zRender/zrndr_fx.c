@@ -4,23 +4,13 @@
 // separate from the neighbouring zRender objects. Original filename
 // unresolved; zrndr_fx.c is a provisional name (2026-10-02).
 
-#include "recoil/Mfc42Abi.h"
-
 #include "GameZRecoil/zRender/zrndr.h"
 
-#include "GameZRecoil/include/zimage.h"
-#include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zGame/zgame.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
-#include "GameZRecoil/zMath/zmth.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "zclass.h"
 
 #include <malloc.h>
 #include <math.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 
 extern "C" {
 /*
@@ -972,7 +962,7 @@ namespace zRndr
  * Source file evidence: recovered original path on the prior source label.
  * Purpose: Submit an overlay rectangle to Direct3D or stage it for software overlay blending.
  */
-void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32* rectOrNull, double alpha)
+void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, double alpha, zVidRect32* rectOrNull)
 {
     const unsigned short overlayColor16 = (unsigned short)(packedColor16);
     zVidRect32 rect;
@@ -1022,11 +1012,25 @@ void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32*
  */
 void __fastcall zRndrOverlayRectFlushSw()
 {
+    int rowY;
+    unsigned short* rowPixels16;
+    int pixelCount;
+    unsigned int premulR;
+    unsigned int premulG;
+    unsigned int premulB;
+    unsigned int redMask;
+    unsigned int greenMask;
+    unsigned int blueMask;
+    int srcScale5;
+    unsigned char graphicsFlags;
+    int dstScale5;
+    unsigned int packed;
+
     if (zRndr::g_overlayBlendEnabled == 0) {
         return;
     }
 
-    const unsigned char graphicsFlags = *(const unsigned char*)(zRndr::g_graphicsFlags);
+    graphicsFlags = *(const unsigned char*)(zRndr::g_graphicsFlags);
     if ((graphicsFlags & 4U) != 0) {
         if (zRndr::g_pixelPackGreenBits == 5) {
             zRndr::g_pfnOverlayBlendRow = zRndr::OverlayBlendRow555Mmx;
@@ -1041,32 +1045,29 @@ void __fastcall zRndrOverlayRectFlushSw()
         }
     }
 
-    unsigned int redMask;
-    unsigned int greenMask;
-    unsigned int blueMask;
     zVideo::PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
 
-    const int srcScale5 = (int)(zRndr::g_overlayBlendAlpha * 32.0);
-    const unsigned int overlayColor16 = zRndr::g_overlayBlendPackedColor16;
-    const unsigned int premulR = ((redMask & overlayColor16) * srcScale5) >> 5;
-    const unsigned int premulG = ((greenMask & overlayColor16) * srcScale5) >> 5;
-    const unsigned int premulB = ((blueMask & overlayColor16) * srcScale5) >> 5;
-    const unsigned int premulRPair = premulR | (premulR << 16);
-    const unsigned int premulGPair = premulG | (premulG << 16);
-    const unsigned int premulBPair = premulB | (premulB << 16);
-    zRndr::g_swOverlayPremulRPair = premulRPair;
-    zRndr::g_swOverlayPremulGPair = premulGPair;
-    zRndr::g_swOverlayPremulBPair = premulBPair;
-    zRndr::g_swOverlayPremulPacked
-        = (((blueMask & premulBPair) | (redMask & premulRPair)) << 16) | (greenMask & premulGPair);
-    zRndr::g_swOverlayPremulPackedRot16 = _rotr(zRndr::g_swOverlayPremulPacked, 16);
-    zRndr::g_swOverlayDstScale5 = (int)((1.0 - zRndr::g_overlayBlendAlpha) * 32.0);
+    srcScale5 = (int)(zRndr::g_overlayBlendAlpha * 32.0);
+    // Retail reads the packed overlay color in each channel term and doubles each premultiplied term in place.
+    premulR = ((redMask & zRndr::g_overlayBlendPackedColor16) * srcScale5) >> 5;
+    premulG = ((greenMask & zRndr::g_overlayBlendPackedColor16) * srcScale5) >> 5;
+    premulB = ((blueMask & zRndr::g_overlayBlendPackedColor16) * srcScale5) >> 5;
+    premulR |= premulR << 16;
+    premulG |= premulG << 16;
+    premulB |= premulB << 16;
+    zRndr::g_swOverlayPremulRPair = premulR;
+    zRndr::g_swOverlayPremulGPair = premulG;
+    zRndr::g_swOverlayPremulBPair = premulB;
+    packed = (((blueMask & premulB) | (redMask & premulR)) << 16) | (greenMask & premulG);
+    zRndr::g_swOverlayPremulPacked = packed;
+    zRndr::g_swOverlayPremulPackedRot16 = _rotr(packed, 16);
+    dstScale5 = (int)((1.0 - zRndr::g_overlayBlendAlpha) * 32.0);
+    zRndr::g_swOverlayDstScale5 = dstScale5;
 
-    const int pitchPixels16 = g_zVideo_FxSurfacePitchPixels16;
-    int rowY = zRndr::g_overlayBlendRectTop;
-    const int rectLeft = zRndr::g_overlayBlendRectLeft;
-    const int pixelCount = zRndr::g_overlayBlendRectRight - rectLeft;
-    unsigned short* rowPixels16 = g_zVideo_FxSurfacePixels16 + pitchPixels16 * rowY + rectLeft;
+    rowPixels16 = g_zVideo_FxSurfacePixels16 + g_zVideo_FxSurfacePitchPixels16 * zRndr::g_overlayBlendRectTop
+        + zRndr::g_overlayBlendRectLeft;
+    rowY = zRndr::g_overlayBlendRectTop;
+    pixelCount = zRndr::g_overlayBlendRectRight - zRndr::g_overlayBlendRectLeft;
     while (rowY < zRndr::g_overlayBlendRectBottom) {
         zRndr::g_pfnOverlayBlendRow(rowPixels16, pixelCount);
         ++rowY;

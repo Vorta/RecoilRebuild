@@ -530,8 +530,8 @@ extern "C" float __stdcall zSndGainScaleIdentity(float value)
  * Purpose: dispatch sample playback to the active sound backend.
  */
 zSndPlayHandle* __fastcall zSndSample::PlayOnActiveBackend(
-    zVec3* worldPos,
     float gainScale,
+    zVec3* worldPos,
     zVec3* velocity,
     int backendArg
 )
@@ -709,8 +709,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayA3D(float gainScale, zVec3* worldPos,
 
     markerBaseTime = 0.0f;
     return PlayOnActiveBackend(
-        worldPos,
         gainScale * (replayFields.gain * *(float*)(g_zSnd_GlobalVolumeScalePtr)),
+        worldPos,
         velocity,
         0
     );
@@ -719,7 +719,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayA3D(float gainScale, zVec3* worldPos,
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playdirectsound
  * @recoil-artifact defines .text recoil:function:0x49fd50: zSndSample::PlayDirectSound.
- *
+ * @recoil-match byte
  *
  * Purpose: play a DirectSound sample variant with gain scaling and marker state.
  */
@@ -737,8 +737,8 @@ zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float g
     }
 
     return PlayOnActiveBackend(
-        0,
         replayFields.gain * gainScale * *(float*)(g_zSnd_GlobalVolumeScalePtr),
+        0,
         0,
         backendArg
     );

@@ -1072,7 +1072,9 @@ void __fastcall ResolvePendingPlayerCollisionContact(zUtil_SaveGameState* saveSt
 
     if (targetPlayerState->lifecycleState == kPlayerLifecycleAi) {
         massScale *= 1.10000002f;
-        if ((targetPlayerState->statusMeterValue - massScale) * targetCommonData->invMaxHealth > 0.200000003f) {
+        // Retail reads the named 0.2f constant's storage (0x4d073c) here, not a separate literal.
+        if ((targetPlayerState->statusMeterValue - massScale) * targetCommonData->invMaxHealth
+            > kPlayerWorldCollisionStackDrop) {
             HitCallbackRecordContextAndTimedStatus(targetSaveState, 0, 0, massScale);
         }
     }

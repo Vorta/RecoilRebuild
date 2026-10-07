@@ -1,6 +1,5 @@
 #include "GameZRecoil/zInterp/zinterp.h"
 
-#include "Battlesport/wol_download.h"
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclass.h"
 #include "GameZRecoil/include/zdi.h"
@@ -12,7 +11,6 @@
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zUtil/zutil.h"
 #include "GameZRecoil/zVideo/zvid.h"
-#include "GameZRecoil/zWeapon/zwep.h"
 
 #include <ctype.h>
 #include <direct.h>

@@ -74,6 +74,12 @@ struct zVideoFxPass3Slot : zVideoFxPass3Element {
     void ApplyPass3();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:zui.zui-fx.z-video-fx-pass3-config-destroy-z-video-fx-pass3-config
+ * @recoil-artifact emits .text recoil:function:0x4bee80: VC5 compiler-generated implicit destructor (no vptr store; destroys the slot array and root element, then ~HudUiContainer) anchored to this complete type definition; not an authored body.
+ * Purpose: define the pass-3 config container whose implicit destructor runs from the zui_fx.cpp singleton's atexit
+ * cleanup.
+ */
 struct zVideoFxPass3Config : HudUiContainer {
     HudUiRect* inputRectsOrNull[2];
     unsigned short* surfacePixels;
@@ -85,7 +91,6 @@ struct zVideoFxPass3Config : HudUiContainer {
     int slotWriteIndex;
 
     zVideoFxPass3Config();
-    ~zVideoFxPass3Config();
     void UpdateLocal(float deltaTime);
     void SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha);
     void QueueElementLocal(
