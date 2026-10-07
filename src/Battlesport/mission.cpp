@@ -1397,35 +1397,39 @@ void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance
         // Retail copies this 10-byte literal and zero-fills the rest of the buffer.
         char featureText[0x40] = "Features:";
 
+        // Retail tests these bits as shr + test al,1 (byte-cast bit tests); LockOn is a mask test.
         const unsigned int flags = optEntry->flags;
-        if ((flags & 0x00080000) != 0) {
+        if ((unsigned char)(flags >> 19) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Remote);
         }
-        if ((flags & 0x00200000) != 0) {
+        if ((unsigned char)(flags >> 21) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Thermal);
         }
-        if ((flags & 0x00010000) != 0) {
+        if ((unsigned char)(flags >> 16) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Multi);
         }
-        if ((flags & 0x00100000) != 0) {
+        if ((unsigned char)(flags >> 20) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Tether);
         } else if ((flags & 0x00004000) != 0) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_LockOn);
         }
-        if ((flags & 0x00000002) != 0) {
+        if ((unsigned char)(flags >> 1) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Beam);
         }
-        if ((flags & 0x00002000) != 0) {
+        if ((unsigned char)(flags >> 13) & 1) {
             AppendPickupFeature(featureText, g_HudUiWeaponFeatureSuffix_Mine);
         }
 
         if (featureText[0x0c] == '\0') {
-            strcpy(featureText, "\n");
+            // Retail stores the two bytes directly (+0x1b7), not an inline strcpy.
+            featureText[0] = '\n';
+            featureText[1] = '\0';
         }
 
         char weaponStatsText[0x200];
         if (optEntry->impactProximity > 0.0f) {
-            const int fireRatePerMinute = (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+            // Retail divides 60.0f by the interval and subtracts its -0.5f constant (0x4ceff0).
+            const int fireRatePerMinute = (int)(60.0f / (float)(optEntry->fireRateInterval) - (-0.5f));
             const int maxRange = (int)(optEntry->range);
             sprintf(
                 weaponStatsText,
@@ -1437,7 +1441,7 @@ void HudSensorTracker::ShowObjectivePickupInfo(int visible, int startAutoAdvance
                 featureText
             );
         } else {
-            const int fireRatePerMinute = (int)(60.0f / optEntry->fireRateInterval + 0.5f);
+            const int fireRatePerMinute = (int)(60.0f / (float)(optEntry->fireRateInterval) - (-0.5f));
             const int maxRange = (int)(optEntry->range);
             sprintf(
                 weaponStatsText,

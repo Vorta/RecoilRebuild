@@ -910,7 +910,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x4279f0: Player::UpdateMasterTypeAmphib.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered
@@ -958,8 +958,9 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
         const float offsetDx = g_Player_DeltaTime * playerState->yawRotatedLocalVel.x;
         const float offsetDz = playerState->yawRotatedLocalVel.z * g_Player_DeltaTime;
         playerState->environmentAttachmentLocalOffset.x += offsetDx;
-        playerState->environmentAttachmentLocalOffset.y = 0.0f;
         playerState->environmentAttachmentLocalOffset.z += offsetDz;
+        // Retail stores the zero y offset after both += updates (+0x1b2).
+        playerState->environmentAttachmentLocalOffset.y = 0.0f;
 
         zVec3 attachedWorld;
         ZMTH_VECTOR_TRANSFORM_POINT(
@@ -2173,31 +2174,30 @@ float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState)
     const float slipDelta
         = crossYaw * -playerState->localVel.z * g_Player_InvDeltaTime + playerState->motionBasis.xy * -28.0f;
 
+    // Retail falls through to the shared return when the static slip is within
+    // friction (+0xe4 jne 0x1e3) and duplicates the epilogue for the sign path.
     float residual = 0.0f;
     if (playerState->localVel.x == 0.0f) {
-        if (fabs(slipDelta) <= masterModalData->frictionStatic) {
-            return residual;
+        if (fabs(slipDelta) > masterModalData->frictionStatic) {
+            const int sign = slipDelta < 0.0f ? -1 : 1;
+            residual = slipDelta - (float)(sign)*masterModalData->frictionStatic;
+            StartSlipSfx(saveState);
+        }
+    } else {
+        residual = slipDelta - (float)(FloatSign(playerState->localVel.x)) * masterModalData->frictionDynamic;
+
+        if (playerState->throttleInputCopy != 0.0f
+            && FloatSign(playerState->steeringInputCopy) == FloatSign(playerState->restartYawRad)) {
+            const int residualSign = residual < 0.0f ? -1 : 1;
+            const int velocitySign = playerState->localVel.x < 0.0f ? -1 : 1;
+            if (residualSign != velocitySign) {
+                residual = 0.0f;
+            }
         }
 
-        const int sign = slipDelta < 0.0f ? -1 : 1;
-        residual = slipDelta - (float)(sign)*masterModalData->frictionStatic;
-        StartSlipSfx(saveState);
-        return residual;
-    }
-
-    residual = slipDelta - (float)(FloatSign(playerState->localVel.x)) * masterModalData->frictionDynamic;
-
-    if (playerState->throttleInputCopy != 0.0f
-        && FloatSign(playerState->steeringInputCopy) == FloatSign(playerState->restartYawRad)) {
-        const int residualSign = residual < 0.0f ? -1 : 1;
-        const int velocitySign = playerState->localVel.x < 0.0f ? -1 : 1;
-        if (residualSign != velocitySign) {
-            residual = 0.0f;
+        if (playerState->slipSfxActive == 0 && fabs(slipDelta) > masterModalData->frictionStatic) {
+            StartSlipSfx(saveState);
         }
-    }
-
-    if (playerState->slipSfxActive == 0 && fabs(slipDelta) > masterModalData->frictionStatic) {
-        StartSlipSfx(saveState);
     }
 
     return residual;

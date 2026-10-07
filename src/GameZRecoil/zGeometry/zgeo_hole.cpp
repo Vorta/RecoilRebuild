@@ -89,7 +89,7 @@ namespace zGeometry_TriangulateHole {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-tryappendbridgeedge
  * @recoil-artifact defines .text recoil:function:0x46bd50: zGeometry_TriangulateHole::TryAppendBridgeEdge
- *
+ * @recoil-match byte
  *
  * Purpose: Append a bridge edge when it is unique and does not cross live edges.
  */
@@ -106,10 +106,12 @@ int __fastcall TryAppendBridgeEdge(
         return edgeCount;
     }
 
+    // Retail advances the edge cursor on both the skip path and the tested path.
+    zGeometry_TriangulateHole_EdgeState* edge = edgeStates;
     for (int i = 0; i < edgeCount; ++i) {
-        zGeometry_TriangulateHole_EdgeState* const edge = &edgeStates[i];
         if (edge->vertexIndex0 == edgeState->vertexIndex0 || edge->vertexIndex1 == edgeState->vertexIndex0
             || edge->vertexIndex0 == edgeState->vertexIndex1 || edge->vertexIndex1 == edgeState->vertexIndex1) {
+            ++edge;
             continue;
         }
 
@@ -122,6 +124,8 @@ int __fastcall TryAppendBridgeEdge(
             != 0) {
             return edgeCount;
         }
+
+        ++edge;
     }
 
     edgeStates[edgeCount] = *edgeState;

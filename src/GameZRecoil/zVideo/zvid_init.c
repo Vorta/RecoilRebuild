@@ -374,7 +374,7 @@ namespace zVideo_buff
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-buff-copy-surface-rect-to-image
      * @recoil-artifact defines .text recoil:function:0x4a6fe0: zVideo_buff::CopySurfaceRectToImage.
-     *
+     * @recoil-match byte
      *
      * Provisional source-placement hypothesis: GameZRecoil/zImage/zvid_buff.c.
      * Purpose: provide the recovered zVideo_buff::CopySurfaceRectToImage behavior.
@@ -385,6 +385,8 @@ namespace zVideo_buff
         int surfaceHeight;
         unsigned int pitchWords;
         unsigned char* surfacePixels;
+        // Retail reserves a whole rect for the destination offsets; only left/top are used.
+        zVidRect32 dstRect;
         switch (sourceSelector) {
         case 0:
             surfaceWidth = g_zVideo_SwSurfaceState.width;
@@ -408,13 +410,13 @@ namespace zVideo_buff
             return 0;
         }
 
-        int dstOffsetY = 0;
-        int dstOffsetX = 0;
+        dstRect.top = 0;
+        dstRect.left = 0;
         const int originalWidth = rect->right - rect->left;
 
         int clipped = ClipCoordToRange(&rect->left, 0, surfaceWidth);
         if (clipped < 0) {
-            dstOffsetX = -clipped;
+            dstRect.left = -clipped;
         } else if (clipped > 0) {
             return 0;
         }
@@ -426,7 +428,7 @@ namespace zVideo_buff
 
         clipped = ClipCoordToRange(&rect->top, 0, surfaceHeight);
         if (clipped < 0) {
-            dstOffsetY = -clipped;
+            dstRect.top = -clipped;
         } else if (clipped > 0) {
             return 0;
         }
@@ -454,7 +456,7 @@ namespace zVideo_buff
         }
 
         unsigned char* dstBytes
-            = (unsigned char*)(image->pixels) + (originalWidth * dstOffsetY + dstOffsetX) * sizeof(unsigned short);
+            = (unsigned char*)(image->pixels) + (originalWidth * dstRect.top + dstRect.left) * sizeof(unsigned short);
         unsigned char* srcBytes = surfacePixels + (pitchWords * rect->top + rect->left) * sizeof(unsigned short);
         for (int row = 0; row < clippedHeight; ++row) {
             memcpy(dstBytes, srcBytes, clippedWidth * sizeof(unsigned short));

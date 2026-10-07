@@ -197,7 +197,7 @@ extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(zReader::Node
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-loadfromconfignode
  * @recoil-artifact defines .text recoil:function:0x4a4590: zSndGroupLoadFromConfigNode.
- *
+ * @recoil-match byte
  *
  * Purpose: allocate and populate one sound group from a zReader array node.
  */

@@ -2407,7 +2407,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.findconvexhullxz
      * @recoil-artifact defines .text recoil:function:0x44c230: CZCamera::FindConvexHullXZ.
-     *
+     * @recoil-match byte
      *
      * Purpose: build the XZ convex hull ordering for frustum footprint points.
      */

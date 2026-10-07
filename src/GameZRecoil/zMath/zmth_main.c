@@ -839,7 +839,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatey
      * @recoil-artifact defines .text recoil:function:0x473b10: zMath::MatRotateY.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     *
+     * @recoil-match source
      *
      * Purpose: applies a Y-axis rotation to the current matrix stack slot while
      * preserving translation.
@@ -891,7 +891,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatez
      * @recoil-artifact defines .text recoil:function:0x473cc0: zMath::MatRotateZ.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     *
+     * @recoil-match source
      *
      * Purpose: applies a Z-axis rotation to the current matrix stack slot.
      */

@@ -1826,16 +1826,22 @@ namespace CZDisplayInstance
     )
     {
         int index = vertexCount - 1;
-        const zVec3* previous = &polygonVertices[index];
-        if ((queryX - previous->x) * (polygonVertices[0].z - previous->z)
-                + (queryZ - previous->z) * (previous->x - polygonVertices[0].x)
+        int current;
+        if ((queryX - polygonVertices[index].x) * (polygonVertices[0].z - polygonVertices[index].z)
+                + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[0].x)
             <= -0.0001) {
             return 0;
         }
 
-        while (--index >= 0) {
-            if ((queryX - polygonVertices[index].x) * (polygonVertices[index + 1].z - polygonVertices[index].z)
-                    + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[index + 1].x)
+        // Retail tests the closing edge, then walks (index, current) pairs down with a top-tested loop.
+        while (1) {
+            current = index;
+            index--;
+            if (index < 0) {
+                break;
+            }
+            if ((queryX - polygonVertices[index].x) * (polygonVertices[current].z - polygonVertices[index].z)
+                    + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[current].x)
                 <= -0.0001) {
                 return 0;
             }

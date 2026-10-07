@@ -1017,8 +1017,10 @@ void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32*
  * Owner: shared zRndr_Overlay.cpp overlay callback/global owner with row leaves
  * 0x48d450, 0x48d4b0, 0x48d510, and 0x48d5f0.
  * Purpose: Blend the staged software overlay rectangle into the active 16-bit video surface.
+ * Calling convention: the /Gr default (__fastcall); RenderScene's call-site
+ * epilogue schedule (0x44d5c7) matches only a non-cdecl callee.
  */
-void __cdecl zRndrOverlayRectFlushSw()
+void __fastcall zRndrOverlayRectFlushSw()
 {
     if (zRndr::g_overlayBlendEnabled == 0) {
         return;
@@ -1416,142 +1418,16 @@ namespace zVideo
      */
     void __fastcall buffBlurRegionCombined(zVidRect32 * rectOrNull, int)
     {
-        int top;
-        int left;
-        int right;
-        int bottom;
-        if (rectOrNull != 0) {
-            left = rectOrNull->left;
-            top = rectOrNull->top;
-            right = rectOrNull->right;
-            bottom = rectOrNull->bottom;
-            if (top < 1) {
-                top = 1;
-            }
-            if (left < 0) {
-                left = 0;
-            }
-            if (bottom > g_zVideo_FxSurfaceHeight - 1) {
-                bottom = g_zVideo_FxSurfaceHeight - 1;
-            }
-            if (right > g_zVideo_FxSurfaceWidth - 1) {
-                right = g_zVideo_FxSurfaceWidth - 1;
-            }
-        } else {
-            left = 0;
-            top = 1;
-            right = g_zVideo_FxSurfaceWidth - 1;
-            bottom = g_zVideo_FxSurfaceHeight - 1;
-        }
-
-        int savedLeft = left;
-        int savedTop = top;
-        int savedBottom = bottom;
-        int columnCount = right - savedLeft + 1;
-        unsigned int blueMask;
         unsigned int redMask;
+        int columnCount;
+        unsigned short* scratch;
         unsigned int greenMask;
+        int rowDelta;
         unsigned int rbMask;
-        PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
-        rbMask = redMask | blueMask;
-
-        int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
-        unsigned short* src = g_zVideo_FxSurfacePixels16 + savedTop * g_zVideo_FxSurfacePitchPixels16 + savedLeft
-            - g_zVideo_FxSurfaceWidth;
-        unsigned short* scratch = g_zVideo_FxPass3_ScratchPixels16 + savedTop * g_zVideo_FxSurfaceWidth + savedLeft
-            - g_zVideo_FxSurfaceWidth;
-
-        if (columnCount > 0) {
-            int count = columnCount;
-            do {
-                *scratch = *src;
-                ++src;
-                ++scratch;
-                --count;
-            } while (count != 0);
-        }
-
-        src = src + rowDelta;
-        scratch = scratch + rowDelta;
-        if (savedTop < savedBottom) {
-            int rowCount = savedBottom - savedTop;
-            do {
-                if (columnCount > 0) {
-                    int count = columnCount;
-                    do {
-                        const unsigned int rb = (src[-g_zVideo_FxSurfaceWidth] & rbMask) + ((*src & rbMask) << 1)
-                            + (src[g_zVideo_FxSurfaceWidth] & rbMask);
-                        const unsigned int green = (src[-g_zVideo_FxSurfaceWidth] & greenMask)
-                            + ((*src & greenMask) << 1) + (src[g_zVideo_FxSurfaceWidth] & greenMask);
-                        *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
-                        ++src;
-                        ++scratch;
-                        --count;
-                    } while (count != 0);
-                }
-
-                src = src + rowDelta;
-                scratch = scratch + rowDelta;
-                --rowCount;
-            } while (rowCount != 0);
-        }
-
-        if (columnCount > 0) {
-            int count = columnCount;
-            do {
-                *scratch = *src;
-                ++src;
-                ++scratch;
-                --count;
-            } while (count != 0);
-        }
-
-        top = savedTop - 1;
-        bottom = savedBottom + 1;
-        left = savedLeft + 1;
-        columnCount -= 2;
-        src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
-        scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
-        if (top < bottom) {
-            int horizontalRowDelta = rowDelta + 2;
-            int rowCount = bottom - top;
-            do {
-                src[-1] = scratch[-1];
-                if (columnCount > 0) {
-                    int count = columnCount;
-                    do {
-                        const unsigned int rb
-                            = (scratch[-1] & rbMask) + ((*scratch & rbMask) << 1) + (scratch[1] & rbMask);
-                        const unsigned int green
-                            = (scratch[-1] & greenMask) + ((*scratch & greenMask) << 1) + (scratch[1] & greenMask);
-                        *src = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
-                        ++src;
-                        ++scratch;
-                        --count;
-                    } while (count != 0);
-                }
-
-                *src = *scratch;
-                src = src + horizontalRowDelta;
-                scratch = scratch + horizontalRowDelta;
-                --rowCount;
-            } while (rowCount != 0);
-        }
-    }
-} // namespace zVideo
-
-namespace zVideo
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionvertical
-     * @recoil-artifact defines .text recoil:function:0x48e670: zVideo::buffBlurRegionVertical.
-     *
-     *
-     * Purpose: Applies the vertical 1-2-1 blur pass over a 16bpp FX-surface region.
-     */
-    void __fastcall buffBlurRegionVertical(zVidRect32 * rectOrNull, int)
-    {
+        int surfaceWidth;
+        unsigned int blueMask;
         zVidRect32 rect;
+        unsigned short* src;
         if (rectOrNull != 0) {
             rect = *rectOrNull;
             if (rect.top < 1) {
@@ -1573,22 +1449,152 @@ namespace zVideo
             rect.right = g_zVideo_FxSurfaceWidth - 1;
         }
 
-        const int left = rect.left;
-        const int top = rect.top;
-        const int bottom = rect.bottom;
-        const int right = rect.right;
-        const int surfaceWidth = g_zVideo_FxSurfaceWidth;
-        int columnCount = right - left + 1;
+        surfaceWidth = g_zVideo_FxSurfaceWidth;
+        columnCount = rect.right - rect.left + 1;
+        PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
+        rbMask = redMask | blueMask;
+
+        rowDelta = surfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+        scratch = g_zVideo_FxPass3_ScratchPixels16 + rect.top * surfaceWidth + rect.left - surfaceWidth;
+        src = g_zVideo_FxSurfacePixels16 + rect.top * g_zVideo_FxSurfacePitchPixels16 + rect.left - surfaceWidth;
+
+        if (columnCount > 0) {
+            int count = columnCount;
+            do {
+                *scratch = *src;
+                ++src;
+                ++scratch;
+                --count;
+            } while (count != 0);
+        }
+
+        src += rowDelta;
+        scratch += rowDelta;
+        if (rect.top < rect.bottom) {
+            int rowCount = rect.bottom - rect.top;
+            do {
+                if (columnCount > 0) {
+                    int count = columnCount;
+                    do {
+                        const unsigned int rb
+                            = (src[-surfaceWidth] & rbMask) + ((*src & rbMask) << 1) + (src[surfaceWidth] & rbMask);
+                        const unsigned int green = (src[-surfaceWidth] & greenMask) + ((*src & greenMask) << 1)
+                            + (src[surfaceWidth] & greenMask);
+                        *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                        ++src;
+                        ++scratch;
+                        --count;
+                    } while (count != 0);
+                }
+
+                src += rowDelta;
+                scratch += rowDelta;
+                --rowCount;
+            } while (rowCount != 0);
+        }
+
+        if (columnCount > 0) {
+            int count = columnCount;
+            do {
+                *scratch = *src;
+                ++src;
+                ++scratch;
+                --count;
+            } while (count != 0);
+        }
+
+        --rect.top;
+        ++rect.bottom;
+        columnCount -= 2;
+        ++rect.left;
+        rowDelta += 2;
+        src = g_zVideo_FxSurfacePixels16 + rect.top * g_zVideo_FxSurfacePitchPixels16 + rect.left;
+        scratch = g_zVideo_FxPass3_ScratchPixels16 + rect.top * surfaceWidth + rect.left;
+        if (rect.top < rect.bottom) {
+            int rowCount = rect.bottom - rect.top;
+            do {
+                src[-1] = scratch[-1];
+                if (columnCount > 0) {
+                    int count = columnCount;
+                    do {
+                        const unsigned int rb
+                            = (scratch[-1] & rbMask) + ((*scratch & rbMask) << 1) + (scratch[1] & rbMask);
+                        const unsigned int green
+                            = (scratch[-1] & greenMask) + ((*scratch & greenMask) << 1) + (scratch[1] & greenMask);
+                        *src = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                        ++src;
+                        ++scratch;
+                        --count;
+                    } while (count != 0);
+                }
+
+                *src = *scratch;
+                src += rowDelta;
+                scratch += rowDelta;
+                --rowCount;
+            } while (rowCount != 0);
+        }
+    }
+} // namespace zVideo
+
+namespace zVideo
+{
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-buff-blurregionvertical
+     * @recoil-artifact defines .text recoil:function:0x48e670: zVideo::buffBlurRegionVertical.
+     *
+     *
+     * Purpose: Applies the vertical 1-2-1 blur pass over a 16bpp FX-surface region.
+     */
+    void __fastcall buffBlurRegionVertical(zVidRect32 * rectOrNull, int)
+    {
+        zVidRect32 rect;
+        int left;
+        int top;
+        int bottom;
+        int right;
+        int surfaceWidth;
+        int columnCount;
         unsigned int redMask;
         unsigned int greenMask;
         unsigned int blueMask;
         unsigned int rbMask;
+        unsigned short* src;
+        unsigned short* scratch;
+        int rowDelta;
+        if (rectOrNull != 0) {
+            rect = *rectOrNull;
+            if (rect.top < 1) {
+                rect.top = 1;
+            }
+            if (rect.left < 0) {
+                rect.left = 0;
+            }
+            if (rect.bottom > g_zVideo_FxSurfaceHeight - 1) {
+                rect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            }
+            if (rect.right > g_zVideo_FxSurfaceWidth - 1) {
+                rect.right = g_zVideo_FxSurfaceWidth - 1;
+            }
+        } else {
+            rect.left = 0;
+            rect.top = 1;
+            rect.bottom = g_zVideo_FxSurfaceHeight - 1;
+            rect.right = g_zVideo_FxSurfaceWidth - 1;
+        }
+
+        left = rect.left;
+        top = rect.top;
+        bottom = rect.bottom;
+        right = rect.right;
+        surfaceWidth = g_zVideo_FxSurfaceWidth;
+        columnCount = right - left + 1;
         PixelPackGetRgbMasks(&redMask, &greenMask, &blueMask);
         rbMask = redMask | blueMask;
 
-        unsigned short* src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
-        unsigned short* scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
-        const int rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
+        src = g_zVideo_FxSurfacePixels16 + top * g_zVideo_FxSurfacePitchPixels16 + left;
+        scratch = g_zVideo_FxPass3_ScratchPixels16 + top * g_zVideo_FxSurfaceWidth + left;
+        rowDelta = g_zVideo_FxSurfaceWidth - g_zVideo_FxSurfacePitchPixels16;
 
         if (top < bottom) {
             int rowCount = bottom - top;

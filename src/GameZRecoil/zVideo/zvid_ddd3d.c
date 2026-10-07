@@ -434,27 +434,28 @@ namespace zVideo_dd3d
             }
 
             HRESULT hresult = displaySurface->Flip(0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
-            if (hresult == DD_OK) {
-                return 0;
+            if (hresult != DD_OK) {
+                if (hresult == DDERR_WASSTILLDRAWING) {
+                    displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+                    continue;
+                }
+
+                if (hresult == DDERR_SURFACELOST) {
+                    displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+                    hresult = displaySurface->Restore();
+                }
+
+                if (hresult == DD_OK) {
+                    displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
+                    continue;
+                }
+
+                zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xae);
+                return 0x5a56ffff;
             }
 
-            if (hresult == DDERR_WASSTILLDRAWING) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-                continue;
-            }
-
-            if (hresult == DDERR_SURFACELOST) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-                hresult = displaySurface->Restore();
-            }
-
-            if (hresult == DD_OK) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-                continue;
-            }
-
-            zVideo_dd::ReportError((int)(hresult), g_zVideo_SourceFile_ZvidDdd3dC, 0xae);
-            return 0x5a56ffff;
+            // Retail places the DD_OK return after the failure handling.
+            return 0;
         }
     }
 
@@ -861,6 +862,10 @@ namespace zVideo_dd3d
     void __fastcall
     ConvertImagePixelsForTexture(unsigned short* dstPixels, zVidImagePartial* image, int pitchBytes, int useAlpha)
     {
+        // Retail keeps one row/column pair for both conversion loops (shared stack slots).
+        int row;
+        int column;
+
         (void)useAlpha;
 
         char* alphaMap = image->alphaMap;
@@ -870,10 +875,10 @@ namespace zVideo_dd3d
         if (alphaMap == 0) {
             const unsigned int redGreenMask = g_zVideo_PixelPack.rMask | g_zVideo_PixelPack.gMask;
             {
-                for (int row = 0; row < image->height; ++row) {
+                for (row = 0; row < image->height; ++row) {
                     unsigned short* dstCursor = (unsigned short*)(dstRowBytes);
                     {
-                        for (int column = 0; column < image->width; ++column) {
+                        for (column = 0; column < image->width; ++column) {
                             const unsigned int src = *srcPixels++;
                             const unsigned int alphaBit = src != 0 ? 0x8000 : 0;
                             *dstCursor++ = (unsigned short)((src & g_zVideo_PixelPack.bMask)
@@ -904,10 +909,10 @@ namespace zVideo_dd3d
         }
 
         {
-            for (int row = 0; row < image->height; ++row) {
+            for (row = 0; row < image->height; ++row) {
                 unsigned short* dstCursor = (unsigned short*)(dstRowBytes);
                 {
-                    for (int column = 0; column < image->width; ++column) {
+                    for (column = 0; column < image->width; ++column) {
                         const unsigned short src = *srcPixels++;
                         const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
                         *dstCursor++ = (unsigned short)(((src >> 1) & (g_zVideo_PixelPack.bMask >> 1))

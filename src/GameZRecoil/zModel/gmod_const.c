@@ -1314,27 +1314,33 @@ namespace zModel_Const
     {
         int removedAnyVertices = 0;
         int removedVertexThisPass;
+        int nextIndex;
+        int vertexIndex;
+        int scannedVertexCount;
+        zVec3* currentVertex;
 
         do {
+            // Retail sets both walk indices before the vertex-count guard.
+            nextIndex = 2;
+            vertexIndex = 1;
             removedVertexThisPass = 0;
 
             if (*vertexCount >= 2) {
-                int nextIndex = 2;
-                int vertexIndex = 1;
-                int scannedVertexCount = 2;
-                zVec3* currentVertex = &points[1];
+                scannedVertexCount = 2;
+                currentVertex = &points[1];
 
                 do {
                     zVec3 outNormal;
-                    zVec3* const normal = SetNormalizedCrossFromVertexTriplet(
+                    // Retail copies the returned normal into a local before the tolerance tests.
+                    const zVec3 normal = *SetNormalizedCrossFromVertexTriplet(
                         currentVertex - 1,
                         currentVertex,
                         &outNormal,
                         &points[nextIndex]
                     );
 
-                    if (fabs(normal->x) < g_zModel_ColinearTolerance && fabs(normal->y) < g_zModel_ColinearTolerance
-                        && fabs(normal->z) < g_zModel_ColinearTolerance) {
+                    if (fabs(normal.x) < g_zModel_ColinearTolerance && fabs(normal.y) < g_zModel_ColinearTolerance
+                        && fabs(normal.z) < g_zModel_ColinearTolerance) {
                         removedAnyVertices = 1;
                         removedVertexThisPass = 1;
 
@@ -2194,7 +2200,8 @@ namespace zDi
             return;
         }
 
-        if (extent.x > extent.z) {
+        // Retail compares the preloaded maxExtent (extent.x) against extent.z here.
+        if (maxExtent > extent.z) {
             extent.z = extent.x;
         } else {
             extent.x = extent.z;

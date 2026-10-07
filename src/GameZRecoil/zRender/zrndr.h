@@ -636,7 +636,7 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
 void __cdecl zRndrFlushTransparentQueue();
 void __cdecl zRndrFlushOverwriteQueue();
 void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, zVidRect32* rectOrNull, double alpha);
-void __cdecl zRndrOverlayRectFlushSw();
+void __fastcall zRndrOverlayRectFlushSw();
 
 void __fastcall zRndrDrawImmediateLine(int x0, int y0, int x1, int y1, int color16);
 

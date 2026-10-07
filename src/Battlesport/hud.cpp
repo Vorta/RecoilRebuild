@@ -10627,9 +10627,31 @@ HudLayoutHW::HudLayoutHW()
 }
 
 /**
+ * Reconstruction model: a TU-local inline helper performs the two identical
+ * default/320/400 image-set loads in HudLayoutHW::LoadTypeIIFromZarRoot; storing
+ * through its reference parameters reproduces retail 0x412f70's store order.
+ * Historical helper spelling, existence as a distinct original-source helper and
+ * placement are not established; no standalone retail function exists.
+ * Purpose: remember a widget's default image and load its 320- and 400-line
+ * alternates from a pair of image-name nodes.
+ */
+static inline void HudLayoutHWLoadImageSet(
+    HudUiWidget& widget,
+    zVidImagePartial*& imageDefault,
+    zVidImagePartial*& image320,
+    zVidImagePartial*& image400,
+    zReader::Node* imageNames
+)
+{
+    imageDefault = widget.image;
+    image320 = zImage::TexDirFindOrCreateByPath(imageNames[0].value.str);
+    image400 = zImage::TexDirFindOrCreateByPath(imageNames[1].value.str);
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudlayouthw-loadtypeiifromzarroot
  * @recoil-artifact defines .text recoil:function:0x412f70: HudLayoutHW::LoadTypeIIFromZarRoot.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: load the TYPEII HUD layout widgets and alternate image variants from ZRD data.
@@ -10648,12 +10670,8 @@ int HudLayoutHW::LoadTypeIIFromZarRoot(zReader::Node* parentNode)
         HudUiLayoutNode::ApplyImageWidget(&typeIINode->value.nodes[4], &widget2, 0, g_HudUiMgrHudOriginY, 0, 0, 0);
 
         zReader::Node* const imageNames = typeIINode->value.nodes[5].value.nodes;
-        widget1ImageDefault = widget1.image;
-        widget1Image320 = zImage::TexDirFindOrCreateByPath(imageNames[1].value.str);
-        widget1Image400 = zImage::TexDirFindOrCreateByPath(imageNames[2].value.str);
-        widget2ImageDefault = widget2.image;
-        widget2Image320 = zImage::TexDirFindOrCreateByPath(imageNames[3].value.str);
-        widget2Image400 = zImage::TexDirFindOrCreateByPath(imageNames[4].value.str);
+        HudLayoutHWLoadImageSet(widget1, widget1ImageDefault, widget1Image320, widget1Image400, &imageNames[1]);
+        HudLayoutHWLoadImageSet(widget2, widget2ImageDefault, widget2Image320, widget2Image400, &imageNames[3]);
     }
 
     return 1;

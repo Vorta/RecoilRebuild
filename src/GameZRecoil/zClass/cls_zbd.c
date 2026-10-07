@@ -606,9 +606,22 @@ namespace CZZbd
     }
 
     /**
+     * Serialized 0xc4-byte node-table record: the live node slot, whose low 24
+     * tag bits carry the class-data file offset in the written table.
+     */
+    struct CZZbdNodeRecord {
+        CZNodePartial node;
+        zBBox3f primaryBounds;
+        zBBox3f secondaryBounds;
+        void* damageHandler;
+        int classDataOffset : 24;
+        unsigned int tagFlags : 8;
+    };
+
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-zbd.writenodetable
      * @recoil-artifact defines .text recoil:function:0x454890: CZZbd::WriteNodeTable.
-     *
+     * @recoil-match byte
      *
      * Evidence: BN name/source-file comment and cls_zbd.c writes copy the node
      * array, append payloads, and patch encoded class-data offsets.
@@ -621,8 +634,8 @@ namespace CZZbd
         }
 
         int result = g_CZClass_NodeArraySize;
-        const int byteCount = result * (int)(sizeof(CZNodeFreeListSlot));
-        CZNodeFreeListSlot* nodeBuffer = (CZNodeFreeListSlot*)(malloc(byteCount));
+        const int byteCount = result * (int)(sizeof(CZZbdNodeRecord));
+        CZZbdNodeRecord* nodeBuffer = (CZZbdNodeRecord*)(malloc(byteCount));
         memcpy(nodeBuffer, g_CZClass_NodeArray, byteCount);
 
         for (int i = 0; i < result; ++i) {
@@ -649,15 +662,14 @@ namespace CZZbd
             for (int i = 0; i < result; ++i) {
                 const long classDataOffset = ftell(file);
                 if (WriteSingleNodeClassData(&nodeBuffer[i].node, stream) != 0) {
-                    const unsigned int freeTag = nodeBuffer[i].freeTag;
-                    nodeBuffer[i].freeTag = (((unsigned int)(classDataOffset) ^ freeTag) & 0x00ffffffu) ^ freeTag;
+                    nodeBuffer[i].classDataOffset = classDataOffset;
                 }
             }
         }
 
         const long endOffset = ftell(file);
         fseek(file, nodeTableOffset, SEEK_SET);
-        if (fwrite(nodeBuffer, g_CZClass_NodeArraySize * sizeof(CZNodeFreeListSlot), 1, file) != 1) {
+        if (fwrite(nodeBuffer, g_CZClass_NodeArraySize * sizeof(CZZbdNodeRecord), 1, file) != 1) {
             zError::ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x23a, g_CZClass_WriteNodeDataErrorMsg);
             result = 0;
         }

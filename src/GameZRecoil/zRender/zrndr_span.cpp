@@ -1508,8 +1508,7 @@ void __fastcall SpanMasked16FromTex16To565(int texU, int texV, int pixelCount, i
                 int blueDelta
                     = (((srcColor & 0x001f) - (dstColor & 0x001f)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8;
                 blueDelta += greenDelta;
-                dstColor += blueDelta;
-                *dst = (unsigned short)(dstColor);
+                *dst = (unsigned short)(dstColor + blueDelta);
             }
         }
 
@@ -1870,7 +1869,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49ca90: zRndr::SpanAlphaBlend555ConstAlphaFromTex16Alpha8
- *
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the tex16 alpha-map scaling loop with a
  * 555-specific alpha > 7 gate and 555 channel masks.
@@ -1883,11 +1882,11 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     // Retail runs the span as a do-while (no zero-count guard).
     do {
-        // Declared ahead of srcColor: retail evaluates the source channel operand of the red/green deltas first.
-        int dstColor;
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int srcColor = (short)(texels16[sourceIndex]);
+        // Declared after srcColor: retail's red/green delta operand order and register roles follow this order.
+        int dstColor;
         // Retail scales the alpha byte by the float view of the active constant-alpha bits.
         const double alphaScaled
             = (double)(alphaMap[sourceIndex]) * (double)(*(const float*)(&g_spanActiveConstAlphaBits));

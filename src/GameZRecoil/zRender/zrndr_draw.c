@@ -582,6 +582,8 @@ void __cdecl zRndrFlushTransparentQueue()
             if (zRndr::g_transparentQueue[queueIndex].materialRef != 0) {
                 if ((zRndr::g_transparentQueue[queueIndex].materialRef->image->formatFlagsPacked & 2) != 0) {
                     const float alpha = *(float*)(&zRndr::g_transparentQueue[queueIndex].alphaOrShadeBits);
+                    // Both draw calls take the same texture key; retail pushes it once ahead of the alpha branch.
+                    const int texKey = zRndr::g_transparentQueue[queueIndex].texKey;
                     if (alpha >= 1.0f) {
                         zRndrDrawFlatQueued(
                             zRndr::g_transparentQueue[queueIndex].materialRef,
@@ -589,7 +591,7 @@ void __cdecl zRndrFlushTransparentQueue()
                             (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
                             (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
                             zRndr::g_transparentQueue[queueIndex].vertexCount,
-                            zRndr::g_transparentQueue[queueIndex].texKey
+                            texKey
                         );
                     } else {
                         RendererDrawPolyTLV(
@@ -599,7 +601,7 @@ void __cdecl zRndrFlushTransparentQueue()
                             (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
                             zRndr::g_transparentQueue[queueIndex].vertexCount,
                             alpha,
-                            zRndr::g_transparentQueue[queueIndex].texKey
+                            texKey
                         );
                     }
                 } else {

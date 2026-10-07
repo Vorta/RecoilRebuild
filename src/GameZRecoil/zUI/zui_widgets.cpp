@@ -3605,7 +3605,9 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
     zReader::Node* const selectedFontNode = zRdrGetNode(zrdSection, "SELECTED_FONT");
     if (selectedFontNode != 0) {
         selectedFontStyleRef = selectedFontNode->value.i32;
-        const HudFontStyle* const selectedStyle = HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef);
+        // Retail tests the style pointer after the inline select (neg/sbb/and then a compare).
+        const HudFontStyle* const selectedStyle
+            = owner->fontStyles[selectedFontStyleRef].validMarker != 0 ? &owner->fontStyles[selectedFontStyleRef] : 0;
         if (selectedStyle != 0) {
             HudUiPanel* const panel = &bindPanel;
             panel->SetFont(selectedStyle->fontName, selectedStyle->fontSize, selectedStyle->fontWeight, 0, 0, 0, 2);
@@ -3656,7 +3658,8 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
                     bindingSlotPanels[index].SetBltSourceAndClipRect(clipSource, &clipRect);
                 }
 
-                const HudFontStyle* const listStyle = HudUiZrdOwnerFontStyle(owner, listFontStyleRef);
+                const HudFontStyle* const listStyle
+                    = owner->fontStyles[listFontStyleRef].validMarker != 0 ? &owner->fontStyles[listFontStyleRef] : 0;
                 if (listStyle != 0) {
                     // Retail repeats the complete font pass inside the child loop.
                     for (int fontIndex = 0; fontIndex < bindingSlotTotalCount; ++fontIndex) {
