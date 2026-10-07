@@ -4,6 +4,7 @@
 !/.gitattributes
 !/.clang-format
 !/LICENSE
+!/CHANGELOG.md
 !/README.md
 !/src/
 !/src/**
