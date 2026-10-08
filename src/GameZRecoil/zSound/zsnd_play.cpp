@@ -748,7 +748,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float g
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-stopifactive
  * @recoil-artifact defines .text recoil:function:0x49fda0: zSndPlayHandle::StopIfActive.
- *
+ * @recoil-match byte
  *
  * Purpose: stop the active provider buffer/source for this play handle and
  * clear any matching last-voice marker state.
@@ -785,8 +785,7 @@ int zSndPlayHandle::StopIfActive()
         if (error != 0) {
             error = zSnd::ReportA3DError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x38c);
         }
-
-        return error;
+        break;
 
     case ZSND_AUDIO_API_DIRECTSOUND:
         buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
@@ -812,11 +811,12 @@ int zSndPlayHandle::StopIfActive()
         if (error != 0) {
             error = zSnd::ReportDirectSoundError(error, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_play.cpp", 0x39a);
         }
-
-        return error;
+        break;
     }
 
-    return status;
+    // Both backend cases break here; for any other backend value retail 0x49fea6
+    // returns the unassigned error home ([esp+4], the slot it shares with status).
+    return error;
 }
 
 /**

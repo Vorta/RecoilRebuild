@@ -4912,61 +4912,59 @@ void __fastcall zRndrPlotPixel16(unsigned short* dstPixels, int y, int x, int co
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16
  * @recoil-artifact defines .text recoil:function:0x4992d0: zRndrDrawLine16
- *
+ * @recoil-match byte
  *
  * Purpose: Rasterize an unclipped 16-bit Bresenham line into the active framebuffer.
  */
 void __fastcall zRndrDrawLine16(unsigned short* dstPixels, int x0, int y0, int x1, int y1, int color16)
 {
-    const unsigned int pitchWordsUnsigned = ((unsigned int)zRndr::g_pitchBytes) >> 1;
-    int rowStep = (int)(pitchWordsUnsigned);
-    int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
+    // Retail walks an index; VC5 rebuilds the pointer per branch (0x499319, 0x499369).
+    const int pitch = (int)(((unsigned int)zRndr::g_pitchBytes) >> 1);
+    int index = pitch * y0 + x0;
 
     int dy = y1 - y0;
+    int rowStep;
     if (dy < 0) {
         dy = -dy;
-        rowStep = -rowStep;
+        rowStep = -pitch;
+    } else {
+        rowStep = pitch;
     }
 
     int dx = x1 - x0;
-    int xStep = 1;
+    int xStep;
     if (dx < 0) {
         dx = -dx;
         xStep = -1;
+    } else {
+        xStep = 1;
     }
 
     if (dx > dy) {
-        unsigned short* cursor = &dstPixels[startIndex];
-        const unsigned short packedColor = (unsigned short)(color16);
         int error = dx >> 1;
         int count = dx + 1;
         do {
-            *cursor = packedColor;
+            dstPixels[index] = (unsigned short)color16;
             error += dy;
-            cursor += xStep;
+            index += xStep;
             if (error > dx) {
                 error -= dx;
-                cursor += rowStep;
+                index += rowStep;
             }
-            --count;
-        } while (count != 0);
-        return;
+        } while (--count != 0);
+    } else {
+        int error = dy >> 1;
+        int count = dy + 1;
+        do {
+            dstPixels[index] = (unsigned short)color16;
+            error += dx;
+            index += rowStep;
+            if (error > dy) {
+                error -= dy;
+                index += xStep;
+            }
+        } while (--count != 0);
     }
-
-    unsigned short* cursor = &dstPixels[startIndex];
-    const unsigned short packedColor = (unsigned short)(color16);
-    int error = dy >> 1;
-    int count = dy + 1;
-    do {
-        *cursor = packedColor;
-        error += dx;
-        cursor += rowStep;
-        if (error > dy) {
-            error -= dy;
-            cursor += xStep;
-        }
-        --count;
-    } while (count != 0);
 }
 
 /**

@@ -2314,62 +2314,72 @@ void __fastcall zRndrSpanOcclusionBuildSpanListFast(zRndr::SpanNodePartial** spa
  */
 void __fastcall zRndrSpanOcclusionTestColumnVisibility(int columnIndex, int* isVisible)
 {
-    zRndr::SpanNodePartial* current = zRndr::g_spanColumnHeadTable[columnIndex];
+    zRndr::SpanNodePartial* columnHead = zRndr::g_spanColumnHeadTable[columnIndex];
     zRndr::SpanNodePartial* pending = zRndr::g_spanAllocCursor;
-    zRndr::SpanNodePartial* minDepthSpan = 0;
     *isVisible = 0;
-    if (current == 0) {
+    if (columnHead == 0) {
         *isVisible = 1;
         return;
     }
-    if (pending->sampleXMax < current->sampleXMin) {
+    if (pending->sampleXMax < columnHead->sampleXMin) {
         *isVisible = 1;
         return;
     }
 
     pending->next = 0;
+    zRndr::SpanNodePartial* minDepthSpan = 0;
     zRndr::SpanNodePartial* maxDepthSpan = 0;
     float maxDepth = 0.0f;
     float minDepth = 0.0f;
     zRndr::SpanNodePartial occluder;
+    // Retail re-tests the walk pointer at the loop head (0x491e2d), so the walk
+    // starts from a copy of the column head rather than the tested variable.
+    zRndr::SpanNodePartial* current = columnHead;
     for (;;) {
         while (current != 0 && pending->sampleXMin > current->sampleXMax) {
             current = current->next;
+        }
+        // Retail null-tests the walk pointer again after redirecting it to the
+        // occluder copy (0x491e78) and reads the copy through it.
+        if (current != 0) {
+            occluder.next = current->next;
+            occluder.sampleXMin = current->sampleXMin;
+            occluder.sampleXMax = current->sampleXMax;
+            occluder.invDepth = current->invDepth;
+            occluder.invDepthStep = current->invDepthStep;
+            occluder.depthSlope = current->depthSlope;
+            current = &occluder;
         }
         if (current == 0) {
             *isVisible = 1;
             return;
         }
-
-        occluder.next = current->next;
-        occluder.sampleXMin = current->sampleXMin;
-        occluder.sampleXMax = current->sampleXMax;
-        occluder.invDepth = current->invDepth;
-        occluder.invDepthStep = current->invDepthStep;
-        occluder.depthSlope = current->depthSlope;
-        current = &occluder;
         if (pending->sampleXMax < current->sampleXMin) {
             *isVisible = 1;
             return;
         }
 
+        // Retail compares the endpoint depths double-widened (fld/fld/fcompp)
+        // and selects them on the FPU before each store or multiply.
         if (maxDepthSpan != pending) {
-            maxDepth = pending->invDepth > pending->invDepthStep ? pending->invDepth : pending->invDepthStep;
+            maxDepth
+                = (double)pending->invDepth > pending->invDepthStep ? (double)pending->invDepth : pending->invDepthStep;
             maxDepthSpan = pending;
         }
         const float occluderMinDepth
-            = current->invDepth < current->invDepthStep ? current->invDepth : current->invDepthStep;
+            = (double)current->invDepth < current->invDepthStep ? (double)current->invDepth : current->invDepthStep;
         int pendingInFront;
         if (occluderMinDepth * zRndr::g_spanDepthBiasPlusOne >= maxDepth) {
             pendingInFront = 0;
         } else {
             if (minDepthSpan != pending) {
-                minDepth = pending->invDepth < pending->invDepthStep ? pending->invDepth : pending->invDepthStep;
+                minDepth = (double)pending->invDepth < pending->invDepthStep ? (double)pending->invDepth
+                                                                             : pending->invDepthStep;
                 minDepthSpan = pending;
             }
-            const float occluderMaxDepth
-                = current->invDepth > current->invDepthStep ? current->invDepth : current->invDepthStep;
-            if (minDepth * zRndr::g_spanDepthBiasPlusOne >= occluderMaxDepth) {
+            if (minDepth * zRndr::g_spanDepthBiasPlusOne
+                >= ((double)current->invDepth > current->invDepthStep ? (double)current->invDepth
+                                                                      : current->invDepthStep)) {
                 pendingInFront = 1;
             } else {
                 pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);
@@ -2403,8 +2413,10 @@ void __fastcall zRndrSpanOcclusionTestColumnVisibility(int columnIndex, int* isV
                 *isVisible = 1;
                 return;
             }
+            // Retail keeps this end test although the check above implies it (0x491fb5);
+            // VC5 folds it when spelled current-first.
             if (pending->sampleXMin <= current->sampleXMin && current->sampleXMin <= pending->sampleXMax
-                && current->sampleXMax >= pending->sampleXMax) {
+                && pending->sampleXMax <= current->sampleXMax) {
                 if (pending->sampleXMin < current->sampleXMin) {
                     *isVisible = 1;
                 }

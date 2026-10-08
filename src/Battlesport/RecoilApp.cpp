@@ -1113,7 +1113,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
  * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
- *
+ * @recoil-match byte
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
@@ -2284,7 +2284,7 @@ RecoilApp_MfcOleModule::RecoilApp_MfcOleModule()
  * @recoil-artifact emits .text recoil:function:0x4430cc: CException catch body.
  * @recoil-artifact emits .text recoil:function:0x4430ea: CException catch continuation.
  * @recoil-artifact emits .text recoil:function:0x4430f3: Common compiler-generated EH epilogue.
- *
+ * @recoil-match byte
  *
  * Purpose: runs the app-shell message loop, queued state transitions, and exception dialogs.
  */

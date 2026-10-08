@@ -2261,31 +2261,30 @@ SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSl
 void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4x3* outMatrix34)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-
+    // Retail evidence (0x43b015..0x43b0a8): the turret zx/zz operands load before
+    // the gun-fire copy and each yaw component is stored before its row reuse.
     zMat4x3 gunMatrix;
-    memcpy(&gunMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode), sizeof(gunMatrix));
-
+    zVec3 yaw;
     zMat4x3 turretMatrix;
-    memcpy(&turretMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode), sizeof(turretMatrix));
-
     zMat4x3 gunFireTransform;
+    memcpy(&gunMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode), sizeof(gunMatrix));
+    memcpy(&turretMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->turretNode), sizeof(turretMatrix));
     memcpy(&gunFireTransform, &playerState->gunFireTransform, sizeof(gunFireTransform));
 
     outMatrix34->xx = turretMatrix.xx * gunFireTransform.xx + turretMatrix.xz * gunFireTransform.zx;
     outMatrix34->xy = turretMatrix.xx * gunFireTransform.xy + turretMatrix.xz * gunFireTransform.zy;
     outMatrix34->xz = turretMatrix.xx * gunFireTransform.xz + turretMatrix.xz * gunFireTransform.zz;
 
-    const float yawX = turretMatrix.zx * gunFireTransform.xx + turretMatrix.zz * gunFireTransform.zx;
-    const float yawY = turretMatrix.zx * gunFireTransform.xy + turretMatrix.zz * gunFireTransform.zy;
-    const float yawZ = turretMatrix.zx * gunFireTransform.xz + turretMatrix.zz * gunFireTransform.zz;
+    yaw.x = turretMatrix.zx * gunFireTransform.xx + turretMatrix.zz * gunFireTransform.zx;
+    outMatrix34->yx = gunFireTransform.yx * gunMatrix.yy + gunMatrix.yz * yaw.x;
+    yaw.y = turretMatrix.zx * gunFireTransform.xy + turretMatrix.zz * gunFireTransform.zy;
+    outMatrix34->yy = gunFireTransform.yy * gunMatrix.yy + gunMatrix.yz * yaw.y;
+    yaw.z = turretMatrix.zx * gunFireTransform.xz + turretMatrix.zz * gunFireTransform.zz;
+    outMatrix34->yz = gunFireTransform.yz * gunMatrix.yy + gunMatrix.yz * yaw.z;
 
-    outMatrix34->yx = gunFireTransform.yx * gunMatrix.yy + gunMatrix.yz * yawX;
-    outMatrix34->yy = gunFireTransform.yy * gunMatrix.yy + gunMatrix.yz * yawY;
-    outMatrix34->yz = gunFireTransform.yz * gunMatrix.yy + gunMatrix.yz * yawZ;
-
-    outMatrix34->zx = gunFireTransform.yx * gunMatrix.zy + gunMatrix.zz * yawX;
-    outMatrix34->zy = gunFireTransform.yy * gunMatrix.zy + gunMatrix.zz * yawY;
-    outMatrix34->zz = gunFireTransform.yz * gunMatrix.zy + gunMatrix.zz * yawZ;
+    outMatrix34->zx = gunFireTransform.yx * gunMatrix.zy + gunMatrix.zz * yaw.x;
+    outMatrix34->zy = gunFireTransform.yy * gunMatrix.zy + gunMatrix.zz * yaw.y;
+    outMatrix34->zz = gunFireTransform.yz * gunMatrix.zy + gunMatrix.zz * yaw.z;
 
     outMatrix34->posX = playerState->aimBasisOrigin.x;
     outMatrix34->posY = playerState->aimBasisOrigin.y;

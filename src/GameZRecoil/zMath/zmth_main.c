@@ -1067,11 +1067,11 @@ namespace zMath
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 
-    /**
+                            /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
      * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     *
+     * @recoil-match byte
      *
      * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
      * storage and clears the translation row.
@@ -1092,18 +1092,19 @@ namespace zMath
         const float szCy = sz * cy;
         const float czCy = cz * cy;
 
-        outBasis->xx = sySx * sz + czCy;
-        outBasis->xy = sz * cx;
-        outBasis->xz = szCy * sx - cz * sy;
-        outBasis->yx = sySx * cz - szCy;
-        outBasis->yy = cz * cx;
-        outBasis->yz = czCy * sx + sz * sy;
-        outBasis->zx = sy * cx;
-        outBasis->zy = -sx;
-        outBasis->zz = cy * cx;
-        outBasis->posX = 0.0f;
-        outBasis->posY = 0.0f;
-        outBasis->posZ = 0.0f;
+        float* dest = &outBasis->xx;
+        *dest++ = sySx * sz + czCy;
+        *dest++ = sz * cx;
+        *dest++ = szCy * sx - cz * sy;
+        *dest++ = sySx * cz - szCy;
+        *dest++ = cz * cx;
+        *dest++ = czCy * sx + sz * sy;
+        *dest++ = sy * cx;
+        *dest++ = -sx;
+        *dest++ = cy * cx;
+        *dest++ = 0.0f;
+        *dest++ = 0.0f;
+        *dest = 0.0f;
     }
 } // namespace zMath
 

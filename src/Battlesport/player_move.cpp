@@ -1040,7 +1040,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1320,7 +1320,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
@@ -1539,7 +1539,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
@@ -1971,7 +1971,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
  * @recoil-artifact defines .text recoil:function:0x429560: Player::RebuildSteerBasisFromMotionAxes.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
@@ -2045,7 +2045,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
@@ -2087,7 +2087,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered
@@ -2181,16 +2181,21 @@ float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState)
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
 
-    const float crossYaw = playerState->steerBasisNorm.x * playerState->bankBasis.z
-        - playerState->steerBasisNorm.z * playerState->bankBasis.x;
-    const float slipDelta
-        = crossYaw * -playerState->localVel.z * g_Player_InvDeltaTime + playerState->motionBasis.xy * -28.0f;
+    // Retail copies both basis vectors into frame locals (0x429b6d..0x429baf) and
+    // keeps the fchs on -localVel.z and the faddp of the -28 centering term.
+    const zVec3 bank = playerState->bankBasis;
+    const zVec3 steer = playerState->steerBasisNorm;
+    const float crossYaw = steer.x * bank.z - steer.z * bank.x;
+    const float lateralVel = -playerState->localVel.z;
+    const float slipRate = crossYaw * lateralVel;
+    const float centering = playerState->motionBasis.xy * -28.0f;
+    const float slipDelta = slipRate * g_Player_InvDeltaTime + centering;
 
     // Retail falls through to the shared return when the static slip is within
     // friction (+0xe4 jne 0x1e3) and duplicates the epilogue for the sign path.
     float residual = 0.0f;
     if (playerState->localVel.x == 0.0f) {
-        if (fabs(slipDelta) > masterModalData->frictionStatic) {
+        if ((float)fabs(slipDelta) > masterModalData->frictionStatic) {
             const int sign = slipDelta < 0.0f ? -1 : 1;
             residual = slipDelta - (float)(sign)*masterModalData->frictionStatic;
             StartSlipSfx(saveState);
@@ -2199,7 +2204,7 @@ float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState)
         residual = slipDelta - (float)(FloatSign(playerState->localVel.x)) * masterModalData->frictionDynamic;
 
         if (playerState->throttleInputCopy != 0.0f
-            && FloatSign(playerState->steeringInputCopy) == FloatSign(playerState->restartYawRad)) {
+            && FloatSign(playerState->restartYawRad) == FloatSign(playerState->steeringInputCopy)) {
             const int residualSign = residual < 0.0f ? -1 : 1;
             const int velocitySign = playerState->localVel.x < 0.0f ? -1 : 1;
             if (residualSign != velocitySign) {
@@ -2207,7 +2212,7 @@ float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState)
             }
         }
 
-        if (playerState->slipSfxActive == 0 && fabs(slipDelta) > masterModalData->frictionStatic) {
+        if (playerState->slipSfxActive == 0 && (float)fabs(slipDelta) > masterModalData->frictionStatic) {
             StartSlipSfx(saveState);
         }
     }

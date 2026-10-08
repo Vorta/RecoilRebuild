@@ -1317,51 +1317,40 @@ namespace zModel_Const
         int nextIndex;
         int vertexIndex;
         int scannedVertexCount;
-        zVec3* currentVertex;
+        int copyIndex;
 
         do {
-            // Retail sets both walk indices before the vertex-count guard.
+            // Retail sets both walk indices before the for-loop vertex-count guard.
             nextIndex = 2;
             vertexIndex = 1;
             removedVertexThisPass = 0;
 
-            if (*vertexCount >= 2) {
-                scannedVertexCount = 2;
-                currentVertex = &points[1];
+            for (scannedVertexCount = 2; scannedVertexCount <= *vertexCount; ++scannedVertexCount) {
+                zVec3 outNormal;
+                zVec3* const currVertex = &points[vertexIndex];
+                zVec3* const prevVertex = currVertex - 1;
+                zVec3* const nextVertex = &points[nextIndex];
+                // Retail copies the returned normal into a local before the tolerance tests.
+                const zVec3 normal
+                    = *SetNormalizedCrossFromVertexTriplet(prevVertex, currVertex, &outNormal, nextVertex);
 
-                do {
-                    zVec3 outNormal;
-                    // Retail copies the returned normal into a local before the tolerance tests.
-                    const zVec3 normal = *SetNormalizedCrossFromVertexTriplet(
-                        currentVertex - 1,
-                        currentVertex,
-                        &outNormal,
-                        &points[nextIndex]
-                    );
+                if (fabs(normal.x) < g_zModel_ColinearTolerance && fabs(normal.y) < g_zModel_ColinearTolerance
+                    && fabs(normal.z) < g_zModel_ColinearTolerance) {
+                    removedAnyVertices = 1;
+                    removedVertexThisPass = 1;
 
-                    if (fabs(normal.x) < g_zModel_ColinearTolerance && fabs(normal.y) < g_zModel_ColinearTolerance
-                        && fabs(normal.z) < g_zModel_ColinearTolerance) {
-                        removedAnyVertices = 1;
-                        removedVertexThisPass = 1;
-
-                        if (vertexIndex < *vertexCount - 1) {
-                            zVec3* write = &points[vertexIndex];
-                            do {
-                                *write = write[1];
-                                ++write;
-                                ++vertexIndex;
-                            } while (vertexIndex < *vertexCount - 1);
-                        }
-
-                        --*vertexCount;
-                        break;
+                    // Shift the remaining vertices down over the removed one (retail loop 0x482c24).
+                    for (copyIndex = vertexIndex; copyIndex < *vertexCount - 1; ++copyIndex) {
+                        zVec3* const dest = &points[copyIndex];
+                        *dest = dest[1];
                     }
 
-                    ++vertexIndex;
-                    ++currentVertex;
-                    ++scannedVertexCount;
-                    nextIndex = (nextIndex + 1) % *vertexCount;
-                } while (scannedVertexCount <= *vertexCount);
+                    --*vertexCount;
+                    break;
+                }
+
+                ++vertexIndex;
+                nextIndex = (nextIndex + 1) % *vertexCount;
             }
         } while (removedVertexThisPass != 0);
 
@@ -1371,7 +1360,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
      * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: compute and normalize the cross product from three polygon vertices.
      */
@@ -1598,7 +1587,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
@@ -2054,10 +2043,22 @@ namespace zDi
         self->bboxRadius = radiusEstimate;
     }
 
+/*
+ * Grow a [minValue, maxValue] range to include value. Retail compares and copies the
+ * parenthesized arguments (fld/fld/fcompp compares, fld/fstp copies).
+ */
+#define GMOD_EXPAND_BOUNDS(minValue, maxValue, value)                                                                  \
+    if ((value) < (minValue)) {                                                                                        \
+        (minValue) = (value);                                                                                          \
+    }                                                                                                                  \
+    if ((value) > (maxValue)) {                                                                                        \
+        (maxValue) = (value);                                                                                          \
+    }
+
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildaabb
      * @recoil-artifact defines .text recoil:function:0x483b80: zDi::BuildAabb
-     *
+     * @recoil-match byte
      *
      * Purpose: build a display-instance axis-aligned bounds box from vertices and point data.
      */
@@ -2085,47 +2086,17 @@ namespace zDi
         zModel_PointEntryPartial* entry = self->pointEntries;
         for (i = 0; i < self->pointCount; ++i, ++entry) {
             for (j = 0; j < entry->pointCamCount; ++j) {
-                if (entry->pointCamList[j].x < outBoundsMinMax->min.x) {
-                    outBoundsMinMax->min.x = entry->pointCamList[j].x;
-                }
-                if (outBoundsMinMax->max.x < entry->pointCamList[j].x) {
-                    outBoundsMinMax->max.x = entry->pointCamList[j].x;
-                }
-                if (outBoundsMinMax->min.y > entry->pointCamList[j].y) {
-                    outBoundsMinMax->min.y = entry->pointCamList[j].y;
-                }
-                if (outBoundsMinMax->max.y < entry->pointCamList[j].y) {
-                    outBoundsMinMax->max.y = entry->pointCamList[j].y;
-                }
-                if (outBoundsMinMax->min.z > entry->pointCamList[j].z) {
-                    outBoundsMinMax->min.z = entry->pointCamList[j].z;
-                }
-                if (outBoundsMinMax->max.z < entry->pointCamList[j].z) {
-                    outBoundsMinMax->max.z = entry->pointCamList[j].z;
-                }
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.x, outBoundsMinMax->max.x, entry->pointCamList[j].x);
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.y, outBoundsMinMax->max.y, entry->pointCamList[j].y);
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.z, outBoundsMinMax->max.z, entry->pointCamList[j].z);
             }
         }
 
         const zVec3* point = self->verts + 1;
         for (i = 1; i < self->vertCount; ++i, ++point) {
-            if (point->x < outBoundsMinMax->min.x) {
-                outBoundsMinMax->min.x = point->x;
-            }
-            if (point->x > outBoundsMinMax->max.x) {
-                outBoundsMinMax->max.x = point->x;
-            }
-            if (outBoundsMinMax->min.y > point->y) {
-                outBoundsMinMax->min.y = point->y;
-            }
-            if (outBoundsMinMax->max.y < point->y) {
-                outBoundsMinMax->max.y = point->y;
-            }
-            if (outBoundsMinMax->min.z > point->z) {
-                outBoundsMinMax->min.z = point->z;
-            }
-            if (outBoundsMinMax->max.z < point->z) {
-                outBoundsMinMax->max.z = point->z;
-            }
+            GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.x, outBoundsMinMax->max.x, point->x);
+            GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.y, outBoundsMinMax->max.y, point->y);
+            GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.z, outBoundsMinMax->max.z, point->z);
         }
 
         if (self->blendVertCount != 0) {
@@ -2138,24 +2109,9 @@ namespace zDi
             );
             point = g_zModel_SharedVec3ScratchA;
             for (i = 0; i < self->blendVertCount; ++i, ++point) {
-                if (point->x < outBoundsMinMax->min.x) {
-                    outBoundsMinMax->min.x = point->x;
-                }
-                if (point->x > outBoundsMinMax->max.x) {
-                    outBoundsMinMax->max.x = point->x;
-                }
-                if (outBoundsMinMax->min.y > point->y) {
-                    outBoundsMinMax->min.y = point->y;
-                }
-                if (outBoundsMinMax->max.y < point->y) {
-                    outBoundsMinMax->max.y = point->y;
-                }
-                if (outBoundsMinMax->min.z > point->z) {
-                    outBoundsMinMax->min.z = point->z;
-                }
-                if (outBoundsMinMax->max.z < point->z) {
-                    outBoundsMinMax->max.z = point->z;
-                }
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.x, outBoundsMinMax->max.x, point->x);
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.y, outBoundsMinMax->max.y, point->y);
+                GMOD_EXPAND_BOUNDS(outBoundsMinMax->min.z, outBoundsMinMax->max.z, point->z);
             }
         }
     }
@@ -2163,7 +2119,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildoriginsymmetricaabb
      * @recoil-artifact defines .text recoil:function:0x483e60: zDi::BuildOriginSymmetricAabb
-     *
+     * @recoil-match byte
      *
      * Purpose: symmetrize display-instance bounds around the origin according to mode flags.
      */
@@ -2182,37 +2138,36 @@ namespace zDi
             extent.z = (float)fabs(outBoundsMinMax->min.z);
         }
 
-        // Retail keeps maxExtent register-resident (fcomp st(1)), which the double widening reproduces.
-        double maxExtent = extent.x;
         if ((self->flags & 0x10) != 0) {
-            if (extent.y > maxExtent) {
-                maxExtent = extent.y;
+            // Retail keeps the running maximum in extent.x on the x87 stack (0x483e7d..0x483f0b);
+            // the extent stores are dead after the bounds stores.
+            if (extent.y > extent.x) {
+                extent.x = extent.y;
             }
-            if (extent.z > maxExtent) {
-                maxExtent = extent.z;
+            if (extent.z > extent.x) {
+                extent.x = extent.z;
             }
-            outBoundsMinMax->min.x = -maxExtent;
-            outBoundsMinMax->min.y = -maxExtent;
-            outBoundsMinMax->min.z = -maxExtent;
-            outBoundsMinMax->max.x = maxExtent;
-            outBoundsMinMax->max.y = maxExtent;
-            outBoundsMinMax->max.z = maxExtent;
+            outBoundsMinMax->max.x = extent.x;
+            outBoundsMinMax->min.x = -extent.x;
+            outBoundsMinMax->max.y = extent.x;
+            outBoundsMinMax->min.y = -extent.x;
+            outBoundsMinMax->max.z = extent.x;
+            outBoundsMinMax->min.z = -extent.x;
             return;
         }
 
-        // Retail compares the preloaded maxExtent (extent.x) against extent.z here.
-        if (maxExtent > extent.z) {
+        if (extent.x > extent.z) {
             extent.z = extent.x;
         } else {
             extent.x = extent.z;
         }
 
-        outBoundsMinMax->min.x = -extent.x;
-        outBoundsMinMax->min.y = -extent.y;
-        outBoundsMinMax->min.z = -extent.z;
         outBoundsMinMax->max.x = extent.x;
+        outBoundsMinMax->min.x = -extent.x;
         outBoundsMinMax->max.y = extent.y;
+        outBoundsMinMax->min.y = -extent.y;
         outBoundsMinMax->max.z = extent.z;
+        outBoundsMinMax->min.z = -extent.z;
     }
 
     /**

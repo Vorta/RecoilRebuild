@@ -648,26 +648,28 @@ namespace CZDisplayInstance
         int vertexCount
     )
     {
+        zVec3 edgeNormal;
         int index = vertexCount - 1;
-        int current;
-        if ((queryX - polygonVertices[index].x) * (polygonVertices[0].z - polygonVertices[index].z)
-                + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[0].x)
-            <= -0.0001) {
-            return 0;
-        }
+        int current = 0;
+        edgeNormal.x = polygonVertices[current].z - polygonVertices[index].z;
+        edgeNormal.z = polygonVertices[index].x - polygonVertices[current].x;
 
-        // Retail tests the closing edge, then walks (index, current) pairs down with a top-tested loop.
-        while (1) {
+        // Retail rotates this loop: the closing-edge test is a separate guard (0x4856d0..0x485712), and the
+        // walked edges keep edgeNormal.x on the x87 stack while edgeNormal.z lives in its frame slot.
+        for (;;) {
+            if ((queryX - polygonVertices[index].x) * edgeNormal.x + (queryZ - polygonVertices[index].z) * edgeNormal.z
+                <= -0.0001) {
+                return 0;
+            }
+
             current = index;
             index--;
             if (index < 0) {
                 break;
             }
-            if ((queryX - polygonVertices[index].x) * (polygonVertices[current].z - polygonVertices[index].z)
-                    + (queryZ - polygonVertices[index].z) * (polygonVertices[index].x - polygonVertices[current].x)
-                <= -0.0001) {
-                return 0;
-            }
+
+            edgeNormal.x = polygonVertices[current].z - polygonVertices[index].z;
+            edgeNormal.z = polygonVertices[index].x - polygonVertices[current].x;
         }
 
         zMathVec3TriangleNormal(

@@ -1562,6 +1562,9 @@ namespace zVid_Image {
  */
 void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
 {
+    // Retail keeps sourceIndex in ESI as the base-index pair [alphaMap + sourceIndex]
+    // only with the C-style function-scope declaration (0x46ea9c).
+    int sourceIndex;
     const float inverseSideLength = 1.0f / (float)(sideLength);
     unsigned short* const oldPixels = (unsigned short*)(image->pixels);
     char* const oldAlphaMap = image->alphaMap;
@@ -1574,13 +1577,16 @@ void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength)
         newAlphaMap = (char*)(malloc(sideLength * sideLength));
     }
 
-    // Index form: VC5 keeps the image in EBX and sideLength in EBP as in retail.
     for (int dstY = 0; dstY < sideLength; ++dstY) {
+        // Retail converts the source row once per destination row and forms
+        // srcY * width in ESI before the per-pixel column _ftol (0x46ea77..0x46ea87).
+        const int srcY = (int)((float)(dstY)*yScale);
         for (int dstX = 0; dstX < sideLength; ++dstX) {
-            const int sourceIndex = (int)((float)(dstY)*yScale) * image->width + (int)((float)(dstX)*xScale);
-            newPixels[dstY * sideLength + dstX] = oldPixels[sourceIndex];
+            sourceIndex = srcY * image->width + (int)((float)(dstX)*xScale);
+            const int dstIndex = dstY * sideLength + dstX;
+            newPixels[dstIndex] = oldPixels[sourceIndex];
             if (oldAlphaMap != 0) {
-                newAlphaMap[dstY * sideLength + dstX] = oldAlphaMap[sourceIndex];
+                newAlphaMap[dstIndex] = oldAlphaMap[sourceIndex];
             }
         }
     }

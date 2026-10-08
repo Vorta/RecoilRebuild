@@ -540,8 +540,11 @@ namespace CZWorld
             *insideBoundsOut = 0;
         }
 
-        *clampedGridColOut = (int)((clampedX - data->originX) * data->areaInvSizeX);
-        *clampedGridRowOut = (int)((clampedZ - data->originZ) * data->areaInvSizeZ);
+        // Retail subtracts both origins before the first _ftol (0x4506e6..0x4506f7).
+        clampedX -= data->originX;
+        clampedZ -= data->originZ;
+        *clampedGridColOut = (int)(clampedX * data->areaInvSizeX);
+        *clampedGridRowOut = (int)(clampedZ * data->areaInvSizeZ);
 
         if (*insideBoundsOut != 0) {
             *outGridCol = *clampedGridColOut;
@@ -549,8 +552,13 @@ namespace CZWorld
             return 0;
         }
 
-        *outGridCol = (int)(floor((worldX - data->originX) * data->areaInvSizeX));
-        *outGridRow = (int)(floor((worldZ - data->originZ) * data->areaInvSizeZ));
+        // Retail keeps the outside-path offsets in an 8-byte frame aggregate: the z
+        // offset survives the first floor() call at [esp+0x14] (0x450744/0x45075c).
+        zVec2 offset;
+        offset.x = worldX - data->originX;
+        offset.y = worldZ - data->originZ;
+        *outGridCol = (int)(floor(offset.x * data->areaInvSizeX));
+        *outGridRow = (int)(floor(offset.y * data->areaInvSizeZ));
         return 0;
     }
 
