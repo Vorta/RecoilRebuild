@@ -414,7 +414,6 @@ void __stdcall DDX_Check(CDataExchange* dataExchange, int controlId, int& value)
 
 namespace {
 const UINT kWestwoodOnlineUpgradeConfigDialogResourceId = 156;
-const char kEmptyString[] = "";
 const int kWestwoodOnlineUpgradeConfigProfileComboId = 1192;
 const int kWestwoodOnlineUpgradeConfigConnectStringEditId = 1173;
 const int kWestwoodOnlineUpgradeConfigRememberPasswordCheckId = 1182;
@@ -3810,7 +3809,7 @@ WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog(CWnd* paren
     , m_reservedString()
     , m_connectStringEditText()
 {
-    m_connectStringEditText = kEmptyString;
+    m_connectStringEditText = "";
     m_wolPasswordFlag = zOptGetWolPasswordFlagValue();
 }
 
@@ -3963,7 +3962,7 @@ void WestwoodOnlineUpgradeConfigDialog::GetSelectedProfileValues(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-showmodalandapplyselectedprofilevalues
  * @recoil-artifact defines .text recoil:function:0x441cb0: WestwoodOnlineUpgradeConfigDialog::ShowModalAndApplySelectedProfileValues
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp.
  * Purpose: runs the stack-based config dialog and copies selected profile

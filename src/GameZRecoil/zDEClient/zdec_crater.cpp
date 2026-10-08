@@ -204,32 +204,58 @@ int __fastcall InstanceEventMaybeRelay(zDEClient_CraterEventTemplate* eventTempl
 }
 } // namespace zDEClient_Crater
 
+/*
+ * Grow a [minValue, maxValue] range to include value. Retail compares and copies the
+ * parenthesized arguments (fld/fld/fcompp compares, fld/fstp copies).
+ */
+#define ZDEC_EXPAND_BOUNDS(minValue, maxValue, value)                                                                  \
+    if ((value) < (minValue)) {                                                                                        \
+        (minValue) = (value);                                                                                          \
+    }                                                                                                                  \
+    if ((value) > (maxValue)) {                                                                                        \
+        (maxValue) = (value);                                                                                          \
+    }
+
 namespace zDEClient_Crater {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-initfeaturefromeventtemplate
  * @recoil-artifact defines .text recoil:function:0x456c80: zDEClient_Crater::InitFeatureFromEventTemplate
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- *
+ * @recoil-match byte
  *
  * Purpose: create a crater feature from an event template, fit it to the
  * owning feature grid cell, and generate its circular point bounds.
  */
 zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate* eventTemplate)
 {
-    zDEClient_CraterFeature* featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
-    zVec3* currentPoint = featureInstance->points;
+    int i;
+    int col;
+    int row;
+    CZWorldDataPartial* worldData;
+    float cellSizeZ;
+    float angle;
+    zVec3* currentPoint;
+    float angleStep;
+    // Cell-local X/Z of the center: retail keeps the pair in adjacent dwords below the scalar homes.
+    zVec2 localCenter;
+    float cellSizeX;
+    CZNodePartial* world;
+    zDEClient_FeatureGridCell* featureGridCell;
+    zDEClient_CraterFeature* featureInstance;
+    zVec3* points;
 
-    CZNodePartial* world = zDEClient::GetCameraNode();
-    CZWorldDataPartial* worldData = (CZWorldDataPartial*)(world->classData);
+    featureInstance = CreateFeatureStructFromEventTemplate(eventTemplate);
+    currentPoint = featureInstance->points;
+
+    world = zDEClient::GetCameraNode();
+    worldData = (CZWorldDataPartial*)(world->classData);
     if (worldData == 0) {
         return 0;
     }
 
-    int gridRow;
-    int gridCol;
-    CZWorld::WorldToGridCoordsClamped(world, eventTemplate->center.x, eventTemplate->center.z, &gridCol, &gridRow);
+    CZWorld::WorldToGridCoordsClamped(world, eventTemplate->center.x, eventTemplate->center.z, &col, &row);
 
-    zDEClient_FeatureGridCell* featureGridCell = zDEClient::GetFeatureGridCell(gridCol, gridRow);
+    featureGridCell = zDEClient::GetFeatureGridCell(col, row);
     featureInstance->featureGridCell = featureGridCell;
     if (featureGridCell == 0) {
         DestroyFeature(featureInstance);
@@ -241,31 +267,29 @@ zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_Crate
         return 0;
     }
 
-    const float localX = featureInstance->eventTemplate.center.x - featureGridCell->originX;
-    const float localZ = featureInstance->eventTemplate.center.z - featureGridCell->originZ;
-    const float cellSizeX = worldData->areaCellSizeX;
-    const float cellSizeZ = worldData->areaCellSizeZ;
+    localCenter.x = featureInstance->eventTemplate.center.x - featureGridCell->originX;
+    localCenter.y = featureInstance->eventTemplate.center.z - featureGridCell->originZ;
+    cellSizeX = worldData->areaCellSizeX;
+    cellSizeZ = worldData->areaCellSizeZ;
 
-    const float localXPlusRadius = localX + featureInstance->eventTemplate.radius;
-    if (localXPlusRadius > cellSizeX) {
-        featureInstance->eventTemplate.center.x -= (localXPlusRadius - cellSizeX) + 1.0f;
-    } else if (localX - featureInstance->eventTemplate.radius < 0.0f) {
-        featureInstance->eventTemplate.center.x += (featureInstance->eventTemplate.radius - localX) + 1.0f;
+    if (localCenter.x + featureInstance->eventTemplate.radius > cellSizeX) {
+        featureInstance->eventTemplate.center.x
+            -= (localCenter.x + featureInstance->eventTemplate.radius - cellSizeX) + 1.0f;
+    } else if (localCenter.x - featureInstance->eventTemplate.radius < 0.0f) {
+        featureInstance->eventTemplate.center.x += (featureInstance->eventTemplate.radius - localCenter.x) + 1.0f;
     }
 
-    const float localZMinusRadius = localZ - featureInstance->eventTemplate.radius;
-    if (localZMinusRadius < cellSizeZ) {
-        featureInstance->eventTemplate.center.z += (cellSizeZ - localZMinusRadius) + 1.0f;
-    } else {
-        const float localZPlusRadius = localZ + featureInstance->eventTemplate.radius;
-        if (localZPlusRadius > 0.0) {
-            featureInstance->eventTemplate.center.z -= localZPlusRadius + 1.0f;
-        }
+    if (localCenter.y - featureInstance->eventTemplate.radius < cellSizeZ) {
+        featureInstance->eventTemplate.center.z
+            += (cellSizeZ - (localCenter.y - featureInstance->eventTemplate.radius)) + 1.0f;
+    } else if (localCenter.y + featureInstance->eventTemplate.radius > 0.0) {
+        featureInstance->eventTemplate.center.z -= localCenter.y + featureInstance->eventTemplate.radius + 1.0f;
     }
 
-    float angle = 0.0f;
-    const float angleStep = (float)(6.2831853071800001 / eventTemplate->pointCount);
-    for (int i = 0; i < eventTemplate->pointCount; ++i) {
+    angleStep = (float)(6.2831853071800001 / eventTemplate->pointCount);
+    angle = 0.0f;
+    // One counter serves all three loops; retail keeps it in a single home.
+    for (i = 0; i < eventTemplate->pointCount; ++i) {
         zMath::SinCos(angle, &currentPoint->x, &currentPoint->z);
 
         currentPoint->x *= featureInstance->eventTemplate.radius;
@@ -278,63 +302,44 @@ zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_Crate
         angle += angleStep;
     }
 
-    zVec3* const points = featureInstance->points;
+    points = featureInstance->points;
     featureInstance->boundsMinX = points[0].x;
     featureInstance->boundsMaxX = points[0].x;
     featureInstance->boundsMinZ = points[0].z;
     featureInstance->boundsMaxZ = points[0].z;
 
-    for (int i_282 = 1; i_282 < eventTemplate->pointCount; ++i_282) {
-        zVec3* const point = &points[i_282];
-        if (point->x < featureInstance->boundsMinX) {
-            featureInstance->boundsMinX = point->x;
-        }
-
-        if (point->x > featureInstance->boundsMaxX) {
-            featureInstance->boundsMaxX = point->x;
-        }
-
-        if (point->z < featureInstance->boundsMinZ) {
-            featureInstance->boundsMinZ = point->z;
-        }
-
-        if (point->z > featureInstance->boundsMaxZ) {
-            featureInstance->boundsMaxZ = point->z;
-        }
+    for (i = 1; i < eventTemplate->pointCount; ++i) {
+        ZDEC_EXPAND_BOUNDS(featureInstance->boundsMinX, featureInstance->boundsMaxX, points[i].x);
+        ZDEC_EXPAND_BOUNDS(featureInstance->boundsMinZ, featureInstance->boundsMaxZ, points[i].z);
     }
 
     if (featureInstance->featureGridCell->featureCount > 0) {
-        const int nodeCount = featureInstance->featureGridCell->nodeCount;
-        if (nodeCount > 0) {
-            zGeometry_ClipPatchNodeView** nodeCursor = featureInstance->featureGridCell->nodes;
-            for (int i = 0; i < nodeCount; ++i) {
-                zGeometry_ClipPatchNodeView* node = *nodeCursor;
-                if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {
-                    zDEClient_FeatureContextOverlapView* context
-                        = (zDEClient_FeatureContextOverlapView*)(node->callbackContext);
-                    if (context != 0) {
-                        const int featureType = context->featureType;
-                        if (featureType == 1) {
-                            if (context->bounds_38 + 5.0f > featureInstance->boundsMinX
-                                && context->bounds_30 - 5.0f < featureInstance->boundsMaxX
-                                && context->bounds_3c + 5.0f > featureInstance->boundsMinZ
-                                && context->bounds_34 - 5.0f < featureInstance->boundsMaxZ) {
-                                DestroyFeature(featureInstance);
-                                return 0;
-                            }
-                        } else if (featureType == 3) {
-                            if (context->bounds_3c + 5.0f > featureInstance->boundsMinX
-                                && context->bounds_34 - 5.0f < featureInstance->boundsMaxX
-                                && context->bounds_40 + 5.0f > featureInstance->boundsMinZ
-                                && context->bounds_38 - 5.0f < featureInstance->boundsMaxZ) {
-                                DestroyFeature(featureInstance);
-                                return 0;
-                            }
+        // Retail hoists the node count into a loop temporary and strength-reduces nodes[i].
+        for (i = 0; i < featureInstance->featureGridCell->nodeCount; ++i) {
+            zGeometry_ClipPatchNodeView* node = featureInstance->featureGridCell->nodes[i];
+            if (strcmp(node->name, g_zDEClient_FeatureNodeName) == 0) {
+                zDEClient_FeatureContextOverlapView* context
+                    = (zDEClient_FeatureContextOverlapView*)(node->callbackContext);
+                if (context != 0) {
+                    const int featureType = context->featureType;
+                    if (featureType == 1) {
+                        if (context->bounds_38 + 5.0f > featureInstance->boundsMinX
+                            && context->bounds_30 - 5.0f < featureInstance->boundsMaxX
+                            && context->bounds_3c + 5.0f > featureInstance->boundsMinZ
+                            && context->bounds_34 - 5.0f < featureInstance->boundsMaxZ) {
+                            DestroyFeature(featureInstance);
+                            return 0;
+                        }
+                    } else if (featureType == 3) {
+                        if (context->bounds_3c + 5.0f > featureInstance->boundsMinX
+                            && context->bounds_34 - 5.0f < featureInstance->boundsMaxX
+                            && context->bounds_40 + 5.0f > featureInstance->boundsMinZ
+                            && context->bounds_38 - 5.0f < featureInstance->boundsMaxZ) {
+                            DestroyFeature(featureInstance);
+                            return 0;
                         }
                     }
                 }
-
-                ++nodeCursor;
             }
         }
     }

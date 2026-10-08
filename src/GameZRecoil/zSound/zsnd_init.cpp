@@ -339,7 +339,8 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
         break;
     }
 
-    g_zSndCdFlags &= ~0x03;
+    g_zSndCdFlags.ready = 0;
+    g_zSndCdFlags.stereoAux = 0;
     g_zSndCdTrackListCount = 0;
     g_zSnd_SearchPathList = 0;
     g_zSndCdDeviceId = 0;
@@ -466,8 +467,6 @@ extern "C" int __fastcall zSndSystemInit(unsigned int hwnd, const char* zrdPath)
  */
 extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRootNode)
 {
-    (void)configRootNode;
-
     zSndCd::Init(zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_CdTracksKey));
 
     const char* pathText = zReader::FindString(g_zSnd_ConfigRootNode, g_zSndConfig_SoundPathKey);
@@ -487,57 +486,37 @@ extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRo
     zReader::Node* setsNode = zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_SetsKey);
     zReader::Node* sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
+    // The otherwise unused parameter is reused as the set cursor: retail homes
+    // ECX at entry in the frame slot this cursor later spills to.
+    configRootNode = &sets[1];
     for (int i = 0; i < setCount; ++i) {
-        zReader::Node* setNameNode = &sets[(i * 2) + 1];
-        zReader::Node* sampleListNode = &sets[(i * 2) + 2];
-        const int sampleCount = sampleListNode->value.nodes[0].value.i32 - 1;
-        zSndSampleSet* sampleSet = (zSndSampleSet*)(::operator new(sizeof(zSndSampleSet)));
-        if (sampleSet != 0) {
-            sampleSet = sampleSet->RegistryAddEntry(setNameNode->value.str, sampleCount);
-        }
+        const int sampleCount = configRootNode[1].value.nodes[0].value.i32 - 1;
+        zSndSampleSet* sampleSet = new zSndSampleSet(configRootNode->value.str, sampleCount);
+        ++configRootNode;
 
-        zReader::Node* entries = sampleListNode->value.nodes;
-        for (int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex) {
+        int sampleIndex = 0;
+        zReader::Node* entryNode = &configRootNode->value.nodes[1];
+        for (; sampleIndex < sampleCount; ++sampleIndex, ++entryNode) {
             zSndSample* sample = sampleSet->GetSampleAt(sampleIndex);
-            zReader::Node* entryNode = &entries[sampleIndex + 1];
-            zReader::Node* entry = entryNode->value.nodes;
 
             sample->createGuard = 0;
-            sample->replayFields.sampleId = entry[1].value.str;
-            sample->replayFields.resourceName = entry[2].value.str;
+            sample->replayFields.sampleId = entryNode->value.nodes[1].value.str;
+            sample->replayFields.resourceName = entryNode->value.nodes[2].value.str;
 
             int tailIndex = 3;
-            if (entry[tailIndex].type == zReader::ZRDR_NODE_FLOAT) {
-                sample->replayFields.gain = entry[tailIndex].value.f32;
-                ++tailIndex;
+            if (entryNode->value.nodes[tailIndex].type == zReader::ZRDR_NODE_FLOAT) {
+                sample->replayFields.gain = entryNode->value.nodes[tailIndex++].value.f32;
             } else {
                 sample->replayFields.gain = 1.0f;
             }
 
-            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
-                sample->replayFields.flags |= 0x01;
-            } else {
-                sample->replayFields.flags &= ~0x01;
-            }
-            ++tailIndex;
+            sample->replayFields.flagBits.looping = strcmp(entryNode->value.nodes[tailIndex++].value.str, "TRUE") == 0;
+            sample->replayFields.flagBits.flag04 = strcmp(entryNode->value.nodes[tailIndex++].value.str, "TRUE") == 0;
+            sample->replayFields.flagBits.flag02 = strcmp(entryNode->value.nodes[tailIndex++].value.str, "TRUE") == 0;
 
-            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
-                sample->replayFields.flags |= 0x04;
-            } else {
-                sample->replayFields.flags &= ~0x04;
-            }
-            ++tailIndex;
-
-            if (strcmp(entry[tailIndex].value.str, "TRUE") == 0) {
-                sample->replayFields.flags |= 0x02;
-            } else {
-                sample->replayFields.flags &= ~0x02;
-            }
-            ++tailIndex;
-
-            if (entry[0].value.i32 == tailIndex + 2) {
-                sample->rangeMin = entry[tailIndex].value.f32;
-                sample->rangeMax = entry[tailIndex + 1].value.f32;
+            if (entryNode->value.nodes[0].value.i32 == tailIndex + 2) {
+                sample->rangeMin = entryNode->value.nodes[tailIndex++].value.f32;
+                sample->rangeMax = entryNode->value.nodes[tailIndex].value.f32;
             } else {
                 sample->rangeMin = 50.0f;
                 sample->rangeMax = 400.0f;
@@ -555,6 +534,7 @@ extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRo
             sample->lowVariant.bitsPerSample = 8;
             sample->lowVariant.channelCount = 1;
         }
+        ++configRootNode;
     }
 
     zReader::Node* groupsNode = zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_SoundGroupsKey);
@@ -573,8 +553,6 @@ extern "C" int __fastcall zSndSystemInitLegacySetsSyntax(zReader::Node* configRo
  */
 extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRootNode)
 {
-    (void)configRootNode;
-
     zSndCd::Init(zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_CdTracksKey));
 
     const char* pathText = zReader::FindString(g_zSnd_ConfigRootNode, g_zSndConfig_SoundPathKey);
@@ -586,7 +564,7 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
         }
     }
 
-    float speedOfSound = 0.0f;
+    float speedOfSound;
     if (zReader::GetFloat(g_zSnd_ConfigRootNode, g_zSndConfig_SpeedOfSoundKey, &speedOfSound) != 0) {
         zSnd::SetSpeedOfSoundMps(speedOfSound);
     }
@@ -594,56 +572,60 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
     zReader::Node* setsNode = zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_SetsKey);
     zReader::Node* sets = setsNode->value.nodes;
     const int setCount = (sets[0].value.i32 - 1) / 2;
+    // The otherwise unused parameter is reused as the set cursor: retail homes
+    // ECX at entry in the frame slot this cursor later spills to.
+    configRootNode = &sets[1];
     for (int i = 0; i < setCount; ++i) {
-        zReader::Node* setNameNode = &sets[(i * 2) + 1];
-        zReader::Node* sampleListNode = &sets[(i * 2) + 2];
-        const int sampleCount = sampleListNode->value.nodes[0].value.i32 - 1;
-        zSndSampleSet* sampleSet = (zSndSampleSet*)(::operator new(sizeof(zSndSampleSet)));
-        if (sampleSet != 0) {
-            sampleSet = sampleSet->RegistryAddEntry(setNameNode->value.str, sampleCount);
-        }
+        const int sampleCount = configRootNode[1].value.nodes[0].value.i32 - 1;
+        zSndSampleSet* sampleSet = new zSndSampleSet(configRootNode->value.str, sampleCount);
+        ++configRootNode;
 
-        zReader::Node* samples = sampleListNode->value.nodes;
-        for (int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex) {
+        int sampleIndex = 0;
+        zReader::Node* sampleNode = &configRootNode->value.nodes[1];
+        for (; sampleIndex < sampleCount; ++sampleIndex, ++sampleNode) {
             zSndSample* sample = sampleSet->GetSampleAt(sampleIndex);
-            zReader::Node* sampleNode = &samples[sampleIndex + 1];
-            zReader::Node* sampleFields = sampleNode->value.nodes;
 
             sample->createGuard = 0;
-            sample->replayFields.sampleId = sampleFields[1].value.str;
-            sample->replayFields.resourceName = sampleFields[2].value.str;
+            sample->replayFields.sampleId = sampleNode->value.nodes[1].value.str;
+            sample->replayFields.resourceName = sampleNode->value.nodes[2].value.str;
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_3dKey) != 0) {
+            zReader::Node* tagNode = zRdrFindTag(sampleNode, g_zSndConfig_3dKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x04;
             } else {
                 sample->replayFields.flags &= ~0x04;
             }
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_LoopedKey) != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_LoopedKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x01;
             } else {
                 sample->replayFields.flags &= ~0x01;
             }
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_FrequencyKey) != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_FrequencyKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x20;
             } else {
                 sample->replayFields.flags &= ~0x20;
             }
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_HardwareKey) != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_HardwareKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x40;
             } else {
                 sample->replayFields.flags &= ~0x40;
             }
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_PurgeableKey) != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_PurgeableKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x02;
             } else {
                 sample->replayFields.flags &= ~0x02;
             }
 
-            if (zRdrFindTag(sampleNode, g_zSndConfig_VoiceKey) != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_VoiceKey);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x10;
             } else {
                 sample->replayFields.flags &= ~0x10;
@@ -660,77 +642,80 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
             sample->a3dDistanceScale = 1.0f;
             zReader::GetFloat(sampleNode, g_zSndConfig_A3dDistanceKey, &sample->a3dDistanceScale);
 
-            zReader::Node* rangeNode = zRdrFindTag(sampleNode, g_zEffectAnim_TokenRange);
-            if (rangeNode != 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zEffectAnim_TokenRange);
+            if (tagNode != 0) {
                 sample->replayFields.flags |= 0x04;
-                zReader::Node* range = rangeNode->value.nodes;
-                sample->rangeMin = range[1].value.f32;
-                sample->rangeMax = range[2].value.f32;
+                sample->rangeMin = tagNode->value.nodes[1].value.f32;
+                sample->rangeMax = tagNode->value.nodes[2].value.f32;
             } else {
                 sample->rangeMin = 50.0f;
                 sample->rangeMax = 400.0f;
             }
 
-            zReader::Node* variantNode = zRdrFindTag(sampleNode, "HIGH");
-            if (variantNode == 0) {
+            tagNode = zRdrFindTag(sampleNode, "HIGH");
+            if (tagNode != 0) {
+                if (tagNode->type == zReader::ZRDR_NODE_STRING) {
+                    sample->highVariant.sampleName = _strdup(tagNode->value.str);
+                    sample->highVariant.samplesPerSec = 0;
+                    sample->highVariant.bitsPerSample = 0;
+                    sample->highVariant.channelCount = 0;
+                } else {
+                    sample->highVariant.sampleName = 0;
+                    sample->highVariant.samplesPerSec = tagNode->value.nodes[1].value.i32;
+                    sample->highVariant.bitsPerSample = tagNode->value.nodes[2].value.i32;
+                    sample->highVariant.channelCount = tagNode->value.nodes[3].value.i32;
+                }
+            } else {
                 sample->highVariant.sampleName = 0;
                 sample->highVariant.samplesPerSec = 44100;
                 sample->highVariant.bitsPerSample = 16;
                 sample->highVariant.channelCount = 2;
-            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
-                sample->highVariant.sampleName = _strdup(variantNode->value.str);
-                sample->highVariant.samplesPerSec = 0;
-                sample->highVariant.bitsPerSample = 0;
-                sample->highVariant.channelCount = 0;
-            } else {
-                zReader::Node* format = variantNode->value.nodes;
-                sample->highVariant.sampleName = 0;
-                sample->highVariant.samplesPerSec = format[1].value.i32;
-                sample->highVariant.bitsPerSample = format[2].value.i32;
-                sample->highVariant.channelCount = format[3].value.i32;
             }
 
-            variantNode = zRdrFindTag(sampleNode, g_zSndConfig_QualityMedToken);
-            if (variantNode == 0) {
+            tagNode = zRdrFindTag(sampleNode, g_zSndConfig_QualityMedToken);
+            if (tagNode != 0) {
+                if (tagNode->type == zReader::ZRDR_NODE_STRING) {
+                    sample->medVariant.sampleName = _strdup(tagNode->value.str);
+                    sample->medVariant.samplesPerSec = 0;
+                    sample->medVariant.bitsPerSample = 0;
+                    sample->medVariant.channelCount = 0;
+                } else {
+                    sample->medVariant.sampleName = 0;
+                    sample->medVariant.samplesPerSec = tagNode->value.nodes[1].value.i32;
+                    sample->medVariant.bitsPerSample = tagNode->value.nodes[2].value.i32;
+                    sample->medVariant.channelCount = tagNode->value.nodes[3].value.i32;
+                }
+            } else {
                 sample->medVariant.sampleName = 0;
                 sample->medVariant.samplesPerSec = 22050;
                 sample->medVariant.bitsPerSample = 16;
                 sample->medVariant.channelCount = 1;
-            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
-                sample->medVariant.sampleName = _strdup(variantNode->value.str);
-                sample->medVariant.samplesPerSec = 0;
-                sample->medVariant.bitsPerSample = 0;
-                sample->medVariant.channelCount = 0;
-            } else {
-                zReader::Node* format = variantNode->value.nodes;
-                sample->medVariant.sampleName = 0;
-                sample->medVariant.samplesPerSec = format[1].value.i32;
-                sample->medVariant.bitsPerSample = format[2].value.i32;
-                sample->medVariant.channelCount = format[3].value.i32;
             }
 
-            variantNode = zRdrFindTag(sampleNode, "LOW");
-            if (variantNode == 0) {
+            tagNode = zRdrFindTag(sampleNode, "LOW");
+            if (tagNode != 0) {
+                if (tagNode->type == zReader::ZRDR_NODE_STRING) {
+                    sample->lowVariant.sampleName = _strdup(tagNode->value.str);
+                    sample->lowVariant.samplesPerSec = 0;
+                    sample->lowVariant.bitsPerSample = 0;
+                    sample->lowVariant.channelCount = 0;
+                } else {
+                    sample->lowVariant.sampleName = 0;
+                    sample->lowVariant.samplesPerSec = tagNode->value.nodes[1].value.i32;
+                    sample->lowVariant.bitsPerSample = tagNode->value.nodes[2].value.i32;
+                    sample->lowVariant.channelCount = tagNode->value.nodes[3].value.i32;
+                }
+            } else {
                 sample->lowVariant.sampleName = 0;
                 sample->lowVariant.samplesPerSec = 11025;
                 sample->lowVariant.bitsPerSample = 8;
                 sample->lowVariant.channelCount = 1;
-            } else if (variantNode->type == zReader::ZRDR_NODE_STRING) {
-                sample->lowVariant.sampleName = _strdup(variantNode->value.str);
-                sample->lowVariant.samplesPerSec = 0;
-                sample->lowVariant.bitsPerSample = 0;
-                sample->lowVariant.channelCount = 0;
-            } else {
-                zReader::Node* format = variantNode->value.nodes;
-                sample->lowVariant.sampleName = 0;
-                sample->lowVariant.samplesPerSec = format[1].value.i32;
-                sample->lowVariant.bitsPerSample = format[2].value.i32;
-                sample->lowVariant.channelCount = format[3].value.i32;
             }
 
             sample->playbackParam3 = 20000.0f;
             sample->playbackParam2 = 90000.0f;
         }
+        ++configRootNode;
     }
 
     zReader::Node* groupsNode = zRdrFindTag(g_zSnd_ConfigRootNode, g_zSndConfig_SoundGroupsKey);

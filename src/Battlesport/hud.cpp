@@ -9326,12 +9326,14 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
     zProjectedPoint projectedPoint;
     projectedPoint.x = screenX;
     projectedPoint.y = screenY;
-    const int projectedX = (int)(projectedPoint.x);
-    g_HudUiMgrReticleProjectedX = projectedX;
-    const int projectedY = (int)(projectedPoint.y);
-    g_HudUiMgrReticleProjectedY = projectedY;
+    // Retail stores the projected globals first and computes SetPos from them (no local copy).
+    g_HudUiMgrReticleProjectedX = (int)(projectedPoint.x);
+    g_HudUiMgrReticleProjectedY = (int)(projectedPoint.y);
 
-    reticleElement->SetPos(projectedX - g_HudUiMgrReticleWidgetHalfW, projectedY - g_HudUiMgrReticleWidgetHalfH);
+    reticleElement->SetPos(
+        g_HudUiMgrReticleProjectedX - g_HudUiMgrReticleWidgetHalfW,
+        g_HudUiMgrReticleProjectedY - g_HudUiMgrReticleWidgetHalfH
+    );
 
     if ((g_HudLayoutHW.reticleClipInitFlags & 1) == 0) {
         g_HudLayoutHW.reticleClipInitFlags = (unsigned char)(g_HudLayoutHW.reticleClipInitFlags | 1);
@@ -9397,27 +9399,20 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
     }
 
     if (raycastResult == 0) {
-        const zClassDiPickCandidateEntry& candidate = rayData.entries[rayData.candidateCount];
-        g_HudUiMgrReticleProjection[0] = candidate.hitPos.x;
-        g_HudUiMgrReticleProjection[1] = candidate.hitPos.y;
-        g_HudUiMgrReticleProjection[2] = candidate.hitPos.z;
+        // Retail indexes the hit entry twice (count * 40 offset) and copies hitPos as a struct.
+        g_HudUiMgrReticleProjection = rayData.entries[rayData.candidateCount].hitPos;
 
-        CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(candidate.node);
-        if (hitSlot->damageHandler != 0) {
+        if (((CZNodeFreeListSlot*)(rayData.entries[rayData.candidateCount].node))->damageHandler != 0) {
             g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[2]);
         } else {
             g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[0]);
         }
     } else {
-        g_HudUiMgrReticleProjection[0] = farPoint.x;
-        g_HudUiMgrReticleProjection[1] = farPoint.y;
-        g_HudUiMgrReticleProjection[2] = farPoint.z;
+        g_HudUiMgrReticleProjection = farPoint;
         g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[1]);
     }
 
-    worldHitPoint->x = g_HudUiMgrReticleProjection[0];
-    worldHitPoint->y = g_HudUiMgrReticleProjection[1];
-    worldHitPoint->z = g_HudUiMgrReticleProjection[2];
+    *worldHitPoint = g_HudUiMgrReticleProjection;
 
     zOpt_ViewRectSection* const renderRect = zOpt::GetRenderSection();
     const float minX = (float)(renderRect->x) + g_HudUiMgrSensorBlock.sensorClampHalfW;
@@ -9466,7 +9461,7 @@ void __cdecl ReticleStaticAtexitStub() { }
 void __fastcall CopyReticleProjection(float* outProjection)
 {
     unsigned int* const outBits = (unsigned int*)(outProjection);
-    const unsigned int* const projectionBits = (const unsigned int*)(g_HudUiMgrReticleProjection);
+    const unsigned int* const projectionBits = (const unsigned int*)(&g_HudUiMgrReticleProjection);
     outBits[0] = projectionBits[0];
     outBits[1] = projectionBits[1];
     outBits[2] = projectionBits[2];

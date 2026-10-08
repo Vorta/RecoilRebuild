@@ -1519,12 +1519,12 @@ zSndSample* __fastcall zSnd::FindSampleByName(const char* sampleName)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-registryaddentry
- * @recoil-artifact defines .text recoil:function:0x4a09e0: zSndSampleSet::RegistryAddEntry.
+ * @recoil-artifact defines .text recoil:function:0x4a09e0: zSndSampleSet::zSndSampleSet.
  *
  *
  * Purpose: Allocates sample entries, stores the set name, and appends this set to the registry.
  */
-zSndSampleSet* zSndSampleSet::RegistryAddEntry(const char* name, int count)
+zSndSampleSet::zSndSampleSet(const char* name, int count)
 {
     samples = (zSndSample*)(calloc((size_t)(count), sizeof(zSndSample)));
     sampleCount = count;
@@ -1535,7 +1535,6 @@ zSndSampleSet* zSndSampleSet::RegistryAddEntry(const char* name, int count)
     }
 
     g_zSnd_SampleSetRegistry.push_back(this);
-    return this;
 }
 
 /**

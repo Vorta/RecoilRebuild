@@ -25,7 +25,7 @@ struct zSndCdTrackState {
  */
 extern "C" int g_zSndCdTrackListCount = 0;
 extern "C" int g_zSndCdLastPlayMode = 0;
-extern "C" int g_zSndCdFlags = 0;
+extern "C" zSndCdFlagBits g_zSndCdFlags = { 0 };
 extern "C" unsigned short g_zSndCdDeviceId = 0;
 extern "C" int g_zSndCdAuxDeviceId = 0;
 extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
@@ -79,21 +79,23 @@ int __cdecl Shutdown();
  */
 RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
 {
-    if (((g_zSndCdFlags >> 1) & 1) != 0) {
+    if (g_zSndCdFlags.ready) {
         return 1;
     }
 
-    MCI_OPEN_PARMSA openParms = { 0 };
+    MCI_OPEN_PARMSA openParms;
+    memset(&openParms, 0, sizeof(openParms));
     openParms.lpstrDeviceType = "cdaudio";
     DWORD mciError = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x43);
+        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x43);
     }
 
     g_zSndCdDeviceId = (unsigned short)(openParms.wDeviceID);
 
-    MCI_STATUS_PARMS statusParms = { 0 };
-    statusParms.dwItem = 5;
+    MCI_STATUS_PARMS statusParms;
+    memset(&statusParms, 0, sizeof(statusParms));
+    statusParms.dwItem = MCI_STATUS_MEDIA_PRESENT;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_STATUS,
@@ -101,7 +103,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x4d);
+        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x4d);
     }
 
     if (statusParms.dwReturn == 0) {
@@ -109,7 +111,8 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         return 0;
     }
 
-    MCI_SET_PARMS setParms = { 0 };
+    MCI_SET_PARMS setParms;
+    memset(&setParms, 0, sizeof(setParms));
     setParms.dwTimeFormat = MCI_FORMAT_TMSF;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId),
@@ -118,11 +121,11 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&setParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x5d);
+        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x5d);
     }
 
     memset(&statusParms, 0, sizeof(statusParms));
-    statusParms.dwItem = 3;
+    statusParms.dwItem = MCI_STATUS_NUMBER_OF_TRACKS;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId),
         MCI_STATUS,
@@ -130,11 +133,11 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x66);
+        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x66);
     }
 
     g_zSndCdTrackCountCached = (int)(statusParms.dwReturn);
-    statusParms.dwItem = 1;
+    statusParms.dwItem = MCI_STATUS_LENGTH;
     statusParms.dwTrack = 0;
     mciError = mciSendCommandA(
         (MCIDEVICEID)(g_zSndCdDeviceId),
@@ -143,45 +146,41 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x70);
+        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x70);
     }
 
-    const UINT auxCount = auxGetNumDevs();
-    for (UINT deviceId = 0; deviceId < auxCount; ++deviceId) {
-        AUXCAPSA caps = { 0 };
+    const int auxCount = auxGetNumDevs();
+    for (int deviceId = 0; deviceId < auxCount; ++deviceId) {
+        AUXCAPSA caps;
+        memset(&caps, 0, sizeof(caps)); // retail rep stosd, ecx = 0x0c
         if (auxGetDevCapsA(deviceId, &caps, sizeof(caps)) == 0 && caps.wTechnology == AUXCAPS_CDAUDIO
             && (caps.dwSupport & AUXCAPS_VOLUME) != 0) {
             if ((caps.dwSupport & AUXCAPS_LRVOLUME) != 0) {
-                g_zSndCdFlags |= ZSND_CD_FLAG_STEREO_AUX;
+                g_zSndCdFlags.stereoAux = 1;
             }
-            g_zSndCdAuxDeviceId = (int)(deviceId);
+            g_zSndCdAuxDeviceId = deviceId;
             break;
         }
     }
 
     if (g_zSndCdAuxDeviceId != -1) {
-        DWORD volume = 0;
+        // Not pre-zeroed: retail has no store before auxGetVolume.
+        DWORD volume;
         if (auxGetVolume((UINT)(g_zSndCdAuxDeviceId), &volume) == 0) {
-            g_zSndCdAuxVolumeSecondary = (unsigned short)(volume & 0xffff);
-            g_zSndCdAuxVolumePrimary = (unsigned short)((volume >> 16) & 0xffff);
+            g_zSndCdAuxVolumePrimary = HIWORD(volume);
+            g_zSndCdAuxVolumeSecondary = LOWORD(volume);
         }
     }
 
-    const DWORD discLength = statusParms.dwReturn;
-    g_zSndCdDiscLengthMinute = (int)((discLength >> 8) & 0xff);
-    g_zSndCdDiscLengthSecond = (int)((discLength >> 16) & 0xff);
+    g_zSndCdDiscLengthMinute = MCI_TMSF_MINUTE(statusParms.dwReturn);
+    g_zSndCdDiscLengthSecond = MCI_TMSF_SECOND(statusParms.dwReturn);
     ResetTrackState();
-    g_zSndCdFlags |= ZSND_CD_FLAG_READY;
+    g_zSndCdFlags.ready = 1;
 
     if (cdTracksNode != 0) {
         for (int i = 1; i < cdTracksNode->value.nodes[0].value.i32; ++i) {
             zReader::Node* const trackConfig = cdTracksNode->value.nodes[i].value.nodes;
-            zSndCdTrackEntry* entry = (zSndCdTrackEntry*)(::operator new(sizeof(zSndCdTrackEntry)));
-            if (entry != 0) {
-                entry->trackNumber = trackConfig[2].value.i32;
-                entry->archiveName = _strdup(trackConfig[1].value.str);
-            }
-            g_zSndCdTrackList.push_back(entry);
+            g_zSndCdTrackList.push_back(new zSndCdTrackEntry(trackConfig[1].value.str, trackConfig[2].value.i32));
         }
     }
 
@@ -243,7 +242,7 @@ int __cdecl Shutdown()
         g_zSndCdDeviceId = 0;
     }
 
-    g_zSndCdFlags &= ~ZSND_CD_FLAG_READY;
+    g_zSndCdFlags.ready = 0;
 
     std::transform(
         g_zSndCdTrackList.begin(),
@@ -283,7 +282,7 @@ int __fastcall PlayTrackWithMode(int trackIndex, int playbackMode)
  */
 RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -326,8 +325,8 @@ RECOIL_NO_GS int __fastcall ApplyPlaybackMode(int playbackMode)
  */
 void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0 || g_zSndCdLastPlayMode != 5
-        || lParam != (unsigned int)(g_zSndCdDeviceId) || wParam != 1) {
+    if (!g_zSndCdFlags.ready || g_zSndCdLastPlayMode != 5 || lParam != (unsigned int)(g_zSndCdDeviceId)
+        || wParam != 1) {
         return;
     }
 
@@ -343,7 +342,7 @@ void __fastcall OnMciNotify(unsigned int wParam, unsigned int lParam)
  */
 RECOIL_NO_GS int __cdecl Stop()
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -367,7 +366,7 @@ RECOIL_NO_GS int __cdecl Stop()
  */
 RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -395,7 +394,7 @@ RECOIL_NO_GS int __fastcall PlayTrack(int trackIndex)
  */
 int __cdecl IsStereoAuxEnabled()
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -403,7 +402,7 @@ int __cdecl IsStereoAuxEnabled()
         return 0;
     }
 
-    return g_zSndCdFlags & ZSND_CD_FLAG_STEREO_AUX;
+    return g_zSndCdFlags.stereoAux;
 }
 
 /**
@@ -415,7 +414,7 @@ int __cdecl IsStereoAuxEnabled()
  */
 int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secondaryVolumeOut)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -443,13 +442,13 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */
 int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryVolume)
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 
@@ -479,7 +478,7 @@ int __fastcall SetVolume(unsigned short primaryVolume, unsigned short secondaryV
  */
 int __cdecl GetTrackCount()
 {
-    if ((g_zSndCdFlags & ZSND_CD_FLAG_READY) == 0) {
+    if (!g_zSndCdFlags.ready) {
         return 0;
     }
 

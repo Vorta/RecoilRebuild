@@ -13,6 +13,7 @@
  * @recoil-anchor recoil:anchor:zui.zui-element.hud-ui-widget-hit-test
  * @recoil-artifact defines .text recoil:function:0x4b4030: HudUiWidget::HitTest.
  * @recoil-match byte
+ * Purpose: report whether the point (px, py) lies inside a visible widget's bounds rectangle.
  */
 int HudUiWidget::HitTest(int px, int py)
 {

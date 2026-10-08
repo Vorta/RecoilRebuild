@@ -140,7 +140,7 @@ void __fastcall SetSoftwarePathActive(int active);
 void __stdcall SetTextureWorldPerMeter(float worldPerMeterU, float worldPerMeterV);
 void __stdcall SetTextureWorldBase(float worldBaseU, float worldBaseV);
 int __fastcall SetDiTextureWorldPerMeter(zDiPartial* di, int worldSpaceEnabled, float scrollRateU, float scrollRateV);
-// Both render-node entries clear eax before returning (retail 0x476f14/0x477b23, 0x477d55/0x478c5b).
+/** Both render-node entries clear eax before returning (retail 0x476f14/0x477b23, 0x477d55/0x478c5b). */
 int __fastcall RenderNodeHardware(CZNodePartial* node, int clipMask);
 int __fastcall RenderNodeSoftware(CZNodePartial* node, int clipMask);
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);

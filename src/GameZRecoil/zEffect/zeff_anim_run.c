@@ -3223,10 +3223,16 @@ namespace zEffect
             colorTime = sequenceRuntime->eventElapsedSec;
         }
 
-        float red = event->redSlope * colorTime + event->redBase;
-        float green = event->greenSlope * colorTime + event->greenBase;
-        float blue = event->blueSlope * colorTime + event->blueBase;
-        float alpha = event->alphaSlope * colorTime + event->alphaBase;
+        // Each channel accumulates in place: retail schedules all four slope
+        // products before the base adds.
+        float red = event->redSlope * colorTime;
+        red += event->redBase;
+        float green = event->greenSlope * colorTime;
+        green += event->greenBase;
+        float blue = event->blueSlope * colorTime;
+        blue += event->blueBase;
+        float alpha = event->alphaSlope * colorTime;
+        alpha += event->alphaBase;
         g_zEffectAnim_State.frameDeltaRemainingSec -= timeSlice;
 
         if (sequenceRuntime->eventElapsedSec > event->endTimeSec) {
@@ -3262,10 +3268,14 @@ namespace zEffect
             alpha = 1.0f;
         }
 
+        // Scaled in place, then rounded: retail 'fmul 255.0f; fsub -0.5' per channel.
+        red *= 255.0f;
+        green *= 255.0f;
+        blue *= 255.0f;
         const unsigned short packedColor = zVidPackColorRGB(
-            (unsigned char)((int)(red * 255.0f + 0.5)),
-            (unsigned char)((int)(green * 255.0f + 0.5)),
-            (unsigned char)((int)(blue * 255.0f + 0.5))
+            (unsigned char)((int)(red + 0.5)),
+            (unsigned char)((int)(green + 0.5)),
+            (unsigned char)((int)(blue + 0.5))
         );
         zVideo::FxPass3SetPrimaryElementParamsLocal(packedColor, (double)(alpha));
         return result;

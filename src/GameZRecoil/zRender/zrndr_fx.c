@@ -1513,10 +1513,11 @@ namespace zVideo
                 if (columnCount > 0) {
                     int count = columnCount;
                     do {
-                        const unsigned int rb
-                            = (src[-surfaceWidth] & rbMask) + ((*src & rbMask) << 1) + (src[surfaceWidth] & rbMask);
-                        const unsigned int green = (src[-surfaceWidth] & greenMask) + ((*src & greenMask) << 1)
-                            + (src[surfaceWidth] & greenMask);
+                        const unsigned int up = src[-surfaceWidth];
+                        const unsigned int down = src[surfaceWidth];
+                        const unsigned int center = *src;
+                        const unsigned int rb = (down & rbMask) + ((center & rbMask) << 1) + (up & rbMask);
+                        const unsigned int green = (down & greenMask) + ((center & greenMask) << 1) + (up & greenMask);
                         *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
                         ++src;
                         ++scratch;

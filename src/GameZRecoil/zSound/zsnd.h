@@ -223,7 +223,7 @@ struct zSndSampleSet {
     zSndSample* samples;
     int resourcesLoaded;
 
-    zSndSampleSet* RegistryAddEntry(const char* name, int count);
+    zSndSampleSet(const char* name, int count);
     zSndSample* GetSampleAt(int index);
     zSndSample* FindSampleByName(const char* sampleName);
     int Init();
@@ -327,6 +327,12 @@ struct zSndFadeListCursor {
 struct zSndCdTrackEntry {
     char* archiveName;
     int trackNumber;
+
+    zSndCdTrackEntry(const char* name, int track)
+    {
+        trackNumber = track;
+        archiveName = _strdup(name);
+    }
 };
 
 namespace zReader {
@@ -407,6 +413,15 @@ void __cdecl ReleaseCachedDirectSound();
 HRESULT __fastcall CachedDirectSoundGetCaps(DSCAPS* caps);
 } // namespace zSnd
 
+/**
+ * Purpose: CD audio state bits; zSndCd::Init tests ready as a bitfield
+ * (retail 'shr eax,1; test al,1') and zSndPreInitializeRuntimeState clears both.
+ */
+struct zSndCdFlagBits {
+    unsigned int stereoAux : 1;
+    unsigned int ready : 1;
+};
+
 namespace zSndCd {
 int __fastcall Init(zReader::Node* cdTracksNode);
 int __cdecl Stop();
@@ -452,7 +467,7 @@ extern zArchiveList* g_zSndStream_FreeList;
 extern zSndStreamRequest* g_zSndStream_MatchedRequest;
 extern int g_zSndStream_MatchedRequestCount;
 extern CZNodePartial* g_zSndStream_RootNode;
-extern int g_zSndCdFlags;
+extern zSndCdFlagBits g_zSndCdFlags;
 extern int g_zSndCdLastPlayMode;
 extern unsigned short g_zSndCdDeviceId;
 extern int g_zSndCdAuxDeviceId;

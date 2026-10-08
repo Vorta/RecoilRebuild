@@ -87,6 +87,8 @@ void HudUiWidget::ReleaseImageIfOwned()
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-pos
  * @recoil-artifact defines .text recoil:function:0x4b3dd0: HudUiWidget::SetPos.
  * @recoil-match byte
+ * Purpose: move the widget to (newX, newY), centring its image on that point when alignment is enabled, and invalidate
+ * it.
  */
 void HudUiWidget::SetPos(int newX, int newY)
 {
@@ -105,6 +107,7 @@ void HudUiWidget::SetPos(int newX, int newY)
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-image-by-path-owned
  * @recoil-artifact defines .text recoil:function:0x4b3e30: HudUiWidget::SetImageByPathOwned.
  * @recoil-match byte
+ * Purpose: replace the widget image with a texture-directory image loaded by path and take ownership of it.
  */
 zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
 {
@@ -126,6 +129,7 @@ zVidImagePartial* HudUiWidget::SetImageByPathOwned(const char* imagePath)
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-set-image-borrowed-and-invalidate
  * @recoil-artifact defines .text recoil:function:0x4b3e70: HudUiWidget::SetImageBorrowedAndInvalidate.
  * @recoil-match byte
+ * Purpose: show a borrowed image that the widget does not own, then invalidate the widget.
  */
 zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* newImage)
 {
@@ -139,6 +143,7 @@ zVidImagePartial* HudUiWidget::SetImageBorrowedAndInvalidate(zVidImagePartial* n
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-invalidate-rect
  * @recoil-artifact defines .text recoil:function:0x4b3e90: HudUiWidget::InvalidateRect.
  * @recoil-match byte
+ * Purpose: queue a dirty rectangle in a free dirty-rect slot so the following draws repaint it.
  */
 void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
 {
@@ -204,6 +209,7 @@ void HudUiWidget::InvalidateRect(const HudUiRect* dirtyRect)
  * @recoil-anchor recoil:anchor:zui.zui-image.hud-ui-widget-draw
  * @recoil-artifact defines .text recoil:function:0x4b3fb0: HudUiWidget::Draw.
  * @recoil-match byte
+ * Purpose: blit the widget image to the active target, limited to the pending dirty rectangles when any are queued.
  */
 void HudUiWidget::Draw()
 {

@@ -1910,13 +1910,15 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromTex16Alpha8(int texU, int texV, i
 } // namespace zRndr
 
 namespace zRndr {
-// Stack scratch of the alpha-map MMX span leaves: sampled texels, then the matching alpha bytes widened to
-// words; the MMX gather addresses the alpha half through this layout.
+/**
+ * Stack scratch of the alpha-map MMX span leaves: sampled texels, then the matching alpha bytes widened to
+ * words; the MMX gather addresses the alpha half through this layout.
+ */
 struct SpanAlpha8Scratch {
     unsigned short texels[1024];
     unsigned short alphas[1024];
 };
-// Byte offset of the alpha half, for the dword alpha-pair store (a word-typed field operand cannot take a dword).
+/** Byte offset of the alpha half, for the dword alpha-pair store (a word-typed field operand cannot take a dword). */
 enum { kSpanAlpha8ScratchAlphas = offsetof(SpanAlpha8Scratch, alphas) };
 } // namespace zRndr
 

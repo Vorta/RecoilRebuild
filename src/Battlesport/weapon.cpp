@@ -2370,7 +2370,7 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible; reviewed inline asm reproduces the retail

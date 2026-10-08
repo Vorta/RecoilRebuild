@@ -774,7 +774,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
 
     float probeHeightByPoint[PLAYER_MAX_MODAL_PROBE_POINTS];
-    float outBestHeight;
+    float bestHeight;
     PlayerProbeTypeHistogram outTypeHistogram;
     int outAttachmentCandidateCount;
     CZNodePartial* outAttachmentNode;
@@ -782,7 +782,7 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
-        &outBestHeight,
+        &bestHeight,
         0,
         &outTypeHistogram,
         &outAttachmentCandidateCount,
@@ -857,7 +857,8 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
 
     const float hoverLiftError = minHoverClearance - masterModalData->modeAltTransitionTime;
     if (playerState->modeVariantNode != 0) {
-        CZClass::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError <= 2.0f ? 1 : 0);
+        // Retail lays out the inactive (> 2.0f) arm as the fall-through.
+        CZClass::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError > 2.0f ? 0 : 1);
     }
 
     if (hoverLiftError > 2.0f && playerState->localVel.y > 0.0f) {
@@ -888,15 +889,16 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     playerState->vehiclePitchRad = (float)(asin(probePlaneNormal.z));
     playerState->vehicleRollRad = (float)(asin(-probePlaneNormal.x));
 
-    const float speedAbs = (float)(fabs(playerState->localVel.z));
-    const float pitchWaveArg
-        = (masterModalData->hoverPitchWaveSpeedRate * speedAbs + masterModalData->hoverPitchWaveBaseRate)
-        * g_Time_AccumulatedTimeSec;
-    const float rollWaveArg
-        = (masterModalData->hoverRollWaveSpeedRate * speedAbs + masterModalData->hoverRollWaveBaseRate)
-        * g_Time_AccumulatedTimeSec;
-    const float pitchWave = (float)(sin(pitchWaveArg)) * masterModalData->hoverPitchWaveAmplitude;
-    const float rollWave = (float)(sin(rollWaveArg)) * masterModalData->hoverRollWaveAmplitude
+    // Retail computes both wave phases before either sine (the phase variables are reassigned).
+    float pitchWave = masterModalData->hoverPitchWaveSpeedRate * fabs(playerState->localVel.z)
+        + masterModalData->hoverPitchWaveBaseRate;
+    pitchWave *= g_Time_AccumulatedTimeSec;
+    float rollWave = masterModalData->hoverRollWaveSpeedRate * fabs(playerState->localVel.z)
+        + masterModalData->hoverRollWaveBaseRate;
+    rollWave *= g_Time_AccumulatedTimeSec;
+    pitchWave = (float)(sin(pitchWave));
+    pitchWave *= masterModalData->hoverPitchWaveAmplitude;
+    rollWave = (float)(sin(rollWave)) * masterModalData->hoverRollWaveAmplitude
         + masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw * playerState->localVel.z;
     playerState->vehiclePitchRad += g_Player_DeltaTime * pitchWave;
     playerState->vehicleRollRad += g_Player_DeltaTime * rollWave;
@@ -1040,7 +1042,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1320,7 +1322,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x428520: Player::UpdateMasterTypeSub.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeSub from the recovered
@@ -1539,7 +1541,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubverticaldamping
  * @recoil-artifact defines .text recoil:function:0x428c20: Player::UpdateSubVerticalDamping.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source model: bounded Player namespace subsystem helper, not a C++ Player class member.
  * Purpose: Apply submarine vertical input acceleration, velocity clamp, and neutral-input vertical damping.
@@ -1855,39 +1857,39 @@ ApplyAmphibSpeedOscillation(zUtil_SaveGameState* saveState, zVec3* inOutUpVector
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
+    float pitchSine;
+    float pitchCosine;
+    float rollSine;
+    float rollCosine;
 
-    const float pitchArg = (masterModalData->hoverPitchWaveSpeedRate * fabs(playerState->localVel.z)
-                               + masterModalData->hoverPitchWaveBaseRate)
-        * g_Time_AccumulatedTimeSec;
-    const float rollArg = (masterModalData->hoverRollWaveSpeedRate * fabs(playerState->localVel.z)
-                              + masterModalData->hoverRollWaveBaseRate)
-        * g_Time_AccumulatedTimeSec;
+    // Retail stores each wave phase in its angle variable before taking the sine.
+    const float speed = (float)(fabs(playerState->localVel.z));
+    float pitchAngle = masterModalData->hoverPitchWaveSpeedRate * speed + masterModalData->hoverPitchWaveBaseRate;
+    pitchAngle *= g_Time_AccumulatedTimeSec;
+    float rollAngle = masterModalData->hoverRollWaveSpeedRate * speed + masterModalData->hoverRollWaveBaseRate;
+    rollAngle *= g_Time_AccumulatedTimeSec;
 
-    const float pitchAngle = (float)(sin(pitchArg)) * masterModalData->hoverPitchWaveAmplitude;
-    float rollAngle = (float)(sin(rollArg)) * masterModalData->hoverRollWaveAmplitude;
+    pitchAngle = (float)(sin(pitchAngle)) * masterModalData->hoverPitchWaveAmplitude;
+    rollAngle = (float)(sin(rollAngle)) * masterModalData->hoverRollWaveAmplitude;
     if (includeYawCoupling != 0) {
         rollAngle += playerState->angVelYaw * masterModalData->hoverRollYawCoupleScale * playerState->localVel.z;
     }
 
-    const float yawSin = -playerState->steerBasisNorm.x;
-    const float yawCos = -playerState->steerBasisNorm.z;
-    float pitchSin;
-    float pitchCos;
-    zMath::SinCos(pitchAngle, &pitchSin, &pitchCos);
-    float rollSin;
-    float rollCos;
-    zMath::SinCos(rollAngle, &rollSin, &rollCos);
+    const float yawSine = -playerState->steerBasisNorm.x;
+    const float yawCosine = -playerState->steerBasisNorm.z;
+    zMath::SinCos(pitchAngle, &pitchSine, &pitchCosine);
+    zMath::SinCos(rollAngle, &rollSine, &rollCosine);
 
     zMat4x3 oscillationBasis;
-    oscillationBasis.xx = yawSin * pitchSin * rollSin + rollCos * yawCos;
-    oscillationBasis.xy = rollSin * pitchCos;
-    oscillationBasis.xz = rollSin * yawCos * pitchSin - rollCos * yawSin;
-    oscillationBasis.yx = yawSin * pitchSin * rollCos - rollSin * yawCos;
-    oscillationBasis.yy = rollCos * pitchCos;
-    oscillationBasis.yz = rollCos * yawCos * pitchSin + rollSin * yawSin;
-    oscillationBasis.zx = yawSin * pitchCos;
-    oscillationBasis.zy = -pitchSin;
-    oscillationBasis.zz = yawCos * pitchCos;
+    oscillationBasis.xx = pitchSine * (yawSine * rollSine) + yawCosine * rollCosine;
+    oscillationBasis.xy = rollSine * pitchCosine;
+    oscillationBasis.xz = pitchSine * (yawCosine * rollSine) - yawSine * rollCosine;
+    oscillationBasis.yx = pitchSine * (yawSine * rollCosine) - yawCosine * rollSine;
+    oscillationBasis.yy = rollCosine * pitchCosine;
+    oscillationBasis.yz = pitchSine * (yawCosine * rollCosine) + yawSine * rollSine;
+    oscillationBasis.zx = yawSine * pitchCosine;
+    oscillationBasis.zy = -pitchSine;
+    oscillationBasis.zz = yawCosine * pitchCosine;
 
     zMath::Vec3TransformDirectionInPlace(&oscillationBasis, inOutUpVector);
 }
@@ -1971,7 +1973,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisfrommotionaxes
  * @recoil-artifact defines .text recoil:function:0x429560: Player::RebuildSteerBasisFromMotionAxes.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::RebuildSteerBasisFromMotionAxes from the recovered
@@ -2045,7 +2047,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateautoturnandsteerfromtarget
  * @recoil-artifact defines .text recoil:function:0x429750: Player::UpdateAutoTurnAndSteerFromTarget
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: damp yaw angular velocity when steering is neutral, otherwise apply
@@ -2087,7 +2089,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updateyawvelocityfromsteerinput
  * @recoil-artifact defines .text recoil:function:0x429870: Player::UpdateYawVelocityFromSteerInput.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateYawVelocityFromSteerInput from the recovered

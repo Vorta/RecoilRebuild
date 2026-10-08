@@ -1898,7 +1898,7 @@ struct HudUiMgrData : HudUiContainer {
     unsigned int viewRectH;
     int hudOriginX;
     int hudOriginY;
-    float reticleProjection[3];
+    zVec3 reticleProjection;
     int reticleWidgetHalfW;
     int reticleWidgetHalfH;
     float reticleMapBiasX;

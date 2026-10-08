@@ -413,7 +413,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-applyterraintilt
  * @recoil-artifact defines .text recoil:function:0x42c8d0: Player::ApplyTerrainTilt.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyTerrainTilt from the recovered

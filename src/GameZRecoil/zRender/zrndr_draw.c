@@ -55,13 +55,13 @@ namespace zRndr
     // 0x49c360, 0x49c560, 0x49d1a0, and 0x49d3b0 sample it in lockstep with
     // gRndr_ActiveTexPixels using the same U/V masks and fixed-point steps.
     char* g_spanActiveTexAlphaMap = 0;
-    // Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
-    // at 0x57de7c, the transparent records at 0x57de80, the sort index bank at
-    // 0x5cacf8, the overwrite count at 0x5cb270, and overwrite records at
-    // 0x5cb274.
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-transparentqueuecount
      * @recoil-artifact defines .data recoil:data:0x57de7c: g_queuedPolyBanks.
+     * Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
+     * at 0x57de7c, the transparent records at 0x57de80, the sort index bank at
+     * 0x5cacf8, the overwrite count at 0x5cb270, and overwrite records at
+     * 0x5cb274.
      * Purpose: Own the queued transparent and overwrite software polygon banks; the
      * transparent count (0x57de7c) and overwrite count (0x5cb270) are members.
      */

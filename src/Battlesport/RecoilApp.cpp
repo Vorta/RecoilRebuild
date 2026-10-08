@@ -234,7 +234,6 @@ const AFX_MSGMAP* RecoilApp::GetMessageMap() const
  * Retail CRT slot 0x4da080 references the compiler-generated coordinator.
  */
 RecoilApp g_RecoilApp;
-// ~RecoilApp is compiler-generated: retail's destructor never resets the RecoilApp vptr.
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.recoil-app-recoil-app
@@ -242,6 +241,7 @@ RecoilApp g_RecoilApp;
  * @recoil-match byte
  *
  * Purpose: Initializes application state after constructing the MFC module base.
+ * ~RecoilApp is compiler-generated: retail's destructor never resets the RecoilApp vptr.
  */
 RecoilApp::RecoilApp()
     : RecoilApp_MfcOleModule()

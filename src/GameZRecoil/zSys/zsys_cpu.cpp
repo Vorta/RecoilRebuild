@@ -18,7 +18,7 @@ using zSys::Sub64;
 const unsigned int g_zSys_CpuBenchmarkDurationTable[12] = { 0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38 };
 
 struct CpuBenchmarkResolver {
-    zSys::CpuBenchmarkResult* ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult* outBuffer);
+    static zSys::CpuBenchmarkResult __fastcall ResolveCpuBenchmarkPacket(int cpuClassHint);
     zSys::CpuBenchmarkResult* MeasureMhzViaBsfLoopQpc(zSys::CpuBenchmarkResult* outBuffer);
     zSys::CpuBenchmarkResult* MeasureCpuMhzRdtscQpc(zSys::CpuBenchmarkResult* outBuffer);
     zSys::CpuBenchmarkResult* MeasureCpuMhzCmosRtc(zSys::CpuBenchmarkResult* outBuffer);
@@ -35,19 +35,14 @@ namespace zSys {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
  * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
- * @recoil-match byte
+ *
  *
  * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
  */
 RECOIL_NO_GS int __cdecl GetCpuMhz()
 {
-    volatile CpuBenchmarkResult copied;
-    CpuBenchmarkResult benchmark;
-    const volatile CpuBenchmarkResult* measured = ((CpuBenchmarkResolver*)0)->ResolveCpuBenchmarkPacket(&benchmark);
-    copied.totalCycles = measured->totalCycles;
-    copied.totalMicroseconds = measured->totalMicroseconds;
-    copied.cpuMhzRaw = measured->cpuMhzRaw;
-    return measured->cpuMhzRounded;
+    const CpuBenchmarkResult result = CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(0);
+    return result.cpuMhzRounded;
 }
 
 /**
@@ -429,30 +424,27 @@ unsigned short __cdecl ReadCpuidVendorAndFamily()
  *
  * Purpose: chooses the CPU benchmark strategy and writes the result packet.
  */
-zSys::CpuBenchmarkResult* CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::CpuBenchmarkResult* outBuffer)
+zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(int cpuClassHint)
 {
     const unsigned short cpuClass = zSys::DetectCpuClassAndFeatures();
     const unsigned int featureFlags = zSys::ReadCpuidFeatureFlags();
-    const int cpuClassHint = (int)((unsigned int)(this));
-    if ((cpuClass & 0x8000) != 0) {
-        outBuffer->totalCycles = 0;
-        outBuffer->totalMicroseconds = 0;
-        outBuffer->cpuMhzRaw = 0;
-        outBuffer->cpuMhzRounded = 0;
-        return outBuffer;
-    }
-    unsigned int expectedCycles;
     int forcedLowHint = 0;
+    // memset: retail builds the zero result from register copies (xor edx,edx; mov ecx,edx; mov ebx,edx).
+    zSys::CpuBenchmarkResult result;
+    memset(&result, 0, sizeof(result));
+    if ((cpuClass & 0x8000) != 0) {
+        return result;
+    }
+    // Left unset for hints above 0x96: retail then passes the stale return-slot word.
+    unsigned int expectedCycles;
     if (cpuClassHint <= 0) {
         expectedCycles = g_zSys_CpuBenchmarkDurationTable[cpuClass & 0xffff] * 4000u;
     } else if (cpuClassHint <= 0x96) {
         forcedLowHint = 1;
         expectedCycles = (unsigned int)(cpuClassHint) * 4000u;
-    } else {
-        expectedCycles = (unsigned int)((unsigned int)(outBuffer));
     }
     zSys::CpuBenchmarkResult localResult;
-    zSys::CpuBenchmarkResult* measured;
+    const zSys::CpuBenchmarkResult* measured;
     if ((featureFlags & 0x10u) != 0 && !forcedLowHint) {
         if (cpuClassHint == 0) {
             measured = ((CpuBenchmarkResolver*)expectedCycles)->MeasureCpuMhzRdtscQpc(&localResult);
@@ -462,14 +454,9 @@ zSys::CpuBenchmarkResult* CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(zSys::
     } else if ((cpuClass & 0xffff) >= 3) {
         measured = ((CpuBenchmarkResolver*)expectedCycles)->MeasureMhzViaBsfLoopQpc(&localResult);
     } else {
-        outBuffer->totalCycles = 0;
-        outBuffer->totalMicroseconds = 0;
-        outBuffer->cpuMhzRaw = 0;
-        outBuffer->cpuMhzRounded = 0;
-        return outBuffer;
+        return result;
     }
-    *outBuffer = *measured;
-    return outBuffer;
+    return *measured;
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)

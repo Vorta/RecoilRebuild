@@ -39,8 +39,8 @@ struct NetSessionBrowserDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
     static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
+    /** User-declared constructor only: the destructor is compiler-generated (retail never resets this vptr). */
     NetSessionBrowserDialog(CWnd* parentWnd);
-    // Destructor is compiler-generated; retail teardown never resets this class vptr.
     virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* dataExchange);
@@ -87,8 +87,8 @@ struct NetSessionConfigDialog : CDialog {
     static const AFX_MSGMAP_ENTRY messageEntries[];
     static const AFX_MSGMAP* __stdcall GetBaseMessageMapForMfc();
 
+    /** User-declared constructor only: the destructor is compiler-generated (retail never resets this vptr). */
     NetSessionConfigDialog(CWnd* parentWnd);
-    // Destructor is compiler-generated; retail teardown never resets this class vptr.
     virtual const AFX_MSGMAP* GetMessageMap() const;
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* dataExchange);
@@ -344,7 +344,7 @@ int __cdecl GetStatusBitAllowMaps();
 int __cdecl GetStatusBitNameTags();
 void __fastcall
 ShowPlayerKillMessage(GameNetPlayerRow* victimRow, OptCatalogEntryDef* killEntry, GameNetPlayerRow* killerRow);
-// Packet handler: retail callers pass the sender and packet in ECX/EDX (fastcall).
+/** Packet handler: retail callers pass the sender and packet in ECX/EDX (fastcall). */
 int __fastcall ReassignPlayerColorsAndRefreshRows(int senderPlayerId, zNetworkPacketHeader* packet);
 int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketHeader* packet);
 void __fastcall AddPlayerRowToScoreboard(GameNetPlayerRow* playerRow);

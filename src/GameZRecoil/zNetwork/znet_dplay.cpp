@@ -1386,7 +1386,7 @@ namespace zNetworkDPlay {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-pumpincomingmessages
  * @recoil-artifact defines .text recoil:function:0x48afe0: zNetworkDPlay::PumpIncomingMessages.
- *
+ * @recoil-match byte
  *
  * Purpose: handle DirectPlay system messages and dispatch synthesized packets.
  */

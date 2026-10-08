@@ -1384,6 +1384,7 @@ void HudUiApplyStatsTripletInt3(zReader::Node* payload, int nodeIndex, int& outX
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-hud-ui-text-input
  * @recoil-artifact defines .text recoil:function:0x4b42f0: HudUiTextInput::HudUiTextInput.
  * @recoil-match byte
+ * Purpose: allocate the text buffer and build the key-action map that routes printable characters to text entry.
  */
 HudUiTextInput::HudUiTextInput(int bufferSize)
 {
@@ -1417,6 +1418,7 @@ HudUiTextInput::HudUiTextInput(int bufferSize)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-destroy-hud-ui-text-input
  * @recoil-artifact defines .text recoil:function:0x4b4370: HudUiTextInput::~HudUiTextInput.
  * @recoil-match byte
+ * Purpose: free the owned text buffer.
  */
 HudUiTextInput::~HudUiTextInput()
 {
@@ -1428,6 +1430,7 @@ HudUiTextInput::~HudUiTextInput()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-alloc-text-buffer
  * @recoil-artifact defines .text recoil:function:0x4b4390: HudUiTextInput::AllocTextBuffer.
  * @recoil-match byte
+ * Purpose: allocate a text buffer of the requested size, keeping as much of the old contents as fits.
  */
 void HudUiTextInput::AllocTextBuffer(int bufferSize)
 {
@@ -1450,6 +1453,7 @@ void HudUiTextInput::AllocTextBuffer(int bufferSize)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-set-contents
  * @recoil-artifact defines .text recoil:function:0x4b43d0: HudUiTextInput::SetContents.
  * @recoil-match byte
+ * Purpose: copy a string into the buffer, truncated to its capacity, and re-clamp the cursor.
  */
 void HudUiTextInput::SetContents(const char* source)
 {
@@ -1462,6 +1466,7 @@ void HudUiTextInput::SetContents(const char* source)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-get-buffer
  * @recoil-artifact defines .text recoil:function:0x4b4410: HudUiTextInput::GetBuffer.
  * @recoil-match byte
+ * Purpose: return the editable text buffer.
  */
 char* HudUiTextInput::GetBuffer()
 {
@@ -1472,6 +1477,7 @@ char* HudUiTextInput::GetBuffer()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-set-cursor-position
  * @recoil-artifact defines .text recoil:function:0x4b4420: HudUiTextInput::SetCursorPosition.
  * @recoil-match byte
+ * Purpose: place the cursor at the given position, clamped to the end of the text.
  */
 void HudUiTextInput::SetCursorPosition(int position)
 {
@@ -1482,6 +1488,7 @@ void HudUiTextInput::SetCursorPosition(int position)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
  * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
  * @recoil-match byte
+ * Purpose: route a key to its mapped edit action (insert, ignore, cancel and the editing keys).
  */
 void HudUiTextInput::DispatchKeyAction(int key)
 {
@@ -1522,6 +1529,7 @@ void HudUiTextInput::DispatchKeyAction(int key)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-insert-char-at-cursor
  * @recoil-artifact defines .text recoil:function:0x4b44e0: HudUiTextInput::InsertCharAtCursor.
  * @recoil-match byte
+ * Purpose: insert a character at the cursor when the buffer has room, otherwise report an overflow.
  */
 void HudUiTextInput::InsertCharAtCursor(int ch)
 {
@@ -1539,6 +1547,7 @@ void HudUiTextInput::InsertCharAtCursor(int ch)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-backspace-delete-char
  * @recoil-artifact defines .text recoil:function:0x4b4530: HudUiTextInput::BackspaceDeleteChar.
  * @recoil-match byte
+ * Purpose: delete the character before the cursor and move the cursor back.
  */
 void HudUiTextInput::BackspaceDeleteChar()
 {
@@ -1552,6 +1561,7 @@ void HudUiTextInput::BackspaceDeleteChar()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-delete-char-forward
  * @recoil-artifact defines .text recoil:function:0x4b4550: HudUiTextInput::DeleteCharForward.
  * @recoil-match byte
+ * Purpose: delete the character at the cursor.
  */
 void HudUiTextInput::DeleteCharForward()
 {
@@ -1562,6 +1572,7 @@ void HudUiTextInput::DeleteCharForward()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-move-cursor-left
  * @recoil-artifact defines .text recoil:function:0x4b4560: HudUiTextInput::MoveCursorLeft.
  * @recoil-match byte
+ * Purpose: move the cursor one character left, stopping at the start of the text.
  */
 void HudUiTextInput::MoveCursorLeft()
 {
@@ -1609,6 +1620,7 @@ int HudUiTextInput::ShiftTextRight(int count, int startPos)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-shift-text-left
  * @recoil-artifact defines .text recoil:function:0x4b45e0: HudUiTextInput::ShiftTextLeft.
  * @recoil-match byte
+ * Purpose: shift the text from startPos left by count characters to close a gap.
  */
 int HudUiTextInput::ShiftTextLeft(int count, int startPos)
 {
@@ -1626,6 +1638,7 @@ int HudUiTextInput::ShiftTextLeft(int count, int startPos)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-hud-ui-slider-border
  * @recoil-artifact defines .text recoil:function:0x4b4620: HudUiSliderBorder::HudUiSliderBorder.
  * @recoil-match byte
+ * Purpose: initialise the caret border's geometry and blink state and seed its polyline points.
  */
 HudUiSliderBorder::HudUiSliderBorder()
 {
@@ -1657,6 +1670,7 @@ HudUiSliderBorder::HudUiSliderBorder()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-update
  * @recoil-artifact defines .text recoil:function:0x4b47b0: HudUiSliderBorder::Update.
  * @recoil-match byte
+ * Purpose: advance the caret blink timer and draw the border polyline during the visible phase.
  */
 void HudUiSliderBorder::Update(float deltaSeconds)
 {
@@ -1682,6 +1696,7 @@ void HudUiSliderBorder::Update(float deltaSeconds)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-slider-border-set-bounds
  * @recoil-artifact defines .text recoil:function:0x4b4810: HudUiSliderBorder::SetBounds.
  * @recoil-match byte
+ * Purpose: set the caret border's origin and size and rebuild its eight polyline points.
  */
 void HudUiSliderBorder::SetBounds(int newOriginX, int newOriginY, int newHalfWidth, int newHeight)
 {
@@ -1709,6 +1724,7 @@ void HudUiSliderBorder::SetBounds(int newOriginX, int newOriginY, int newHalfWid
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-hud-ui-numeric-text-input
  * @recoil-artifact defines .text recoil:function:0x4b49e0: HudUiNumericTextInput::HudUiNumericTextInput.
  * @recoil-match byte
+ * Purpose: build the numeric text field's text input and caret border and link them to the widget.
  */
 HudUiNumericTextInput::HudUiNumericTextInput()
     : HudUiZrdWidget()
@@ -1747,6 +1763,7 @@ HudUiNumericTextInput::~HudUiNumericTextInput()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-raw-keyboard-callback
  * @recoil-artifact defines .text recoil:function:0x4b4b30: HudUiNumericTextInput::RawKeyboardCallback.
  * @recoil-match byte
+ * Purpose: forward a raw keyboard character from zInput to the registered numeric text input.
  */
 int __fastcall HudUiNumericTextInput::RawKeyboardCallback(int key, HudUiNumericTextInput* callbackCtx)
 {
@@ -1761,6 +1778,7 @@ int __fastcall HudUiNumericTextInput::RawKeyboardCallback(int key, HudUiNumericT
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-on-raw-keyboard-char
  * @recoil-artifact defines .text recoil:function:0x4b4b50: HudUiNumericTextInput::OnRawKeyboardChar.
  * @recoil-match byte
+ * Purpose: pass a raw key to the text input, dropping characters outside the accepted set when filtering is enabled.
  */
 int HudUiNumericTextInput::OnRawKeyboardChar(int key)
 {
@@ -1780,6 +1798,7 @@ int HudUiNumericTextInput::OnRawKeyboardChar(int key)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-set-input-active
  * @recoil-artifact defines .text recoil:function:0x4b4ba0: HudUiNumericTextInput::SetInputActive.
  * @recoil-match byte
+ * Purpose: switch text entry on or off, updating the caret border and label visibility.
  */
 int HudUiNumericTextInput::SetInputActive(int active)
 {
@@ -1814,6 +1833,7 @@ int HudUiNumericTextInput::SetInputActive(int active)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-set-raw-keyboard-capture
  * @recoil-artifact defines .text recoil:function:0x4b4c50: HudUiNumericTextInput::SetRawKeyboardCapture.
  * @recoil-match byte
+ * Purpose: register this field as zInput's raw keyboard callback, or clear the callback.
  */
 void HudUiNumericTextInput::SetRawKeyboardCapture(int enable)
 {
@@ -1834,6 +1854,7 @@ void HudUiNumericTextInput::SetRawKeyboardCapture(int enable)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-on-activate
  * @recoil-artifact defines .text recoil:function:0x4b4c90: HudUiNumericTextInput::OnActivate.
  * @recoil-match byte
+ * Purpose: mark text entry active, then run the base widget activation.
  */
 void HudUiNumericTextInput::OnActivate()
 {
@@ -1895,6 +1916,7 @@ RECOIL_NO_GS void HudUiNumericTextInput::Update(float deltaSeconds)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-alloc-text-buffer
  * @recoil-artifact defines .text recoil:function:0x4b4e40: HudUiNumericTextInput::AllocTextBuffer.
  * @recoil-match byte
+ * Purpose: resize the text input's buffer.
  */
 void HudUiNumericTextInput::AllocTextBuffer(unsigned int bufferSize)
 {
@@ -1919,6 +1941,7 @@ void HudUiNumericTextInput::Update(const char* text)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-numeric-text-input-get-buffer
  * @recoil-artifact defines .text recoil:function:0x4b4ed0: HudUiNumericTextInput::GetBuffer.
  * @recoil-match byte
+ * Purpose: return the text input's buffer.
  */
 char* HudUiNumericTextInput::GetBuffer()
 {
@@ -1929,6 +1952,7 @@ char* HudUiNumericTextInput::GetBuffer()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-hud-ui-zrd-widget
  * @recoil-artifact defines .text recoil:function:0x4b4ee0: HudUiZrdWidget::HudUiZrdWidget.
  * @recoil-match byte
+ * Purpose: initialise a ZRD-loaded widget with no images, sounds or label panels.
  */
 HudUiZrdWidget::HudUiZrdWidget()
     : HudUiWidget(0)
@@ -2033,6 +2057,7 @@ HudUiZrdWidget::~HudUiZrdWidget()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-delete-child-if-present
  * @recoil-artifact defines .text recoil:function:0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent.
  * @recoil-match byte
+ * Purpose: delete a child widget when one is given; used to empty the label-panel lists.
  */
 void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
 {
@@ -2047,6 +2072,7 @@ void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-invalidate
  * @recoil-artifact defines .text recoil:function:0x4b5310: HudUiZrdWidget::Invalidate.
  * @recoil-match byte
+ * Purpose: invalidate the widget and every label panel.
  */
 void HudUiZrdWidget::Invalidate()
 {
@@ -2068,6 +2094,7 @@ void HudUiZrdWidget::Invalidate()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-get-bounds-rect-or-null
  * @recoil-artifact defines .text recoil:function:0x4b5350: HudUiZrdWidget::GetBoundsRectOrNull.
  * @recoil-match byte
+ * Purpose: return the widget bounds from its image or its label panels, or null when the widget is disabled.
  */
 HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
 {
@@ -2127,6 +2154,7 @@ HudUiRect* HudUiZrdWidget::GetBoundsRectOrNull()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-show-preview
  * @recoil-artifact defines .text recoil:function:0x4b5630: HudUiZrdWidget::ShowPreview.
  * @recoil-match byte
+ * Purpose: enter the rollover state: rollover image, rollover sound and rollover label panels.
  */
 void HudUiZrdWidget::ShowPreview()
 {
@@ -2157,6 +2185,7 @@ void HudUiZrdWidget::ShowPreview()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-refresh-state
  * @recoil-artifact defines .text recoil:function:0x4b5740: HudUiZrdWidget::RefreshState.
  * @recoil-match byte
+ * Purpose: hide the rollover and activate label panels and show the label panels for the current enabled state.
  */
 void HudUiZrdWidget::RefreshState()
 {
@@ -2201,6 +2230,7 @@ void HudUiZrdWidget::RefreshState()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-hide-preview
  * @recoil-artifact defines .text recoil:function:0x4b5860: HudUiZrdWidget::HidePreview.
  * @recoil-match byte
+ * Purpose: leave the rollover state: restore the default image and hide the rollover label panels.
  */
 void HudUiZrdWidget::HidePreview()
 {
@@ -2231,6 +2261,7 @@ void HudUiZrdWidget::HidePreview()
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-on-activate
  * @recoil-artifact defines .text recoil:function:0x4b5900: HudUiZrdWidget::OnActivate.
  * @recoil-match byte
+ * Purpose: enter the activate state: reset input transitions, show the activate image and play the activate sound.
  */
 void HudUiZrdWidget::OnActivate()
 {
