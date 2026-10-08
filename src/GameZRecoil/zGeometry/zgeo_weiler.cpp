@@ -3425,10 +3425,13 @@ char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPoint
 
         if (xSide != previousXSide) {
             if ((ySide >= 0) != (previousYSide >= 0)) {
-                const float xIntersection = (point->y - y) / (previousY - y) * (previousX - x) + x;
-                const float intersectionSide = xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0;
+                // Retail rounds the edge ratio to binary32 before scaling (fmulp st(1); fadd st(2)).
+                const float ratio = (point->y - y) / (previousY - y);
+                const float xIntersection = ratio * (previousX - x) + x;
+                float intersectionSide;
 
-                if (intersectionSide == 0.0f) {
+                // Retail keeps intersectionSide live across both tests (fld st(0); fcomp).
+                if ((intersectionSide = xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0) == 0.0f) {
                     return 0;
                 }
 
@@ -3850,7 +3853,7 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyadjacentedgepairagainstadjacentedgepair
  * @recoil-artifact defines .text recoil:function:0x469560: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstAdjacentEdgePair
- *
+ * @recoil-match byte
  *
  * Purpose: Classify two linked adjacent edge pairs by their endpoint wedge relationship.
  */
@@ -3867,16 +3870,18 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         return 0;
     }
 
-    const float pairBFirstDeltaX = pairBFirstSegment->endPoint->x - pairBFirstSegment->startPoint->x;
+    // Retail names only pair B's first-edge deltas (y computed and stored first); the second-edge and
+    // pair-A deltas are written inline at each use and VC5 CSEs them within each condition chain.
     const float pairBFirstDeltaY = pairBFirstSegment->endPoint->y - pairBFirstSegment->startPoint->y;
-    const float pairBSecondDeltaX = pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x;
-    const float pairBSecondDeltaY = pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y;
+    const float pairBFirstDeltaX = pairBFirstSegment->endPoint->x - pairBFirstSegment->startPoint->x;
     int startClass;
     if ((pairAFirstSegment->startPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
             - (pairAFirstSegment->startPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
         < 0.0) {
-        if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-                    - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+        if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x)
+                        * (pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                    - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y)
+                        * (pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
                 < 0.0
             || (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
                     - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
@@ -3885,8 +3890,10 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         } else {
             startClass = -1;
         }
-    } else if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-                - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+    } else if ((pairAFirstSegment->startPoint->x - pairBSecondSegment->startPoint->x)
+                    * (pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                - (pairAFirstSegment->startPoint->y - pairBSecondSegment->startPoint->y)
+                    * (pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
             < 0.0
         && (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
                 - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
@@ -3900,8 +3907,10 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     if ((pairASecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
             - (pairASecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
         < 0.0) {
-        if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-                    - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+        if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
+                        * (pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                    - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                        * (pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
                 < 0.0
             || (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
                     - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
@@ -3910,8 +3919,10 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
         } else {
             endClass = -1;
         }
-    } else if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x) * pairBSecondDeltaY
-                - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y) * pairBSecondDeltaX
+    } else if ((pairASecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
+                    * (pairBSecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                - (pairASecondSegment->endPoint->y - pairBSecondSegment->startPoint->y)
+                    * (pairBSecondSegment->endPoint->x - pairBSecondSegment->startPoint->x)
             < 0.0
         && (pairBSecondSegment->endPoint->y - pairBFirstSegment->startPoint->y) * pairBFirstDeltaX
                 - (pairBSecondSegment->endPoint->x - pairBFirstSegment->startPoint->x) * pairBFirstDeltaY
@@ -3922,21 +3933,25 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     }
 
     if (startClass == -1 && endClass == -1) {
-        const float pairAFirstDeltaX = pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x;
-        const float pairAFirstDeltaY = pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
-        const float pairASecondDeltaX = pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
-        const float pairASecondDeltaY = pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
-        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x)
+                    * (pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y)
+                    * (pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x))
                 < 0.0
-            && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
-                   - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
+            && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x)
+                       * (pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                   - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y)
+                       * (pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x))
                 < 0.0
-            && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+            && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x)
+                       * (pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                   - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                       * (pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x))
                 < 0.0
-            && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
+            && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x)
+                       * (pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                   - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                       * (pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x))
                 < 0.0) {
             return 6;
         }
@@ -3945,21 +3960,25 @@ int __fastcall ClassifyAdjacentEdgePairAgainstAdjacentEdgePair(
     }
 
     if (startClass == 1 && endClass == 1) {
-        const float pairAFirstDeltaX = pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x;
-        const float pairAFirstDeltaY = pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y;
-        const float pairASecondDeltaX = pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x;
-        const float pairASecondDeltaY = pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y;
-        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+        if (((pairBFirstSegment->startPoint->x - pairAFirstSegment->startPoint->x)
+                    * (pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                - (pairBFirstSegment->startPoint->y - pairAFirstSegment->startPoint->y)
+                    * (pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x))
                 < 0.0
-            && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
-                   - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
+            && ((pairBFirstSegment->startPoint->x - pairASecondSegment->startPoint->x)
+                       * (pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                   - (pairBFirstSegment->startPoint->y - pairASecondSegment->startPoint->y)
+                       * (pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x))
                 < 0.0
-            && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x) * pairAFirstDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y) * pairAFirstDeltaX)
+            && ((pairBSecondSegment->endPoint->x - pairAFirstSegment->startPoint->x)
+                       * (pairAFirstSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                   - (pairBSecondSegment->endPoint->y - pairAFirstSegment->startPoint->y)
+                       * (pairAFirstSegment->endPoint->x - pairAFirstSegment->startPoint->x))
                 < 0.0
-            && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x) * pairASecondDeltaY
-                   - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y) * pairASecondDeltaX)
+            && ((pairBSecondSegment->endPoint->x - pairASecondSegment->startPoint->x)
+                       * (pairASecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                   - (pairBSecondSegment->endPoint->y - pairASecondSegment->startPoint->y)
+                       * (pairASecondSegment->endPoint->x - pairASecondSegment->startPoint->x))
                 < 0.0) {
             return 4;
         }

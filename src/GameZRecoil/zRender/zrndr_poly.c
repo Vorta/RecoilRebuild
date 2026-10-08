@@ -2136,7 +2136,8 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
     edgeCountB = 0;
     // Retail expands one direction-specialized edge walk per table and scan mode. Each walk starts from the top vertex
     // (its fixed-point Y is computed once and reused), stores only yStart for horizontal edges, and derives the
-    // x intercept from the sample row (edgeYStart + 0.5). Each walk converts through one walk-local double.
+    // x intercept from the sample row (edgeYStart + 0.5). Each walk converts through one walk-local double and reads
+    // both edge endpoints through start/end references (retail next-index/next-offset register roles).
     if (zRndr::g_scanConvertMode != 0) {
         edgeVertexIndex = topVertexIndex;
         ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
@@ -2149,12 +2150,13 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
                 double fixedBits;
-                const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
+                const zVec3& end = reducedVerts[nextIndex];
+                const float dy = end.y - start.y;
                 edge = &edgeTableA[edgeCountA++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
-                    const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
+                    const float xSlope = (end.x - start.x) / dy;
                     fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                     edge->xStepFixed = *(int*)(&fixedBits);
                     fixedBits = 6755399441055744.0
@@ -2180,12 +2182,13 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
                 double fixedBits;
-                const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
+                const zVec3& end = reducedVerts[nextIndex];
+                const float dy = end.y - start.y;
                 edge = &edgeTableB[edgeCountB++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
-                    const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
+                    const float xSlope = (end.x - start.x) / dy;
                     fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                     edge->xStepFixed = *(int*)(&fixedBits);
                     fixedBits = 6755399441055744.0
@@ -2211,12 +2214,13 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
                 double fixedBits;
-                const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
+                const zVec3& end = reducedVerts[nextIndex];
+                const float dy = end.y - start.y;
                 edge = &edgeTableB[edgeCountB++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
-                    const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
+                    const float xSlope = (end.x - start.x) / dy;
                     fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                     edge->xStepFixed = *(int*)(&fixedBits);
                     fixedBits = 6755399441055744.0
@@ -2242,12 +2246,13 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
             }
             if (edgeSampleY <= reducedVerts[nextIndex].y) {
                 double fixedBits;
-                const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                 const zVec3& start = reducedVerts[edgeVertexIndex];
+                const zVec3& end = reducedVerts[nextIndex];
+                const float dy = end.y - start.y;
                 edge = &edgeTableA[edgeCountA++];
                 edge->yStart = edgeYStart;
                 if (dy != 0.0f) {
-                    const float xSlope = (reducedVerts[nextIndex].x - start.x) / dy;
+                    const float xSlope = (end.x - start.x) / dy;
                     fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                     edge->xStepFixed = *(int*)(&fixedBits);
                     fixedBits = 6755399441055744.0
@@ -2265,8 +2270,9 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
 
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
     firstScanline = (fixed16Value + 0x7fff) >> 16;
-    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
+    // Retail converts the bottom vertex before forming scanlineBase (fld at 0x493cac precedes the add at 0x493cb6).
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[bottomVertexIndex].y);
+    scanlineBase = (unsigned char*)(zRndr::g_frameBuffer) + firstScanline * zRndr::g_pitchBytes;
     lastScanline = (fixed16Value - 0x8041) >> 16;
     edgeIndexB = 0;
     edgeIndexA = 0;
@@ -4970,85 +4976,81 @@ void __fastcall zRndrDrawLine16(unsigned short* dstPixels, int x0, int y0, int x
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-drawline16-segmented
  * @recoil-artifact defines .text recoil:function:0x4993a0: zRndrDrawLine16Segmented
- *
+ * @recoil-match byte
  *
  * Purpose: Rasterize a segmented 16-bit Bresenham line into the active framebuffer.
  */
 void __fastcall
 zRndrDrawLine16Segmented(unsigned short* dstPixels, int x0, int y0, int x1, int y1, int color16, int segmentCount)
 {
-    const unsigned int pitchWordsUnsigned = (unsigned int)(zRndr::g_pitchBytes) >> 1;
-    int rowStep = (int)(pitchWordsUnsigned);
+    // Retail walks an index like zRndrDrawLine16; VC5 rebuilds the pointer per branch (0x49941b, 0x49949e).
+    const int pitch = (int)(((unsigned int)zRndr::g_pitchBytes) >> 1);
     int drawSegment = 1;
-    int startIndex = (int)(pitchWordsUnsigned * y0 + x0);
+    int index = pitch * y0 + x0;
+    int error;
+    int count;
+    int segmentCounter;
 
     int dy = y1 - y0;
+    int rowStep;
     if (dy < 0) {
         dy = -dy;
-        rowStep = -rowStep;
+        rowStep = -pitch;
+    } else {
+        rowStep = pitch;
     }
 
     int dx = x1 - x0;
-    int xStep = 1;
+    int xStep;
     if (dx < 0) {
         dx = -dx;
         xStep = -1;
+    } else {
+        xStep = 1;
     }
-
-    const unsigned short packedColor = (unsigned short)(color16);
-    int segmentCounter = 0;
 
     // Retail VC5 reuses the consumed segmentCount argument slot for the branch segment limit.
     if (dx > dy) {
-        segmentCount = (dx + 1) / segmentCount;
-        int error = dx >> 1;
-        int count = dx + 1;
-        unsigned short* cursor = &dstPixels[startIndex];
+        error = dx >> 1;
+        count = dx + 1;
+        segmentCount = count / segmentCount;
+        segmentCounter = 0;
         do {
             if (drawSegment != 0) {
-                *cursor = packedColor;
+                dstPixels[index] = (unsigned short)color16;
             }
-
+            index += xStep;
             error += dy;
-            cursor += xStep;
             if (error > dx) {
                 error -= dx;
-                cursor += rowStep;
+                index += rowStep;
             }
-
             if (segmentCounter++ >= segmentCount) {
                 segmentCounter = 0;
                 drawSegment = drawSegment == 0 ? 1 : 0;
             }
-
-            --count;
-        } while (count != 0);
-        return;
+        } while (--count != 0);
+    } else {
+        error = dy >> 1;
+        count = dy + 1;
+        segmentCount = count / segmentCount;
+        segmentCounter = 0;
+        do {
+            if (drawSegment != 0) {
+                dstPixels[index] = (unsigned short)color16;
+            }
+            index += rowStep;
+            error += dx;
+            if (error > dy) {
+                error -= dy;
+                index += xStep;
+            }
+            if (segmentCounter++ >= segmentCount) {
+                segmentCounter = 0;
+                drawSegment = drawSegment == 0 ? 1 : 0;
+            }
+        } while (--count != 0);
     }
-
-    segmentCount = (dy + 1) / segmentCount;
-    int error = dy >> 1;
-    int count = dy + 1;
-    unsigned short* cursor = &dstPixels[startIndex];
-    do {
-        if (drawSegment != 0) {
-            *cursor = packedColor;
-        }
-
-        error += dx;
-        cursor += rowStep;
-        if (error > dy) {
-            error -= dy;
-            cursor += xStep;
-        }
-
-        if (segmentCounter++ >= segmentCount) {
-            segmentCounter = 0;
-            drawSegment = drawSegment == 0 ? 1 : 0;
-        }
-
-        --count;
-    } while (count != 0);
 }
 
 /**

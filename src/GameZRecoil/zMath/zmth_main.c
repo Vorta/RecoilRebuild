@@ -1071,7 +1071,7 @@ namespace zMath
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
      * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
      * storage and clears the translation row.

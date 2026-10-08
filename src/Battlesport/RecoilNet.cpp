@@ -625,8 +625,8 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
 
     zUtil_SaveGameState* const saveState = Player::CreateFromNamesAtPoseGetState(
         &packet->worldPos,
-        g_Player_NodeName_Bft,
         packet->vehicleRotationAngles.y,
+        g_Player_NodeName_Bft,
         netNodeName
     );
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
@@ -635,11 +635,10 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     playerState->hoverUnlocked = 1;
     playerState->subUnlocked = 1;
     for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
-        PlayerAltWeaponBank& bank = playerState->altWeaponBanks[bankIndex];
-        bank.controllerA.flags |= 4u;
-        bank.controllerA.ammoOrCharge = 123456792.0f;
-        bank.controllerB.flags |= 4u;
-        bank.controllerB.ammoOrCharge = 123456792.0f;
+        playerState->altWeaponBanks[bankIndex].controllerA.flags |= 4u;
+        playerState->altWeaponBanks[bankIndex].controllerA.ammoOrCharge = 123456792.0f;
+        playerState->altWeaponBanks[bankIndex].controllerB.flags |= 4u;
+        playerState->altWeaponBanks[bankIndex].controllerB.ammoOrCharge = 123456792.0f;
     }
 
     GameNetPlayerRowListState* const rowList = &g_GameNetPlayerRowList;
@@ -664,7 +663,8 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
     hudWidget->textColor0 = hudColor;
     hudWidget->textColor1 = hudColor;
     hudWidget->textDirty = 1;
-    hudWidget->SetVisible(0);
+    // Retail reloads the row-relative widget table for this dispatch (+0x19f).
+    row->hudWidget.SetVisible(0);
     g_HudUiTopMessageStack->AddChild((HudUiElement*)(hudWidget));
 
     saveState->netPlayerRow = row;
@@ -682,14 +682,16 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
         SendAllPkt13EffectAnimActivationRecords();
         Pickup::ReconcilePrimaryAndNetworkCopySpawnLists();
 
-        HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
+        // Retail copies the timer state separately inside each branch.
         if (g_HudSensorTracker.raceCheckpointMode != 0) {
+            HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
             timerState.startCountdownTriggered = 0;
             if (g_HudTimerPanelNetState.startGateTriggered != 0) {
                 timerState.ClearTailFlagsLocal();
             }
             SendPkt0DHudTimerPanelState(&timerState);
         } else {
+            HudTimerPanelNetState timerState = g_HudTimerPanelNetState;
             SendPkt0CHudTimerStatusBits(&timerState);
         }
     }
@@ -835,7 +837,7 @@ int __fastcall UpdateRemotePlayerHudWidgetScreenPos(zUtil_SaveGameState* saveSta
  *
  * Purpose: Refresh player-row colors after network color assignment changes.
  */
-int __cdecl ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader*)
+int __fastcall ReassignPlayerColorsAndRefreshRows(int, zNetworkPacketHeader*)
 {
     GameNetPlayerRow* row = g_GameNetPlayerRowHead;
     while (row != 0) {

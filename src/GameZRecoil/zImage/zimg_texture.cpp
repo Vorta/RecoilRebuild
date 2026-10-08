@@ -1549,7 +1549,7 @@ namespace zVid_Image {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zvid-image-resamplesquare
  * @recoil-artifact defines .text recoil:function:0x46e9b0: zVid_Image::ResampleSquare.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: resamples an owned 16-bit zVid image into a square nearest-source

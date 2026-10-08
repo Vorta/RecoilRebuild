@@ -209,7 +209,7 @@ namespace CZTypeList
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.alloclink
      * @recoil-artifact defines .text recoil:function:0x44e630: CZTypeList::AllocLink.
-     *
+     * @recoil-match byte
      *
      * Purpose: allocate or recycle a type-list link while maintaining live
      * link accounting.
@@ -224,14 +224,13 @@ namespace CZTypeList
 
         CZTypeListLink* link = g_CZTypeList_FreeLinkHead;
         if (link != 0) {
-            CZTypeListLink** nextSlot = &link->next;
-            CZTypeListLink* next = *nextSlot;
-            g_CZTypeList_FreeLinkHead = next;
-            if (next != 0) {
-                next->prev = 0;
+            // Pop through the global head: retail keeps &link->next in ECX for the later clear (0x44e656).
+            g_CZTypeList_FreeLinkHead = g_CZTypeList_FreeLinkHead->next;
+            if (g_CZTypeList_FreeLinkHead != 0) {
+                g_CZTypeList_FreeLinkHead->prev = 0;
             }
 
-            *nextSlot = 0;
+            link->next = 0;
             link->prev = 0;
             link->pendingRemove = 0;
             return link;

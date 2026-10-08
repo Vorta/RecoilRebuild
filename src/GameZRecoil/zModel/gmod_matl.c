@@ -1124,7 +1124,7 @@ namespace zRndr_GlobalStringTable
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-matl-loaddynamicentriesfrompath
      * @recoil-artifact defines .text recoil:function:0x481460: zRndr_GlobalStringTable::LoadDynamicEntriesFromPath
-     *
+     * @recoil-match byte
      *
      * Purpose: append non-prefix dynamic global-string entries loaded from a zReader node tree.
      */
@@ -1151,7 +1151,9 @@ namespace zRndr_GlobalStringTable
             }
 
             if (g_zRndr_GlobalStringCount >= 100) {
-                break;
+                // Retail frees and returns here (not a break); its callee-saved pushes stay in the entry block.
+                zReader::Free(root);
+                return;
             }
 
             const size_t byteCount = strlen(stringList[index].value.str) + 1;

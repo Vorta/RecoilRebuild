@@ -2382,16 +2382,17 @@ namespace CZCamera
     float __fastcall theta_x_z(zVec3 * point1, zVec3 * point2)
     {
         const int deltaX = (int)(point2->x - point1->x);
-        // abs() intrinsic: retail forms |dx| and |dz| with cdq/xor/sub (0x44c1cc, 0x44c1da).
-        int denom = abs(deltaX);
+        // abs() intrinsic: retail forms |dx| and |dz| with cdq/xor/sub (0x44c1cc, 0x44c1da); the
+        // twice-used |dx| local is formed before the second __ftol and held in ESI, as in retail.
+        const int absDeltaX = abs(deltaX);
         const int deltaZ = (int)(point1->z - point2->z);
-        denom += abs(deltaZ);
+        const int absDeltaZ = abs(deltaZ);
 
         float angle;
-        if (denom == 0) {
+        if (absDeltaX + absDeltaZ == 0) {
             angle = 0.0f;
         } else {
-            angle = (float)(deltaZ) / (float)(denom);
+            angle = (float)(deltaZ) / (float)(absDeltaX + absDeltaZ);
         }
 
         if (deltaX < 0) {

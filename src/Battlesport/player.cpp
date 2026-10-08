@@ -3755,9 +3755,11 @@ namespace Player {
  * objectName), then returns g_PlayerSaveStateList.tail on success and null on
  * failure. BN leaves the MSVC neg/sbb/and success-mask expression. Retail
  * keeps templateName in edx until after yawDeg is loaded into eax.
+ * Parameter order mirrors CreateFromNamesAtPose: retail caller 0x432860
+ * evaluates objectName, templateName (EDX), yawDeg, then spawnPos.
  */
 zUtil_SaveGameState* __fastcall
-CreateFromNamesAtPoseGetState(const zVec3* spawnPos, const char* templateName, float yawDeg, const char* objectName)
+CreateFromNamesAtPoseGetState(const zVec3* spawnPos, float yawDeg, const char* templateName, const char* objectName)
 {
     const char* const object = objectName;
     const int created = CreateFromNamesAtPose(spawnPos, yawDeg, 0, templateName, object);

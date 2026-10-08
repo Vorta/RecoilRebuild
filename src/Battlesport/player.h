@@ -432,7 +432,7 @@ int __fastcall CreateFromNamesAtPose(
     const char* objectName
 );
 zUtil_SaveGameState* __fastcall
-CreateFromNamesAtPoseGetState(const zVec3* spawnPos, const char* templateName, float yawDeg, const char* objectName);
+CreateFromNamesAtPoseGetState(const zVec3* spawnPos, float yawDeg, const char* templateName, const char* objectName);
 zUtil_SaveGameState* __cdecl GetSaveStateListHead();
 void UnbindCurrentSaveStateIfSinglePlayer();
 void BindActiveGameStateAsCurrentSaveState();

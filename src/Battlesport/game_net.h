@@ -344,7 +344,8 @@ int __cdecl GetStatusBitAllowMaps();
 int __cdecl GetStatusBitNameTags();
 void __fastcall
 ShowPlayerKillMessage(GameNetPlayerRow* victimRow, OptCatalogEntryDef* killEntry, GameNetPlayerRow* killerRow);
-int __cdecl ReassignPlayerColorsAndRefreshRows(int senderPlayerId, zNetworkPacketHeader* packet);
+// Packet handler: retail callers pass the sender and packet in ECX/EDX (fastcall).
+int __fastcall ReassignPlayerColorsAndRefreshRows(int senderPlayerId, zNetworkPacketHeader* packet);
 int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketHeader* packet);
 void __fastcall AddPlayerRowToScoreboard(GameNetPlayerRow* playerRow);
 int __fastcall HandlePkt0CHudTimerStatusBits(int senderPlayerId, NetPkt0C_HudTimerStatusBits* packet);
