@@ -513,7 +513,7 @@ int zSndStreamRequest::StateBeginGroup()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsound-zsnd-grp-zsndgroup-selectweightedentry
  * @recoil-artifact defines .text recoil:function:0x4a4d10: zSndGroup::SelectWeightedEntry.
- *
+ * @recoil-match byte
  *
  * Purpose: choose a playable config block using remaining play count and
  * weighted random selection.
@@ -535,7 +535,8 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
     float cumulativeWeight;
     const float selectSlop = totalWeight * 0.00100000005f;
     const float selection = totalWeight * ((float)(rand()) * 3.05185094e-05f);
-    // Retail 0x4a4dc9 reads this index unassigned when no entry is selected.
+    // Recorded only for the dynamic-weight pass (its only reader); retail 0x4a4dc9 reads it
+    // unassigned when no entry is selected.
     int selectedIndex;
     cumulativeWeight = 0.0f;
     for (i = 0; i < fields.configBlockCount; ++i) {
@@ -543,8 +544,8 @@ zSndGroupConfigBlock* zSndGroup::SelectWeightedEntry()
             cumulativeWeight += fields.configBlocks[i].weight;
             if (cumulativeWeight + selectSlop >= selection) {
                 result = &fields.configBlocks[i];
-                selectedIndex = i;
                 if (fields.dynamicWeightsEnabled != 0) {
+                    selectedIndex = i;
                     result->weight = fields.dynamicWeightScale * result->weight;
                 }
                 break;

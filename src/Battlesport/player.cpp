@@ -2067,10 +2067,12 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
     for (int bankIndex = 0; bankIndex < 10; ++bankIndex) {
         playerState->altWeaponBanks[bankIndex].selectedSide = saveData->weaponBank[bankIndex].selectedSide;
         for (int sideIndex = 0; sideIndex < 2; ++sideIndex) {
-            PlayerGunFireController* const controller = &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
-            controller->flags = (controller->flags & ~kPlayerGunControllerAvailableFlag)
+            (&playerState->altWeaponBanks[bankIndex].controllerA)[sideIndex].flags
+                = ((&playerState->altWeaponBanks[bankIndex].controllerA)[sideIndex].flags
+                      & ~kPlayerGunControllerAvailableFlag)
                 | ((saveData->weaponBank[bankIndex].sides[sideIndex].enabled & 1) << 2);
-            controller->ammoOrCharge = saveData->weaponBank[bankIndex].sides[sideIndex].ammoOrCharge;
+            (&playerState->altWeaponBanks[bankIndex].controllerA)[sideIndex].ammoOrCharge
+                = saveData->weaponBank[bankIndex].sides[sideIndex].ammoOrCharge;
         }
 
         HudUiMessage::SetValueIfOwnerMatches(

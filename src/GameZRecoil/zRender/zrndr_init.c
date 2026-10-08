@@ -1650,7 +1650,6 @@ zRndr_SpanOcclusion_InsertSpanNode_Local(zRndr::SpanNodePartial** spanList, int 
                 g_spanIterPrevLink = previous;
                 const float slope = pending->depthSlope;
                 // Retail forms the right fragment start before the left fragment end (0x490d67, 0x490d74).
-                // Retail forms the right fragment start before the left fragment end (0x490d67, 0x490d74).
                 const int rightMin = current->sampleXMax + 1;
                 const int leftMax = current->sampleXMin - 1;
                 SpanNodePartial* right = pending + 1;

@@ -5256,7 +5256,7 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
  * @recoil-artifact defines .text recoil:function:0x4998a0: zRndrFillSpan565Solid
- *
+ * @recoil-match byte
  *
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *
@@ -5271,18 +5271,17 @@ void __fastcall zRndrFillSpan565Solid(int packedColor16, int blendAlpha, int pix
             if (blendAlpha >= 0xfc) {
                 *cursor = (unsigned short)(packedColor16);
             } else {
+                int redDelta, greenDelta, blueDelta;
                 int dst = (short)(*cursor);
-                int greenDelta = (packedColor16 & 0x07e0) - (dst & 0x07e0);
-                int redDelta = (packedColor16 & 0xf800) - (dst & 0xf800);
-                greenDelta *= blendAlpha;
-                redDelta *= blendAlpha;
-                redDelta = (redDelta >> 8) & 0xfffff800;
+                redDelta = (((packedColor16 & 0xf800) - (dst & 0xf800)) * blendAlpha) >> 8;
+                greenDelta = (((packedColor16 & 0x07e0) - (dst & 0x07e0)) * blendAlpha) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
                 dst += redDelta;
-                int blueDelta = (packedColor16 & 0x001f) - (dst & 0x001f);
-                blueDelta *= blendAlpha;
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
-                blueDelta >>= 8;
-                *cursor = (unsigned short)(dst + blueDelta + greenDelta);
+                blueDelta = (((packedColor16 & 0x001f) - (dst & 0x001f)) * blendAlpha) >> 8;
+                // Retail adds blue + green first, then adds that sum into the red-adjusted dst (0x49990a/0x49990c).
+                blueDelta += greenDelta;
+                *cursor = (unsigned short)(dst + blueDelta);
             }
         }
 

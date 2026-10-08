@@ -9,6 +9,33 @@
 namespace
 {
     const int kZClassNodeWindow = 3;
+
+    /**
+     * Window class data as Window.c maintains it.
+     * Evidence: 0x44fcf0 advances the clear-polygon count with VC5's bitfield
+     * merge ('inc; or 0x80000000'); every reader masks 0x7fffffff / tests bit 31.
+     * Purpose: the clear-polygon count word is a 31-bit count plus an enable bit.
+     */
+    struct CZWindowClearPolygon {
+        zVec3 vertices[4];
+        unsigned int vertCount : 31;
+        unsigned int hasVertices : 1;
+    };
+
+    struct CZWindowData {
+        int viewportWidth;
+        int viewportHeight;
+        int resolutionWidth;
+        int resolutionHeight;
+        CZWindowClearPolygon clearPolys[4];
+        unsigned int clearPolyCount : 31;
+        unsigned int clearPolysEnabled : 1;
+        int bufferIndex;
+        void* buffer;
+        int fbWidth;
+        int fbHeight;
+        int fbBpp;
+    };
 }
 
 namespace CZWindow
@@ -40,7 +67,7 @@ namespace CZWindow
         }
 
         node->classId = kZClassNodeWindow;
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(calloc(1, sizeof(CZWindowDataPartial)));
+        CZWindowData* data = (CZWindowData*)(calloc(1, sizeof(CZWindowData)));
         node->classData = data;
         data->resolutionWidth = 1;
         data->resolutionHeight = 1;
@@ -124,8 +151,8 @@ namespace CZWindow
             return 3;
         }
 
-        ((CZWindowDataPartial*)(node->classData))->resolutionWidth = width;
-        ((CZWindowDataPartial*)(node->classData))->resolutionHeight = height;
+        ((CZWindowData*)(node->classData))->resolutionWidth = width;
+        ((CZWindowData*)(node->classData))->resolutionHeight = height;
         return 0;
     }
 
@@ -158,8 +185,8 @@ namespace CZWindow
             return 3;
         }
 
-        *outWidth = ((CZWindowDataPartial*)(node->classData))->resolutionWidth;
-        *outHeight = ((CZWindowDataPartial*)(node->classData))->resolutionHeight;
+        *outWidth = ((CZWindowData*)(node->classData))->resolutionWidth;
+        *outHeight = ((CZWindowData*)(node->classData))->resolutionHeight;
         return 0;
     }
 
@@ -193,8 +220,8 @@ namespace CZWindow
             return 3;
         }
 
-        ((CZWindowDataPartial*)(node->classData))->viewportWidth = width;
-        ((CZWindowDataPartial*)(node->classData))->viewportHeight = height;
+        ((CZWindowData*)(node->classData))->viewportWidth = width;
+        ((CZWindowData*)(node->classData))->viewportHeight = height;
         return 0;
     }
 
@@ -227,8 +254,8 @@ namespace CZWindow
             return 3;
         }
 
-        *outWidth = ((CZWindowDataPartial*)(node->classData))->viewportWidth;
-        *outHeight = ((CZWindowDataPartial*)(node->classData))->viewportHeight;
+        *outWidth = ((CZWindowData*)(node->classData))->viewportWidth;
+        *outHeight = ((CZWindowData*)(node->classData))->viewportHeight;
         return 0;
     }
 
@@ -262,7 +289,7 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
+        CZWindowData* data = (CZWindowData*)(node->classData);
         data->bufferIndex = bufferIndex;
         return 0;
     }
@@ -297,11 +324,11 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
+        CZWindowData* data = (CZWindowData*)(node->classData);
         if (enabled == 1) {
-            data->clearPolyIndexFlags |= (int)(0x80000000u);
+            data->clearPolysEnabled = 1;
         } else {
-            data->clearPolyIndexFlags &= 0x7fffffff;
+            data->clearPolysEnabled = 0;
         }
 
         return 0;
@@ -337,8 +364,8 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        const int polyIndex = data->clearPolyIndexFlags & 0x7fffffff;
+        CZWindowData* data = (CZWindowData*)(node->classData);
+        const int polyIndex = data->clearPolyCount;
         if (polyIndex == 4) {
             zError::ReportOld(
                 0x400,
@@ -349,7 +376,7 @@ namespace CZWindow
             return 1;
         }
 
-        const int vertIndex = data->clearPolys[polyIndex].vertCount & 0x7fffffff;
+        const int vertIndex = data->clearPolys[polyIndex].vertCount;
         if (vertIndex == 4) {
             zError::ReportOld(
                 0x400,
@@ -360,19 +387,17 @@ namespace CZWindow
             return 1;
         }
 
-        data->clearPolys[polyIndex].vertCount |= (int)(0x80000000u);
+        data->clearPolys[polyIndex].hasVertices = 1;
         data->clearPolys[polyIndex].vertices[vertIndex] = *point;
         data->clearPolys[polyIndex].vertices[vertIndex].z = 100.0f;
-
-        const int countFlags = data->clearPolys[polyIndex].vertCount;
-        data->clearPolys[polyIndex].vertCount = (((countFlags + 1) ^ countFlags) & 0x7fffffff) ^ countFlags;
+        data->clearPolys[polyIndex].vertCount++;
         return 0;
     }
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.zclass-window-gwwindowcloseclearpolygon
      * @recoil-artifact defines .text recoil:function:0x44fcf0: CZWindow::gwWindowCloseClearPolygon.
-     *
+     * @recoil-match byte
      *
      * Purpose: submit the active clear polygon to the renderer and advance the
      * stored clear-polygon index.
@@ -399,8 +424,8 @@ namespace CZWindow
             return 3;
         }
 
-        CZWindowDataPartial* data = (CZWindowDataPartial*)(node->classData);
-        const int polyIndex = data->clearPolyIndexFlags & 0x7fffffff;
+        CZWindowData* data = (CZWindowData*)(node->classData);
+        const int polyIndex = data->clearPolyCount;
         if (polyIndex == 4) {
             zError::ReportOld(
                 0x400,
@@ -411,11 +436,9 @@ namespace CZWindow
             return 1;
         }
 
-        zRndr::SpanOcclusionAddPolygon(
-            data->clearPolys[polyIndex].vertices,
-            data->clearPolys[polyIndex].vertCount & 0x7fffffff
-        );
-        data->clearPolyIndexFlags = (data->clearPolyIndexFlags + 1) | (int)(0x80000000u);
+        zRndr::SpanOcclusionAddPolygon(data->clearPolys[polyIndex].vertices, data->clearPolys[polyIndex].vertCount);
+        data->clearPolyCount++;
+        data->clearPolysEnabled = 1;
         return polyIndex;
     }
 }

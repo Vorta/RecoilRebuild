@@ -775,7 +775,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlelightanimevent
      * @recoil-artifact defines .text recoil:function:0x459280: zEffect::HandleLightAnimEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate a light reference's range and specular color over a timed
@@ -824,20 +824,29 @@ namespace zEffect
             lightRangeOuter = lightRangeInner + 1.0f;
         }
 
-        animEvent->currentRangeInner += animEvent->rangeInnerDelta * stepSec;
-        animEvent->currentRangeOuter += animEvent->rangeOuterDelta * stepSec;
+        // Named products give retail's x87 schedule (SetRange arguments loaded before the stores).
+        const float innerDelta = animEvent->rangeInnerDelta * stepSec;
+        const float outerDelta = animEvent->rangeOuterDelta * stepSec;
+        animEvent->currentRangeInner += innerDelta;
+        animEvent->currentRangeOuter += outerDelta;
         CZLight::gwLightSetRange(lightRef->runtimeNode, lightRangeInner, lightRangeOuter);
 
         zColorRgb specular;
         CZLight::gwLightGetSpecularColor(lightRef->runtimeNode, &specular.red, &specular.green, &specular.blue);
 
-        specular.red += stepSec * animEvent->currentSpecular.red;
-        specular.green += stepSec * animEvent->currentSpecular.green;
-        specular.blue += stepSec * animEvent->currentSpecular.blue;
+        const float redStep = stepSec * animEvent->currentSpecular.red;
+        const float greenStep = stepSec * animEvent->currentSpecular.green;
+        const float blueStep = stepSec * animEvent->currentSpecular.blue;
+        specular.red += redStep;
+        specular.green += greenStep;
+        specular.blue += blueStep;
 
-        animEvent->currentSpecular.red += animEvent->specularDelta.red * stepSec;
-        animEvent->currentSpecular.green += animEvent->specularDelta.green * stepSec;
-        animEvent->currentSpecular.blue += animEvent->specularDelta.blue * stepSec;
+        const float redDelta = animEvent->specularDelta.red * stepSec;
+        const float greenDelta = animEvent->specularDelta.green * stepSec;
+        const float blueDelta = animEvent->specularDelta.blue * stepSec;
+        animEvent->currentSpecular.red += redDelta;
+        animEvent->currentSpecular.green += greenDelta;
+        animEvent->currentSpecular.blue += blueDelta;
 
         if (specular.red > 1.0f) {
             specular.red = 1.0f;

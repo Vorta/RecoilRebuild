@@ -128,7 +128,7 @@ struct zSndFadeTickPredicate {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeactivelist-tickall
  * @recoil-artifact defines .text recoil:function:0x4a3c20: zSndFadeActiveList::TickAll.
- *
+ * @recoil-match byte
  *
  * Purpose: tick active fades, compact unfinished entries, and delete completed
  * fade-list nodes.
@@ -182,7 +182,7 @@ namespace zSndFadeLists {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.stopallandshutdown
  * @recoil-artifact defines .text recoil:function:0x4a3d20: zSndFadeLists::StopAllAndShutdown.
- *
+ * @recoil-match byte
  *
  * Purpose: stop active fade handles and drain both recovered fade lists during
  * sound-system shutdown.

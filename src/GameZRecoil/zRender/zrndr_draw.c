@@ -533,7 +533,7 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-flushtransparentqueue
  * @recoil-artifact defines .text recoil:function:0x49a2b0: zRndrFlushTransparentQueue
- *
+ * @recoil-match byte
  *
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
@@ -573,10 +573,11 @@ void __cdecl zRndrFlushTransparentQueue()
             zRndr::g_scanConvertMode = zRndr::g_transparentQueue[queueIndex].scanConvertMode;
 
             if (zRndr::g_transparentQueue[queueIndex].materialRef != 0) {
-                if ((zRndr::g_transparentQueue[queueIndex].materialRef->image->formatFlagsPacked & 2) != 0) {
+                // Like zRndrFlushOverwriteQueue, retail reads the image through a local; both draw calls then
+                // share the texKey push that VC5 hoists past the alpha test (0x49a3ae).
+                zVidImagePartial* image = zRndr::g_transparentQueue[queueIndex].materialRef->image;
+                if ((image->formatFlagsPacked & 2) != 0) {
                     const float alpha = *(float*)(&zRndr::g_transparentQueue[queueIndex].alphaOrShadeBits);
-                    // Both draw calls take the same texture key; retail pushes it once ahead of the alpha branch.
-                    const int texKey = zRndr::g_transparentQueue[queueIndex].texKey;
                     if (alpha >= 1.0f) {
                         zRndrDrawFlatQueued(
                             zRndr::g_transparentQueue[queueIndex].materialRef,
@@ -584,7 +585,7 @@ void __cdecl zRndrFlushTransparentQueue()
                             (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
                             (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
                             zRndr::g_transparentQueue[queueIndex].vertexCount,
-                            texKey
+                            zRndr::g_transparentQueue[queueIndex].texKey
                         );
                     } else {
                         RendererDrawPolyTLV(
@@ -594,7 +595,7 @@ void __cdecl zRndrFlushTransparentQueue()
                             (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
                             zRndr::g_transparentQueue[queueIndex].vertexCount,
                             alpha,
-                            texKey
+                            zRndr::g_transparentQueue[queueIndex].texKey
                         );
                     }
                 } else {

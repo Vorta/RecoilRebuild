@@ -95,8 +95,14 @@ namespace zVideo_buff
             srcRectLocal.bottom -= clipped;
         }
 
-        // Image format flag 0x02 selects the source color key (DDBLT_KEYSRC).
-        const DWORD bltFlags = DDBLT_WAIT | DDBLT_ASYNC | (((srcImage->formatFlagsPacked & 0x02) != 0) * DDBLT_KEYSRC);
+        // Image format flag 0x02 selects the source color key (DDBLT_KEYSRC). VC5 if-converts this
+        // selection into retail's branch-free and/shl/or sequence (+0xe1..+0xf3).
+        DWORD bltFlags;
+        if (srcImage->formatFlagsPacked & 0x02) {
+            bltFlags = DDBLT_WAIT | DDBLT_ASYNC | DDBLT_KEYSRC;
+        } else {
+            bltFlags = DDBLT_WAIT | DDBLT_ASYNC;
+        }
         if (g_zVideo_PrimarySurfaceState.surf == 0) {
             return;
         }

@@ -2654,7 +2654,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d950: zRndr::SpanAlphaBlend555ConstAlphaFromPal8Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN matches the pal8 alpha-map scaling loop with the
  * active palette expansion and 555-specific alpha > 7 gate.
@@ -2681,7 +2681,7 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(int texU, int texV, in
                 *dst = (unsigned short)(srcColor);
             } else {
                 const int dstColor = (short)(*dst);
-                int redDelta, greenDelta, blueDelta;
+                int redDelta, blueDelta, greenDelta;
                 redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
                 greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
                 redDelta &= 0xfffffc00;

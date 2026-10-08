@@ -3809,9 +3809,21 @@ GetNextContourSegmentForTraversal(zGeometry_WeilerContourSegmentPartial* segment
 }
 
 /**
+ * Purpose: Return the signed XY side of a point relative to a directed edge (the edge-delta cross product).
+ * Original inline helper evidence: no standalone retail function; observed at retail 0x469450 and 0x469d60,
+ * whose hoisted first-side compare (fld st(2); fcomp before the fxch) needs the helper's named result.
+ */
+inline float EdgeSideXY(const zVec3* point, const zVec3* edgeStart, const zVec3* edgeEnd)
+{
+    float side = (point->x - edgeStart->x) * (edgeEnd->y - edgeStart->y)
+        - (point->y - edgeStart->y) * (edgeEnd->x - edgeStart->x);
+    return side;
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyadjacentedgepairagainstcontoursegment
  * @recoil-artifact defines .text recoil:function:0x469450: zGeometry_Weiler::ClassifyAdjacentEdgePairAgainstContourSegment
- *
+ * @recoil-match byte
  *
  * Purpose: Classify whether an adjacent edge pair crosses or lies to one side of a contour segment.
  */
@@ -3827,12 +3839,8 @@ int __fastcall ClassifyAdjacentEdgePairAgainstContourSegment(
         const zVec3* const contourEnd = contourSegment->endPoint;
         const zVec3* const firstStart = firstSegment->startPoint;
         const zVec3* const secondEnd = secondSegment->endPoint;
-        const float contourDeltaY = contourEnd->y - contourStart->y;
-        const float contourDeltaX = contourEnd->x - contourStart->x;
-        const float firstSide
-            = (firstStart->x - contourStart->x) * contourDeltaY - (firstStart->y - contourStart->y) * contourDeltaX;
-        const float secondSide
-            = (secondEnd->x - contourStart->x) * contourDeltaY - (secondEnd->y - contourStart->y) * contourDeltaX;
+        const float firstSide = EdgeSideXY(firstStart, contourStart, contourEnd);
+        const float secondSide = EdgeSideXY(secondEnd, contourStart, contourEnd);
 
         if (!((firstSide < 0.0 || secondSide < 0.0) && (firstSide > 0.0 || secondSide > 0.0))) {
             if ((secondEnd->x - firstStart->x) * (firstSegment->endPoint->y - firstStart->y)
@@ -4213,7 +4221,7 @@ namespace zGeometry_Weiler {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-selectforwardstartpointincontoura
  * @recoil-artifact defines .text recoil:function:0x469d60: zGeometry_Weiler::SelectForwardStartPointInContourA
- *
+ * @recoil-match byte
  *
  * Purpose: Choose the forward start point on contour A for outside-results bridge traversal.
  */
@@ -4226,12 +4234,8 @@ SelectForwardStartPointInContourA(zVec3* point, zVec3** selectedPoint, zGeometry
 
     while (remainingPointCount-- != 0) {
         zVec3* const candidatePoint = *selectedPoint;
-        const float edgeDeltaX = currentPoint->x - previousPoint->x;
-        const float edgeDeltaY = currentPoint->y - previousPoint->y;
-        const float pointCross
-            = (point->x - previousPoint->x) * edgeDeltaY - (point->y - previousPoint->y) * edgeDeltaX;
-        const float candidateCross
-            = (candidatePoint->x - previousPoint->x) * edgeDeltaY - (candidatePoint->y - previousPoint->y) * edgeDeltaX;
+        const float pointCross = EdgeSideXY(point, previousPoint, currentPoint);
+        const float candidateCross = EdgeSideXY(candidatePoint, previousPoint, currentPoint);
 
         if ((pointCross > 0.0 && candidateCross < 0.0) || (pointCross < 0.0 && candidateCross > 0.0)) {
             if (currentPoint->x >= point->x) {

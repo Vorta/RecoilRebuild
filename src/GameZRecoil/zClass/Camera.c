@@ -3017,7 +3017,9 @@ namespace CZCamera
                 if (fogWasEnabled != 0) {
                     zMath::Vec3Subtract(&center, &cameraData->cameraPos, &delta);
                     float distance = zMath::Vec3Length(&delta);
-                    distance += area->bboxRadius * 1.10000002f;
+                    // Named margin: retail 'fmul 1.1; fadd distance' (inline folds to 'fmul -1.1; fsubr').
+                    const float fogMargin = area->bboxRadius * 1.10000002f;
+                    distance += fogMargin;
                     zModelFogSetEnabled(distance < fogDistanceStart ? 0 : 1);
                 }
 

@@ -1712,10 +1712,9 @@ namespace CZClass
         }
 
         int worldRectComputed = 0;
-        float minX;
-        float maxX;
-        float minZ;
-        float maxZ;
+        // X/Z footprint pairs (.y = Z): retail keeps max and min as adjacent dword pairs.
+        zVec2 boundsMin;
+        zVec2 boundsMax;
         for (int i = 0; i < node->listCountA; ++i) {
             CZNodePartial* parent = node->listA[i];
             if (parent->classId == 2) {
@@ -1723,26 +1722,33 @@ namespace CZClass
                     zBBoxCorners corners;
                     worldRectComputed = 1;
                     gwNodeGetWorldBBoxCorners(node, &corners);
-                    minX = maxX = corners.corners[0].x;
-                    minZ = maxZ = corners.corners[0].z;
+                    boundsMax.x = boundsMin.x = corners.corners[0].x;
+                    boundsMax.y = boundsMin.y = corners.corners[0].z;
                     const zVec3* corner = &corners.corners[1];
-                    for (i = 7; i > 0; --i) {
-                        if (corner->x < minX)
-                            minX = corner->x;
-                        else if (corner->x > maxX)
-                            maxX = corner->x;
-                        if (corner->z < minZ)
-                            minZ = corner->z;
-                        else if (corner->z > maxZ)
-                            maxZ = corner->z;
-                        ++corner;
+                    for (i = 7; i > 0; --i, ++corner) {
+                        if (corner->x < boundsMin.x)
+                            boundsMin.x = corner->x;
+                        else if (corner->x > boundsMax.x)
+                            boundsMax.x = corner->x;
+                        if (corner->z < boundsMin.y)
+                            boundsMin.y = corner->z;
+                        else if (corner->z > boundsMax.y)
+                            boundsMax.y = corner->z;
                     }
                 }
 
                 int gridCol;
                 int gridRow;
                 if ((node->flags & 0x80) == 0) {
-                    CZWorld::WorldRectToGridIndex(parent, minX, maxX, minZ, maxZ, &gridCol, &gridRow);
+                    CZWorld::WorldRectToGridIndex(
+                        parent,
+                        boundsMin.x,
+                        boundsMax.x,
+                        boundsMin.y,
+                        boundsMax.y,
+                        &gridCol,
+                        &gridRow
+                    );
                 } else {
                     gridCol = gridRow = -1;
                 }

@@ -1224,7 +1224,7 @@ namespace CZDisplayInstance
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.findbestpickcandidatebelowpoint
      * @recoil-artifact defines .text recoil:function:0x443c70: CZDisplayInstance::FindBestPickCandidateBelowPoint.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1237,16 +1237,20 @@ namespace CZDisplayInstance
     )
     {
         if (BuildPickCandidateListBelowPoint(world, position->x, position->y, position->z, outResults) == 0) {
-            zClassDiPickCandidateEntry* candidate = &outResults->entries[0];
-            zClassDiPickCandidateEntry* best = candidate;
+            zClassDiPickCandidateEntry* best = &outResults->entries[0];
+            zClassDiPickCandidateEntry* candidate = best;
             while (--outResults->candidateCount != 0) {
                 ++candidate;
                 if (candidate->hitPos.y > position->y) {
                     continue;
                 }
 
-                if (best->hitPos.y > position->y || candidate->hitPos.y > best->hitPos.y
-                    || (candidate->hitPos.y == best->hitPos.y && best->variantTag.count == 0)) {
+                // Separate replacement rules: retail copies best from entries[0] and candidate from best.
+                if (best->hitPos.y > position->y) {
+                    best = candidate;
+                } else if (candidate->hitPos.y > best->hitPos.y) {
+                    best = candidate;
+                } else if (candidate->hitPos.y == best->hitPos.y && best->variantTag.count == 0) {
                     best = candidate;
                 }
             }
