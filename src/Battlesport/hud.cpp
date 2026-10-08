@@ -986,9 +986,9 @@ int RecoilStateCheatCode::OnTryBecomeCurrent()
     m_prevHalfResAdjustMode = (zVideoHalfResAdjustMode)zVideo::SetHalfResAdjustMode(ZVIDEO_HALFRES_ADJUST_DISABLED);
     HudUi::SetInvalidateMode(0);
 
-    zSndPlayHandleSnapshot* const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    zSndPlayHandleSnapshotList* const audioSnapshot = zSnd::CreateSnapshotFromActiveSamples();
     m_audioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
-    audioSnapshot->StopAllIfPlaying();
+    zSnd::StopSnapshotVoicesIfPlaying(audioSnapshot);
 
     zSndSampleSetInitByName("DIALOG");
 
@@ -1028,9 +1028,9 @@ void RecoilStateCheatCode::OnDeactivate()
 
     zSndSampleSetDestroyByName("DIALOG");
 
-    zSndPlayHandleSnapshot* const audioSnapshot = (zSndPlayHandleSnapshot*)(unsigned int)m_audioSnapshot;
+    zSndPlayHandleSnapshotList* const audioSnapshot = (zSndPlayHandleSnapshotList*)(unsigned int)m_audioSnapshot;
     if (audioSnapshot != 0) {
-        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+        zSnd::RestoreSnapshotWithGlobalVolumeDelta(audioSnapshot);
     }
 
     zVideo::SetHalfResAdjustMode(m_prevHalfResAdjustMode);
@@ -12808,9 +12808,9 @@ RECOIL_NO_GS int RecoilStateMainMenuTransition::OnTryBecomeCurrent()
         action->End();
     }
 
-    zSndPlayHandleSnapshot* const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+    zSndPlayHandleSnapshotList* const audioSnapshot = zSnd::CreateSnapshotFromActiveSamples();
     m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
-    audioSnapshot->StopAllIfPlaying();
+    zSnd::StopSnapshotVoicesIfPlaying(audioSnapshot);
 
     zSndSampleSetInitByName("DIALOG");
 
@@ -13011,14 +13011,14 @@ void RecoilStateMainMenuTransition::OnDeactivate()
         Sleep(0x3e8);
         zSndSampleSetDestroyByName("DIALOG");
 
-        zSndPlayHandleSnapshot* snapshot = (zSndPlayHandleSnapshot*)(unsigned int)m_pausedAudioSnapshot;
+        zSndPlayHandleSnapshotList* snapshot = (zSndPlayHandleSnapshotList*)(unsigned int)m_pausedAudioSnapshot;
         if (snapshot != 0) {
-            snapshot->RestoreAllWithGlobalVolumeDelta();
+            zSnd::RestoreSnapshotWithGlobalVolumeDelta(snapshot);
         }
 
-        snapshot = (zSndPlayHandleSnapshot*)(unsigned int)m_pausedAudioSnapshot;
+        snapshot = (zSndPlayHandleSnapshotList*)(unsigned int)m_pausedAudioSnapshot;
         if (snapshot != 0) {
-            snapshot->Destroy();
+            zSnd::DestroySnapshot(snapshot);
             m_pausedAudioSnapshot = 0;
         }
     }
@@ -13039,10 +13039,10 @@ void RecoilStateMainMenuTransition::OnDeactivate()
  */
 void RecoilStateMainMenuTransition::ClearPausedAudioSnapshot()
 {
-    zSndPlayHandleSnapshot* const snapshot
-        = (zSndPlayHandleSnapshot*)g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot;
+    zSndPlayHandleSnapshotList* const snapshot
+        = (zSndPlayHandleSnapshotList*)g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot;
     if (snapshot != 0) {
-        snapshot->Destroy();
+        zSnd::DestroySnapshot(snapshot);
         g_RecoilState_MainMenuTransition.m_pausedAudioSnapshot = 0;
     }
 }

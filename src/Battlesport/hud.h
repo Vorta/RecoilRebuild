@@ -42,7 +42,6 @@ struct HudUiBackgroundConfirmQuit;
 struct HudUiControlsDialog;
 struct HudUiCheatCodeDialog;
 struct zSndSample;
-struct zSndPlayHandleSnapshot;
 struct CZNodePartial;
 /**
  * Forward declaration for imported MFC42 CString. This is only a pointer
@@ -315,7 +314,7 @@ struct RecoilStateSaveLoadTransition : RecoilStateDialogHost {
     zVideoHalfResAdjustMode m_savedHalfResAdjustMode;
     RecoilSaveLoadPresentationCaptureMode m_capturePresentationMode;
     RecoilSaveLoadTransitionMode m_transitionMode;
-    RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
+    RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshotList*
 
     static void __cdecl StaticInitAndRegisterAtExit();
     static void __cdecl StaticInit();
@@ -580,7 +579,7 @@ RECOIL_STATIC_ASSERT(
  */
 struct RecoilStateCheatCode : RecoilStateDialogHost {
     zVideoHalfResAdjustMode m_prevHalfResAdjustMode;
-    RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshot*
+    RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshotList*
 
     RecoilStateCheatCode();
     static void __cdecl StaticInitAndRegisterAtExit();

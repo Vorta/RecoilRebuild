@@ -923,7 +923,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x4279f0: Player::UpdateMasterTypeAmphib.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered

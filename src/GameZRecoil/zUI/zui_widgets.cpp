@@ -1487,7 +1487,7 @@ void HudUiTextInput::SetCursorPosition(int position)
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
  * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
- * @recoil-match byte
+ * @recoil-match source
  * Purpose: route a key to its mapped edit action (insert, ignore, cancel and the editing keys).
  */
 void HudUiTextInput::DispatchKeyAction(int key)
@@ -1597,7 +1597,7 @@ void HudUiTextInput::MoveCursorRight()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduitextinput-shifttextright
  * @recoil-artifact defines .text recoil:function:0x4b4590: HudUiTextInput::ShiftTextRight.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: make room in the input buffer by shifting its suffix right.
  */
@@ -3140,7 +3140,7 @@ void HudUiFillBitmap::DestructorCore()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-draw
  * @recoil-artifact defines .text recoil:function:0x4b8520: HudUiFillBitmap::Draw.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
  */

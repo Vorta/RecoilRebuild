@@ -1258,7 +1258,7 @@ namespace zModel
      * @recoil-artifact defines .text recoil:function:0x477b30: zModel::RenderNodeHardware
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
-     *
+     * @recoil-match byte
      *
      * Raw assembly: the reviewed vector-dot island in the per-entry backface
      * test (GMOD_DRAW_FACING_DOT, retail [0x4781d5,0x4781f4)), and the reviewed

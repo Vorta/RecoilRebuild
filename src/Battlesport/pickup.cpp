@@ -948,7 +948,7 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-applyeffect
  * @recoil-artifact defines .text recoil:function:0x41d220: Pickup::ApplyEffect (D:\Proj\Battlesport\pickup.cpp).
- *
+ * @recoil-match source
  *
  * Purpose: apply the gameplay effect for a pickup type to the player save state.
  */

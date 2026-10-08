@@ -2039,7 +2039,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
  * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits recoil:function:0x43a900
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
@@ -2349,7 +2349,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -2381,7 +2381,7 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible; reviewed inline asm reproduces the retail

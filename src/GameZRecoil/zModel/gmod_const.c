@@ -1360,7 +1360,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
      * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: compute and normalize the cross product from three polygon vertices.
      */
@@ -1407,7 +1407,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
      * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
      */
@@ -1587,7 +1587,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
@@ -2656,7 +2656,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
      * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: solve the 2D scalar gradient over a triangle.
      */

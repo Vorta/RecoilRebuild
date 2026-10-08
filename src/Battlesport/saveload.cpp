@@ -671,10 +671,10 @@ void HudUiLoadGameDialog::ProcessDialogResult()
     }
 
     RecoilStateMainMenuTransition::ClearPausedAudioSnapshot();
-    zSndPlayHandleSnapshot* const snapshot
-        = (zSndPlayHandleSnapshot*)((unsigned int)(g_RecoilStateSaveLoadTransition.m_pausedAudioSnapshot));
+    zSndPlayHandleSnapshotList* const snapshot
+        = (zSndPlayHandleSnapshotList*)((unsigned int)(g_RecoilStateSaveLoadTransition.m_pausedAudioSnapshot));
     if (snapshot != 0) {
-        snapshot->Destroy();
+        zSnd::DestroySnapshot(snapshot);
         g_RecoilStateSaveLoadTransition.m_pausedAudioSnapshot = 0;
     }
 
@@ -769,9 +769,9 @@ int RecoilStateSaveLoadTransition::OnTryBecomeCurrent()
         HudUi::SetInvalidateMode(0);
         zSnd::ApplyMuteStateToActiveVoices(1);
 
-        zSndPlayHandleSnapshot* const audioSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
+        zSndPlayHandleSnapshotList* const audioSnapshot = zSnd::CreateSnapshotFromActiveSamples();
         m_pausedAudioSnapshot = (RecoilPtr32)(unsigned int)audioSnapshot;
-        audioSnapshot->StopAllIfPlaying();
+        zSnd::StopSnapshotVoicesIfPlaying(audioSnapshot);
 
         zFMV_ActionBlur blurAction(4, 1);
         zFMV_Action* const action = &blurAction;
@@ -886,9 +886,10 @@ void RecoilStateSaveLoadTransition::OnDeactivate()
 
     zSndSampleSetDestroyByName("DIALOG");
 
-    zSndPlayHandleSnapshot* const audioSnapshot = (zSndPlayHandleSnapshot*)((unsigned int)m_pausedAudioSnapshot);
+    zSndPlayHandleSnapshotList* const audioSnapshot
+        = (zSndPlayHandleSnapshotList*)((unsigned int)m_pausedAudioSnapshot);
     if (audioSnapshot != 0) {
-        audioSnapshot->RestoreAllWithGlobalVolumeDelta();
+        zSnd::RestoreSnapshotWithGlobalVolumeDelta(audioSnapshot);
     }
 
     zSnd::ApplyMuteStateToActiveVoices(0);
@@ -942,3 +943,13 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RecoilSaveLoa
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
     g_RecoilApp.QueuePushState(&g_RecoilStateSaveLoadTransition, 0);
 }
+
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and HudUiSaveLoadDialog::RefreshSaveFileList (0x4355e0) orders
+ * code by that counter's parity at code generation. This declaration is never
+ * referenced and emits no code, data or symbols. User-authorized exception:
+ * match-proofs.md "Per-TU VC5 ID-counter parity exception".
+ * Purpose: keep this file's ID-counter parity after shared-header changes.
+ */
+extern int g_SaveLoadIdCounterAlignment0;

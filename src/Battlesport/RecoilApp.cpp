@@ -1113,7 +1113,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
  * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
@@ -1317,8 +1317,8 @@ int CRecoilAppPlayState::OnUpdateShouldQuit()
     }
 
     if (g_RecoilApp_QuitAfterCredits != 0) {
-        zSndPlayHandleSnapshot* const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
-        snapshot->StopAllIfPlaying();
+        zSndPlayHandleSnapshotList* const snapshot = zSnd::CreateSnapshotFromActiveSamples();
+        zSnd::StopSnapshotVoicesIfPlaying(snapshot);
         zSndCd::Stop();
 
         // Retail constructs and destroys the script as an EH-tracked object.
@@ -1403,8 +1403,8 @@ void CRecoilAppPlayState::OnDeactivate()
 
     if (zOpt::GetNetworkEnabled() == 0) {
         HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
-        zSndPlayHandleSnapshot* const snapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
-        snapshot->StopAllIfPlaying();
+        zSndPlayHandleSnapshotList* const snapshot = zSnd::CreateSnapshotFromActiveSamples();
+        zSnd::StopSnapshotVoicesIfPlaying(snapshot);
     }
 
     CRecoilAppFmvScript fmvScript(g_zFMV_ScriptFileName, g_RecoilApp_MissionOverFmvTag, 0);

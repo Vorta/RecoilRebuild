@@ -84,17 +84,13 @@ int __fastcall ShowMessageBox(const char* messageText, const char* titleText, vo
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-zutil-savegamestatelist-init
  * @recoil-artifact defines .text recoil:function:0x4383e0: zUtil_SaveGameState::zUtil_SaveGameState.
- *
+ * @recoil-match byte
  *
  * Purpose: initialize a save-state list sentinel and allocate zeroed player
  * state storage for the owning save-game state.
  */
 zUtil_SaveGameState::zUtil_SaveGameState()
 {
-    unknown_10 = 0;
-    saveStateListTail = 0;
-    saveStateListHead = 0;
-    saveStateCount = 0;
     next = 0;
     firstSaveState = 0;
 
@@ -124,24 +120,24 @@ void zUtil_SaveGameState::FreeOwnedResources()
         netPlayerRow->saveState = 0;
     }
 
-    PlayerModalState* modalState = modalStateListHead;
+    PlayerModalState* modalState = modalStates.head;
     while (modalState != 0) {
         PlayerModalState* const nextModalState = modalState != 0 ? modalState->next : 0;
-        if (modalState != 0 && modalStateCount != 0) {
-            if (modalState == modalStateListHead) {
-                --modalStateCount;
-                modalStateListHead = modalState->next;
-                if (modalStateListHead == 0) {
-                    modalStateListAux = 0;
-                    modalStateListTail = 0;
+        if (modalState != 0 && modalStates.count != 0) {
+            if (modalState == modalStates.head) {
+                --modalStates.count;
+                modalStates.head = modalState->next;
+                if (modalStates.head == 0) {
+                    modalStates.listAux = 0;
+                    modalStates.tail = 0;
                 }
             } else {
-                for (PlayerModalState* cursor = modalStateListHead; cursor != 0; cursor = cursor->next) {
+                for (PlayerModalState* cursor = modalStates.head; cursor != 0; cursor = cursor->next) {
                     if (cursor->next == modalState) {
-                        --modalStateCount;
+                        --modalStates.count;
                         cursor->next = modalState->next;
-                        if (modalStateListTail == modalState) {
-                            modalStateListTail = cursor;
+                        if (modalStates.tail == modalState) {
+                            modalStates.tail = cursor;
                         }
                         break;
                     }
@@ -167,27 +163,27 @@ void zUtil_SaveGameState::FreeOwnedResources()
  */
 zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGameState* self)
 {
-    zUtil_SaveGameState* const saveState = (zUtil_SaveGameState*)(malloc(sizeof(PlayerModalState)));
-    memset(saveState, 0, sizeof(PlayerModalState));
+    PlayerModalState* const modalState = (PlayerModalState*)(malloc(sizeof(PlayerModalState)));
+    memset(modalState, 0, sizeof(PlayerModalState));
 
-    if (self->firstSaveState == 0) {
-        self->firstSaveState = saveState;
+    if (self->primaryModalState == 0) {
+        self->primaryModalState = modalState;
     }
 
-    if (saveState != 0) {
-        saveState->next = 0;
-        if (self->saveStateCount == 0) {
-            self->saveStateListHead = saveState;
+    if (modalState != 0) {
+        modalState->next = 0;
+        if (self->modalStates.count == 0) {
+            self->modalStates.head = modalState;
         } else {
-            self->saveStateListTail->next = saveState;
+            self->modalStates.tail->next = modalState;
         }
 
-        self->saveStateListTail = saveState;
-        saveState->next = 0;
-        ++self->saveStateCount;
+        self->modalStates.tail = modalState;
+        modalState->next = 0;
+        ++self->modalStates.count;
     }
 
-    return saveState;
+    return (zUtil_SaveGameState*)modalState;
 }
 
 /**
@@ -201,7 +197,7 @@ zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGame
 int zUtil_SaveGameState::SelectModalStateByMasterType(int masterType)
 {
     zUtil_SaveGameState* const saveState = this;
-    PlayerModalState* modalState = saveState->modalStateListHead;
+    PlayerModalState* modalState = saveState->modalStates.head;
     if (modalState == 0) {
         return 0;
     }

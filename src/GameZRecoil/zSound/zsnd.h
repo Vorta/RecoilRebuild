@@ -1,6 +1,7 @@
 #pragma once
 
 #include "recoil/recoil_types.h"
+#include <list>
 #include <stddef.h>
 #include <vector>
 
@@ -102,28 +103,24 @@ struct zSndPlayHandleSnapshotPayload {
     void __fastcall CaptureFromPlayHandle(zSndPlayHandle* playHandle);
 };
 
-struct zSndPlayHandleSnapshotItem {
-    zSndPlayHandleSnapshotItem* next;
-    zSndPlayHandleSnapshotItem* prev;
-    zSndPlayHandleSnapshotPayload payload;
-};
+/**
+ * Original VC5 snapshot container: a std::list of captured payloads; the first
+ * entry is the global-volume anchor.
+ * Evidence: retail 0x49fff0 copies the empty allocator byte from an
+ * uninitialized constructor temporary, builds the sentinel with the inlined
+ * list::_Buynode, appends through the inlined list::insert (out-of-line
+ * _Buynode 0x4a07c0: ret 8 with an unused this) and guards each payload copy
+ * with the placement-new null test of allocator::construct; retail 0x4a05f0
+ * is the inlined ~list() of a plain list pointer (no derived destructor call).
+ */
+typedef std::list<zSndPlayHandleSnapshotPayload> zSndPlayHandleSnapshotList;
 
-struct zSndPlayHandleSnapshot {
-    unsigned char backendTag;
-    unsigned char unknown_01[3];
-    zSndPlayHandleSnapshotItem* listHead;
-    int itemCount;
-
-    zSndPlayHandleSnapshot(unsigned char backendTag);
-
-    static zSndPlayHandleSnapshot* __cdecl CreateFromActiveSamples();
-    void AppendPayload(const zSndPlayHandleSnapshotPayload& payload);
-    zSndPlayHandleSnapshotItem* NewNode(zSndPlayHandleSnapshotItem* listHead, zSndPlayHandleSnapshotItem* prev);
-
-    int StopAllIfPlaying();
-    int RestoreAllWithGlobalVolumeDelta();
-    int Destroy();
-};
+namespace zSnd {
+zSndPlayHandleSnapshotList* __cdecl CreateSnapshotFromActiveSamples();
+int __fastcall StopSnapshotVoicesIfPlaying(zSndPlayHandleSnapshotList* snapshot);
+int __fastcall RestoreSnapshotWithGlobalVolumeDelta(zSndPlayHandleSnapshotList* snapshot);
+int __fastcall DestroySnapshot(zSndPlayHandleSnapshotList* snapshot);
+} // namespace zSnd
 
 struct zSndListenerState {
     zVec3 right;
@@ -322,8 +319,7 @@ struct Node;
 RECOIL_STATIC_ASSERT(sizeof(zSndSampleReplayFields) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zSndPlayHandle) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zSndPlayHandleSnapshotPayload) == 0x28);
-RECOIL_STATIC_ASSERT(sizeof(zSndPlayHandleSnapshotItem) == 0x30);
-RECOIL_STATIC_ASSERT(sizeof(zSndPlayHandleSnapshot) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(zSndPlayHandleSnapshotList) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndListenerState) == 0x30);
 RECOIL_STATIC_ASSERT(sizeof(zSndQualityVariant) == 0x10);
 RECOIL_STATIC_ASSERT(sizeof(zSndCuePoint) == 0x18);
@@ -342,9 +338,6 @@ RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackEntry) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, volumeScaleRaw) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, worldPos) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, velocityOrDir) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotItem, payload) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, listHead) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshot, itemCount) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, sampleCount) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zSndSampleSet, samples) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndGroupConfigBlock, cachedSample) == 0x10);

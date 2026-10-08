@@ -2149,7 +2149,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
      * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
-     * @recoil-match byte
+     * @recoil-match source
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is

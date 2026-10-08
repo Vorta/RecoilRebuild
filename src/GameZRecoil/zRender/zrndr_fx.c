@@ -1080,7 +1080,7 @@ namespace zVid
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawnoiserect
      * @recoil-artifact defines .text recoil:function:0x48d910: zVid::DrawNoiseRect.
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
      * Purpose: overlay thresholded grayscale noise on the active FX surface rectangle.

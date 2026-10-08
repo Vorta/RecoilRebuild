@@ -315,6 +315,10 @@ void __cdecl HudSensorTracker::ShutdownGlobal()
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-constructor
+ * @recoil-artifact defines .text recoil:function:0x417390: HudSensorTracker::Constructor.
+ *
+ *
  * Source model: member constructor for the global HudSensorTracker record; VC5
  * EH state only surrounds the three CString default constructors.
  * Touched data: initializes this HudSensorTracker instance and then resets its
@@ -864,8 +868,8 @@ int HudSensorTracker::ShutdownMissionGameplaySystems()
     HudUiAuxOverlay::ClearTextLines();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudLoading_StopAllSoundsMsg);
-    zSndPlayHandleSnapshot* const soundSnapshot = zSndPlayHandleSnapshot::CreateFromActiveSamples();
-    soundSnapshot->StopAllIfPlaying();
+    zSndPlayHandleSnapshotList* const soundSnapshot = zSnd::CreateSnapshotFromActiveSamples();
+    zSnd::StopSnapshotVoicesIfPlaying(soundSnapshot);
     CZCamera::gwCameraSetFlagBit0(cameraNode, 0);
     MapShutdownAndReset();
 
@@ -1879,6 +1883,10 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(float timerSec, int goalVa
 }
 
 /**
+ * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-shutdown
+ * @recoil-artifact defines .text recoil:function:0x419490: HudSensorTracker::Shutdown.
+ *
+ *
  * Source model: HudSensorTracker lifetime cleanup method; CString destruction
  * and EH state are MFC/VC5 provider scaffolding, while map teardown remains the
  * accepted map shutdown/reset owner.

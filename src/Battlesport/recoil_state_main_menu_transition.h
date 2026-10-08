@@ -36,7 +36,7 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     int m_savedHalfResAdjustMode;
     RecoilMainMenuEntryRoute m_entryRoute;
     zVidModeIndex m_deferredVideoModeIndex;
-    RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshot*
+    RecoilPtr32 m_pausedAudioSnapshot; // zSndPlayHandleSnapshotList*
 
     RecoilStateMainMenuTransition();
     RECOIL_NO_GS ~RecoilStateMainMenuTransition();

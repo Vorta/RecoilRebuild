@@ -293,7 +293,7 @@ void zFMV_Script::Reset(int destroyActions)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-loadactionsfromzrd
  * @recoil-artifact defines .text recoil:function:0x4626b0: zFMV_Script::LoadActionsFromZrd.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: load FMV path metadata and construct actions from a named zReader sequence.
  */
@@ -560,7 +560,7 @@ int zFMV_Script::Update(double timeSec)
     if (m_abortOnKey != 0) {
         if (zInput::KeyboardWaitForAnyKeyPress(0) != 0) {
             m_cur->End();
-            zSndPlayHandleSnapshot::CreateFromActiveSamples()->StopAllIfPlaying();
+            zSnd::StopSnapshotVoicesIfPlaying(zSnd::CreateSnapshotFromActiveSamples());
             m_cur = 0;
             return 0;
         }

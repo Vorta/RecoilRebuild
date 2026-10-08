@@ -153,7 +153,7 @@ namespace CZDisplay
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.display.zclass-display-gwdisplaysetbackgroundcolor
      * @recoil-artifact defines .text recoil:function:0x44ff90: CZDisplay::gwDisplaySetBackgroundColor
-     *
+     * @recoil-match byte
      *
      * Evidence: retail stores the packed clear color from AX into a stack
      * temporary, reloads it as a dword and masks it before the call. This matches
@@ -189,8 +189,8 @@ namespace CZDisplay
         data->backgroundR = red;
         data->backgroundG = green;
         data->backgroundB = blue;
-        const unsigned short packedColor = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&data->backgroundR));
-        zVideoSetClearColorPacked16(packedColor);
+        const zVideo_PackedColor16 packedColor = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&data->backgroundR));
+        zVideoSetClearColorPacked16(packedColor.value);
         return 0;
     }
 }

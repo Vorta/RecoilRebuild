@@ -150,7 +150,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x425a20: Player::TickLocalPlayerControls.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
- * @recoil-match byte
+ * @recoil-match source
  *
  * Raw assembly: reviewed (Pro batch Z, run 96d501c4): the zMath::FastExp integer
  * bridge [0x425aca,0x425ad5) supplying cursorBlend and the zMath::Vec3Subtract

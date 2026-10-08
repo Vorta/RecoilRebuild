@@ -203,7 +203,7 @@ unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB)
 /**
  * @recoil-anchor recoil:anchor:zvid.pack-color-rgb
  * @recoil-artifact defines .text recoil:function:0x4a6cf0: zVidPackColorRGB.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Pack 8-bit RGB components into the active framebuffer pixel format.
  * BN passes red and green as low-byte fastcall registers and consumes the low
@@ -224,9 +224,10 @@ unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char gree
  *
  * Purpose: round RGB float channels and pack them through the active 16-bit pixel format.
  */
-unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color)
+zVideo_PackedColor16 __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color)
 {
     unsigned short packed;
+    zVideo_PackedColor16 result;
 
     packed = (unsigned short)(int)(color->r + 0.5f);
     packed &= (unsigned short)(g_zVideo_PixelPack.rMaskShifted);
@@ -234,7 +235,8 @@ unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color)
     packed = (unsigned short)(packed
         | (((int)(color->g + 0.5f) & g_zVideo_PixelPack.gMaskShifted) << g_zVideo_PixelPack.sumMinus8));
     packed = (unsigned short)(packed | ((unsigned short)(int)(color->b + 0.5f) >> g_zVideo_PixelPack.bShiftTo8));
-    return packed;
+    result.value = packed;
+    return result;
 }
 
 namespace zVideo
@@ -830,6 +832,10 @@ namespace zVideo
 namespace zVideo
 {
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-module-init
+     * @recoil-artifact defines .text recoil:function:0x4a7530: zVideo::ModuleInit.
+     *
+     *
      * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
      * Purpose: initialize zVideo global defaults, software renderer dispatch,
      * DirectDraw device enumeration, and the process-exit teardown hook.

@@ -1353,7 +1353,7 @@ void __fastcall ApplyRecipeToPaletteVariant(
                       + (recipe->color0.blue - decoded.b) * inverseVariantWeight * recipe->color0Strength + decoded.b)
             * 255.0f;
 
-        *destColors = zVidPackColorRgbFloats(&color);
+        *destColors = zVidPackColorRgbFloats(&color).value;
         ++sourceColors;
         ++destColors;
         --colorCount;

@@ -1842,7 +1842,7 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
             runtimeBlob->material.colorRgb.green = ParseFloatToken();
             runtimeBlob->material.colorRgb.blue = ParseFloatToken();
             runtimeBlob->material.packedColor
-                = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&runtimeBlob->material.colorRgb));
+                = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&runtimeBlob->material.colorRgb)).value;
             return 1;
         }
 

@@ -771,7 +771,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslatetarget
      * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslate.
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: translate the camera position (matrix translation in matrix mode) and update children.
      */
@@ -1068,7 +1068,7 @@ namespace CZCamera
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.updateimpl
      * @recoil-artifact defines .text recoil:function:0x44aa30: CZCamera::UpdateImpl.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Purpose: rebuild camera transforms, frustum planes, and clip centers.
      */
@@ -2682,7 +2682,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtilesfromparams
      * @recoil-artifact defines .text recoil:function:0x44c8e0: CZCamera::BuildFrustumGridTilesFromParams
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: build frustum grid rings while preserving raw out-of-bounds
      * grid offsets for wrapped/clamped world positions.

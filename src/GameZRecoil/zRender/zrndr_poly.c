@@ -5220,7 +5220,7 @@ void __fastcall zRndrFillSpan16Opaque(int packedColor16, int pixelCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
  * @recoil-artifact defines .text recoil:function:0x499810: zRndrFillSpan555Solid
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *
@@ -5256,7 +5256,7 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
  * @recoil-artifact defines .text recoil:function:0x4998a0: zRndrFillSpan565Solid
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *

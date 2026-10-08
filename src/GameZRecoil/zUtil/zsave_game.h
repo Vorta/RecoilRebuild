@@ -428,22 +428,22 @@ struct zUtil_SaveGameState {
         int unknown_0c;
         zUtil_SaveGameState* aiPeerRingNext;
     };
-    union {
-        int unknown_10;
-        int modalStateListAux;
-    };
-    union {
-        zUtil_SaveGameState* saveStateListHead;
-        PlayerModalState* modalStateListHead;
-    };
-    union {
-        zUtil_SaveGameState* saveStateListTail;
-        PlayerModalState* modalStateListTail;
-    };
-    union {
-        int saveStateCount;
-        int modalStateCount;
-    };
+    /** Retail 0x4383e0 runs this list's inline constructor before the owner's
+     * body: aux, tail, head and count are cleared first. */
+    struct ModalStateList {
+        int listAux;
+        PlayerModalState* head;
+        PlayerModalState* tail;
+        int count;
+
+        ModalStateList()
+        {
+            listAux = 0;
+            tail = 0;
+            head = 0;
+            count = 0;
+        }
+    } modalStates;
     float modeLoopBlend;
     union {
         int unknown_24;
@@ -718,14 +718,14 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, playerState) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, firstSaveState) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, primaryModalState) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, aiPeerRingNext) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateListAux) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, saveStateListHead) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, saveStateListTail) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, saveStateCount) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStates) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStates.head) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStates.tail) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStates.count) == 0x1c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modeLoopBlend) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateListHead) == 0x14);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateListTail) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, modalStateCount) == 0x1c);
+RECOIL_STATIC_ASSERT(sizeof(zUtil_SaveGameState::ModalStateList) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState::ModalStateList, listAux) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState::ModalStateList, head) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_SaveGameState, netPlayerRow) == 0x24);
 
 zUtil_SaveGameState* __fastcall zUtilSaveGameStateListAllocAppend(zUtil_SaveGameState* self);

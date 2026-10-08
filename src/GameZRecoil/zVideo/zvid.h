@@ -292,6 +292,10 @@ struct zVideo_ColorRgbFloat {
     float b;
 };
 
+struct zVideo_PackedColor16 {
+    unsigned short value;
+};
+
 struct zVideo_TexCoord {
     float u;
     float v;
@@ -696,7 +700,7 @@ extern char g_zVideo_DDErrorName_Unsupported[0x12];
 
 unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char green, unsigned char blue);
 unsigned short __fastcall zVidPackColor00RRGGBB(unsigned int color00RRGGBB);
-unsigned short __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color);
+zVideo_PackedColor16 __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* color);
 void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16);
 void __fastcall zVideoSetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat* color);
 void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded();

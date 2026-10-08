@@ -993,7 +993,7 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */

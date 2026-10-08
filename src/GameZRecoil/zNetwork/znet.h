@@ -170,6 +170,13 @@ struct zNetworkDispatchHandlerRecord {
     short unknown_02;
     zNetworkPacketHandler handler;
     int mode;
+
+    zNetworkDispatchHandlerRecord(short type, zNetworkPacketHandler handlerProc, int handlerMode)
+        : packetType(type)
+        , handler(handlerProc)
+        , mode(handlerMode)
+    {
+    }
 };
 
 typedef std::list<zNetworkDispatchHandlerRecord*> zNetworkDispatchHandlerList;

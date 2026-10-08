@@ -176,6 +176,10 @@ void __fastcall RegisterGameplayHandlersAndOptCatalogCallbacks()
 
 namespace Net {
 /**
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.net-init-from-zrd
+ * @recoil-artifact defines .text recoil:function:0x431dd0: Net::InitFromZrd.
+ *
+ *
  * Purpose: Initialize multiplayer mission state from net.zrd spawn points,
  * create the local player row, initialize host HUD timer state, and respawn
  * the local player.

@@ -1643,6 +1643,10 @@ namespace zVideo_dd3d
     }
 
     /**
+     * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon
+     * @recoil-artifact defines .text recoil:function:0x4abb20: zVideo_dd3d::SubmitPolygon.
+     *
+     *
      * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
      * route them to immediate, overwrite, or sorted transparent submission.
      */

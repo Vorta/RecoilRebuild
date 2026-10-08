@@ -426,7 +426,7 @@ namespace zModel_MatlBuffer
                     material->currentTextureDirectoryEntry
                         = zImage::TexIndexToDirEntry((int)((int)(material->currentTextureDirectoryEntry)));
                 } else {
-                    material->packedColor = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&material->colorRgb));
+                    material->packedColor = zVidPackColorRgbFloats((zVideo_ColorRgbFloat*)(&material->colorRgb)).value;
                 }
 
                 if ((material->flags & 0x0400) != 0) {

@@ -2073,7 +2073,7 @@ namespace zNetwork {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-znetwork-znet-dplay-registerpackethandler
  * @recoil-artifact defines .text recoil:function:0x48c0a0: zNetwork::RegisterPacketHandler.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zNetwork\zNetwork.cpp.
  * Purpose: allocate a packet-handler record and append it to the dispatch list.
@@ -2081,13 +2081,7 @@ namespace zNetwork {
 zNetworkDispatchHandlerRecord* __fastcall
 RegisterPacketHandler(short packetType, zNetworkPacketHandler handlerProc, int mode)
 {
-    zNetworkDispatchHandlerRecord* const record
-        = (zNetworkDispatchHandlerRecord*)(::operator new(sizeof(zNetworkDispatchHandlerRecord)));
-    if (record != 0) {
-        record->packetType = packetType;
-        record->handler = handlerProc;
-        record->mode = mode;
-    }
+    zNetworkDispatchHandlerRecord* const record = new zNetworkDispatchHandlerRecord(packetType, handlerProc, mode);
 
     g_zNetwork_DispatchHandlerList.push_back(record);
 

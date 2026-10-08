@@ -127,7 +127,7 @@ namespace zVideo_dd
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-present-display-mode-surface
      * @recoil-artifact defines .text recoil:function:0x4a7b60: zVideo_dd::PresentDisplayModeSurface.
-     * @recoil-match byte
+     * @recoil-match source
      */
     PresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
     {

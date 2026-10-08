@@ -1087,7 +1087,7 @@ namespace Player {
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate recoil:function:0x424bf0
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Raw assembly: the reviewed full-XYZ dot island bound directly to the vec
  * parameter (retail loads ECX and EDX from the one home [ebp-8]) and one
