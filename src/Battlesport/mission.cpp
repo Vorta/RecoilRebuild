@@ -2879,20 +2879,6 @@ extern "C" {
  */
 char g_Hud_TripleStringFmt[9] = "%s %s %s";
 /**
- * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetplayerrowlist
- * @recoil-artifact defines .data recoil:data:0x4f3f10: g_GameNetPlayerRowList.
- * Purpose: Owns the multiplayer player-row linked-list header for active
- * local and remote network participants.
- */
-GameNetPlayerRowListState g_GameNetPlayerRowList = { 0, 0, 0, 0 };
-/**
- * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetspawnpointlist
- * @recoil-artifact defines .data recoil:data:0x4f3f78: g_GameNetSpawnPointList.
- * Purpose: Owns the multiplayer spawn-point linked-list header loaded from
- * net.zrd during network mission startup.
- */
-GameNetSpawnPointListState g_GameNetSpawnPointList = { 0, 0, 0, 0 };
-/**
  * @recoil-anchor recoil:anchor:battlesport-mission-g-gamenetplayerrowstylecolors-00rrggbb
  * @recoil-artifact defines .data recoil:data:0x4dcd88: g_GameNetPlayerRowStyleColors_00RRGGBB.
  * Purpose: Maps network player color indices to HUD row and player tint

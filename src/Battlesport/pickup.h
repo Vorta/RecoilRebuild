@@ -132,8 +132,14 @@ struct PickupSpawnList {
     PickupSpawnDef* tail;
     int count;
 
-    static void __cdecl PrimaryInit();
-    static void __cdecl NetCopyInit();
+    PickupSpawnList()
+    {
+        unused = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
+
     static void __fastcall RemoveAndFreeNode(PickupSpawnDef* node, PickupSpawnList* list);
     void Clear();
 };
@@ -150,7 +156,14 @@ struct PickupRespawnQueue {
     PickupRespawnEntry* tail;
     int count;
 
-    static void __cdecl Init();
+    PickupRespawnQueue()
+    {
+        unused = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
+
     static void __cdecl Update();
     void ClearAndFree();
 };

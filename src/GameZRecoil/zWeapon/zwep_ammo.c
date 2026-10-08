@@ -1153,17 +1153,20 @@ namespace OptCatalog
         g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
         g_OptCatalogRuntimeNowSec = g_Time_UnscaledAccumulatedTimeSec;
 
-        while (g_OptCatalogQueuedImpactQueue.count != 0) {
-            --g_OptCatalogQueuedImpactQueue.count;
-            InvokeDamageFeedbackAndHitCallback(
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry,
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode,
-                &g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos,
-                (OptCatalogHitEventPartial*)(void*)(&g_OptCatalogQueuedImpactQueue
-                        .records[g_OptCatalogQueuedImpactQueue.count]
-                        .hit),
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount
-            );
+        // Retail drains with a post-decrement and resets the count on exit (0x4af0bc-0x4af10e).
+        if (g_OptCatalogQueuedImpactQueue.count != 0) {
+            while (g_OptCatalogQueuedImpactQueue.count-- != 0) {
+                InvokeDamageFeedbackAndHitCallback(
+                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry,
+                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode,
+                    &g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos,
+                    (OptCatalogHitEventPartial*)(void*)(&g_OptCatalogQueuedImpactQueue
+                            .records[g_OptCatalogQueuedImpactQueue.count]
+                            .hit),
+                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount
+                );
+            }
+            g_OptCatalogQueuedImpactQueue.count = 0;
         }
 
         for (OptCatalogEntryDef* entry = g_OptCatalog_EntryTable; entry < entryEnd; ++entry) {
@@ -1690,27 +1693,19 @@ namespace OptCatalog
                                     += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
                             }
 
-                            for (targetIndex = 0; targetIndex < lastTargetIndex; ++targetIndex) {
-                                OptCatalogTrailNodeSlot* const current = &segment[targetIndex];
-                                current->scale = zMath::Vec3DirectionTo(
-                                    &current->pos,
-                                    &segment[targetIndex + 1].pos,
-                                    &current->dir
-                                );
-                                stopped = ComputeTrailImpactResponse(
-                                    entry,
-                                    trailRuntime,
-                                    current,
-                                    &segment[targetIndex + 1].pos
-                                );
+                            // Retail walks the current and branch slot pointers (0x4afe1d-0x4aff23).
+                            OptCatalogTrailNodeSlot* current = segment;
+                            OptCatalogTrailNodeSlot* branch = &segment[targetCount];
+                            for (targetIndex = 0; targetIndex < lastTargetIndex; ++targetIndex, ++current, ++branch) {
+                                current->scale = zMath::Vec3DirectionTo(&current->pos, &current[1].pos, &current->dir);
+                                stopped = ComputeTrailImpactResponse(entry, trailRuntime, current, &current[1].pos);
                                 UpdateTrailSegmentVisual(current);
                                 ++visibleSegmentCount;
                                 if (stopped != 0) {
                                     break;
                                 }
 
-                                OptCatalogTrailNodeSlot* const branch = &segment[targetCount + targetIndex];
-                                branch->pos = segment[targetIndex + 1].pos;
+                                branch->pos = current[1].pos;
                                 branch->scale = zMath::Vec3DirectionTo(
                                     &branch->pos,
                                     trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,
@@ -1728,7 +1723,6 @@ namespace OptCatalog
                             }
 
                             if (stopped == 0) {
-                                OptCatalogTrailNodeSlot* const current = &segment[targetIndex];
                                 current->scale = zMath::Vec3DirectionTo(
                                     &current->pos,
                                     trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,

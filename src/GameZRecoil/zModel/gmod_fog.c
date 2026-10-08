@@ -98,7 +98,7 @@ namespace zModel_Light
         const double kVisibleAttrThreshold = 0.003921569;
         float radialDistance[0x40];
         for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert& vert = g_Clip_PolyVertsScratch[i];
+            const zVec3& vert = g_Clip_PolyVertsScratch[i];
             radialDistance[i] = vert.z * vert.z + vert.x * vert.x;
             const float distanceSq = radialDistance[i];
             float distance;
@@ -253,7 +253,7 @@ namespace zModel_Light
         const double kVisibleAttrThreshold = 0.003921569;
         float radialDistance[0x40];
         for (int i = 0; i < vertexCount; ++i) {
-            const zClipVert& vert = g_Clip_PolyVertsScratch[i];
+            const zVec3& vert = g_Clip_PolyVertsScratch[i];
             radialDistance[i] = vert.z * vert.z + vert.x * vert.x;
             const float distanceSq = radialDistance[i];
             float distance;

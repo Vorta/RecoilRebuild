@@ -632,7 +632,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- * @recoil-match byte
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -1444,7 +1444,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-tickaltgunruntimestate
  * @recoil-artifact defines .text recoil:function:0x439ba0: Player::TickAltGunRuntimeState.
- *
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Source model: Player source-file runtime tick owner for active alt-gun state;

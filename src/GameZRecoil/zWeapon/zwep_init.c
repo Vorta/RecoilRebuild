@@ -548,8 +548,11 @@ namespace zWeapon
                 g_OptCatalog_EntryTable
                     = (OptCatalogEntryDef*)(calloc(1, g_OptCatalog_EntryCount * sizeof(OptCatalogEntryDef)));
 
-                OptCatalogEntryDef* entry = g_OptCatalog_EntryTable;
-                for (unsigned int itemIndex = 1; itemIndex < (unsigned int)(ballisticsNode->value.nodes[0].value.i32);
+                // Retail stores the first item index directly and compares the count in memory (0x4b1319).
+                OptCatalogEntryDef* entry;
+                unsigned int itemIndex;
+                for (itemIndex = 1, entry = g_OptCatalog_EntryTable;
+                    itemIndex < (unsigned int)(ballisticsNode->value.nodes[0].value.i32);
                     itemIndex += 2, ++entry) {
                     entry->ammoOrChargeMax = 50.0f;
                     entry->range = 500.0f;
@@ -573,17 +576,22 @@ namespace zWeapon
                             entry->displayName = entry->keyName;
                         }
 
+                        // Retail pushes the _strdup argument in each arm (0x4b13e8, 0x4b13eb).
                         fieldNode = zRdrFindTag(entryNode, "DESC");
-                        entry->description = _strdup(
-                            fieldNode != 0 ? zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str)
-                                           : entry->keyName
-                        );
+                        if (fieldNode != 0) {
+                            entry->description
+                                = _strdup(zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
+                        } else {
+                            entry->description = _strdup(entry->keyName);
+                        }
 
                         fieldNode = zRdrFindTag(entryNode, "MILITARY_NAME");
-                        entry->militaryName = _strdup(
-                            fieldNode != 0 ? zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str)
-                                           : entry->keyName
-                        );
+                        if (fieldNode != 0) {
+                            entry->militaryName
+                                = _strdup(zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
+                        } else {
+                            entry->militaryName = _strdup(entry->keyName);
+                        }
 
                         fieldNode = zRdrFindTag(entryNode, "ACCELERATION");
                         if (fieldNode != 0) {
@@ -918,11 +926,11 @@ namespace zWeapon
                 }
             }
 
-            OptCatalogRuntimeInstanceStorage* runtime = (OptCatalogRuntimeInstanceStorage*)(calloc(
-                g_OptCatalogRuntimeInstanceCount,
-                sizeof(OptCatalogRuntimeInstanceStorage)
-            ));
-            g_OptCatalogRuntimeInstancePool = runtime;
+            // Retail stores the calloc result to the pool global first (0x4b1c67).
+            g_OptCatalogRuntimeInstancePool
+                = calloc(g_OptCatalogRuntimeInstanceCount, sizeof(OptCatalogRuntimeInstanceStorage));
+            OptCatalogRuntimeInstanceStorage* runtime
+                = (OptCatalogRuntimeInstanceStorage*)(g_OptCatalogRuntimeInstancePool);
             g_OptCatalogFreeRuntimeInstanceList = 0;
             for (unsigned int runtimeIndex = 0; runtimeIndex < (unsigned int)(g_OptCatalogRuntimeInstanceCount);
                 ++runtimeIndex, ++runtime) {

@@ -224,7 +224,7 @@ namespace zClipRect
      */
     int __fastcall ClipPolyZRange_NoUV(zClipRectPartial * clipRect, int* vertexCount)
     {
-        zClipVert clippedVerts[kClipBufferCapacity];
+        zVec3 clippedVerts[kClipBufferCapacity];
         int outputCount;
         int edgeIndex;
         zClipRectPartial* rect = clipRect;
@@ -264,8 +264,8 @@ namespace zClipRect
 
         int prevIndex = *count - 1;
         for (; edgeIndex < *count; ++edgeIndex) {
-            const zClipVert& prevVert = g_Clip_PolyVertsScratch[prevIndex];
-            const zClipVert& currVert = g_Clip_PolyVertsScratch[edgeIndex];
+            const zVec3& prevVert = g_Clip_PolyVertsScratch[prevIndex];
+            const zVec3& currVert = g_Clip_PolyVertsScratch[edgeIndex];
             if (prevVert.z >= rect->zMin && currVert.z >= rect->zMin) {
                 clippedVerts[outputCount] = currVert;
                 ++outputCount;
@@ -293,7 +293,7 @@ namespace zClipRect
             return 0;
         }
 
-        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zClipVert));
+        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
         return 1;
     }
 
@@ -337,21 +337,21 @@ namespace zClipRect
             return count >= 3 ? 1 : 0;
         }
 
-        zClipVert clippedVerts[kClipBufferCapacity] = { 0 };
+        zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
         float clippedAttr0[kClipBufferCapacity] = { 0 };
         float clippedAttr1[kClipBufferCapacity] = { 0 };
         float clippedAttr2[kClipBufferCapacity] = { 0 };
         int outputCount = 0;
 
         if (count > 0) {
-            zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
+            zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
             float prevAttr0 = g_Clip_PolyAttr0[count - 1];
             float prevAttr1 = g_Clip_PolyAttr1[count - 1];
             float prevAttr2 = g_Clip_PolyAttr2[count - 1];
             bool prevInside = prevVert.z >= clipRect->zMin;
 
             for (int i = 0; i < count; ++i) {
-                const zClipVert currVert = g_Clip_PolyVertsScratch[i];
+                const zVec3 currVert = g_Clip_PolyVertsScratch[i];
                 const float currAttr0 = g_Clip_PolyAttr0[i];
                 const float currAttr1 = g_Clip_PolyAttr1[i];
                 const float currAttr2 = g_Clip_PolyAttr2[i];
@@ -359,7 +359,7 @@ namespace zClipRect
 
                 if (prevInside != currInside) {
                     const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                    zClipVert intersection = { 0 };
+                    zVec3 intersection = { 0 };
                     intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
                     intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
                     intersection.z = clipRect->zMin;
@@ -393,7 +393,7 @@ namespace zClipRect
             return 0;
         }
 
-        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zClipVert));
+        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
         memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr1, clippedAttr1, (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)(outputCount) * sizeof(float));
@@ -440,16 +440,16 @@ namespace zClipRect
             return *vertexCount >= 3 ? 1 : 0;
         }
 
-        zClipVert clippedVerts[kClipBufferCapacity];
+        zVec3 clippedVerts[kClipBufferCapacity];
         zClipUV clippedUvs[kClipBufferCapacity];
-        zClipVert* outVert = clippedVerts;
+        zVec3* outVert = clippedVerts;
         zClipUV* outUv = clippedUvs;
         int outputCount = 0;
         int prevIndex = *vertexCount - 1;
 
         for (i = 0; i < *vertexCount; ++i) {
-            zClipVert* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
-            zClipVert* currVert = &g_Clip_PolyVertsScratch[i];
+            zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+            zVec3* currVert = &g_Clip_PolyVertsScratch[i];
             zClipUV* prevUv = &g_Clip_PolyUvs[prevIndex];
             zClipUV* currUv = &g_Clip_PolyUvs[i];
 
@@ -495,7 +495,7 @@ namespace zClipRect
             return 0;
         }
 
-        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zClipVert));
+        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
         memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
         return 1;
     }
@@ -542,26 +542,26 @@ namespace zClipRect
             return result;
         }
 
-        zClipVert clippedVerts[kClipBufferCapacity] = { 0 };
+        zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
         zClipUV clippedUvs[kClipBufferCapacity] = { 0 };
         float clippedAttrs[kClipBufferCapacity] = { 0 };
         int outputCount = 0;
 
         if (count > 0) {
-            zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
+            zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
             zClipUV prevUv = g_Clip_PolyUvs[count - 1];
             float prevAttr = g_Clip_PolyAttr0[count - 1];
             bool prevInside = prevVert.z >= clipRect->zMin;
 
             for (int i = 0; i < count; ++i) {
-                const zClipVert currVert = g_Clip_PolyVertsScratch[i];
+                const zVec3 currVert = g_Clip_PolyVertsScratch[i];
                 const zClipUV currUv = g_Clip_PolyUvs[i];
                 const float currAttr = g_Clip_PolyAttr0[i];
                 const bool currInside = currVert.z >= clipRect->zMin;
 
                 if (prevInside != currInside) {
                     const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                    zClipVert intersection = { 0 };
+                    zVec3 intersection = { 0 };
                     intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
                     intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
                     intersection.z = clipRect->zMin;
@@ -595,7 +595,7 @@ namespace zClipRect
             return 0;
         }
 
-        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zClipVert));
+        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
         memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
         memcpy(g_Clip_PolyAttr0, clippedAttrs, (size_t)(outputCount) * sizeof(float));
         return 1;
@@ -1879,7 +1879,7 @@ namespace zClipRect
             return count >= 3 ? 1 : 0;
         }
 
-        zClipVert clippedVerts[kClipBufferCapacity] = { 0 };
+        zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
         zClipUV clippedUvs[kClipBufferCapacity] = { 0 };
         float clippedAttr0[kClipBufferCapacity] = { 0 };
         float clippedAttr1[kClipBufferCapacity] = { 0 };
@@ -1887,7 +1887,7 @@ namespace zClipRect
         int outputCount = 0;
 
         if (count > 0) {
-            zClipVert prevVert = g_Clip_PolyVertsScratch[count - 1];
+            zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
             zClipUV prevUv = g_Clip_PolyUvs[count - 1];
             float prevAttr0 = g_Clip_PolyAttr0[count - 1];
             float prevAttr1 = g_Clip_PolyAttr1[count - 1];
@@ -1895,7 +1895,7 @@ namespace zClipRect
             bool prevInside = prevVert.z >= clipRect->zMin;
 
             for (int i = 0; i < count; ++i) {
-                const zClipVert currVert = g_Clip_PolyVertsScratch[i];
+                const zVec3 currVert = g_Clip_PolyVertsScratch[i];
                 const zClipUV currUv = g_Clip_PolyUvs[i];
                 const float currAttr0 = g_Clip_PolyAttr0[i];
                 const float currAttr1 = g_Clip_PolyAttr1[i];
@@ -1904,7 +1904,7 @@ namespace zClipRect
 
                 if (prevInside != currInside) {
                     const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                    zClipVert intersection = { 0 };
+                    zVec3 intersection = { 0 };
                     intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
                     intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
                     intersection.z = clipRect->zMin;
@@ -1944,7 +1944,7 @@ namespace zClipRect
             return 0;
         }
 
-        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zClipVert));
+        memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
         memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
         memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)(outputCount) * sizeof(float));
         memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)(outputCount) * sizeof(float));

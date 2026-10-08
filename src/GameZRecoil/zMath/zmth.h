@@ -747,9 +747,12 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * must each address count valid elements and must not overlap (the identity
  * branch uses memcpy); the current matrix-stack slots must be valid. Every
  * expansion is a transform-point island consumer for allowlist purposes.
+ * The expansion is a plain braced block: VC5 treats a do/while (0) wrapper as a loop
+ * region, which moves its constant-zero register choice after the batch (retail
+ * RenderNodeSoftware/Hardware 0x476e34/0x477c75 and 0x477eb5 use local zeros there).
  */
 #define ZMTH_MAT_TRANSFORM_POINT_BATCH(points, outPoints, count)                                                       \
-    do {                                                                                                               \
+    {                                                                                                                  \
         int batchCount = (count);                                                                                      \
         zVec3* batchOutPoints = (outPoints);                                                                           \
         const zVec3* batchPoints = (points);                                                                           \
@@ -765,7 +768,7 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
                 ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(transformMatrix, transformDest, transformSource)                    \
             } while (--batchCount);                                                                                    \
         }                                                                                                              \
-    } while (0)
+    }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**

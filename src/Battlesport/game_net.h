@@ -188,6 +188,14 @@ struct GameNetPlayerRowListState {
     GameNetPlayerRow* tail;
     unsigned int count;
 
+    GameNetPlayerRowListState()
+    {
+        flags = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
+
     GameNetPlayerRow* AppendNewRow(int zeroInitializeRow);
 };
 
@@ -202,6 +210,14 @@ struct GameNetSpawnPointListState {
     GameNetSpawnPoint* head;
     GameNetSpawnPoint* tail;
     unsigned int count;
+
+    GameNetSpawnPointListState()
+    {
+        flags = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
 };
 
 struct HudTimerPanelNetState {
@@ -388,14 +404,6 @@ namespace Net {
 void __cdecl InitFromZrd();
 void __fastcall FormatIpv4Address(char* outText, unsigned int ipAddress);
 } // namespace Net
-
-namespace GameNetSpawnPointList {
-void __cdecl InitGlobals();
-}
-
-namespace GameNetPlayerRowList {
-void __cdecl Reset();
-} // namespace GameNetPlayerRowList
 
 extern "C" {
 extern GameNetPlayerRowListState g_GameNetPlayerRowList;

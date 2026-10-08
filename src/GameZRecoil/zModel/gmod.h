@@ -322,7 +322,8 @@ struct zModel_GlobalState {
      * the next member at +0x300.
      */
     zVec3 diFaceVertexScratch[0x40]; /* +0x60c4 0x57c2c4 */
-    zClipVert clipPolyVertsScratch[0x40]; /* +0x63c4 0x57c5c4 */
+    // Transformed zVec3 records: the renderers gather them with whole-record copies (0x477211, 0x47812c).
+    zVec3 clipPolyVertsScratch[0x40]; /* +0x63c4 0x57c5c4 */
     zClipVert clipPolyVerts[0x40]; /* +0x66c4 0x57c8c4 */
     zClipUV clipPolyUvsStorage[0x40]; /* +0x69c4 0x57cbc4 */
     zClipUV* clipPolyUvs; /* +0x6bc4 0x57cdc4 */

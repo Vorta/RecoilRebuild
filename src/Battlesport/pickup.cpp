@@ -130,14 +130,28 @@ PickupType g_PickupTypes[40] = { { 0, 515, 0, 30, g_PickupLogicalName_ERFPG_AMMO
     { 0, 577, 37, 1, g_PickupLogicalName_PUP_AMPHIB, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 578, 38, 1, g_PickupLogicalName_PUP_HOVER, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 581, 39, 1, g_PickupLogicalName_PUP_SUB, 0, 0, 0, 0, 0, 0, 0 } };
-PickupSpawnList g_PickupSpawnList_NetworkCopy = { 0 };
+/**
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupspawnlist-primary
+ * @recoil-artifact defines .data recoil:data:0x4f3318: g_PickupSpawnList_Primary (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-artifact emits .text recoil:function:0x41cc10: Native global lifecycle contribution 1.
+ * Purpose: hold the primary pickup spawn list; its inline constructor empties it at startup.
+ */
+PickupSpawnList g_PickupSpawnList_Primary;
+/**
+ * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickupspawnlist-networkcopy
+ * @recoil-artifact defines .data recoil:data:0x4f32f8: g_PickupSpawnList_NetworkCopy (D:\Proj\Battlesport\pickup.cpp).
+ * @recoil-artifact emits .text recoil:function:0x41cc40: Native global lifecycle contribution 1.
+ * Purpose: hold the network-copy pickup spawn list; its inline constructor empties it at startup.
+ */
+PickupSpawnList g_PickupSpawnList_NetworkCopy;
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.g-pickuprespawnqueue
  * @recoil-artifact defines .data recoil:data:0x4f3308: g_PickupRespawnQueue (D:\Proj\Battlesport\pickup.cpp).
- * Purpose: hold the BSS-zeroed head/tail/count state for pending pickup respawns.
+ * @recoil-artifact emits .text recoil:function:0x41cc70: Native global lifecycle contribution 1.
+ * Purpose: hold the head/tail/count state for pending pickup respawns; its inline constructor
+ * empties it at startup.
  */
-PickupRespawnQueue g_PickupRespawnQueue = { 0 };
-PickupSpawnList g_PickupSpawnList_Primary = { 0 };
+PickupRespawnQueue g_PickupRespawnQueue;
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.g-nextpickupid
  * @recoil-artifact defines .data recoil:data:0x4f3330: g_NextPickupId (D:\Proj\Battlesport\pickup.cpp).
@@ -633,51 +647,6 @@ PickupPkt11Delta g_PickupPkt11Flag2Delta = { { 0x11, sizeof(PickupPkt11Delta), 0
 PickupPkt11Delta g_PickupPkt11Flag8Delta = { { 0x11, sizeof(PickupPkt11Delta), 0 }, 0, 0, 0 };
 PickupPkt12AirdropSpawnChuteRelay g_PickupPkt12AirdropSpawnChuteRelay
     = { { 0x12, sizeof(PickupPkt12AirdropSpawnChuteRelay), 0 }, { 0.0f, 0.0f, 0.0f }, 0, 0, 0 };
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-primary-init
- * @recoil-artifact defines .text recoil:function:0x41cc10: PickupSpawnList::PrimaryInit (D:\Proj\Battlesport\pickup.cpp).
- *
- *
- * Purpose: clear the primary pickup spawn list global.
- */
-void __cdecl PickupSpawnList::PrimaryInit()
-{
-    g_PickupSpawnList_Primary.unused = 0;
-    g_PickupSpawnList_Primary.tail = 0;
-    g_PickupSpawnList_Primary.head = 0;
-    g_PickupSpawnList_Primary.count = 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.pickupspawnlist-netcopy-init
- * @recoil-artifact defines .text recoil:function:0x41cc40: PickupSpawnList::NetCopyInit (D:\Proj\Battlesport\pickup.cpp).
- *
- *
- * Purpose: clear the network-copy pickup spawn list global.
- */
-void __cdecl PickupSpawnList::NetCopyInit()
-{
-    g_PickupSpawnList_NetworkCopy.unused = 0;
-    g_PickupSpawnList_NetworkCopy.tail = 0;
-    g_PickupSpawnList_NetworkCopy.head = 0;
-    g_PickupSpawnList_NetworkCopy.count = 0;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.pickup.pickuprespawnqueue-init
- * @recoil-artifact defines .text recoil:function:0x41cc70: PickupRespawnQueue::Init (D:\Proj\Battlesport\pickup.cpp).
- *
- *
- * Purpose: clear the pickup respawn queue global.
- */
-void __cdecl PickupRespawnQueue::Init()
-{
-    g_PickupRespawnQueue.unused = 0;
-    g_PickupRespawnQueue.tail = 0;
-    g_PickupRespawnQueue.head = 0;
-    g_PickupRespawnQueue.count = 0;
-}
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickuptypetable-freeoptmeta
@@ -2502,16 +2471,6 @@ int __cdecl PickupAirdropSpawnRef::TrySpawnRandomPickupFromGlobal()
 
     return 0;
 }
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* PickupCrtInitializerFn)();
-/* VC5 emits these pickup.cpp startup callbacks as direct .CRT$XCU rows. */
-#pragma data_seg(".CRT$XCU")
-PickupCrtInitializerFn s_PickupCrtInit_PrimarySpawnList = PickupSpawnList::PrimaryInit;
-PickupCrtInitializerFn s_PickupCrtInit_NetworkCopySpawnList = PickupSpawnList::NetCopyInit;
-PickupCrtInitializerFn s_PickupCrtInit_RespawnQueue = PickupRespawnQueue::Init;
-#pragma data_seg()
-#endif
 
 #if defined(RECOILAPP_LINK_SPLIT_EARLY_SHARD)
 namespace Pickup {

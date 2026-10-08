@@ -113,31 +113,26 @@ struct GameNetReaderArray {
     zReader::Node nodes[1];
 };
 
-namespace GameNetSpawnPointList {
+extern "C" {
 /**
- * Purpose: Reset the GameNet-owned spawn-point list header to an empty state.
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.g-gamenetspawnpointlist
+ * @recoil-artifact defines .data recoil:data:0x4f3f78: g_GameNetSpawnPointList.
+ * @recoil-artifact emits .text recoil:function:0x431bf0: Native global lifecycle contribution 1.
+ * Purpose: Owns the multiplayer spawn-point linked-list header loaded from
+ * net.zrd during network mission startup; its inline constructor empties it
+ * at startup.
  */
-void __cdecl InitGlobals()
-{
-    g_GameNetSpawnPointList.flags = 0;
-    g_GameNetSpawnPointTail = 0;
-    g_GameNetSpawnPointHead = 0;
-    g_GameNetSpawnPointCount = 0;
-}
-} // namespace GameNetSpawnPointList
-
-namespace GameNetPlayerRowList {
+GameNetSpawnPointListState g_GameNetSpawnPointList;
 /**
- * Purpose: Reset the GameNet-owned player-row list header to an empty state.
+ * @recoil-anchor recoil:anchor:battlesport.recoilnet.g-gamenetplayerrowlist
+ * @recoil-artifact defines .data recoil:data:0x4f3f10: g_GameNetPlayerRowList.
+ * @recoil-artifact emits .text recoil:function:0x431c20: Native global lifecycle contribution 1.
+ * Purpose: Owns the multiplayer player-row linked-list header for active
+ * local and remote network participants; its inline constructor empties it
+ * at startup.
  */
-void __cdecl Reset()
-{
-    g_GameNetPlayerRowList.flags = 0;
-    g_GameNetPlayerRowTail = 0;
-    g_GameNetPlayerRowHead = 0;
-    g_GameNetPlayerRowCount = 0;
+GameNetPlayerRowListState g_GameNetPlayerRowList;
 }
-} // namespace GameNetPlayerRowList
 
 namespace GameNet {
 /**
@@ -2208,12 +2203,3 @@ void GameNetPlayerRow::DestroyEmbeddedPanel()
 namespace GameNet {
 
 } // namespace GameNet
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* GameNetCrtInitializerFn)();
-/* VC5 emits these GameNet.cpp startup callbacks as direct .CRT$XCU rows. */
-#pragma data_seg(".CRT$XCU")
-GameNetCrtInitializerFn s_GameNetCrtInit_SpawnPointListInitGlobals = GameNetSpawnPointList::InitGlobals;
-GameNetCrtInitializerFn s_GameNetCrtInit_PlayerRowListReset = GameNetPlayerRowList::Reset;
-#pragma data_seg()
-#endif

@@ -285,7 +285,7 @@ namespace zModel_Light
         zVec3 lightToVertex[0x40][0x40];
 
         for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-            const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+            const zVec3* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
             for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
                 zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
                 CZLightDataPartial* const light = entry.light;
@@ -308,8 +308,7 @@ namespace zModel_Light
                     const float depth = vertex->z;
                     distances[lightIndex][vertexIndex] = depth;
                     if (depth < light->range2) {
-                        // zClipVert shares zVec3's x/y/z layout; retail passes the scratch vertex directly.
-                        zMathVec3DivScalar((const zVec3*)vertex, &lightToVertex[lightIndex][vertexIndex], depth);
+                        zMathVec3DivScalar(vertex, &lightToVertex[lightIndex][vertexIndex], depth);
                     }
                     valid[lightIndex][vertexIndex] = 1;
                     hasAnyCandidate = 1;
@@ -453,7 +452,7 @@ namespace zModel_Light
                     if (light->isDirectional != 0) {
                         zVec3* const direction = &lightToVertex[lightIndex][vertexIndex];
                         if (entry.useFullWeight != 0) {
-                            const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+                            const zVec3* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
                             direction->x = light->viewPos.x - vertex->x;
                             direction->y = light->viewPos.y - vertex->y;
                             direction->z = light->viewPos.z - vertex->z;
@@ -717,7 +716,7 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
     zVec3 lightToVertex[0x40][0x40];
 
     for (int vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex) {
-        const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+        const zVec3* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
         for (int lightIndex = 0; lightIndex < gModel_ActiveLightCount; ++lightIndex) {
             zModel_ActiveLightEntryLive& entry = gModel_ActiveLights[lightIndex];
             valid[lightIndex][vertexIndex] = 0;
@@ -843,7 +842,7 @@ zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPack
                 if (light->isDirectional != 0) {
                     zVec3* const direction = &lightToVertex[lightIndex][vertexIndex];
                     if (entry.useFullWeight != 0) {
-                        const zClipVert* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
+                        const zVec3* const vertex = &g_Clip_PolyVertsScratch[vertexIndex];
                         direction->x = light->viewPos.x - vertex->x;
                         direction->y = light->viewPos.y - vertex->y;
                         direction->z = light->viewPos.z - vertex->z;
