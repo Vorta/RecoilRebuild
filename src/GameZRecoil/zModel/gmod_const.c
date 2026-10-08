@@ -704,7 +704,8 @@ namespace zModel_DiPool
         {
             zDiEntryPartial* diEntry = entries;
             for (int entryIndex = 0; entryIndex < entryCount; ++entryIndex, ++diEntry) {
-                if ((diEntry->flagsAndIndexCount & 0xff) != 0) {
+                // Retail tests the loaded word unsigned and reuses it (0x481e7c mov eax,[esi]; test eax,0xff; jbe).
+                if ((diEntry->flagsAndIndexCount & 0xff) > 0) {
                     const unsigned int indexBytes = (diEntry->flagsAndIndexCount & 0xff) * 4;
                     diEntry->vertexIndices = malloc(indexBytes);
                     if (fread(diEntry->vertexIndices, indexBytes, 1, file) != 1) {

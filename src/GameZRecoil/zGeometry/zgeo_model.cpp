@@ -122,7 +122,7 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findorcreaterandomdebugmaterial
  * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
- *
+ * @recoil-match source
  *
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */

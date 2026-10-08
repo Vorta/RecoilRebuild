@@ -11744,7 +11744,7 @@ void __fastcall Trace(const char* /*message*/) { }
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.advanceandlog
  * @recoil-artifact defines .text recoil:function:0x414180: HudUiLoadingCheckpoint::AdvanceAndLog.
- *
+ * @recoil-match byte
  *
  * Purpose: advance the embedded HudUiMgr loading checkpoint table, report
  * overflow, optionally log the supplied message, and update briefing progress.

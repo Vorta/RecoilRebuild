@@ -1518,16 +1518,17 @@ void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState* saveState)
     playerState->angVelRoll = -(rollDampingFactor * playerState->vehicleRollRad);
 
     const float speedAbs = (float)(fabs(playerState->localVel.z));
-    const float pitchWaveRate
-        = speedAbs * masterModalData->hoverPitchWaveSpeedRate + masterModalData->hoverPitchWaveBaseRate;
-    const float rollWaveRate
-        = speedAbs * masterModalData->hoverRollWaveSpeedRate + masterModalData->hoverRollWaveBaseRate;
-    const float pitchBobDelta
-        = sinf(pitchWaveRate * g_Time_AccumulatedTimeSec) * masterModalData->hoverPitchWaveAmplitude;
-    const float rollBobDelta = sinf(rollWaveRate * g_Time_AccumulatedTimeSec) * masterModalData->hoverRollWaveAmplitude;
+    // Retail keeps the pitch wave in a float stack home and the roll wave live on the x87 stack.
+    float pitchWave = speedAbs * masterModalData->hoverPitchWaveSpeedRate + masterModalData->hoverPitchWaveBaseRate;
+    pitchWave *= g_Time_AccumulatedTimeSec;
+    double rollWave = speedAbs * masterModalData->hoverRollWaveSpeedRate + masterModalData->hoverRollWaveBaseRate;
+    rollWave *= g_Time_AccumulatedTimeSec;
+    pitchWave = (float)(sin(pitchWave));
+    pitchWave *= masterModalData->hoverPitchWaveAmplitude;
+    rollWave = sin(rollWave) * masterModalData->hoverRollWaveAmplitude;
 
-    playerState->vehiclePitchRad += g_Player_DeltaTime * pitchBobDelta;
-    playerState->vehicleRollRad += g_Player_DeltaTime * rollBobDelta;
+    playerState->vehiclePitchRad += g_Player_DeltaTime * pitchWave;
+    playerState->vehicleRollRad += g_Player_DeltaTime * rollWave;
 
     if (playerState->underwaterFxEnabled != 0 && playerState->cameraTarget.y < outBestHeight) {
         ((HudUiElement*)(&g_Player_UnderwaterFxPass3Ui))->SetVisible(1);

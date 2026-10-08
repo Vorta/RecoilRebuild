@@ -1748,19 +1748,19 @@ struct HudUiClampedIntTextInput : HudUiNetGameSetupTextInput {
     int CommitAndGetValue();
 };
 
-struct HudUiClampedIntStepButton : HudUiZrdWidget {
+/**
+ * Retail 0x419aa0 stores this pair panel-relative (+0xc50c, +0xc660) while EBX
+ * still holds the button address, so the binding is the button's own subobject.
+ * Purpose: hold the clamped integer input and signed step a step control applies.
+ */
+struct HudUiClampedIntStepTarget {
     HudUiClampedIntTextInput* targetInput;
     int stepDelta;
+    HudUiClampedIntStepTarget();
     void SetTarget(HudUiClampedIntTextInput* input, int step);
-
-    /**
-     * Purpose: leave the step control unbound with a one-unit default step.
-     */
-    HudUiClampedIntStepButton()
-        : targetInput(0)
-        , stepDelta(1)
-    {
-    }
+    void ApplyStep();
+};
+struct HudUiClampedIntStepButton : HudUiZrdWidget, HudUiClampedIntStepTarget {
     void OnActivate();
 };
 

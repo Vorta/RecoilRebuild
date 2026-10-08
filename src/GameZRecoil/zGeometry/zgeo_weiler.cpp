@@ -3476,17 +3476,19 @@ int __fastcall Intersect2d(
 )
 {
     zGeometry_WeilerXingPartial* createdXing = 0;
+    // Function-scope doubles: this declaration order gives retail's interleaved delta schedule (0x468c63..0x468cc7).
+    double divisor, edge0Param, edge0DeltaX, edge0DeltaY, edge1ReverseDeltaX, edge1ReverseDeltaY;
     int xingType = zGeometry_Weiler::ClassifyIntersect2d(&edge0Start, &edge0End, &edge1Start, &edge1End, self);
 
     {
         switch (xingType) {
         case 4:
         case 5: {
-            const double edge0DeltaX = edge0End.x - edge0Start.x;
-            const double edge0DeltaY = edge0End.y - edge0Start.y;
-            const double edge1ReverseDeltaX = edge1Start.x - edge1End.x;
-            const double edge1ReverseDeltaY = edge1Start.y - edge1End.y;
-            const double divisor = edge1ReverseDeltaY * edge0DeltaX - edge1ReverseDeltaX * edge0DeltaY;
+            edge0DeltaX = edge0End.x - edge0Start.x;
+            edge1ReverseDeltaX = edge1Start.x - edge1End.x;
+            edge0DeltaY = edge0End.y - edge0Start.y;
+            edge1ReverseDeltaY = edge1Start.y - edge1End.y;
+            divisor = edge1ReverseDeltaY * edge0DeltaX - edge1ReverseDeltaX * edge0DeltaY;
 
             if (divisor != 0.0) {
                 createdXing
@@ -3502,7 +3504,7 @@ int __fastcall Intersect2d(
                 }
 
                 // Retail scales by the reciprocal divisor term by term.
-                const double edge0Param = (edge1Start.x - edge0Start.x) * (edge1ReverseDeltaY * (1.0 / divisor))
+                edge0Param = (edge1Start.x - edge0Start.x) * (edge1ReverseDeltaY * (1.0 / divisor))
                     + (edge1Start.y - edge0Start.y) * (-edge1ReverseDeltaX * (1.0 / divisor));
                 createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
                 createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);

@@ -4060,20 +4060,22 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     const int originY = uiOriginY;
                     zReader::Node* const imageEntry = &imageListNode->value.nodes[index];
 
-                    HudUiWidget& child = backgroundImageWidgets[index - 1];
-                    child.SetImageByPathOwned(imageEntry->value.nodes[1].value.str);
+                    // Retail addresses the array element directly: the flag store stays ahead of the
+                    // SetVisible vtable load, and the flag byte is zero-extended before masking (0x4b9c43).
+                    backgroundImageWidgets[index - 1].SetImageByPathOwned(imageEntry->value.nodes[1].value.str);
                     if (imageEntry->value.nodes[0].value.i32 >= 4) {
-                        ((HudUiElement*)(&child))
+                        ((HudUiElement*)(&backgroundImageWidgets[index - 1]))
                             ->SetPos(
                                 imageEntry->value.nodes[2].value.i32 + originX,
                                 imageEntry->value.nodes[3].value.i32 + originY
                             );
                     }
 
-                    child.flags = (unsigned int)((unsigned char)(child.flags) & 0x10u) | 0x02u;
-                    ((HudUiElement*)(&child))->SetVisible(1);
-                    ((HudUiElement*)(&child))->Invalidate();
-                    AddChild((HudUiElement*)(&child));
+                    backgroundImageWidgets[index - 1].flags
+                        = ((unsigned char)(backgroundImageWidgets[index - 1].flags) & ~0xefu) | 0x02u;
+                    ((HudUiElement*)(&backgroundImageWidgets[index - 1]))->SetVisible(1);
+                    ((HudUiElement*)(&backgroundImageWidgets[index - 1]))->Invalidate();
+                    AddChild((HudUiElement*)(&backgroundImageWidgets[index - 1]));
                 }
             }
 
@@ -4097,11 +4099,11 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     }
                     if (videoEntry->value.nodes[0].value.i32 >= 5) {
                         zReader::Node* const color = videoEntry->value.nodes[4].value.nodes;
-                        child.SetColorKey565((unsigned short)(zVidPackColorRGB(
-                            color[1].value.i32,
-                            color[2].value.i32,
-                            color[3].value.i32
-                        )));
+                        // Retail loads full dwords for the packed-color channels (0x4b9d1a), as in mission.cpp.
+                        const int red = color[1].value.i32;
+                        const int green = color[2].value.i32;
+                        const int blue = color[3].value.i32;
+                        child.SetColorKey565((unsigned short)(zVidPackColorRGB(red, green, blue)));
                     }
 
                     child.SetVisible(1);
@@ -4127,11 +4129,14 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 for (int index = 1; index < textCount; ++index) {
                     zReader::Node* const textEntry = &textListNode->value.nodes[index];
 
-                    HudUiPanel* const child = (HudUiPanel*)(&backgroundTextPanels[index - 1]);
-                    child->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(textEntry->value.nodes[1].value.str));
+                    // Retail addresses the array element directly: the alignMode store stays ahead of
+                    // the SetFont vtable load (0x4b9e3d).
+                    backgroundTextPanels[index - 1].SetTextFmt(
+                        zLoc::ResolveMessageKeyOrFallback(textEntry->value.nodes[1].value.str)
+                    );
                     const int originX = uiOriginX;
                     const int originY = uiOriginY;
-                    child->SetPos(
+                    backgroundTextPanels[index - 1].SetPos(
                         textEntry->value.nodes[2].value.i32 + originX,
                         textEntry->value.nodes[3].value.i32 + originY
                     );
@@ -4139,14 +4144,15 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     const HudFontStyle* const style
                         = fontStyles[styleIndex].validMarker != 0 ? &fontStyles[styleIndex] : 0;
                     if (style != 0) {
-                        child->alignMode = style->alignMode;
-                        child->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
-                        child->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
-                        child->SetShadow(style->shadowEnabled, 1, 1);
-                        child->SetTextBackground(style->bkMode, style->bkColor);
+                        backgroundTextPanels[index - 1].alignMode = style->alignMode;
+                        backgroundTextPanels[index - 1]
+                            .SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
+                        backgroundTextPanels[index - 1].SetTextColorsAndMarkDirty(style->textColor, style->textColor);
+                        backgroundTextPanels[index - 1].SetShadow(style->shadowEnabled, 1, 1);
+                        backgroundTextPanels[index - 1].SetTextBackground(style->bkMode, style->bkColor);
                     }
-                    child->SetVisible(1);
-                    AddChild((HudUiElement*)(child));
+                    backgroundTextPanels[index - 1].SetVisible(1);
+                    AddChild(&backgroundTextPanels[index - 1]);
                 }
             }
 
@@ -4187,12 +4193,14 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
 
                 for (int index = 1; index < soundCount; ++index) {
                     zReader::Node* const soundEntry = &soundListNode->value.nodes[index];
+                    // Retail reads the sample name before the optional volume field (0x4b9fdf).
+                    const char* const sampleName = soundEntry->value.nodes[1].value.str;
 
                     float volume = 1.0f;
                     if (soundEntry->value.nodes[0].value.i32 >= 3) {
                         volume = soundEntry->value.nodes[2].value.f32;
                     }
-                    backgroundSounds[index - 1].sample = zSnd::FindSampleByName(soundEntry->value.nodes[1].value.str);
+                    backgroundSounds[index - 1].sample = zSnd::FindSampleByName(sampleName);
                     backgroundSounds[index - 1].volume = volume;
                 }
             }

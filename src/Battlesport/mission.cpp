@@ -2148,11 +2148,20 @@ inline void HudUiClampedIntTextInput::SetRange(int minimum, int maximum)
 }
 
 /**
+ * Purpose: leave the step control unbound with a one-unit default step.
+ */
+inline HudUiClampedIntStepTarget::HudUiClampedIntStepTarget()
+    : targetInput(0)
+    , stepDelta(1)
+{
+}
+
+/**
  * Purpose: bind a step control to the input and signed increment it applies.
  * This models the repeated target/step pairs; no original method spelling or
  * standalone retail body is claimed.
  */
-inline void HudUiClampedIntStepButton::SetTarget(HudUiClampedIntTextInput* input, int step)
+inline void HudUiClampedIntStepTarget::SetTarget(HudUiClampedIntTextInput* input, int step)
 {
     targetInput = input;
     stepDelta = step;
@@ -2396,6 +2405,19 @@ int HudUiClampedIntTextInput::CommitAndGetValue()
 }
 
 /**
+ * Purpose: commit the bound input, add the signed step and invalidate the input
+ * when a target is bound; the step binding owns this part of activation.
+ */
+inline void HudUiClampedIntStepTarget::ApplyStep()
+{
+    if (targetInput != 0) {
+        const int value = targetInput->CommitAndGetValue();
+        targetInput->SetValue(stepDelta + value);
+        targetInput->Invalidate();
+    }
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-ui-clamped-int-step-button-on-activate
  * @recoil-artifact defines .text recoil:function:0x41a350: HudUiClampedIntStepButton::OnActivate.
  * @recoil-match byte
@@ -2408,12 +2430,7 @@ int HudUiClampedIntTextInput::CommitAndGetValue()
  */
 void HudUiClampedIntStepButton::OnActivate()
 {
-    if (targetInput != 0) {
-        const int value = targetInput->CommitAndGetValue();
-        targetInput->SetValue(stepDelta + value);
-        targetInput->Invalidate();
-    }
-
+    ApplyStep();
     HudUiZrdWidget::OnActivate();
 }
 

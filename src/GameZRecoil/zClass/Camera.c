@@ -2489,14 +2489,15 @@ namespace CZCamera
             g_zCamera_FrustumGridTileRings[ringIndex].count = 0;
         }
 
-        int originCol;
-        int originRow;
+        // Grid queries fill (col, row) pairs and the footprint bounds are X/Z pairs, as in the
+        // sibling BuildFrustumGridTilesFromParams (retail keeps each pair in adjacent dwords).
+        GridCell origin;
         int result = CZWorld::WorldToGridCoordsClamped(
             world,
             cameraData->cameraPos.x,
             cameraData->cameraPos.z,
-            &originCol,
-            &originRow
+            &origin.col,
+            &origin.row
         );
         if (result != 0) {
             return result;
@@ -2539,137 +2540,128 @@ namespace CZCamera
         }
 
         // Retail seeds the bounds from the first two footprint points, then scans from the third.
-        float minX = g_zCamera_FrustumFootprintPoints[0].x < g_zCamera_FrustumFootprintPoints[1].x
+        zVec2 boundsMin;
+        zVec2 boundsMax;
+        boundsMin.x = g_zCamera_FrustumFootprintPoints[0].x < g_zCamera_FrustumFootprintPoints[1].x
             ? g_zCamera_FrustumFootprintPoints[0].x
             : g_zCamera_FrustumFootprintPoints[1].x;
-        float maxX = g_zCamera_FrustumFootprintPoints[0].x > g_zCamera_FrustumFootprintPoints[1].x
+        boundsMax.x = g_zCamera_FrustumFootprintPoints[0].x > g_zCamera_FrustumFootprintPoints[1].x
             ? g_zCamera_FrustumFootprintPoints[0].x
             : g_zCamera_FrustumFootprintPoints[1].x;
-        float minZ = g_zCamera_FrustumFootprintPoints[0].z < g_zCamera_FrustumFootprintPoints[1].z
+        boundsMin.y = g_zCamera_FrustumFootprintPoints[0].z < g_zCamera_FrustumFootprintPoints[1].z
             ? g_zCamera_FrustumFootprintPoints[0].z
             : g_zCamera_FrustumFootprintPoints[1].z;
-        float maxZ = g_zCamera_FrustumFootprintPoints[0].z > g_zCamera_FrustumFootprintPoints[1].z
+        boundsMax.y = g_zCamera_FrustumFootprintPoints[0].z > g_zCamera_FrustumFootprintPoints[1].z
             ? g_zCamera_FrustumFootprintPoints[0].z
             : g_zCamera_FrustumFootprintPoints[1].z;
         const zVec3* point = &g_zCamera_FrustumFootprintPoints[2];
         for (int i = 2; i < g_zCamera_FrustumFootprintPointCount; ++i, ++point) {
-            if (point->x < minX) {
-                minX = point->x;
+            if (point->x < boundsMin.x) {
+                boundsMin.x = point->x;
             }
-            if (point->x > maxX) {
-                maxX = point->x;
+            if (point->x > boundsMax.x) {
+                boundsMax.x = point->x;
             }
-            if (point->z < minZ) {
-                minZ = point->z;
+            if (point->z < boundsMin.y) {
+                boundsMin.y = point->z;
             }
-            if (point->z > maxZ) {
-                maxZ = point->z;
+            if (point->z > boundsMax.y) {
+                boundsMax.y = point->z;
             }
         }
 
-        int minCol;
-        int minRow;
-        result = CZWorld::WorldToGridCoordsClamped(world, minX, minZ, &minCol, &minRow);
+        GridCell minCell;
+        result = CZWorld::WorldToGridCoordsClamped(world, boundsMin.x, boundsMin.y, &minCell.col, &minCell.row);
         if (result != 0) {
             zMath::MatStackPopPtr();
             return result;
         }
 
-        int maxCol;
-        int maxRow;
-        result = CZWorld::WorldToGridCoordsClamped(world, maxX, maxZ, &maxCol, &maxRow);
+        GridCell maxCell;
+        result = CZWorld::WorldToGridCoordsClamped(world, boundsMax.x, boundsMax.y, &maxCell.col, &maxCell.row);
         if (result != 0) {
             zMath::MatStackPopPtr();
             return result;
         }
 
-        if (minRow > maxRow) {
-            const int savedRow = minRow;
-            minRow = maxRow;
-            maxRow = savedRow;
+        if (minCell.row > maxCell.row) {
+            const int savedRow = minCell.row;
+            minCell.row = maxCell.row;
+            maxCell.row = savedRow;
         }
 
-        if (minCol > worldData->areaGridColCount - 1) {
-            minCol = worldData->areaGridColCount - 1;
-        } else if (minCol < 0) {
-            minCol = 0;
+        if (minCell.col > worldData->areaGridColCount - 1) {
+            minCell.col = worldData->areaGridColCount - 1;
+        } else if (minCell.col < 0) {
+            minCell.col = 0;
         }
-        if (maxCol > worldData->areaGridColCount - 1) {
-            maxCol = worldData->areaGridColCount - 1;
-        } else if (maxCol < 0) {
-            maxCol = 0;
+        if (maxCell.col > worldData->areaGridColCount - 1) {
+            maxCell.col = worldData->areaGridColCount - 1;
+        } else if (maxCell.col < 0) {
+            maxCell.col = 0;
         }
-        if (minRow > worldData->areaGridRowCount - 1) {
-            minRow = worldData->areaGridRowCount - 1;
-        } else if (minRow < 0) {
-            minRow = 0;
+        if (minCell.row > worldData->areaGridRowCount - 1) {
+            minCell.row = worldData->areaGridRowCount - 1;
+        } else if (minCell.row < 0) {
+            minCell.row = 0;
         }
-        if (maxRow > worldData->areaGridRowCount - 1) {
-            maxRow = worldData->areaGridRowCount - 1;
-        } else if (maxRow < 0) {
-            maxRow = 0;
+        if (maxCell.row > worldData->areaGridRowCount - 1) {
+            maxCell.row = worldData->areaGridRowCount - 1;
+        } else if (maxCell.row < 0) {
+            maxCell.row = 0;
         }
 
-        const int areaIndex = worldData->areaGridRows[originRow][originCol].areaIndex;
-        {
-            for (int col = minCol; col <= maxCol; ++col) {
-                {
-                    for (int row = minRow; row <= maxRow; ++row) {
-                        zWorldAreaPartial* area = &worldData->areaGridRows[row][col];
-                        if ((area->areaIndex & areaIndex) == 0) {
-                            continue;
-                        }
+        const int areaIndex = worldData->areaGridRows[origin.row][origin.col].areaIndex;
+        for (int col = minCell.col; col <= maxCell.col; ++col) {
+            for (int row = minCell.row; row <= maxCell.row; ++row) {
+                zWorldAreaPartial* area = &worldData->areaGridRows[row][col];
+                if ((area->areaIndex & areaIndex) == 0) {
+                    continue;
+                }
 
-                        zVec3 center;
-                        center.x = area->cellMinX + worldData->areaHalfSizeX;
-                        center.y = 0.0f;
-                        center.z = area->cellMinZ + worldData->areaHalfSizeZ;
-                        if (CZDisplayInstance::FilterRegionsAgainstHexahedronFaces(
-                                &center,
-                                worldData->areaCellRadiusBias
-                            )
-                            == 0) {
-                            continue;
-                        }
+                zVec3 center;
+                center.x = area->cellMinX + worldData->areaHalfSizeX;
+                center.y = 0.0f;
+                center.z = area->cellMinZ + worldData->areaHalfSizeZ;
+                if (CZDisplayInstance::FilterRegionsAgainstHexahedronFaces(&center, worldData->areaCellRadiusBias)
+                    == 0) {
+                    continue;
+                }
 
-                        int clipMask = 0x3f;
-                        int frustumResult;
-                        if ((area->areaFlags & 0x100) != 0) {
-                            frustumResult
-                                = zVideoFrustumTestSphereClipMask(&area->bboxCenter, area->bboxRadius, &clipMask);
+                int clipMask = 0x3f;
+                int frustumResult;
+                if ((area->areaFlags & 0x100) != 0) {
+                    frustumResult = zVideoFrustumTestSphereClipMask(&area->bboxCenter, area->bboxRadius, &clipMask);
+                } else {
+                    frustumResult = zVideoFrustumTestSphereClipMask(&center, -worldData->areaCellRadiusBias, &clipMask);
+                }
+
+                if (frustumResult == 0) {
+                    const int ringIndex = abs(col - origin.col) + abs(row - origin.row);
+                    if (ringIndex < 50) {
+                        const int tileIndex = g_zCamera_FrustumGridTileRings[ringIndex].count;
+                        if (tileIndex < 30) {
+                            // Retail writes only col/row/clip mask and clears hasPosOffset here.
+                            g_zCamera_FrustumGridTileRings[ringIndex].count = tileIndex + 1;
+                            g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].col = col;
+                            g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].row = row;
+                            g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].clipMask = clipMask;
+                            g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].hasPosOffset = 0;
                         } else {
-                            frustumResult
-                                = zVideoFrustumTestSphereClipMask(&center, -worldData->areaCellRadiusBias, &clipMask);
+                            zError::ReportOld(
+                                0x200,
+                                "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
+                                0x11a4,
+                                g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg
+                            );
                         }
-
-                        if (frustumResult == 0) {
-                            const int ringIndex = abs(col - originCol) + abs(row - originRow);
-                            if (ringIndex < 50) {
-                                const int tileIndex = g_zCamera_FrustumGridTileRings[ringIndex].count;
-                                if (tileIndex < 30) {
-                                    // Retail writes only col/row/clip mask and clears hasPosOffset here.
-                                    g_zCamera_FrustumGridTileRings[ringIndex].count = tileIndex + 1;
-                                    g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].col = col;
-                                    g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].row = row;
-                                    g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].clipMask = clipMask;
-                                    g_zCamera_FrustumGridTileRings[ringIndex].tiles[tileIndex].hasPosOffset = 0;
-                                } else {
-                                    zError::ReportOld(
-                                        0x200,
-                                        "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
-                                        0x11a4,
-                                        g_CZClass_DiamondTilerNeedMoreCellsPerRingMsg
-                                    );
-                                }
-                            } else {
-                                zError::ReportOld(
-                                    0x200,
-                                    "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
-                                    0x11aa,
-                                    g_CZClass_DiamondTilerNeedMoreRingsMsg
-                                );
-                            }
-                        }
+                    } else {
+                        zError::ReportOld(
+                            0x200,
+                            "D:\\Proj\\GameZRecoil\\zClass\\Camera.c",
+                            0x11aa,
+                            g_CZClass_DiamondTilerNeedMoreRingsMsg
+                        );
                     }
                 }
             }
@@ -2682,7 +2674,7 @@ namespace CZCamera
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtilesfromparams
      * @recoil-artifact defines .text recoil:function:0x44c8e0: CZCamera::BuildFrustumGridTilesFromParams
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: build frustum grid rings while preserving raw out-of-bounds
      * grid offsets for wrapped/clamped world positions.

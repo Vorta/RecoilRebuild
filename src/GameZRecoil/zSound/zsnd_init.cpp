@@ -315,7 +315,7 @@ const GUID kIID_IA3dListener = { 0xc398e563, 0xd90b, 0x11d1, { 0x90, 0xfb, 0x00,
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsnd-preinitializeruntimestate
  * @recoil-artifact defines .text recoil:function:0x4a12c0: zSndPreInitializeRuntimeState.
- *
+ * @recoil-match byte
  *
  * Purpose: reset sound runtime globals, cache option pointers, and prepare the
  * selected backend for later initialization.
