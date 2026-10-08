@@ -1804,7 +1804,7 @@ namespace zVideo_dd3d
     /**
      * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon-lit
      * @recoil-artifact defines .text recoil:function:0x4ac370: zVideo_dd3d::SubmitPolygonLit.
-     *
+     * @recoil-match byte
      *
      * Purpose: Build lit textured polygon TL vertices with fog color-attribute bias
      * and route them to immediate, overwrite, or sorted transparent submission.

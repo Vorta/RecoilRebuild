@@ -1208,7 +1208,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
     if (zVid::GetAccelerationOption() != 0) {
         zRndr::LensFlareResetSampleQueue();
         g_HudSensorTracker.UpdateObjectiveFlow();
-        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
+        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_VariantTag_Current);
         zVideo::RunPostprocessOnSwBuffer();
         zVideo::FxPass3UpdateLocal(g_FrameDeltaTimeSec);
 
@@ -1242,7 +1242,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
         zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(2.0f, 0);
-        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
+        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_VariantTag_Current);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();
@@ -1261,7 +1261,7 @@ int CRecoilAppPlayState::TickAndRenderFrame(int shouldPresent)
         g_HudSensorTracker.UpdateObjectiveFlow();
         zRndr::SetActiveRegionSizeFromRect((HudUiRect*)(pWindowSection));
         zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(1.0f, 0);
-        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_Variant_CurrentTag);
+        HudUiMgrSensor::UpdateMarkersAndProgressFromVariantTag(&g_VariantTag_Current);
         HudUiMgr::UpdateFrame();
         if (zOpt::GetNetworkEnabled() != 0) {
             HudUiNetExitPanel::Tick();

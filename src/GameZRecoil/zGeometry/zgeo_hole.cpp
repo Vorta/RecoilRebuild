@@ -291,7 +291,7 @@ namespace zGeometry {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-convexify-triangulatepolygonwithhole
  * @recoil-artifact defines .text recoil:function:0x46c070: zGeometry::TriangulatePolygonWithHole
- *
+ * @recoil-match byte
  *
  * Purpose: Bridge an inner polygon ring to an outer ring and emit triangle soup.
  */

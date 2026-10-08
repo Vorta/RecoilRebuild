@@ -923,7 +923,7 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-handlealtweaponbankselectinput
  * @recoil-artifact defines .text recoil:function:0x439260: Player::HandleAltWeaponBankSelectInput.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zWeapon.cpp.
  * Purpose: reimplement Player::HandleAltWeaponBankSelectInput from the recovered
@@ -1020,7 +1020,7 @@ void __fastcall HandleAltWeaponBankSelectInput(int inputCode)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-handleprimaryweaponvarianttoggleinput
  * @recoil-artifact defines .text recoil:function:0x439460: Player::HandlePrimaryWeaponVariantToggleInput.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::HandlePrimaryWeaponVariantToggleInput from the recovered
@@ -2081,7 +2081,7 @@ DecayAndApplyAltFireSlotOffsetToNode(PlayerGunFireSlot* slot, float slotAimY, CZ
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applygunfireslotoffsettonode
  * @recoil-artifact defines .text recoil:function:0x43a980: Player::ApplyGunFireSlotOffsetToNode.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyGunFireSlotOffsetToNode from the recovered

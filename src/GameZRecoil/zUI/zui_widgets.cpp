@@ -3690,7 +3690,7 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudcmdbindbuttonbase-rebuildbindingslotwidgets
  * @recoil-artifact defines .text recoil:function:0x4b90e0: HudCmdBindButtonBase::RebuildBindingSlotWidgets.
- *
+ * @recoil-match byte
  *
  * Purpose: recreate the binding-slot panel array and lay out visible and
  * overflow slots around the selected binding panel.

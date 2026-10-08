@@ -16,8 +16,9 @@ namespace {
 /**
  * Data evidence: BN 0x4dfdd0 is int32_t[0x51], xrefed by 0x468fa0, and matches these case ids byte-for-byte.
  * Purpose: Map the four ternary edge-side sign classes to the Weiler intersection case id.
+ * Retail places this table in writable .data, so the original array is not const.
  */
-const int kIntersect2dCaseIdBySignClass[0x51] = { 0,
+int kIntersect2dCaseIdBySignClass[0x51] = { 0,
     0,
     0,
     0,
@@ -3623,7 +3624,7 @@ int __fastcall Intersect2d(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifyintersect2d
  * @recoil-artifact defines .text recoil:function:0x468fa0: zGeometry_Weiler::ClassifyIntersect2d
- *
+ * @recoil-match byte
  *
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 sign-class HLIL is limited, so assembly is source of
  * truth. Purpose: Classify two XY edges into the Weiler intersection case table, including contour-side disambiguation

@@ -604,13 +604,6 @@ char g_zInput_KeyNameRBracket[9] = "RBRACKET";
  */
 char g_zInput_KeyNameLBracket[9] = "LBRACKET";
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keycharrow-poiuytrewq
- * @recoil-artifact defines .data recoil:data:0x4e0bc4: g_zInput_KeyCharRow_POIUYTREWQ.
- * BN types this as ten 4-byte-aligned writable one-character DIK name slots.
- * Purpose: Stores folded one-character Q/W/E/R/T/Y/U/I/O/P key names.
- */
-unsigned int g_zInput_KeyCharRow_POIUYTREWQ[10] = { 'P', 'O', 'I', 'U', 'Y', 'T', 'R', 'E', 'W', 'Q' };
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynametab
  * @recoil-artifact defines .data recoil:data:0x4e0bec: g_zInput_KeyNameTab.
  * Purpose: Stores the writable TAB DIK backing key name.
@@ -1520,6 +1513,7 @@ void __fastcall BindMapSystemInit(int commandCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initdikkeynametable
  * @recoil-artifact defines .text recoil:function:0x471120: zInput::BindMapInitDikKeyNameTable.
+ * @recoil-artifact emits .data recoil:data:0x4e0bc4: "P" DIK key-name /Gf literal.
  *
  *
  * Binary Ninja shows the zinput.cpp initializer filling the BSS DIK-name
@@ -1543,16 +1537,18 @@ void __fastcall BindMapInitDikKeyNameTable()
     g_zInput_DikKeyNames[0x0d] = g_zInput_KeyNameEquals;
     g_zInput_DikKeyNames[0x0e] = "BACK";
     g_zInput_DikKeyNames[0x0f] = g_zInput_KeyNameTab;
-    g_zInput_DikKeyNames[0x10] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[9];
-    g_zInput_DikKeyNames[0x11] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[8];
-    g_zInput_DikKeyNames[0x12] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[7];
-    g_zInput_DikKeyNames[0x13] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[6];
-    g_zInput_DikKeyNames[0x14] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[5];
-    g_zInput_DikKeyNames[0x15] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[4];
-    g_zInput_DikKeyNames[0x16] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[3];
-    g_zInput_DikKeyNames[0x17] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[2];
-    g_zInput_DikKeyNames[0x18] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[1];
-    g_zInput_DikKeyNames[0x19] = (const char*)&g_zInput_KeyCharRow_POIUYTREWQ[0];
+    // Retail stores ten 4-byte-aligned /Gf one-character literals here, laid
+    // out in reverse use order; "W" folds with the zui literal.
+    g_zInput_DikKeyNames[0x10] = "Q";
+    g_zInput_DikKeyNames[0x11] = "W";
+    g_zInput_DikKeyNames[0x12] = "E";
+    g_zInput_DikKeyNames[0x13] = "R";
+    g_zInput_DikKeyNames[0x14] = "T";
+    g_zInput_DikKeyNames[0x15] = "Y";
+    g_zInput_DikKeyNames[0x16] = "U";
+    g_zInput_DikKeyNames[0x17] = "I";
+    g_zInput_DikKeyNames[0x18] = "O";
+    g_zInput_DikKeyNames[0x19] = "P";
     g_zInput_DikKeyNames[0x1a] = "LBRACKET";
     g_zInput_DikKeyNames[0x1b] = "RBRACKET";
     g_zInput_DikKeyNames[0x1c] = "RETURN";
