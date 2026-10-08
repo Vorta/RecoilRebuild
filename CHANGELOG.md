@@ -88,6 +88,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Easy and Hard vehicle parameters and pickup layouts fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
 - Paletted textures with uniform transparency can display incorrect colors in RGB565 software rendering.
@@ -173,6 +174,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Easy and Hard vehicle parameters and pickup layouts fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
 - Failed saves can leave incomplete files without a retry prompt. Fixed in [1.0.6.8](#1068--retail).
@@ -312,6 +314,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Easy and Hard vehicle parameters, pickup layouts, and AI vehicle placements fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
 - Incompatible saved player records are applied without a layout check. Fixed in [1.0.1.23](#10123--full-game).
@@ -427,6 +430,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Indexed resource archives require write access even when only being read, preventing loading from read-only files or media. Fixed in [Demo 1998-09-28](#demo-1998-09-28).
 - Easy and Hard vehicle parameters, pickup layouts, and AI vehicle placements fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
@@ -477,6 +481,7 @@ None recorded.
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Indexed resource archives require write access even when only being read, preventing loading from read-only files or media. Fixed in [Demo 1998-09-28](#demo-1998-09-28).
 - Easy and Hard vehicle parameters, pickup layouts, and AI vehicle placements fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
@@ -537,6 +542,7 @@ None recorded.
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Indexed resource archives require write access even when only being read, preventing loading from read-only files or media. Fixed in [Demo 1998-09-28](#demo-1998-09-28).
 - Easy and Hard vehicle parameters, pickup layouts, and AI vehicle placements fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
@@ -567,6 +573,7 @@ Earliest available build and comparison baseline.
 
 ### Known issues
 
+- High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes.
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward.
 - Indexed resource archives require write access even when only being read, preventing loading from read-only files or media. Fixed in [Demo 1998-09-28](#demo-1998-09-28).
 - Easy and Hard vehicle parameters, pickup layouts, and AI vehicle placements fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
