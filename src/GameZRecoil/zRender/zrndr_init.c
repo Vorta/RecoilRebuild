@@ -1334,7 +1334,9 @@ zRndr_SpanOcclusion_InsertSpanNode_Local(zRndr::SpanNodePartial** spanList, int 
     SpanNodePartial* previous = 0;
     float maxPendingDepth;
     float maxCurrentDepth;
-    float scaledDepth;
+    // Separate scaled depths: retail gives the dead spanCount slot [esp+0x3c] to maxPendingDepth.
+    float scaledOccluderDepth;
+    float scaledPendingDepth;
     int pendingInFront;
     while (current != 0) {
         previous = g_spanIterPrevLink;
@@ -1415,21 +1417,21 @@ zRndr_SpanOcclusion_InsertSpanNode_Local(zRndr::SpanNodePartial** spanList, int 
         } else {
             maxPendingDepth = pending->invDepthStep;
         }
-        scaledDepth = (*(int*)(&current->invDepth) < *(int*)(&current->invDepthStep) ? current->invDepth
-                                                                                     : current->invDepthStep)
+        scaledOccluderDepth = (*(int*)(&current->invDepth) < *(int*)(&current->invDepthStep) ? current->invDepth
+                                                                                             : current->invDepthStep)
             * g_spanDepthBiasPlusOne;
-        if (*(int*)(&scaledDepth) >= *(int*)(&maxPendingDepth)) {
+        if (*(int*)(&scaledOccluderDepth) >= *(int*)(&maxPendingDepth)) {
             pendingInFront = 0;
         } else {
-            scaledDepth = *(int*)(&pending->invDepth) < *(int*)(&pending->invDepthStep) ? pending->invDepth
-                                                                                        : pending->invDepthStep;
+            scaledPendingDepth = *(int*)(&pending->invDepth) < *(int*)(&pending->invDepthStep) ? pending->invDepth
+                                                                                               : pending->invDepthStep;
             if (*(int*)(&current->invDepth) > *(int*)(&current->invDepthStep)) {
                 maxCurrentDepth = current->invDepth;
             } else {
                 maxCurrentDepth = current->invDepthStep;
             }
-            scaledDepth *= g_spanDepthBiasPlusOne;
-            if (*(int*)(&scaledDepth) >= *(int*)(&maxCurrentDepth)) {
+            scaledPendingDepth *= g_spanDepthBiasPlusOne;
+            if (*(int*)(&scaledPendingDepth) >= *(int*)(&maxCurrentDepth)) {
                 pendingInFront = 1;
             } else {
                 pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);
@@ -1647,15 +1649,19 @@ zRndr_SpanOcclusion_InsertSpanNode_Local(zRndr::SpanNodePartial** spanList, int 
                 g_spanIterNode = current;
                 g_spanIterPrevLink = previous;
                 const float slope = pending->depthSlope;
+                // Retail forms the right fragment start before the left fragment end (0x490d67, 0x490d74).
+                // Retail forms the right fragment start before the left fragment end (0x490d67, 0x490d74).
+                const int rightMin = current->sampleXMax + 1;
+                const int leftMax = current->sampleXMin - 1;
                 SpanNodePartial* right = pending + 1;
                 right->next = pending->next;
                 right->sampleXMax = pending->sampleXMax;
                 right->invDepthStep = pending->invDepthStep;
                 right->depthSlope = pending->depthSlope;
-                pending->sampleXMax = current->sampleXMin - 1;
-                pending->invDepthStep = pending->invDepth + (float)(pending->sampleXMax - pending->sampleXMin) * slope;
-                right->sampleXMin = current->sampleXMax + 1;
-                right->invDepth = pending->invDepth + (float)(right->sampleXMin - pending->sampleXMin) * slope;
+                pending->sampleXMax = leftMax;
+                pending->invDepthStep = pending->invDepth + (float)(leftMax - pending->sampleXMin) * slope;
+                right->sampleXMin = rightMin;
+                right->invDepth = pending->invDepth + (float)(rightMin - pending->sampleXMin) * slope;
 
                 if (g_spanIterPrevLink != 0) {
                     g_spanIterPrevLink->next = g_spanAllocCursor;
@@ -2049,55 +2055,63 @@ zRndrSpanOcclusionInsertSpanNodeNoDepthTest(zRndr::SpanNodePartial** spanList, i
  */
 void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanList, int columnIndex, int* spanCount)
 {
-    zRndr::SpanNodePartial* current = zRndr::g_spanColumnHeadTable[columnIndex];
-    zRndr::SpanNodePartial* pending = zRndr::g_spanAllocCursor;
-    zRndr::SpanNodePartial* emitted;
-    zRndr::SpanNodePartial* lastVisible;
+    using namespace zRndr;
+
+    SpanNodePartial* columnHead = g_spanColumnHeadTable[columnIndex];
+    SpanNodePartial* pending = g_spanAllocCursor;
+    SpanNodePartial* emitted;
     *spanCount = 0;
-    if (current == 0) {
-        zRndr::g_spanAllocCursor->next = 0;
-        spanList[*spanCount] = zRndr::g_spanAllocCursor;
+    if (columnHead == 0) {
+        g_spanAllocCursor->next = 0;
+        spanList[*spanCount] = g_spanAllocCursor;
         ++*spanCount;
-        ++zRndr::g_spanAllocCursor;
+        ++g_spanAllocCursor;
         return;
     }
-    if (pending->sampleXMax < current->sampleXMin) {
-        spanList[*spanCount] = zRndr::g_spanAllocCursor;
+    if (pending->sampleXMax < columnHead->sampleXMin) {
+        spanList[*spanCount] = g_spanAllocCursor;
         ++*spanCount;
-        ++zRndr::g_spanAllocCursor;
+        ++g_spanAllocCursor;
         return;
     }
 
     pending->next = 0;
-    zRndr::SpanNodePartial* maxDepthSpan = 0;
-    zRndr::SpanNodePartial* minDepthSpan = 0;
+    SpanNodePartial* maxDepthSpan = 0;
+    SpanNodePartial* minDepthSpan = 0;
     float maxDepth = 0.0f;
     float minDepth = 0.0f;
-    zRndr::SpanNodePartial occluder;
+    SpanNodePartial occluder;
+    SpanNodePartial* current = columnHead;
     for (;;) {
         while (current != 0 && pending->sampleXMin > current->sampleXMax) {
             current = current->next;
         }
+        if (current != 0) {
+            occluder.next = current->next;
+            occluder.sampleXMin = current->sampleXMin;
+            occluder.sampleXMax = current->sampleXMax;
+            occluder.invDepth = current->invDepth;
+            occluder.invDepthStep = current->invDepthStep;
+            occluder.depthSlope = current->depthSlope;
+            current = &occluder;
+        }
         if (current == 0) {
             break;
         }
-
-        occluder.next = current->next;
-        occluder.sampleXMin = current->sampleXMin;
-        occluder.sampleXMax = current->sampleXMax;
-        occluder.invDepth = current->invDepth;
-        occluder.invDepthStep = current->invDepthStep;
-        occluder.depthSlope = current->depthSlope;
-        current = &occluder;
         if (pending->sampleXMax < current->sampleXMin) {
             // Retail emits the cursor node here without advancing the allocator.
-            emitted = zRndr::g_spanAllocCursor;
-            if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                lastVisible = spanList[*spanCount - 1];
-                lastVisible->sampleXMax = emitted->sampleXMax;
-                lastVisible->invDepthStep = emitted->invDepthStep;
-                lastVisible->next = emitted->next;
-                zRndr::g_spanLastNode = lastVisible;
+            emitted = g_spanAllocCursor;
+            if (*spanCount > 0) {
+                SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                    lastVisible->sampleXMax = emitted->sampleXMax;
+                    lastVisible->invDepthStep = emitted->invDepthStep;
+                    lastVisible->next = emitted->next;
+                    g_spanLastNode = lastVisible;
+                } else {
+                    spanList[*spanCount] = emitted;
+                    ++*spanCount;
+                }
             } else {
                 spanList[*spanCount] = emitted;
                 ++*spanCount;
@@ -2106,22 +2120,24 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
         }
 
         if (maxDepthSpan != pending) {
-            maxDepth = pending->invDepth > pending->invDepthStep ? pending->invDepth : pending->invDepthStep;
+            maxDepth
+                = (double)pending->invDepth > pending->invDepthStep ? (double)pending->invDepth : pending->invDepthStep;
             maxDepthSpan = pending;
         }
         const float occluderMinDepth
-            = current->invDepth < current->invDepthStep ? current->invDepth : current->invDepthStep;
+            = (double)current->invDepth < current->invDepthStep ? (double)current->invDepth : current->invDepthStep;
         int pendingInFront;
-        if (occluderMinDepth * zRndr::g_spanDepthBiasPlusOne >= maxDepth) {
+        if (occluderMinDepth * g_spanDepthBiasPlusOne >= maxDepth) {
             pendingInFront = 0;
         } else {
             if (minDepthSpan != pending) {
-                minDepth = pending->invDepth < pending->invDepthStep ? pending->invDepth : pending->invDepthStep;
+                minDepth = (double)pending->invDepth < pending->invDepthStep ? (double)pending->invDepth
+                                                                             : pending->invDepthStep;
                 minDepthSpan = pending;
             }
-            const float occluderMaxDepth
-                = current->invDepth > current->invDepthStep ? current->invDepth : current->invDepthStep;
-            if (minDepth * zRndr::g_spanDepthBiasPlusOne >= occluderMaxDepth) {
+            if (minDepth * g_spanDepthBiasPlusOne
+                >= ((double)current->invDepth > current->invDepthStep ? (double)current->invDepth
+                                                                      : current->invDepthStep)) {
                 pendingInFront = 1;
             } else {
                 pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);
@@ -2142,29 +2158,37 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
                         break;
                     }
                     // Split the pending span after the occluder and emit its left part.
-                    pending[1].next = pending->next;
-                    pending[1].sampleXMax = pending->sampleXMax;
-                    pending[1].invDepthStep = pending->invDepthStep;
-                    pending[1].depthSlope = pending->depthSlope;
-                    pending->sampleXMax = current->sampleXMax;
-                    pending->invDepthStep
-                        = (float)(pending->sampleXMax - pending->sampleXMin) * pending->depthSlope + pending->invDepth;
-                    pending[1].sampleXMin = current->sampleXMax + 1;
-                    pending[1].invDepth = (float)(pending[1].sampleXMin - pending->sampleXMin) * pending->depthSlope
-                        + pending->invDepth;
-                    emitted = zRndr::g_spanAllocCursor++;
-                    zRndr::g_spanLastNode = emitted;
-                    if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                        lastVisible = spanList[*spanCount - 1];
-                        lastVisible->sampleXMax = emitted->sampleXMax;
-                        lastVisible->invDepthStep = emitted->invDepthStep;
-                        lastVisible->next = emitted->next;
-                        zRndr::g_spanLastNode = lastVisible;
+                    const float slope = pending->depthSlope;
+                    const int coveredMax = current->sampleXMax;
+                    const int rightMin = coveredMax + 1;
+                    SpanNodePartial* right = pending + 1;
+                    right->next = pending->next;
+                    right->sampleXMax = pending->sampleXMax;
+                    right->invDepthStep = pending->invDepthStep;
+                    right->depthSlope = pending->depthSlope;
+                    pending->sampleXMax = coveredMax;
+                    pending->invDepthStep = pending->invDepth + (float)(coveredMax - pending->sampleXMin) * slope;
+                    right->sampleXMin = rightMin;
+                    right->invDepth = pending->invDepth + (float)(rightMin - pending->sampleXMin) * slope;
+                    g_spanLastNode = g_spanAllocCursor;
+                    ++g_spanAllocCursor;
+                    emitted = g_spanLastNode;
+                    if (*spanCount > 0) {
+                        SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                        if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                            lastVisible->sampleXMax = emitted->sampleXMax;
+                            lastVisible->invDepthStep = emitted->invDepthStep;
+                            lastVisible->next = emitted->next;
+                            g_spanLastNode = lastVisible;
+                        } else {
+                            spanList[*spanCount] = emitted;
+                            ++*spanCount;
+                        }
                     } else {
                         spanList[*spanCount] = emitted;
                         ++*spanCount;
                     }
-                    pending = zRndr::g_spanAllocCursor;
+                    pending = g_spanAllocCursor;
                     pending->next = 0;
                 }
             } else {
@@ -2172,13 +2196,18 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
                     current->sampleXMin = pending->sampleXMax + 1;
                     current->invDepth = (float)(current->sampleXMin - current->sampleXMax) * current->depthSlope
                         + current->invDepthStep;
-                    emitted = zRndr::g_spanAllocCursor;
-                    if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                        lastVisible = spanList[*spanCount - 1];
-                        lastVisible->sampleXMax = emitted->sampleXMax;
-                        lastVisible->invDepthStep = emitted->invDepthStep;
-                        lastVisible->next = emitted->next;
-                        zRndr::g_spanLastNode = lastVisible;
+                    emitted = g_spanAllocCursor;
+                    if (*spanCount > 0) {
+                        SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                        if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                            lastVisible->sampleXMax = emitted->sampleXMax;
+                            lastVisible->invDepthStep = emitted->invDepthStep;
+                            lastVisible->next = emitted->next;
+                            g_spanLastNode = lastVisible;
+                        } else {
+                            spanList[*spanCount] = emitted;
+                            ++*spanCount;
+                        }
                     } else {
                         spanList[*spanCount] = emitted;
                         ++*spanCount;
@@ -2186,14 +2215,20 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
                     return;
                 }
                 if (pending->sampleXMin > current->sampleXMin && pending->sampleXMax < current->sampleXMax) {
-                    emitted = zRndr::g_spanAllocCursor++;
-                    zRndr::g_spanLastNode = emitted;
-                    if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                        lastVisible = spanList[*spanCount - 1];
-                        lastVisible->sampleXMax = emitted->sampleXMax;
-                        lastVisible->invDepthStep = emitted->invDepthStep;
-                        lastVisible->next = emitted->next;
-                        zRndr::g_spanLastNode = lastVisible;
+                    g_spanLastNode = g_spanAllocCursor;
+                    ++g_spanAllocCursor;
+                    emitted = g_spanLastNode;
+                    if (*spanCount > 0) {
+                        SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                        if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                            lastVisible->sampleXMax = emitted->sampleXMax;
+                            lastVisible->invDepthStep = emitted->invDepthStep;
+                            lastVisible->next = emitted->next;
+                            g_spanLastNode = lastVisible;
+                        } else {
+                            spanList[*spanCount] = emitted;
+                            ++*spanCount;
+                        }
                     } else {
                         spanList[*spanCount] = emitted;
                         ++*spanCount;
@@ -2216,44 +2251,58 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
         } else {
             if (current->sampleXMax < pending->sampleXMax) {
                 // The occluder sits inside the pending span: emit the left part, keep the right part pending.
-                pending[1].next = pending->next;
-                pending[1].sampleXMax = pending->sampleXMax;
-                pending[1].invDepthStep = pending->invDepthStep;
-                pending[1].depthSlope = pending->depthSlope;
-                pending->sampleXMax = current->sampleXMin - 1;
-                pending->invDepthStep
-                    = (float)(pending->sampleXMax - pending->sampleXMin) * pending->depthSlope + pending->invDepth;
-                pending[1].sampleXMin = current->sampleXMax + 1;
-                pending[1].invDepth
-                    = (float)(pending[1].sampleXMin - pending->sampleXMin) * pending->depthSlope + pending->invDepth;
-                emitted = zRndr::g_spanAllocCursor;
-                if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                    lastVisible = spanList[*spanCount - 1];
-                    lastVisible->sampleXMax = emitted->sampleXMax;
-                    lastVisible->invDepthStep = emitted->invDepthStep;
-                    lastVisible->next = emitted->next;
-                    zRndr::g_spanLastNode = lastVisible;
+                const float slope = pending->depthSlope;
+                // Retail forms the right fragment start before the left fragment end (0x491b69, 0x491b7f).
+                const int rightMin = current->sampleXMax + 1;
+                const int leftMax = current->sampleXMin - 1;
+                SpanNodePartial* right = pending + 1;
+                right->next = pending->next;
+                right->sampleXMax = pending->sampleXMax;
+                right->invDepthStep = pending->invDepthStep;
+                right->depthSlope = pending->depthSlope;
+                pending->sampleXMax = leftMax;
+                pending->invDepthStep = pending->invDepth + (float)(leftMax - pending->sampleXMin) * slope;
+                right->sampleXMin = rightMin;
+                right->invDepth = pending->invDepth + (float)(rightMin - pending->sampleXMin) * slope;
+                emitted = g_spanAllocCursor;
+                if (*spanCount > 0) {
+                    SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                    if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                        lastVisible->sampleXMax = emitted->sampleXMax;
+                        lastVisible->invDepthStep = emitted->invDepthStep;
+                        lastVisible->next = emitted->next;
+                        g_spanLastNode = lastVisible;
+                    } else {
+                        spanList[*spanCount] = emitted;
+                        ++*spanCount;
+                    }
                 } else {
                     spanList[*spanCount] = emitted;
                     ++*spanCount;
                 }
-                pending = ++zRndr::g_spanAllocCursor;
+                pending = ++g_spanAllocCursor;
                 pending->next = 0;
                 continue;
             }
+            // Retail keeps this end test although the check above implies it (0x491c22).
             if (pending->sampleXMin <= current->sampleXMin && current->sampleXMin <= pending->sampleXMax
-                && current->sampleXMax >= pending->sampleXMax) {
+                && pending->sampleXMax <= current->sampleXMax) {
                 if (pending->sampleXMin < current->sampleXMin) {
                     pending->sampleXMax = current->sampleXMin - 1;
                     pending->invDepthStep
                         = (float)(pending->sampleXMax - pending->sampleXMin) * pending->depthSlope + pending->invDepth;
-                    emitted = zRndr::g_spanAllocCursor;
-                    if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-                        lastVisible = spanList[*spanCount - 1];
-                        lastVisible->sampleXMax = emitted->sampleXMax;
-                        lastVisible->invDepthStep = emitted->invDepthStep;
-                        lastVisible->next = emitted->next;
-                        zRndr::g_spanLastNode = lastVisible;
+                    emitted = g_spanAllocCursor;
+                    if (*spanCount > 0) {
+                        SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+                        if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+                            lastVisible->sampleXMax = emitted->sampleXMax;
+                            lastVisible->invDepthStep = emitted->invDepthStep;
+                            lastVisible->next = emitted->next;
+                            g_spanLastNode = lastVisible;
+                        } else {
+                            spanList[*spanCount] = emitted;
+                            ++*spanCount;
+                        }
                     } else {
                         spanList[*spanCount] = emitted;
                         ++*spanCount;
@@ -2264,14 +2313,20 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
         }
     }
 
-    emitted = zRndr::g_spanAllocCursor++;
-    zRndr::g_spanLastNode = emitted;
-    if (*spanCount > 0 && emitted->sampleXMin == spanList[*spanCount - 1]->sampleXMax + 1) {
-        lastVisible = spanList[*spanCount - 1];
-        lastVisible->sampleXMax = emitted->sampleXMax;
-        lastVisible->invDepthStep = emitted->invDepthStep;
-        lastVisible->next = emitted->next;
-        zRndr::g_spanLastNode = lastVisible;
+    g_spanLastNode = g_spanAllocCursor;
+    ++g_spanAllocCursor;
+    emitted = g_spanLastNode;
+    if (*spanCount > 0) {
+        SpanNodePartial* lastVisible = spanList[*spanCount - 1];
+        if (emitted->sampleXMin == lastVisible->sampleXMax + 1) {
+            lastVisible->sampleXMax = emitted->sampleXMax;
+            lastVisible->invDepthStep = emitted->invDepthStep;
+            lastVisible->next = emitted->next;
+            g_spanLastNode = lastVisible;
+        } else {
+            spanList[*spanCount] = emitted;
+            ++*spanCount;
+        }
     } else {
         spanList[*spanCount] = emitted;
         ++*spanCount;

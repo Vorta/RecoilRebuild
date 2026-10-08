@@ -410,6 +410,16 @@ namespace Player {
 void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
+    // Function-scope declarations give retail's chassis x87 operand order (0x426e44, 0x426e77).
+    PlayerModalState* primaryModalState;
+    PlayerMasterModalData* masterModalData;
+    float dampingWeight;
+    float newWeight;
+    float pitchTarget;
+    float rollScale;
+    float rollTarget;
+    float pitchFiltered;
+    float rollFiltered;
     RebuildSteerBasisFromMotionAxes(saveState);
 
     if (playerState->airborneFlag != 0) {
@@ -480,8 +490,9 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
         }
 
         playerState->worldPos.x += g_Player_DeltaTime * playerState->projectileSpawnVel.x;
-        playerState->yawRotatedLocalVel = playerState->projectileSpawnVel;
+        // Retail finishes the z update before the copy's last stores (0x426bc5..0x426be5).
         playerState->worldPos.z += playerState->projectileSpawnVel.z * g_Player_DeltaTime;
+        playerState->yawRotatedLocalVel = playerState->projectileSpawnVel;
     }
 
     playerState->motionBasis.posX = playerState->worldPos.x;
@@ -505,8 +516,8 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
         break;
     }
 
-    PlayerModalState* const primaryModalState = saveState->primaryModalState;
-    PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
+    primaryModalState = saveState->primaryModalState;
+    masterModalData = primaryModalState->masterModalData;
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
         ProcessPendingContactQueues(saveState);
         if (CollectPendingCollisionContactsForQuadProbe(saveState, 0.0f) != 0) {
@@ -565,16 +576,15 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     playerState->fxOffsetWorld.z = playerState->fxOffsetLocal.z + playerState->worldPos.z;
 
     if (primaryModalState->modalNode != 0 && masterModalData->masterType == kPlayerMasterTypeTrack) {
-        const float dampingWeight = zMath::FastExp(-(masterModalData->chassisSmoothFactor * g_Player_DeltaTime));
-        const float newWeight = 1.0f - dampingWeight;
-        float pitchTarget = masterModalData->chassisPitchRate * playerState->angVelPitch
+        dampingWeight = zMath::FastExp(-(masterModalData->chassisSmoothFactor * g_Player_DeltaTime));
+        newWeight = 1.0f - dampingWeight;
+        pitchTarget = masterModalData->chassisPitchRate * playerState->angVelPitch
             + masterModalData->chassisPitchMax * playerState->localVel.z;
-        const float rollScale = masterModalData->chassisRollMax;
-        float rollTarget = 0.0f;
-        const float pitchFiltered
-            = dampingWeight * primaryModalState->chassisPitchFilterState + pitchTarget * newWeight;
+        rollScale = masterModalData->chassisRollMax;
+        rollTarget = 0.0f;
+        pitchFiltered = dampingWeight * primaryModalState->chassisPitchFilterState + pitchTarget * newWeight;
         primaryModalState->chassisPitchFilterState = pitchFiltered;
-        const float rollFiltered = dampingWeight * primaryModalState->chassisRollFilterState + rollTarget * newWeight;
+        rollFiltered = dampingWeight * primaryModalState->chassisRollFilterState + rollTarget * newWeight;
         primaryModalState->chassisRollFilterState = rollFiltered;
 
         pitchTarget -= pitchFiltered;
@@ -652,6 +662,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
         CZObject3D::gwObject3DSetScale(primaryModalState->nodeDustR, 0.0f, 0.0f, 0.0f);
     }
 }
+
 } // namespace Player
 namespace Player {
 /**
@@ -1129,7 +1140,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
  * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered

@@ -3796,7 +3796,7 @@ CString WestwoodOnlineUpgradeDialog::GetSelectedProfileConnectString()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeconfigdialog-westwoodonlineupgradeconfigdialog
  * @recoil-artifact defines .text recoil:function:0x441750: WestwoodOnlineUpgradeConfigDialog::WestwoodOnlineUpgradeConfigDialog
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\WestwoodOnlineUpgradeConfigDialog.cpp.
  * Purpose: constructs the MFC dialog, child controls, CString profile arrays,

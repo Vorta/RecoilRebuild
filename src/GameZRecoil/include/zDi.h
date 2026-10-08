@@ -425,7 +425,7 @@ int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
     zVec3* polygonVertices,
     zModel_PickFaceEntry* faceEntry
 );
-int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
     CZNodePartial* candidateOwner,
     PlayerProbeSampleCandidateBuffer* outCandidateBuffersBySegment,
     CZDisplayInstanceSegmentEndpoints* segmentEndpointsByBatch,

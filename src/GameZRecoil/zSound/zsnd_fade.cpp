@@ -4,6 +4,7 @@
 #include "GameZRecoil/zSound/zsnd_a3d_provider.h"
 #include "GameZRecoil/zTime/time.h"
 
+#include <algorithm>
 #include <list>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,9 @@ std::list<zSndFadeEntry*> g_zSndFadeDispatchList;
  * compiler-generated destructors for both fade lists.
  * These four contributions arise naturally from the two namespace-scope
  * std::list objects above; they are not authored wrapper functions.
+ * The std::list<zSndFadeEntry *>::erase(iterator) and
+ * iterator::operator++(int) COMDATs that close this object are likewise
+ * <list> template instances, not authored helpers.
  */
 
 namespace zSndFadeDispatchList {
@@ -101,6 +105,26 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
     return 0;
 }
 
+namespace {
+/**
+ * Original-source helper: std::remove_if predicate that ticks one active fade
+ * and reports completion; expanded inline into zSndFadeActiveListTickAll.
+ */
+struct zSndFadeTickPredicate {
+    float deltaTime;
+
+    zSndFadeTickPredicate(float elapsed)
+        : deltaTime(elapsed)
+    {
+    }
+
+    int operator()(zSndFadeEntry* fadeEntry) const
+    {
+        return fadeEntry->TickAndMaybeDispatch(deltaTime);
+    }
+};
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadeactivelist-tickall
  * @recoil-artifact defines .text recoil:function:0x4a3c20: zSndFadeActiveList::TickAll.
@@ -111,35 +135,48 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
  */
 extern "C" void __stdcall zSndFadeActiveListTickAll(float deltaTime)
 {
-    std::list<zSndFadeEntry*>::iterator compactIt = g_zSndFadeActiveList.begin();
-    while (compactIt != g_zSndFadeActiveList.end()) {
-        if ((*compactIt)->TickAndMaybeDispatch(deltaTime) != 0) {
-            break;
-        }
-        ++compactIt;
-    }
-
-    if (compactIt == g_zSndFadeActiveList.end()) {
+    if (g_zSndFadeActiveList.empty()) {
         return;
     }
 
-    std::list<zSndFadeEntry*>::iterator fadeIt = compactIt;
-    ++fadeIt;
-    while (fadeIt != g_zSndFadeActiveList.end()) {
-        if ((*fadeIt)->TickAndMaybeDispatch(deltaTime) == 0) {
-            *compactIt = *fadeIt;
-            ++compactIt;
-        }
-        ++fadeIt;
-    }
-
-    g_zSndFadeActiveList.erase(compactIt, g_zSndFadeActiveList.end());
+    const std::list<zSndFadeEntry*>::iterator fadeEnd = g_zSndFadeActiveList.end();
+    g_zSndFadeActiveList.erase(
+        std::remove_if(g_zSndFadeActiveList.begin(), fadeEnd, zSndFadeTickPredicate(deltaTime)),
+        fadeEnd
+    );
 }
 
 /*
  * These definitions remain beside the sound-system initialization sequence.
  * This translation unit retains the fade-list implementation.
  */
+
+namespace {
+/**
+ * Original-source helper: std::for_each functor that stops one active fade's
+ * playback handle and queues the entry for dispatch; expanded inline into
+ * zSndFadeLists::StopAllAndShutdown.
+ */
+struct zSndFadeStopAndQueue {
+    void operator()(zSndFadeEntry* fadeEntry) const
+    {
+        fadeEntry->handle->StopIfActive();
+        zSndFadeDispatchList::PushBack(fadeEntry);
+    }
+};
+
+/**
+ * Original-source helper: std::transform functor that deletes one fade entry
+ * and returns null; expanded inline into zSndFadeLists::StopAllAndShutdown.
+ */
+struct zSndFadeEntryDelete {
+    zSndFadeEntry* operator()(zSndFadeEntry* fadeEntry) const
+    {
+        ::operator delete(fadeEntry);
+        return 0;
+    }
+};
+} // namespace
 
 namespace zSndFadeLists {
 /**
@@ -152,65 +189,15 @@ namespace zSndFadeLists {
  */
 void __cdecl StopAllAndShutdown()
 {
-    std::list<zSndFadeEntry*>::iterator fadeIt = g_zSndFadeActiveList.begin();
-    while (fadeIt != g_zSndFadeActiveList.end()) {
-        zSndFadeEntry* const fadeEntry = *fadeIt;
-        fadeEntry->handle->StopIfActive();
-        zSndFadeDispatchList::PushBack(fadeEntry);
-        ++fadeIt;
-    }
-    zSndFadeList* const activeList = (zSndFadeList*)(&g_zSndFadeActiveList);
-    zSndFadeListCursor activeCursor;
-    activeCursor.node = activeList->sentinel->next;
-    while (activeCursor.node != activeList->sentinel) {
-        zSndFadeListNode* node;
-        activeCursor.PopFrontCursor(&node, 0);
-        activeList->DeleteNodeAndAdvanceCursor(&activeCursor.node, node);
-    }
+    std::for_each(g_zSndFadeActiveList.begin(), g_zSndFadeActiveList.end(), zSndFadeStopAndQueue());
+    g_zSndFadeActiveList.clear();
 
-    fadeIt = g_zSndFadeDispatchList.begin();
-    while (fadeIt != g_zSndFadeDispatchList.end()) {
-        ::operator delete(*fadeIt);
-        *fadeIt = 0;
-        ++fadeIt;
-    }
+    std::transform(
+        g_zSndFadeDispatchList.begin(),
+        g_zSndFadeDispatchList.end(),
+        g_zSndFadeDispatchList.begin(),
+        zSndFadeEntryDelete()
+    );
     g_zSndFadeDispatchList.clear();
 }
 } // namespace zSndFadeLists
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelist-deletenodeandadvancecursor
- * @recoil-artifact defines .text recoil:function:0x4a3e50: zSndFadeList::DeleteNodeAndAdvanceCursor.
- * @recoil-match byte
- *
- * Purpose: remove the current fade-list node, release its storage, and advance
- * the caller's cursor to the next node.
- */
-void zSndFadeList::DeleteNodeAndAdvanceCursor(zSndFadeListNode** outCursor, zSndFadeListNode* node)
-{
-    zSndFadeListNode* const erased = node;
-    node = node->next;
-    erased->prev->next = erased->next;
-    erased->next->prev = erased->prev;
-    ::operator delete(erased);
-    --count;
-    *outCursor = node;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-fade.zsndfadelistcursor-popfrontcursor
- * @recoil-artifact defines .text recoil:function:0x4a3e90: zSndFadeListCursor::PopFrontCursor.
- * @recoil-match byte
- *
- * Purpose: return the current cursor node and advance the cursor to the next
- * intrusive-list node.
- */
-zSndFadeListNode** zSndFadeListCursor::PopFrontCursor(zSndFadeListNode** outNode, int unused)
-{
-    (void)unused;
-
-    zSndFadeListNode* const current = node;
-    node = current->next;
-    *outNode = current;
-    return outNode;
-}

@@ -2145,12 +2145,11 @@ namespace OptCatalog
         OptCatalogDamageMaskSurface* dstSurface;
         unsigned short* dstPixels;
         unsigned int dstPitch;
+        // Retail keeps the source window as a RECT beside stampRect; srcRect.top stays in a register.
+        RECT srcRect;
         RECT stampRect;
-        int srcXBegin;
-        int srcXEnd;
-        int srcYBegin;
-        int srcYEnd;
         int srcX;
+        int outX;
         int srcY;
         int outY;
 
@@ -2193,15 +2192,15 @@ namespace OptCatalog
 
         // Retail centres an oversized stamp and shifts, rather than clips, one that overhangs an edge.
         if (srcSurface->width > dstSurface->width) {
-            srcXBegin = (srcSurface->width - dstSurface->width) >> 1;
-            srcXEnd = srcSurface->width - srcXBegin;
+            srcRect.left = (srcSurface->width - dstSurface->width) >> 1;
+            srcRect.right = srcSurface->width - srcRect.left;
             stampRect.left = 0;
             stampRect.right = dstSurface->width;
         } else {
-            srcXBegin = 0;
-            srcXEnd = srcSurface->width;
+            srcRect.left = 0;
+            srcRect.right = srcSurface->width;
             stampRect.left = dstX;
-            stampRect.right = dstX + srcXEnd;
+            stampRect.right = dstX + srcRect.right;
             if (dstX < 0) {
                 stampRect.right -= dstX;
                 stampRect.left = 0;
@@ -2212,15 +2211,15 @@ namespace OptCatalog
         }
 
         if (srcSurface->height > dstSurface->height) {
-            srcYBegin = (srcSurface->height - dstSurface->height) >> 1;
-            srcYEnd = srcSurface->height - srcYBegin;
+            srcRect.top = (srcSurface->height - dstSurface->height) >> 1;
+            srcRect.bottom = srcSurface->height - srcRect.top;
             stampRect.top = 0;
             stampRect.bottom = dstSurface->height;
         } else {
-            srcYBegin = 0;
-            srcYEnd = srcSurface->height;
+            srcRect.top = 0;
+            srcRect.bottom = srcSurface->height;
             stampRect.top = dstY;
-            stampRect.bottom = dstY + srcYEnd;
+            stampRect.bottom = dstY + srcRect.bottom;
             if (dstY < 0) {
                 stampRect.bottom -= dstY;
                 stampRect.top = 0;
@@ -2245,66 +2244,67 @@ namespace OptCatalog
             dstPitch >>= 1;
         }
 
+        // Rows are indexed from per-row bases: retail sets up both pixel walkers after each row's bounds test.
         if (srcSurface->alpha != 0) {
             if (zRndr::g_pixelPackGreenBits == 6) {
-                for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
-                    unsigned short* dst = dstPixels + outY * dstPitch + stampRect.left;
-                    const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
-                    const unsigned char* const alphaRow = srcSurface->alpha + srcY * srcSurface->width;
-                    for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
+                for (srcY = srcRect.top, outY = stampRect.top; srcY < srcRect.bottom; ++srcY, ++outY) {
+                    unsigned short* dstRow = dstPixels + outY * dstPitch;
+                    const unsigned short* srcRow = srcSurface->pixels + srcY * srcSurface->width;
+                    const unsigned char* alphaRow = srcSurface->alpha + srcY * srcSurface->width;
+                    for (srcX = srcRect.left, outX = stampRect.left; srcX < srcRect.right; ++srcX, ++outX) {
                         const int alpha = alphaRow[srcX];
                         if (alpha != 0) {
-                            const int srcPixel = *src;
+                            const unsigned short srcPixel = srcRow[srcX];
                             if (alpha <= 3) {
                                 continue;
                             }
                             if (alpha >= 0xfc) {
-                                *dst = (unsigned short)srcPixel;
+                                dstRow[outX] = srcPixel;
                             } else {
-                                const int dstPixel = *dst;
+                                const int dstPixel = dstRow[outX];
                                 const int blended = dstPixel
                                     + ((((srcPixel & 0xf800) - (dstPixel & 0xf800)) * alpha >> 8) & 0xfffff800);
                                 const int green
                                     = (((srcPixel & 0x07e0) - (dstPixel & 0x07e0)) * alpha >> 8) & 0xffffffe0;
                                 const int blue = ((srcPixel & 0x001f) - (blended & 0x001f)) * alpha >> 8;
-                                *dst = (unsigned short)(blended + (blue + green));
+                                dstRow[outX] = (unsigned short)(blended + (blue + green));
                             }
                         }
                     }
                 }
             } else {
-                for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
-                    unsigned short* dst = dstPixels + outY * dstPitch + stampRect.left;
-                    const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
-                    const unsigned char* const alphaRow = srcSurface->alpha + srcY * srcSurface->width;
-                    for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
+                for (srcY = srcRect.top, outY = stampRect.top; srcY < srcRect.bottom; ++srcY, ++outY) {
+                    unsigned short* dstRow = dstPixels + outY * dstPitch;
+                    const unsigned short* srcRow = srcSurface->pixels + srcY * srcSurface->width;
+                    const unsigned char* alphaRow = srcSurface->alpha + srcY * srcSurface->width;
+                    for (srcX = srcRect.left, outX = stampRect.left; srcX < srcRect.right; ++srcX, ++outX) {
                         const int alpha = alphaRow[srcX];
                         if (alpha != 0) {
-                            const int srcPixel = *src;
+                            const unsigned short srcPixel = srcRow[srcX];
                             if (alpha <= 7) {
                                 continue;
                             }
                             if (alpha >= 0xfc) {
-                                *dst = (unsigned short)srcPixel;
+                                dstRow[outX] = srcPixel;
                             } else {
-                                const int dstPixel = *dst;
+                                const unsigned short dstPixel = dstRow[outX];
                                 const int red = (((srcPixel & 0x7c00) - (dstPixel & 0x7c00)) * alpha >> 8) & 0xfffffc00;
                                 const int green
                                     = (((srcPixel & 0x03e0) - (dstPixel & 0x03e0)) * alpha >> 8) & 0xffffffe0;
                                 const int blue = ((srcPixel & 0x001f) - (dstPixel & 0x001f)) * alpha >> 8;
-                                *dst = (unsigned short)(blue + green + red + dstPixel);
+                                dstRow[outX] = (unsigned short)(blue + green + red + dstPixel);
                             }
                         }
                     }
                 }
             }
         } else {
-            for (srcY = srcYBegin, outY = stampRect.top; srcY < srcYEnd; ++srcY, ++outY) {
-                unsigned short* dst = dstPixels + outY * dstSurface->width + stampRect.left;
-                const unsigned short* src = srcSurface->pixels + srcY * srcSurface->width + srcXBegin;
-                for (srcX = srcXBegin; srcX < srcXEnd; ++srcX, ++src, ++dst) {
-                    if (*src != 0) {
-                        *dst = *src;
+            for (srcY = srcRect.top, outY = stampRect.top; srcY < srcRect.bottom; ++srcY, ++outY) {
+                unsigned short* dstRow = dstPixels + outY * dstSurface->width;
+                const unsigned short* srcRow = srcSurface->pixels + srcY * srcSurface->width;
+                for (srcX = srcRect.left, outX = stampRect.left; srcX < srcRect.right; ++srcX, ++outX) {
+                    if (srcRow[srcX] != 0) {
+                        dstRow[outX] = srcRow[srcX];
                     }
                 }
             }

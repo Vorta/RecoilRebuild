@@ -1271,10 +1271,11 @@ namespace zVideo
             g_zVideo_FxPass3_ClipMaxX = clipRectOrNull->right;
             g_zVideo_FxPass3_ClipMaxY = clipRectOrNull->bottom;
         } else {
-            g_zVideo_FxPass3_ClipMinX = 0;
+            // Retail stores the default bounds top, left, bottom, right (0x48dbbd..0x48dbda).
             g_zVideo_FxPass3_ClipMinY = 0;
-            g_zVideo_FxPass3_ClipMaxX = g_zVideo_FxSurfaceWidth - 1;
+            g_zVideo_FxPass3_ClipMinX = 0;
             g_zVideo_FxPass3_ClipMaxY = g_zVideo_FxSurfaceHeight - 1;
+            g_zVideo_FxPass3_ClipMaxX = g_zVideo_FxSurfaceWidth - 1;
         }
 
         left = centerX - maxRadius;
@@ -1329,24 +1330,23 @@ namespace zVideo
                         recipValue = recipTable[radiusIndex];
                         offsetX = (int)(x * sinValue * recipValue);
                         offsetY = (int)(y * sinValue * recipValue);
-                        srcX = x + offsetX;
-                        srcY = y + offsetY;
+                        // Retail forms each source index from the offsets inline (0x48dda1..0x48def9).
                         dstCenter[y * g_zVideo_FxSurfaceWidth + x]
-                            = srcCenter[srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
+                            = srcCenter[(y + offsetY) * g_zVideo_FxSurfacePitchPixels16 + (x + offsetX)];
                         dstCenter[x * g_zVideo_FxSurfaceWidth + y]
-                            = srcCenter[srcX * g_zVideo_FxSurfacePitchPixels16 + srcY];
+                            = srcCenter[(x + offsetX) * g_zVideo_FxSurfacePitchPixels16 + (y + offsetY)];
                         dstCenter[y * g_zVideo_FxSurfaceWidth - x]
-                            = srcCenter[srcY * g_zVideo_FxSurfacePitchPixels16 - srcX];
+                            = srcCenter[(y + offsetY) * g_zVideo_FxSurfacePitchPixels16 - (x + offsetX)];
                         dstCenter[-x * g_zVideo_FxSurfaceWidth + y]
-                            = srcCenter[-srcX * g_zVideo_FxSurfacePitchPixels16 + srcY];
+                            = srcCenter[-(x + offsetX) * g_zVideo_FxSurfacePitchPixels16 + (y + offsetY)];
                         dstCenter[-y * g_zVideo_FxSurfaceWidth + x]
-                            = srcCenter[-srcY * g_zVideo_FxSurfacePitchPixels16 + srcX];
+                            = srcCenter[-(y + offsetY) * g_zVideo_FxSurfacePitchPixels16 + (x + offsetX)];
                         dstCenter[x * g_zVideo_FxSurfaceWidth - y]
-                            = srcCenter[srcX * g_zVideo_FxSurfacePitchPixels16 - srcY];
+                            = srcCenter[(x + offsetX) * g_zVideo_FxSurfacePitchPixels16 - (y + offsetY)];
                         dstCenter[-y * g_zVideo_FxSurfaceWidth - x]
-                            = srcCenter[-srcY * g_zVideo_FxSurfacePitchPixels16 - srcX];
+                            = srcCenter[-(y + offsetY) * g_zVideo_FxSurfacePitchPixels16 - (x + offsetX)];
                         dstCenter[-x * g_zVideo_FxSurfaceWidth - y]
-                            = srcCenter[-srcX * g_zVideo_FxSurfacePitchPixels16 - srcY];
+                            = srcCenter[-(x + offsetX) * g_zVideo_FxSurfacePitchPixels16 - (y + offsetY)];
                     } else {
                         dstCenter[y * g_zVideo_FxSurfaceWidth + x] = srcCenter[y * g_zVideo_FxSurfacePitchPixels16 + x];
                         dstCenter[x * g_zVideo_FxSurfaceWidth + y] = srcCenter[x * g_zVideo_FxSurfacePitchPixels16 + y];
@@ -1979,22 +1979,21 @@ namespace zVideo_FxSurface
         int alphaFixed;
         int dx;
         int dy;
-        int left;
-        int top;
-        int right;
-        int bottom;
+        // Retail keeps the inset bounds in a local rect: .left in ebp, the rest at [esp+0x28..0x30].
+        zVidRect32 clip;
         int startOutCode;
         int endOutCode;
         float slopeYPerX;
         float slopeXPerY;
         int pitchPixels;
         int xStep;
-        unsigned short* pixel;
+        unsigned short* pixels;
+        int index;
         int err;
         int steps;
         int alphaStep;
         int alpha;
-        unsigned short* spanPixel;
+        int spanIndex;
         int spanCount;
         int dstValue;
         int redDelta;
@@ -2002,32 +2001,32 @@ namespace zVideo_FxSurface
         int blueDelta;
 
         alphaFixed = (int)(alphaStart * 255.0f) << 16;
-        dx = x0 - x1;
         dy = y0 - y1;
-        left = clipRect->left + clipInset;
-        top = clipRect->top + clipInset;
-        right = clipRect->right - clipInset;
-        bottom = clipRect->bottom - clipInset;
+        dx = x0 - x1;
         startOutCode = 0;
-        if (x1 < left) {
+        endOutCode = 0;
+        clip.top = clipRect->top + clipInset;
+        clip.left = clipRect->left + clipInset;
+        clip.bottom = clipRect->bottom - clipInset;
+        clip.right = clipRect->right - clipInset;
+        if (x1 < clip.left) {
             startOutCode = 1;
-        } else if (x1 > right) {
+        } else if (x1 > clip.right) {
             startOutCode = 2;
         }
-        if (y1 < top) {
+        if (y1 < clip.top) {
             startOutCode |= 4;
-        } else if (y1 > bottom) {
+        } else if (y1 > clip.bottom) {
             startOutCode |= 8;
         }
-        endOutCode = 0;
-        if (x0 < left) {
+        if (x0 < clip.left) {
             endOutCode = 1;
-        } else if (x0 > right) {
+        } else if (x0 > clip.right) {
             endOutCode = 2;
         }
-        if (y0 < top) {
+        if (y0 < clip.top) {
             endOutCode |= 4;
-        } else if (y0 > bottom) {
+        } else if (y0 > clip.bottom) {
             endOutCode |= 8;
         }
         if ((startOutCode & endOutCode) != 0) {
@@ -2037,70 +2036,72 @@ namespace zVideo_FxSurface
         if ((startOutCode | endOutCode) != 0) {
             slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
             slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
-            if (x1 < left) {
-                y1 += (int)((left - x1) * slopeYPerX);
-                x1 = left;
-                dx = x0 - x1;
+            if (x1 < clip.left) {
+                y1 += (int)((clip.left - x1) * slopeYPerX);
+                x1 = clip.left;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
-            } else if (x1 > right) {
-                y1 += (int)((right - x1) * slopeYPerX);
-                x1 = right;
-                dx = x0 - x1;
+            } else if (x1 > clip.right) {
+                y1 += (int)((clip.right - x1) * slopeYPerX);
+                x1 = clip.right;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeYPerX = dx == 0 ? 0.0f : (float)(dy) / dx;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
-            if (x0 < left) {
-                y0 += (int)((left - x0) * slopeYPerX);
-                x0 = left;
-                dx = x0 - x1;
+            if (x0 < clip.left) {
+                y0 += (int)((clip.left - x0) * slopeYPerX);
+                x0 = clip.left;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
-            } else if (x0 > right) {
-                y0 += (int)((right - x0) * slopeYPerX);
-                x0 = right;
-                dx = x0 - x1;
+            } else if (x0 > clip.right) {
+                y0 += (int)((clip.right - x0) * slopeYPerX);
+                x0 = clip.right;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
             // Retail rejects the line when both clipped endpoints remain beyond the same horizontal edge.
-            if (y1 < top) {
-                if (y0 < top) {
+            if (y1 < clip.top) {
+                if (y0 < clip.top) {
                     return;
                 }
-                x1 += (int)((top - y1) * slopeXPerY);
-                y1 = top;
-                dx = x0 - x1;
+                x1 += (int)((clip.top - y1) * slopeXPerY);
+                y1 = clip.top;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
-            } else if (y1 > bottom) {
-                if (y0 > bottom) {
+            } else if (y1 > clip.bottom) {
+                if (y0 > clip.bottom) {
                     return;
                 }
-                x1 += (int)((bottom - y1) * slopeXPerY);
-                y1 = bottom;
-                dx = x0 - x1;
+                x1 += (int)((clip.bottom - y1) * slopeXPerY);
+                y1 = clip.bottom;
                 dy = y0 - y1;
+                dx = x0 - x1;
                 slopeXPerY = dy == 0 ? 0.0f : (float)(dx) / dy;
             }
-            if (y0 < top) {
-                x0 += (int)((top - y0) * slopeXPerY);
-                y0 = top;
-                dx = x0 - x1;
+            if (y0 < clip.top) {
+                x0 += (int)((clip.top - y0) * slopeXPerY);
+                y0 = clip.top;
                 dy = y0 - y1;
-            } else if (y0 > bottom) {
-                x0 += (int)((bottom - y0) * slopeXPerY);
-                y0 = bottom;
                 dx = x0 - x1;
+            } else if (y0 > clip.bottom) {
+                x0 += (int)((clip.bottom - y0) * slopeXPerY);
+                y0 = clip.bottom;
                 dy = y0 - y1;
+                dx = x0 - x1;
             }
         }
 
+        // Retail indexes a local copy of the surface base; VC5 rebuilds the pointer per branch (0x48f17d, 0x48f358).
+        pixels = g_zVideo_FxSurfacePixels16;
         pitchPixels = (unsigned int)(zRndr::g_pitchBytes) >> 1;
         xStep = 1;
-        pixel = g_zVideo_FxSurfacePixels16 + pitchPixels * y1 + x1;
+        index = pitchPixels * y1 + x1;
         if (dy < 0) {
             dy = -dy;
             pitchPixels = -pitchPixels;
@@ -2117,28 +2118,28 @@ namespace zVideo_FxSurface
             do {
                 alpha = alphaFixed >> 16;
                 if (clipInset > 0) {
-                    spanPixel = pixel;
+                    spanIndex = index;
                     spanCount = clipInset;
                     do {
                         if (zRndr::g_pixelPackGreenBits == 5) {
                             if (alpha > 7) {
                                 if (alpha >= 0xfc) {
-                                    *spanPixel = color16;
+                                    pixels[spanIndex] = color16;
                                 } else {
-                                    dstValue = *spanPixel;
+                                    dstValue = pixels[spanIndex];
                                     redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
                                     greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
                                     redDelta &= 0xfffffc00;
                                     greenDelta &= 0xffffffe0;
                                     blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                                    *spanPixel += greenDelta + blueDelta + redDelta;
+                                    pixels[spanIndex] += greenDelta + blueDelta + redDelta;
                                 }
                             }
                         } else if (alpha > 3) {
                             if (alpha >= 0xfc) {
-                                *spanPixel = color16;
+                                pixels[spanIndex] = color16;
                             } else {
-                                dstValue = *spanPixel;
+                                dstValue = pixels[spanIndex];
                                 greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha;
                                 redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha;
                                 redDelta = (redDelta >> 8) & 0xfffff800;
@@ -2148,19 +2149,19 @@ namespace zVideo_FxSurface
                                 blueDelta >>= 8;
                                 blueDelta += greenDelta;
                                 dstValue += blueDelta;
-                                *spanPixel = (unsigned short)(dstValue);
+                                pixels[spanIndex] = (unsigned short)(dstValue);
                             }
                         }
-                        spanPixel += pitchPixels;
+                        spanIndex += pitchPixels;
                     } while (--spanCount);
                 }
 
-                pixel += xStep;
+                index += xStep;
                 alphaFixed += alphaStep;
                 err += dy;
                 if (err > dx) {
                     err -= dx;
-                    pixel += pitchPixels;
+                    index += pitchPixels;
                 }
             } while (--steps);
             return;
@@ -2172,28 +2173,28 @@ namespace zVideo_FxSurface
         do {
             alpha = alphaFixed >> 16;
             if (clipInset > 0) {
-                spanPixel = pixel;
+                spanIndex = index;
                 spanCount = clipInset;
                 do {
                     if (zRndr::g_pixelPackGreenBits == 5) {
                         if (alpha > 7) {
                             if (alpha >= 0xfc) {
-                                *spanPixel = color16;
+                                pixels[spanIndex] = color16;
                             } else {
-                                dstValue = *spanPixel;
+                                dstValue = pixels[spanIndex];
                                 redDelta = ((color16 & 0x7c00) - (dstValue & 0x7c00)) * alpha >> 8;
                                 greenDelta = ((color16 & 0x3e0) - (dstValue & 0x3e0)) * alpha >> 8;
                                 redDelta &= 0xfffffc00;
                                 greenDelta &= 0xffffffe0;
                                 blueDelta = ((color16 & 0x1f) - (dstValue & 0x1f)) * alpha >> 8;
-                                *spanPixel += greenDelta + blueDelta + redDelta;
+                                pixels[spanIndex] += greenDelta + blueDelta + redDelta;
                             }
                         }
                     } else if (alpha > 3) {
                         if (alpha >= 0xfc) {
-                            *spanPixel = color16;
+                            pixels[spanIndex] = color16;
                         } else {
-                            dstValue = *spanPixel;
+                            dstValue = pixels[spanIndex];
                             greenDelta = ((color16 & 0x7e0) - (dstValue & 0x7e0)) * alpha;
                             redDelta = ((color16 & 0xf800) - (dstValue & 0xf800)) * alpha;
                             redDelta = (redDelta >> 8) & 0xfffff800;
@@ -2203,19 +2204,19 @@ namespace zVideo_FxSurface
                             blueDelta >>= 8;
                             blueDelta += greenDelta;
                             dstValue += blueDelta;
-                            *spanPixel = (unsigned short)(dstValue);
+                            pixels[spanIndex] = (unsigned short)(dstValue);
                         }
                     }
-                    spanPixel += xStep;
+                    spanIndex += xStep;
                 } while (--spanCount);
             }
 
-            pixel += pitchPixels;
+            index += pitchPixels;
             alphaFixed += alphaStep;
             err += dx;
             if (err > dy) {
                 err -= dy;
-                pixel += xStep;
+                index += xStep;
             }
         } while (--steps);
     }

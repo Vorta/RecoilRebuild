@@ -3140,7 +3140,7 @@ void HudUiFillBitmap::DestructorCore()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduifillbitmap-draw
  * @recoil-artifact defines .text recoil:function:0x4b8520: HudUiFillBitmap::Draw.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: preserve the recovered HUD behavior for HudUiFillBitmap::Draw.
  */

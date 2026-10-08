@@ -1454,16 +1454,15 @@ struct HitOwnerOrContextPartial {
  * Observed in caller 0x4226d0 as eight repeated transition-FX list loads with
  * the same optional named-node lookup, two-entry cap, and
  * zEffectAnim::FindEntryByName dispatch. BN shows each loop body inlined.
+ * The cap is a __min of the record count and 2 (the conditional-assignment
+ * spelling shifts VC5's register rotation across the whole caller).
  * Purpose: load up to two named transition FX entries from a modal ZRD list.
  */
 #define PlayerLoadModalFxList(modalNode, name, entries)                                                                \
     do {                                                                                                               \
         zReader::Node* const playerFxListNode = zRdrFindTag((modalNode), (name));                                      \
         if (playerFxListNode != 0) {                                                                                   \
-            int playerFxCount = PlayerZrdArrayCount(playerFxListNode);                                                 \
-            if (playerFxCount >= 2) {                                                                                  \
-                playerFxCount = 2;                                                                                     \
-            }                                                                                                          \
+            const int playerFxCount = __min(PlayerZrdArrayCount(playerFxListNode), 2);                                 \
             for (int playerFxIndex = 0; playerFxIndex < playerFxCount; ++playerFxIndex) {                              \
                 (entries)[playerFxIndex]                                                                               \
                     = zEffectAnim::FindEntryByName(PlayerZrdArrayString(playerFxListNode, playerFxIndex + 1));         \
@@ -2718,10 +2717,11 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     g_Player_CopterSndNode2 = 0;
     g_Player_BftSplashAnimEntry = zEffectAnim::FindEntryByName("bftsplash");
 
+    zReader::Node* node;
     zReader::Node* playerRoot = zReader::Load(g_Player_ConfigArchiveName, 0, 0);
     {
         zReader::Node* const root = playerRoot;
-        zReader::Node* node = zRdrFindTag(root, g_Player_ConfigKey_CameraZone);
+        node = zRdrFindTag(root, g_Player_ConfigKey_CameraZone);
         if (node != 0) {
             const float cameraZone = PlayerZrdArrayFloat(node, 1);
             if (cameraZone > 0.0f && cameraZone < 1.0f) {
@@ -2839,13 +2839,10 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
         asyncEntry = zEffectAnim::FindNextAsyncEntry(asyncEntry);
     }
 
+    char vehicleName[0x14];
     zReader::Node* vehicleRoot = zReader::Load(zVehicle::SelectZrdByDifficulty(0), 0, 0);
-    zReader::Node* const vehicleList = PlayerZrdArrayNode(vehicleRoot, 1);
-    const int vehicleCount = (PlayerZrdArrayCount(vehicleList) - 1) / 2;
+    const int vehicleCount = (PlayerZrdArrayCount(PlayerZrdArrayNode(vehicleRoot, 1)) - 1) / 2;
     for (int vehicleIndex = 0; vehicleIndex < vehicleCount; ++vehicleIndex) {
-        char vehicleName[0x14];
-        strcpy(vehicleName, PlayerZrdArrayString(vehicleList, vehicleIndex * 2 + 1));
-
         PlayerMasterCommonData* const commonData
             = (PlayerMasterCommonData*)(::operator new(sizeof(PlayerMasterCommonData)));
         memset(commonData, 0, sizeof(PlayerMasterCommonData));
@@ -2860,6 +2857,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
             commonData->next = 0;
             ++g_PlayerMasterCommonDataList.count;
         }
+        strcpy(vehicleName, PlayerZrdArrayString(PlayerZrdArrayNode(vehicleRoot, 1), vehicleIndex * 2 + 1));
         zReader::Node* const vehicleNode = zRdrFindTag(vehicleRoot, vehicleName);
         LoadMasterCommonDataFromNode(commonData, vehicleNode, vehicleName);
 
@@ -2907,7 +2905,8 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     CZClass::gwNodeSetPriority(stealthPlayerState->rootNode, 1);
     CZClass::gwNodeSetRaycastable(stealthPlayerState->rootNode, 0);
     CZClass::gwNodeSetCellPickable(stealthPlayerState->rootNode, 0);
-    zRdrFindTag(zRdrFindTag(vehicleRoot, g_Player_ConfigNode_Stealth), g_Player_ConfigNode_CommonMode);
+    node = zRdrFindTag(vehicleRoot, g_Player_ConfigNode_Stealth);
+    node = zRdrFindTag(node, g_Player_ConfigNode_CommonMode);
     InitStateFromNameAndMasterCommonData(stealthSaveState, g_Player_ConfigNode_Stealth, g_Player_ConfigNode_Stealth);
     BindModalStateFromMasterModalData(
         stealthSaveState,
@@ -2926,16 +2925,14 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     }
 
     zReader::BuildResolvedParentDir(GetAivZrdPath(), g_Player_AivParentDir);
-    zReader::Node* const aivList = PlayerZrdArrayNode(aivRoot, 1);
-    int aivCount = (PlayerZrdArrayCount(aivList) - 1) / 2;
+    int aivCount = (PlayerZrdArrayCount(PlayerZrdArrayNode(aivRoot, 1)) - 1) / 2;
     if (zOpt::GetNetworkEnabled() != 0) {
         aivCount = 1;
     }
 
     for (int aivIndex = 0; aivIndex < aivCount; ++aivIndex) {
         char aivName[0x1c];
-        char vehicleName[0x14];
-        strcpy(aivName, PlayerZrdArrayString(aivList, aivIndex * 2 + 1));
+        strcpy(aivName, PlayerZrdArrayString(PlayerZrdArrayNode(aivRoot, 1), aivIndex * 2 + 1));
         ExtractVehicleNameFromAivName(aivName, vehicleName);
 
         if (zRdrFindTag(vehicleRoot, vehicleName) != 0) {
@@ -2948,7 +2945,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
                 spawnPos.z = PlayerZrdArrayFloat(spawnNode, 3);
                 CreateFromNamesAtPose(
                     &spawnPos,
-                    PlayerZrdArrayFloat(aivNode, 3),
+                    (float)(PlayerZrdArrayFloat(aivNode, 3)),
                     PlayerZrdArrayInt(aivNode, 1),
                     vehicleName,
                     aivName
@@ -2962,40 +2959,41 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
 
     zUtil_SaveGameState* const headSaveState = g_PlayerSaveStateList.head;
     headSaveState->playerState->lifecycleState = kPlayerLifecycleInactive;
-    zUtil_SaveGameState* const localSaveState = headSaveState != 0 ? headSaveState->next : 0;
-    g_LocalPlayerSaveState = localSaveState;
+    g_LocalPlayerSaveState = headSaveState != 0 ? headSaveState->next : 0;
+    zUtil_SaveGameState* const localSaveState = g_LocalPlayerSaveState;
     g_CurrentPlayerSaveState = localSaveState;
     localSaveState->playerState->cameraTickEnabled = 1;
     localSaveState->playerState->transitionDamageSuppressed = 0;
-    g_VariantTag_Current = localSaveState->playerState->variantTag;
-    g_Player_LastValidCameraVariantTag = localSaveState->playerState->variantTag;
-    g_Variant_CurrentTag = localSaveState->playerState->variantTag;
+    g_Variant_CurrentTag = g_Player_LastValidCameraVariantTag = g_VariantTag_Current
+        = localSaveState->playerState->variantTag;
     zEffect::SetConditionalRefPos(&localSaveState->playerState->worldPos);
     localSaveState->playerState->lifecycleState = kPlayerLifecycleLocal;
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial*)localSaveState;
 
     if (zOpt::GetNetworkEnabled() != 0) {
-        localSaveState->playerState->amphibUnlocked = IsMissionProbeType1EnabledById(g_HudSensorTracker.GetMissionId());
+        zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
+        localPlayerState->amphibUnlocked = IsMissionProbeType1EnabledById(g_HudSensorTracker.GetMissionId());
     } else {
         if (g_HudSensorTracker.GetMissionId() == 6) {
-            localSaveState->playerState->subUnlocked = 1;
+            ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->subUnlocked = 1;
         }
         if (g_HudSensorTracker.GetMissionId() >= 4) {
-            localSaveState->playerState->hoverUnlocked = 1;
+            ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->hoverUnlocked = 1;
         }
         if (g_HudSensorTracker.GetMissionId() >= 3) {
-            localSaveState->playerState->amphibUnlocked = 1;
+            ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->amphibUnlocked = 1;
         }
     }
 
-    stealthPlayerState->worldPos = localSaveState->playerState->worldPos;
+    stealthPlayerState->worldPos = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->worldPos;
     CZObject3D::gwObject3DSetPosition(
         stealthPlayerState->rootNode,
         stealthPlayerState->worldPos.x,
         stealthPlayerState->worldPos.y,
         stealthPlayerState->worldPos.z
     );
-    stealthPlayerState->vehicleRotationAngles = localSaveState->playerState->vehicleRotationAngles;
+    stealthPlayerState->vehicleRotationAngles
+        = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->vehicleRotationAngles;
     CZObject3D::gwObject3DSetRotation(
         stealthPlayerState->rootNode,
         stealthPlayerState->vehiclePitchRad,
@@ -3020,6 +3018,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
         Checkpoint::InstantiateNamedObjects();
     }
 }
+
 } // namespace Player
 namespace zReader {
 /**
@@ -4031,7 +4030,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-loadmastermodaldatafromnode
  * @recoil-artifact defines .text recoil:function:0x4226d0: Player::LoadMasterModalDataFromNode.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Source owner: battlesport_gameplay.player_master_zrd_record_loaders.

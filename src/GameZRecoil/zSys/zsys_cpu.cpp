@@ -35,7 +35,7 @@ namespace zSys {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
  * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
- *
+ * @recoil-match byte
  *
  * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
  */

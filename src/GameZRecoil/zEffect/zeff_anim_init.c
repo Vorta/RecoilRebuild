@@ -1084,11 +1084,11 @@ namespace zEffect_Anim
                             }
                         }
                     } else if (prereq->mode == 3 || prereq->mode == 2) {
-                        const char* const nodeName = &prereq->targetName[4];
+                        // Retail recomputes the node-name address at each use (no cached local).
                         if (prereqSearchRoot == 0) {
-                            prereqSearchRoot = CZClass::FindByTypeAndName(6, nodeName);
+                            prereqSearchRoot = CZClass::FindByTypeAndName(6, &prereq->targetName[4]);
                         } else {
-                            prereqSearchRoot = CZClass::FindSubNodeByName(prereqSearchRoot, nodeName);
+                            prereqSearchRoot = CZClass::FindSubNodeByName(prereqSearchRoot, &prereq->targetName[4]);
                         }
 
                         if (prereqSearchRoot == 0) {
@@ -1098,7 +1098,7 @@ namespace zEffect_Anim
                                 0x2c17,
                                 g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
                                 entry,
-                                nodeName
+                                &prereq->targetName[4]
                             );
                             entry->activationPrereqCount = 0;
                             break;

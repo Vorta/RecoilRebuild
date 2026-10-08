@@ -293,7 +293,7 @@ void zFMV_Script::Reset(int destroyActions)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zfmv-fmv-script-zfmv-script-loadactionsfromzrd
  * @recoil-artifact defines .text recoil:function:0x4626b0: zFMV_Script::LoadActionsFromZrd.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: load FMV path metadata and construct actions from a named zReader sequence.
  */
@@ -837,7 +837,7 @@ void CZFMVActionFade::End()
 /**
  * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-avi-czfmvaction-play-avi
  * @recoil-artifact defines .text recoil:function:0x463570: CZFMVActionPlayAvi::CZFMVActionPlayAvi.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
  */
@@ -1139,7 +1139,7 @@ int CZFMVActionBlurV::Update(double)
 /**
  * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-mci-czfmvaction-play-mci
  * @recoil-artifact defines .text recoil:function:0x463b00: CZFMVActionPlayMci::CZFMVActionPlayMci.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: build the MCI media path, create playback state, and set its destination rect.
  */

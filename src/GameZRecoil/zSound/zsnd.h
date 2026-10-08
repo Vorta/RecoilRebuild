@@ -304,26 +304,6 @@ struct zSndFadeEntry {
     int TickAndMaybeDispatch(float deltaTime);
 };
 
-struct zSndFadeListNode {
-    zSndFadeListNode* next;
-    zSndFadeListNode* prev;
-    zSndFadeEntry* fadeEntry;
-};
-
-struct zSndFadeList {
-    unsigned int flags;
-    zSndFadeListNode* sentinel;
-    int count;
-
-    void DeleteNodeAndAdvanceCursor(zSndFadeListNode** outCursor, zSndFadeListNode* node);
-};
-
-struct zSndFadeListCursor {
-    zSndFadeListNode* node;
-
-    zSndFadeListNode** PopFrontCursor(zSndFadeListNode** outNode, int unused);
-};
-
 struct zSndCdTrackEntry {
     char* archiveName;
     int trackNumber;
@@ -358,8 +338,6 @@ RECOIL_STATIC_ASSERT(sizeof(zSndGroupRuntimeFields) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zSndGroup) == 0xb8);
 RECOIL_STATIC_ASSERT(sizeof(zSndStreamRequest) == 0x3c);
 RECOIL_STATIC_ASSERT(sizeof(zSndFadeEntry) == 0x10);
-RECOIL_STATIC_ASSERT(sizeof(zSndFadeListNode) == 0x0c);
-RECOIL_STATIC_ASSERT(sizeof(zSndFadeList) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zSndCdTrackEntry) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, volumeScaleRaw) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndPlayHandleSnapshotPayload, worldPos) == 0x10);
@@ -380,9 +358,6 @@ RECOIL_STATIC_ASSERT(offsetof(zSndStreamRequest, group) == 0x38);
 RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, currentValue) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, handle) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zSndFadeEntry, stopOnComplete) == 0x0c);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeListNode, fadeEntry) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, sentinel) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(zSndFadeList, count) == 0x08);
 
 namespace zSnd {
 // Audio API option and active sound backend values: the Options audio-API

@@ -1476,16 +1476,17 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         }
 
         if ((playerState->altGunTransitionState & 0x180) != 0) {
-            OptCatalogRuntimeInstanceStorage* const attachState
-                = (OptCatalogRuntimeInstanceStorage*)activeAltGunController->attachState;
-
-            if (attachState->ownerNode == 0) {
+            // Retail re-reads attachState at each use (0x43a0bf, 0x43a0e5); no cached local.
+            if (((OptCatalogRuntimeInstanceStorage*)activeAltGunController->attachState)->ownerNode == 0) {
                 if (playerState->cameraState == kPlayerTickCameraStateProjectileAttached) {
                     HudUiMgr::EnableHud();
                     Player::ApplyCameraState(kPlayerTickCameraStateRestorePrevious);
                 }
                 playerState->pendingAltCameraToggle = 0;
-                OptCatalog::RecycleRuntimeInstanceStorage(activeAltGunController->optCatalogEntry, attachState);
+                OptCatalog::RecycleRuntimeInstanceStorage(
+                    activeAltGunController->optCatalogEntry,
+                    (OptCatalogRuntimeInstanceStorage*)activeAltGunController->attachState
+                );
                 activeAltGunController->attachState = 0;
                 if (activeAltGunController->ammoOrCharge > 0.0f) {
                     playerState->altGunTransitionState = 4;
@@ -1548,8 +1549,9 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
             break;
 
         case 4: {
-            playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
+            // Retail computes targetY before the timer sum and keeps progress in an x87 register.
             const float targetY = transitionController->attachPosY - 0.400000006f;
+            playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
             const float progress = playerState->altGunTransitionTimerA * 4.0f;
             const float animScale = progress * 0.400000006f;
             playerState->altGunTransitionAnimScale = animScale;
@@ -1573,13 +1575,14 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
                 break;
             }
 
+            // Retail forms the scale before the position call (0x439cde).
+            const float scale = 1.0f - progress * 0.399999976f;
             CZObject3D::gwObject3DSetPosition(
                 transitionController->attachNodePrimary,
                 transitionController->attachPosX,
                 y,
                 transitionController->attachPosZ
             );
-            const float scale = 1.0f - progress * 0.399999976f;
             CZObject3D::gwObject3DSetScale(transitionController->attachNodePrimary, 1.0f, scale, scale);
             CZObject3D::gwObject3DSetRotation(transitionController->attachNodePrimary, 0.0f, 0.0f, 0.0f);
             break;
@@ -1602,11 +1605,16 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         case 16: {
             if (transitionController != 0 && transitionController->attachNodePrimary != 0
                 && (transitionController->flags & kPlayerGunControllerDualMountFlag) == 0) {
-                OptCatalogRuntimeInstanceStorage* const attachState
-                    = (OptCatalogRuntimeInstanceStorage*)transitionController->attachState;
-                if (attachState != 0) {
-                    CZClass::RemoveChild(transitionController->attachNodePrimary, attachState->projectileNode);
-                    OptCatalog::RecycleRuntimeInstanceStorage(transitionController->optCatalogEntry, attachState);
+                // Retail re-reads attachState after RemoveChild (0x439da5).
+                if (transitionController->attachState != 0) {
+                    CZClass::RemoveChild(
+                        transitionController->attachNodePrimary,
+                        ((OptCatalogRuntimeInstanceStorage*)transitionController->attachState)->projectileNode
+                    );
+                    OptCatalog::RecycleRuntimeInstanceStorage(
+                        transitionController->optCatalogEntry,
+                        (OptCatalogRuntimeInstanceStorage*)transitionController->attachState
+                    );
                     transitionController->attachState = 0;
                 }
 
@@ -1650,10 +1658,11 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
             OptCatalogEntryDef* const entry = activeController->optCatalogEntry;
             if ((entry->flags & kOptCatalogFlagReload) != 0 && activeController->ammoOrCharge > 0.0f) {
                 activeController->attachState = OptCatalog::AllocOrReuseAttachNodeClone(entry);
-                OptCatalogRuntimeInstanceStorage* const attachState
-                    = (OptCatalogRuntimeInstanceStorage*)activeController->attachState;
-                CZClass::AddChild(activeController->attachNodePrimary, attachState->projectileNode);
-                attachState->ownerNode = playerState->rootNode;
+                CZClass::AddChild(
+                    activeController->attachNodePrimary,
+                    ((OptCatalogRuntimeInstanceStorage*)activeController->attachState)->projectileNode
+                );
+                ((OptCatalogRuntimeInstanceStorage*)activeController->attachState)->ownerNode = playerState->rootNode;
             }
 
             CZClass::gwNodeSetActive(activeController->attachNodePrimary, 1);
@@ -1684,34 +1693,34 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         }
 
         case 64: {
-            PlayerGunFireController* const activeController = activeAltGunController;
             playerState->altGunTransitionTimerA += g_FrameDeltaTimeSec;
             const float progress = playerState->altGunTransitionTimerA * 4.0f;
             const float animScale = progress * 0.400000006f;
             playerState->altGunTransitionAnimScale = animScale;
-            const float y = animScale + (activeController->attachPosY - 0.400000006f);
-            if (y >= activeController->attachPosY) {
+            const float y = animScale + (activeAltGunController->attachPosY - 0.400000006f);
+            if (y >= activeAltGunController->attachPosY) {
                 playerState->altGunTransitionAnimScale = 0.400000006f;
                 playerState->altGunTransitionState = 1;
                 playerState->altGunTransitionTimerA = 0.0f;
                 CZObject3D::gwObject3DSetPosition(
-                    activeController->attachNodePrimary,
-                    activeController->attachPosX,
-                    activeController->attachPosY,
-                    activeController->attachPosZ
+                    activeAltGunController->attachNodePrimary,
+                    activeAltGunController->attachPosX,
+                    activeAltGunController->attachPosY,
+                    activeAltGunController->attachPosZ
                 );
-                CZObject3D::gwObject3DSetScale(activeController->attachNodePrimary, 1.0f, 1.0f, 1.0f);
+                CZObject3D::gwObject3DSetScale(activeAltGunController->attachNodePrimary, 1.0f, 1.0f, 1.0f);
                 break;
             }
 
-            CZObject3D::gwObject3DSetPosition(
-                activeController->attachNodePrimary,
-                activeController->attachPosX,
-                y,
-                activeController->attachPosZ
-            );
+            // Retail forms the scale before the position call (0x43a047).
             const float scale = progress * 0.399999976f - -0.600000024f;
-            CZObject3D::gwObject3DSetScale(activeController->attachNodePrimary, 1.0f, scale, scale);
+            CZObject3D::gwObject3DSetPosition(
+                activeAltGunController->attachNodePrimary,
+                activeAltGunController->attachPosX,
+                y,
+                activeAltGunController->attachPosZ
+            );
+            CZObject3D::gwObject3DSetScale(activeAltGunController->attachNodePrimary, 1.0f, scale, scale);
             break;
         }
         }
@@ -1723,9 +1732,10 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
     // the gun-slot decay and primary dispatch below still run for every player.
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
         if (playerState->altGunFireHeldFlag != 0 && activeAltGunController->ammoOrCharge != 123456792.0f) {
+            // Retail loads the interval before the frame delta (fdivr at 0x43a247); mission.cpp reads it the same way.
             activeAltGunController->ammoOrCharge
-                -= g_FrameDeltaTimeSec / activeAltGunController->optCatalogEntry->fireRateInterval;
-            if (activeAltGunController->ammoOrCharge < 0.0f) {
+                -= g_FrameDeltaTimeSec / (float)(activeAltGunController->optCatalogEntry->fireRateInterval);
+            if (0.0f > activeAltGunController->ammoOrCharge) {
                 activeAltGunController->ammoOrCharge = 0.0f;
             }
             activeAltGunController->trailRuntimeState->ammoOrChargeMirror = activeAltGunController->ammoOrCharge;
@@ -1788,6 +1798,7 @@ void __fastcall TickAltGunRuntimeState(zUtil_SaveGameState* saveState)
         Player::ProcessPrimaryGunDispatchTick(saveState);
     }
 }
+
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-processprimarygundispatchtick
  * @recoil-artifact defines .text recoil:function:0x43a400: Player::ProcessPrimaryGunDispatchTick.
@@ -2370,7 +2381,7 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible; reviewed inline asm reproduces the retail

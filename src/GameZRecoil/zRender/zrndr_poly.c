@@ -5077,13 +5077,13 @@ void __fastcall zRndrDrawLine16Clipped(
     float yPerX;
     float xPerY;
     int rowStep;
-    int startIndex;
+    int index;
     int xStep;
-    unsigned short* cursor;
     int error;
     int count;
 
-    outcode0 = 0;
+    // Retail zeroes both outcodes before the first test (0x499512, 0x499514).
+    outcode0 = outcode1 = 0;
     if (x0 < clipRect->left) {
         outcode0 = 1;
     } else if (x0 > clipRect->right) {
@@ -5094,7 +5094,6 @@ void __fastcall zRndrDrawLine16Clipped(
     } else if (y0 > clipRect->bottom) {
         outcode0 |= 8;
     }
-    outcode1 = 0;
     if (x1 < clipRect->left) {
         outcode1 = 1;
     } else if (x1 > clipRect->right) {
@@ -5152,9 +5151,10 @@ void __fastcall zRndrDrawLine16Clipped(
         dy = y1 - y0;
     }
 
+    // Retail walks an index like zRndrDrawLine16; VC5 rebuilds the pointer per branch (0x499758, 0x499798).
     rowStep = (unsigned int)(zRndr::g_pitchBytes) >> 1;
     xStep = 1;
-    startIndex = rowStep * y0 + x0;
+    index = rowStep * y0 + x0;
     if (dy < 0) {
         dy = -dy;
         rowStep = -rowStep;
@@ -5167,14 +5167,13 @@ void __fastcall zRndrDrawLine16Clipped(
     if (dx > dy) {
         error = dx >> 1;
         count = dx + 1;
-        cursor = &dstPixels[startIndex];
         do {
-            *cursor = (unsigned short)(color16);
+            dstPixels[index] = (unsigned short)(color16);
             error += dy;
-            cursor += xStep;
+            index += xStep;
             if (error > dx) {
                 error -= dx;
-                cursor += rowStep;
+                index += rowStep;
             }
         } while (--count);
         return;
@@ -5182,14 +5181,13 @@ void __fastcall zRndrDrawLine16Clipped(
 
     error = dy >> 1;
     count = dy + 1;
-    cursor = &dstPixels[startIndex];
     do {
-        *cursor = (unsigned short)(color16);
+        dstPixels[index] = (unsigned short)(color16);
         error += dx;
-        cursor += rowStep;
+        index += rowStep;
         if (error > dy) {
             error -= dy;
-            cursor += xStep;
+            index += xStep;
         }
     } while (--count);
 }

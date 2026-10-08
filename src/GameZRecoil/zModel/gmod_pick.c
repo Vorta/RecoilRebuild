@@ -149,6 +149,26 @@ namespace zMath
     }
 } // namespace zMath
 
+namespace zMath
+{
+    /**
+     * Purpose: Inline-function spelling of the reviewed vector-dot island for
+     * this unit's consumers. VC5 binds simple variable arguments to their own
+     * homes and address arguments to inline-parameter homes, which the capturing
+     * ZMTH_VECTOR_DOT cannot express. Original header ownership is unrecovered.
+     * Original inline helper evidence: no standalone retail function; retail
+     * 0x4857f0 and 0x485d10 load the surface normal from the candidate home and
+     * &delta/&scratch from an inline-parameter home (TU-resident reconstruction
+     * model, as zmth_main.c).
+     */
+    inline float Vec3Dot(const zVec3* left, const zVec3* right)
+    {
+        float result;
+        ZMTH_VECTOR_DOT_BOUND(result, left, right);
+        return result;
+    }
+} // namespace zMath
+
 /*
  * Address-backed gmod_const.c function contribution in natural retail order.
  */
@@ -245,7 +265,7 @@ namespace zModelConst
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addfacetoplayerprobesamplebuckets
      * @recoil-artifact defines .text recoil:function:0x484b70: zModelConst::AddFaceToPlayerProbeSampleBuckets.
-     *
+     * @recoil-match byte
      *
      * Provenance: address-backed reconstruction placed in the cls_di runtime
      * surface from current Binary Ninja behavior/global evidence.
@@ -726,7 +746,7 @@ namespace CZDisplayInstance
 
         float endSide;
         zMath::Vec3Subtract(segmentEnd, polygonVertices, &delta);
-        ZMTH_VECTOR_DOT(endSide, &delta, &candidate->surfaceNormal);
+        endSide = zMath::Vec3Dot(&delta, &candidate->surfaceNormal);
         endBits.f = endSide;
         if (cullBackface == 0 && endSide >= 0.0) {
             return 0;
@@ -734,7 +754,7 @@ namespace CZDisplayInstance
 
         float startSide;
         zMath::Vec3Subtract(segmentStart, polygonVertices, &delta);
-        ZMTH_VECTOR_DOT(startSide, &delta, &candidate->surfaceNormal);
+        startSide = zMath::Vec3Dot(&delta, &candidate->surfaceNormal);
         startBits.f = startSide;
         if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
             return 0;
@@ -762,150 +782,129 @@ namespace CZDisplayInstance
         }
 
         int index = vertexCount - 1;
-        int current;
+        int current = 0;
+        // Retail rotates each edge loop like TryGetPolygonHitAtQueryXZ: the first edge test is peeled and the
+        // two edge-normal components stay x87 register variables (fmul st(n), popped after the compare).
+        zVec3 edgeNormal;
         switch (axis) {
         case 1:
-            if ((polygonVertices[index].x - polygonVertices[0].x) * (candidate->hitPos.z - polygonVertices[index].z)
-                    + (polygonVertices[0].z - polygonVertices[index].z)
-                        * (candidate->hitPos.x - polygonVertices[index].x)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.z = polygonVertices[index].x - polygonVertices[current].x;
+            edgeNormal.x = polygonVertices[current].z - polygonVertices[index].z;
+            for (;;) {
+                if ((candidate->hitPos.z - polygonVertices[index].z) * edgeNormal.z
+                        + (candidate->hitPos.x - polygonVertices[index].x) * edgeNormal.x
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[index].x - polygonVertices[current].x)
-                            * (candidate->hitPos.z - polygonVertices[index].z)
-                        + (polygonVertices[current].z - polygonVertices[index].z)
-                            * (candidate->hitPos.x - polygonVertices[index].x)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.z = polygonVertices[index].x - polygonVertices[current].x;
+                edgeNormal.x = polygonVertices[current].z - polygonVertices[index].z;
             }
             break;
         case 0:
-            if ((polygonVertices[index].z - polygonVertices[0].z) * (candidate->hitPos.y - polygonVertices[index].y)
-                    + (polygonVertices[0].y - polygonVertices[index].y)
-                        * (candidate->hitPos.z - polygonVertices[index].z)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.z = polygonVertices[current].y - polygonVertices[index].y;
+            edgeNormal.y = polygonVertices[index].z - polygonVertices[current].z;
+            for (;;) {
+                if ((candidate->hitPos.y - polygonVertices[index].y) * edgeNormal.y
+                        + (candidate->hitPos.z - polygonVertices[index].z) * edgeNormal.z
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[index].z - polygonVertices[current].z)
-                            * (candidate->hitPos.y - polygonVertices[index].y)
-                        + (polygonVertices[current].y - polygonVertices[index].y)
-                            * (candidate->hitPos.z - polygonVertices[index].z)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.z = polygonVertices[current].y - polygonVertices[index].y;
+                edgeNormal.y = polygonVertices[index].z - polygonVertices[current].z;
             }
             break;
         case 2:
-            if ((polygonVertices[index].y - polygonVertices[0].y) * (candidate->hitPos.x - polygonVertices[index].x)
-                    + (polygonVertices[0].x - polygonVertices[index].x)
-                        * (candidate->hitPos.y - polygonVertices[index].y)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.x = polygonVertices[index].y - polygonVertices[current].y;
+            edgeNormal.y = polygonVertices[current].x - polygonVertices[index].x;
+            for (;;) {
+                if ((candidate->hitPos.x - polygonVertices[index].x) * edgeNormal.x
+                        + (candidate->hitPos.y - polygonVertices[index].y) * edgeNormal.y
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[index].y - polygonVertices[current].y)
-                            * (candidate->hitPos.x - polygonVertices[index].x)
-                        + (polygonVertices[current].x - polygonVertices[index].x)
-                            * (candidate->hitPos.y - polygonVertices[index].y)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.x = polygonVertices[index].y - polygonVertices[current].y;
+                edgeNormal.y = polygonVertices[current].x - polygonVertices[index].x;
             }
             break;
         case 4:
-            if ((polygonVertices[0].x - polygonVertices[index].x) * (candidate->hitPos.z - polygonVertices[index].z)
-                    + (polygonVertices[index].z - polygonVertices[0].z)
-                        * (candidate->hitPos.x - polygonVertices[index].x)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.z = polygonVertices[current].x - polygonVertices[index].x;
+            edgeNormal.x = polygonVertices[index].z - polygonVertices[current].z;
+            for (;;) {
+                if ((candidate->hitPos.x - polygonVertices[index].x) * edgeNormal.x
+                        + (candidate->hitPos.z - polygonVertices[index].z) * edgeNormal.z
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[current].x - polygonVertices[index].x)
-                            * (candidate->hitPos.z - polygonVertices[index].z)
-                        + (polygonVertices[index].z - polygonVertices[current].z)
-                            * (candidate->hitPos.x - polygonVertices[index].x)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.z = polygonVertices[current].x - polygonVertices[index].x;
+                edgeNormal.x = polygonVertices[index].z - polygonVertices[current].z;
             }
             break;
         case 3:
-            if ((polygonVertices[0].z - polygonVertices[index].z) * (candidate->hitPos.y - polygonVertices[index].y)
-                    + (polygonVertices[index].y - polygonVertices[0].y)
-                        * (candidate->hitPos.z - polygonVertices[index].z)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.z = polygonVertices[index].y - polygonVertices[current].y;
+            edgeNormal.y = polygonVertices[current].z - polygonVertices[index].z;
+            for (;;) {
+                if ((candidate->hitPos.y - polygonVertices[index].y) * edgeNormal.y
+                        + (candidate->hitPos.z - polygonVertices[index].z) * edgeNormal.z
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[current].z - polygonVertices[index].z)
-                            * (candidate->hitPos.y - polygonVertices[index].y)
-                        + (polygonVertices[index].y - polygonVertices[current].y)
-                            * (candidate->hitPos.z - polygonVertices[index].z)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.z = polygonVertices[index].y - polygonVertices[current].y;
+                edgeNormal.y = polygonVertices[current].z - polygonVertices[index].z;
             }
             break;
         case 5:
-            if ((polygonVertices[0].y - polygonVertices[index].y) * (candidate->hitPos.x - polygonVertices[index].x)
-                    + (polygonVertices[index].x - polygonVertices[0].x)
-                        * (candidate->hitPos.y - polygonVertices[index].y)
-                <= -0.0001) {
-                return 0;
-            }
+            edgeNormal.x = polygonVertices[current].y - polygonVertices[index].y;
+            edgeNormal.y = polygonVertices[index].x - polygonVertices[current].x;
+            for (;;) {
+                if ((candidate->hitPos.x - polygonVertices[index].x) * edgeNormal.x
+                        + (candidate->hitPos.y - polygonVertices[index].y) * edgeNormal.y
+                    <= -0.0001) {
+                    return 0;
+                }
 
-            while (1) {
                 current = index;
-                --index;
+                index--;
                 if (index < 0) {
                     break;
                 }
 
-                if ((polygonVertices[current].y - polygonVertices[index].y)
-                            * (candidate->hitPos.x - polygonVertices[index].x)
-                        + (polygonVertices[index].x - polygonVertices[current].x)
-                            * (candidate->hitPos.y - polygonVertices[index].y)
-                    <= -0.0001) {
-                    return 0;
-                }
+                edgeNormal.x = polygonVertices[current].y - polygonVertices[index].y;
+                edgeNormal.y = polygonVertices[index].x - polygonVertices[current].x;
             }
             break;
         }
@@ -954,10 +953,10 @@ namespace CZDisplayInstance
         );
 
         zMath::Vec3Subtract(segmentEnd, polygonVertices, &scratch);
-        ZMTH_VECTOR_DOT(endSide, &scratch, &candidate->surfaceNormal);
+        endSide = zMath::Vec3Dot(&scratch, &candidate->surfaceNormal);
         if (cullBackface != 0 || endSide < 0.0) {
             zMath::Vec3Subtract(segmentStart, polygonVertices, &scratch);
-            ZMTH_VECTOR_DOT(startSide, &scratch, &candidate->surfaceNormal);
+            startSide = zMath::Vec3Dot(&scratch, &candidate->surfaceNormal);
             if ((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) {
                 t = startSide / (startSide - endSide);
                 zMath::Vec3Subtract(segmentEnd, segmentStart, &scratch);
@@ -1390,8 +1389,10 @@ namespace CZDisplayInstance
      * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
      * behavior/global evidence for the expanded raycast/filter runtime slice.
      * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+     * Returns nothing: the only caller (FilterRegionsAgainstPolygon) discards the
+     * result, and retail leaves EAX unset on the commit paths.
      */
-    int __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
+    void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
         CZNodePartial * candidateOwner,
         PlayerProbeSampleCandidateBuffer * outCandidateBuffersBySegment,
         CZDisplayInstanceSegmentEndpoints * segmentEndpointsByBatch,
@@ -1795,8 +1796,6 @@ namespace CZDisplayInstance
                 break;
             }
         }
-
-        return anyActive;
     }
 
     /**

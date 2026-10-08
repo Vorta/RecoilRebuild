@@ -1038,7 +1038,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered

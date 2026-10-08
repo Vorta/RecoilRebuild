@@ -1955,7 +1955,7 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(zVec3* position, float clearanceR
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-selectnextvtolspawntypeindex
  * @recoil-artifact defines .text recoil:function:0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: rotate through available weapon pickups for the next VTOL drop.
  */

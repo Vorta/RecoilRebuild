@@ -2518,7 +2518,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computetrailimpactresponse
      * @recoil-artifact defines .text recoil:function:0x4b0e20: OptCatalog::ComputeTrailImpactResponse
-     * @recoil-match byte
+     * @recoil-match source
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * Purpose: raycast a trail segment against the runtime world, apply

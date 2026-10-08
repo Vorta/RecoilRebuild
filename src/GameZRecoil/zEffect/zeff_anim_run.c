@@ -2971,7 +2971,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
      * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: evaluate a conditional event chain and skip to the matching branch
@@ -3133,7 +3133,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
      * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
@@ -3196,7 +3196,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlescreencolorfxevent
      * @recoil-artifact defines .text recoil:function:0x45c710: zEffect::HandleScreenColorFxEvent.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: animate and queue the screen color effect for the current frame.
