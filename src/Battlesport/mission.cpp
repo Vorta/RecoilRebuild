@@ -2,29 +2,23 @@
 
 #include "Battlesport/hud_sensor_tracker.h"
 
-namespace Mission {
+extern "C" {
 /**
- * @recoil-anchor recoil:anchor:battlesport.mission.mission-init-objectives
- * @recoil-artifact defines .text recoil:function:0x417350: Mission::InitObjectives.
- * @recoil-match byte
- *
- * Purpose: initialize the global HUD sensor objective tracker and register its
- * process-exit cleanup hook.
+ * @recoil-anchor recoil:anchor:battlesport.mission.g-hudsensortracker
+ * @recoil-artifact defines .data recoil:data:0x4f0cc0: g_HudSensorTracker.
+ * @recoil-artifact emits .text recoil:function:0x417350: Native global lifecycle contribution 1.
+ * @recoil-artifact emits .text recoil:function:0x417360: Native global lifecycle contribution 2.
+ * @recoil-artifact emits .text recoil:function:0x417370: Native global lifecycle contribution 3.
+ * @recoil-artifact emits .text recoil:function:0x417380: Native global lifecycle contribution 4.
+ * Source model: the mission tracker global object. VC5 emits its dynamic
+ * initializer from this definition: the .CRT$XCU entry (0x417350), the
+ * construction call (0x417360), the atexit registration (0x417370) and the
+ * destruction callback (0x417380).
+ * Purpose: Owns the global HUD sensor tracker state used by mission flow,
+ * map/objective rendering, network timer sync, and frame-level HUD updates.
  */
-void __cdecl InitObjectives()
-{
-    HudSensorTracker::ConstructGlobal();
-    HudSensorTracker::RegisterGlobalOnExit();
+HudSensorTracker g_HudSensorTracker;
 }
-} // namespace Mission
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* MissionCrtInitializerFn)();
-/* VC5 emits this mission-objectives startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-MissionCrtInitializerFn s_MissionCrtInit_Objectives = Mission::InitObjectives;
-#pragma data_seg()
-#endif
 #include "Battlesport/hud_sensor_tracker.h"
 
 #include "Battlesport/game_net.h"
@@ -270,74 +264,24 @@ ResolveObjectiveNodePath(zReader::Node* pathNode, int objectiveIndex, const char
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-construct-global
- * @recoil-artifact defines .text recoil:function:0x417360: HudSensorTracker::ConstructGlobal.
- * @recoil-match byte
- *
- * Source model: global construction thunk for the CZRecoilFrame-owned
- * g_HudSensorTracker object.
- * Touched data: constructs the accepted zero-filled global data owner
- * g_HudSensorTracker.
- * Purpose: Construct and return the global HUD sensor tracker instance.
- */
-HudSensorTracker* __cdecl HudSensorTracker::ConstructGlobal()
-{
-    return g_HudSensorTracker.Constructor();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-register-global-on-exit
- * @recoil-artifact defines .text recoil:function:0x417370: HudSensorTracker::RegisterGlobalOnExit.
- * @recoil-match byte
- *
- * Source model: global lifetime registration helper for the tracker singleton.
- * Touched data: registers ShutdownGlobal as the CRT atexit callback.
- * Purpose: Schedule HUD sensor tracker shutdown during process exit.
- */
-void __cdecl HudSensorTracker::RegisterGlobalOnExit()
-{
-    atexit(&HudSensorTracker::ShutdownGlobal);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-shutdown-global
- * @recoil-artifact defines .text recoil:function:0x417380: HudSensorTracker::ShutdownGlobal.
- * @recoil-match byte
- *
- * Source model: global destruction thunk for the CZRecoilFrame-owned
- * g_HudSensorTracker object.
- * Touched data: tears down g_HudSensorTracker through its member Shutdown path.
- * Purpose: Run tracker cleanup for the singleton registered with atexit.
- */
-void __cdecl HudSensorTracker::ShutdownGlobal()
-{
-    g_HudSensorTracker.Shutdown();
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-constructor
- * @recoil-artifact defines .text recoil:function:0x417390: HudSensorTracker::Constructor.
+ * @recoil-artifact defines .text recoil:function:0x417390: HudSensorTracker::HudSensorTracker.
+ * @recoil-match byte
  *
- *
- * Source model: member constructor for the global HudSensorTracker record; VC5
- * EH state only surrounds the three CString default constructors.
+ * Source model: HudSensorTracker constructor (retail 0x417390). EH state 0 covers
+ * the HudSensorTrackerMap base (0x416650); states 1..3 cover the three CStrings.
  * Touched data: initializes this HudSensorTracker instance and then resets its
  * mission state through ResetMissionState.
  * Purpose: Construct the tracker singleton storage before mission/map runtime use.
  */
-HudSensorTracker* HudSensorTracker::Constructor()
+HudSensorTracker::HudSensorTracker()
 {
-    InitNoBounds();
-    missionDataPath.CString::CString();
-    zbdPath.CString::CString();
-    missionGsPath.CString::CString();
     fxPass3Obj = 0;
     hudScale = 1.0f;
     raceCheckpointMode = 0;
     hasPendingPlayerSave = 0;
     pendingPlayerSave.skipTimerResetOnStart = 0;
     ResetMissionState();
-    return this;
 }
 
 /**
@@ -1884,23 +1828,17 @@ void HudSensorTracker::SetRuntimeTimerSecAndGoalValue(float timerSec, int goalVa
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-shutdown
- * @recoil-artifact defines .text recoil:function:0x419490: HudSensorTracker::Shutdown.
+ * @recoil-artifact defines .text recoil:function:0x419490: HudSensorTracker::~HudSensorTracker.
+ * @recoil-match byte
  *
- *
- * Source model: HudSensorTracker lifetime cleanup method; CString destruction
- * and EH state are MFC/VC5 provider scaffolding, while map teardown remains the
- * accepted map shutdown/reset owner.
+ * Source model: HudSensorTracker destructor (retail 0x419490). VC5 destroys the
+ * three CString members under EH states 3..1 and then the HudSensorTrackerMap
+ * base (0x416790), which resets the map runtime state.
  * Touched data: no authored globals; clears owned mission path strings and
- * resets map runtime state through MapShutdownAndResetThunk.
+ * resets map runtime state through the HudSensorTrackerMap base destructor.
  * Purpose: release mission/map path state when the tracker shuts down.
  */
-void HudSensorTracker::Shutdown()
-{
-    missionGsPath.~CString();
-    zbdPath.~CString();
-    missionDataPath.~CString();
-    MapShutdownAndResetThunk();
-}
+HudSensorTracker::~HudSensorTracker() { }
 
 #include "Battlesport/hud.h"
 #include "Battlesport/hud_ui_mp_exit_dialog.h"

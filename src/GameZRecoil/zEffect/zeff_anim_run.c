@@ -3141,8 +3141,8 @@ namespace zEffect
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
-     * @recoil-artifact defines .text recoil:function:0x45c6b0: zEffect::SkipConditionalChainToEnd.
-     * @recoil-match source
+     * @recoil-artifact defines .text recoil:logical-function:0x45c6b0:zeffect-skip-conditional-chain-to-end: zEffect::SkipConditionalChainToEnd.
+     *
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance the current event cursor to the end marker of a conditional
@@ -3165,13 +3165,76 @@ namespace zEffect
 
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenoopmarkerevent
-     * @recoil-artifact defines .text recoil:function:0x45c6e0: zEffect::HandleNoOpMarkerEvent.
-     * @recoil-match byte
+     * @recoil-artifact defines .text recoil:logical-function:0x45c6e0:zeffect-handle-no-op-marker-event: zEffect::HandleNoOpMarkerEvent.
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: consume a marker event that has no runtime side effects.
      */
     int __fastcall HandleNoOpMarkerEvent(
+        zEffectAnimEntry* /*self*/,
+        zEffectAnimSurfaceRuntime* /*runtime*/,
+        void* /*event*/
+    )
+    {
+        return 2;
+    }
+
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalelseifevent
+     * @recoil-artifact defines .text recoil:logical-function:0x45c6b0:zeffect-handle-conditional-else-if-event: zEffect::HandleConditionalElseIfEvent.
+     * Logical fold alias of 0x45c6b0 (zEffect::SkipConditionalChainToEnd).
+     * Evidence: RunSequenceEvents dispatches event 0x21 (else-if) through its
+     * own unmerged call block to 0x45c6b0 beside the 0x20 (else) block; VC5
+     * merges identical call blocks, so the two cases call distinct handlers
+     * whose identical bodies the linker folded.
+     * Purpose: on reaching an else-if marker after a taken branch, skip the
+     * cursor to the chain's end marker.
+     */
+    int __fastcall HandleConditionalElseIfEvent(
+        zEffectAnimEntry* /*self*/,
+        zEffectAnimSurfaceRuntime * runtime,
+        void* /*event*/
+    )
+    {
+        do {
+            const zEffectAnimEventHeader* const header = (zEffectAnimEventHeader*)(runtime->currentEvent);
+            runtime->currentEvent = (unsigned char*)(runtime->currentEvent) + header->byteSize;
+        } while (((zEffectAnimEventHeader*)(runtime->currentEvent))->eventType != 0x22
+            && runtime->currentEvent < (unsigned char*)(runtime->eventStream) + runtime->eventStreamSize);
+
+        return 2;
+    }
+
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlemarkerevent27
+     * @recoil-artifact defines .text recoil:logical-function:0x45c6e0:zeffect-handle-marker-event-27: zEffect::HandleMarkerEvent27.
+     * Logical fold alias of 0x45c6e0 (zEffect::HandleNoOpMarkerEvent).
+     * Evidence: RunSequenceEvents dispatches event 0x27 through its own
+     * unmerged call block to 0x45c6e0 beside the 0x22 and 0x28 blocks; VC5
+     * merges identical call blocks, so the case calls its own handler and the
+     * linker folded the identical bodies. The name is descriptive.
+     * Purpose: consume marker event 0x27, which has no runtime effect.
+     */
+    int __fastcall HandleMarkerEvent27(
+        zEffectAnimEntry* /*self*/,
+        zEffectAnimSurfaceRuntime* /*runtime*/,
+        void* /*event*/
+    )
+    {
+        return 2;
+    }
+
+    /**
+     * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlemarkerevent28
+     * @recoil-artifact defines .text recoil:logical-function:0x45c6e0:zeffect-handle-marker-event-28: zEffect::HandleMarkerEvent28.
+     * Logical fold alias of 0x45c6e0 (zEffect::HandleNoOpMarkerEvent).
+     * Evidence: RunSequenceEvents dispatches event 0x28 through its own
+     * unmerged call block to 0x45c6e0 beside the 0x22 and 0x27 blocks; VC5
+     * merges identical call blocks, so the case calls its own handler and the
+     * linker folded the identical bodies. The name is descriptive.
+     * Purpose: consume marker event 0x28, which has no runtime effect.
+     */
+    int __fastcall HandleMarkerEvent28(
         zEffectAnimEntry* /*self*/,
         zEffectAnimSurfaceRuntime* /*runtime*/,
         void* /*event*/
@@ -3455,7 +3518,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequenceevents
      * @recoil-artifact defines .text recoil:function:0x45cc00: zEffect_Anim::RunSequenceEvents.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance a runtime event stream by trigger timing and dispatch
@@ -3512,162 +3575,168 @@ namespace zEffect_Anim
                 }
             }
             zEffectAnimEventHeader* const currentEvent = (zEffectAnimEventHeader*)sequenceRuntime->currentEvent;
-            int dispatchResult;
             switch (currentEvent->eventType) {
             case 1:
-                dispatchResult = zEffect::HandleSampleRefOffsetEvent(self, (zEffectAnimRefOffsetEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleSampleRefOffsetEvent(self, (zEffectAnimRefOffsetEvent*)(currentEvent));
                 break;
             case 3:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleEffectTemplateOffsetEvent(self, (zEffectAnimRefOffsetEvent*)(currentEvent));
                 break;
             case 2:
-                dispatchResult = zEffect::HandleSoundEvent(self, (zEffectAnimSoundEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleSoundEvent(self, (zEffectAnimSoundEvent*)(currentEvent));
                 break;
             case 4:
-                dispatchResult = zEffect::HandleLightEvent(self, (zEffectAnimLightEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleLightEvent(self, (zEffectAnimLightEvent*)(currentEvent));
                 break;
             case 5:
-                dispatchResult = zEffect::HandleLightAnimEvent(
+                sequenceRuntime->runState = zEffect::HandleLightAnimEvent(
                     self,
                     sequenceRuntime,
                     (zEffectLightRangeSpecularAnimEvent*)(currentEvent)
                 );
                 break;
             case 0x1c:
-                dispatchResult = zEffect::HandleFogEvent(self, (zEffectFogEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleFogEvent(self, (zEffectFogEvent*)(currentEvent));
                 break;
             case 0x14:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleCameraParamsEvent(self, sequenceRuntime, (zEffectCameraEvent*)(currentEvent));
                 break;
             case 0x15:
-                dispatchResult = zEffect::AnimateCameraParamsOverTime(
+                sequenceRuntime->runState = zEffect::AnimateCameraParamsOverTime(
                     self,
                     sequenceRuntime,
                     (zEffectCameraAnimEvent*)(currentEvent)
                 );
                 break;
             case 9:
-                dispatchResult = zEffect::HandleRotationEvent(self, (zEffectTransformEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleRotationEvent(self, (zEffectTransformEvent*)(currentEvent));
                 break;
             case 8:
-                dispatchResult = zEffect::HandleNodeScaleEvent(self, (zEffectNodeScaleEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleNodeScaleEvent(self, (zEffectNodeScaleEvent*)(currentEvent));
                 break;
             case 7:
-                dispatchResult = zEffect::HandlePositionEvent(self, (zEffectTransformEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandlePositionEvent(self, (zEffectTransformEvent*)(currentEvent));
                 break;
             case 6:
-                dispatchResult = zEffect::HandleActivateEvent(self, (zEffectActivateEvent*)(currentEvent));
+                sequenceRuntime->runState = zEffect::HandleActivateEvent(self, (zEffectActivateEvent*)(currentEvent));
                 break;
             case 0x0a:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleNodeAnimEvent(self, sequenceRuntime, (zEffectNodeAnimEvent*)(currentEvent));
                 break;
             case 0x0b:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::AnimateNodeOverTime(self, sequenceRuntime, (zEffectNodeAnimEvent*)(currentEvent));
                 break;
             case 0x0c:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect_Anim::AdvanceKeyframe(self, sequenceRuntime, (zEffectKeyframeEvent*)(currentEvent));
                 break;
             case 0x0d:
-                dispatchResult = zEffect_Anim::EvaluateKeyframe(self, (zEffectEvaluateKeyframeEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect_Anim::EvaluateKeyframe(self, (zEffectEvaluateKeyframeEvent*)(currentEvent));
                 break;
             case 0x0e:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect_Anim::RunKeyframes(self, sequenceRuntime, (zEffectRunKeyframeEvent*)(currentEvent));
                 break;
             case 0x0f:
-                dispatchResult = zEffect::HandleAddChildEvent(self, (zEffectParentChildEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleAddChildEvent(self, (zEffectParentChildEvent*)(currentEvent));
                 break;
             case 0x10:
-                dispatchResult = zEffect::HandleRemoveChildEvent(self, (zEffectParentChildEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleRemoveChildEvent(self, (zEffectParentChildEvent*)(currentEvent));
                 break;
             case 0x11:
-                dispatchResult = zEffect::HandleAttachEvent(self, sequenceRuntime, (zEffectAttachEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleAttachEvent(self, sequenceRuntime, (zEffectAttachEvent*)(currentEvent));
                 break;
             case 0x12:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleDetachEvent(self, sequenceRuntime, (zEffectBeamDetachEvent*)(currentEvent));
                 break;
             case 0x13:
-                dispatchResult = zEffect::HandleTransformRefsEvent(self, (zEffectTransformRefsEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleTransformRefsEvent(self, (zEffectTransformRefsEvent*)(currentEvent));
                 break;
             case 0x16:
-                dispatchResult = zEffect::HandleSurfaceStopEvent(self, (zEffectSurfaceControlEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleSurfaceStopEvent(self, (zEffectSurfaceControlEvent*)(currentEvent));
                 break;
             case 0x17:
-                dispatchResult = zEffect::HandleSurfacePlayEvent(self, (zEffectSurfaceControlEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleSurfacePlayEvent(self, (zEffectSurfaceControlEvent*)(currentEvent));
                 break;
             case 0x18:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleSurfaceRefEvent(self, sequenceRuntime, (zEffectSurfaceRefEvent*)(currentEvent));
                 break;
             case 0x19:
-                dispatchResult = zEffect::HandleNamedAnimStopEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleNamedAnimStopEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
                 break;
             case 0x1a:
-                dispatchResult = zEffect::HandleEmitterPlayEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleEmitterPlayEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
                 break;
             case 0x1b:
-                dispatchResult = zEffect::HandleEmitterStopEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleEmitterStopEvent(self, (zEffectAnimEmitterEvent*)(currentEvent));
                 break;
             case 0x1e:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleEmitterLoopEvent(self, sequenceRuntime, (zEffectAnimLoopEvent*)(currentEvent));
-                sequenceRuntime->runState = (unsigned char)dispatchResult;
                 if (sequenceRuntime->runState == 0) {
                     return 0;
                 }
                 break;
             case 0x1f:
-                dispatchResult = zEffect::HandleConditionalChainEvent(
+                sequenceRuntime->runState = zEffect::HandleConditionalChainEvent(
                     self,
                     sequenceRuntime,
                     (zEffectConditionalEvent*)(currentEvent)
                 );
                 break;
             case 0x20:
-                dispatchResult = zEffect::SkipConditionalChainToEnd(self, sequenceRuntime, currentEvent);
+                sequenceRuntime->runState = zEffect::SkipConditionalChainToEnd(self, sequenceRuntime, currentEvent);
                 break;
-            case 0x21: {
-                dispatchResult
-                    = (unsigned char)(zEffect::SkipConditionalChainToEnd(self, sequenceRuntime, currentEvent));
+            case 0x21:
+                sequenceRuntime->runState = zEffect::HandleConditionalElseIfEvent(self, sequenceRuntime, currentEvent);
                 break;
-            }
             case 0x22:
-                dispatchResult = zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent);
+                sequenceRuntime->runState = zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent);
                 break;
             case 0x23:
-                dispatchResult
+                sequenceRuntime->runState
                     = zEffect::HandleCallbackEvent(self, sequenceRuntime, (zEffectAnimCallbackEvent*)(currentEvent));
                 break;
             case 0x24:
-                dispatchResult = zEffect::HandleScreenColorFxEvent(
+                sequenceRuntime->runState = zEffect::HandleScreenColorFxEvent(
                     self,
                     sequenceRuntime,
                     (zEffectScreenColorFxEvent*)(currentEvent)
                 );
                 break;
             case 0x25:
-                dispatchResult = zEffect::HandleScreenOverlayFxEvent(
+                sequenceRuntime->runState = zEffect::HandleScreenOverlayFxEvent(
                     self,
                     sequenceRuntime,
                     (zEffectScreenOverlayFxEvent*)(currentEvent)
                 );
                 break;
-            case 0x27: {
-                dispatchResult = (unsigned char)(zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent));
+            case 0x27:
+                sequenceRuntime->runState = zEffect::HandleMarkerEvent27(self, sequenceRuntime, currentEvent);
                 break;
-            }
-            case 0x28: {
-                dispatchResult = (signed char)(zEffect::HandleNoOpMarkerEvent(self, sequenceRuntime, currentEvent));
+            case 0x28:
+                sequenceRuntime->runState = zEffect::HandleMarkerEvent28(self, sequenceRuntime, currentEvent);
                 break;
-            }
             case 0x26:
-                dispatchResult = zEffect::HandleTopMessageEvent(self, (zEffectTopMessageEvent*)(currentEvent));
+                sequenceRuntime->runState
+                    = zEffect::HandleTopMessageEvent(self, (zEffectTopMessageEvent*)(currentEvent));
                 break;
             default:
                 zError::ReportOld(
@@ -3680,7 +3749,6 @@ namespace zEffect_Anim
                 return -1;
             }
 
-            sequenceRuntime->runState = (unsigned char)dispatchResult;
             if (sequenceRuntime->runState == 2) {
                 const zEffectAnimEventHeader* const finishedEvent
                     = (zEffectAnimEventHeader*)(sequenceRuntime->currentEvent);

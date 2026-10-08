@@ -757,7 +757,7 @@ int HudSensorMapNode::UpdateCachedBounds(HudSensorMapBounds* outBoundsOrNull)
  *
  * Purpose: Draw this map node on the tracker, including blink state and selected-point marker.
  */
-int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* drawPathWorldPos)
+int HudSensorMapNode::DrawOnTracker(HudSensorTrackerMap* tracker, const zVec3* drawPathWorldPos)
 {
     if (isEnabled != 0) {
         blinkTimerSec -= 0.075000003f;
@@ -812,7 +812,7 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
 
     if (selectedPointIndex != -1) {
         tracker->ProjectWorldPointsToOverlay((const zVec3*)(&points[selectedPointIndex]), projectedPathPointBuffer, 1);
-        HudSensorTracker::DrawDiamondMarker(
+        HudSensorTrackerMap::DrawDiamondMarker(
             (int)(projectedPathPointBuffer[0].x),
             (int)(projectedPathPointBuffer[0].y),
             4,
@@ -831,18 +831,18 @@ int HudSensorMapNode::DrawOnTracker(HudSensorTracker* tracker, const zVec3* draw
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawdiamondmarker
- * @recoil-artifact defines .text recoil:function:0x415f40: HudSensorTracker::DrawDiamondMarker
+ * @recoil-artifact defines .text recoil:function:0x415f40: HudSensorTrackerMap::DrawDiamondMarker
  * @recoil-match byte
  *
  * Purpose: Draw a centered diamond marker as a closed clipped immediate line strip.
  */
-void __fastcall HudSensorTracker::DrawDiamondMarker(
+void __fastcall HudSensorTrackerMap::DrawDiamondMarker(
     int centerX,
     int centerY,
     int halfWidth,
     int halfHeight,
     int markerColor,
-    HudSensorTracker* tracker
+    HudSensorTrackerMap* tracker
 )
 {
     zRndr_LinePoint2I points[5];
@@ -1083,7 +1083,7 @@ int __fastcall HudGeom2D::ClassifyPointAgainstSegment(
  * hold pointCount + 1 points (the closing point is written at index pointCount);
  * the zero test alone does not establish nonnegative count or capacity.
  */
-int HudSensorMapNode::DrawProjectedPath(HudSensorTracker* tracker)
+int HudSensorMapNode::DrawProjectedPath(HudSensorTrackerMap* tracker)
 {
     if (pointCount == 0) {
         return 1;
@@ -1124,25 +1124,24 @@ int HudSensorMapNode::DrawProjectedPath(HudSensorTracker* tracker)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-initnobounds
- * @recoil-artifact defines .text recoil:function:0x416650: HudSensorTracker::InitNoBounds
+ * @recoil-artifact defines .text recoil:function:0x416650: HudSensorTrackerMap::HudSensorTrackerMap
  * @recoil-match byte
  *
- * Purpose: Initialize tracker state without replacing the existing map bounds.
+ * Purpose: Construct the HUD map base with default map state and no bounds.
  */
-HudSensorTracker* HudSensorTracker::InitNoBounds()
+HudSensorTrackerMap::HudSensorTrackerMap()
 {
     Init(0);
-    return this;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-init
- * @recoil-artifact defines .text recoil:function:0x416660: HudSensorTracker::Init
+ * @recoil-artifact defines .text recoil:function:0x416660: HudSensorTrackerMap::Init
  * @recoil-match byte
  *
  * Purpose: Initialize map bounds, save-state marker state, and map runtime defaults.
  */
-void HudSensorTracker::Init(const HudUiRect* outerRectOrNull)
+void HudSensorTrackerMap::Init(const HudUiRect* outerRectOrNull)
 {
     mapFileVersion = 5;
     mapHeaderDword = 0;
@@ -1169,12 +1168,12 @@ void HudSensorTracker::Init(const HudUiRect* outerRectOrNull)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setbounds
- * @recoil-artifact defines .text recoil:function:0x4166e0: HudSensorTracker::SetBounds
+ * @recoil-artifact defines .text recoil:function:0x4166e0: HudSensorTrackerMap::SetBounds
  * @recoil-match byte
  *
  * Purpose: Copy HUD map bounds and cache the overlay center from the outer rect.
  */
-void HudSensorTracker::SetBounds(const HudUiRect* outerRectIn, const HudUiRect* innerRectOrNull)
+void HudSensorTrackerMap::SetBounds(const HudUiRect* outerRectIn, const HudUiRect* innerRectOrNull)
 {
     if (outerRectIn == 0) {
         return;
@@ -1198,24 +1197,24 @@ void HudSensorTracker::SetBounds(const HudUiRect* outerRectIn, const HudUiRect* 
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandresetthunk
- * @recoil-artifact defines .text recoil:function:0x416790: HudSensorTracker::MapShutdownAndResetThunk
+ * @recoil-artifact defines .text recoil:function:0x416790: HudSensorTrackerMap::~HudSensorTrackerMap
  * @recoil-match byte
  *
- * Purpose: Tail-call the shared map shutdown and reset routine.
+ * Purpose: Destroy the HUD map base through the shared map shutdown and reset routine.
  */
-int HudSensorTracker::MapShutdownAndResetThunk()
+HudSensorTrackerMap::~HudSensorTrackerMap()
 {
-    return MapShutdownAndReset();
+    MapShutdownAndReset();
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapshutdownandreset
- * @recoil-artifact defines .text recoil:function:0x4167a0: HudSensorTracker::MapShutdownAndReset
+ * @recoil-artifact defines .text recoil:function:0x4167a0: HudSensorTrackerMap::MapShutdownAndReset
  * @recoil-match byte
  *
  * Purpose: End the overlay, remove loaded map nodes, free the map path, and reset map state.
  */
-int HudSensorTracker::MapShutdownAndReset()
+int HudSensorTrackerMap::MapShutdownAndReset()
 {
     MapOverlayEndShow();
     while (mapNodeListHead != 0) {
@@ -1232,12 +1231,12 @@ int HudSensorTracker::MapShutdownAndReset()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapremovenode
- * @recoil-artifact defines .text recoil:function:0x4167e0: HudSensorTracker::MapRemoveNode
+ * @recoil-artifact defines .text recoil:function:0x4167e0: HudSensorTrackerMap::MapRemoveNode
  * @recoil-match byte
  *
  * Purpose: Unlink the requested map node from the tracker list and release head-node storage.
  */
-int HudSensorTracker::MapRemoveNode(HudSensorMapNode* mapNode)
+int HudSensorTrackerMap::MapRemoveNode(HudSensorMapNode* mapNode)
 {
     HudSensorMapNode* head = mapNodeListHead;
     if (mapNode == head) {
@@ -1264,12 +1263,12 @@ int HudSensorTracker::MapRemoveNode(HudSensorMapNode* mapNode)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapinsertnodeandgrowbounds
- * @recoil-artifact defines .text recoil:function:0x416840: HudSensorTracker::MapInsertNodeAndGrowBounds
+ * @recoil-artifact defines .text recoil:function:0x416840: HudSensorTrackerMap::MapInsertNodeAndGrowBounds
  * @recoil-match byte
  *
  * Purpose: Insert a map node at the list head and grow the tracker bounds from its cached extent.
  */
-int HudSensorTracker::MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode)
+int HudSensorTrackerMap::MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode)
 {
     if (mapNode == 0) {
         return 0;
@@ -1299,12 +1298,12 @@ int HudSensorTracker::MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmapfromstream
- * @recoil-artifact defines .text recoil:function:0x4168d0: HudSensorTracker::LoadMapFromStream
+ * @recoil-artifact defines .text recoil:function:0x4168d0: HudSensorTrackerMap::LoadMapFromStream
  * @recoil-match byte
  *
  * Purpose: Read a versioned map stream into tracker bounds and linked map nodes.
  */
-int HudSensorTracker::LoadMapFromStream(FILE* stream)
+int HudSensorTrackerMap::LoadMapFromStream(FILE* stream)
 {
     if (stream == 0) {
         return 0;
@@ -1345,12 +1344,12 @@ int HudSensorTracker::LoadMapFromStream(FILE* stream)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmapfrompath
- * @recoil-artifact defines .text recoil:function:0x4169d0: HudSensorTracker::LoadMapFromPath
+ * @recoil-artifact defines .text recoil:function:0x4169d0: HudSensorTrackerMap::LoadMapFromPath
  * @recoil-match byte
  *
  * Purpose: Open a map file path, remember it, and load the tracker map from the stream.
  */
-int HudSensorTracker::LoadMapFromPath(const char* path)
+int HudSensorTrackerMap::LoadMapFromPath(const char* path)
 {
     if (path == 0) {
         return 0;
@@ -1369,12 +1368,12 @@ int HudSensorTracker::LoadMapFromPath(const char* path)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlaybeginshow
- * @recoil-artifact defines .text recoil:function:0x416a30: HudSensorTracker::MapOverlayBeginShow
+ * @recoil-artifact defines .text recoil:function:0x416a30: HudSensorTrackerMap::MapOverlayBeginShow
  * @recoil-match byte
  *
  * Purpose: Begin the map overlay scale lerp from the current scale to the fitted map bounds scale.
  */
-int HudSensorTracker::MapOverlayBeginShow()
+int HudSensorTrackerMap::MapOverlayBeginShow()
 {
     if (mapScaleLerpActive != 0) {
         return 0;
@@ -1401,12 +1400,12 @@ int HudSensorTracker::MapOverlayBeginShow()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayendshow
- * @recoil-artifact defines .text recoil:function:0x416ad0: HudSensorTracker::MapOverlayEndShow
+ * @recoil-artifact defines .text recoil:function:0x416ad0: HudSensorTrackerMap::MapOverlayEndShow
  * @recoil-match byte
  *
  * Purpose: Stop the active map overlay lerp and queue the deterministic map-off sound path.
  */
-int HudSensorTracker::MapOverlayEndShow()
+int HudSensorTrackerMap::MapOverlayEndShow()
 {
     if (mapScaleLerpActive == 0) {
         return 0;
@@ -1428,12 +1427,12 @@ int HudSensorTracker::MapOverlayEndShow()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapoverlayreftoggle
- * @recoil-artifact defines .text recoil:function:0x416b30: HudSensorTracker::MapOverlayRefToggle
+ * @recoil-artifact defines .text recoil:function:0x416b30: HudSensorTrackerMap::MapOverlayRefToggle
  * @recoil-match byte
  *
  * Purpose: Reference-count map overlay visibility requests and route transitions through begin/end show.
  */
-int HudSensorTracker::MapOverlayRefToggle(int enable)
+int HudSensorTrackerMap::MapOverlayRefToggle(int enable)
 {
     if (enable != 0) {
         ++g_Hud_MapOverlayRefCount;
@@ -1453,12 +1452,12 @@ int HudSensorTracker::MapOverlayRefToggle(int enable)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapzoomin
- * @recoil-artifact defines .text recoil:function:0x416b80: HudSensorTracker::MapZoomIn
+ * @recoil-artifact defines .text recoil:function:0x416b80: HudSensorTrackerMap::MapZoomIn
  * @recoil-match byte
  *
  * Purpose: Increase the active overlay zoom and play the map click sound while the overlay is shown.
  */
-void HudSensorTracker::MapZoomIn()
+void HudSensorTrackerMap::MapZoomIn()
 {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 1.10000002f;
@@ -1468,12 +1467,12 @@ void HudSensorTracker::MapZoomIn()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-mapzoomout
- * @recoil-artifact defines .text recoil:function:0x416bb0: HudSensorTracker::MapZoomOut
+ * @recoil-artifact defines .text recoil:function:0x416bb0: HudSensorTrackerMap::MapZoomOut
  * @recoil-match byte
  *
  * Purpose: Decrease the active overlay zoom and play the map click sound while the overlay is shown.
  */
-void HudSensorTracker::MapZoomOut()
+void HudSensorTrackerMap::MapZoomOut()
 {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 0.899999976f;
@@ -1483,12 +1482,12 @@ void HudSensorTracker::MapZoomOut()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-updatemapscalelerp
- * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTracker::UpdateMapScaleLerp
+ * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTrackerMap::UpdateMapScaleLerp
  *
  *
  * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
  */
-int HudSensorTracker::UpdateMapScaleLerp()
+int HudSensorTrackerMap::UpdateMapScaleLerp()
 {
     if (mapScaleLerpRunning != 0) {
         mapScaleLerpT += mapScaleLerpStep;
@@ -1529,12 +1528,12 @@ inline float RotateYByForward(const zVec3* forward, const zVec2* delta)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-projectworldpointstooverlay
- * @recoil-artifact defines .text recoil:function:0x416c90: HudSensorTracker::ProjectWorldPointsToOverlay
+ * @recoil-artifact defines .text recoil:function:0x416c90: HudSensorTrackerMap::ProjectWorldPointsToOverlay
  *
  *
  * Purpose: Project world-space map points into overlay coordinates using the tracked origin and forward vector.
  */
-int HudSensorTracker::ProjectWorldPointsToOverlay(
+int HudSensorTrackerMap::ProjectWorldPointsToOverlay(
     const zVec3* inputWorldPoints,
     zVec3* projectedOverlayPoints,
     int pointCount
@@ -1559,12 +1558,12 @@ int HudSensorTracker::ProjectWorldPointsToOverlay(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawtrackedsavestatemarker
- * @recoil-artifact defines .text recoil:function:0x416d50: HudSensorTracker::DrawTrackedSaveStateMarker
+ * @recoil-artifact defines .text recoil:function:0x416d50: HudSensorTrackerMap::DrawTrackedSaveStateMarker
  * @recoil-match byte
  *
  * Purpose: Draw the cross marker for the currently tracked save-state at its projected map position.
  */
-int HudSensorTracker::DrawTrackedSaveStateMarker()
+int HudSensorTrackerMap::DrawTrackedSaveStateMarker()
 {
     int markerColor;
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -1583,18 +1582,18 @@ int HudSensorTracker::DrawTrackedSaveStateMarker()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawmarkercross
- * @recoil-artifact defines .text recoil:function:0x416dd0: HudSensorTracker::DrawMarkerCross
+ * @recoil-artifact defines .text recoil:function:0x416dd0: HudSensorTrackerMap::DrawMarkerCross
  * @recoil-match byte
  *
  * Purpose: Draw a centered cross marker as two clipped immediate line strips.
  */
-void __fastcall HudSensorTracker::DrawMarkerCross(
+void __fastcall HudSensorTrackerMap::DrawMarkerCross(
     int centerX,
     int centerY,
     int armHalfWidth,
     int armHalfHeight,
     int markerColor,
-    HudSensorTracker* tracker
+    HudSensorTrackerMap* tracker
 )
 {
     zRndr_LinePoint2I points[2];
@@ -1691,7 +1690,7 @@ inline float Vec3Length(const zVec3* vec)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-getsavestaterelativevectorlen
- * @recoil-artifact defines .text recoil:function:0x416e50: HudSensorTracker::GetSaveStateRelativeVectorLen
+ * @recoil-artifact defines .text recoil:function:0x416e50: HudSensorTrackerMap::GetSaveStateRelativeVectorLen
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:battlesport.map.vector-length
  * @recoil-raw-consumer recoil:raw-asm:battlesport.map.vector-length-sq
@@ -1703,7 +1702,7 @@ inline float Vec3Length(const zVec3* vec)
  *
  * Purpose: Compute the flat relative vector and squared or true distance to a save-state marker.
  */
-float HudSensorTracker::GetSaveStateRelativeVectorLen(
+float HudSensorTrackerMap::GetSaveStateRelativeVectorLen(
     zUtil_SaveGameState* saveState,
     zVec3* relativeDelta,
     int takeSqrt
@@ -1724,12 +1723,12 @@ float HudSensorTracker::GetSaveStateRelativeVectorLen(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setsavestatemarkermaxdistance
- * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTracker::SetSaveStateMarkerMaxDistance
+ * @recoil-artifact defines .text recoil:function:0x416ef0: HudSensorTrackerMap::SetSaveStateMarkerMaxDistance
  * @recoil-match byte
  *
  * Purpose: Store the squared maximum distance for drawing save-state markers.
  */
-int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
+int HudSensorTrackerMap::SetSaveStateMarkerMaxDistance(float maxDist)
 {
     saveStateMarkerMaxDistSq = maxDist * maxDist;
     return 1;
@@ -1737,7 +1736,7 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-drawsavestatemarker
- * @recoil-artifact defines .text recoil:function:0x416f10: HudSensorTracker::DrawSaveStateMarker
+ * @recoil-artifact defines .text recoil:function:0x416f10: HudSensorTrackerMap::DrawSaveStateMarker
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  * @recoil-raw-consumer recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate recoil:function:0x416f10
  * @recoil-raw-asm recoil:raw-asm:battlesport.map.draw-save-state-marker.fast-sqrt-estimate
@@ -1749,7 +1748,7 @@ int HudSensorTracker::SetSaveStateMarkerMaxDistance(float maxDist)
  *
  * Purpose: Draw one non-tracked save-state marker or its edge-clamped network marker.
  */
-int HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
+int HudSensorTrackerMap::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     if (playerState->lifecycleState == 4 || saveState == trackedSaveStateSelection) {
@@ -1823,12 +1822,12 @@ int HudSensorTracker::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-update
- * @recoil-artifact defines .text recoil:function:0x417130: HudSensorTracker::Update
+ * @recoil-artifact defines .text recoil:function:0x417130: HudSensorTrackerMap::Update
  * @recoil-match byte
  *
  * Purpose: Advance map interpolation, draw map nodes, and draw save-state tracker markers.
  */
-void HudSensorTracker::Update()
+void HudSensorTrackerMap::Update()
 {
     mapScaleLerpStep = 0.150000006f;
     if (mapScaleLerpActive == 0 && mapScaleLerpRunning == 0) {
@@ -1870,12 +1869,12 @@ void HudSensorTracker::Update()
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-settrackedsavestate
- * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTracker::SetTrackedSaveState
+ * @recoil-artifact defines .text recoil:function:0x417220: HudSensorTrackerMap::SetTrackedSaveState
  * @recoil-match byte
  *
  * Purpose: Select the save-state player pose used by the HUD map marker.
  */
-int HudSensorTracker::SetTrackedSaveState(zUtil_SaveGameState* saveState)
+int HudSensorTrackerMap::SetTrackedSaveState(zUtil_SaveGameState* saveState)
 {
     zVec3* trackedForwardVec = 0;
     if (saveState == 0) {
@@ -1895,12 +1894,12 @@ int HudSensorTracker::SetTrackedSaveState(zUtil_SaveGameState* saveState)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-loadmissionmapandsfx
- * @recoil-artifact defines .text recoil:function:0x417260: HudSensorTracker::LoadMissionMapAndSfx
+ * @recoil-artifact defines .text recoil:function:0x417260: HudSensorTrackerMap::LoadMissionMapAndSfx
  * @recoil-match byte
  *
  * Purpose: Load the mission map path and resolve the map on, off, and click samples.
  */
-int HudSensorTracker::LoadMissionMapAndSfx(int missionIdValue)
+int HudSensorTrackerMap::LoadMissionMapAndSfx(int missionIdValue)
 {
     char mapPath[0x40];
     sprintf(mapPath, g_HudSensorTracker_MissionMapPathFmt, missionIdValue);
@@ -1914,12 +1913,12 @@ int HudSensorTracker::LoadMissionMapAndSfx(int missionIdValue)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkerenabledandcolor
- * @recoil-artifact defines .text recoil:function:0x4172c0: HudSensorTracker::SetObjectiveMarkerEnabledAndColor
+ * @recoil-artifact defines .text recoil:function:0x4172c0: HudSensorTrackerMap::SetObjectiveMarkerEnabledAndColor
  * @recoil-match byte
  *
  * Purpose: Apply visibility and RGB color to every map node for the requested objective index.
  */
-int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
+int HudSensorTrackerMap::SetObjectiveMarkerEnabledAndColor(
     int objectiveIndex,
     int enabled,
     const unsigned char* colorRgb24
@@ -1940,12 +1939,12 @@ int HudSensorTracker::SetObjectiveMarkerEnabledAndColor(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-setobjectivemarkercolorblink
- * @recoil-artifact defines .text recoil:function:0x417300: HudSensorTracker::SetObjectiveMarkerColorBlink
+ * @recoil-artifact defines .text recoil:function:0x417300: HudSensorTrackerMap::SetObjectiveMarkerColorBlink
  * @recoil-match byte
  *
  * Purpose: Recolor matching objective map nodes and swap their packed full/half 565 blink colors.
  */
-int HudSensorTracker::SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24)
+int HudSensorTrackerMap::SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24)
 {
     HudSensorMapNode* mapNode = mapNodeListHead;
     while (mapNode != 0) {

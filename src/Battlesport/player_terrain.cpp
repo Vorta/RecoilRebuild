@@ -49,9 +49,6 @@
  * Purpose: keep this file's ID-counter parity after shared-header changes.
  */
 extern int g_PlayerTerrainIdCounterAlignment0;
-extern int g_PlayerTerrainIdCounterAlignment1;
-extern int g_PlayerTerrainIdCounterAlignment2;
-extern int g_PlayerTerrainIdCounterAlignment3;
 extern char g_HudUiCounterText_PlayerLabel[];
 
 extern "C" {
@@ -525,7 +522,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Returns the shared mask bits of three environment probe samples.
  */

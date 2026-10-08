@@ -1053,7 +1053,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -1140,7 +1140,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypebasic
  * @recoil-artifact defines .text recoil:function:0x428120: Player::UpdateMasterTypeBasic.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeBasic from the recovered

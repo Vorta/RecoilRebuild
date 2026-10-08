@@ -9620,7 +9620,7 @@ void UpdateMeterXPoints()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.show
  * @recoil-artifact defines .text recoil:function:0x411900: HudUiMgrObjective::Show.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Start or update the objective HUD panel with summary text, description text, and image state.
@@ -9890,7 +9890,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:

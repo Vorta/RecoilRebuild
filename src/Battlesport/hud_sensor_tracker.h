@@ -16,7 +16,7 @@
 
 struct zSndSample;
 struct OptCatalogEntryDef;
-struct HudSensorTracker;
+struct HudSensorTrackerMap;
 
 struct HudSensorMapPoint {
     float x;
@@ -65,8 +65,8 @@ struct HudSensorMapNode {
     int SetColorRgb(const unsigned char* rgbOrNull);
     int LoadFromStream(FILE* stream);
     int UpdateCachedBounds(HudSensorMapBounds* outBoundsOrNull);
-    int DrawOnTracker(HudSensorTracker* tracker, const zVec3* drawPathWorldPos);
-    int DrawProjectedPath(HudSensorTracker* tracker);
+    int DrawOnTracker(HudSensorTrackerMap* tracker, const zVec3* drawPathWorldPos);
+    int DrawProjectedPath(HudSensorTrackerMap* tracker);
 };
 
 struct HudSensorObjectiveSlot {
@@ -90,7 +90,7 @@ struct HudSensorPendingPlayerSave {
     int skipTimerResetOnStart;
 };
 
-struct HudSensorTracker {
+struct HudSensorTrackerMap {
     HudUiRect outerRect;
     HudUiRect innerRectExpanded;
     int mapFileVersion;
@@ -126,6 +126,50 @@ struct HudSensorTracker {
     unsigned char unknown_c0[0x08];
     float saveStateMarkerMaxDistSq;
     float mapScaleLerpStep;
+    HudSensorTrackerMap();
+    ~HudSensorTrackerMap();
+    void Init(const HudUiRect* outerRectOrNull);
+    void SetBounds(const HudUiRect* outerRect, const HudUiRect* innerRectOrNull);
+    int SetTrackedSaveState(zUtil_SaveGameState* saveState);
+    int SetSaveStateMarkerMaxDistance(float maxDist);
+    int MapOverlayEndShow();
+    int MapOverlayBeginShow();
+    int MapOverlayRefToggle(int enable);
+    void MapZoomIn();
+    void MapZoomOut();
+    int UpdateMapScaleLerp();
+    void Update();
+    int ProjectWorldPointsToOverlay(const zVec3* inputWorldPoints, zVec3* projectedOverlayPoints, int pointCount);
+    float GetSaveStateRelativeVectorLen(zUtil_SaveGameState* saveState, zVec3* relativeDelta, int takeSqrt);
+    int DrawTrackedSaveStateMarker();
+    int DrawSaveStateMarker(zUtil_SaveGameState* saveState);
+    int MapRemoveNode(HudSensorMapNode* mapNode);
+    int MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode);
+    int MapShutdownAndReset();
+    int LoadMapFromStream(FILE* stream);
+    int LoadMapFromPath(const char* path);
+    int LoadMissionMapAndSfx(int missionId);
+    int SetObjectiveMarkerEnabledAndColor(int objectiveIndex, int enabled, const unsigned char* colorRgb24);
+    int SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24);
+    static void __fastcall DrawMarkerCross(
+        int centerX,
+        int centerY,
+        int armHalfWidth,
+        int armHalfHeight,
+        int markerColor,
+        HudSensorTrackerMap* tracker
+    );
+    static void __fastcall DrawDiamondMarker(
+        int centerX,
+        int centerY,
+        int halfWidth,
+        int halfHeight,
+        int markerColor,
+        HudSensorTrackerMap* tracker
+    );
+};
+
+struct HudSensorTracker : HudSensorTrackerMap {
     int objectiveUiMode;
     float hudScale;
     int missionLoaded;
@@ -173,31 +217,8 @@ struct HudSensorTracker {
     int hasPendingPlayerSave;
     HudSensorPendingPlayerSave pendingPlayerSave;
 
-    void Init(const HudUiRect* outerRectOrNull);
-    HudSensorTracker* InitNoBounds();
-    HudSensorTracker* Constructor();
-    void Shutdown();
-    void SetBounds(const HudUiRect* outerRect, const HudUiRect* innerRectOrNull);
-    int SetTrackedSaveState(zUtil_SaveGameState* saveState);
-    int SetSaveStateMarkerMaxDistance(float maxDist);
-    int MapOverlayEndShow();
-    int MapOverlayBeginShow();
-    int MapOverlayRefToggle(int enable);
-    void MapZoomIn();
-    void MapZoomOut();
-    int UpdateMapScaleLerp();
-    void Update();
-    int ProjectWorldPointsToOverlay(const zVec3* inputWorldPoints, zVec3* projectedOverlayPoints, int pointCount);
-    float GetSaveStateRelativeVectorLen(zUtil_SaveGameState* saveState, zVec3* relativeDelta, int takeSqrt);
-    int DrawTrackedSaveStateMarker();
-    int DrawSaveStateMarker(zUtil_SaveGameState* saveState);
-    int MapRemoveNode(HudSensorMapNode* mapNode);
-    int MapInsertNodeAndGrowBounds(HudSensorMapNode* mapNode);
-    int MapShutdownAndResetThunk();
-    int MapShutdownAndReset();
-    int LoadMapFromStream(FILE* stream);
-    int LoadMapFromPath(const char* path);
-    int LoadMissionMapAndSfx(int missionId);
+    HudSensorTracker();
+    ~HudSensorTracker();
     int ResetMissionState();
     void RegisterMissionSectionHandlers();
     int WriteMissionDataSection(zZbdSectionCallbackCtx* writer);
@@ -223,8 +244,6 @@ struct HudSensorTracker {
         char** outDesc,
         zVidImagePartial** outImageRef
     );
-    int SetObjectiveMarkerEnabledAndColor(int objectiveIndex, int enabled, const unsigned char* colorRgb24);
-    int SetObjectiveMarkerColorBlink(int objectiveIndex, const unsigned char* colorRgb24);
     int FindAndHighlightFirstIncompleteObjective();
     void SetRuntimeTimerSecAndGoalValue(float timerSec, int goalValue);
     int SetObjectiveReviewVisible(int visible);
@@ -254,25 +273,6 @@ struct HudSensorTracker {
     );
     static void __fastcall OnObjectiveReadSoundEvent(int eventCode);
     static void __fastcall OnObjectiveCommand(int commandId);
-    static HudSensorTracker* __cdecl ConstructGlobal();
-    static void __cdecl RegisterGlobalOnExit();
-    static void __cdecl ShutdownGlobal();
-    static void __fastcall DrawMarkerCross(
-        int centerX,
-        int centerY,
-        int armHalfWidth,
-        int armHalfHeight,
-        int markerColor,
-        HudSensorTracker* tracker
-    );
-    static void __fastcall DrawDiamondMarker(
-        int centerX,
-        int centerY,
-        int halfWidth,
-        int halfHeight,
-        int markerColor,
-        HudSensorTracker* tracker
-    );
     static int __fastcall ParseCheckpointNumberFromNode(CZNodePartial* node);
 };
 
@@ -328,15 +328,10 @@ RECOIL_STATIC_ASSERT(offsetof(HudSensorTracker, fxPass3Obj) == 0x2478);
 RECOIL_STATIC_ASSERT(offsetof(HudSensorTracker, pendingPlayerSave) == 0x2488);
 RECOIL_STATIC_ASSERT(sizeof(HudSensorTracker) == 0x25d0);
 
-union HudSensorTrackerStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudSensorTracker)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerStorage) == 0x25d0);
+RECOIL_STATIC_ASSERT(sizeof(HudSensorTrackerMap) == 0xd0);
 
 extern "C" {
-extern HudSensorTrackerStorage g_HudSensorTracker;
-#define g_HudSensorTracker (*(HudSensorTracker*)&g_HudSensorTracker)
+extern HudSensorTracker g_HudSensorTracker;
 extern char g_HudSensor_MissionSoundSetName[0x20];
 
 extern "C" {
