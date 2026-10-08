@@ -1306,7 +1306,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.removecolinearverticesinplace
      * @recoil-artifact defines .text recoil:function:0x482b40: zModel_Const::check_colinearity
-     *
+     * @recoil-match byte
      *
      * Purpose: remove colinear vertices from a polygon point array in place.
      */
@@ -1326,13 +1326,13 @@ namespace zModel_Const
             removedVertexThisPass = 0;
 
             for (scannedVertexCount = 2; scannedVertexCount <= *vertexCount; ++scannedVertexCount) {
-                zVec3 outNormal;
-                zVec3* const currVertex = &points[vertexIndex];
-                zVec3* const prevVertex = currVertex - 1;
-                zVec3* const nextVertex = &points[nextIndex];
-                // Retail copies the returned normal into a local before the tolerance tests.
-                const zVec3 normal
-                    = *SetNormalizedCrossFromVertexTriplet(prevVertex, currVertex, &outNormal, nextVertex);
+                // The helper returns the normal by value: retail pushes the hidden return slot after
+                // vertex2 (0x482b88..0x482b90) and copies the returned vector before the tolerance tests.
+                const zVec3 normal = SetNormalizedCrossFromVertexTriplet(
+                    &points[vertexIndex - 1],
+                    &points[vertexIndex],
+                    &points[nextIndex]
+                );
 
                 if (fabs(normal.x) < g_zModel_ColinearTolerance && fabs(normal.y) < g_zModel_ColinearTolerance
                     && fabs(normal.z) < g_zModel_ColinearTolerance) {
@@ -1360,12 +1360,15 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.setnormalizedcrossfromvertextriplet
      * @recoil-artifact defines .text recoil:function:0x482c60: zModel_Const::SetNormalizedCrossFromVertexTriplet
-     * @recoil-match source
+     * @recoil-match byte
+     *
+     * Evidence: the stack argument at [esp+4] is the hidden by-value return slot
+     * (stored through and returned in EAX; ret 8), and the only caller
+     * (check_colinearity, 0x482b91) pushes it after vertex2 and copies the result.
      *
      * Purpose: compute and normalize the cross product from three polygon vertices.
      */
-    zVec3* __fastcall
-    SetNormalizedCrossFromVertexTriplet(zVec3 * vertex0, zVec3 * vertex1, zVec3 * outNormal, zVec3 * vertex2)
+    zVec3 __fastcall SetNormalizedCrossFromVertexTriplet(zVec3 * vertex0, zVec3 * vertex1, zVec3 * vertex2)
     {
         zVec3 edge0;
         zVec3 edge2;
@@ -1400,8 +1403,7 @@ namespace zModel_Const
         normal.x = normal.x * scale;
         normal.y = normal.y * scale;
         normal.z = normal.z * scale;
-        *outNormal = normal;
-        return outNormal;
+        return normal;
     }
 
     /**
@@ -1587,7 +1589,7 @@ namespace zDi
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonsplitbyvertexlimit
      * @recoil-artifact defines .text recoil:function:0x483240: zDi::AddPolygonSplitByVertexLimit
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: split an oversized polygon into overlapping chunks within the vertex limit.
      */
@@ -2656,7 +2658,7 @@ namespace zModel_Const
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.solvetriscalargradient2d
      * @recoil-artifact defines .text recoil:function:0x484860: zModel_Const::SolveTriScalarGradient2D
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Purpose: solve the 2D scalar gradient over a triangle.
      */

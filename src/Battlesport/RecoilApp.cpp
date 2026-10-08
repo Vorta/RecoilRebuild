@@ -1113,7 +1113,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
  * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.

@@ -2045,7 +2045,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-applymissionsavedata
  * @recoil-artifact defines .text recoil:function:0x41f1d0: Player::ApplyMissionSaveData
- *
+ * @recoil-match source
  *
  * Purpose: restore the live local-player mission state from the save-section payload.
  */

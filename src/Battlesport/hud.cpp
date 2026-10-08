@@ -9370,14 +9370,14 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
     float farClip;
     CZCamera::gwCameraGetNearFarClip(g_MainCamera, &nearClip, &farClip);
 
-    zVec3 nearPoint;
+    // Retail keeps both ray endpoints in one adjacent 24-byte frame object ([esp+0x3c], [esp+0x48]).
+    CZDisplayInstanceSegmentEndpoints segment;
     projectedPoint.reciprocalZ = 1.0f / nearClip;
-    zMathUnprojectPointBatchZBuf(&projectedPoint, &nearPoint, 1);
+    zMathUnprojectPointBatchZBuf(&projectedPoint, &segment.start, 1);
 
-    zVec3 farPoint;
     const float range = playerState->activeAltGunController->optCatalogEntry->range;
     projectedPoint.reciprocalZ = 1.0f / range;
-    zMathUnprojectPointBatchZBuf(&projectedPoint, &farPoint, 1);
+    zMathUnprojectPointBatchZBuf(&projectedPoint, &segment.end, 1);
 
     CZClass::gwNodeSetRaycastable(playerState->rootNode, 0);
     if (playerState->cameraState == 7) {
@@ -9388,8 +9388,8 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
     PlayerProbeSampleCandidateBuffer rayData;
     const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
         g_Player_RuntimeDiScene,
-        &nearPoint,
-        &farPoint,
+        &segment.start,
+        &segment.end,
         &rayData
     );
 
@@ -9408,7 +9408,7 @@ UpdateTargetReticleFromCursor(int reticleMode, float normalizedX, float normaliz
             g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[0]);
         }
     } else {
-        g_HudUiMgrReticleProjection = farPoint;
+        g_HudUiMgrReticleProjection = segment.end;
         g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[1]);
     }
 
@@ -9620,7 +9620,7 @@ void UpdateMeterXPoints()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.show
  * @recoil-artifact defines .text recoil:function:0x411900: HudUiMgrObjective::Show.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: Start or update the objective HUD panel with summary text, description text, and image state.
@@ -11738,6 +11738,9 @@ void HudUiMessage::RebuildWeaponLayout()
 }
 
 namespace HudUiLoadingCheckpoint {
+// Empty loading-trace sink; retail passes the message in ECX to the shared RET fold 0x4076f0.
+void __fastcall Trace(const char* /*message*/) { }
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.advanceandlog
  * @recoil-artifact defines .text recoil:function:0x414180: HudUiLoadingCheckpoint::AdvanceAndLog.
@@ -11758,7 +11761,7 @@ void __fastcall AdvanceAndLog(const char* messageOrNull)
             g_HudUiLoadingCheckpointCurrentIndex = maxIndex;
         }
     } else {
-        zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\hud.cpp", 0x1184, g_Hud_CheckpointOverflowMsg);
+        zError::ReportOld(0x800, g_Hud_SourceFile_HudCpp, 0x1184, g_Hud_CheckpointOverflowMsg);
     }
 
     if (messageOrNull != 0) {
@@ -11766,7 +11769,7 @@ void __fastcall AdvanceAndLog(const char* messageOrNull)
         fflush(stdout);
     }
 
-    zGame::ReturnOnlyStub();
+    Trace(messageOrNull);
     Briefing::SetProgressAndSleep(g_HudUiLoadingCheckpointCurrentProgress);
 }
 

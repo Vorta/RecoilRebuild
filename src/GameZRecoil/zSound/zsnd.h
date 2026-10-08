@@ -390,6 +390,26 @@ struct zSndCdFlagBits {
     unsigned int ready : 1;
 };
 
+/**
+ * Purpose: CD-audio state record (retail 0x56b318..0x56b33f): track-list count,
+ * play mode, flags, MCI/AUX device ids and volumes, and the cached disc length.
+ * zSndPreInitializeRuntimeState clears its ready and stereo-aux flags with two
+ * separate byte ANDs around one dword store, which VC5 emits for a member flag.
+ */
+struct zSndCdState {
+    int trackListCount;
+    int lastPlayMode;
+    int unknown08;
+    zSndCdFlagBits flags;
+    unsigned short deviceId;
+    int auxDeviceId;
+    unsigned short auxVolumePrimary;
+    unsigned short auxVolumeSecondary;
+    int trackCountCached;
+    int discLengthMinute;
+    int discLengthSecond;
+};
+
 namespace zSndCd {
 int __fastcall Init(zReader::Node* cdTracksNode);
 int __cdecl Stop();
@@ -435,17 +455,21 @@ extern zArchiveList* g_zSndStream_FreeList;
 extern zSndStreamRequest* g_zSndStream_MatchedRequest;
 extern int g_zSndStream_MatchedRequestCount;
 extern CZNodePartial* g_zSndStream_RootNode;
-extern zSndCdFlagBits g_zSndCdFlags;
-extern int g_zSndCdLastPlayMode;
-extern unsigned short g_zSndCdDeviceId;
-extern int g_zSndCdAuxDeviceId;
-extern int g_zSndCdDiscLengthMinute;
-extern int g_zSndCdDiscLengthSecond;
-extern unsigned short g_zSndCdAuxVolumePrimary;
-extern unsigned short g_zSndCdAuxVolumeSecondary;
+extern zSndCdState g_zSndCdState;
 extern float g_zSndSpeedOfSoundMps;
 extern float g_zSndInvSpeedOfSoundMps;
 }
+
+#define g_zSndCdTrackListCount (g_zSndCdState.trackListCount)
+#define g_zSndCdLastPlayMode (g_zSndCdState.lastPlayMode)
+#define g_zSndCdFlags (g_zSndCdState.flags)
+#define g_zSndCdDeviceId (g_zSndCdState.deviceId)
+#define g_zSndCdAuxDeviceId (g_zSndCdState.auxDeviceId)
+#define g_zSndCdAuxVolumePrimary (g_zSndCdState.auxVolumePrimary)
+#define g_zSndCdAuxVolumeSecondary (g_zSndCdState.auxVolumeSecondary)
+#define g_zSndCdTrackCountCached (g_zSndCdState.trackCountCached)
+#define g_zSndCdDiscLengthMinute (g_zSndCdState.discLengthMinute)
+#define g_zSndCdDiscLengthSecond (g_zSndCdState.discLengthSecond)
 
 extern char g_zSndConfig_SoundGroupsKey[0x0d];
 extern char g_zSndConfig_SetsKey[0x05];

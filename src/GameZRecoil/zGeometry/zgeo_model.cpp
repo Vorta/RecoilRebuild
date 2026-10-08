@@ -137,8 +137,10 @@ zModel_MaterialPartial* __cdecl FindOrCreateRandomDebugMaterial()
     color.blue = (float)(rand()) * kRandToDebugColorScale;
 
     material.colorRgb = color;
-    material.packedColor = (unsigned short)((((int)(color.red) & 0x1f) << 11) | (((int)(color.green) & 0x3f) << 5)
-        | ((int)(color.blue) & 0x1f));
+    // Retail read-modify-writes each 5:6:5 channel into the reset packed color (0x46a6e1..0x46a74f).
+    material.packedColor = (unsigned short)((material.packedColor & 0x07ff) | (((int)(color.red) & 0x1f) << 11));
+    material.packedColor = (unsigned short)((material.packedColor & 0xf81f) | (((int)(color.green) & 0x3f) << 5));
+    material.packedColor = (unsigned short)((material.packedColor & 0xffe0) | ((int)(color.blue) & 0x1f));
 
     g_zGeometry_Model_LastRandomDebugMaterial = zModel_Material::FindOrClone(&material);
     return g_zGeometry_Model_LastRandomDebugMaterial;

@@ -554,7 +554,7 @@ void HudUiSaveLoadDialog::SetSelectedEntryIndex(int selectedEntryIndexValue)
 /**
  * @recoil-anchor recoil:anchor:battlesport.saveload.hud-ui-save-load-dialog-refresh-save-file-list
  * @recoil-artifact defines .text recoil:function:0x4355e0: HudUiSaveLoadDialog::RefreshSaveFileList.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Rebuilds and sorts the saved-game file entry vector from the SavedGames directory.
  */

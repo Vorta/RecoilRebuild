@@ -2248,7 +2248,9 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
                 return;
             }
         } else {
-            if (current->sampleXMax < pending->sampleXMax) {
+            // Each overlap case is a complete interval test, as in the in-front branch; the implied first clause
+            // folds, but the right-cover end test below is kept (0x491c22).
+            if (current->sampleXMin > pending->sampleXMin && current->sampleXMax < pending->sampleXMax) {
                 // The occluder sits inside the pending span: emit the left part, keep the right part pending.
                 const float slope = pending->depthSlope;
                 // Retail forms the right fragment start before the left fragment end (0x491b69, 0x491b7f).
@@ -2283,9 +2285,8 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(zRndr::SpanNodePartial** spanLis
                 pending->next = 0;
                 continue;
             }
-            // Retail keeps this end test although the check above implies it (0x491c22).
             if (pending->sampleXMin <= current->sampleXMin && current->sampleXMin <= pending->sampleXMax
-                && pending->sampleXMax <= current->sampleXMax) {
+                && current->sampleXMax >= pending->sampleXMax) {
                 if (pending->sampleXMin < current->sampleXMin) {
                     pending->sampleXMax = current->sampleXMin - 1;
                     pending->invDepthStep
@@ -2463,14 +2464,14 @@ void __fastcall zRndrSpanOcclusionTestColumnVisibility(int columnIndex, int* isV
                 return;
             }
         } else {
-            if (current->sampleXMax < pending->sampleXMax) {
+            // Each overlap case is a complete interval test, as in the in-front branch; the implied first clause
+            // folds, but the right-cover end test below is kept (0x491fb5).
+            if (current->sampleXMin > pending->sampleXMin && current->sampleXMax < pending->sampleXMax) {
                 *isVisible = 1;
                 return;
             }
-            // Retail keeps this end test although the check above implies it (0x491fb5);
-            // VC5 folds it when spelled current-first.
             if (pending->sampleXMin <= current->sampleXMin && current->sampleXMin <= pending->sampleXMax
-                && pending->sampleXMax <= current->sampleXMax) {
+                && current->sampleXMax >= pending->sampleXMax) {
                 if (pending->sampleXMin < current->sampleXMin) {
                     *isVisible = 1;
                 }

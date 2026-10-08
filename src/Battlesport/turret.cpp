@@ -685,7 +685,7 @@ void zTurret_Runtime::UpdateFirePositionFromParts()
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate recoil:function:0x4374a0
  * @recoil-raw-asm recoil:raw-asm:battlesport.turret.update-aim-and-part-matrices.fast-sqrt-estimate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Raw assembly: inline zMath::Vec3Subtract [0x4374f3,0x437516) and
  * zMath::FastExp [0x4375ba,0x4375c5) expansions (requires turret.cpp /Ob1),

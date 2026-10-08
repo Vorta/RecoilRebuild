@@ -191,7 +191,7 @@ float __cdecl GetVertexMergeEpsilon();
 void __stdcall SetVertexMergeEpsilon(float epsilon);
 void __stdcall SetCoplanarTolerance(float tolerance);
 void __stdcall SetColinearTolerance(float tolerance);
-zVec3* __fastcall SetNormalizedCrossFromVertexTriplet(zVec3* vertex0, zVec3* vertex1, zVec3* outNormal, zVec3* vertex2);
+zVec3 __fastcall SetNormalizedCrossFromVertexTriplet(zVec3* vertex0, zVec3* vertex1, zVec3* vertex2);
 int __fastcall
 check_colinearity(int* vertexCount, zVec3* points, zClipUV* uvPairsA, zVec3* normalsB, zClipUV* uvPairsB);
 zGeometry_PlaneEquationPartial* __fastcall

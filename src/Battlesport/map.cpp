@@ -863,7 +863,7 @@ void __fastcall HudSensorTrackerMap::DrawDiamondMarker(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-cliporsplitsegment
  * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
@@ -1045,7 +1045,7 @@ int __fastcall HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmen
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudgeom2d-classifypointagainstsegment
  * @recoil-artifact defines .text recoil:function:0x416390: HudGeom2D::ClassifyPointAgainstSegment
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */
@@ -1506,30 +1506,9 @@ int HudSensorTrackerMap::UpdateMapScaleLerp()
 }
 
 /**
- * Reconstruction model: inline overlay rotation terms. Retail 0x416c90 reloads the
- * tracked forward components for every product (0x416cc2, 0x416cdc, 0x416ce7,
- * 0x416d02) and multiplies the spilled delta.x as the memory operand; VC5 produces
- * that operand order only through these inline-expanded pointer parameters. Helper
- * spelling and placement are not established; no standalone retail function exists.
- * Purpose: return the overlay X term of a delta rotated by the forward vector.
- */
-inline float RotateXByForward(const zVec3* forward, const zVec2* delta)
-{
-    return forward->x * delta->y - forward->z * delta->x;
-}
-
-/**
- * Purpose: return the overlay Y term of a delta rotated by the forward vector.
- */
-inline float RotateYByForward(const zVec3* forward, const zVec2* delta)
-{
-    return -forward->x * delta->x - forward->z * delta->y;
-}
-
-/**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-projectworldpointstooverlay
  * @recoil-artifact defines .text recoil:function:0x416c90: HudSensorTrackerMap::ProjectWorldPointsToOverlay
- *
+ * @recoil-match source
  *
  * Purpose: Project world-space map points into overlay coordinates using the tracked origin and forward vector.
  */
@@ -1542,10 +1521,12 @@ int HudSensorTrackerMap::ProjectWorldPointsToOverlay(
     zVec2 delta;
 
     while (pointCount--) {
-        delta.x = (inputWorldPoints->x - trackedWorldOriginPtr->x) * mapZoom * mapScaleCurrent.x;
-        delta.y = (inputWorldPoints->z - trackedWorldOriginPtr->z) * mapScaleCurrent.z * mapZoom;
-        const float rotatedX = RotateXByForward(trackedForwardVecPtr, &delta);
-        const float rotatedY = RotateYByForward(trackedForwardVecPtr, &delta);
+        delta.x = inputWorldPoints->x - trackedWorldOriginPtr->x;
+        delta.y = inputWorldPoints->z - trackedWorldOriginPtr->z;
+        delta.x = delta.x * mapZoom * mapScaleCurrent.x;
+        delta.y = delta.y * mapScaleCurrent.z * mapZoom;
+        const float rotatedX = trackedForwardVecPtr->x * delta.y - trackedForwardVecPtr->z * delta.x;
+        const float rotatedY = -trackedForwardVecPtr->x * delta.x - trackedForwardVecPtr->z * delta.y;
 
         projectedOverlayPoints->x = rotatedX + (float)(mapOverlayCenterX);
         projectedOverlayPoints->y = rotatedY + (float)(mapOverlayCenterY);

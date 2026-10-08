@@ -526,7 +526,7 @@ namespace zClipAlt
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-remappointxyinplace
      * @recoil-artifact defines .text recoil:function:0x4766a0: zClipAlt::RemapPointXYInPlace
-     *
+     * @recoil-match source
      *
      * Purpose: reject a point outside the alternate clip rectangle or remap its XY
      * coordinates into source-rectangle space in place.

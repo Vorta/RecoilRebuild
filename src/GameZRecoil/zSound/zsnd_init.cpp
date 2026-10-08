@@ -9,12 +9,14 @@
 #include <stdio.h>
 
 extern "C" char g_Player_MasterTypeName_Unknown[0x08];
+extern "C" char g_zOpt_OptionName_SoundLOD[];
+extern "C" char g_zOpt_OptionName_MuteSound[];
+extern "C" char g_zOpt_OptionName_SoundVolume[];
 extern "C" LPDIRECTSOUND g_zSnd_BackendDevice = 0;
 extern "C" LPDIRECTSOUNDBUFFER g_zSnd_BackendListenerHandle = 0;
 extern "C" DSCAPS g_zSnd_BackendAuxHandleOrConfig = { 0 };
 extern "C" LPDIRECTSOUND g_zSnd_CachedDirectSound = 0;
 extern "C" const GUID* g_zSnd_CachedDirectSoundGuid = 0;
-extern "C" int g_zSndCdTrackListCount;
 extern "C" int g_zSnd_PreInitialized = 0;
 extern "C" int g_zSnd_SoundLodDefault = 0;
 extern "C" void* g_zSnd_SoundLodValuePtr = 0;
@@ -339,24 +341,25 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
         break;
     }
 
-    g_zSndCdFlags.ready = 0;
-    g_zSndCdFlags.stereoAux = 0;
     g_zSndCdTrackListCount = 0;
     g_zSnd_SearchPathList = 0;
     g_zSndCdDeviceId = 0;
+    // Retail clears the ready flag, then the stereo-aux flag (two byte ANDs around one store).
+    g_zSndCdFlags.ready = 0;
+    g_zSndCdFlags.stereoAux = 0;
     g_zSndCdAuxDeviceId = 0;
     g_zSndCdAuxVolumePrimary = 0;
     g_zSndCdAuxVolumeSecondary = 0;
     g_zSndCdLastPlayMode = 2;
 
     g_zSnd_SoundLodDefault = 0;
-    g_zSnd_SoundLodValuePtr = zGame::OptionsFindOption("SoundLOD");
+    g_zSnd_SoundLodValuePtr = zGame::OptionsFindOption(g_zOpt_OptionName_SoundLOD);
     if (g_zSnd_SoundLodValuePtr == 0) {
         g_zSnd_SoundLodValuePtr = &g_zSnd_SoundLodDefault;
     }
 
     g_zSnd_MuteOptionDefault = 0;
-    g_zSnd_MuteOptionValuePtr = zGame::OptionsFindOption("MuteSound");
+    g_zSnd_MuteOptionValuePtr = zGame::OptionsFindOption(g_zOpt_OptionName_MuteSound);
     if (g_zSnd_MuteOptionValuePtr == 0) {
         g_zSnd_MuteOptionValuePtr = &g_zSnd_MuteOptionDefault;
     }
@@ -366,7 +369,7 @@ extern "C" int __fastcall zSndPreInitializeRuntimeState(unsigned int hwnd)
     g_zSndLastVoice = 0;
 
     g_zSnd_VolumeScaleDefault = 1.0f;
-    g_zSnd_GlobalVolumeScalePtr = zGame::OptionsFindOption("SoundVolume");
+    g_zSnd_GlobalVolumeScalePtr = zGame::OptionsFindOption(g_zOpt_OptionName_SoundVolume);
     if (g_zSnd_GlobalVolumeScalePtr == 0) {
         g_zSnd_GlobalVolumeScalePtr = &g_zSnd_VolumeScaleDefault;
     }

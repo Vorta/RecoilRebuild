@@ -19,20 +19,22 @@ struct zSndCdTrackState {
 };
 
 /**
- * Purpose: Stores the pre-initialization CD track-list count reset by
- * zSndPreInitializeRuntimeState; distinct from the static CD track-list
- * lifecycle count.
+ * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.g-zsndcdstate
+ * @recoil-artifact defines .data recoil:data:0x56b318: g_zSndCdState.trackListCount.
+ * @recoil-artifact defines .data recoil:data:0x56b31c: g_zSndCdState.lastPlayMode.
+ * @recoil-artifact defines .data recoil:data:0x56b324: g_zSndCdState.flags.
+ * @recoil-artifact defines .data recoil:data:0x56b328: g_zSndCdState.deviceId.
+ * @recoil-artifact defines .data recoil:data:0x56b32c: g_zSndCdState.auxDeviceId.
+ * @recoil-artifact defines .data recoil:data:0x56b330: g_zSndCdState.auxVolumePrimary.
+ * @recoil-artifact defines .data recoil:data:0x56b332: g_zSndCdState.auxVolumeSecondary.
+ * @recoil-artifact defines .data recoil:data:0x56b334: g_zSndCdState.trackCountCached.
+ * @recoil-artifact defines .data recoil:data:0x56b338: g_zSndCdState.discLengthMinute.
+ * @recoil-artifact defines .data recoil:data:0x56b33c: g_zSndCdState.discLengthSecond.
+ * Storage group: g_zSndCdState, retail [0x56b318, 0x56b340).
+ * Purpose: Stores the CD-audio state record; zSndPreInitializeRuntimeState
+ * resets its track-list count, flags, device ids and volumes.
  */
-extern "C" int g_zSndCdTrackListCount = 0;
-extern "C" int g_zSndCdLastPlayMode = 0;
-extern "C" zSndCdFlagBits g_zSndCdFlags = { 0 };
-extern "C" unsigned short g_zSndCdDeviceId = 0;
-extern "C" int g_zSndCdAuxDeviceId = 0;
-extern "C" unsigned short g_zSndCdAuxVolumePrimary = 0;
-extern "C" unsigned short g_zSndCdAuxVolumeSecondary = 0;
-extern "C" int g_zSndCdTrackCountCached = 0;
-extern "C" int g_zSndCdDiscLengthMinute = 0;
-extern "C" int g_zSndCdDiscLengthSecond = 0;
+extern "C" zSndCdState g_zSndCdState = { 0 };
 extern "C" zSndCdTrackState g_zSndCdPlayFrom = { 0 };
 extern "C" zSndCdTrackState g_zSndCdCurrent = { 0 };
 extern "C" zSndCdTrackState g_zSndCdPlayTo = { 0 };
@@ -442,7 +444,7 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.setvolume
  * @recoil-artifact defines .text recoil:function:0x4a2880: zSndCd::SetVolume.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: write mono or stereo AUX mixer volume from requested channel values.
  */

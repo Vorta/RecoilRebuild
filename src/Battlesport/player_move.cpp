@@ -1053,7 +1053,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypeamphib-frommodalprobe
  * @recoil-artifact defines .text recoil:function:0x427ec0: Player::UpdateMasterTypeAmphibFromModalProbe.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphibFromModalProbe from the recovered
@@ -2217,7 +2217,7 @@ float __fastcall UpdateBankAndTurnDynamics(zUtil_SaveGameState* saveState)
         residual = slipDelta - (float)(FloatSign(playerState->localVel.x)) * masterModalData->frictionDynamic;
 
         if (playerState->throttleInputCopy != 0.0f
-            && FloatSign(playerState->restartYawRad) == FloatSign(playerState->steeringInputCopy)) {
+            && FloatSign(playerState->steeringInputCopy) == FloatSign(playerState->restartYawRad)) {
             const int residualSign = residual < 0.0f ? -1 : 1;
             const int velocitySign = playerState->localVel.x < 0.0f ? -1 : 1;
             if (residualSign != velocitySign) {
