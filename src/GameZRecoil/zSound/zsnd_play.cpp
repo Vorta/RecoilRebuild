@@ -442,7 +442,7 @@ zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
  * @recoil-artifact defines .text recoil:function:0x49f9a0: zSnd::GainScaleToDirectSoundAttenuation.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zsound.play.attenuation-fyl2x recoil:function:0x49f9a0
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zsound.play.attenuation-fyl2x
- *
+ * @recoil-match byte
  *
  * Raw assembly: four-instruction scaled-log2 block containing one FYL2X, at
  * retail [0x49f9d2,0x49f9e0), including the binary32 parameter store.
