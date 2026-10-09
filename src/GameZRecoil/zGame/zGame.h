@@ -4,19 +4,21 @@
 
 #include "recoil/recoil_callconv.h"
 
+#ifdef __cplusplus
 extern "C" {
-struct zOptionEntryPartial {
+#endif
+typedef struct zOptionEntryPartial {
     int payloadOrBuffer;
     unsigned int flagsOrDefault;
     int storageType;
     int dataSize;
     char* name;
     int registryScope;
-    zOptionEntryPartial* next;
+    struct zOptionEntryPartial* next;
     int unknown_1c;
-};
+} zOptionEntryPartial;
 
-struct zOpt_ViewRectSection {
+typedef struct zOpt_ViewRectSection {
     int x;
     int y;
     int rightExclusive;
@@ -27,22 +29,26 @@ struct zOpt_ViewRectSection {
     int maxYInclusive;
     int bitsPerPixel;
     void* target;
-};
+} zOpt_ViewRectSection;
 
-struct CZNodePartial;
+typedef struct CZNodePartial CZNodePartial;
+#ifdef __cplusplus
 namespace zReader {
-    struct Node;
+#endif
+    typedef struct Node Node;
+#ifdef __cplusplus
 }
 
-struct zOpt_CameraSection {
+#endif
+typedef struct zOpt_CameraSection {
     int unknown_00;
     int unknown_04;
     CZNodePartial* m_pCamera;
-};
+} zOpt_CameraSection;
 
 typedef int zOptGameControlFlags;
 
-struct zGame_OptionsPointerCache {
+typedef struct zGame_OptionsPointerCache {
     int* effectsLevelSw;
     int* effectsLevelHw;
     int* gfxFlagsSw;
@@ -81,9 +87,9 @@ struct zGame_OptionsPointerCache {
     void* unusedOption;
     int* networkModem;
     int* wolPasswordFlag;
-};
+} zGame_OptionsPointerCache;
 
-struct zGame_OptionsRuntimeConfig {
+typedef struct zGame_OptionsRuntimeConfig {
     char cpuVendor[0x10];
     int cpuClass;
     int cpuMhz;
@@ -103,10 +109,12 @@ struct zGame_OptionsRuntimeConfig {
     unsigned int reservedCapabilityValue;
     unsigned int unknown_2c;
 
+#ifdef __cplusplus
     zGame_OptionsRuntimeConfig* CopyDefault();
     RECOIL_NO_GS int InitFromSystem();
     RECOIL_NO_GS void LoadCpuVendorString();
-};
+#endif
+} zGame_OptionsRuntimeConfig;
 
 extern zOptionEntryPartial* g_zGame_Options_OptionListHead;
 extern char* g_zGame_Options_RegKeyRoot;
@@ -117,16 +125,23 @@ extern zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfigDefaults;
 extern zGame_OptionsRuntimeConfig g_zGame_Options_RuntimeConfig;
 extern zGame_OptionsPointerCache g_zGame_Options_PointerCache;
 extern int g_zOpt_HwMode;
+#ifdef __cplusplus
 }
+#endif
 
-enum zOptHudTypeOption {
+typedef enum zOptHudTypeOption {
     ZOPT_HUD_TYPE_STANDARD = 1,
     ZOPT_HUD_TYPE_PERSPECTIVE = 2,
-};
+} zOptHudTypeOption;
 
+#ifdef __cplusplus
 namespace zGame {
 void __cdecl ReturnOnlyStub();
-zOptionEntryPartial* __fastcall OptionsFindOption(const char* name) throw();
+extern "C" {
+#endif
+zOptionEntryPartial* __fastcall OptionsFindOption(const char* name);
+#ifdef __cplusplus
+}
 zOptionEntryPartial* __fastcall
 OptionsGetOrCreateOption(const char* name, int storageType, int dataSize, int registryScope);
 void __fastcall
@@ -211,3 +226,4 @@ char* zOptGetPlayerName();
 int zOptGetWolPasswordFlagValue();
 int zOptDisplaySectionGetWidth();
 int zOptDisplaySectionGetHeight();
+#endif

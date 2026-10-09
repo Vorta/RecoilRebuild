@@ -7,41 +7,41 @@
 #include "recoil/recoil_types.h"
 #include <stdio.h>
 
-struct CZNodePartial;
-
+typedef struct CZNodePartial CZNodePartial;
+#ifdef __cplusplus
 namespace zReader {
-enum NodeType {
+#endif
+typedef enum NodeType {
     ZRDR_NODE_INT = 1,
     ZRDR_NODE_FLOAT = 2,
     ZRDR_NODE_STRING = 3,
     ZRDR_NODE_ARRAY = 4,
-};
+} NodeType;
+typedef struct Node Node;
 
-struct Node;
-
-union Value {
+typedef union Value {
     unsigned int u32;
     int i32;
     float f32;
     char* str;
     Node* nodes;
     void* ptr;
-};
+} Value;
 
-struct Node {
+typedef struct Node {
     int type;
     Value value;
-};
+} Node;
 
 RECOIL_STATIC_ASSERT(sizeof(Value) == 4);
 RECOIL_STATIC_ASSERT(sizeof(Node) == 8);
-
-Node* __fastcall Load(const char* path, const char* extraSearchPath = 0, int unusedStack = 0);
-int __fastcall Free(Node* loaded);
+#ifdef __cplusplus
+extern "C" Node* __fastcall Load(const char* path, const char* extraSearchPath = 0, int unusedStack = 0);
+extern "C" int __fastcall Free(Node* loaded);
 const char* __fastcall FindString(Node* parentNode, const char* name);
 int __fastcall GetFloat(Node* parentNode, const char* name, float* outValue);
 int __fastcall GetInt(Node* parentNode, const char* name, int* outValue);
-int __fastcall FindGlobalStringPrefixIndex(const char* text);
+extern "C" int __fastcall FindGlobalStringPrefixIndex(const char* text);
 int __fastcall FileExists(const char* path);
 const char* __fastcall FindFile(const char* filename, const char* extraSearchPath);
 int __fastcall BuildResolvedParentDir(const char* filename, char* outParentDir);
@@ -196,5 +196,10 @@ int __fastcall SetMissionZrdrPathsAndMountZbd(int missionId);
 namespace zArchive {
 int __fastcall Mount(const char* path, int setCurrent);
 }
+#else
+/* C units' view of the reader members they call (zreader.cpp defines them). */
+Node* __fastcall Load(const char* path, const char* extraSearchPath, int unusedStack);
+int __fastcall Free(Node* loaded);
+#endif
 
 #endif

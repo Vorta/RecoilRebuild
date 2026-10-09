@@ -652,12 +652,12 @@ namespace CZClass
 
         zDiPartial* oldDisplayInstance = (zDiPartial*)((unsigned int)(node->userDataOrDiRef));
         if (oldDisplayInstance != 0) {
-            zDi::Release(oldDisplayInstance);
+            zDiRelease(oldDisplayInstance);
         }
 
         node->userDataOrDiRef = (unsigned int)((unsigned int)(displayInstance));
         if (displayInstance != 0) {
-            zDi::AddRef(displayInstance);
+            zDiAddRef(displayInstance);
             zDi::RebuildBounds(
                 (zDiPartial*)((unsigned int)(node->userDataOrDiRef)),
                 (zBoundsMinMaxPartial*)(&((CZNodeFreeListSlot*)node)->primaryBounds)

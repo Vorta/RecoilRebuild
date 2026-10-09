@@ -9,8 +9,10 @@
 #include "GameZRecoil/include/zdi.h"
 #include "recoil/recoil_callconv.h"
 
-struct zGeometry_PlaneEquationPartial;
-
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef struct zGeometry_PlaneEquationPartial zGeometry_PlaneEquationPartial;
 extern int g_Variant_FilterEnabled;
 extern zTag4Partial g_VariantTag_Current;
 extern float g_zModel_BFETolerance;
@@ -26,33 +28,31 @@ extern float g_zModel_UvQuantizeInvScale;
  * Active lights retain their scene node alongside the light class data.
  * Node flags govern participation; class data supplies lighting parameters.
  */
-
-struct zModel_ActiveLightEntryLive {
+typedef struct zModel_ActiveLightEntryLive {
     CZLightDataPartial* light;
     CZNodePartial* lightNode;
     int useFullWeight;
     int contributesToLighting;
     unsigned int reserved_10;
-};
-
+} zModel_ActiveLightEntryLive;
 RECOIL_STATIC_ASSERT(offsetof(CZNodePartial, flags) == 0x24);
 RECOIL_STATIC_ASSERT(sizeof(zModel_ActiveLightEntryLive) == 0x14);
 RECOIL_STATIC_ASSERT(offsetof(zModel_ActiveLightEntryLive, useFullWeight) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_ActiveLightEntryLive, contributesToLighting) == 0x0c);
 
-struct zModel_FogTargetColorOverride {
+typedef struct zModel_FogTargetColorOverride {
     zColorRgb colorRgb01;
     float weight;
-};
+} zModel_FogTargetColorOverride;
 
 RECOIL_STATIC_ASSERT(offsetof(zModel_FogTargetColorOverride, weight) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zModel_FogTargetColorOverride) == 0x10);
 
-struct zModel_MaterialSlot {
+typedef struct zModel_MaterialSlot {
     zModel_MaterialPartial material;
     short prevPoolIndex;
     short nextPoolIndex;
-};
+} zModel_MaterialSlot;
 
 RECOIL_STATIC_ASSERT(sizeof(zModel_MaterialSlot) == 0x2c);
 RECOIL_STATIC_ASSERT(offsetof(zModel_MaterialSlot, prevPoolIndex) == 0x28);
@@ -66,36 +66,36 @@ extern int g_zModel_MatlActiveHeadIndex;
 extern zModel_MaterialPartial* g_zModel_MatlReuseCache;
 extern zModel_MaterialPartial g_zModel_DefaultMaterial;
 
-struct zModel_Uv {
+typedef struct zModel_Uv {
     float u;
     float v;
-};
+} zModel_Uv;
 
-struct zModel_TextureScrollInfoPartial {
+typedef struct zModel_TextureScrollInfoPartial {
     unsigned char unknown_00[0x0a];
     unsigned char wrapShiftU;
     unsigned char wrapShiftV;
-};
+} zModel_TextureScrollInfoPartial;
 
-struct zModel_TextureRefPartial {
+typedef struct zModel_TextureRefPartial {
     zModel_TextureScrollInfoPartial* textureInfo;
-};
+} zModel_TextureRefPartial;
 
-struct zModel_MaterialTextureBindingPartial {
+typedef struct zModel_MaterialTextureBindingPartial {
     unsigned short flags;
     unsigned char unknown_02[0x0e];
     zModel_TextureRefPartial* textureRef;
-};
+} zModel_MaterialTextureBindingPartial;
 
-struct zModel_InstanceSurfaceEntryPartial {
+typedef struct zModel_InstanceSurfaceEntryPartial {
     unsigned int vertexCountAndFlags;
     unsigned char unknown_04[0x0c];
     zModel_Uv* uvs;
     zModel_MaterialTextureBindingPartial* materialBinding;
     unsigned char unknown_18[0x04];
-};
+} zModel_InstanceSurfaceEntryPartial;
 
-struct zModel_InstancePartial {
+typedef struct zModel_InstancePartial {
     unsigned char unknown_00[0x0c];
     int surfaceEntryCount;
     unsigned char unknown_10[0x14];
@@ -103,7 +103,7 @@ struct zModel_InstancePartial {
     float scrollRateV;
     int scrollingTextureFrameTick;
     zModel_InstanceSurfaceEntryPartial* surfaceEntries;
-};
+} zModel_InstancePartial;
 
 RECOIL_STATIC_ASSERT(sizeof(zModel_Uv) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(zModel_TextureScrollInfoPartial, wrapShiftU) == 0x0a);
@@ -131,9 +131,12 @@ int __fastcall
 zModelLightBuildLightWeights(zVec3* surfaceNormal, int vertexCount, int* outPackedFogColor, float fogBlendScale);
 void __fastcall
 zModelLightPointInPolygonInitXZ(CZNodePartial** lightNodes, CZLightDataPartial** lightDataList, int lightCount);
+#ifdef __cplusplus
+}
 
 namespace zModel {
-int __cdecl Init();
+extern "C" {
+#endif
 void __fastcall SetVertexShadingEnabled(int enabled);
 void __fastcall SetDisplayInstancePoolCapacity(int capacity);
 void __fastcall SetSoftwarePathActive(int active);
@@ -146,7 +149,13 @@ int __fastcall RenderNodeSoftware(CZNodePartial* node, int clipMask);
 void __stdcall SetBackfaceEliminationToleranceScalar(float scalar);
 float __cdecl GetBackfaceEliminationToleranceScalar();
 void __stdcall UpdateSmallPolyRejectThresholds(float baseRejectArea);
+#ifdef __cplusplus
+}
 } // namespace zModel
+
+extern "C" {
+#endif
+int __cdecl zModelInit();
 
 int __cdecl zModelDisplayInit();
 void __stdcall OptCatalogSetDamageMaskUv(float u, float v);
@@ -164,8 +173,12 @@ void __stdcall zModelFogSetDensity(float density);
 void __fastcall zModelFogSetLinearModeEnabled(int enabled);
 void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01);
 void __cdecl zModelFogApplyCurrentColor();
+#ifdef __cplusplus
+}
 
 namespace zModel_Light {
+extern "C" {
+#endif
 float __fastcall EvalDistanceWeight(float distance, const CZLightDataPartial* light);
 float __fastcall EvalSphereFogFade(const zVec3* point, float radius);
 int __fastcall BuildAttr0DepthFade(int vertexCount, int* outHasVariation);
@@ -174,9 +187,13 @@ int __fastcall EvalBatchSphereFade(float* outFade);
 int __fastcall PointInPolygonTestRadiusXZ(const zVec3* sphereCenter, float radius);
 int __fastcall
 SetActiveLights(zVec3* surfaceNormal, int vertexCount, int* lightFlags, int* lightingMode, int usePaletteRemap);
+#ifdef __cplusplus
+}
 } // namespace zModel_Light
 
 namespace zModel_DiPool {
+extern "C" {
+#endif
 int __fastcall WriteToStream(void* stream);
 int __fastcall ReadHeaderFromStream(void* stream, int* outCapacity, int* outInUseCount, int* outFreeHeadIndex);
 int __fastcall ReadEntryDynamicDataFromStream(void* stream, zDiPartial* entry);
@@ -184,9 +201,13 @@ RECOIL_NO_GS zDiPartial* __fastcall ReadEntryByIndexFromStream(void* stream, int
 int __fastcall ReadFromStream(void* stream);
 zDiPartial* __cdecl AllocFromFreeList();
 int __fastcall FreeIfUnreferenced(zDiPartial* di);
+#ifdef __cplusplus
+}
 } // namespace zModel_DiPool
 
 namespace zModel_Const {
+extern "C" {
+#endif
 float __cdecl GetVertexMergeEpsilon();
 void __stdcall SetVertexMergeEpsilon(float epsilon);
 void __stdcall SetCoplanarTolerance(float tolerance);
@@ -226,55 +247,110 @@ void __fastcall SplitPolygonChunkedByVertexLimit(
     int flagBit8,
     const int* userTag
 );
+#ifdef __cplusplus
+}
 } // namespace zModel_Const
 
 namespace zModel_MatlBuffer {
+extern "C" {
+#endif
 void __fastcall SetArraySize(int count);
 zModel_MaterialPartial* __fastcall CloneToActiveSlot(zModel_MaterialPartial* material);
 int __fastcall WriteGameZ(void* stream);
 int __fastcall ReadGameZ(void* stream);
 int __cdecl ReleaseAllActive();
 void __cdecl ReleaseTextureSurfaces();
-int __cdecl Shutdown();
+#ifdef __cplusplus
+}
 } // namespace zModel_MatlBuffer
 
-namespace zModel_Matl {
-int __cdecl InitGlobals();
-zModel_MaterialSlot* __fastcall GetPoolEntry(int index);
-} // namespace zModel_Matl
-
-namespace zModel_MatlSlot {
-void __fastcall Release(zModel_MaterialSlot* slot);
-int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot* slot);
-} // namespace zModel_MatlSlot
-
-namespace zModel_Display {
-int __cdecl Reset();
-int __cdecl Shutdown();
-int __cdecl ShutdownThunk();
-} // namespace zModel_Display
-
-namespace zScene {
-int __fastcall TestProjectedSphereVisible(zVec3* center, float radius);
+extern "C" {
+#endif
+int __cdecl zModelMatlBufferShutdown();
+#ifdef __cplusplus
 }
 
+namespace zModel_Matl {
+extern "C" {
+#endif
+zModel_MaterialSlot* __fastcall GetPoolEntry(int index);
+#ifdef __cplusplus
+}
+} // namespace zModel_Matl
+
+extern "C" {
+#endif
+int __cdecl zModelMatlInitGlobals();
+#ifdef __cplusplus
+}
+
+namespace zModel_MatlSlot {
+extern "C" {
+#endif
+int __fastcall IndexFromPtrOrMinus1(zModel_MaterialSlot* slot);
+#ifdef __cplusplus
+}
+} // namespace zModel_MatlSlot
+
+extern "C" {
+#endif
+void __fastcall zModelMatlSlotRelease(zModel_MaterialSlot* slot);
+#ifdef __cplusplus
+}
+
+namespace zModel_Display {
+extern "C" {
+#endif
+int __cdecl ShutdownThunk();
+#ifdef __cplusplus
+}
+} // namespace zModel_Display
+
+extern "C" {
+#endif
+int __cdecl zModelDisplayReset();
+int __cdecl zModelDisplayShutdown();
+#ifdef __cplusplus
+}
+
+namespace zScene {
+extern "C" {
+#endif
+int __fastcall TestProjectedSphereVisible(zVec3* center, float radius);
+#ifdef __cplusplus
+}
+}
+
+extern "C" {
+#endif
 void __fastcall zModelFogTargetColorOverrideSetCurrent(zColorRgb* colorRgb01, float weight);
 void __stdcall zModelRenderAlphaScaleSetCurrent(float scale);
 void __fastcall zModelRenderVertexAlphaEnabledSetCurrent(int enabled);
+#ifdef __cplusplus
+}
 
 namespace VariantTag {
+extern "C" {
+#endif
 int __fastcall TagsOverlap(const zTag4Partial* tagA, const zTag4Partial* tagB);
 int __fastcall CurrentAllowsId(int variantId);
+#ifdef __cplusplus
+}
 } // namespace VariantTag
 
 namespace zDi {
+extern "C" {
+#endif
 void __fastcall EvalBoundingSphereLightingFlags(
     zDiPartial* self,
     int* outDepthFade,
     int* outActiveLightState,
     int* outLensFlareVisible
 );
+#ifdef __cplusplus
 }
+}
+#endif
 
 /*
  * Reconstructed zModel storage root.
@@ -286,7 +362,7 @@ void __fastcall EvalBoundingSphereLightingFlags(
  * The compatibility macros below expose the recovered retail names as members
  * of the single definition in gmod_init.c; offsets are checked there.
  */
-struct zModel_GlobalState {
+typedef struct zModel_GlobalState {
     int diPoolCapacity; /* +0x0000 0x576200 */
     zDiPartial* diPoolBase; /* +0x0004 0x576204 */
     int diPoolInUseCount; /* +0x0008 0x576208 */
@@ -387,11 +463,15 @@ struct zModel_GlobalState {
     int* clipMaskStackTop; /* +0x7824 0x57da24 */
     zTag4Partial variantCurrentTag; /* +0x7828 0x57da28 */
     int altClipPassEnabled; /* +0x782c 0x57da2c */
-};
+} zModel_GlobalState;
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 extern zModel_GlobalState g_zModel_GlobalStateStorage;
+#ifdef __cplusplus
 }
+#endif
 
 #define g_zModel_DiPoolCapacity (g_zModel_GlobalStateStorage.diPoolCapacity)
 #define g_zModel_DiPoolBase (g_zModel_GlobalStateStorage.diPoolBase)

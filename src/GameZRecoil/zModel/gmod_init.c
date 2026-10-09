@@ -20,10 +20,9 @@
 
 // Option names hud.cpp defines; retail reads these globals (0x4da834,
 // 0x4da888), not literals.
-extern "C" char g_zOpt_OptionName_GfxFlagsHw[];
-extern "C" char g_zOpt_OptionName_GfxFlagsSw[];
+extern char g_zOpt_OptionName_GfxFlagsHw[];
+extern char g_zOpt_OptionName_GfxFlagsSw[];
 
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-g-zmodel-globalstatestorage
  * @recoil-artifact defines .data recoil:data:0x576200: g_zModel_GlobalStateStorage.diPoolCapacity.
@@ -130,7 +129,6 @@ extern "C" {
  * Purpose: Owns the zero-filled zModel module state.
  */
 zModel_GlobalState g_zModel_GlobalStateStorage = { 0 };
-}
 
 /*
  * BN identifies the gmod_init.c diagnostics as three initialized .data char
@@ -175,7 +173,6 @@ float g_zModel_BFETolerance = 0.005f;
 int g_Variant_FilterEnabled = 1;
 zTag4Partial g_VariantTag_Current = { 0 };
 
-extern "C" {
 /**
  * Source owner evidence: zClipAlt is a namespace/data utility cluster over alternate clip rectangles,
  * remap globals, and typed zClipRect/zMath provider calls.
@@ -193,7 +190,6 @@ extern "C" {
  * Purpose: Select whether remap bias includes the primary clip origin.
  */
 int g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
-}
 
 /**
  * Original source helper expression observed in callers 0x476190 and 0x4761e0
@@ -227,14 +223,15 @@ int g_zClipAlt_BiasIncludesPrimaryOrigin = 0;
  *
  * Purpose: initialize zModel display globals, fog defaults, scratch buffers, and damage-mask state.
  */
-int __cdecl zModelDisplayInit()
+int __cdecl zModelDisplayInit(void)
 {
+    zOptionEntryPartial* graphicsFlagsOption;
     gModel_DisplayInitWriteOnlyFlag = 1;
     gModel_FogEnabled = 1;
     gModel_FogLinearModeEnabled = 1;
 
     gModel_RenderMode = 2;
-    gModel_RenderFn = zModel::RenderNodeSoftware;
+    gModel_RenderFn = RenderNodeSoftware;
     gAltClipPassEnabled = 0;
     gModel_ClipMaskStackTop = gModel_ClipMaskStack;
     g_zVideo_pActiveProjectionViewContext = 0;
@@ -282,7 +279,8 @@ int __cdecl zModelDisplayInit()
     g_zModel_PointInPolygonVertices = g_zModel_SharedVec3ScratchAStorage;
     g_zModel_PointInPolygonEdgeNormals = g_zModel_SharedVec3ScratchBStorage;
     {
-        for (int handleIndex = 0; handleIndex < 3; ++handleIndex) {
+        int handleIndex;
+        for (handleIndex = 0; handleIndex < 3; ++handleIndex) {
             g_OptCatalogDamageMaskHandles[handleIndex] = 0;
         }
     }
@@ -297,168 +295,158 @@ int __cdecl zModelDisplayInit()
     g_OptCatalogDamageMaskSlotIndex = 0;
     gModel_DefaultGraphicsFlags = -1;
 
-    zOptionEntryPartial* graphicsFlagsOption = zGame::OptionsFindOption(
+    graphicsFlagsOption = OptionsFindOption(
         g_zVideo_ActiveRendererPath != 0 ? g_zOpt_OptionName_GfxFlagsHw : g_zOpt_OptionName_GfxFlagsSw
     );
     gModel_pGraphicsFlags
         = graphicsFlagsOption != 0 ? &graphicsFlagsOption->payloadOrBuffer : &gModel_DefaultGraphicsFlags;
 
-    zTag4::Clear(&g_Variant_CurrentTag);
+    Clear(&g_Variant_CurrentTag);
     return 0;
 }
 
-namespace zModel_Display
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdownthunk
+ * @recoil-artifact defines .text recoil:function:0x475e60: zModel_Display::ShutdownThunk
+ * @recoil-match byte
+ *
+ * Purpose: registration thunk that invokes zModelDisplayShutdown.
+ */
+int __cdecl ShutdownThunk(void)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdownthunk
-     * @recoil-artifact defines .text recoil:function:0x475e60: zModel_Display::ShutdownThunk
-     * @recoil-match byte
-     *
-     * Purpose: registration thunk that invokes zModel_Display::Shutdown.
-     */
-    int __cdecl ShutdownThunk()
-    {
-        Shutdown();
-        return 0;
+    zModelDisplayShutdown();
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-init
+ * @recoil-artifact defines .text recoil:function:0x475e70: zModelInit
+ * @recoil-match byte
+ *
+ * Purpose: initialize zModel material and display-instance pools and choose the render path.
+ */
+int __cdecl zModelInit(void)
+{
+    zModelMatlInitGlobals();
+
+    if (g_zVideo_ActiveRendererPath != 0) {
+        gModel_RenderFn = RenderNodeHardware;
+        g_zModel_SoftwarePathActive = 0;
+    } else {
+        g_zModel_SoftwarePathActive = 1;
     }
-} // namespace zModel_Display
 
-namespace zModel
+    gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+
+    if (g_zModel_DiPoolCapacity == 0) {
+        g_zModel_DiPoolCapacity = 1750;
+    }
+
+    g_zModel_DiPoolBase = (zDiPartial*)(malloc(g_zModel_DiPoolCapacity * sizeof(zDiPartial)));
+    memset(g_zModel_DiPoolBase, 0, g_zModel_DiPoolCapacity * sizeof(zDiPartial));
+    g_zModel_DiPoolFreeHeadIndex = 0;
+    if (g_zModel_DiPoolCapacity > 0) {
+        int i;
+        for (i = 0; i < g_zModel_DiPoolCapacity - 1; ++i) {
+            g_zModel_DiPoolBase[i].nextFreeIndex = i + 1;
+        }
+
+        g_zModel_DiPoolBase[g_zModel_DiPoolCapacity - 1].nextFreeIndex = -1;
+    }
+
+    g_zModel_DiPoolInUseCount = 0;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-reset
+ * @recoil-artifact defines .text recoil:function:0x475f60: zModelDisplayReset
+ * @recoil-match byte
+ *
+ * Purpose: free all currently in-use display-instance pool entries.
+ */
+int __cdecl zModelDisplayReset(void)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-init
-     * @recoil-artifact defines .text recoil:function:0x475e70: zModel::Init
-     * @recoil-match byte
-     *
-     * Purpose: initialize zModel material and display-instance pools and choose the render path.
-     */
-    int __cdecl Init()
-    {
-        zModel_Matl::InitGlobals();
-
-        if (g_zVideo_ActiveRendererPath != 0) {
-            gModel_RenderFn = zModel::RenderNodeHardware;
-            g_zModel_SoftwarePathActive = 0;
-        } else {
-            g_zModel_SoftwarePathActive = 1;
+    if (g_zModel_DiPoolCapacity > 0) {
+        int i;
+        for (i = 0; i < g_zModel_DiPoolInUseCount; ++i) {
+            FreeIfUnreferenced(&g_zModel_DiPoolBase[i]);
         }
+    }
 
-        gModel_ClipMaskStackTop = gModel_ClipMaskStack;
+    return 0;
+}
 
-        if (g_zModel_DiPoolCapacity == 0) {
-            g_zModel_DiPoolCapacity = 1750;
-        }
-
-        g_zModel_DiPoolBase = (zDiPartial*)(malloc(g_zModel_DiPoolCapacity * sizeof(zDiPartial)));
-        memset(g_zModel_DiPoolBase, 0, g_zModel_DiPoolCapacity * sizeof(zDiPartial));
-        g_zModel_DiPoolFreeHeadIndex = 0;
-        if (g_zModel_DiPoolCapacity > 0) {
-            for (int i = 0; i < g_zModel_DiPoolCapacity - 1; ++i) {
-                g_zModel_DiPoolBase[i].nextFreeIndex = i + 1;
-            }
-
-            g_zModel_DiPoolBase[g_zModel_DiPoolCapacity - 1].nextFreeIndex = -1;
-        }
-
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdown
+ * @recoil-artifact defines .text recoil:function:0x475fa0: zModelDisplayShutdown
+ * @recoil-match byte
+ *
+ * Purpose: shut down display materials and release the display-instance pool.
+ */
+int __cdecl zModelDisplayShutdown(void)
+{
+    zModelMatlBufferShutdown();
+    if (g_zModel_DiPoolCapacity > 0) {
+        zModelDisplayReset();
+        free(g_zModel_DiPoolBase);
+        g_zModel_DiPoolBase = 0;
+        g_zModel_DiPoolCapacity = 0;
         g_zModel_DiPoolInUseCount = 0;
-        return 0;
+        g_zModel_DiPoolFreeHeadIndex = -1;
     }
-} // namespace zModel
 
-namespace zModel_Display
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setdisplayinstancepoolcapacity
+ * @recoil-artifact defines .text recoil:function:0x475ff0: zModel::SetDisplayInstancePoolCapacity
+ * @recoil-match byte
+ *
+ * Purpose: set the display-instance pool capacity before zModel initialization.
+ */
+void __fastcall SetDisplayInstancePoolCapacity(int capacity)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-reset
-     * @recoil-artifact defines .text recoil:function:0x475f60: zModel_Display::Reset
-     * @recoil-match byte
-     *
-     * Purpose: free all currently in-use display-instance pool entries.
-     */
-    int __cdecl Reset()
-    {
-        if (g_zModel_DiPoolCapacity > 0) {
-            for (int i = 0; i < g_zModel_DiPoolInUseCount; ++i) {
-                zModel_DiPool::FreeIfUnreferenced(&g_zModel_DiPoolBase[i]);
-            }
-        }
-
-        return 0;
+    if (g_zModel_DiPoolCapacity != 0) {
+        ReportOld(
+            0x200,
+            g_zModel_SourceFile_GmodInitC,
+            0x1be,
+            g_zModel_SetModel3dArraySizeAlreadySetFmt,
+            g_zModel_DiPoolCapacity
+        );
+        return;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-display-shutdown
-     * @recoil-artifact defines .text recoil:function:0x475fa0: zModel_Display::Shutdown
-     * @recoil-match byte
-     *
-     * Purpose: shut down display materials and release the display-instance pool.
-     */
-    int __cdecl Shutdown()
-    {
-        zModel_MatlBuffer::Shutdown();
-        if (g_zModel_DiPoolCapacity > 0) {
-            Reset();
-            free(g_zModel_DiPoolBase);
-            g_zModel_DiPoolBase = 0;
-            g_zModel_DiPoolCapacity = 0;
-            g_zModel_DiPoolInUseCount = 0;
-            g_zModel_DiPoolFreeHeadIndex = -1;
-        }
+    g_zModel_DiPoolCapacity = capacity;
+}
 
-        return 0;
-    }
-} // namespace zModel_Display
-
-namespace zModel
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setsoftwarepathactive
+ * @recoil-artifact defines .text recoil:function:0x476020: zModel::SetSoftwarePathActive
+ * @recoil-match byte
+ *
+ * Purpose: update the software render path flag when no hardware renderer is active.
+ */
+void __fastcall SetSoftwarePathActive(int active)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setdisplayinstancepoolcapacity
-     * @recoil-artifact defines .text recoil:function:0x475ff0: zModel::SetDisplayInstancePoolCapacity
-     * @recoil-match byte
-     *
-     * Purpose: set the display-instance pool capacity before zModel initialization.
-     */
-    void __fastcall SetDisplayInstancePoolCapacity(int capacity)
-    {
-        if (g_zModel_DiPoolCapacity != 0) {
-            zError::ReportOld(
-                0x200,
-                g_zModel_SourceFile_GmodInitC,
-                0x1be,
-                g_zModel_SetModel3dArraySizeAlreadySetFmt,
-                g_zModel_DiPoolCapacity
-            );
-            return;
-        }
-
-        g_zModel_DiPoolCapacity = capacity;
+    if (g_zVideo_ActiveRendererPath == 0) {
+        g_zModel_SoftwarePathActive = active;
     }
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setsoftwarepathactive
-     * @recoil-artifact defines .text recoil:function:0x476020: zModel::SetSoftwarePathActive
-     * @recoil-match byte
-     *
-     * Purpose: update the software render path flag when no hardware renderer is active.
-     */
-    void __fastcall SetSoftwarePathActive(int active)
-    {
-        if (g_zVideo_ActiveRendererPath == 0) {
-            g_zModel_SoftwarePathActive = active;
-        }
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setvertexshadingenabled
-     * @recoil-artifact defines .text recoil:function:0x476030: zModel::SetVertexShadingEnabled
-     * @recoil-match byte
-     *
-     * Purpose: set the global vertex-shading enable flag.
-     */
-    void __fastcall SetVertexShadingEnabled(int enabled)
-    {
-        g_zModel_VertexShadingEnabled = enabled;
-    }
-} // namespace zModel
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setvertexshadingenabled
+ * @recoil-artifact defines .text recoil:function:0x476030: zModel::SetVertexShadingEnabled
+ * @recoil-match byte
+ *
+ * Purpose: set the global vertex-shading enable flag.
+ */
+void __fastcall SetVertexShadingEnabled(int enabled)
+{
+    g_zModel_VertexShadingEnabled = enabled;
+}
 
 /**
  * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-target-color-override-set-current
@@ -500,74 +488,67 @@ void __fastcall zModelRenderVertexAlphaEnabledSetCurrent(int enabled)
     gModel_RenderVertexAlphaEnabled = enabled;
 }
 
-namespace zModel
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldpermeter
+ * @recoil-artifact defines .text recoil:function:0x476090: zModel::SetTextureWorldPerMeter
+ * @recoil-match byte
+ *
+ * Purpose: set global texture-world scale per meter.
+ */
+void __stdcall SetTextureWorldPerMeter(float worldPerMeterU, float worldPerMeterV)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldpermeter
-     * @recoil-artifact defines .text recoil:function:0x476090: zModel::SetTextureWorldPerMeter
-     * @recoil-match byte
-     *
-     * Purpose: set global texture-world scale per meter.
-     */
-    void __stdcall SetTextureWorldPerMeter(float worldPerMeterU, float worldPerMeterV)
-    {
-        g_zModel_TextureWorldPerMeterU = worldPerMeterU;
-        g_zModel_TextureWorldPerMeterV = worldPerMeterV;
-    }
+    g_zModel_TextureWorldPerMeterU = worldPerMeterU;
+    g_zModel_TextureWorldPerMeterV = worldPerMeterV;
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldbase
-     * @recoil-artifact defines .text recoil:function:0x4760b0: zModel::SetTextureWorldBase
-     * @recoil-match byte
-     *
-     * Purpose: set global texture-world base coordinates.
-     */
-    void __stdcall SetTextureWorldBase(float worldBaseU, float worldBaseV)
-    {
-        g_zModel_TextureWorldBaseU = worldBaseU;
-        g_zModel_TextureWorldBaseV = worldBaseV;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setditextureworldpermeter
-     * @recoil-artifact defines .text recoil:function:0x4760d0: zModel::SetDiTextureWorldPerMeter
-     * @recoil-match byte
-     *
-     * Purpose: enable display-instance texture scrolling and store its U/V rates.
-     */
-    int __fastcall
-    SetDiTextureWorldPerMeter(zDiPartial * di, int worldSpaceEnabled, float scrollRateU, float scrollRateV)
-    {
-        if (di == 0) {
-            zError::ReportOld(0x200, g_zModel_SourceFile_GmodInitC, 0x285, g_zModel_TextureScrollNullPtrErrorMsg);
-            return 1;
-        }
-
-        di->flags = (di->flags & ~0x20) | ((worldSpaceEnabled & 1) << 5);
-        di->scrollRateU = scrollRateU;
-        di->scrollRateV = scrollRateV;
-        return 0;
-    }
-} // namespace zModel
-
-namespace zClipAlt
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-settextureworldbase
+ * @recoil-artifact defines .text recoil:function:0x4760b0: zModel::SetTextureWorldBase
+ * @recoil-match byte
+ *
+ * Purpose: set global texture-world base coordinates.
+ */
+void __stdcall SetTextureWorldBase(float worldBaseU, float worldBaseV)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-setsourcerect
-     * @recoil-artifact defines .text recoil:function:0x476120: zClipAlt::SetSourceRect.
-     * @recoil-match byte
-     *
-     * Purpose: cache the source rectangle extents used to remap alternate clipped
-     * points into the active target rectangle.
-     */
-    void __fastcall SetSourceRect(const zClipAltFloatRect* rect)
-    {
-        g_zClipAlt_SourceRect = *rect;
-        g_zClipAlt_SourceWidth = rect->right - rect->left;
-        g_zClipAlt_SourceHeight = rect->bottom - rect->top;
-        gAltClipSourceRectValid = 1;
+    g_zModel_TextureWorldBaseU = worldBaseU;
+    g_zModel_TextureWorldBaseV = worldBaseV;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zmodel-setditextureworldpermeter
+ * @recoil-artifact defines .text recoil:function:0x4760d0: zModel::SetDiTextureWorldPerMeter
+ * @recoil-match byte
+ *
+ * Purpose: enable display-instance texture scrolling and store its U/V rates.
+ */
+int __fastcall SetDiTextureWorldPerMeter(zDiPartial* di, int worldSpaceEnabled, float scrollRateU, float scrollRateV)
+{
+    if (di == 0) {
+        ReportOld(0x200, g_zModel_SourceFile_GmodInitC, 0x285, g_zModel_TextureScrollNullPtrErrorMsg);
+        return 1;
     }
-} // namespace zClipAlt
+
+    di->flags = (di->flags & ~0x20) | ((worldSpaceEnabled & 1) << 5);
+    di->scrollRateU = scrollRateU;
+    di->scrollRateV = scrollRateV;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-setsourcerect
+ * @recoil-artifact defines .text recoil:function:0x476120: zClipAlt::SetSourceRect.
+ * @recoil-match byte
+ *
+ * Purpose: cache the source rectangle extents used to remap alternate clipped
+ * points into the active target rectangle.
+ */
+void __fastcall SetSourceRect(const zClipAltFloatRect* rect)
+{
+    g_zClipAlt_SourceRect = *rect;
+    g_zClipAlt_SourceWidth = rect->right - rect->left;
+    g_zClipAlt_SourceHeight = rect->bottom - rect->top;
+    gAltClipSourceRectValid = 1;
+}
 
 /**
  * @recoil-anchor recoil:anchor:zmodel.gmod-init.z-model-fog-set-enabled
@@ -588,7 +569,7 @@ void __fastcall zModelFogSetEnabled(int enabled)
  *
  * Purpose: return the current fog-enabled flag.
  */
-int __cdecl zModelFogIsEnabled()
+int __cdecl zModelFogIsEnabled(void)
 {
     return gModel_FogEnabled;
 }
@@ -615,7 +596,7 @@ void __stdcall zModelFogSetDistanceStart(float distanceStart)
  *
  * Purpose: return the current distance-fog start value.
  */
-float __cdecl zModelFogGetDistanceStart()
+float __cdecl zModelFogGetDistanceStart(void)
 {
     return gModel_FogDistanceStart;
 }
@@ -701,7 +682,7 @@ void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01)
 {
     memcpy(&gModel_FogColorRgb01, rgb01, sizeof(gModel_FogColorRgb01));
     if (g_zVideo_ActiveRendererPath != 0) {
-        zVideo::SetFogColorFromRgb01((zVideo_ColorRgbFloat*)(rgb01));
+        SetFogColorFromRgb01((zVideo_ColorRgbFloat*)(rgb01));
     }
 }
 
@@ -712,28 +693,25 @@ void __fastcall zModelFogSetColorRgb01(zColorRgb* rgb01)
  *
  * Purpose: apply the current fog color through the renderer's clamped RGB path.
  */
-void __cdecl zModelFogApplyCurrentColor()
+void __cdecl zModelFogApplyCurrentColor(void)
 {
-    zRndr::FogColorSetRgb01Clamped(&gModel_FogColorRgb01);
+    FogColorSetRgb01Clamped(&gModel_FogColorRgb01);
 }
 
-namespace zRndr
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zrndr-setinverseztolerance
+ * @recoil-artifact defines .text recoil:function:0x476300: zRndr::SetInverseZTolerance
+ * @recoil-match byte
+ *
+ * Purpose: update the software inverse-Z tolerance and mirror it to the active renderer path.
+ */
+void __stdcall SetInverseZTolerance(float inverseZTolerance)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zrndr-setinverseztolerance
-     * @recoil-artifact defines .text recoil:function:0x476300: zRndr::SetInverseZTolerance
-     * @recoil-match byte
-     *
-     * Purpose: update the software inverse-Z tolerance and mirror it to the active renderer path.
-     */
-    void __stdcall SetInverseZTolerance(float inverseZTolerance)
-    {
-        g_zRndr_InverseZTolerance = inverseZTolerance;
-        if (g_zVideo_ActiveRendererPath != 0) {
-            g_zVideo_InverseZTolerancePending = inverseZTolerance;
-        }
+    g_zRndr_InverseZTolerance = inverseZTolerance;
+    if (g_zVideo_ActiveRendererPath != 0) {
+        g_zVideo_InverseZTolerancePending = inverseZTolerance;
     }
-} // namespace zRndr
+}
 
 /*
  * Layout check for zModel_GlobalState: every member offset and extent, including the
@@ -795,19 +773,19 @@ RECOIL_STATIC_ASSERT(
     offsetof(zModel_GlobalState, unknown_007c) == 0x7c && sizeof(g_zModel_GlobalStateStorage.unknown_007c) == 0x10
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceRect.left) == 0x8c
+    offsetof(zModel_GlobalState, altSourceRect) + offsetof(zClipAltFloatRect, left) == 0x8c
     && sizeof(g_zModel_GlobalStateStorage.altSourceRect.left) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceRect.top) == 0x90
+    offsetof(zModel_GlobalState, altSourceRect) + offsetof(zClipAltFloatRect, top) == 0x90
     && sizeof(g_zModel_GlobalStateStorage.altSourceRect.top) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceRect.right) == 0x94
+    offsetof(zModel_GlobalState, altSourceRect) + offsetof(zClipAltFloatRect, right) == 0x94
     && sizeof(g_zModel_GlobalStateStorage.altSourceRect.right) == 0x4
 );
 RECOIL_STATIC_ASSERT(
-    offsetof(zModel_GlobalState, altSourceRect.bottom) == 0x98
+    offsetof(zModel_GlobalState, altSourceRect) + offsetof(zClipAltFloatRect, bottom) == 0x98
     && sizeof(g_zModel_GlobalStateStorage.altSourceRect.bottom) == 0x4
 );
 RECOIL_STATIC_ASSERT(

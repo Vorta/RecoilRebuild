@@ -10,30 +10,30 @@
 #include "recoil/recoil_callconv.h"
 
 #include "GameZRecoil/include/zClass.h"
-struct CZCameraDataPartial;
-struct CZNodePartial;
-struct HudUiRect;
-struct zTag4Partial;
-struct zVec3;
-
+typedef struct CZCameraDataPartial CZCameraDataPartial;
+typedef struct CZNodePartial CZNodePartial;
+typedef struct HudUiRect HudUiRect;
+typedef struct zTag4Partial zTag4Partial;
+typedef struct zVec3 zVec3;
+#ifdef __cplusplus
 extern "C" {
+#endif
 typedef void (*zVideo_ShutdownVideoSystemProc)();
 typedef int(__fastcall* zVideo_StatusProc)(int modeIndex);
-struct zVidRect32 {
+typedef struct zVidRect32 {
     int left;
     int top;
     int right;
     int bottom;
-};
-struct zVideo_SurfaceStatePartial;
-struct zVideo_TextureRecordPartial;
-struct zVidImagePartial;
-struct zVideo_XyzVertex;
-struct zVideo_TexCoord;
-struct zVideo_RenderClass;
-struct zVideo_ColorRgbFloat;
-
-struct zVideoFxColoredLineRecord {
+} zVidRect32;
+typedef struct zVideo_SurfaceStatePartial zVideo_SurfaceStatePartial;
+typedef struct zVideo_TextureRecordPartial zVideo_TextureRecordPartial;
+typedef struct zVidImagePartial zVidImagePartial;
+typedef struct zVideo_XyzVertex zVideo_XyzVertex;
+typedef struct zVideo_TexCoord zVideo_TexCoord;
+typedef struct zVideo_RenderClass zVideo_RenderClass;
+typedef struct zVideo_ColorRgbFloat zVideo_ColorRgbFloat;
+typedef struct zVideoFxColoredLineRecord {
     int x;
     int y;
     int width;
@@ -43,7 +43,7 @@ struct zVideoFxColoredLineRecord {
     float alphaEnd;
     float alphaStart;
     int clipInset;
-};
+} zVideoFxColoredLineRecord;
 RECOIL_STATIC_ASSERT(sizeof(zVideoFxColoredLineRecord) == 0x20);
 
 typedef void(__fastcall* zVideo_BltRectDirectProc)(zVidRect32* srcRect, zVidRect32* dstRect);
@@ -158,15 +158,15 @@ typedef void(__fastcall* zVideo_DrawPointColor16Proc)(
     int pointCount
 );
 
-struct zVidD3DDriverRecordPartial {
+typedef struct zVidD3DDriverRecordPartial {
     char m_deviceName[0x20];
     char m_deviceDescription[0x60];
     GUID* pD3DDeviceGuid;
     GUID m_d3dDeviceGuidStorage;
     D3DDEVICEDESC m_hwDesc;
-};
+} zVidD3DDriverRecordPartial;
 
-struct zVideo_TextureRecordPartial {
+typedef struct zVideo_TextureRecordPartial {
     IDirectDrawSurface* m_uploadSurface;
     IDirectDrawSurface* m_textureSurface;
     IDirect3DTexture2* m_texture;
@@ -174,9 +174,9 @@ struct zVideo_TextureRecordPartial {
     int m_alphaMode;
     D3DTEXTUREADDRESS m_uWrapMode;
     D3DTEXTUREADDRESS m_vWrapMode;
-};
+} zVideo_TextureRecordPartial;
 
-struct zVidImagePartial {
+typedef struct zVidImagePartial {
     int pixelCount;
     short width;
     short height;
@@ -196,9 +196,9 @@ struct zVidImagePartial {
     int vMaskFixed20;
     IDirectDrawSurface3* surface;
     int pitchWords;
-};
+} zVidImagePartial;
 
-struct zVidHwApiDeviceRecordPartial {
+typedef struct zVidHwApiDeviceRecordPartial {
     GUID* pDirectDrawGuid;
     GUID m_directDrawGuidStorage;
     char m_driverName[0x20];
@@ -210,9 +210,9 @@ struct zVidHwApiDeviceRecordPartial {
     int m_deviceFeatureFlags;
     int m_acceptedD3DDeviceCount;
     zVidD3DDriverRecordPartial m_d3dDrivers[4];
-};
+} zVidHwApiDeviceRecordPartial;
 
-struct zVideo_SurfaceStatePartial {
+typedef struct zVideo_SurfaceStatePartial {
     int width;
     int height;
     int pitch;
@@ -221,43 +221,43 @@ struct zVideo_SurfaceStatePartial {
     int locked;
     int pageLockActive;
     IDirectDrawSurface3* surf;
-};
+} zVideo_SurfaceStatePartial;
 
-struct zVideo_SurfaceLockVerifyArgs {
+typedef struct zVideo_SurfaceLockVerifyArgs {
     unsigned int size;
     unsigned char reserved_04[0x18];
     int callerContext;
     unsigned char reserved_20[0x8];
-};
+} zVideo_SurfaceLockVerifyArgs;
 
 struct zVideo_SurfaceLockVerifier;
-struct zVideoFxPass3Config;
+typedef struct zVideoFxPass3Config zVideoFxPass3Config;
 extern zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
 extern zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 
-struct zVidTexturePackRecord {
+typedef struct zVidTexturePackRecord {
     char name[0x20];
     int fileOffset;
     int paletteIndex;
-};
+} zVidTexturePackRecord;
 
-struct zVidTexturePackHeader {
+typedef struct zVidTexturePackHeader {
     int unknown_00;
     int fileFormat;
     int paletteTableCount;
     int recordCount;
     unsigned char unknown_10[0x08];
-};
+} zVidTexturePackHeader;
 
-struct zVidTexturePackEntry {
+typedef struct zVidTexturePackEntry {
     char filePath[0x80];
     FILE* fileHandle;
     zVidTexturePackHeader header;
     zVidTexturePackRecord* records;
     int paletteTableBaseIndex;
-};
+} zVidTexturePackEntry;
 
-struct zVidPaletteRemapRecipe {
+typedef struct zVidPaletteRemapRecipe {
     /*
      * The endpoints use the same RGB representation as the light colours.
      * Their strengths control each endpoint contribution to the remap.
@@ -266,8 +266,9 @@ struct zVidPaletteRemapRecipe {
     zColorRgb color1;
     float color0Strength;
     float color1Strength;
-};
+} zVidPaletteRemapRecipe;
 
+#ifdef __cplusplus
 struct zVideo_SurfaceLockVerifier {
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** object) = 0;
     virtual ULONG STDMETHODCALLTYPE AddRef() = 0;
@@ -275,60 +276,63 @@ struct zVideo_SurfaceLockVerifier {
     virtual HRESULT STDMETHODCALLTYPE Unknown0c() = 0;
     virtual HRESULT STDMETHODCALLTYPE VerifySurfaceState(zVideo_SurfaceLockVerifyArgs* args) = 0;
 };
+#else
+typedef struct zVideo_SurfaceLockVerifier zVideo_SurfaceLockVerifier;
+#endif
 
-struct zVideo_QuadBatchItemPartial {
+typedef struct zVideo_QuadBatchItemPartial {
     D3DTLVERTEX vertices[4];
-};
+} zVideo_QuadBatchItemPartial;
 
-struct zVideo_XyzVertex {
+typedef struct zVideo_XyzVertex {
     float x;
     float y;
     float z;
-};
+} zVideo_XyzVertex;
 
-struct zVideo_ColorRgbFloat {
+typedef struct zVideo_ColorRgbFloat {
     float r;
     float g;
     float b;
-};
+} zVideo_ColorRgbFloat;
 
-struct zVideo_PackedColor16 {
+typedef struct zVideo_PackedColor16 {
     unsigned short value;
-};
+} zVideo_PackedColor16;
 
-struct zVideo_TexCoord {
+typedef struct zVideo_TexCoord {
     float u;
     float v;
-};
+} zVideo_TexCoord;
 
-struct zVideo_RenderClass {
+typedef struct zVideo_RenderClass {
     unsigned char unknown_00[0x0c];
     D3DTEXTUREHANDLE textureHandle;
     D3DTEXTUREBLEND textureMapBlend;
     D3DTEXTUREADDRESS textureAddressU;
     D3DTEXTUREADDRESS textureAddressV;
-};
+} zVideo_RenderClass;
 
-struct zVideo_SortedPolyQueueEntry {
+typedef struct zVideo_SortedPolyQueueEntry {
     int vertexCount;
     zVideo_RenderClass* renderClass;
     int renderParam;
     D3DTLVERTEX vertices[64];
-};
+} zVideo_SortedPolyQueueEntry;
 
-struct zVideo_OverwriteQueueEntry {
+typedef struct zVideo_OverwriteQueueEntry {
     int type;
     int vertexCount;
     zVideo_RenderClass* renderClass;
     int renderParam;
     D3DTLVERTEX vertices[64];
-};
+} zVideo_OverwriteQueueEntry;
 
 /*
  * BN models the Direct3D render-state cache at 0x633408 as one 0x28-byte BSS
  * record shared by the sorted, overwrite, and solid-quad flush paths.
  */
-struct zVideo_D3DRenderStateCacheLive {
+typedef struct zVideo_D3DRenderStateCacheLive {
     int alphaBlendEnable;
     int shadeMode;
     D3DTEXTUREBLEND textureMapBlend;
@@ -339,9 +343,9 @@ struct zVideo_D3DRenderStateCacheLive {
     D3DTEXTUREHANDLE textureHandle;
     int zWriteEnable;
     int unknown_24;
-};
+} zVideo_D3DRenderStateCacheLive;
 
-struct zVideo_PixelPackParams {
+typedef struct zVideo_PixelPackParams {
     int rBits;
     int gBits;
     int bBits;
@@ -354,7 +358,7 @@ struct zVideo_PixelPackParams {
     int rMaskShifted;
     int gMaskShifted;
     int bMaskShifted;
-};
+} zVideo_PixelPackParams;
 
 /*
  * zVideo module state recovered as one zero-filled aggregate: retail
@@ -363,7 +367,7 @@ struct zVideo_PixelPackParams {
  * sibling counters (FlushSortedPolys reloads the count after each draw-order
  * store). Offsets are relative to 0x632120; unknown_* are unrecovered spans.
  */
-struct zVideo_GlobalState {
+typedef struct zVideo_GlobalState {
     int rendererType; /* +0x00000 0x632120 */
     int fullscreenOption; /* +0x00004 0x632124 */
     int useHalfResBackbuffer; /* +0x00008 0x632128 */
@@ -472,7 +476,7 @@ struct zVideo_GlobalState {
     D3DTLVERTEX d3dSubmitTempVertices[64]; /* +0x03bf8 0x635d18 */
     zVideo_SortedPolyQueueEntry sortedPolyQueue[256]; /* +0x043f8 0x636518 */
     zVideo_OverwriteQueueEntry overwriteQueue[0x180]; /* +0x84ff8 0x6b7118 */
-};
+} zVideo_GlobalState;
 
 extern int g_zVid_PaletteRemapRecipeCount;
 extern zVidPaletteRemapRecipe* g_zVid_PaletteRemapRecipes;
@@ -704,11 +708,12 @@ zVideo_PackedColor16 __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* col
 void __fastcall zVideoSetClearColorPacked16(unsigned int packedColor16);
 void __fastcall zVideoSetPendingFogTargetColorFromRgb01(zVideo_ColorRgbFloat* color);
 void __cdecl zVideoRestoreIconicFullscreenWindowIfNeeded();
-}
 
 void __fastcall zVideoSetActiveViewContext(CZCameraDataPartial* viewContext);
 void __fastcall zVideoUpdateProjectionStateFromCameraData(CZCameraDataPartial* cameraData);
 int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius, int* clipMaskInOut);
+#ifdef __cplusplus
+}
 
 int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local);
 
@@ -779,10 +784,18 @@ BltSourceToPrimaryClipped(zVidImagePartial* srcImage, int dstX, int dstY, int sr
 } // namespace zVideo_buff
 
 namespace zVideo {
+extern "C" {
+#endif
 void __fastcall SetFogColorFromRgb01(zVideo_ColorRgbFloat* color);
+#ifdef __cplusplus
+}
 void __fastcall SetFogTargetColorFromRgb01(zVideo_ColorRgbFloat* color);
+extern "C" {
+#endif
 void __cdecl CommitFogColorIfChanged();
 void __cdecl CommitFogTargetColorIfChanged();
+#ifdef __cplusplus
+}
 void __fastcall PixelPackSetupFromMasks(
     int redBits,
     int greenBits,
@@ -814,8 +827,12 @@ int __cdecl GetSwSurfaceHeight();
 int __cdecl GetSwSurfacePitch();
 int __cdecl GetSwSurfaceLockedFlag();
 void* __cdecl GetPrimarySurfacePixels();
+extern "C" {
+#endif
 int __cdecl GetPrimarySurfaceWidth();
 int __cdecl GetPrimarySurfaceHeight();
+#ifdef __cplusplus
+}
 int __cdecl GetPrimarySurfacePitch();
 int __cdecl GetDisplayModeBpp();
 int __fastcall LoadPaletteFileAndApplyBrightness(const char* palettePath);
@@ -881,7 +898,11 @@ extern zVidImagePartial g_zImage_DefaultImage;
 zVidImagePartial* __cdecl Create();
 int __fastcall Destroy(zVidImagePartial* image) throw();
 zVidImagePartial* __fastcall ReleaseIfNotDefault(zVidImagePartial* image) throw();
+extern "C" {
+#endif
 void __fastcall ReleaseOwnedBuffers(zVidImagePartial* image);
+#ifdef __cplusplus
+}
 void __fastcall CalcPow2ScratchFields(zVidImagePartial* image);
 int __fastcall QueryBytesPerPixel(zVidImagePartial* image);
 void __fastcall ClearZeroAlphaPixelsInPlace(zVidImagePartial* image);
@@ -910,18 +931,21 @@ void __fastcall ApplyRecipeToPaletteVariant(
 );
 } // namespace zVid_PaletteRemap
 
-extern "C" int __fastcall zVidImageSetPixels(zVidImagePartial* image, void* pixels, char* alphaMap);
+extern "C" {
+#endif
+int __fastcall zVidImageSetPixels(zVidImagePartial* image, void* pixels, char* alphaMap);
 
-extern "C" zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sourceSelector);
-extern "C" unsigned short* __fastcall
-zVidPaletteRemapBuildAllRecipeVariantsForPalette(unsigned short* palette, int colorCount);
-extern "C" int __fastcall zVidPaletteRemapBuildPaletteVariant(zVidPaletteRemapRecipe* recipe);
-extern "C" int __fastcall zVidPaletteRemapFindRecipeIndexFromRgb(zColorRgb* rgb);
-extern "C" FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntry* entry);
-extern "C" void __cdecl zVidTexturePackEnsureDefaultImagePackLoaded();
-extern "C" RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoaded();
-extern "C" zVidImagePartial* __fastcall zVidTexturePackLoadImageByName(const char* imageName);
-extern "C" zVidImagePartial* __fastcall zVidTexturePackLoadBuiltinImageByName(const char* imageName);
+zVidImagePartial* __fastcall zVideobuffCaptureSurfaceToImage(int sourceSelector);
+unsigned short* __fastcall zVidPaletteRemapBuildAllRecipeVariantsForPalette(unsigned short* palette, int colorCount);
+int __fastcall zVidPaletteRemapBuildPaletteVariant(zVidPaletteRemapRecipe* recipe);
+int __fastcall zVidPaletteRemapFindRecipeIndexFromRgb(zColorRgb* rgb);
+FILE* __fastcall zVidTexturePackEntryLoadFromFile(zVidTexturePackEntry* entry);
+void __cdecl zVidTexturePackEnsureDefaultImagePackLoaded();
+RECOIL_NO_GS void __cdecl zVidTexturePackEnsureBuiltinTexturePacksLoaded();
+zVidImagePartial* __fastcall zVidTexturePackLoadImageByName(const char* imageName);
+zVidImagePartial* __fastcall zVidTexturePackLoadBuiltinImageByName(const char* imageName);
+#ifdef __cplusplus
+}
 
 namespace zVid_TexturePack {
 void __cdecl ShutdownBuiltinPacks();
@@ -1003,7 +1027,11 @@ void __stdcall SetFogStart(float fogStart);
 void __stdcall SetFogEnd(float fogEnd);
 void __fastcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unused);
 void __cdecl UpdateFogColor();
+extern "C" {
+#endif
 void __stdcall SetQuadBatchDepthAndRhw(float depthAndRhw);
+#ifdef __cplusplus
+}
 void __fastcall SubmitPolyFlatColor16(
     zVideo_XyzVertex* vertices,
     unsigned int packedColor16,
@@ -1088,3 +1116,4 @@ namespace zVideoD3D {
 int __cdecl SceneEnter();
 int __cdecl SceneLeave();
 } // namespace zVideoD3D
+#endif

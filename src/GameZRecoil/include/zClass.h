@@ -10,15 +10,15 @@
 #include "GameZRecoil/zMath/zmth_decls.h"
 #include "recoil/recoil_callconv.h"
 
-struct zBBoxCorners;
-struct zDiPartial;
-struct CZLightDataPartial;
-struct CZSoundDataPartial;
-struct zSndPlayHandle;
-struct zSndSample;
-struct zZbdSectionCallbackCtx;
+typedef struct zBBoxCorners zBBoxCorners;
+typedef struct zDiPartial zDiPartial;
+typedef struct CZLightDataPartial CZLightDataPartial;
+typedef struct CZSoundDataPartial CZSoundDataPartial;
+typedef struct zSndPlayHandle zSndPlayHandle;
+typedef struct zSndSample zSndSample;
+typedef struct zZbdSectionCallbackCtx zZbdSectionCallbackCtx;
 
-struct CZNodePartial {
+typedef struct CZNodePartial {
     char name[0x24];
     int flags;
     int auxFlags;
@@ -28,49 +28,49 @@ struct CZNodePartial {
     int classId;
     void* classData;
     unsigned int userDataOrDiRef;
-    CZNodePartial* callbackContext;
+    struct CZNodePartial* callbackContext;
     int callbackPriority;
     void* actionCallback;
     int gridCol;
     int gridRow;
     int listCountA;
-    CZNodePartial** listA;
+    struct CZNodePartial** listA;
     int listCountB;
-    CZNodePartial** listB;
+    struct CZNodePartial** listB;
     float cachedSphereCenter[4];
     float cachedBounds[6];
-};
+} CZNodePartial;
 
-struct CZTypeListLink {
+typedef struct CZTypeListLink {
     CZNodePartial* node;
-    CZTypeListLink* prev;
-    CZTypeListLink* next;
+    struct CZTypeListLink* prev;
+    struct CZTypeListLink* next;
     int pendingRemove;
-};
+} CZTypeListLink;
 
-struct CZTypeListBucket {
+typedef struct CZTypeListBucket {
     CZTypeListLink* head;
     CZTypeListLink* tail;
     int pendingRemovalDirty;
-};
+} CZTypeListBucket;
 
 typedef int(__fastcall* CZNodePredicate)(CZNodePartial* node);
 typedef int(__fastcall* CZNodeActionCallback)(CZNodePartial* node);
 
-struct CZNodeFreeListSlot {
+typedef struct CZNodeFreeListSlot {
     CZNodePartial node;
     zBBox3f primaryBounds;
     zBBox3f secondaryBounds;
     void* damageHandler;
     unsigned int freeTag;
-};
+} CZNodeFreeListSlot;
 
-struct OptCatalogDamageHandlerPartial {
+typedef struct OptCatalogDamageHandlerPartial {
     void* hitCallback;
     void* hitContext;
     void* timerContext;
     void* timerCallback;
-};
+} OptCatalogDamageHandlerPartial;
 
 /**
  * Original inline helper; no standalone retail function exists. Observed
@@ -78,18 +78,18 @@ struct OptCatalogDamageHandlerPartial {
  * 0x4535c0 in D:\Proj\GameZRecoil\zClass\Light.c.
  * Purpose: construct a zVec3 value from explicit x, y, and z components.
  */
-inline zVec3 zVec3Make(float x, float y, float z)
+__inline zVec3 zVec3Make(float x, float y, float z)
 {
     zVec3 value = { x, y, z };
     return value;
 }
 
-struct CZWindowClearPoly {
+typedef struct CZWindowClearPoly {
     zVec3 vertices[4];
     int vertCount;
-};
+} CZWindowClearPoly;
 
-struct CZWindowDataPartial {
+typedef struct CZWindowDataPartial {
     int viewportWidth;
     int viewportHeight;
     int resolutionWidth;
@@ -101,9 +101,9 @@ struct CZWindowDataPartial {
     int fbWidth;
     int fbHeight;
     int fbBpp;
-};
+} CZWindowDataPartial;
 
-struct CZDisplayDataPartial {
+typedef struct CZDisplayDataPartial {
     int x;
     int y;
     int width;
@@ -111,15 +111,15 @@ struct CZDisplayDataPartial {
     float backgroundR;
     float backgroundG;
     float backgroundB;
-};
+} CZDisplayDataPartial;
 
-struct zColorRgb {
+typedef struct zColorRgb {
     float red;
     float green;
     float blue;
-};
+} zColorRgb;
 
-struct zWorldAreaPartial {
+typedef struct zWorldAreaPartial {
     int areaFlags;
     int areaIndex;
     float cellMinX;
@@ -131,9 +131,9 @@ struct zWorldAreaPartial {
     unsigned char displayRefreshQueued;
     short childCount;
     CZNodePartial** childList;
-};
+} zWorldAreaPartial;
 
-struct CZWorldDataPartial {
+typedef struct CZWorldDataPartial {
     int flags;
     int pendingAreaUpdateCount;
     int pendingAreaUpdateCapacity;
@@ -176,9 +176,9 @@ struct CZWorldDataPartial {
     CZNodePartial** soundNodes;
     CZSoundDataPartial** soundDataList;
     int areaGridExternalOwnership;
-};
+} CZWorldDataPartial;
 
-struct CZWorldSettingsSectionRecord {
+typedef struct CZWorldSettingsSectionRecord {
     int fogState;
     zColorRgb fogColorRgb01;
     float fogRangeNear;
@@ -186,9 +186,9 @@ struct CZWorldSettingsSectionRecord {
     float fogAltitudeHigh;
     float fogAltitudeLow;
     float fogDensity;
-};
+} CZWorldSettingsSectionRecord;
 
-struct CZSoundDataPartial {
+typedef struct CZSoundDataPartial {
     zSndSample* sample;
     zSndPlayHandle* playHandle;
     char sampleSetName[0x24];
@@ -203,14 +203,14 @@ struct CZSoundDataPartial {
     float invRangeSpan;
     int attachedWorldCount;
     CZNodePartial** attachedWorlds;
-};
+} CZSoundDataPartial;
 
-struct CZSequenceEntryPartial {
+typedef struct CZSequenceEntryPartial {
     CZNodePartial* node;
     float triggerTime;
-};
+} CZSequenceEntryPartial;
 
-struct CZSequenceDataPartial {
+typedef struct CZSequenceDataPartial {
     int isActive;
     int repeatAtBounds;
     int wrapAtBounds;
@@ -220,20 +220,20 @@ struct CZSequenceDataPartial {
     float currentTime;
     int entryCount;
     CZSequenceEntryPartial entries[1];
-};
+} CZSequenceDataPartial;
 
-struct CZSwitchDataPartial {
+typedef struct CZSwitchDataPartial {
     int activeMaskIndex;
     int maskCount;
     unsigned int childMasks[1];
-};
+} CZSwitchDataPartial;
 
-struct zTag4Partial {
+typedef struct zTag4Partial {
     unsigned char count;
     unsigned char tags[3];
-};
+} zTag4Partial;
 
-struct CZObject3DDataPartial {
+typedef struct CZObject3DDataPartial {
     int flags;
     float alphaScale;
     zColorRgb color;
@@ -242,9 +242,9 @@ struct CZObject3DDataPartial {
     zVec3 scale;
     float localMatrix[12];
     float cachedWorldMatrix[12];
-};
+} CZObject3DDataPartial;
 
-struct CZLodDataPartial {
+typedef struct CZLodDataPartial {
     int computeOwnDistance;
     float nearRangeSq;
     float nearRange;
@@ -259,9 +259,9 @@ struct CZLodDataPartial {
     int active;
     CZNodePartial* rangeNode;
     float rangeSq;
-};
+} CZLodDataPartial;
 
-struct CZLightDataPartial {
+typedef struct CZLightDataPartial {
     int dirty;
     int enabled;
     zVec3 localRotation;
@@ -288,15 +288,15 @@ struct CZLightDataPartial {
     float invRangeDelta;
     int attachedWorldCount;
     CZNodePartial** attachedWorlds;
-};
+} CZLightDataPartial;
 
-struct CZAnimateKeyframePartial {
+typedef struct CZAnimateKeyframePartial {
     zVec3 rotation;
     zVec3 position;
     zVec3 scale;
-};
+} CZAnimateKeyframePartial;
 
-struct CZAnimateRuntimePartial {
+typedef struct CZAnimateRuntimePartial {
     unsigned char unknown_00[0x04];
     CZAnimateKeyframePartial* keyframes;
     zVec3 sampledRotation;
@@ -314,17 +314,17 @@ struct CZAnimateRuntimePartial {
     short unknown_66;
     short maxFrameIndex;
     short loopCount;
-};
+} CZAnimateRuntimePartial;
 
-struct CZAnimateDataPartial {
+typedef struct CZAnimateDataPartial {
     int flags;
     int statusFlags;
     float animatedTransform[12];
     float savedParentMatrix[12];
     CZAnimateRuntimePartial runtime;
-};
+} CZAnimateDataPartial;
 
-struct CZCameraDataPartial {
+typedef struct CZCameraDataPartial {
     CZNodePartial* worldNode;
     CZNodePartial* windowNode;
     CZNodePartial* horizonNode;
@@ -370,9 +370,9 @@ struct CZCameraDataPartial {
     unsigned char unknown_1dc[0x04];
     int variantOverrideEnabled;
     zTag4Partial variantTag;
-};
+} CZCameraDataPartial;
 
-struct CZZbdHeader {
+typedef struct CZZbdHeader {
     int magic;
     int version;
     int texDirArg;
@@ -382,17 +382,17 @@ struct CZZbdHeader {
     int nodeCount;
     int nodeFreeHead;
     int nodeTableOffset;
-};
+} CZZbdHeader;
 
-struct CZRenderColorAlphaState {
+typedef struct CZRenderColorAlphaState {
     zColorRgb color;
     float alpha;
-};
+} CZRenderColorAlphaState;
 
-struct CZLodDistanceState {
+typedef struct CZLodDistanceState {
     zVec3 center;
     float distanceSq;
-};
+} CZLodDistanceState;
 
 typedef int(__fastcall* CZRenderFn)(CZNodePartial* node, int clipMask);
 
@@ -666,19 +666,19 @@ RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, variantOverrideEnabled) == 0x
 RECOIL_STATIC_ASSERT(offsetof(CZCameraDataPartial, variantTag) == 0x1e4);
 RECOIL_STATIC_ASSERT(sizeof(CZCameraDataPartial) == 0x1e8);
 
-struct zCamera_FrustumGridTilePartial {
+typedef struct zCamera_FrustumGridTilePartial {
     int col;
     int row;
     int hasPosOffset;
     float posOffsetX;
     float posOffsetZ;
     int clipMask;
-};
+} zCamera_FrustumGridTilePartial;
 
-struct zCamera_FrustumGridTileRingPartial {
+typedef struct zCamera_FrustumGridTileRingPartial {
     zCamera_FrustumGridTilePartial tiles[30];
     int count;
-};
+} zCamera_FrustumGridTileRingPartial;
 
 RECOIL_STATIC_ASSERT(offsetof(zCamera_FrustumGridTilePartial, col) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zCamera_FrustumGridTilePartial, row) == 0x04);
@@ -689,7 +689,7 @@ RECOIL_STATIC_ASSERT(offsetof(zCamera_FrustumGridTilePartial, clipMask) == 0x14)
 RECOIL_STATIC_ASSERT(sizeof(zCamera_FrustumGridTilePartial) == 0x18);
 RECOIL_STATIC_ASSERT(offsetof(zCamera_FrustumGridTileRingPartial, count) == 0x2d0);
 RECOIL_STATIC_ASSERT(sizeof(zCamera_FrustumGridTileRingPartial) == 0x2d4);
-
+#ifdef __cplusplus
 extern "C" {
 extern zVec3 g_zCamera_FrustumFootprintPoints[5];
 extern int g_zCamera_FrustumFootprintPointCount;
@@ -788,16 +788,16 @@ void __fastcall CornersToBoundingSphere(zBBoxCorners* corners, zVec3* outCenter,
 } // namespace CZBBox
 
 namespace zTag4 {
-void __fastcall Clear(zTag4Partial* tag);
+extern "C" void __fastcall Clear(zTag4Partial* tag);
 }
 
 namespace CZWindow {
 CZNodePartial* __cdecl gwWindowNew();
 int __fastcall DeleteNode(CZNodePartial* node);
 int __fastcall gwWindowSetResolution(CZNodePartial* node, int width, int height);
-int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
+extern "C" int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
 int __fastcall gwWindowSetSize(CZNodePartial* node, int width, int height);
-int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);
+extern "C" int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);
 int __fastcall gwWindowSetBuffer(CZNodePartial* node, int bufferIndex);
 int __fastcall gwWindowSetClearPolygon(CZNodePartial* node, int enabled);
 int __fastcall gwWindowAddClearPolygonVertex(CZNodePartial* node, const zVec3* point);
@@ -1450,5 +1450,11 @@ inline void SetPendingRemovalDirty(int bucket, int value)
     }
 }
 } // namespace CZTypeList
+#else
+/* C units' view of the zClass members they call (the zClass units are C++). */
+void __fastcall Clear(zTag4Partial* tag);
+int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
+int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);
+#endif
 
 #endif

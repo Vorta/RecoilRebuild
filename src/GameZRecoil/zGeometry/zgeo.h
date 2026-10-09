@@ -12,31 +12,31 @@
 
 typedef CZNodePartial zGeometry_ClipPatchNodeView;
 
-struct zDEClient_FeatureGridCell;
-struct zGeometry_PolygonPointSpanPartial;
-struct zGeometry_WeilerContourOutputPartial;
-struct zGeometry_WeilerContourSegmentPartial;
-struct zGeometry_WeilerXingPartial;
-struct zGeometry_WeilerStatePartial;
+typedef struct zDEClient_FeatureGridCell zDEClient_FeatureGridCell;
+typedef struct zGeometry_PolygonPointSpanPartial zGeometry_PolygonPointSpanPartial;
+typedef struct zGeometry_WeilerContourOutputPartial zGeometry_WeilerContourOutputPartial;
+typedef struct zGeometry_WeilerContourSegmentPartial zGeometry_WeilerContourSegmentPartial;
+typedef struct zGeometry_WeilerXingPartial zGeometry_WeilerXingPartial;
+typedef struct zGeometry_WeilerStatePartial zGeometry_WeilerStatePartial;
 
-struct zGeometry_BoundsXY {
+typedef struct zGeometry_BoundsXY {
     float minX;
     float maxY;
     float maxX;
     float minY;
-};
+} zGeometry_BoundsXY;
 
-struct zGeometry_WeilerBufferPartial {
+typedef struct zGeometry_WeilerBufferPartial {
     int elementSize;
     int capacity;
     int count;
     void* base;
     void* appendPtr;
-};
+} zGeometry_WeilerBufferPartial;
 
-struct zGeometry_WeilerContourSegmentPartial {
-    zGeometry_WeilerContourSegmentPartial* prev;
-    zGeometry_WeilerContourSegmentPartial* next;
+typedef struct zGeometry_WeilerContourSegmentPartial {
+    struct zGeometry_WeilerContourSegmentPartial* prev;
+    struct zGeometry_WeilerContourSegmentPartial* next;
     int contourType;
     zVec3* startPoint;
     zVec3* endPoint;
@@ -50,9 +50,9 @@ struct zGeometry_WeilerContourSegmentPartial {
     zGeometry_WeilerXingPartial* startXing;
     zGeometry_WeilerXingPartial* endXing;
     zGeometry_WeilerContourOutputPartial* contourOutput;
-};
+} zGeometry_WeilerContourSegmentPartial;
 
-struct zGeometry_WeilerXingPartial {
+typedef struct zGeometry_WeilerXingPartial {
     zVec3 point;
     zGeometry_WeilerContourSegmentPartial* segment0;
     zGeometry_WeilerContourSegmentPartial* segment1;
@@ -63,55 +63,55 @@ struct zGeometry_WeilerXingPartial {
     zGeometry_WeilerContourSegmentPartial* segment6;
     zGeometry_WeilerContourSegmentPartial* segment7;
     int xingType;
-};
+} zGeometry_WeilerXingPartial;
 
-struct zGeometry_WeilerContourOutputPartial {
+typedef struct zGeometry_WeilerContourOutputPartial {
     int contourType;
     zGeometry_WeilerContourSegmentPartial* firstSegment;
     int pointCount;
-};
+} zGeometry_WeilerContourOutputPartial;
 
-struct zGeometry_PolygonPointSpanPartial {
+typedef struct zGeometry_PolygonPointSpanPartial {
     int pointCount;
     int pointDwordOffset;
-};
+} zGeometry_PolygonPointSpanPartial;
 
-struct zGeometry_PolygonSpanArrayPartial {
+typedef struct zGeometry_PolygonSpanArrayPartial {
     int polygonCount;
     zGeometry_PolygonPointSpanPartial* polygons;
-};
+} zGeometry_PolygonSpanArrayPartial;
 
-struct zGeometry_ConvexPolygonSetPartial {
+typedef struct zGeometry_ConvexPolygonSetPartial {
     int polygonCount;
     zGeometry_PolygonPointSpanPartial* polygons;
     int totalPointCount;
     zVec3* points;
-};
+} zGeometry_ConvexPolygonSetPartial;
 
-struct zGeometry_TriangleDwordOffsetList {
+typedef struct zGeometry_TriangleDwordOffsetList {
     int triangleCount;
     int triangleDwordOffsets[1];
-};
+} zGeometry_TriangleDwordOffsetList;
 
-struct zGeometry_TriangleIndexTriple {
+typedef struct zGeometry_TriangleIndexTriple {
     int i0;
     int i1;
     int i2;
-};
+} zGeometry_TriangleIndexTriple;
 
-struct zGeometry_TriangulateHole_EdgeState {
+typedef struct zGeometry_TriangulateHole_EdgeState {
     int vertexIndex0;
     int vertexIndex1;
     int remainingUseCount;
-};
+} zGeometry_TriangulateHole_EdgeState;
 
-struct zGeometry_PlaneEquationPartial {
+typedef struct zGeometry_PlaneEquationPartial {
     float a;
     float b;
     float c;
     float d;
-};
-
+} zGeometry_PlaneEquationPartial;
+#ifdef __cplusplus
 struct zGeometry_TriangleSoup {
     int triangleCount;
     zVec3 triangleVerts[1];
@@ -540,5 +540,6 @@ zGeometry_ClipPatchOutputPartial* __cdecl Create();
 void __fastcall Destroy(zGeometry_ClipPatchOutputPartial* self);
 int __fastcall ApplyNodeDiPairs(zGeometry_ClipPatchOutputPartial* self);
 } // namespace zGeometry_ClipPatchOutput
+#endif
 
 #endif

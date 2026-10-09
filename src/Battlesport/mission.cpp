@@ -615,7 +615,7 @@ int HudSensorTracker::LoadMissionCoreResources()
     g_zInterp_GlobalContext.RunScriptFile(scriptPath);
 
     CZClass::Init();
-    zModel::Init();
+    zModelInit();
 
     if (zbdPath.IsEmpty()) {
         if (missionFlags != 0) {
@@ -849,7 +849,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems()
     CZClass::ShutdownCore();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingModelsMsg);
-    zModel_Display::Shutdown();
+    zModelDisplayShutdown();
     zImage::Shutdown();
 
     sprintf(g_HudSensor_MissionSoundSetName + 16, g_HudSensorTracker_MissionSoundSetNameFmt, missionId);

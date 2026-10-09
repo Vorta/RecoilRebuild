@@ -876,7 +876,7 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
-                zDi::Release((zDiPartial*)displayInstanceValue);
+                zDiRelease((zDiPartial*)displayInstanceValue);
                 zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }
@@ -895,7 +895,7 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
-                zDi::Release((zDiPartial*)displayInstanceValue);
+                zDiRelease((zDiPartial*)displayInstanceValue);
                 zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }
@@ -914,7 +914,7 @@ void __fastcall CacheGunHardpointsAndDetachDisplays(zUtil_SaveGameState* saveSta
             CZClass::gwNodeGetUserData(hardpointNode, &displayInstanceValue);
             CZClass::gwNodeSetDisplayInstance(hardpointNode, 0);
             if ((zDiPartial*)displayInstanceValue != 0 && ((zDiPartial*)displayInstanceValue)->refCount != 0) {
-                zDi::Release((zDiPartial*)displayInstanceValue);
+                zDiRelease((zDiPartial*)displayInstanceValue);
                 zModel_DiPool::FreeIfUnreferenced((zDiPartial*)displayInstanceValue);
             }
         }

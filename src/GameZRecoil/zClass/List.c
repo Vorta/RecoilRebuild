@@ -9,12 +9,12 @@
 
 namespace zDi
 {
-    int __fastcall GetRefCount(zDiPartial * self);
+    extern "C" int __fastcall GetRefCount(zDiPartial * self);
 }
 
 namespace zModel_DiPool
 {
-    int __fastcall FreeIfUnreferenced(zDiPartial * di);
+    extern "C" int __fastcall FreeIfUnreferenced(zDiPartial * di);
 }
 
 extern "C" {

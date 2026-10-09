@@ -8,29 +8,29 @@
 #include "GameZRecoil/zReader/zreader.h"
 #include "zclass.h"
 
-struct zSndSample;
-struct zSndPlayHandle;
-struct zEffectAnimEntry;
-struct PlayerTimedHitStatus;
-struct PlayerProgressTargetSlotRuntime;
-struct NetPkt0A_RemoveRuntimeRelay;
-struct OptCatalogEntryDef;
-struct OptCatalogTrailRuntimeState;
-struct OptCatalogFxSpec;
-struct zVideo_TextureRecordPartial;
-struct OptCatalogRaycastHitEntry;
-struct OptCatalogRaycastHitList;
+typedef struct zSndSample zSndSample;
+typedef struct zSndPlayHandle zSndPlayHandle;
+typedef struct zEffectAnimEntry zEffectAnimEntry;
+typedef struct PlayerTimedHitStatus PlayerTimedHitStatus;
+typedef struct PlayerProgressTargetSlotRuntime PlayerProgressTargetSlotRuntime;
+typedef struct NetPkt0A_RemoveRuntimeRelay NetPkt0A_RemoveRuntimeRelay;
+typedef struct OptCatalogEntryDef OptCatalogEntryDef;
+typedef struct OptCatalogTrailRuntimeState OptCatalogTrailRuntimeState;
+typedef struct OptCatalogFxSpec OptCatalogFxSpec;
+typedef struct zVideo_TextureRecordPartial zVideo_TextureRecordPartial;
+typedef struct OptCatalogRaycastHitEntry OptCatalogRaycastHitEntry;
+typedef struct OptCatalogRaycastHitList OptCatalogRaycastHitList;
 
-struct OptCatalogTrailNodeSlot {
+typedef struct OptCatalogTrailNodeSlot {
     CZNodePartial* node;
     zVec3 pos;
     zVec3 dir;
     float scale;
-};
+} OptCatalogTrailNodeSlot;
 
-struct OptCatalogTrailRuntimeState {
-    OptCatalogTrailRuntimeState* next;
-    OptCatalogTrailRuntimeState* prev;
+typedef struct OptCatalogTrailRuntimeState {
+    struct OptCatalogTrailRuntimeState* next;
+    struct OptCatalogTrailRuntimeState* prev;
     OptCatalogEntryDef* ownerEntry;
     CZNodePartial* projectileNode;
     zTag4Partial* variantTagPtr;
@@ -49,9 +49,9 @@ struct OptCatalogTrailRuntimeState {
     OptCatalogTrailNodeSlot activeNodeSlots[8];
     int* pendingSpawnTargetCountPtr;
     PlayerProgressTargetSlotRuntime* pendingSpawnTargetListPtr;
-};
+} OptCatalogTrailRuntimeState;
 
-struct OptCatalogFxSpec {
+typedef struct OptCatalogFxSpec {
     unsigned int flags;
     zEffectAnimEntry* animationEntry;
     unsigned char unknown_08[0x04];
@@ -63,15 +63,15 @@ struct OptCatalogFxSpec {
     zSndSample* soundSamples[4];
     int bounceSoundCount;
     zSndSample* bounceSoundSamples[6];
-};
+} OptCatalogFxSpec;
 
-struct OptCatalogDamageFeedbackVariant {
+typedef struct OptCatalogDamageFeedbackVariant {
     float minFeedbackScale;
     zEffectAnimEntry* effect;
-};
+} OptCatalogDamageFeedbackVariant;
 
-struct OptCatalogRuntimeInstanceStorage {
-    OptCatalogRuntimeInstanceStorage* next;
+typedef struct OptCatalogRuntimeInstanceStorage {
+    struct OptCatalogRuntimeInstanceStorage* next;
     CZNodePartial* ownerNode;
     zTag4Partial variantTag;
     CZNodePartial* projectileNode;
@@ -97,9 +97,9 @@ struct OptCatalogRuntimeInstanceStorage {
     void* saveState;
     void* updateCallback;
     unsigned char unknown_8c[0x04];
-};
+} OptCatalogRuntimeInstanceStorage;
 
-struct OptCatalogDamageMaskSurface {
+typedef struct OptCatalogDamageMaskSurface {
     unsigned char unknown_00[0x04];
     short width;
     short height;
@@ -107,14 +107,14 @@ struct OptCatalogDamageMaskSurface {
     short format;
     unsigned short* pixels;
     unsigned char* alpha;
-};
+} OptCatalogDamageMaskSurface;
 
-struct OptCatalogSurfaceTextureHandle {
+typedef struct OptCatalogSurfaceTextureHandle {
     OptCatalogDamageMaskSurface* surface;
     zVideo_TextureRecordPartial* textureRecord;
-};
+} OptCatalogSurfaceTextureHandle;
 
-struct OptCatalogSurfaceMaterialRef {
+typedef struct OptCatalogSurfaceMaterialRef {
     unsigned short flags;
     unsigned char unknown_02[0x0e];
     OptCatalogSurfaceTextureHandle* textureHandle;
@@ -124,15 +124,15 @@ struct OptCatalogSurfaceMaterialRef {
         CZNodePartial* impactOwnerNode;
     };
     unsigned char unknown_24[0x04];
-};
+} OptCatalogSurfaceMaterialRef;
 
-struct OptCatalogHitEventPartial {
+typedef struct OptCatalogHitEventPartial {
     unsigned char unknown_00[0x0c];
     zVec3 hitPos;
     unsigned char unknown_18[0x08];
     OptCatalogSurfaceMaterialRef* surfaceRef;
     CZNodePartial* hitNode;
-};
+} OptCatalogHitEventPartial;
 
 typedef void(__fastcall* OptCatalogImpactCallback)(
     OptCatalogEntryDef* entry,
@@ -140,7 +140,7 @@ typedef void(__fastcall* OptCatalogImpactCallback)(
     OptCatalogRuntimeInstanceStorage* runtimeInstance
 );
 
-struct OptCatalogEntryDef {
+typedef struct OptCatalogEntryDef {
     char* keyName;
     char* displayName;
     char* description;
@@ -228,7 +228,7 @@ struct OptCatalogEntryDef {
     float tetherAltitude;
     OptCatalogImpactCallback impactCallback;
     char* killVerbString;
-};
+} OptCatalogEntryDef;
 
 typedef float(__fastcall* OptCatalogDamageTimerCallback)(void* context, float damageAmount);
 typedef int(__fastcall* OptCatalogHitCallback)(
@@ -248,6 +248,7 @@ typedef void(__fastcall* OptCatalogRemoveRuntimeRelayCallback)(
     CZNodePartial* ownerNode
 );
 
+#ifdef __cplusplus
 namespace OptCatalog {
 void __fastcall
 BlendDirectionTowardTarget(zVec3* direction, const zVec3* targetDirection, float xWeight, float yWeight, float zWeight);
@@ -315,9 +316,13 @@ int __fastcall InvokeDamageFeedbackAndHitCallback(
     float damageAmount
 );
 void __fastcall SetDamageContext(int contextKind, OptCatalogHitEventPartial* contextHitEvent);
+extern "C" {
+#endif
 void __fastcall SetDamageMaskSlotIndex(int slotIndex);
 void __fastcall RegisterDamageMaskSlotPtr(void* slotPtr);
 void __fastcall ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial* hitEvent);
+#ifdef __cplusplus
+}
 float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
     zVec3* sourcePos,
     OptCatalogHitEventPartial* hitEvent,
@@ -403,6 +408,7 @@ void* __cdecl GetCurrentOwnerOrCtx();
 } // namespace HitContext
 
 extern "C" {
+#endif
 extern int g_OptCatalog_CaptureHitSnapshotEnabled;
 extern int g_OptCatalog_FallbackImpactProbeEnabled;
 extern zVec3 g_OptCatalog_CapturedDamageSourcePos;
@@ -430,7 +436,9 @@ extern float g_OptCatalogRuntimeDeltaTime;
 extern float g_OptCatalogRuntimeNowSec;
 extern CZNodePartial* g_OptCatalogThermalGlowFreeList;
 extern OptCatalogRuntimeInstanceStorage* g_OptCatalog_MineIteratorCursor;
+#ifdef __cplusplus
 extern zReader::Node* g_OptCatalogLoadedTreeRoot;
+#endif
 extern zSndSample* g_OptCatalogSndTriggerInactive;
 extern zSndSample* g_OptCatalogSndWeaponInactive;
 extern zSndSample* g_OptCatalogSndNoAmmoWarning;
@@ -441,7 +449,9 @@ extern int g_OptCatalogNetworkOptionState;
 extern OptCatalogAllocRuntimeGateCallback g_OptCatalog_AllocRuntimeGateCallback;
 extern OptCatalogAllocRuntimeGateCallback g_OptCatalog_AltGunDispatchNoOpCallback;
 extern int g_OptCatalogProcessRuntimeRelayEnabled;
+#ifdef __cplusplus
 }
+#endif
 
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogHitEventPartial, hitPos) == 0x0c);
 RECOIL_STATIC_ASSERT(offsetof(OptCatalogHitEventPartial, surfaceRef) == 0x20);

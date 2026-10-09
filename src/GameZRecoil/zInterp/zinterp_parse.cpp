@@ -1508,13 +1508,13 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
         }
 
         if (CommandHasPrefix(this, "CycleTextureSetLooping") != 0) {
-            zModel_Instance::SetCycleTextureLoop(g_zInterp_CurrentCycleTextureDi, ParseBoolToken());
+            zModelInstanceSetCycleTextureLoop(g_zInterp_CurrentCycleTextureDi, ParseBoolToken());
             return 1;
         }
 
         if (CommandHasPrefix(this, "CycleTextureSetMap") != 0) {
             zImage_TexDirEntryPartial* const texDirEntry = zImage::TexDirFindOrAppendByPath(NextToken());
-            zModel_Instance::AddCycleTexture(g_zInterp_CurrentCycleTextureDi, texDirEntry);
+            zModelInstanceAddCycleTexture(g_zInterp_CurrentCycleTextureDi, texDirEntry);
             return 1;
         }
 

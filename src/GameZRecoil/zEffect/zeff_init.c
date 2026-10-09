@@ -151,15 +151,15 @@ namespace zEffect
             zReader::Node* const loopingNode = zRdrFindTag(effectNode, g_zEffectAnim_TokenLooping);
             if (loopingNode != 0) {
                 if (strcmp(loopingNode->value.nodes[1].value.str, "ON") == 0) {
-                    zModel_Instance::SetCycleTextureLoop(displayInstance, 1);
+                    zModelInstanceSetCycleTextureLoop(displayInstance, 1);
                 } else {
-                    zModel_Instance::SetCycleTextureLoop(displayInstance, 0);
+                    zModelInstanceSetCycleTextureLoop(displayInstance, 0);
                 }
             }
 
             {
                 for (int textureIndex = 1; textureIndex <= textureCount; ++textureIndex) {
-                    zModel_Instance::AddCycleTexture(
+                    zModelInstanceAddCycleTexture(
                         displayInstance,
                         zImage::TexDirFindOrAppendByPath(mapsNode->value.nodes[textureIndex].value.str)
                     );

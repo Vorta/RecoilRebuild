@@ -182,7 +182,8 @@ float __stdcall ApproxExpNeg(float x);
 zVec3* __fastcall Vec3Midpoint(const zVec3* a, const zVec3* b, zVec3* outMidpoint);
 int __fastcall ClipLineSegmentToZRange(zVec3* pointA, zVec3* pointB);
 void __fastcall ClipLineSegmentPointToZ(zVec3* pointToClip, const zVec3* otherPoint, float clipZ);
-int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* dstPoint);
+/* gmod_draw.c, a C unit, defines this member. */
+extern "C" int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* dstPoint);
 } // namespace zMath
 #endif
 
@@ -194,6 +195,7 @@ int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* ds
 
 #ifdef __cplusplus
 namespace zFloat {
-void __fastcall Set255f(float* value);
+/* C units (gmod_draw.c, gmod_fog.c, gmod_light.c) call it too; see zrndr.h. */
+extern "C" void __fastcall Set255f(float* value);
 }
 #endif

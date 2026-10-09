@@ -9,20 +9,21 @@
 #include "GameZRecoil/zVideo/zvid.h"
 #include "recoil/recoil_callconv.h"
 
-struct zArchiveList;
+typedef struct zArchiveList zArchiveList;
 typedef zVidImagePartial*(__fastcall* zImage_CreateFallbackImageProc)(char* path);
 
-struct zImage_TexDirEntryPartial {
+typedef struct zImage_TexDirEntryPartial {
     zVidImagePartial* image;
     zVideo_TextureRecordPartial* texture;
     char baseName[0x14];
     int loadState;
-    zImage_TexDirEntryPartial* nextVariant;
-
+    struct zImage_TexDirEntryPartial* nextVariant;
+#ifdef __cplusplus
     zVidImagePartial* __fastcall GetVariantImageAtIndex(int variantIndex);
     RECOIL_NO_GS void __fastcall BuildMipChain();
-};
-
+#endif
+} zImage_TexDirEntryPartial;
+#ifdef __cplusplus
 struct zImage_Font {
     zVidImagePartial* image;
     int spaceWidth;
@@ -34,7 +35,6 @@ struct zImage_Font {
     int BuildGlyphRects();
     static int __fastcall IsImageColumnTransparent(zVidImagePartial* image, int columnX);
 };
-
 extern "C" {
 extern zArchiveList* g_zImage_MissionSearchPathList;
 extern zImage_Font* g_zImage_FontTable[20];
@@ -51,16 +51,16 @@ void __fastcall SetPathExtension(char* path, const char* extension);
 void __fastcall TexDirSetBaseNameFromPath(const char* sourcePath, char* destBaseName);
 int __fastcall FontsLoadFromPath(const char* path);
 zVidImagePartial* __fastcall TexDirFindOrCreateByPath(const char* path);
-int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial* texDirEntry);
-zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index);
+extern "C" int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial* texDirEntry);
+extern "C" zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index);
 zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName);
-zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr();
+extern "C" zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr();
 int __cdecl InitTextureDirectory();
 zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path);
 int __cdecl TexDirLoadPendingEntries();
 int __fastcall WriteTextureDirectory(void* stream);
 int __fastcall ReadTextureDirectory(int entryCount, void* stream);
-void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHead);
+extern "C" void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHead);
 int __cdecl ShutdownTextureDirectoryRuntime();
 int __cdecl Shutdown();
 int __cdecl ShutdownSubsystem();
@@ -89,5 +89,12 @@ RECOIL_STATIC_ASSERT(offsetof(zImage_Font, image) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zImage_Font, spaceWidth) == 0x04);
 RECOIL_STATIC_ASSERT(offsetof(zImage_Font, glyphRects) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zImage_Font) == 0x5f8);
+#else
+/* C units' view of the zImage members they call (zimg_texture.cpp defines them). */
+int __fastcall TexDirEntryToIndex(zImage_TexDirEntryPartial* texDirEntry);
+zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index);
+zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr();
+void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHead);
+#endif
 
 #endif // GAMEZRECOIL_INCLUDE_ZIMAGE_H

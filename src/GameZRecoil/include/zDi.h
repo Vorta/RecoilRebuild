@@ -10,16 +10,16 @@
 #include "zclass.h"
 #include "zimage.h"
 
-struct OptCatalogSurfaceMaterialRef;
+typedef struct OptCatalogSurfaceMaterialRef OptCatalogSurfaceMaterialRef;
 
-struct zBoundsMinMaxPartial {
+typedef struct zBoundsMinMaxPartial {
     zVec3 min;
     zVec3 max;
-};
+} zBoundsMinMaxPartial;
 
-struct zClipUV;
+typedef struct zClipUV zClipUV;
 
-struct zModel_PointEntryPartial {
+typedef struct zModel_PointEntryPartial {
     int mode;
     int behavior;
     float timerSec;
@@ -34,9 +34,9 @@ struct zModel_PointEntryPartial {
     unsigned short packedColor16Padding;
     zVec3* pointCamList;
     unsigned char lensFlareSource[0x1c];
-};
+} zModel_PointEntryPartial;
 
-struct zDiPartial {
+typedef struct zDiPartial {
     int mode;
     int flags;
     int refCount;
@@ -57,9 +57,9 @@ struct zDiPartial {
     zVec3 bboxCenter;
     float bboxRadius;
     int nextFreeIndex;
-};
+} zDiPartial;
 
-struct zModel_MaterialPartial {
+typedef struct zModel_MaterialPartial {
     unsigned short flags;
     unsigned short packedColor;
     zColorRgb colorRgb;
@@ -69,9 +69,9 @@ struct zModel_MaterialPartial {
     float unknown_1c;
     int userTag;
     struct zModel_MaterialCyclePartial* cycle;
-};
+} zModel_MaterialPartial;
 
-struct zModel_MaterialCyclePartial {
+typedef struct zModel_MaterialCyclePartial {
     int loopEnabled;
     int lastUpdateFrameTick;
     float currentFrame;
@@ -79,9 +79,9 @@ struct zModel_MaterialCyclePartial {
     int frameCount;
     int frameWriteCount;
     zImage_TexDirEntryPartial** frameTable;
-};
+} zModel_MaterialCyclePartial;
 
-struct zDiEntryPartial {
+typedef struct zDiEntryPartial {
     unsigned int flagsAndIndexCount;
     unsigned int drawFlags;
     void* vertexIndices;
@@ -91,53 +91,53 @@ struct zDiEntryPartial {
     unsigned char variantTagInitialized;
     unsigned char variantTag;
     unsigned char unknown_1a[0x02];
-};
+} zDiEntryPartial;
 
-struct zClassDiPickCandidateEntry {
+typedef struct zClassDiPickCandidateEntry {
     zVec3 surfaceNormal;
     zVec3 hitPos;
     zTag4Partial variantTag;
     unsigned char unknown_1c[0x04];
     void* scenePayload;
     CZNodePartial* node;
-};
+} zClassDiPickCandidateEntry;
 
-struct PlayerProbeSampleCandidateBuffer {
+typedef struct PlayerProbeSampleCandidateBuffer {
     int candidateCount;
     zClassDiPickCandidateEntry entries[0x20];
-};
+} PlayerProbeSampleCandidateBuffer;
 
-struct OptCatalogRaycastHitEntry {
+typedef struct OptCatalogRaycastHitEntry {
     unsigned char unknown_00[0x0c];
     zVec3 pos;
     float unknown_18;
     float distance;
     OptCatalogSurfaceMaterialRef* surfaceRef;
     CZNodePartial* hitNode;
-};
+} OptCatalogRaycastHitEntry;
 
-struct OptCatalogRaycastHitList {
+typedef struct OptCatalogRaycastHitList {
     int hitCount;
     OptCatalogRaycastHitEntry hits[0x20];
-};
+} OptCatalogRaycastHitList;
 
-struct CZDisplayInstanceSegmentEndpoints {
+typedef struct CZDisplayInstanceSegmentEndpoints {
     zVec3 start;
     zVec3 end;
-};
+} CZDisplayInstanceSegmentEndpoints;
 
-struct CZDisplayInstanceSegmentBounds {
+typedef struct CZDisplayInstanceSegmentBounds {
     float minX;
     float minY;
     float minZ;
     float maxX;
     float maxY;
     float maxZ;
-};
+} CZDisplayInstanceSegmentBounds;
 
 enum { kDiRaycastFilterSegmentBoundsCapacity = 12 };
 
-struct CZDisplayInstanceRaycastFilterRuntime {
+typedef struct CZDisplayInstanceRaycastFilterRuntime {
     const char* filterRegionsNodeNamePrefix;
     zVec3* filterRegionsCenter;
     float filterRegionsRadiusSq;
@@ -155,17 +155,17 @@ struct CZDisplayInstanceRaycastFilterRuntime {
     zVec3* pickPointArray;
     int pickPointCount;
     int unused_16c;
-};
+} CZDisplayInstanceRaycastFilterRuntime;
 
-struct zModel_PickFaceUvData {
+typedef struct zModel_PickFaceUvData {
     zVec2 uvs[3];
-};
+} zModel_PickFaceUvData;
 
-struct zModel_PickFaceScenePayload {
+typedef struct zModel_PickFaceScenePayload {
     unsigned short flags;
-};
+} zModel_PickFaceScenePayload;
 
-struct zModel_PickFaceEntry {
+typedef struct zModel_PickFaceEntry {
     unsigned int vertexCount : 8;
     unsigned int doubleSided : 1;
     unsigned int unknown_04;
@@ -174,9 +174,9 @@ struct zModel_PickFaceEntry {
     zModel_PickFaceUvData* faceUvData;
     zModel_PickFaceScenePayload* scenePayload;
     zTag4Partial variantTag;
-};
+} zModel_PickFaceEntry;
 
-struct zModel_PickFaceData {
+typedef struct zModel_PickFaceData {
     unsigned int unknown_00;
     unsigned int flags;
     unsigned int unknown_08;
@@ -191,9 +191,12 @@ struct zModel_PickFaceData {
     zVec3* baseVertices;
     unsigned char unknown_38[0x08];
     zVec3* morphVertices;
-};
+} zModel_PickFaceData;
 
+#ifdef __cplusplus
 namespace zDi {
+extern "C" {
+#endif
 int __fastcall AddPolygonEx(
     zDiPartial* self,
     int vertexCount,
@@ -245,8 +248,6 @@ void __fastcall BuildAabb(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMa
 void __fastcall BuildOriginSymmetricAabb(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMax);
 void __fastcall RebuildBounds(zDiPartial* self, zBoundsMinMaxPartial* outBoundsMinMax);
 int __fastcall FreeContents(zDiPartial* self);
-int __fastcall AddRef(zDiPartial* self);
-int __fastcall Release(zDiPartial* self);
 int __fastcall GetRefCount(zDiPartial* self);
 int __fastcall PtrToIndexOrMinus1(zDiPartial* self);
 zDiPartial* __fastcall IndexToPtrOrNull(int index);
@@ -267,14 +268,22 @@ void __fastcall SetShowBackFaceForAllEntries(zDiPartial* self, int enabled);
 void __fastcall SetObject3DColorModeForMaterials(zDiPartial* self, int colorMode);
 int __fastcall
 BuildPickCandidateForQueryPoint(zDiPartial* self, zClassDiPickCandidateEntry* outCandidate, const zVec3* queryPoint);
+#ifdef __cplusplus
+}
 } // namespace zDi
 
-namespace zModel_Instance {
-int __fastcall SetCycleTextureLoop(zDiPartial* instance, int loopEnabled);
-int __fastcall AddCycleTexture(zDiPartial* instance, zImage_TexDirEntryPartial* textureDirectoryEntry);
-} // namespace zModel_Instance
+extern "C" {
+#endif
+int __fastcall zDiAddRef(zDiPartial* self);
+int __fastcall zDiRelease(zDiPartial* self);
+
+int __fastcall zModelInstanceSetCycleTextureLoop(zDiPartial* instance, int loopEnabled);
+int __fastcall zModelInstanceAddCycleTexture(zDiPartial* instance, zImage_TexDirEntryPartial* textureDirectoryEntry);
+#ifdef __cplusplus
+}
 
 extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime;
+#endif
 
 #define g_CZDisplayInstance_FilterRegions_NodeNamePrefix                                                               \
     (g_CZDisplayInstance_RaycastFilterRuntime.filterRegionsNodeNamePrefix)
@@ -302,6 +311,7 @@ extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRu
 #define g_DiPickPointArray (g_CZDisplayInstance_RaycastFilterRuntime.pickPointArray)
 #define g_DiPickPointCount (g_CZDisplayInstance_RaycastFilterRuntime.pickPointCount)
 
+#ifdef __cplusplus
 namespace CZDisplayInstance {
 void __fastcall SetBreakOnFirstCandidate(int enabled);
 void __fastcall SetStopAfterFirstHit(int flag);
@@ -334,6 +344,8 @@ int __fastcall BuildPickCandidatesForLight(CZNodePartial* node, int cullCount);
 int __fastcall IsPickQueryPointOutsideViewBBoxXZ(CZNodePartial* node);
 int __fastcall PickTestBBox2D(CZNodePartial* node, int* hitFlags);
 int __fastcall FrustumTestAndPick(CZNodePartial* node, int* activeMask);
+extern "C" {
+#endif
 int __fastcall TryGetPolygonHitAtQueryXZ(
     zClassDiPickCandidateEntry* candidate,
     const zVec3* polygonVertices,
@@ -350,6 +362,8 @@ void __fastcall PickTestMeshAtQueryXZ(
     float maxProjectedY,
     PlayerProbeSampleCandidateBuffer* outputBuckets
 );
+#ifdef __cplusplus
+}
 int __fastcall BuildPickCandidatesForSegment(CZNodePartial* self);
 int __fastcall RaycastSelectClosestHitBetweenPoints(
     CZNodePartial* world,
@@ -381,8 +395,12 @@ void __fastcall BuildProbeHitBatchesForSegments(
     PlayerProbeSampleCandidateBuffer* hitBatches
 );
 void __fastcall BuildPickCandidatesForSegmentsInGridWindow(CZNodePartial* world, int* activeMask);
+extern "C" {
+#endif
 int __fastcall FilterRegionsAgainstMeshFaces(zVec3* meshVertices, int faceCount);
 int __fastcall FilterRegionsAgainstHexahedronFaces(zVec3* center, float radius);
+#ifdef __cplusplus
+}
 int __fastcall FilterRegionsAgainstSphere(
     CZNodePartial* world,
     zVec3* center,
@@ -394,6 +412,8 @@ int __fastcall FilterRegionsAgainstSphere(
 );
 int __fastcall FilterRegionsTryAppendNode(CZNodePartial* node);
 int __fastcall FilterPointsBBox(CZNodePartial* node, void* pointData);
+extern "C" {
+#endif
 int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
     CZNodePartial* candidateOwner,
     PlayerProbeSampleCandidateBuffer* outCandidateBuffersBySegment,
@@ -460,9 +480,13 @@ int __fastcall AppendPickCandidatesForFace(
     const zVec3* segmentStart,
     const zVec3* segmentEnd
 );
+#ifdef __cplusplus
+}
 } // namespace CZDisplayInstance
 
 namespace zModelConst {
+extern "C" {
+#endif
 void __fastcall AddFaceToPlayerProbeSampleBuckets(
     CZNodePartial* node,
     PlayerProbeSampleCandidateBuffer* outputBuckets,
@@ -473,9 +497,13 @@ void __fastcall AddFaceToPlayerProbeSampleBuckets(
     const zVec3* polygonVertices,
     const zModel_PickFaceEntry* faceEntry
 );
+#ifdef __cplusplus
+}
 } // namespace zModelConst
 
 namespace zModel_Material {
+extern "C" {
+#endif
 int __fastcall SetFlagBit9(zModel_MaterialPartial* material, int enabled);
 void __fastcall ResetDefaults(zModel_MaterialPartial* material);
 int __fastcall HasAuxData(zModel_MaterialPartial* material);
@@ -490,11 +518,18 @@ int __fastcall SetCycleTextureSpeed(zModel_MaterialPartial* material, float cycl
 void __fastcall UpdateCycleIfNeeded(zModel_MaterialPartial* material);
 zModel_MaterialPartial* __fastcall Clone(zModel_MaterialPartial* material);
 void __fastcall InvalidateImagesIfEligible(zModel_MaterialPartial* material);
+#ifdef __cplusplus
+}
 } // namespace zModel_Material
 namespace zDi {
+extern "C" {
+#endif
 void __fastcall SetMaterialFlagBit9ForFlagBit0Entries(zDiPartial* self, int enabled);
 void __fastcall InvalidateImagesForFlagBit8Materials(zDiPartial* self);
+#ifdef __cplusplus
 }
+}
+#endif
 
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, mode) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zDiPartial, flags) == 0x04);
