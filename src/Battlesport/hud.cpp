@@ -9299,7 +9299,7 @@ int __fastcall ProjectPointToNormalizedClamped(const zVec3* srcPoint, zVec3* pro
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.updatetargetreticlefromcursor
  * @recoil-artifact defines .text recoil:function:0x411270: HudUiMgr::UpdateTargetReticleFromCursor.
- *
+ * @recoil-match source
  *
  * Purpose: advance the recovered HUD update path for HudUiMgr::UpdateTargetReticleFromCursor.
  */
@@ -9572,7 +9572,7 @@ void __fastcall SetVisibleAndResetMeterFill(int visible)
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.tickmeterfillanimation
  * @recoil-artifact defines .text recoil:function:0x4117f0: HudUiMgrObjective::TickMeterFillAnimation.
- *
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: advance the objective meter fill timer, update the animated top
@@ -9700,7 +9700,7 @@ void Begin()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.starthide
  * @recoil-artifact defines .text recoil:function:0x411ac0: HudUiMgrObjective::StartHide.
- *
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
  * Purpose: advance objective panel show/hide phases, keep slide and meter
