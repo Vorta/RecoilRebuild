@@ -1067,7 +1067,7 @@ namespace zMath
         *g_currentMatrixIdentityFlagSlot = 0;
     }
 
-                            /**
+    /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
      * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
      * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
@@ -1787,10 +1787,11 @@ void __fastcall zMathVec3TriangleNormal(const zVec3* p0, const zVec3* p1, const 
  * Data: reads the distinct shared zMath zero double at 0x4d2970
  * (0.0) and unit float at 0x4d297c; writes only the two
  * caller-supplied output floats.
+ * Interface: the output pointers are the trailing parameters. __fastcall still
+ * passes them in ECX/EDX, and retail callers evaluate them before pushing the
+ * nine floats (0x485f7a, 0x486d42), which is the right-to-left order of this list.
  */
 void __fastcall zMathSolveLinearGradient2D(
-    float* outDuDx,
-    float* outDuDy,
     float ax,
     float ay,
     float bx,
@@ -1799,7 +1800,9 @@ void __fastcall zMathSolveLinearGradient2D(
     float cy,
     float ua,
     float ub,
-    float uc
+    float uc,
+    float* outDuDx,
+    float* outDuDy
 )
 {
     zVec3 edgeA, edgeC;

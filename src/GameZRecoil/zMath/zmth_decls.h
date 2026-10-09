@@ -37,8 +37,6 @@ zMathVec3ArrayAddScaled(zVec3* outArray, const zVec3* biasArray, const zVec3* sr
 void __fastcall zMathVec3TriangleNormal(const zVec3* p0, const zVec3* p1, const zVec3* p2, zVec3* outNormal);
 float __fastcall zMathVec3ElevationAngleBetweenPoints(const zVec3* pointA, const zVec3* pointB);
 void __fastcall zMathSolveLinearGradient2D(
-    float* outDuDx,
-    float* outDuDy,
     float ax,
     float ay,
     float bx,
@@ -47,7 +45,9 @@ void __fastcall zMathSolveLinearGradient2D(
     float cy,
     float ua,
     float ub,
-    float uc
+    float uc,
+    float* outDuDx,
+    float* outDuDy
 );
 void __fastcall zMathBuildPerspectiveTextureInterpolants(
     const zVec3* triVerts,

@@ -732,7 +732,7 @@ extern "C" int __fastcall zSndSystemInitNamedSetsSyntax(zReader::Node* configRoo
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-init.zsndbackend-inita3d
  * @recoil-artifact defines .text recoil:function:0x4a1d10: zSndBackendInitA3D.
- *
+ * @recoil-match byte
  *
  * Purpose: create the A3D provider object, query geometry/listener interfaces,
  * configure output mode, and validate buffer creation.

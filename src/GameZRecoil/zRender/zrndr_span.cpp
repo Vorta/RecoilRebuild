@@ -2369,8 +2369,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
 {
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned char* texels8 = g_spanActiveTexPixels;
-    const int uStep = g_spanActiveTexUStepFixed20;
-    const int vStep = g_spanActiveTexVStepFixed20;
+    int uStep = g_spanActiveTexUStepFixed20;
+    int vStep = g_spanActiveTexVStepFixed20;
     const unsigned short* palette = g_spanActiveTexPalette;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
@@ -2398,6 +2398,9 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
         ++dst;
     }
 
+    // Retail doubles the steps in their own homes ([esp+0x18]/[esp+0x1c]) for the pixel-pair loop.
+    uStep *= 2;
+    vStep *= 2;
     for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
@@ -2421,8 +2424,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
             }
         }
 
-        texU += uStep * 2;
-        texV += vStep * 2;
+        texU += uStep;
+        texV += vStep;
         dst += 2;
     }
 }
@@ -2442,8 +2445,8 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
 {
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
     const unsigned char* texels8 = g_spanActiveTexPixels;
-    const int uStep = g_spanActiveTexUStepFixed20;
-    const int vStep = g_spanActiveTexVStepFixed20;
+    int uStep = g_spanActiveTexUStepFixed20;
+    int vStep = g_spanActiveTexVStepFixed20;
     const unsigned short* palette = g_spanActiveTexPalette;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
@@ -2471,6 +2474,9 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
         ++dst;
     }
 
+    // Retail doubles the steps in their own homes ([esp+0x18]/[esp+0x1c]) for the pixel-pair loop.
+    uStep *= 2;
+    vStep *= 2;
     for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
@@ -2494,8 +2500,8 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
             }
         }
 
-        texU += uStep * 2;
-        texV += vStep * 2;
+        texU += uStep;
+        texV += vStep;
         dst += 2;
     }
 }

@@ -311,8 +311,6 @@ namespace
 
         if (dominantAxis == 0) {
             zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
                 polygonVertices[0].y,
                 polygonVertices[0].z,
                 polygonVertices[1].y,
@@ -321,11 +319,11 @@ namespace
                 polygonVertices[2].z,
                 faceUvData->uvs[0].x,
                 faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
+                faceUvData->uvs[2].x,
+                &uGrad0,
+                &uGrad1
             );
             zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
                 polygonVertices[0].y,
                 polygonVertices[0].z,
                 polygonVertices[1].y,
@@ -334,7 +332,9 @@ namespace
                 polygonVertices[2].z,
                 faceUvData->uvs[0].y,
                 faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
+                faceUvData->uvs[2].y,
+                &vGrad0,
+                &vGrad1
             );
 
             outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad0
@@ -346,8 +346,6 @@ namespace
 
         if (dominantAxis == 1) {
             zMathSolveLinearGradient2D(
-                &uGrad0,
-                &uGrad1,
                 polygonVertices[0].x,
                 polygonVertices[0].z,
                 polygonVertices[1].x,
@@ -356,11 +354,11 @@ namespace
                 polygonVertices[2].z,
                 faceUvData->uvs[0].x,
                 faceUvData->uvs[1].x,
-                faceUvData->uvs[2].x
+                faceUvData->uvs[2].x,
+                &uGrad0,
+                &uGrad1
             );
             zMathSolveLinearGradient2D(
-                &vGrad0,
-                &vGrad1,
                 polygonVertices[0].x,
                 polygonVertices[0].z,
                 polygonVertices[1].x,
@@ -369,7 +367,9 @@ namespace
                 polygonVertices[2].z,
                 faceUvData->uvs[0].y,
                 faceUvData->uvs[1].y,
-                faceUvData->uvs[2].y
+                faceUvData->uvs[2].y,
+                &vGrad0,
+                &vGrad1
             );
 
             outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad1
@@ -380,8 +380,6 @@ namespace
         }
 
         zMathSolveLinearGradient2D(
-            &uGrad0,
-            &uGrad1,
             polygonVertices[0].x,
             polygonVertices[0].y,
             polygonVertices[1].x,
@@ -390,11 +388,11 @@ namespace
             polygonVertices[2].y,
             faceUvData->uvs[0].x,
             faceUvData->uvs[1].x,
-            faceUvData->uvs[2].x
+            faceUvData->uvs[2].x,
+            &uGrad0,
+            &uGrad1
         );
         zMathSolveLinearGradient2D(
-            &vGrad0,
-            &vGrad1,
             polygonVertices[0].x,
             polygonVertices[0].y,
             polygonVertices[1].x,
@@ -403,7 +401,9 @@ namespace
             polygonVertices[2].y,
             faceUvData->uvs[0].y,
             faceUvData->uvs[1].y,
-            faceUvData->uvs[2].y
+            faceUvData->uvs[2].y,
+            &vGrad0,
+            &vGrad1
         );
 
         outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad1

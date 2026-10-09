@@ -580,30 +580,6 @@ char g_zInput_KeyNameSemicolon[10] = "SEMICOLON";
  */
 unsigned int g_zInput_KeyCharRow_LKJHGFDSA[9] = { 'L', 'K', 'J', 'H', 'G', 'F', 'D', 'S', 'A' };
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelcontrol
- * @recoil-artifact defines .data recoil:data:0x4e0b98: g_zInput_KeyNameLControl.
- * Purpose: Stores the writable LCONTROL DIK backing key name.
- */
-char g_zInput_KeyNameLControl[9] = "LCONTROL";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamereturn
- * @recoil-artifact defines .data recoil:data:0x4e0ba4: g_zInput_KeyNameReturn.
- * Purpose: Stores the writable RETURN DIK backing key name.
- */
-char g_zInput_KeyNameReturn[7] = "RETURN";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamerbracket
- * @recoil-artifact defines .data recoil:data:0x4e0bac: g_zInput_KeyNameRBracket.
- * Purpose: Stores the writable RBRACKET DIK backing key name.
- */
-char g_zInput_KeyNameRBracket[9] = "RBRACKET";
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynamelbracket
- * @recoil-artifact defines .data recoil:data:0x4e0bb8: g_zInput_KeyNameLBracket.
- * Purpose: Stores the writable LBRACKET DIK backing key name.
- */
-char g_zInput_KeyNameLBracket[9] = "LBRACKET";
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-keynametab
  * @recoil-artifact defines .data recoil:data:0x4e0bec: g_zInput_KeyNameTab.
  * Purpose: Stores the writable TAB DIK backing key name.
@@ -1514,7 +1490,11 @@ void __fastcall BindMapSystemInit(int commandCount)
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.bindmap-initdikkeynametable
  * @recoil-artifact defines .text recoil:function:0x471120: zInput::BindMapInitDikKeyNameTable.
  * @recoil-artifact emits .data recoil:data:0x4e0bc4: "P" DIK key-name /Gf literal.
- *
+ * @recoil-artifact emits .data recoil:data:0x4e0bb8: "LBRACKET" DIK key-name /Gf literal.
+ * @recoil-artifact emits .data recoil:data:0x4e0bac: "RBRACKET" DIK key-name /Gf literal.
+ * @recoil-artifact emits .data recoil:data:0x4e0ba4: "RETURN" DIK key-name /Gf literal.
+ * @recoil-artifact emits .data recoil:data:0x4e0b98: "LCONTROL" DIK key-name /Gf literal.
+ * @recoil-match byte
  *
  * Binary Ninja shows the zinput.cpp initializer filling the BSS DIK-name
  * pointer table at g_zInput_DikKeyNames with the recovered key-name literals.

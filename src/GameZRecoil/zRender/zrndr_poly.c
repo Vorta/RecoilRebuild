@@ -4874,15 +4874,15 @@ zVidImagePartial* __fastcall zRndrTextureMipSelectVariantImage(
     }
 
     const zVec3* selected = &triVerts[selectedVertex];
-    const float invZ = 1.0f / selected->z;
     const float invZAtX = 1.0f / (mipParamsA->x + selected->z);
     const float invZAtY = 1.0f / (mipParamsA->y + selected->z);
-    const float uOverZ = vertexUvPairs[selectedVertex].x * invZ;
+    // Retail forms 1/z after both offset reciprocals and never gives it a home: no invZ local.
+    const float uOverZ = vertexUvPairs[selectedVertex].x * (1.0f / selected->z);
     // Retail keeps the delta pairs in two stack arrays (v pair [esp+0x10], u pair [esp+0x18]).
     float uDeltas[2];
     uDeltas[0] = (mipParamsB->x + vertexUvPairs[selectedVertex].x) * invZAtX - uOverZ;
     uDeltas[1] = (mipParamsB->y + vertexUvPairs[selectedVertex].x) * invZAtY - uOverZ;
-    const float vOverZ = vertexUvPairs[selectedVertex].y * invZ;
+    const float vOverZ = vertexUvPairs[selectedVertex].y * (1.0f / selected->z);
     float vDeltas[2];
     vDeltas[0] = (mipParamsC->x + vertexUvPairs[selectedVertex].y) * invZAtX - vOverZ;
     vDeltas[1] = (mipParamsC->y + vertexUvPairs[selectedVertex].y) * invZAtY - vOverZ;
@@ -5220,7 +5220,7 @@ void __fastcall zRndrFillSpan16Opaque(int packedColor16, int pixelCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
  * @recoil-artifact defines .text recoil:function:0x499810: zRndrFillSpan555Solid
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *
@@ -5256,7 +5256,7 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
  * @recoil-artifact defines .text recoil:function:0x4998a0: zRndrFillSpan565Solid
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *

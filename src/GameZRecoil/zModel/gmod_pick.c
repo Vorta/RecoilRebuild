@@ -997,8 +997,6 @@ namespace CZDisplayInstance
                         return 0;
                     }
                     zMathSolveLinearGradient2D(
-                        &uGrad.x,
-                        &uGrad.y,
                         polygonVertices[0].y,
                         polygonVertices[0].z,
                         polygonVertices[1].y,
@@ -1007,11 +1005,11 @@ namespace CZDisplayInstance
                         polygonVertices[2].z,
                         faceUvData->uvs[0].x,
                         faceUvData->uvs[1].x,
-                        faceUvData->uvs[2].x
+                        faceUvData->uvs[2].x,
+                        &uGrad.x,
+                        &uGrad.y
                     );
                     zMathSolveLinearGradient2D(
-                        &vGrad.x,
-                        &vGrad.y,
                         polygonVertices[0].y,
                         polygonVertices[0].z,
                         polygonVertices[1].y,
@@ -1020,7 +1018,9 @@ namespace CZDisplayInstance
                         polygonVertices[2].z,
                         faceUvData->uvs[0].y,
                         faceUvData->uvs[1].y,
-                        faceUvData->uvs[2].y
+                        faceUvData->uvs[2].y,
+                        &vGrad.x,
+                        &vGrad.y
                     );
                     outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad.x
                         + (candidate->hitPos.z - polygonVertices[0].z) * uGrad.y + faceUvData->uvs[0].x;
@@ -1044,8 +1044,6 @@ namespace CZDisplayInstance
                         return 0;
                     }
                     zMathSolveLinearGradient2D(
-                        &uGrad.x,
-                        &uGrad.y,
                         polygonVertices[0].x,
                         polygonVertices[0].z,
                         polygonVertices[1].x,
@@ -1054,11 +1052,11 @@ namespace CZDisplayInstance
                         polygonVertices[2].z,
                         faceUvData->uvs[0].x,
                         faceUvData->uvs[1].x,
-                        faceUvData->uvs[2].x
+                        faceUvData->uvs[2].x,
+                        &uGrad.x,
+                        &uGrad.y
                     );
                     zMathSolveLinearGradient2D(
-                        &vGrad.x,
-                        &vGrad.y,
                         polygonVertices[0].x,
                         polygonVertices[0].z,
                         polygonVertices[1].x,
@@ -1067,7 +1065,9 @@ namespace CZDisplayInstance
                         polygonVertices[2].z,
                         faceUvData->uvs[0].y,
                         faceUvData->uvs[1].y,
-                        faceUvData->uvs[2].y
+                        faceUvData->uvs[2].y,
+                        &vGrad.x,
+                        &vGrad.y
                     );
                     outUv->x = (candidate->hitPos.z - polygonVertices[0].z) * uGrad.y
                         + (candidate->hitPos.x - polygonVertices[0].x) * uGrad.x + faceUvData->uvs[0].x;
@@ -1091,8 +1091,6 @@ namespace CZDisplayInstance
                         return 0;
                     }
                     zMathSolveLinearGradient2D(
-                        &uGrad.x,
-                        &uGrad.y,
                         polygonVertices[0].x,
                         polygonVertices[0].y,
                         polygonVertices[1].x,
@@ -1101,11 +1099,11 @@ namespace CZDisplayInstance
                         polygonVertices[2].y,
                         faceUvData->uvs[0].x,
                         faceUvData->uvs[1].x,
-                        faceUvData->uvs[2].x
+                        faceUvData->uvs[2].x,
+                        &uGrad.x,
+                        &uGrad.y
                     );
                     zMathSolveLinearGradient2D(
-                        &vGrad.x,
-                        &vGrad.y,
                         polygonVertices[0].x,
                         polygonVertices[0].y,
                         polygonVertices[1].x,
@@ -1114,7 +1112,9 @@ namespace CZDisplayInstance
                         polygonVertices[2].y,
                         faceUvData->uvs[0].y,
                         faceUvData->uvs[1].y,
-                        faceUvData->uvs[2].y
+                        faceUvData->uvs[2].y,
+                        &vGrad.x,
+                        &vGrad.y
                     );
                     outUv->x = (candidate->hitPos.y - polygonVertices[0].y) * uGrad.y
                         + (candidate->hitPos.x - polygonVertices[0].x) * uGrad.x + faceUvData->uvs[0].x;
@@ -1518,8 +1518,6 @@ namespace CZDisplayInstance
                 if (anyActive != 0) {
                     if (OptCatalogIsDamageMaskEnabled() != 0) {
                         zMathSolveLinearGradient2D(
-                            &uGrad.x,
-                            &uGrad.y,
                             polygonVertices[0].y,
                             polygonVertices[0].z,
                             polygonVertices[1].y,
@@ -1528,11 +1526,11 @@ namespace CZDisplayInstance
                             polygonVertices[2].z,
                             faceUvData->uvs[0].x,
                             faceUvData->uvs[1].x,
-                            faceUvData->uvs[2].x
+                            faceUvData->uvs[2].x,
+                            &uGrad.x,
+                            &uGrad.y
                         );
                         zMathSolveLinearGradient2D(
-                            &vGrad.x,
-                            &vGrad.y,
                             polygonVertices[0].y,
                             polygonVertices[0].z,
                             polygonVertices[1].y,
@@ -1541,7 +1539,9 @@ namespace CZDisplayInstance
                             polygonVertices[2].z,
                             faceUvData->uvs[0].y,
                             faceUvData->uvs[1].y,
-                            faceUvData->uvs[2].y
+                            faceUvData->uvs[2].y,
+                            &vGrad.x,
+                            &vGrad.y
                         );
                     }
                     for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
@@ -1621,8 +1621,6 @@ namespace CZDisplayInstance
                 if (anyActive != 0) {
                     if (OptCatalogIsDamageMaskEnabled() != 0) {
                         zMathSolveLinearGradient2D(
-                            &uGrad.x,
-                            &uGrad.y,
                             polygonVertices[0].x,
                             polygonVertices[0].z,
                             polygonVertices[1].x,
@@ -1631,11 +1629,11 @@ namespace CZDisplayInstance
                             polygonVertices[2].z,
                             faceUvData->uvs[0].x,
                             faceUvData->uvs[1].x,
-                            faceUvData->uvs[2].x
+                            faceUvData->uvs[2].x,
+                            &uGrad.x,
+                            &uGrad.y
                         );
                         zMathSolveLinearGradient2D(
-                            &vGrad.x,
-                            &vGrad.y,
                             polygonVertices[0].x,
                             polygonVertices[0].z,
                             polygonVertices[1].x,
@@ -1644,7 +1642,9 @@ namespace CZDisplayInstance
                             polygonVertices[2].z,
                             faceUvData->uvs[0].y,
                             faceUvData->uvs[1].y,
-                            faceUvData->uvs[2].y
+                            faceUvData->uvs[2].y,
+                            &vGrad.x,
+                            &vGrad.y
                         );
                     }
                     for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {
@@ -1724,8 +1724,6 @@ namespace CZDisplayInstance
                 if (anyActive != 0) {
                     if (OptCatalogIsDamageMaskEnabled() != 0) {
                         zMathSolveLinearGradient2D(
-                            &uGrad.x,
-                            &uGrad.y,
                             polygonVertices[0].x,
                             polygonVertices[0].y,
                             polygonVertices[1].x,
@@ -1734,11 +1732,11 @@ namespace CZDisplayInstance
                             polygonVertices[2].y,
                             faceUvData->uvs[0].x,
                             faceUvData->uvs[1].x,
-                            faceUvData->uvs[2].x
+                            faceUvData->uvs[2].x,
+                            &uGrad.x,
+                            &uGrad.y
                         );
                         zMathSolveLinearGradient2D(
-                            &vGrad.x,
-                            &vGrad.y,
                             polygonVertices[0].x,
                             polygonVertices[0].y,
                             polygonVertices[1].x,
@@ -1747,7 +1745,9 @@ namespace CZDisplayInstance
                             polygonVertices[2].y,
                             faceUvData->uvs[0].y,
                             faceUvData->uvs[1].y,
-                            faceUvData->uvs[2].y
+                            faceUvData->uvs[2].y,
+                            &vGrad.x,
+                            &vGrad.y
                         );
                     }
                     for (segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex) {

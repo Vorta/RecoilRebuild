@@ -623,38 +623,6 @@ char g_WestwoodOnlineUpgradeSessionQueryPayloadFmt[] = "%1d%4d%4d%1d%1d%1d";
  * selected session rows.
  */
 char g_WestwoodOnlineUpgradeSessionQueryDisplayFmt[] = "{ %s } %s";
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.g-westwoodonlineupgradesingledigitfieldmaxtext-4
- * @recoil-artifact defines .data recoil:data:0x4dd27c: g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4.
- * Purpose: normalized max-player edit text for the upper single-digit query
- * bound.
- */
-char g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4[] = "4";
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.g-westwoodonlineupgradesingledigitfieldmintext-2
- * @recoil-artifact defines .data recoil:data:0x4dd280: g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2.
- * Purpose: normalized edit text for the lower single-digit query bound shared
- * by max-player and value/time controls.
- */
-char g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2[] = "2";
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.g-westwoodonlineupgrademaxplayersmaxtext-1000
- * @recoil-artifact defines .data recoil:data:0x4dd284: g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000.
- * Purpose: normalized auxiliary-parameter edit text for the 1000 upper bound.
- */
-char g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000[] = "1000";
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.g-westwoodonlineupgrademaxplayersmintext-1
- * @recoil-artifact defines .data recoil:data:0x4dd28c: g_WestwoodOnlineUpgradeMaxPlayersMinText_1.
- * Purpose: normalized auxiliary-parameter edit text for the lower query bound.
- */
-char g_WestwoodOnlineUpgradeMaxPlayersMinText_1[] = "1";
-/**
- * @recoil-anchor recoil:anchor:battlesport.wol.g-westwoodonlineupgradeauxparammaxtext-2000
- * @recoil-artifact defines .data recoil:data:0x4dd290: g_WestwoodOnlineUpgradeAuxParamMaxText_2000.
- * Purpose: normalized value/time edit text for the 2000 upper bound.
- */
-char g_WestwoodOnlineUpgradeAuxParamMaxText_2000[] = "2000";
 
 namespace {
 const unsigned int kStatusAppendBufferSize = 1024;
@@ -749,11 +717,6 @@ const UINT kWestwoodOnlineUpgradeDialog_MfcMessageMapSigVoidUInt = 13;
 RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeStatusAppendBuffer) == kStatusAppendBufferSize);
 RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSessionQueryPayloadFmt) == 0x13);
 RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSessionQueryDisplayFmt) == 0x0a);
-RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4) == 0x02);
-RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2) == 0x02);
-RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000) == 0x05);
-RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeMaxPlayersMinText_1) == 0x02);
-RECOIL_STATIC_ASSERT(sizeof(g_WestwoodOnlineUpgradeAuxParamMaxText_2000) == 0x05);
 
 } // namespace
 
@@ -2240,6 +2203,8 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-onmaxplayerseditkillfocus
  * @recoil-artifact defines .text recoil:function:0x43f450: WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus
+ * @recoil-artifact emits .data recoil:data:0x4dd27c: "4" /Gf query-bound literal.
+ * @recoil-artifact emits .data recoil:data:0x4dd280: "2" /Gf query-bound literal.
  * @recoil-match byte
  *
  * Purpose: clamp and normalize the max-player query edit value.
@@ -2247,13 +2212,13 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowModalAndGetSelectedMissionIndex(
 void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus()
 {
     if ((int)m_queryMaxPlayers < kWolMinPlayersPerSession) {
-        ((CWnd*)&m_queryMaxPlayersEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2);
+        ((CWnd*)&m_queryMaxPlayersEdit)->SetWindowTextA("2");
         m_queryMaxPlayers = kWolMinPlayersPerSession;
         return;
     }
 
     if ((int)m_queryMaxPlayers > kWolMaxPlayersPerSession) {
-        ((CWnd*)&m_queryMaxPlayersEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMaxText_4);
+        ((CWnd*)&m_queryMaxPlayersEdit)->SetWindowTextA("4");
         m_queryMaxPlayers = kWolMaxPlayersPerSession;
         return;
     }
@@ -2266,6 +2231,8 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-onauxparameditkillfocus
  * @recoil-artifact defines .text recoil:function:0x43f4d0: WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus
+ * @recoil-artifact emits .data recoil:data:0x4dd284: "1000" /Gf query-bound literal.
+ * @recoil-artifact emits .data recoil:data:0x4dd28c: "1" /Gf query-bound literal.
  * @recoil-match byte
  *
  * Purpose: clamp and normalize the auxiliary query parameter edit value.
@@ -2273,13 +2240,13 @@ void WestwoodOnlineUpgradeDialog::OnMaxPlayersEditKillFocus()
 void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus()
 {
     if ((int)m_queryAuxParam < kWolMinQueryAuxParam) {
-        ((CWnd*)&m_queryAuxParamEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeMaxPlayersMinText_1);
+        ((CWnd*)&m_queryAuxParamEdit)->SetWindowTextA("1");
         m_queryAuxParam = kWolMinQueryAuxParam;
         return;
     }
 
     if ((int)m_queryAuxParam > kWolMaxQueryAuxParam) {
-        ((CWnd*)&m_queryAuxParamEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeMaxPlayersMaxText_1000);
+        ((CWnd*)&m_queryAuxParamEdit)->SetWindowTextA("1000");
         m_queryAuxParam = kWolMaxQueryAuxParam;
         return;
     }
@@ -2292,6 +2259,7 @@ void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-onvalueortimeeditkillfocus
  * @recoil-artifact defines .text recoil:function:0x43f550: WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus
+ * @recoil-artifact emits .data recoil:data:0x4dd290: "2000" /Gf query-bound literal.
  * @recoil-match byte
  *
  * Purpose: clamp and normalize the value-or-time query edit value.
@@ -2299,13 +2267,13 @@ void WestwoodOnlineUpgradeDialog::OnAuxParamEditKillFocus()
 void WestwoodOnlineUpgradeDialog::OnValueOrTimeEditKillFocus()
 {
     if ((int)m_queryValueOrTime < kWolMinQueryValueOrTime) {
-        ((CWnd*)&m_queryValueOrTimeEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeSingleDigitFieldMinText_2);
+        ((CWnd*)&m_queryValueOrTimeEdit)->SetWindowTextA("2");
         m_queryValueOrTime = kWolMinQueryValueOrTime;
         return;
     }
 
     if ((int)m_queryValueOrTime > kWolMaxQueryValueOrTime) {
-        ((CWnd*)&m_queryValueOrTimeEdit)->SetWindowTextA(g_WestwoodOnlineUpgradeAuxParamMaxText_2000);
+        ((CWnd*)&m_queryValueOrTimeEdit)->SetWindowTextA("2000");
         m_queryValueOrTime = kWolMaxQueryValueOrTime;
         return;
     }

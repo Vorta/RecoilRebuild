@@ -745,7 +745,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-init.loadzbd
      * @recoil-artifact defines .text recoil:function:0x45efb0: zEffect_Anim::LoadZbd.
-     *
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_init.c.
      * Purpose: load animation entries, dynamic lists, event streams, refs, and
@@ -979,23 +979,19 @@ namespace zEffect_Anim
             if (i == 0 || entry->activationState == 5) {
                 continue;
             }
-            {
-                entry->boundNode = 0;
-                if (previousRootNodeName != 0 && strcmp(previousRootNodeName, entry->rootNodeName) == 0) {
-                    entry->boundNode = CZClass::gwNodeFindNextByName(0, 0);
-                }
+            entry->boundNode = 0;
+            if (previousRootNodeName != 0 && strcmp(previousRootNodeName, entry->rootNodeName) == 0) {
+                entry->boundNode = CZClass::gwNodeFindNextByName(0, 0);
+            }
 
-                if (entry->boundNode == 0) {
-                    CZClass::gwNodeFindNextByName(entry->rootNodeName, 6);
-                    entry->boundNode = CZClass::gwNodeFindNextByName(0, 0);
-                    previousRootNodeName = entry->rootNodeName;
-                }
+            if (entry->boundNode == 0) {
+                CZClass::gwNodeFindNextByName(entry->rootNodeName, 6);
+                entry->boundNode = CZClass::gwNodeFindNextByName(0, 0);
+                previousRootNodeName = entry->rootNodeName;
+            }
 
-                if (entry->boundNode == 0) {
-                    fclose(stream);
-                    return -1;
-                }
-
+            // Retail emits this failure's merged fclose exit after all later per-entry exits: a trailing else.
+            if (entry->boundNode != 0) {
                 CZNodePartial* const rootNode = CZClass::gwNodeGetRoot(entry->boundNode);
                 if (g_zEffectAnim_ForceCloneNonDynamicRoot != 0 && rootNode != 0 && rootNode->classId != 2
                     && rootNode->classId != 1) {
@@ -1017,99 +1013,103 @@ namespace zEffect_Anim
                     fclose(stream);
                     return -1;
                 }
-            }
 
-            entry->lightRefCount = savedLightRefCount;
-            for (int j2 = 1; j2 < entry->lightRefCount; ++j2) {
-                entry->lightRefList[j2].runtimeNode = CZLight::gwLightNew();
-                if (entry->lightRefList[j2].runtimeNode == 0) {
-                    fclose(stream);
-                    return -1;
+                entry->lightRefCount = savedLightRefCount;
+                for (int j2 = 1; j2 < entry->lightRefCount; ++j2) {
+                    entry->lightRefList[j2].runtimeNode = CZLight::gwLightNew();
+                    if (entry->lightRefList[j2].runtimeNode == 0) {
+                        fclose(stream);
+                        return -1;
+                    }
+                    CZClass::gwNodeSetName(entry->lightRefList[j2].runtimeNode, entry->lightRefList[j2].name.text);
                 }
-                CZClass::gwNodeSetName(entry->lightRefList[j2].runtimeNode, entry->lightRefList[j2].name.text);
-            }
 
-            entry->soundRefCount = savedSoundRefCount;
-            for (int j3 = 1; j3 < entry->soundRefCount; ++j3) {
-                entry->soundRefList[j3].runtimeNode = CZSound::gwSoundNew();
-                if (entry->soundRefList[j3].runtimeNode == 0) {
-                    fclose(stream);
-                    return -1;
+                entry->soundRefCount = savedSoundRefCount;
+                for (int j3 = 1; j3 < entry->soundRefCount; ++j3) {
+                    entry->soundRefList[j3].runtimeNode = CZSound::gwSoundNew();
+                    if (entry->soundRefList[j3].runtimeNode == 0) {
+                        fclose(stream);
+                        return -1;
+                    }
+                    CZClass::gwNodeSetName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
+                    CZSound::SetSampleSetByName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
                 }
-                CZClass::gwNodeSetName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
-                CZSound::SetSampleSetByName(entry->soundRefList[j3].runtimeNode, entry->soundRefList[j3].name.text);
-            }
 
-            for (int j4 = 1; j4 < entry->trackedNodeCount; ++j4) {
-                entry->trackedNodeList[j4].trackedNode
-                    = zEffectAnim::ResolveNodeByName(entry, entry->trackedNodeList[j4].trackedNodeName);
-                if (entry->trackedNodeList[j4].trackedNode == 0) {
-                    fclose(stream);
-                    return -1;
+                for (int j4 = 1; j4 < entry->trackedNodeCount; ++j4) {
+                    entry->trackedNodeList[j4].trackedNode
+                        = zEffectAnim::ResolveNodeByName(entry, entry->trackedNodeList[j4].trackedNodeName);
+                    if (entry->trackedNodeList[j4].trackedNode == 0) {
+                        fclose(stream);
+                        return -1;
+                    }
                 }
-            }
 
-            for (int j5 = 1; j5 < entry->nodeRefCount; ++j5) {
-                entry->nodeRefList[j5].node = zEffectAnim::ResolveNodeByName(entry, entry->nodeRefList[j5].name.text);
-                if (entry->nodeRefList[j5].node == 0) {
-                    fclose(stream);
-                    return -1;
+                for (int j5 = 1; j5 < entry->nodeRefCount; ++j5) {
+                    entry->nodeRefList[j5].node
+                        = zEffectAnim::ResolveNodeByName(entry, entry->nodeRefList[j5].name.text);
+                    if (entry->nodeRefList[j5].node == 0) {
+                        fclose(stream);
+                        return -1;
+                    }
                 }
-            }
 
-            for (int j6 = 1; j6 < entry->sampleRefCount; ++j6) {
-                entry->sampleRefList[j6].sample = zSnd::FindSampleByName(entry->sampleRefList[j6].name);
-            }
-
-            for (int j7 = 1; j7 < entry->effectTemplateRefCount; ++j7) {
-                entry->effectTemplateRefList[j7].templateIndex
-                    = zEffect::FindTemplateIndexByName(entry->effectTemplateRefList[j7].name);
-                if (entry->effectTemplateRefList[j7].templateIndex == -1) {
-                    fclose(stream);
-                    return -1;
+                for (int j6 = 1; j6 < entry->sampleRefCount; ++j6) {
+                    entry->sampleRefList[j6].sample = zSnd::FindSampleByName(entry->sampleRefList[j6].name);
                 }
-            }
 
-            if (entry->activationPrereqCount > 0) {
-                CZNodePartial* prereqSearchRoot = 0;
-                for (int j8 = 0; j8 < entry->activationPrereqCount; ++j8) {
-                    zEffectAnimActivationPrereq* const prereq = &entry->activationPrereqList[j8];
-                    if (prereq->mode == 1) {
-                        prereq->targetEntry = 0;
-                        zEffectAnimEntry* targetEntry = g_zEffectAnim_State.entryList;
-                        for (int k = 1; k < g_zEffectAnim_State.entryCount; ++k, ++targetEntry) {
-                            if (strcmp(targetEntry->name, prereq->targetName) == 0) {
-                                prereq->targetEntry = targetEntry;
+                for (int j7 = 1; j7 < entry->effectTemplateRefCount; ++j7) {
+                    entry->effectTemplateRefList[j7].templateIndex
+                        = zEffect::FindTemplateIndexByName(entry->effectTemplateRefList[j7].name);
+                    if (entry->effectTemplateRefList[j7].templateIndex == -1) {
+                        fclose(stream);
+                        return -1;
+                    }
+                }
+
+                if (entry->activationPrereqCount > 0) {
+                    CZNodePartial* prereqSearchRoot = 0;
+                    for (int j8 = 0; j8 < entry->activationPrereqCount; ++j8) {
+                        zEffectAnimActivationPrereq* const prereq = &entry->activationPrereqList[j8];
+                        if (prereq->mode == 1) {
+                            prereq->targetEntry = 0;
+                            zEffectAnimEntry* targetEntry = g_zEffectAnim_State.entryList;
+                            for (int k = 1; k < g_zEffectAnim_State.entryCount; ++k, ++targetEntry) {
+                                if (strcmp(targetEntry->name, prereq->targetName) == 0) {
+                                    prereq->targetEntry = targetEntry;
+                                    break;
+                                }
+                            }
+                        } else if (prereq->mode == 3 || prereq->mode == 2) {
+                            // Retail recomputes the node-name address at each use (no cached local).
+                            if (prereqSearchRoot == 0) {
+                                prereqSearchRoot = CZClass::FindByTypeAndName(6, &prereq->targetName[4]);
+                            } else {
+                                prereqSearchRoot = CZClass::FindSubNodeByName(prereqSearchRoot, &prereq->targetName[4]);
+                            }
+
+                            if (prereqSearchRoot == 0) {
+                                zError::ReportOld(
+                                    0x400,
+                                    "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
+                                    0x2c17,
+                                    g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
+                                    entry,
+                                    &prereq->targetName[4]
+                                );
+                                entry->activationPrereqCount = 0;
                                 break;
                             }
-                        }
-                    } else if (prereq->mode == 3 || prereq->mode == 2) {
-                        // Retail recomputes the node-name address at each use (no cached local).
-                        if (prereqSearchRoot == 0) {
-                            prereqSearchRoot = CZClass::FindByTypeAndName(6, &prereq->targetName[4]);
-                        } else {
-                            prereqSearchRoot = CZClass::FindSubNodeByName(prereqSearchRoot, &prereq->targetName[4]);
-                        }
 
-                        if (prereqSearchRoot == 0) {
-                            zError::ReportOld(
-                                0x400,
-                                "D:\\Proj\\GameZRecoil\\zEffect\\zeff_anim_init.c",
-                                0x2c17,
-                                g_zEffectAnim_ActivationPrereqNodeNotFoundFmt,
-                                entry,
-                                &prereq->targetName[4]
-                            );
-                            entry->activationPrereqCount = 0;
-                            break;
-                        }
-
-                        prereq->targetNode = prereqSearchRoot;
-                        if (prereq->mode == 2) {
-                            prereqSearchRoot = 0;
+                            prereq->targetNode = prereqSearchRoot;
+                            if (prereq->mode == 2) {
+                                prereqSearchRoot = 0;
+                            }
                         }
                     }
                 }
+            } else {
+                fclose(stream);
+                return -1;
             }
         }
 

@@ -780,6 +780,8 @@ namespace Player {
  */
 void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveState)
 {
+    // Retail stores the 5000 seed right after the saveState spill, before the pointer spills.
+    float lowestProbeHeight = 5000.0f;
     PlayerModalState* const primaryModalState = saveState->primaryModalState;
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = primaryModalState->masterModalData;
@@ -789,7 +791,6 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     PlayerProbeTypeHistogram outTypeHistogram;
     int outAttachmentCandidateCount;
     CZNodePartial* outAttachmentNode;
-    float lowestProbeHeight = 5000.0f;
     ProbeModalSampleHeights(
         saveState,
         probeHeightByPoint,
@@ -868,8 +869,12 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
 
     const float hoverLiftError = minHoverClearance - masterModalData->modeAltTransitionTime;
     if (playerState->modeVariantNode != 0) {
-        // Retail lays out the inactive (> 2.0f) arm as the fall-through.
-        CZClass::gwNodeSetActive(playerState->modeVariantNode, hoverLiftError > 2.0f ? 0 : 1);
+        // Two calls tail-merged by VC5: hoverLiftError is stored and reloaded on both arms (0x42778a).
+        if (hoverLiftError > 2.0f) {
+            CZClass::gwNodeSetActive(playerState->modeVariantNode, 0);
+        } else {
+            CZClass::gwNodeSetActive(playerState->modeVariantNode, 1);
+        }
     }
 
     if (hoverLiftError > 2.0f && playerState->localVel.y > 0.0f) {
@@ -897,19 +902,20 @@ void __fastcall UpdateMasterTypeHoverFromModalProbe(zUtil_SaveGameState* saveSta
     }
 
     zMath::Vec3RotateY(&probePlaneNormal, &playerState->steerBasisRef, -playerState->restartYawRad);
-    playerState->vehiclePitchRad = (float)(asin(probePlaneNormal.z));
-    playerState->vehicleRollRad = (float)(asin(-probePlaneNormal.x));
+    // Same uncast asin pair as RebuildOrientationFromNormal (0x42da40).
+    playerState->vehiclePitchRad = asin(probePlaneNormal.z);
+    playerState->vehicleRollRad = asin(-probePlaneNormal.x);
 
-    // Retail computes both wave phases before either sine (the phase variables are reassigned).
-    float pitchWave = masterModalData->hoverPitchWaveSpeedRate * fabs(playerState->localVel.z)
-        + masterModalData->hoverPitchWaveBaseRate;
+    // Retail computes both wave phases before either sine; the pitch wave keeps a float stack home and the
+    // double roll wave stays on the x87 stack (fld dt; fmul st(1) ... fstp st(0)), as in 0x4289f0.
+    const float speedAbs = fabs(playerState->localVel.z);
+    float pitchWave = masterModalData->hoverPitchWaveSpeedRate * speedAbs + masterModalData->hoverPitchWaveBaseRate;
     pitchWave *= g_Time_AccumulatedTimeSec;
-    float rollWave = masterModalData->hoverRollWaveSpeedRate * fabs(playerState->localVel.z)
-        + masterModalData->hoverRollWaveBaseRate;
+    double rollWave = masterModalData->hoverRollWaveSpeedRate * speedAbs + masterModalData->hoverRollWaveBaseRate;
     rollWave *= g_Time_AccumulatedTimeSec;
     pitchWave = (float)(sin(pitchWave));
     pitchWave *= masterModalData->hoverPitchWaveAmplitude;
-    rollWave = (float)(sin(rollWave)) * masterModalData->hoverRollWaveAmplitude
+    rollWave = sin(rollWave) * masterModalData->hoverRollWaveAmplitude
         + masterModalData->hoverRollYawCoupleScale * playerState->angVelYaw * playerState->localVel.z;
     playerState->vehiclePitchRad += g_Player_DeltaTime * pitchWave;
     playerState->vehicleRollRad += g_Player_DeltaTime * rollWave;
