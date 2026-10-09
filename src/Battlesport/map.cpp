@@ -1483,9 +1483,19 @@ void HudSensorTrackerMap::MapZoomOut()
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-updatemapscalelerp
  * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTrackerMap::UpdateMapScaleLerp
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-lerp
  *
  *
  * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
+ *
+ * Raw assembly: one unchanged vector-lerp family expansion at retail
+ * [0x416c45,0x416c85) (64 bytes), invoked through ZMTH_VECTOR_LERP.
+ * Evidence: three operand-home reloads followed by the reviewed 55-byte
+ * x87 lerp core, storing x, y, z in order. The member-wise C spelling
+ * and native-C control did not reproduce the retail function.
+ * Historical operand declaration order and invocation syntax are unresolved.
+ * Operand preparation, frame construction and control flow are outside
+ * this raw-assembly permission.
  */
 int HudSensorTrackerMap::UpdateMapScaleLerp()
 {
@@ -1496,10 +1506,7 @@ int HudSensorTrackerMap::UpdateMapScaleLerp()
             mapScaleLerpT = 1.0f;
         }
 
-        const float lerpT = mapScaleLerpT;
-        mapScaleCurrent.x = (mapScaleGoal.x - mapScaleStart.x) * lerpT + mapScaleStart.x;
-        mapScaleCurrent.y = (mapScaleGoal.y - mapScaleStart.y) * lerpT + mapScaleStart.y;
-        mapScaleCurrent.z = (mapScaleGoal.z - mapScaleStart.z) * lerpT + mapScaleStart.z;
+        ZMTH_VECTOR_LERP(&mapScaleCurrent, &mapScaleStart, &mapScaleGoal, mapScaleLerpT);
     }
 
     return 1;

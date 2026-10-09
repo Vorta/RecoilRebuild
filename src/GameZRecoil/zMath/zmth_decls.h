@@ -3,6 +3,10 @@
 #include "GameZRecoil/zMath/zmth_types.h"
 #include "recoil/recoil_callconv.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern float g_zMath_ProjSphereRadiusScale;
 extern float g_zMath_ProjScaleX;
 extern float g_zMath_ProjScaleY;
@@ -91,8 +95,22 @@ void __fastcall zMathQuatMultiplyConjugate(const zQuat* quatA, const zQuat* quat
 void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3);
 void __fastcall zMathQuatExp(const zVec3* rotationVector, zQuat* outQuat);
 zVec2 __cdecl zMathProjectGetLastScreenScaleXY();
+void __fastcall zMathProjectSphereBatch(const zVec3* spherePoints, zProjectedSphere* projectedSpheres, int count);
 
+#ifdef __cplusplus
+}
+#endif
+
+/*
+ * zmth_main.c, zmth_vec.c and zmth_quat.c are C units, so the members they
+ * define have C linkage (VC5 names such as @MatMultiply@8). C++ consumers
+ * keep the reconstruction's zMath namespace view of them; C linkage leaves the
+ * namespace out of the linked name, and C consumers use the plain names.
+ */
+#ifdef __cplusplus
 namespace zMath {
+extern "C" {
+#endif
 extern zMat4x3 g_zMath_CameraScratchB;
 extern zMat4x3 g_zMath_CameraScratchA;
 extern zVec3 g_zMath_Vec3Zero;
@@ -100,14 +118,14 @@ extern zVec3 g_zMath_Vec3DeltaScratch;
 extern int* g_currentMatrixIdentityFlagSlot;
 extern float** g_currentMatrixPtrSlot;
 
-int __cdecl CrtMatherrHandler(_exception* except);
+int __cdecl CrtMatherrHandler(struct _exception* except);
 void __fastcall MatStackPushPtr(float* matrix);
 void __fastcall MatStackPushAndCloneParent(float* newSlotBuffer);
 void __fastcall MatStackPopPtr();
 void __cdecl MatLoadCameraScratchB();
 void __cdecl MatLoadCameraScratchA();
 void __cdecl MatLoadIdentity();
-inline float __fastcall Vec3Normalize(zVec3* vec);
+__inline float __fastcall Vec3Normalize(zVec3* vec);
 void __fastcall Vec3NormalizeXZ(zVec3* vec, zVec3* out);
 void __fastcall Vec3Perp2D(const zVec3* in, zVec3* out);
 void __fastcall Vec3ToRightXZ(const zVec3* in, zVec3* out);
@@ -124,7 +142,6 @@ int __fastcall LineVsSphereHit(
     const zVec3* sphereCenterRelSegB,
     zVec3* outInwardNormal
 );
-zVec3* __fastcall Vec3Midpoint(const zVec3* a, const zVec3* b, zVec3* outMidpoint);
 float __fastcall Vec3DeltaLength(const zVec3* a, const zVec3* b);
 float __fastcall Vec3DeltaLengthSq(const zVec3* a, const zVec3* b);
 float __fastcall Vec3DistSqXZ(const zVec3* a, const zVec3* b);
@@ -150,23 +167,33 @@ void __fastcall Vec3ArrayProjectToCachedY(const zVec3* points, float* outValues,
  * (@Vec3RotateY@12). The original header arrangement is not established.
  */
 #if defined(ZMTH_VEC3ROTATEY_LEGACY_ORDER)
-extern "C" void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec3* inVec);
+void __fastcall Vec3RotateY(float yawAngle, zVec3* outVec, const zVec3* inVec);
 #else
-extern "C" void __fastcall Vec3RotateY(zVec3* outVec, const zVec3* inVec, float yawAngle);
+void __fastcall Vec3RotateY(zVec3* outVec, const zVec3* inVec, float yawAngle);
 #endif
 void __fastcall Vec3ArrayTransformDirectionTranspose(zVec3* vectors, int count);
 void __fastcall MatTransformPointBatchInPlace(zVec3* points, int count);
 void __fastcall ProjectPointBatch(const zVec3* viewPoints, zProjectedPoint* projectedPoints, int count);
+float __stdcall ApproxExpNeg(float x);
+#ifdef __cplusplus
+}
+
+/* Members defined in C++ units keep C++ linkage. */
+zVec3* __fastcall Vec3Midpoint(const zVec3* a, const zVec3* b, zVec3* outMidpoint);
 int __fastcall ClipLineSegmentToZRange(zVec3* pointA, zVec3* pointB);
 void __fastcall ClipLineSegmentPointToZ(zVec3* pointToClip, const zVec3* otherPoint, float clipZ);
 int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* dstPoint);
-float __stdcall ApproxExpNeg(float x);
 } // namespace zMath
+#endif
 
+#ifdef __cplusplus
 #define zMath_Mat_Scale zMath::MatScale
+#else
+#define zMath_Mat_Scale MatScale
+#endif
 
+#ifdef __cplusplus
 namespace zFloat {
 void __fastcall Set255f(float* value);
 }
-
-void __fastcall zMathProjectSphereBatch(const zVec3* spherePoints, zProjectedSphere* projectedSpheres, int count);
+#endif

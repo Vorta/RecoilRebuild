@@ -5,20 +5,20 @@
 #include <math.h>
 #include <stddef.h>
 
-struct zVec3 {
+typedef struct zVec3 {
     float x;
     float y;
     float z;
-};
+} zVec3;
 
 RECOIL_STATIC_ASSERT(sizeof(zVec3) == 0x0c);
 
-struct zVec2 {
+typedef struct zVec2 {
     float x;
     float y;
-};
+} zVec2;
 
-struct zMat4x3 {
+typedef struct zMat4x3 {
     float xx;
     float xy;
     float xz;
@@ -31,17 +31,17 @@ struct zMat4x3 {
     float posX;
     float posY;
     float posZ;
-};
+} zMat4x3;
 
 RECOIL_STATIC_ASSERT(sizeof(zMat4x3) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zMat4x3, posX) == 0x24);
 
-struct zQuat {
+typedef struct zQuat {
     float w;
     float x;
     float y;
     float z;
-};
+} zQuat;
 
 RECOIL_STATIC_ASSERT(sizeof(zQuat) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(zQuat, x) == 0x04);
@@ -50,34 +50,34 @@ RECOIL_STATIC_ASSERT(offsetof(zQuat, x) == 0x04);
  * Axis-aligned box defined by its minimum and maximum positions.
  * Each endpoint occupies one consecutive three-float vector.
  */
-struct zBBox3f {
+typedef struct zBBox3f {
     zVec3 min;
     zVec3 max;
-};
+} zBBox3f;
 
-struct zBBoxCorners {
+typedef struct zBBoxCorners {
     zVec3 corners[8];
-};
+} zBBoxCorners;
 
-struct zProjectedPoint {
+typedef struct zProjectedPoint {
     float x;
     float y;
     float reciprocalZ;
-};
+} zProjectedPoint;
 
-struct zProjectedSphere {
+typedef struct zProjectedSphere {
     float x;
     float y;
     float screenRadius;
-};
+} zProjectedSphere;
 
 RECOIL_STATIC_ASSERT(sizeof(zBBox3f) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zBBoxCorners) == 0x60);
-RECOIL_STATIC_ASSERT(sizeof(_exception) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(_exception, name) == 0x04);
-RECOIL_STATIC_ASSERT(offsetof(_exception, arg1) == 0x08);
-RECOIL_STATIC_ASSERT(offsetof(_exception, arg2) == 0x10);
-RECOIL_STATIC_ASSERT(offsetof(_exception, retval) == 0x18);
+RECOIL_STATIC_ASSERT(sizeof(struct _exception) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(struct _exception, name) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(struct _exception, arg1) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(struct _exception, arg2) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(struct _exception, retval) == 0x18);
 RECOIL_STATIC_ASSERT(sizeof(zVec2) == 0x08);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedPoint) == 0x0c);
 RECOIL_STATIC_ASSERT(sizeof(zProjectedSphere) == 0x0c);

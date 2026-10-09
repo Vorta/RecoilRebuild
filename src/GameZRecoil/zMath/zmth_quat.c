@@ -19,15 +19,19 @@ void __fastcall zMathQuatFromEulerYXZ(zQuat* outQuat, float angle0, float angle1
     float cp;
     float sr;
     float cr;
-    zMath::SinCos(angle0 * 0.5f, &sy, &cy);
-    zMath::SinCos(angle1 * 0.5f, &sp, &cp);
+    float cpcy;
+    float spcy;
+    float cpsy;
+    float spsy;
+    SinCos(angle0 * 0.5f, &sy, &cy);
+    SinCos(angle1 * 0.5f, &sp, &cp);
 
-    const float cpcy = cp * cy;
-    const float spcy = sp * cy;
-    const float cpsy = cp * sy;
-    const float spsy = sp * sy;
+    cpcy = cp * cy;
+    spcy = sp * cy;
+    cpsy = cp * sy;
+    spsy = sp * sy;
 
-    zMath::SinCos(angle2 * 0.5f, &sr, &cr);
+    SinCos(angle2 * 0.5f, &sr, &cr);
     outQuat->w = spsy * sr + cpcy * cr;
     outQuat->x = cpsy * sr + spcy * cr;
     outQuat->y = cpsy * cr - spcy * sr;
@@ -37,25 +41,28 @@ void __fastcall zMathQuatFromEulerYXZ(zQuat* outQuat, float angle0, float angle1
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiply
  * @recoil-artifact defines .text recoil:function:0x475910: zMathQuatMultiply
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: computes the quaternion product used by zMath rotation composition.
  */
 void __fastcall zMathQuatMultiply(const zQuat* quatA, const zQuat* quatB, zQuat* outAB)
 {
+    float scaledX;
+    float scaledY;
+    float scaledZ;
     outAB->w = quatB->w * quatA->w - quatA->x * quatB->x - quatA->y * quatB->y - quatA->z * quatB->z;
-    const float scaledX = quatB->w * quatA->x;
+    scaledX = quatB->w * quatA->x;
     outAB->x = scaledX + quatA->w * quatB->x + quatB->z * quatA->y - quatA->z * quatB->y;
-    const float scaledY = quatB->w * quatA->y;
+    scaledY = quatB->w * quatA->y;
     outAB->y = scaledY + quatA->w * quatB->y + quatA->z * quatB->x - quatB->z * quatA->x;
-    const float scaledZ = quatB->w * quatA->z;
+    scaledZ = quatB->w * quatA->z;
     outAB->z = scaledZ + quatA->w * quatB->z + quatB->y * quatA->x - quatA->y * quatB->x;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-multiplyinverse
  * @recoil-artifact defines .text recoil:function:0x4759d0: zMathQuatMultiplyConjugate
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: multiplies a quaternion by the conjugate of a second quaternion (its inverse only for unit quaternions).
  */
@@ -81,25 +88,35 @@ void __fastcall zMathQuatMultiplyConjugate(const zQuat* quatA, const zQuat* quat
 void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
 {
     zVec3 twice;
+    float xx2;
+    float yy2;
+    float zz2;
+    float xy2;
+    float yz2;
+    float xz2;
+    float xw2;
+    float yw2;
+    float zw2;
+    float* out;
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-    zMath::Vec3Add((const zVec3*)&quat->x, (const zVec3*)&quat->x, &twice);
+    Vec3Add((const zVec3*)&quat->x, (const zVec3*)&quat->x, &twice);
 #else
     twice.x = quat->x + quat->x;
     twice.y = quat->y + quat->y;
     twice.z = quat->z + quat->z;
 #endif
 
-    const float xx2 = twice.x * quat->x;
-    const float yy2 = twice.y * quat->y;
-    const float zz2 = twice.z * quat->z;
-    const float xy2 = twice.y * quat->x;
-    const float yz2 = twice.z * quat->y;
-    const float xz2 = twice.x * quat->z;
-    const float xw2 = twice.x * quat->w;
-    const float yw2 = twice.y * quat->w;
-    const float zw2 = twice.z * quat->w;
+    xx2 = twice.x * quat->x;
+    yy2 = twice.y * quat->y;
+    zz2 = twice.z * quat->z;
+    xy2 = twice.y * quat->x;
+    yz2 = twice.z * quat->y;
+    xz2 = twice.x * quat->z;
+    xw2 = twice.x * quat->w;
+    yw2 = twice.y * quat->w;
+    zw2 = twice.z * quat->w;
 
-    float* out = &outMatrix3x3->xx;
+    out = &outMatrix3x3->xx;
     *out++ = 1.0f - yy2 - zz2;
     *out++ = zw2 + xy2;
     *out++ = xz2 - yw2;
@@ -111,46 +128,43 @@ void __fastcall zMathQuatToMatrix(const zQuat* quat, zMat4x3* outMatrix3x3)
     *out = 1.0f - xx2 - yy2;
 }
 
-namespace zMath
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.quat.vector-length
+ *
+ * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+ * Reconstruction: zmth_quat.c-resident copy of the Camera.c inline helper,
+ * following the zwep_ammo.c-resident precedent; this /Ob1 TU inlines it at
+ * 0x475b80 with the parameter argument bound to its inline parameter home.
+ * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
+ * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+ * sequence and result store without a call at that site; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x475b80.
+ */
+__inline float Vec3Length(const zVec3* vec)
 {
-    /**
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.quat.vector-length
-     *
-     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
-     * Reconstruction: zmth_quat.c-resident copy of the Camera.c inline helper,
-     * following the zwep_ammo.c-resident precedent; this /Ob1 TU inlines it at
-     * 0x475b80 with the parameter argument bound to its inline parameter home.
-     * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
-     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
-     * sequence and result store without a call at that site; the original inline helper's header
-     * ownership and declaration placement are not established (TU-resident reconstruction model).
-     * Original inline helper evidence: no standalone retail function; observed at
-     * retail 0x475b80.
-     */
-    inline float Vec3Length(const zVec3* vec)
-    {
-        float vecLength;
+    float vecLength;
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-        mov ecx, vec
-        fld dword ptr [ecx]zVec3.x
-        fmul dword ptr [ecx]zVec3.x
-        fld dword ptr [ecx]zVec3.y
-        fmul dword ptr [ecx]zVec3.y
-        fld dword ptr [ecx]zVec3.z
-        fmul dword ptr [ecx]zVec3.z
-        fxch st(1)
-        faddp st(2), st
-        faddp st(1), st
-        fsqrt
-        fstp vecLength
-        }
-#else
-        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
-#endif
-        return vecLength;
+    __asm {
+    mov ecx, vec
+    fld dword ptr [ecx]zVec3.x
+    fmul dword ptr [ecx]zVec3.x
+    fld dword ptr [ecx]zVec3.y
+    fmul dword ptr [ecx]zVec3.y
+    fld dword ptr [ecx]zVec3.z
+    fmul dword ptr [ecx]zVec3.z
+    fxch st(1)
+    faddp st(2), st
+    faddp st(1), st
+    fsqrt
+    fstp vecLength
     }
-} // namespace zMath
+#else
+    vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+    return vecLength;
+}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-quat-fromrotationvector
@@ -168,7 +182,8 @@ namespace zMath
 void __fastcall zMathQuatExp(const zVec3* rotationVector, zQuat* outQuat)
 {
     float sinLength;
-    const float length = zMath::Vec3Length(rotationVector);
+    const float length = Vec3Length(rotationVector);
+    float scale;
 
     if (length == 0.0f) {
         outQuat->w = 1.0f;
@@ -178,8 +193,8 @@ void __fastcall zMathQuatExp(const zVec3* rotationVector, zQuat* outQuat)
         return;
     }
 
-    zMath::SinCos(length, &sinLength, &outQuat->w);
-    const float scale = sinLength / length;
+    SinCos(length, &sinLength, &outQuat->w);
+    scale = sinLength / length;
     outQuat->x = scale * rotationVector->x;
     outQuat->y = scale * rotationVector->y;
     outQuat->z = scale * rotationVector->z;

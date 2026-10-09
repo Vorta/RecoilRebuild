@@ -442,7 +442,7 @@ extern zSndPlayHandle* g_zSndLastVoiceHandle;
 extern int g_zSndLastVoiceMarkerIndex;
 extern int g_zSndLastVoiceStopMarkerIndex;
 extern int g_zSnd_Flag10PlaybackEnabled;
-extern zSndSampleSetRegistry g_zSnd_SampleSetRegistry;
+extern DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern zReader::Node* g_zSnd_ConfigRootNode;
 extern zArchiveList* g_zSnd_SearchPathList;
 extern int g_zSnd_ListenerStateValid;

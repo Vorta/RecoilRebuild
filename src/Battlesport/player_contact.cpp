@@ -59,11 +59,7 @@ enum PlayerMasterTypeId {
     kPlayerMasterTypeAmphib = 5
 };
 const float kPlayerWorldCollisionStackDrop = 0.200000003f;
-// Unused since 0x4248e0 reads the pooled -1.0f literal (retail 0x4d0728); kept so the
-// TU's C1 ID counter layout, which 0x425060's codegen depends on, stays unchanged.
-const float kPlayerWorldCollisionSubRestoreYOffset = -1.0f;
 const float kPlayerTransferDamageScale = 5.0f;
-const float kPlayerTransferVelocityDamping = 0.666700006f;
 
 struct PlayerCollisionContactContextPartial {
     unsigned char unknown_00[0x04];
@@ -810,6 +806,49 @@ void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState* saveState)
     } while (0)
 #endif
 
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+/**
+ * @recoil-raw-asm recoil:raw-asm:battlesport.player-contact.vector-dot-xz
+ *
+ * Purpose: write the horizontal dot product of two vectors into the result float.
+ * Reconstruction: player_contact.cpp-resident copy of the reviewed zmth.h XZ dot
+ * body whose pointer captures run left-first; retail 0x424270 homes the left
+ * vector before the right one at both XZ dots ([0x424656,0x424665),
+ * [0x424698,0x4246a4)), unlike the right-first zmth.h macro used by 0x424010.
+ * Raw assembly: the island body is the reviewed zmth.h vector-dot-xz body,
+ * unchanged; only the C++ capture order differs (reviewed: Pro run a2f26e5e).
+ * Contract: left is captured before right, each once; arguments must be
+ * side-effect-free pointer expressions identifying valid readable zVec3
+ * objects, and result must name a writable, non-volatile binary32 float.
+ * ECX and EDX are clobbered; integer flags and the x87 control word are
+ * unchanged by this body; x87 entry/peak/exit depths are 0/2/0 on normal
+ * completion; x87 status and exceptions are not preserved. Arithmetic follows
+ * the listed x87 operation order under the incoming precision and rounding
+ * controls; the final FSTP stores binary32 under the incoming rounding mode. No
+ * intermediate binary32 store is inserted. The 0/2/0 depth contract applies to
+ * the assembly island, not its surrounding compiler-owned captures. Arguments
+ * must not collide with the internal capture names dotLeft or dotRight.
+ * Fallback: mathematical reference only; identical rounding, NaN handling and
+ * exception behaviour are not promised.
+ */
+#define PLAYER_VECTOR_DOT_XZ(result, left, right)                                                                      \
+    do {                                                                                                               \
+        const zVec3* const dotLeft = (left);                                                                           \
+        const zVec3* const dotRight = (right);                                                                         \
+        __asm mov ecx, dotLeft __asm mov edx,                                                                          \
+            dotRight __asm fld dword ptr[ecx] zVec3.x __asm fmul dword ptr[edx] zVec3.x __asm fld dword                \
+                ptr[ecx] zVec3.z __asm fmul dword ptr[edx] zVec3.z __asm faddp st(1),                                  \
+            st __asm fstp result                                                                                       \
+    } while (0)
+#else
+#define PLAYER_VECTOR_DOT_XZ(result, left, right)                                                                      \
+    do {                                                                                                               \
+        const zVec3* const dotLeft = (left);                                                                           \
+        const zVec3* const dotRight = (right);                                                                         \
+        (result) = dotLeft->x * dotRight->x + dotLeft->z * dotRight->z;                                                \
+    } while (0)
+#endif
+
 /**
  * Original inline helper; no standalone retail function exists.
  * Evidence: retail 0x425770 stores surfaceNormal * 20 through the output
@@ -832,18 +871,19 @@ namespace Player {
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-cross
- * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
+ * @recoil-raw-consumer recoil:raw-asm:battlesport.player-contact.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-contact.vector-length
- *
+ * @recoil-match source
  *
  * Raw assembly: reviewed (Pro batch Z, run 96d501c4), each range separately:
  * Vec3Subtract [0x4242f7,0x42431a), [0x4243fb,0x42441e), [0x424485,0x4244a8);
  * vector dot [0x424326,0x424345); vector length [0x4243a6,0x4243c4); Vec3Add
  * [0x42444d,0x424470), [0x4244c5,0x4244e8), [0x42451d,0x424540),
  * [0x424727,0x42474d); vector cross [0x4245b6,0x4245f7), [0x42460f,0x424650);
- * XZ dot [0x42467a,0x42468f), [0x4246c8,0x4246dd); squared length
- * [0x42479d,0x4247bf) (requires player_contact.cpp /Ob1).
+ * squared length [0x42479d,0x4247bf) (requires player_contact.cpp /Ob1).
+ * Left-first XZ dot [0x42467a,0x42468f), [0x4246c8,0x4246dd): reviewed
+ * separately (Pro run a2f26e5e, 2026-10-09).
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingCollisionContact from the recovered
@@ -915,12 +955,13 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
     playerState->motionBasis.posZ = playerState->worldPos.z;
 
     if (probeResolved == 0) {
+        // Declared ahead of collisionDampingA: retail multiplies collisionDampingA by normalDot (0x4246dd).
+        float tangentSpeed;
+        float normalDot;
         const float collisionDampingA = masterModalData->collisionDampingA;
         float projectileVelY = playerState->projectileSpawnVel.y;
         zMath::Vec3NormalizeXZ(&reflectedSweepDir, &reflectedSweepDir);
 
-        float tangentSpeed;
-        float normalDot;
         zVec3 surfaceTangent;
         ZMTH_VECTOR_CROSS(&reflectedSweepDir, &contactNormal, &surfaceTangent);
         ZMTH_VECTOR_CROSS(&contactNormal, &surfaceTangent, &surfaceTangent);
@@ -929,13 +970,13 @@ void __fastcall ResolvePendingCollisionContact(zUtil_SaveGameState* saveState, P
         reflectedSweepDir.y *= localSpeed;
         reflectedSweepDir.z *= localSpeed;
 
-        ZMTH_VECTOR_DOT_XZ(tangentSpeed, &reflectedSweepDir, &surfaceTangent);
+        PLAYER_VECTOR_DOT_XZ(tangentSpeed, &reflectedSweepDir, &surfaceTangent);
         zVec3 tangentVelocity;
         tangentVelocity.x = surfaceTangent.x * tangentSpeed;
         tangentVelocity.y = surfaceTangent.y * tangentSpeed;
         tangentVelocity.z = surfaceTangent.z * tangentSpeed;
 
-        ZMTH_VECTOR_DOT_XZ(normalDot, &reflectedSweepDir, &contactNormal);
+        PLAYER_VECTOR_DOT_XZ(normalDot, &reflectedSweepDir, &contactNormal);
         zVec3 normalVelocity;
         normalVelocity.x = contactNormal.x * (collisionDampingA * normalDot);
         normalVelocity.y = contactNormal.y * (collisionDampingA * normalDot);

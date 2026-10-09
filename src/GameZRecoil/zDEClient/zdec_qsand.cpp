@@ -357,14 +357,17 @@ int __fastcall Build(zDEClient_QSandFeature* featureInstance)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-createfeature
  * @recoil-artifact defines .text recoil:function:0x4564b0: zDEClient_QSand::CreateFeature
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-lerp
+ * @recoil-match byte
  *
  * Purpose: create quicksand side and cap display geometry from the clipped
  * feature points and attach both display instances to generated feature nodes.
  */
 int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance)
 {
-    CZNodePartial* node = 0;
+    zClipUV* uvPairs = 0;
+    // Retail passes the node slot as an out-parameter only; it is never cleared first.
+    CZNodePartial* node;
     zDiPartial* displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
@@ -387,145 +390,144 @@ int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance)
 
     zVec3* const points = featureInstance->points;
     const int pointCount = featureInstance->eventTemplate.pointCount;
-    const int featureFlags = featureInstance->eventTemplate.featureFlags;
-    const int uvCenterIndex = pointCount * 3;
-    const bool hasMaterialUv = (featureFlags & 0x1008) != 0;
-
-    zModel_MaterialPartial* sideMaterial = 0;
-    float featureRadius = 0.0f;
-    float uvScale = 0.0f;
-    if (hasMaterialUv) {
+    float featureRadius;
+    zModel_MaterialPartial* capMaterial;
+    float uScale;
+    float vScale;
+    if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
         featureRadius = featureInstance->eventTemplate.radius;
-        sideMaterial = featureInstance->eventTemplate.material;
-        uvScale = 4.5f / (featureRadius + featureRadius);
+        capMaterial = featureInstance->eventTemplate.material;
+        uScale = vScale = 4.5f / (featureRadius + featureRadius);
     }
 
-    featureInstance->eventTemplate.center.y -= featureInstance->eventTemplate.depth;
-
-    zClipUV* uvPairs = 0;
-    if (hasMaterialUv) {
+    zVec3* const center = &featureInstance->eventTemplate.center;
+    center->y -= featureInstance->eventTemplate.depth;
+    const int uvCenterIndex = pointCount * 3;
+    if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
         uvPairs = (zClipUV*)(malloc((size_t)(uvCenterIndex + 1) * sizeof(zClipUV)));
     }
 
     zVec3* const midPoints = (zVec3*)(malloc((size_t)(pointCount) * sizeof(zVec3)));
 
-    const zVec3 center = featureInstance->eventTemplate.center;
-    const float lowCenterY = featureInstance->eventTemplate.center.y - featureInstance->eventTemplate.depth;
-    const float topCenterY = featureInstance->eventTemplate.center.y + featureInstance->eventTemplate.depth;
+    zVec3 lowCenter = *center;
+    lowCenter.y = center->y - featureInstance->eventTemplate.depth;
+    // Raised-center snapshot; only y is consumed by the cap geometry.
+    zVec3 topCenter = featureInstance->eventTemplate.center;
+    topCenter.y = featureInstance->eventTemplate.center.y + featureInstance->eventTemplate.depth;
 
-    if (hasMaterialUv) {
-        uvPairs[uvCenterIndex].u = uvScale * featureRadius;
-        uvPairs[uvCenterIndex].v = uvScale * featureRadius;
-    }
+    // Supported domain requires (featureFlags & 0x1008) != 0 and valid UV storage.
+    // Flags clear: retail uses unwritten scalars for null-base UV stores (retained defect).
+    uvPairs[uvCenterIndex].u = uScale * featureRadius;
+    uvPairs[uvCenterIndex].v = vScale * featureRadius;
 
-    for (int i = 0; i < pointCount; ++i) {
-        const zVec3* const point = &points[i];
-        zVec3* const midPoint = &midPoints[i];
+    int i;
+    for (i = 0; i < pointCount; ++i) {
+        float deltaY = center->y - points[i].y;
+        ZMTH_VECTOR_LERP(&midPoints[i], &points[i], &lowCenter, 0.5f);
+        deltaY *= 0.5f;
+        midPoints[i].y = points[i].y + deltaY - featureInstance->eventTemplate.depth;
 
-        midPoint->x = (center.x - point->x) * 0.5f + point->x;
-        midPoint->y = ((center.y - point->y) * 0.5f + point->y) - featureInstance->eventTemplate.depth;
-        midPoint->z = (center.z - point->z) * 0.5f + point->z;
-
-        if (hasMaterialUv) {
-            uvPairs[i].u = (point->x - center.x + featureRadius) * uvScale;
-            uvPairs[i].v = (point->z - center.z + featureRadius) * uvScale;
-            uvPairs[pointCount + i].u = (midPoint->x - center.x + featureRadius) * uvScale;
-            uvPairs[pointCount + i].v = (midPoint->z - center.z + featureRadius) * uvScale;
+        if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+            uvPairs[i].u = (points[i].x - center->x + featureRadius) * uScale;
+            uvPairs[i].v = (points[i].z - center->z + featureRadius) * vScale;
+            uvPairs[pointCount + i].u = (midPoints[i].x - center->x + featureRadius) * uScale;
+            uvPairs[pointCount + i].v = (midPoints[i].z - center->z + featureRadius) * vScale;
         }
     }
 
-    for (int i_837 = 0; i_837 < pointCount; ++i_837) {
-        const int nextIndex = (i_837 + 1) % pointCount;
-        zVec3 polygonPoints[4];
-        polygonPoints[0] = points[i_837];
-        polygonPoints[1] = points[nextIndex];
-        polygonPoints[2] = midPoints[nextIndex];
-        polygonPoints[3] = midPoints[i_837];
+    zVec3 polygonPoints[4];
+    zClipUV polygonUvs[4];
+    // The wrapped index is spelled at each use; retail counts i + 1 as its own induction variable.
+    for (i = 0; i < pointCount; ++i) {
+        polygonPoints[0] = points[i];
+        polygonPoints[1] = points[(i + 1) % featureInstance->eventTemplate.pointCount];
+        polygonPoints[2] = midPoints[(i + 1) % featureInstance->eventTemplate.pointCount];
+        polygonPoints[3] = midPoints[i];
 
-        zClipUV polygonUvs[4];
-        zClipUV* uvList = 0;
-        zModel_MaterialPartial* material = 0;
-        if (hasMaterialUv) {
-            polygonUvs[0] = uvPairs[i_837];
-            polygonUvs[1] = uvPairs[nextIndex];
-            polygonUvs[2] = uvPairs[pointCount + nextIndex];
-            polygonUvs[3] = uvPairs[pointCount + i_837];
-            uvList = polygonUvs;
-            material = featureInstance->eventTemplate.materialCycle;
+        if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+            polygonUvs[0] = uvPairs[i];
+            polygonUvs[1] = uvPairs[(i + 1) % featureInstance->eventTemplate.pointCount];
+            polygonUvs[2] = uvPairs[pointCount + (i + 1) % featureInstance->eventTemplate.pointCount];
+            polygonUvs[3] = uvPairs[pointCount + i];
+            zGeometry_Model::AddPolygonToDi(
+                displayInstance,
+                4,
+                polygonPoints,
+                featureInstance->eventTemplate.materialCycle,
+                polygonUvs
+            );
+        } else {
+            zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, 0, 0);
         }
-
-        zGeometry_Model::AddPolygonToDi(displayInstance, 4, polygonPoints, material, uvList);
     }
 
-    for (int i_860 = 0; i_860 < pointCount; ++i_860) {
-        const int nextIndex = (i_860 + 1) % pointCount;
-        zVec3 polygonPoints[3];
-        polygonPoints[0].x = center.x;
-        polygonPoints[0].y = lowCenterY;
-        polygonPoints[0].z = center.z;
-        polygonPoints[1] = midPoints[i_860];
-        polygonPoints[2] = midPoints[nextIndex];
-
-        zClipUV polygonUvs[3];
-        zClipUV* uvList = 0;
-        zModel_MaterialPartial* material = 0;
-        if (hasMaterialUv) {
-            polygonUvs[0] = uvPairs[uvCenterIndex];
-            polygonUvs[1] = uvPairs[pointCount + i_860];
-            polygonUvs[2] = uvPairs[pointCount + nextIndex];
-            uvList = polygonUvs;
-            material = featureInstance->eventTemplate.materialCycle;
-        }
-
-        zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, material, uvList);
+    polygonPoints[0] = *center;
+    polygonPoints[0].y = lowCenter.y;
+    if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+        polygonUvs[0] = uvPairs[uvCenterIndex];
     }
 
-    CZNodePartial* capNode = 0;
-    zDiPartial* const capDisplayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
+    for (i = 0; i < pointCount; ++i) {
+        polygonPoints[1] = midPoints[i];
+        polygonPoints[2] = midPoints[(i + 1) % featureInstance->eventTemplate.pointCount];
+
+        if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+            polygonUvs[1] = uvPairs[pointCount + i];
+            polygonUvs[2] = uvPairs[pointCount + (i + 1) % featureInstance->eventTemplate.pointCount];
+            zGeometry_Model::AddPolygonToDi(
+                displayInstance,
+                3,
+                polygonPoints,
+                featureInstance->eventTemplate.materialCycle,
+                polygonUvs
+            );
+        } else {
+            zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, 0, 0);
+        }
+    }
+
+    // Retail reuses the node and display-instance slots for the cap geometry.
+    displayInstance = zDEClient::CreateFeatureNodeAndDiFromClipPatchPartition(
         featureInstance->clipPatchOutput->partitions,
         zDEClient::GetCameraNode(),
-        &capNode
+        &node
     );
-    if (capDisplayInstance == 0 || capNode == 0) {
-        if (capDisplayInstance != 0) {
-            zModel_DiPool::FreeIfUnreferenced(capDisplayInstance);
+    if (displayInstance == 0 || node == 0) {
+        if (displayInstance != 0) {
+            zModel_DiPool::FreeIfUnreferenced(displayInstance);
         }
 
-        if (capNode != 0) {
-            CZObject3D::DeleteNode(capNode);
+        if (node != 0) {
+            CZObject3D::DeleteNode(node);
         }
 
         return -1;
     }
 
-    CZClass::gwNodeSetName(capNode, g_zDEClient_FeatureNodeName);
-    capNode->callbackContext = (CZNodePartial*)(featureInstance);
+    CZClass::gwNodeSetName(node, g_zDEClient_FeatureNodeName);
+    node->callbackContext = (CZNodePartial*)(featureInstance);
 
-    for (int i_901 = 0; i_901 < pointCount; ++i_901) {
-        const int nextIndex = (i_901 + 1) % pointCount;
-        zVec3 polygonPoints[3];
-        polygonPoints[0].x = center.x;
-        polygonPoints[0].y = topCenterY;
-        polygonPoints[0].z = center.z;
-        polygonPoints[1] = points[i_901];
-        polygonPoints[2] = points[nextIndex];
+    polygonPoints[0] = *center;
+    polygonPoints[0].y = topCenter.y;
+    if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+        polygonUvs[0] = uvPairs[uvCenterIndex];
+    }
 
-        zClipUV polygonUvs[3];
-        zClipUV* uvList = 0;
-        zModel_MaterialPartial* material = 0;
-        if (hasMaterialUv) {
-            polygonUvs[0] = uvPairs[uvCenterIndex];
-            polygonUvs[1] = uvPairs[pointCount + i_901];
-            polygonUvs[2] = uvPairs[pointCount + nextIndex];
-            uvList = polygonUvs;
-            material = sideMaterial;
+    for (i = 0; i < pointCount; ++i) {
+        polygonPoints[1] = points[i];
+        polygonPoints[2] = points[(i + 1) % featureInstance->eventTemplate.pointCount];
+
+        if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
+            polygonUvs[1] = uvPairs[pointCount + i];
+            polygonUvs[2] = uvPairs[pointCount + (i + 1) % featureInstance->eventTemplate.pointCount];
+            zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, capMaterial, polygonUvs);
+        } else {
+            zGeometry_Model::AddPolygonToDi(displayInstance, 3, polygonPoints, 0, 0);
         }
-
-        zGeometry_Model::AddPolygonToDi(capDisplayInstance, 3, polygonPoints, material, uvList);
     }
 
     free(midPoints);
-    if (hasMaterialUv) {
+    if ((featureInstance->eventTemplate.featureFlags & 0x1008) != 0) {
         free(uvPairs);
     }
 

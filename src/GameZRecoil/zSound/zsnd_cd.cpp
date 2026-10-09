@@ -60,8 +60,23 @@ extern "C" int g_zSnd_UseArchiveBanksFlag = 1;
 namespace {
 const int ZSND_CD_FLAG_STEREO_AUX = 1;
 const int ZSND_CD_FLAG_READY = 2;
-std::list<zSndCdTrackEntry*> g_zSndCdTrackList;
 } // namespace
+
+/**
+ * Purpose: own the configured CD-audio track entries that Init appends and
+ * Shutdown frees, in their original VC5 std::list<zSndCdTrackEntry *> form.
+ * File-static (internal linkage, not an anonymous-namespace member, which VC5
+ * gives external linkage under a path-mangled name): VC5's alias analysis
+ * then keeps the list end across free() and operator delete, which gives
+ * retail 0x4a20d0 and 0x4a24d0. VC5 names the object _g_zSndCdTrackList$S<n>.
+ * Retail storage [0x56b3e0, 0x56b3ec): allocator byte, _Head, _Size.
+ * Compiler-emitted 0x4a2010: VC5 static-initializer coordinator for this
+ * file-static list.
+ * Compiler-emitted 0x4a2020: VC5 list-constructor thunk for this object.
+ * Compiler-emitted 0x4a2050: VC5 atexit-registration helper for this object.
+ * Compiler-emitted 0x4a2060: VC5 list-destructor thunk for this object.
+ */
+static std::list<zSndCdTrackEntry*> g_zSndCdTrackList;
 
 namespace zSnd {
 } // namespace zSnd
@@ -75,7 +90,7 @@ int __cdecl Shutdown();
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.init
  * @recoil-artifact defines .text recoil:function:0x4a20d0: zSndCd::Init.
- *
+ * @recoil-match byte
  *
  * Purpose: Open the MCI CD device, cache track metadata, and build the CD track list.
  */
@@ -90,7 +105,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
     openParms.lpstrDeviceType = "cdaudio";
     DWORD mciError = mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(&openParms));
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x43);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x43);
     }
 
     g_zSndCdDeviceId = (unsigned short)(openParms.wDeviceID);
@@ -105,7 +120,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x4d);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x4d);
     }
 
     if (statusParms.dwReturn == 0) {
@@ -123,7 +138,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&setParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x5d);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x5d);
     }
 
     memset(&statusParms, 0, sizeof(statusParms));
@@ -135,7 +150,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x66);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x66);
     }
 
     g_zSndCdTrackCountCached = (int)(statusParms.dwReturn);
@@ -148,7 +163,7 @@ RECOIL_NO_GS int __fastcall Init(zReader::Node* cdTracksNode)
         (DWORD_PTR)(&statusParms)
     );
     if (mciError != 0) {
-        return zSnd::ReportMciError(mciError, "D:\Proj\GameZRecoil\zSound\zsnd_cd.cpp", 0x70);
+        return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x70);
     }
 
     const int auxCount = auxGetNumDevs();
@@ -229,7 +244,7 @@ namespace {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.shutdown
  * @recoil-artifact defines .text recoil:function:0x4a24d0: zSndCd::Shutdown.
- *
+ * @recoil-match byte
  *
  * Purpose: stop CD playback, close the MCI CD device, clear ready state, and
  * release configured track-list entries.

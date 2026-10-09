@@ -2,7 +2,10 @@
 
 #include "GameZRecoil/zMath/zmth_decls.h"
 
+#ifdef __cplusplus
 namespace zMath {
+extern "C" {
+#endif
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 #pragma optimize("", off)
 #pragma warning(disable : 4035)
@@ -21,7 +24,7 @@ namespace zMath {
  * ai_net.cpp contribution block.
  * Purpose: Normalizes a nonzero vector in place and returns the original 3D length.
  */
-inline float __fastcall Vec3Normalize(zVec3* vec)
+__inline float __fastcall Vec3Normalize(zVec3* vec)
 {
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     float vecLength;
@@ -79,7 +82,10 @@ vec3_normalize_zero_length:
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 #pragma optimize("", on)
 #endif
+#ifdef __cplusplus
+}
 } // namespace zMath
+#endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
@@ -280,7 +286,10 @@ vec3_normalize_zero_length:
     } while (0)
 #endif
 
+#ifdef __cplusplus
 namespace zMath {
+extern "C" {
+#endif
 /**
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  *
@@ -290,7 +299,7 @@ namespace zMath {
  * scaled integer exponent. C++ retains both arithmetic and float conversion.
  * The spelling and historical header ownership remain inferred.
  */
-inline float FastExp(float value)
+__inline float FastExp(float value)
 {
     int fastExpBits = (int)(value * 12102200.0f);
     float result;
@@ -316,7 +325,7 @@ inline float FastExp(float value)
  * Outputs must be distinct; the raw arm stores cosine, then sine as floats.
  * The spelling, inline syntax and historical header ownership are inferred.
  */
-inline void SinCos(double angle, float* sinOut, float* cosOut)
+__inline void SinCos(double angle, float* sinOut, float* cosOut)
 {
     if (fabs(angle) > 9.22e18) {
         *sinOut = (float)sin(angle);
@@ -337,9 +346,15 @@ inline void SinCos(double angle, float* sinOut, float* cosOut)
 #endif
     }
 }
+#ifdef __cplusplus
+}
 } // namespace zMath
+#endif
 
+#ifdef __cplusplus
 namespace zMath {
+extern "C" {
+#endif
 /**
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-add
  *
@@ -350,7 +365,7 @@ namespace zMath {
  * EBX/ECX/EDX hold left/right/destination; x87 depths are 0/3/0.
  * Integer flags and x87 control word are unchanged; x87 status follows retail.
  */
-inline void Vec3Add(const zVec3* left, const zVec3* right, zVec3* dest)
+__inline void Vec3Add(const zVec3* left, const zVec3* right, zVec3* dest)
 {
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     __asm {
@@ -388,7 +403,7 @@ inline void Vec3Add(const zVec3* left, const zVec3* right, zVec3* dest)
  * EBX/ECX/EDX hold left/right/destination; x87 depths are 0/3/0.
  * Integer flags and x87 control word are unchanged; x87 status follows retail.
  */
-inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
+__inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
 {
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
     __asm {
@@ -415,7 +430,10 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
     dest->z = z;
 #endif
 }
+#ifdef __cplusplus
+}
 } // namespace zMath
+#endif
 
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
 /**
@@ -735,6 +753,18 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
         ZMTH_VECTOR_TRANSFORM_POINT_ISLAND(transformMatrix, transformDest, transformSource)                            \
     } while (0)
 
+/*
+ * The matrix-stack cursors have C linkage; C++ consumers name them through
+ * the zMath namespace view, C consumers by their plain names.
+ */
+#ifdef __cplusplus
+#define ZMTH_CURRENT_MATRIX_IDENTITY_FLAG_SLOT zMath::g_currentMatrixIdentityFlagSlot
+#define ZMTH_CURRENT_MATRIX_PTR_SLOT zMath::g_currentMatrixPtrSlot
+#else
+#define ZMTH_CURRENT_MATRIX_IDENTITY_FLAG_SLOT g_currentMatrixIdentityFlagSlot
+#define ZMTH_CURRENT_MATRIX_PTR_SLOT g_currentMatrixPtrSlot
+#endif
+
 /**
  * Purpose: Transform points by the current matrix-stack slot, or copy them
  * unchanged while that slot is flagged identity. Requires <string.h>.
@@ -756,11 +786,11 @@ inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
         int batchCount = (count);                                                                                      \
         zVec3* batchOutPoints = (outPoints);                                                                           \
         const zVec3* batchPoints = (points);                                                                           \
-        if (*zMath::g_currentMatrixIdentityFlagSlot != 0) {                                                            \
+        if (*ZMTH_CURRENT_MATRIX_IDENTITY_FLAG_SLOT != 0) {                                                            \
             memcpy(batchOutPoints, batchPoints, batchCount * sizeof(zVec3));                                           \
         } else {                                                                                                       \
             do {                                                                                                       \
-                const zMat4x3* const transformMatrix = (const zMat4x3*)(*zMath::g_currentMatrixPtrSlot);               \
+                const zMat4x3* const transformMatrix = (const zMat4x3*)(*ZMTH_CURRENT_MATRIX_PTR_SLOT);                \
                 zVec3* const transformDest = batchOutPoints;                                                           \
                 const zVec3* const transformSource = batchPoints;                                                      \
                 batchPoints++;                                                                                         \

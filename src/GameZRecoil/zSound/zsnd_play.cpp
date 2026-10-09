@@ -1242,20 +1242,22 @@ void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks)
 }
 } // namespace zSnd
 
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.g-zsnd-samplesetregistry
  * @recoil-artifact defines .data recoil:data:0x56b290: g_zSnd_SampleSetRegistry.
  * Purpose: store the process-wide sample-set registry in its original VC5
  * std::vector<zSndSampleSet *> form.
+ * File-static: only this unit's registry functions use it. Its internal
+ * linkage lets VC5's alias analysis keep the vector fields across the
+ * allocation calls, which gives retail 0x4a0880, 0x4a0920 and 0x4a09e0;
+ * VC5 names the object _g_zSnd_SampleSetRegistry$S<n> in this unit's .bss.
  * Compiler-emitted 0x4a0800: VC5 static-initializer coordinator for this
- * global vector.
- * Compiler-emitted 0x4a0810: VC5 vector-constructor thunk for this global.
- * Compiler-emitted 0x4a0830: VC5 atexit-registration helper for this global.
- * Compiler-emitted 0x4a0840: VC5 vector-destructor thunk for this global.
+ * file-static vector.
+ * Compiler-emitted 0x4a0810: VC5 vector-constructor thunk for this object.
+ * Compiler-emitted 0x4a0830: VC5 atexit-registration helper for this object.
+ * Compiler-emitted 0x4a0840: VC5 vector-destructor thunk for this object.
  */
-zSndSampleSetRegistry g_zSnd_SampleSetRegistry;
-}
+static zSndSampleSetRegistry g_zSnd_SampleSetRegistry;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.g-zsndbankarchivenamelow
@@ -1308,7 +1310,7 @@ extern "C" int __fastcall zSndSampleSetDestroyByName(const char* setName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-destroyall
  * @recoil-artifact defines .text recoil:function:0x4a0880: zSndSampleSetRegistryDestroyAll.
- *
+ * @recoil-match byte
  *
  * Purpose: destroy registered sample sets, clear their slots, and reset the active range.
  */
@@ -1362,7 +1364,7 @@ extern "C" int __cdecl zSndSampleSetRegistryGetCount()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsamplesetregistry-findbyname
  * @recoil-artifact defines .text recoil:function:0x4a0920: zSndSampleSetRegistryFindByName.
- *
+ * @recoil-match byte
  *
  * Purpose: return the registered sample set whose stored name exactly matches
  * the requested name.
