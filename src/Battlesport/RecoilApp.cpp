@@ -906,6 +906,8 @@ int RecoilApp_MissionFmvState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.mission-fmv-state-set-mission-id
  * @recoil-artifact defines .text recoil:logical-function:0x42ee40:mission-fmv-state-set-mission-id: RecoilApp_MissionFmvState::SetMissionId.
+ * @recoil-match byte
+ *
  * Purpose: Store the mission selected for the next mission-FMV transition.
  */
 void RecoilApp_MissionFmvState::SetMissionId(int missionId)

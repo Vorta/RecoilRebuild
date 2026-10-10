@@ -108,14 +108,14 @@ extern "C" int __fastcall WriteSectionBlob(
 } // namespace zUtil_ZAR
 
 namespace zUtil_ZBD {
-FILE* __cdecl OpenTempWriteStream();
-FILE* __fastcall OpenTempReadStream(void* buffer, unsigned int size);
-void __fastcall
+extern "C" FILE* __cdecl OpenTempWriteStream();
+extern "C" FILE* __fastcall OpenTempReadStream(void* buffer, unsigned int size);
+extern "C" void __fastcall
 FlushTempWriteStreamToSectionRecord(FILE* tempStream, zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken);
-void __fastcall CloseTempReadStream(FILE* tempStream);
+extern "C" void __fastcall CloseTempReadStream(FILE* tempStream);
 } // namespace zUtil_ZBD
 #else
-/* C view of the zUtil ZBD entry points the zClass units call. */
+/* C view of the zUtil ZBD entry points the zClass and zEffect units call. */
 #include "recoil/recoil_callconv.h"
 
 typedef void* zZbdSectionCallback;

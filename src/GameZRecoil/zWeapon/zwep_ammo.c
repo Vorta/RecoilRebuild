@@ -739,7 +739,7 @@ namespace OptCatalog
                 0.0f
             );
             runtimeInstance->asyncFxHandle = asyncFxHandle;
-            zEffectAnimEntry::SetOnStateDoneCallback(
+            zEffectAnimEntrySetOnStateDoneCallback(
                 asyncFxHandle,
                 (void*)(&ClearRuntimeInstanceAsyncFxHandleCallback),
                 runtimeInstance

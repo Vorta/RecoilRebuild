@@ -42,6 +42,8 @@ typedef struct CZWindowData {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.window.deletenode
  * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-window-delete-node: CZWindowDeleteNode
+ *
+ *
  * Purpose: route window deletion through the generic node free path.
  */
 int __fastcall CZWindowDeleteNode(CZNodePartial* node)

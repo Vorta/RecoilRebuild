@@ -38,8 +38,8 @@ RECOIL_STATIC_ASSERT(sizeof(Node) == 8);
 #ifdef __cplusplus
 extern "C" Node* __fastcall Load(const char* path, const char* extraSearchPath = 0, int unusedStack = 0);
 extern "C" int __fastcall Free(Node* loaded);
-const char* __fastcall FindString(Node* parentNode, const char* name);
-int __fastcall GetFloat(Node* parentNode, const char* name, float* outValue);
+extern "C" const char* __fastcall FindString(Node* parentNode, const char* name);
+extern "C" int __fastcall GetFloat(Node* parentNode, const char* name, float* outValue);
 int __fastcall GetInt(Node* parentNode, const char* name, int* outValue);
 extern "C" int __fastcall FindGlobalStringPrefixIndex(const char* text);
 int __fastcall FileExists(const char* path);

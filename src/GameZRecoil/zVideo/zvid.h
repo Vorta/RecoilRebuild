@@ -822,8 +822,8 @@ int __fastcall SetHalfResAdjustMode(int mode);
 void __fastcall HandleSoftwareModeHotkeyCommand(int commandId);
 zVidRect32* __cdecl GetPrimarySurfaceRectScratch();
 void* __cdecl GetSwSurfacePixels();
-int __cdecl GetSwSurfaceWidth();
-int __cdecl GetSwSurfaceHeight();
+extern "C" int __cdecl GetSwSurfaceWidth();
+extern "C" int __cdecl GetSwSurfaceHeight();
 int __cdecl GetSwSurfacePitch();
 int __cdecl GetSwSurfaceLockedFlag();
 void* __cdecl GetPrimarySurfacePixels();
@@ -865,8 +865,8 @@ void __fastcall buffBlurRegionCombined(zVidRect32* rectOrNull, int mode);
 void __fastcall buffBlurRegionVertical(zVidRect32* rectOrNull, int mode);
 void __fastcall buffBlurRegionHorizontal(zVidRect32* rectOrNull, int mode);
 void __fastcall buffBlurRegionByMode(zVidRect32* rectOrNull, int mode);
-void __fastcall FxPass3SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha);
-void __fastcall FxPass3QueueElementLocal(
+extern "C" void __fastcall FxPass3SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha);
+extern "C" void __fastcall FxPass3QueueElementLocal(
     int rectLeftPixels,
     int rectTopPixels,
     int currentRadiusPixels,

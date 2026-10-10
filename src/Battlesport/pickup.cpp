@@ -936,7 +936,7 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
             playerState->rootNode,
             0
         );
-        zEffectAnimEntry::SetOnStateDoneCallback(runtimeEntry, (void*)RemoveObject, pickupObj);
+        zEffectAnimEntrySetOnStateDoneCallback(runtimeEntry, (void*)RemoveObject, pickupObj);
         GetSpawnDefFromNode(pickupObj)->refCount = 1;
         return 1;
     }
@@ -1495,7 +1495,7 @@ int __fastcall Pickup::SpawnWithAirdropChute(int typeIndex, zVec3* position)
     CZNodePartial* const attachNode = CZClass::FindSubNodeByName(chuteRoot, "airdroppup");
     CZClass::AddChild(attachNode, pickupObj);
     CZClass::gwNodeSetActive(pickupObj, 0);
-    zEffectAnimEntry::SetOnStateDoneCallback(chuteEntry, (void*)&RegisterExistingObject, pickupObj);
+    zEffectAnimEntrySetOnStateDoneCallback(chuteEntry, (void*)&RegisterExistingObject, pickupObj);
     return 1;
 }
 

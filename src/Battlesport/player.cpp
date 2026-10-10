@@ -2837,7 +2837,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     g_Player_RuntimeInputFlags = 3;
     zEffectAnimEntry* asyncEntry = zEffectAnim::FindNextAsyncEntry(0);
     while (asyncEntry != 0) {
-        zEffectAnimEntry::SetOnStateDoneCallback(asyncEntry, (void*)(&AsyncCommandCallback), 0);
+        zEffectAnimEntrySetOnStateDoneCallback(asyncEntry, (void*)(&AsyncCommandCallback), 0);
         asyncEntry = zEffectAnim::FindNextAsyncEntry(asyncEntry);
     }
 

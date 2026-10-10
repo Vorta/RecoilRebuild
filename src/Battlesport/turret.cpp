@@ -608,7 +608,7 @@ void zTurret_Runtime::Tick(const zVec3* playerFxOffsetWorld)
                     if (fireAnimEntry == 0) {
                         FireWeapon();
                     } else {
-                        zEffectAnimEntry::SetOnStateDoneCallback(
+                        zEffectAnimEntrySetOnStateDoneCallback(
                             fireAnimEntry,
                             (void*)zTurret_Runtime::FireWeaponCallback,
                             this

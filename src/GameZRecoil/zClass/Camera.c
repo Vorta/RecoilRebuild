@@ -3366,6 +3366,8 @@ int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.deletenode
  * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-camera-delete-node: CZCameraDeleteNode
+ *
+ *
  * Purpose: route camera deletion through the generic node free path.
  */
 int __fastcall CZCameraDeleteNode(CZNodePartial* node)

@@ -66,6 +66,8 @@ int __fastcall RemoveChildValidated(CZNodePartial* parent, CZNodePartial* child)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.switch.deletenode
  * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-switch-delete-node: CZSwitchDeleteNode
+ *
+ *
  * Purpose: route switch deletion through the generic node free path.
  */
 int __fastcall CZSwitchDeleteNode(CZNodePartial* node)

@@ -56,7 +56,7 @@ extern "C" zImage_TexDirEntryPartial* __fastcall TexIndexToDirEntry(int index);
 zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName);
 extern "C" zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr();
 int __cdecl InitTextureDirectory();
-zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path);
+extern "C" zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path);
 extern "C" int __cdecl TexDirLoadPendingEntries();
 extern "C" int __fastcall WriteTextureDirectory(void* stream);
 extern "C" int __fastcall ReadTextureDirectory(int entryCount, void* stream);

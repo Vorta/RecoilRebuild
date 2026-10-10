@@ -7,12 +7,12 @@
 #include "recoil/recoil_callconv.h"
 #include "zclass.h"
 
-struct zArchiveList;
-struct zZbdSectionCallbackCtx;
-struct zEffect_RuntimeEntry;
-struct zClassDiPickCandidateEntry;
+typedef struct zArchiveList zArchiveList;
+typedef struct zZbdSectionCallbackCtx zZbdSectionCallbackCtx;
+typedef struct zEffect_RuntimeEntry zEffect_RuntimeEntry;
+typedef struct zClassDiPickCandidateEntry zClassDiPickCandidateEntry;
 
-struct zEffect_RuntimeManager {
+typedef struct zEffect_RuntimeManager {
     int initialized;
     int templateCount;
     CZNodePartial* loadedTemplateTree;
@@ -23,9 +23,9 @@ struct zEffect_RuntimeManager {
     int freshAllocCount;
     int activatedCount;
     int recycleCount;
-};
+} zEffect_RuntimeManager;
 
-struct zEffect_RuntimeEntry {
+typedef struct zEffect_RuntimeEntry {
     int effectIndex;
     char* modelNodeName;
     char* effectName;
@@ -44,9 +44,9 @@ struct zEffect_RuntimeEntry {
     float initialScale;
     float nearCullDistSq;
     float farFadeDistSq;
-};
+} zEffect_RuntimeEntry;
 
-struct zEffectAnimSurfaceRuntime {
+typedef struct zEffectAnimSurfaceRuntime {
     char sequenceName[0x20];
     unsigned char runState;
     unsigned char resetMode;
@@ -59,13 +59,13 @@ struct zEffectAnimSurfaceRuntime {
     void* currentEvent;
     void* eventStream;
     int eventStreamSize;
-};
+} zEffectAnimSurfaceRuntime;
 
-struct zEffectAnimEntry;
+typedef struct zEffectAnimEntry zEffectAnimEntry;
 
 typedef void(__fastcall* zEffectAnimEventCallback)(zEffectAnimEntry* self, void* context, int value);
 
-struct zEffectAnimEventHeader {
+typedef struct zEffectAnimEventHeader {
     union {
         unsigned char eventType;
         unsigned char typeAndStartMode;
@@ -77,42 +77,42 @@ struct zEffectAnimEventHeader {
         int byteSize;
     };
     float startThreshold;
-};
+} zEffectAnimEventHeader;
 
-union zEffectAnimEventValue {
+typedef union zEffectAnimEventValue {
     unsigned int rawValue;
     int i32;
     unsigned short u16;
     float f32;
-};
+} zEffectAnimEventValue;
 
-struct zEffectAnimLoopEvent {
+typedef struct zEffectAnimLoopEvent {
     unsigned char unknown_00[0x0c];
     unsigned int stopModeFlags;
     zEffectAnimEventValue stopValue;
-};
+} zEffectAnimLoopEvent;
 
-struct zEffectAnimEmitterEvent {
+typedef struct zEffectAnimEmitterEvent {
     unsigned char unknown_00[0x0c];
     char animName[0x20];
     int cachedEntryIndex;
-};
+} zEffectAnimEmitterEvent;
 
-struct zEffectAnimCallbackEvent {
+typedef struct zEffectAnimCallbackEvent {
     unsigned char unknown_00[0x0c];
     int value;
-};
+} zEffectAnimCallbackEvent;
 
-struct zEffectAnimRefOffsetEvent {
+typedef struct zEffectAnimRefOffsetEvent {
     unsigned char unknown_00[0x0c];
     short refIndex;
     short nodeRefIndex;
     float offsetX;
     float offsetY;
     float offsetZ;
-};
+} zEffectAnimRefOffsetEvent;
 
-struct zEffectAnimSoundEvent {
+typedef struct zEffectAnimSoundEvent {
     unsigned char unknown_00[0x0c];
     char soundName[0x20];
     int soundRefIndex;
@@ -122,9 +122,9 @@ struct zEffectAnimSoundEvent {
     float offsetX;
     float offsetY;
     float offsetZ;
-};
+} zEffectAnimSoundEvent;
 
-struct zEffectAnimLightEvent {
+typedef struct zEffectAnimLightEvent {
     unsigned char unknown_00[0x0c];
     char lightName[0x20];
     int lightRefIndex;
@@ -147,9 +147,9 @@ struct zEffectAnimLightEvent {
     float specularB;
     float intensity;
     float falloff;
-};
+} zEffectAnimLightEvent;
 
-struct zEffectLightRangeSpecularAnimEvent {
+typedef struct zEffectLightRangeSpecularAnimEvent {
     zEffectAnimEventHeader header;
     char lightName[0x20];
     int lightRefIndex;
@@ -163,9 +163,9 @@ struct zEffectLightRangeSpecularAnimEvent {
     zColorRgb specularDelta;
     zColorRgb currentSpecular;
     float durationSec;
-};
+} zEffectLightRangeSpecularAnimEvent;
 
-struct zEffectFogEvent {
+typedef struct zEffectFogEvent {
     zEffectAnimEventHeader header;
     char unused0[0x20];
     int flags;
@@ -177,9 +177,9 @@ struct zEffectFogEvent {
     float fogAltitudeMax;
     float fogRangeStart;
     float fogRangeEnd;
-};
+} zEffectFogEvent;
 
-struct zEffectCameraEvent {
+typedef struct zEffectCameraEvent {
     zEffectAnimEventHeader header;
     int flags;
     int targetNodeRefIndex;
@@ -190,9 +190,9 @@ struct zEffectCameraEvent {
     float fovSecondary;
     float viewportPrimary;
     float viewportSecondary;
-};
+} zEffectCameraEvent;
 
-struct zEffectCameraAnimEvent {
+typedef struct zEffectCameraAnimEvent {
     zEffectAnimEventHeader header;
     int flags;
     int targetNodeRefIndex;
@@ -218,9 +218,9 @@ struct zEffectCameraAnimEvent {
     float viewportSecondaryEnd;
     float viewportSecondaryRate;
     float endTime;
-};
+} zEffectCameraAnimEvent;
 
-struct zEffectNodeAnimEvent {
+typedef struct zEffectNodeAnimEvent {
     zEffectAnimEventHeader header;
     int flags;
     int targetNodeRefIndex;
@@ -248,9 +248,9 @@ struct zEffectNodeAnimEvent {
     short sampleRefIndex;
     float lookupScale;
     float runtimeElapsedSec;
-};
+} zEffectNodeAnimEvent;
 
-struct zEffectTransformEvent {
+typedef struct zEffectTransformEvent {
     zEffectAnimEventHeader header;
     int flags;
     float vecX;
@@ -258,44 +258,44 @@ struct zEffectTransformEvent {
     float vecZ;
     short targetNodeRefIndex;
     short basisNodeRefIndex;
-};
+} zEffectTransformEvent;
 
-struct zEffectNodeScaleEvent {
+typedef struct zEffectNodeScaleEvent {
     zEffectAnimEventHeader header;
     float scaleX;
     float scaleY;
     float scaleZ;
     short targetNodeRefIndex;
     unsigned char unknown_1a[0x02];
-};
+} zEffectNodeScaleEvent;
 
-struct zEffectActivateEvent {
+typedef struct zEffectActivateEvent {
     zEffectAnimEventHeader header;
     int activeValue;
     short targetNodeRefIndex;
     unsigned char unknown_12[0x02];
-};
+} zEffectActivateEvent;
 
-struct zEffectParentChildEvent {
+typedef struct zEffectParentChildEvent {
     zEffectAnimEventHeader header;
     short parentNodeRefIndex;
     short childNodeRefIndex;
-};
+} zEffectParentChildEvent;
 
-struct zEffectAttachEvent {
+typedef struct zEffectAttachEvent {
     zEffectAnimEventHeader header;
     int flags;
     short targetNodeRefIndex;
     short variantIndex;
-};
+} zEffectAttachEvent;
 
-struct zEffectSurfaceControlEvent {
+typedef struct zEffectSurfaceControlEvent {
     zEffectAnimEventHeader header;
     char sequenceName[0x20];
     int surfaceSlotIndex;
-};
+} zEffectSurfaceControlEvent;
 
-struct zEffectSurfaceRefEvent {
+typedef struct zEffectSurfaceRefEvent {
     zEffectAnimEventHeader header;
     char sequenceName[0x14];
     int runtimeState;
@@ -308,9 +308,9 @@ struct zEffectSurfaceRefEvent {
     unsigned char unknown_36[0x02];
     zVec3 position;
     zVec3 orientationOffset;
-};
+} zEffectSurfaceRefEvent;
 
-struct zEffectBeamDetachEvent {
+typedef struct zEffectBeamDetachEvent {
     zEffectAnimEventHeader header;
     int flags;
     short beamNodeRefIndex;
@@ -329,38 +329,38 @@ struct zEffectBeamDetachEvent {
     float segmentEndCurrent;
     float endTimeSec;
     float lengthThreshold;
-};
+} zEffectBeamDetachEvent;
 
-struct zEffectKeyframeSampleHeader {
+typedef struct zEffectKeyframeSampleHeader {
     int channelFlags;
     float startTimeSec;
     float endTimeSec;
-};
+} zEffectKeyframeSampleHeader;
 
-struct zEffectKeyframeSampleChannel {
+typedef struct zEffectKeyframeSampleChannel {
     zQuat baseQuat;
     zVec3 rate;
-};
+} zEffectKeyframeSampleChannel;
 
-struct zEffectKeyframeEvent {
+typedef struct zEffectKeyframeEvent {
     zEffectAnimEventHeader header;
     int targetNodeRefIndex;
     int reserved;
     float keyframeLocalTime;
     int currentKeyframeOffset;
     int lookaheadAdvanceCount;
-};
+} zEffectKeyframeEvent;
 
-struct zEffectEvaluateKeyframeEvent {
+typedef struct zEffectEvaluateKeyframeEvent {
     zEffectAnimEventHeader header;
     short litFlag;
     short hasAlphaScale;
     float alphaScale;
     short targetNodeRefIndex;
     short reserved;
-};
+} zEffectEvaluateKeyframeEvent;
 
-struct zEffectRunKeyframeEvent {
+typedef struct zEffectRunKeyframeEvent {
     zEffectAnimEventHeader header;
     int targetNodeRefIndex;
     short startLitFlag;
@@ -369,9 +369,9 @@ struct zEffectRunKeyframeEvent {
     float endAlphaScale;
     float alphaScaleRate;
     float endTimeSec;
-};
+} zEffectRunKeyframeEvent;
 
-struct zEffectScreenColorFxEvent {
+typedef struct zEffectScreenColorFxEvent {
     zEffectAnimEventHeader header;
     float redBase;
     float redEnd;
@@ -386,9 +386,9 @@ struct zEffectScreenColorFxEvent {
     float alphaEnd;
     float alphaSlope;
     float endTimeSec;
-};
+} zEffectScreenColorFxEvent;
 
-struct zEffectScreenOverlayFxEvent {
+typedef struct zEffectScreenOverlayFxEvent {
     zEffectAnimEventHeader header;
     short flags;
     short anchorNodeRefIndex;
@@ -414,9 +414,9 @@ struct zEffectScreenOverlayFxEvent {
     float sinPhaseEnd;
     float sinPhaseSlope;
     float endTimeSec;
-};
+} zEffectScreenOverlayFxEvent;
 
-struct zEffectTransformRefsEvent {
+typedef struct zEffectTransformRefsEvent {
     zEffectAnimEventHeader header;
     int flags;
     char animName[0x20];
@@ -426,74 +426,76 @@ struct zEffectTransformRefsEvent {
     short refNodeBIndex;
     zVec3 refPointA;
     zVec3 refPointB;
-};
+} zEffectTransformRefsEvent;
 
-struct zEffectConditionalEvent {
+typedef struct zEffectConditionalEvent {
     zEffectAnimEventHeader header;
     int conditionMask;
     int nodeIndex;
     zEffectAnimEventValue conditionThreshold;
-};
+} zEffectConditionalEvent;
 
-struct zEffectTopMessageEvent {
+typedef struct zEffectTopMessageEvent {
     zEffectAnimEventHeader header;
     int textIdIndex;
-};
+} zEffectTopMessageEvent;
 
-struct zEffectAnimCapturedNodeState {
+typedef struct zEffectAnimCapturedNodeState {
     int activeFlag;
     int usesCachedMatrix;
     float transformSnapshot[12];
-};
+} zEffectAnimCapturedNodeState;
 
-struct zEffectAnimRefName {
+typedef struct zEffectAnimRefName {
     char text[0x24];
-};
+} zEffectAnimRefName;
 
-struct zEffectAnimTrackedNode {
+typedef struct zEffectAnimTrackedNode {
     char trackedNodeName[0x24];
     CZNodePartial* trackedNode;
     zEffectAnimCapturedNodeState capturedState;
-};
+} zEffectAnimTrackedNode;
 
-struct zEffectAnimNodeRef28 {
+typedef struct zEffectAnimNodeRef28 {
     zEffectAnimRefName name;
     CZNodePartial* node;
-};
+} zEffectAnimNodeRef28;
 
-struct zEffectAnimRuntimeNodeRef {
+typedef struct zEffectAnimRuntimeNodeRef {
     zEffectAnimRefName name;
     CZNodePartial* runtimeNode;
     int isAttached;
-};
+} zEffectAnimRuntimeNodeRef;
 
-struct zEffectAnimSampleRef {
+typedef struct zEffectAnimSampleRef {
     char name[0x20];
     zSndSample* sample;
-};
+} zEffectAnimSampleRef;
 
-struct zEffectAnimTemplateIndexRef {
+typedef struct zEffectAnimTemplateIndexRef {
     char name[0x20];
     int templateIndex;
-};
+} zEffectAnimTemplateIndexRef;
 
-struct zEffectAnimRuntimeRef {
+typedef struct zEffectAnimRuntimeRef {
     char entryName[0x20];
     char spawnDescriptor[0x20];
     int stopCachedChildOnCleanup;
     zEffectAnimEntry* cachedChildEntry;
-};
+} zEffectAnimRuntimeRef;
 
-struct zEffectAnimActivationPrereq {
+typedef struct zEffectAnimActivationPrereq {
     int requireMatch;
     unsigned char mode;
     unsigned char unknown_05[0x03];
     char targetName[0x20];
     zEffectAnimEntry* targetEntry;
     CZNodePartial* targetNode;
-};
+} zEffectAnimActivationPrereq;
 
-struct zEffectAnimEntry {
+/* zEffectAnimEntrySetOnStateDoneCallback (zeff_anim_run.c) stores the state-done
+ * eventCallback and its eventCallbackContext. */
+typedef struct zEffectAnimEntry {
     char name[0x20];
     char rootNodeName[0x20];
     CZNodePartial* boundNode;
@@ -540,33 +542,31 @@ struct zEffectAnimEntry {
     zEffectAnimActivationPrereq* activationPrereqList;
     zEffectAnimRuntimeRef* runtimeRefList;
     zEffectAnimEntry* runtimeSibling;
+} zEffectAnimEntry;
 
-    static void __fastcall SetOnStateDoneCallback(zEffectAnimEntry* self, void* callback, void* user);
-};
-
-struct zEffectAnimTextIdEntry {
+typedef struct zEffectAnimTextIdEntry {
     char messageKey[0x20];
     int messageId;
-};
+} zEffectAnimTextIdEntry;
 
-struct zEffectAnimSourceFileStamp {
+typedef struct zEffectAnimSourceFileStamp {
     char sourcePath[0x50];
     int fileMtime;
-};
+} zEffectAnimSourceFileStamp;
 
-union zEffectAnimActivationParam {
+typedef union zEffectAnimActivationParam {
     unsigned int u32;
     int i32;
     float f32;
-};
+} zEffectAnimActivationParam;
 
-struct zEffectAnimActivationRecord {
+typedef struct zEffectAnimActivationRecord {
     int commandType;
     unsigned int recordId;
     char animName[0x20];
     int nodeToken;
     zEffectAnimActivationParam params[9];
-};
+} zEffectAnimActivationRecord;
 
 RECOIL_STATIC_ASSERT(sizeof(zEffect_RuntimeManager) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(zEffect_RuntimeManager, freshAllocCount) == 0x1c);
@@ -782,7 +782,7 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, activationCountdown) == 0xb0);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, velocity) == 0xb4);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeList) == 0xc0);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, surfacePrimary) == 0xc4);
-RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, surfacePrimary.eventStream) == 0xfc);
+RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, surfacePrimary) + 0x38 == 0xfc); // surfacePrimary.eventStream
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, runtimeSequenceCount) == 0x104);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, trackedNodeCount) == 0x105);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimEntry, nodeRefCount) == 0x106);
@@ -810,7 +810,7 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectAnimActivationRecord, params) == 0x2c);
 /** Live animation state read at 0x45f15f: exactly 0x3c bytes.
  * Names describe observed roles; the layout is checked below.
  */
-struct zEffectAnimState {
+typedef struct zEffectAnimState {
     int entriesInstantiated;
     void* heapPtr;
     short countsPackedLoWord;
@@ -825,7 +825,7 @@ struct zEffectAnimState {
     zVec3 conditionalRefPos;
     unsigned int variantOverridePackedIds;
     float frameDeltaRemainingSec;
-};
+} zEffectAnimState;
 RECOIL_STATIC_ASSERT(sizeof(zEffectAnimState) == 0x3c);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, entriesInstantiated) == 0x00);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, heapPtr) == 0x04);
@@ -842,7 +842,9 @@ RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, conditionalRefPos) == 0x28);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, variantOverridePackedIds) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(zEffectAnimState, frameDeltaRemainingSec) == 0x38);
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 extern zEffect_RuntimeManager g_zEffect_RuntimeManager;
 extern float g_zEffect_RandUnitTable[200];
 extern float g_zEffect_RandUnitScale;
@@ -862,11 +864,11 @@ extern int g_zEffect_VariantCycleId;
 extern int g_zEffect_SkipStopDelay;
 extern int g_zEffect_Anim_DebugFrameTag;
 extern CZNodePartial* g_zEffect_ResourceNode;
-struct zEffectAnimActivationRecordQueue {
+typedef struct zEffectAnimActivationRecordQueue {
     zEffectAnimActivationRecord* table;
     int capacity;
     int count;
-};
+} zEffectAnimActivationRecordQueue;
 extern zEffectAnimActivationRecordQueue g_zEffectAnim_ActivationRecordQueue;
 #define g_zEffectAnim_ActivationRecordTable (g_zEffectAnim_ActivationRecordQueue.table)
 #define g_zEffectAnim_ActivationRecordCapacity (g_zEffectAnim_ActivationRecordQueue.capacity)
@@ -901,11 +903,12 @@ extern char g_zEffectAnim_RunningSectionNameFmt[0xc];
 extern char g_zEffectAnim_AnimSectionNameFmt[0x9];
 extern char g_zEffect_StringNone[0x5];
 extern char g_zEffectAnim_ResetTraceFmt[0x12];
+#ifdef __cplusplus
 }
 
 namespace zEffect_Anim {
-int __fastcall Init();
-int __fastcall Shutdown();
+extern "C" {
+#endif
 int __cdecl ShutdownIfLoaded();
 void __fastcall ClearActivationRecords();
 int __fastcall HasActivationRecord(zEffectAnimActivationRecord* record);
@@ -962,12 +965,24 @@ int __cdecl LoadZbd();
 int __fastcall LoadAndInstantiate(const char* animPath);
 void __fastcall
 SetActivationDispatchContext(void(__fastcall* callback)(zEffectAnimActivationRecord* record), int context);
+#ifdef __cplusplus
+}
 } // namespace zEffect_Anim
 
+extern "C" {
+#endif
+int __fastcall zEffectAnimInit();
+int __fastcall zEffectAnimShutdown();
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
 namespace zEffectAnim {
+extern "C" {
+#endif
 zEffectAnimEntry* __fastcall FindEntryByName(const char* name);
 zEffectAnimEntry* __fastcall FindNextAsyncEntry(zEffectAnimEntry* currentEntry);
-CZNodePartial* __fastcall FindNodeRecursiveByName(CZNodePartial* rootNode, const char* name);
 int __fastcall FindSoundRefIndexByName(zEffectAnimEntry* self, const char* name);
 int __fastcall FindLightRefIndexByName(zEffectAnimEntry* self, const char* name);
 int __fastcall FindOrCreateSoundRef(zEffectAnimEntry* self, const char* name);
@@ -1082,9 +1097,22 @@ zEffectAnimActivationRecord* __fastcall QueueCmdType4TransformRefs(
     const zVec3* refVecB
 );
 int __fastcall ShutdownEntry(zEffectAnimEntry* self);
+#ifdef __cplusplus
+}
 } // namespace zEffectAnim
 
+extern "C" {
+#endif
+CZNodePartial* __fastcall zEffectAnimFindNodeRecursiveByName(CZNodePartial* rootNode, const char* name);
+void __fastcall zEffectAnimEntrySetOnStateDoneCallback(zEffectAnimEntry* self, void* callback, void* user);
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
 namespace zEffect {
+extern "C" {
+#endif
 int __fastcall zEffInit();
 int __fastcall InitFromPath(CZNodePartial* worldNode, CZNodePartial* cameraNode, const char* path);
 void __fastcall SetWorldNode(CZNodePartial* worldNode);
@@ -1183,4 +1211,7 @@ int __fastcall CleanupLightRefs(zEffectAnimEntry* self);
 int __fastcall CleanupSoundRefs(zEffectAnimEntry* self);
 int __fastcall Reset();
 int __cdecl ShutdownAll();
+#ifdef __cplusplus
+}
 } // namespace zEffect
+#endif

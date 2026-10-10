@@ -441,7 +441,7 @@ int __fastcall ShowMessageBox(const char* messageText, const char* titleText, vo
 void __fastcall HandleHotkeyCommand(int commandId);
 void __fastcall ShowTopMessageLine(const char* message, float duration);
 void __fastcall ShowChatLine(const char* message, float duration);
-void __fastcall PushTopMessageLine(const char* message, float duration);
+extern "C" void __fastcall PushTopMessageLine(const char* message, float duration);
 void __fastcall PlayPowerupSfx(int shouldPlay);
 void __fastcall RefreshScoreboardEntryRow(GameNetPlayerRow* entryData);
 void __fastcall RemoveScoreboardEntryRow(GameNetPlayerRow* entryKey);
@@ -2273,7 +2273,7 @@ extern char g_HudUiOptionsPanel_MusicEnableToggleNodeName[];
 extern char g_HudUiOptionsPanel_SoundVolumeWidgetNodeName[];
 extern char g_HudUiOptionsPanel_SoundQualitySelectorNodeName[];
 extern char g_HudUiOptionsPanel_SoundActiveToggleNodeName[];
-extern char g_EffectsZrdNodeName[8];
+extern "C" char g_EffectsZrdNodeName[8];
 extern char g_HudUiOptionsPanel_TextureMemorySelectorNodeName[];
 extern char g_HudUiOptionsPanel_ObjectDetailSelectorNodeName[];
 extern char g_HudUiOptionsPanel_FullHudToggleNodeName[];

@@ -833,7 +833,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems()
     zEffect::Reset();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingAnimationsMsg);
-    zEffect_Anim::Shutdown();
+    zEffectAnimShutdown();
     zDEClient::ShutdownGlobals();
     Pickup::Shutdown();
     CZObject3DModelRefLerpQueue::Reset();

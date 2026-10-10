@@ -156,6 +156,8 @@ HudUiBackgroundContainer::~HudUiBackgroundContainer() { }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zui.hud-ui-background-container-set-enabled
  * @recoil-artifact defines .text recoil:logical-function:0x42ee40:hud-ui-background-container-set-enabled: HudUiBackgroundContainer::SetEnabled.
+ * @recoil-match byte
+ *
  * Purpose: Store whether the background container participates in HUD updates.
  */
 void HudUiBackgroundContainer::SetEnabled(int enabledValue)

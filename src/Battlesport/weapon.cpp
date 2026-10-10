@@ -2819,7 +2819,7 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState* saveSt
 
     if (zOpt::GetNetworkEnabled() != 0) {
         playerState->cameraTransitionTimer = 1;
-        zEffectAnimEntry::SetOnStateDoneCallback(
+        zEffectAnimEntrySetOnStateDoneCallback(
             destroyedRespawnHandle,
             (void*)(&DestroyedStateResetCallback),
             saveState
@@ -3007,11 +3007,7 @@ int __fastcall ApplyDamageLocal(zUtil_SaveGameState* saveState)
     zEffectAnimEntry* const destroyedRespawnHandle
         = zEffectAnim::SetVelocityThunk(playerState->destroyedRespawnFxEntry, playerState->rootNode, 0.0f, 0.0f, 0.0f);
     playerState->destroyedRespawnAsyncHandle = destroyedRespawnHandle;
-    zEffectAnimEntry::SetOnStateDoneCallback(
-        destroyedRespawnHandle,
-        (void*)(&DestroyedStateRespawnCallback),
-        saveState
-    );
+    zEffectAnimEntrySetOnStateDoneCallback(destroyedRespawnHandle, (void*)(&DestroyedStateRespawnCallback), saveState);
 
     if (playerState->recentHitValid != 0) {
         zEffect_Anim::zEffAnimReset(playerState->recentHitLightHandle, 0);
@@ -3080,7 +3076,7 @@ void __fastcall StartDestroyedStateVehicleEffect(zUtil_SaveGameState* saveState,
     }
 
     if (respawnCallback != 0) {
-        zEffectAnimEntry::SetOnStateDoneCallback(asyncHandle, respawnCallback, saveState);
+        zEffectAnimEntrySetOnStateDoneCallback(asyncHandle, respawnCallback, saveState);
     }
 
     HudUiMgr::HideTrackedProgressMeterIfOwnerMatches(saveState);

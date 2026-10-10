@@ -120,6 +120,8 @@ CZNodePartial* __fastcall gwObject3DInit(void)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.object3d.deletenode
  * @recoil-artifact defines .text recoil:logical-function:0x44db00:zclass-object3d-delete-node: CZObject3DDeleteNode
+ * @recoil-match byte
+ *
  * Purpose: route Object3D deletion through the generic node free path.
  */
 int __fastcall CZObject3DDeleteNode(CZNodePartial* node)
