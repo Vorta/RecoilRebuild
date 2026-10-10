@@ -2004,7 +2004,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4026d0
- * @recoil-match byte
+ * @recoil-match source
  *
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, and pointer
  * variants and mixed native dot/cross failed; use the five exact shared islands.

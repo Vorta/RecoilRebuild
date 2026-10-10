@@ -1516,7 +1516,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8
  * @recoil-artifact defines .text recoil:function:0x49c230: zRndr::SpanAlphaBlend565ConstAlphaFromPal8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN uses the sampled pal8 texel for the high-alpha
  * palette copy path, but the partial-alpha path reloads the current destination
@@ -1712,7 +1712,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source-shape evidence: BN samples a 16-bit texel through the active U/V
  * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
@@ -1762,7 +1762,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the tex16 constant-alpha loop shape with a
  * stricter alpha > 7 gate and 555 red/green/blue channel masks.
@@ -1928,7 +1928,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-tex16-alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN retail evidence: BN builds paired U/V indices with the MMX mask and
  * step globals, stages sampled tex16 pixels and alpha bytes in a stack scratch
@@ -2713,7 +2713,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-565-mmx-from-pal8-alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN retail evidence: BN stages paired pal8 samples through the active
  * palette, alpha bytes through the active alpha map, and packed 565 blends

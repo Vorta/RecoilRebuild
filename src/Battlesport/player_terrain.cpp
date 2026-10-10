@@ -522,7 +522,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Returns the shared mask bits of three environment probe samples.
  */
@@ -947,7 +947,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered

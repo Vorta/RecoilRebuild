@@ -751,17 +751,17 @@ extern "C" char* __cdecl GetSelectedHwApiDescriptionOrDefault();
 extern "C" char* __cdecl GetSelectedD3DDeviceNameOrDefault();
 extern "C" char* __fastcall GetHwApiDescription(int index);
 extern "C" char* __fastcall GetHwApiDriverName(int index);
-void __cdecl NoiseInitBuffers();
-void __cdecl NoiseShutdownBuffers();
-void __fastcall DrawNoiseRect(zVidRect32* rectOrNull, double intensity);
-int __cdecl InitFrameScratchBuffers();
-int __cdecl ShutdownFrameScratchBuffers();
+extern "C" void __cdecl NoiseInitBuffers();
+extern "C" void __cdecl NoiseShutdownBuffers();
+extern "C" void __fastcall DrawNoiseRect(zVidRect32* rectOrNull, double intensity);
+extern "C" int __cdecl InitFrameScratchBuffers();
+extern "C" int __cdecl ShutdownFrameScratchBuffers();
 } // namespace zVid
 
 namespace zVideo_FxSurface {
-void __fastcall ApplyBlueTintRect(zVidRect32* rectOrNull);
-void __fastcall ApplyGreenMaskRect(zVidRect32* rectOrNull);
-void __fastcall DrawAlphaBlendedLine(
+extern "C" void __fastcall ApplyBlueTintRect(zVidRect32* rectOrNull);
+extern "C" void __fastcall ApplyGreenMaskRect(zVidRect32* rectOrNull);
+extern "C" void __fastcall DrawAlphaBlendedLine(
     zVidRect32* clipRect,
     int x1,
     int y1,
@@ -772,7 +772,8 @@ void __fastcall DrawAlphaBlendedLine(
     float alphaStart,
     int clipInset
 );
-void __fastcall DrawColoredLinesBatch(zVideoFxColoredLineRecord* lines, int count, zVidRect32* clipRectOrNull);
+extern "C" void __fastcall
+DrawColoredLinesBatch(zVideoFxColoredLineRecord* lines, int count, zVidRect32* clipRectOrNull);
 } // namespace zVideo_FxSurface
 
 namespace zVideo_buff {
@@ -852,8 +853,8 @@ extern "C" int __cdecl DispatchUnlockDisplayModeSurfaceState();
 extern "C" int __cdecl DispatchUnlockSwSurfaceState();
 extern "C" int __cdecl DispatchUnlockPrimarySurfaceState();
 extern "C" void __fastcall FxSetSurfaceState(void* pixels, int width, int height, int pitchBytes);
-void __fastcall FxPass3CopySurfacePixelToScratchClipped(int dstDx, int dstDy, int srcDx, int srcDy);
-void __fastcall FxPass3ApplyToCurrentSurface(
+extern "C" void __fastcall FxPass3CopySurfacePixelToScratchClipped(int dstDx, int dstDy, int srcDx, int srcDy);
+extern "C" void __fastcall FxPass3ApplyToCurrentSurface(
     int centerX,
     int centerY,
     int currentRadius,
@@ -863,10 +864,10 @@ void __fastcall FxPass3ApplyToCurrentSurface(
     float sinPhase,
     zVidRect32* clipRectOrNull
 );
-void __fastcall buffBlurRegionCombined(zVidRect32* rectOrNull, int mode);
-void __fastcall buffBlurRegionVertical(zVidRect32* rectOrNull, int mode);
-void __fastcall buffBlurRegionHorizontal(zVidRect32* rectOrNull, int mode);
-void __fastcall buffBlurRegionByMode(zVidRect32* rectOrNull, int mode);
+extern "C" void __fastcall buffBlurRegionCombined(zVidRect32* rectOrNull, int mode);
+extern "C" void __fastcall buffBlurRegionVertical(zVidRect32* rectOrNull, int mode);
+extern "C" void __fastcall buffBlurRegionHorizontal(zVidRect32* rectOrNull, int mode);
+extern "C" void __fastcall buffBlurRegionByMode(zVidRect32* rectOrNull, int mode);
 extern "C" void __fastcall FxPass3SetPrimaryElementParamsLocal(unsigned short packedColor, double primaryAlpha);
 extern "C" void __fastcall FxPass3QueueElementLocal(
     int rectLeftPixels,
@@ -905,7 +906,7 @@ extern "C" {
 void __fastcall ReleaseOwnedBuffers(zVidImagePartial* image);
 #ifdef __cplusplus
 }
-void __fastcall CalcPow2ScratchFields(zVidImagePartial* image);
+extern "C" void __fastcall CalcPow2ScratchFields(zVidImagePartial* image);
 int __fastcall QueryBytesPerPixel(zVidImagePartial* image);
 void __fastcall ClearZeroAlphaPixelsInPlace(zVidImagePartial* image);
 int __fastcall SetHeaderFlagsByte(zVidImagePartial* image, unsigned char flags);
@@ -916,9 +917,9 @@ int __fastcall ReadHeader(FILE* file, zVidImagePartial* image);
 int __fastcall ReadData(FILE* file, zVidImagePartial* image, int bytesPerPixel = 0);
 zVidImagePartial* __fastcall ReadFromFile(FILE* file);
 extern "C" void __fastcall ResampleSquare(zVidImagePartial* image, int sideLength);
-void __fastcall
+extern "C" void __fastcall
 BlitToActiveTarget(zVidImagePartial* image, int dstX, int dstY, unsigned short colorKey, zVidRect32* srcRect);
-void __fastcall
+extern "C" void __fastcall
 BlitToFramebufferClipped(zVidImagePartial* image, int dstX, int dstY, unsigned short clipFlags, zVidRect32* srcRect);
 } // namespace zVid_Image
 

@@ -19,7 +19,6 @@ typedef struct zImage_TexDirEntryPartial {
     int loadState;
     struct zImage_TexDirEntryPartial* nextVariant;
 #ifdef __cplusplus
-    zVidImagePartial* __fastcall GetVariantImageAtIndex(int variantIndex);
     RECOIL_NO_GS void __fastcall BuildMipChain();
 #endif
 } zImage_TexDirEntryPartial;

@@ -3,6 +3,7 @@
 #include "GameZRecoil/include/zimage.h"
 #include "GameZRecoil/zError/zerr.h"
 #include "GameZRecoil/zMath/zmth.h"
+#include "GameZRecoil/zRender/zrndr_api.h"
 #include "GameZRecoil/zVideo/zvid.h"
 #include "zclass.h"
 
@@ -26,128 +27,125 @@ int g_zRndr_ActivePaletteRemapKey = -1;
  */
 int g_zRndr_ActivePaletteShadeRecipeIndex = -1;
 
-namespace zRndr
-{
-    /**
-     * BN keeps queued texture alpha setup in this initialized slot at 0x4e21ec as
-     * pointer value 0x00000007; the queued and fan-triangle paths overwrite it from
-     * zVidImagePartial::queuedAlphaMap before queued-alpha use.
-     */
-    enum { kQueuedTexAlphaMapStartupSentinel = 7 };
-    char* g_spanQueuedTexAlphaMap = (char*)(kQueuedTexAlphaMapStartupSentinel);
-    int g_spanActiveTexShift = 7;
-    int g_spanActiveTexVMask = 0x07f00000;
-    int g_spanActiveTexUMask = 0x7f;
-    // BN names this BSS slot gRndr_ActiveTexPixels. Word span loops load it as
-    // 16-bit texture pixels, while palettized span loops use the same buffer as
-    // 8-bit texture indices.
-    unsigned char* g_spanActiveTexPixels = 0;
-    unsigned short* g_spanActiveTexPalette = 0;
-    int g_spanActiveTexUStepFixed20 = 0;
-    int g_spanActiveTexVStepFixed20 = 0;
-    // BN names this BSS pointer gRndr_CurrentSpanBaseAddr. Span leaves use it as an
-    // ordinary unsigned-short destination cursor; the switch-vshift leaves that
-    // also use gRndr_SavedEspSlot are separate ESP-pivot source-shape debt.
-    unsigned short* g_spanCurrentSpanBaseAddr = 0;
-    int g_spanActiveShadeFixed16 = 0;
-    int g_spanActiveShadeStepFixed16 = 0;
-    // BN names 0x56b27c gRndr_ActiveTexAlphaMap. Alpha-map span leaves including
-    // 0x49c360, 0x49c560, 0x49d1a0, and 0x49d3b0 sample it in lockstep with
-    // gRndr_ActiveTexPixels using the same U/V masks and fixed-point steps.
-    char* g_spanActiveTexAlphaMap = 0;
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-transparentqueuecount
-     * @recoil-artifact defines .data recoil:data:0x57de7c: g_queuedPolyBanks.
-     * Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
-     * at 0x57de7c, the transparent records at 0x57de80, the sort index bank at
-     * 0x5cacf8, the overwrite count at 0x5cb270, and overwrite records at
-     * 0x5cb274.
-     * Purpose: Own the queued transparent and overwrite software polygon banks; the
-     * transparent count (0x57de7c) and overwrite count (0x5cb270) are members.
-     */
-    QueuedPolyBanks g_queuedPolyBanks = { 0 };
+/**
+ * BN keeps queued texture alpha setup in this initialized slot at 0x4e21ec as
+ * pointer value 0x00000007; the queued and fan-triangle paths overwrite it from
+ * zVidImagePartial::queuedAlphaMap before queued-alpha use.
+ */
+enum { kQueuedTexAlphaMapStartupSentinel = 7 };
+char* g_spanQueuedTexAlphaMap = (char*)(kQueuedTexAlphaMapStartupSentinel);
+int g_spanActiveTexShift = 7;
+int g_spanActiveTexVMask = 0x07f00000;
+int g_spanActiveTexUMask = 0x7f;
+// BN names this BSS slot gRndr_ActiveTexPixels. Word span loops load it as
+// 16-bit texture pixels, while palettized span loops use the same buffer as
+// 8-bit texture indices.
+unsigned char* g_spanActiveTexPixels = 0;
+unsigned short* g_spanActiveTexPalette = 0;
+int g_spanActiveTexUStepFixed20 = 0;
+int g_spanActiveTexVStepFixed20 = 0;
+// BN names this BSS pointer gRndr_CurrentSpanBaseAddr. Span leaves use it as an
+// ordinary unsigned-short destination cursor; the switch-vshift leaves that
+// also use gRndr_SavedEspSlot are separate ESP-pivot source-shape debt.
+unsigned short* g_spanCurrentSpanBaseAddr = 0;
+int g_spanActiveShadeFixed16 = 0;
+int g_spanActiveShadeStepFixed16 = 0;
+// BN names 0x56b27c gRndr_ActiveTexAlphaMap. Alpha-map span leaves including
+// 0x49c360, 0x49c560, 0x49d1a0, and 0x49d3b0 sample it in lockstep with
+// gRndr_ActiveTexPixels using the same U/V masks and fixed-point steps.
+char* g_spanActiveTexAlphaMap = 0;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-transparentqueuecount
+ * @recoil-artifact defines .data recoil:data:0x57de7c: g_queuedPolyBanks.
+ * Queued polygon banks from zrndr_draw.c. BN identifies the transparent count
+ * at 0x57de7c, the transparent records at 0x57de80, the sort index bank at
+ * 0x5cacf8, the overwrite count at 0x5cb270, and overwrite records at
+ * 0x5cb274.
+ * Purpose: Own the queued transparent and overwrite software polygon banks; the
+ * transparent count (0x57de7c) and overwrite count (0x5cb270) are members.
+ */
+QueuedPolyBanks g_queuedPolyBanks = { 0 };
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflaresamplequeuecount
-     * @recoil-artifact defines .data recoil:data:0x62ea00: g_lensFlareBank.
-     * zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue count at
-     * 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible count at 0x631ccc, the
-     * 64-entry visible pointer list at 0x631cd0, the visibility-active flag at 0x56b248, and four
-     * stage texture pointers at 0x56b250.
-     * Purpose: Track the number of queued projected lens-flare samples for the frame.
-     */
-    LensFlareFrameBank g_lensFlareBank = { 0 };
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflarevisibilityactive
-     * @recoil-artifact defines .data recoil:data:0x56b248: g_lensFlareVisibilityActive.
-     * Purpose: Record whether all lens-flare visibility stage textures are ready for drawing.
-     */
-    int g_lensFlareVisibilityActive = 0;
-    zImage_TexDirEntryPartial* g_lensFlareVisibleSampleStages[4] = { 0 };
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflaresamplequeuecount
+ * @recoil-artifact defines .data recoil:data:0x62ea00: g_lensFlareBank.
+ * zRndr lens-flare frame-state bank. BN identifies the zero-initialized queue count at
+ * 0x62ea00, the 0x28a-entry sample queue at 0x62ea04, the visible count at 0x631ccc, the
+ * 64-entry visible pointer list at 0x631cd0, the visibility-active flag at 0x56b248, and four
+ * stage texture pointers at 0x56b250.
+ * Purpose: Track the number of queued projected lens-flare samples for the frame.
+ */
+LensFlareFrameBank g_lensFlareBank = { 0 };
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-lensflarevisibilityactive
+ * @recoil-artifact defines .data recoil:data:0x56b248: g_lensFlareVisibilityActive.
+ * Purpose: Record whether all lens-flare visibility stage textures are ready for drawing.
+ */
+int g_lensFlareVisibilityActive = 0;
+zImage_TexDirEntryPartial* g_lensFlareVisibleSampleStages[4] = { 0 };
 
-    RECOIL_STATIC_ASSERT(sizeof(FogParamsPartial) == 0xa0);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRed) == 0x0c);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorGreen) == 0x10);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorBlue) == 0x14);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16) == 0x18);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16Padding) == 0x1a);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16Dup) == 0x1c);
-    RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRamp) == 0x20);
-    RECOIL_STATIC_ASSERT(sizeof(SpanOccluderPolyPartial) == 0x64);
-    RECOIL_STATIC_ASSERT(sizeof(SpanNodePartial) == 0x18);
-    RECOIL_STATIC_ASSERT(sizeof(LensFlareSamplePartial) == 0x14);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, x) == 0x00);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, y) == 0x04);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, reciprocalZ) == 0x08);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, packedColor16) == 0x0c);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, lensFlareSource) == 0x10);
-    RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, lensFlareEnabled) == 0x0c);
-    RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, fadeNear) == 0x14);
-    RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, fadeFar) == 0x18);
-    RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareVisibleSampleDef, depthDivisor) == 0x08);
-    RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareVisibleSampleDef, lensFlareSource) == 0x10);
-    RECOIL_STATIC_ASSERT(sizeof(QueuedVec3) == 0x0c);
-    RECOIL_STATIC_ASSERT(sizeof(QueuedPolyClipOverlay) == 0x324);
-    RECOIL_STATIC_ASSERT(offsetof(QueuedPolyClipOverlay, clippedTriVerts) == 0x300);
-    RECOIL_STATIC_ASSERT(sizeof(TransparentQueuedPolyDrawCmd) == 0x384);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, materialRef) == 0x00);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, vertexCount) == 0x04);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, polyVerts) == 0x08);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, triVerts) == 0x32c);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, clippedTriVertOverlay) == 0x08);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, triUVs) == 0x350);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, scanConvertMode) == 0x368);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, hasClippedTriVerts) == 0x36c);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, savedInvDepthBias) == 0x370);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, savedInvDepthScale) == 0x374);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, alphaOrShadeBits) == 0x378);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, shadeOrSpanMode) == 0x37c);
-    RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, texKey) == 0x380);
-    RECOIL_STATIC_ASSERT(sizeof(OverwriteQueuedPolyDrawCmd) == 0x48c);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, commandTag) == 0x00);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, polyVerts) == 0x04);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, clippedTriVertOverlay) == 0x04);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, triVerts) == 0x328);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, alphaOrShadeF) == 0x34c);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, shadeOrSpanMode) == 0x350);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, vertexCount) == 0x354);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, triUVs) == 0x358);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, materialRef) == 0x370);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, perVertexAlphaOrShadeF) == 0x374);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, scanConvertMode) == 0x478);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, hasClippedTriVerts) == 0x47c);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, savedInvDepthBias) == 0x480);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, savedInvDepthScale) == 0x484);
-    RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, texKey) == 0x488);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, packedColor16) == 0x0c);
-    RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, lensFlareSource) == 0x10);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, next) == 0x00);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMin) == 0x04);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMax) == 0x08);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepth) == 0x0c);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepthStep) == 0x10);
-    RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, depthSlope) == 0x14);
-} // namespace zRndr
+RECOIL_STATIC_ASSERT(sizeof(FogParamsPartial) == 0xa0);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRed) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorGreen) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorBlue) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16Padding) == 0x1a);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColor16Dup) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(FogParamsPartial, packedColorRamp) == 0x20);
+RECOIL_STATIC_ASSERT(sizeof(SpanOccluderPolyPartial) == 0x64);
+RECOIL_STATIC_ASSERT(sizeof(SpanNodePartial) == 0x18);
+RECOIL_STATIC_ASSERT(sizeof(LensFlareSamplePartial) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, x) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, y) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, reciprocalZ) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, packedColor16) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, lensFlareSource) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, lensFlareEnabled) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, fadeNear) == 0x14);
+RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareSource, fadeFar) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareVisibleSampleDef, depthDivisor) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(zRndr_LensFlareVisibleSampleDef, lensFlareSource) == 0x10);
+RECOIL_STATIC_ASSERT(sizeof(QueuedVec3) == 0x0c);
+RECOIL_STATIC_ASSERT(sizeof(QueuedPolyClipOverlay) == 0x324);
+RECOIL_STATIC_ASSERT(offsetof(QueuedPolyClipOverlay, clippedTriVerts) == 0x300);
+RECOIL_STATIC_ASSERT(sizeof(TransparentQueuedPolyDrawCmd) == 0x384);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, materialRef) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, vertexCount) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, polyVerts) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, triVerts) == 0x32c);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, clippedTriVertOverlay) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, triUVs) == 0x350);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, scanConvertMode) == 0x368);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, hasClippedTriVerts) == 0x36c);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, savedInvDepthBias) == 0x370);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, savedInvDepthScale) == 0x374);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, alphaOrShadeBits) == 0x378);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, shadeOrSpanMode) == 0x37c);
+RECOIL_STATIC_ASSERT(offsetof(TransparentQueuedPolyDrawCmd, texKey) == 0x380);
+RECOIL_STATIC_ASSERT(sizeof(OverwriteQueuedPolyDrawCmd) == 0x48c);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, commandTag) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, polyVerts) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, clippedTriVertOverlay) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, triVerts) == 0x328);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, alphaOrShadeF) == 0x34c);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, shadeOrSpanMode) == 0x350);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, vertexCount) == 0x354);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, triUVs) == 0x358);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, materialRef) == 0x370);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, perVertexAlphaOrShadeF) == 0x374);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, scanConvertMode) == 0x478);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, hasClippedTriVerts) == 0x47c);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, savedInvDepthBias) == 0x480);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, savedInvDepthScale) == 0x484);
+RECOIL_STATIC_ASSERT(offsetof(OverwriteQueuedPolyDrawCmd, texKey) == 0x488);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, packedColor16) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(LensFlareSamplePartial, lensFlareSource) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, next) == 0x00);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMin) == 0x04);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, sampleXMax) == 0x08);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepth) == 0x0c);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, invDepthStep) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(SpanNodePartial, depthSlope) == 0x14);
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-setpaletteremapkey
@@ -160,13 +158,15 @@ namespace zRndr
  */
 void __fastcall zRndrSetPaletteRemapKey(zVidPaletteRemapRecipe* recipe, float shadeLevel)
 {
+    int recipeIndex;
+    int shadeBucket;
     if (recipe == 0) {
         g_zRndr_ActivePaletteRemapKey = -1;
         return;
     }
 
-    const int recipeIndex = zVidPaletteRemapBuildPaletteVariant(recipe);
-    int shadeBucket = (int)(shadeLevel * 0.125f);
+    recipeIndex = zVidPaletteRemapBuildPaletteVariant(recipe);
+    shadeBucket = (int)(shadeLevel * 0.125f);
     if (shadeBucket > 31) {
         shadeBucket = 31;
     } else if (shadeBucket < 0) {
@@ -187,12 +187,12 @@ void __fastcall zRndrSetPaletteRemapKey(zVidPaletteRemapRecipe* recipe, float sh
  */
 void __fastcall zRndrSetPaletteRemapKeyFromRgb01(zColorRgb* rgb01, float shadeLevel)
 {
+    zVidPaletteRemapRecipe recipe;
     if (rgb01 == 0) {
         g_zRndr_ActivePaletteRemapKey = -1;
         return;
     }
 
-    zVidPaletteRemapRecipe recipe;
     recipe.color0.red = 0.0f;
     recipe.color0.green = 0.0f;
     recipe.color0.blue = 0.0f;
@@ -245,24 +245,25 @@ void __fastcall zRndrSubmitPolyWithSpanList(
     const char* kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
 
     if (queueOverwrite != 0) {
-        const int queueIndex = zRndr::g_overwriteQueueCount;
+        const int queueIndex = g_overwriteQueueCount;
+        OverwriteQueuedPolyDrawCmd* cmd;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0x9c, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            ReportOld(0x400, kSourceFile, 0x9c, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
             return;
         }
 
-        zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-        zRndr::g_overwriteQueueCount = queueIndex + 1;
-        cmd.commandTag = 0;
-        memcpy(cmd.polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
-        memcpy(cmd.triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
-        cmd.alphaOrShadeF = (float)(alpha255);
-        cmd.materialRef = 0;
-        cmd.vertexCount = vertCount;
-        cmd.shadeOrSpanMode = spanOpContext;
-        cmd.scanConvertMode = zRndr::g_scanConvertMode;
-        cmd.savedInvDepthBias = zRndr::g_inverseDepthBias;
-        cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
+        cmd = &g_overwriteQueue[queueIndex];
+        g_overwriteQueueCount = queueIndex + 1;
+        cmd->commandTag = 0;
+        memcpy(cmd->polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
+        memcpy(cmd->triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
+        cmd->alphaOrShadeF = (float)(alpha255);
+        cmd->materialRef = 0;
+        cmd->vertexCount = vertCount;
+        cmd->shadeOrSpanMode = spanOpContext;
+        cmd->scanConvertMode = g_scanConvertMode;
+        cmd->savedInvDepthBias = g_inverseDepthBias;
+        cmd->savedInvDepthScale = g_inverseDepthScale;
         return;
     }
 
@@ -271,31 +272,21 @@ void __fastcall zRndrSubmitPolyWithSpanList(
         return;
     }
 
-    if (zRndr::g_transparentQueueCount >= kMaxQueuedPolys) {
-        zError::ReportOld(
-            0x400,
-            kSourceFile,
-            0xb9,
-            " Not enough MAX_TRANSPARENT_POLYS: need %d\n",
-            zRndr::g_transparentQueueCount
-        );
+    if (g_transparentQueueCount >= kMaxQueuedPolys) {
+        ReportOld(0x400, kSourceFile, 0xb9, " Not enough MAX_TRANSPARENT_POLYS: need %d\n", g_transparentQueueCount);
         return;
     }
 
-    memcpy(
-        zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].polyVerts,
-        entryVertices,
-        (size_t)(vertCount) * sizeof(zVec3)
-    );
-    memcpy(zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].materialRef = 0;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].vertexCount = vertCount;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].shadeOrSpanMode = spanOpContext;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].alphaOrShadeBits = alpha255;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].scanConvertMode = zRndr::g_scanConvertMode;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].savedInvDepthBias = zRndr::g_inverseDepthBias;
-    zRndr::g_transparentQueue[zRndr::g_transparentQueueCount].savedInvDepthScale = zRndr::g_inverseDepthScale;
-    ++zRndr::g_transparentQueueCount;
+    memcpy(g_transparentQueue[g_transparentQueueCount].polyVerts, entryVertices, (size_t)(vertCount) * sizeof(zVec3));
+    memcpy(g_transparentQueue[g_transparentQueueCount].triVerts, entryPlaneVertices, 3 * sizeof(zVec3));
+    g_transparentQueue[g_transparentQueueCount].materialRef = 0;
+    g_transparentQueue[g_transparentQueueCount].vertexCount = vertCount;
+    g_transparentQueue[g_transparentQueueCount].shadeOrSpanMode = spanOpContext;
+    g_transparentQueue[g_transparentQueueCount].alphaOrShadeBits = alpha255;
+    g_transparentQueue[g_transparentQueueCount].scanConvertMode = g_scanConvertMode;
+    g_transparentQueue[g_transparentQueueCount].savedInvDepthBias = g_inverseDepthBias;
+    g_transparentQueue[g_transparentQueueCount].savedInvDepthScale = g_inverseDepthScale;
+    ++g_transparentQueueCount;
 }
 
 /**
@@ -320,37 +311,41 @@ void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
 {
     const int kMaxQueuedPolys = 0x15e;
     const char* kSourceFile = "D:\\Proj\\GameZRecoil\\zRender\\zrndr_draw.c";
+    zVidImagePartial* image;
+    int queueIndex;
+    TransparentQueuedPolyDrawCmd* cmd;
 
     if (queueOverwrite != 0) {
-        const int queueIndex = zRndr::g_overwriteQueueCount;
+        const int queueIndex = g_overwriteQueueCount;
+        OverwriteQueuedPolyDrawCmd* cmd;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0xfa, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            ReportOld(0x400, kSourceFile, 0xfa, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
             return;
         }
 
-        zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-        zRndr::g_overwriteQueueCount = queueIndex + 1;
-        cmd.commandTag = 1;
-        cmd.vertexCount = vertexCount;
-        cmd.materialRef = entry;
-        cmd.savedInvDepthBias = zRndr::g_inverseDepthBias;
-        cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
-        cmd.scanConvertMode = zRndr::g_scanConvertMode;
-        cmd.alphaOrShadeF = alphaOrShadeF;
-        memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
-        memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
-        memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
+        cmd = &g_overwriteQueue[queueIndex];
+        g_overwriteQueueCount = queueIndex + 1;
+        cmd->commandTag = 1;
+        cmd->vertexCount = vertexCount;
+        cmd->materialRef = entry;
+        cmd->savedInvDepthBias = g_inverseDepthBias;
+        cmd->savedInvDepthScale = g_inverseDepthScale;
+        cmd->scanConvertMode = g_scanConvertMode;
+        cmd->alphaOrShadeF = alphaOrShadeF;
+        memcpy(cmd->polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+        memcpy(cmd->triVerts, triData9f, 3 * sizeof(zVec3));
+        memcpy(cmd->triUVs, triUVs, 3 * sizeof(zVec2));
         if (clippedTriVerts != 0) {
-            memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
-            cmd.hasClippedTriVerts = 1;
+            memcpy(cmd->clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
+            cmd->hasClippedTriVerts = 1;
         } else {
-            cmd.hasClippedTriVerts = 0;
+            cmd->hasClippedTriVerts = 0;
         }
-        cmd.texKey = g_zRndr_ActivePaletteRemapKey;
+        cmd->texKey = g_zRndr_ActivePaletteRemapKey;
         return;
     }
 
-    zVidImagePartial* image = entry != 0 ? entry->image : 0;
+    image = entry != 0 ? entry->image : 0;
     if ((image->formatFlagsPacked & 2) == 0 && alphaOrShadeF >= 1.0f) {
         zRndrDrawTexturedQueuedAlpha(
             entry,
@@ -364,34 +359,34 @@ void __fastcall zRndrSubmitTexturedPolyUniformAlphaOrShade(
         return;
     }
 
-    const int queueIndex = zRndr::g_transparentQueueCount;
+    queueIndex = g_transparentQueueCount;
     if (queueIndex >= kMaxQueuedPolys) {
-        zError::ReportOld(0x400, kSourceFile, 0x126, " Not enough MAX_TRANSPARENT_POLYS: need %d\n", queueIndex);
+        ReportOld(0x400, kSourceFile, 0x126, " Not enough MAX_TRANSPARENT_POLYS: need %d\n", queueIndex);
         return;
     }
 
-    zRndr::TransparentQueuedPolyDrawCmd& cmd = zRndr::g_transparentQueue[queueIndex];
-    cmd.vertexCount = vertexCount;
-    cmd.materialRef = entry;
-    cmd.savedInvDepthBias = zRndr::g_inverseDepthBias;
-    cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
-    cmd.scanConvertMode = zRndr::g_scanConvertMode;
+    cmd = &g_transparentQueue[queueIndex];
+    cmd->vertexCount = vertexCount;
+    cmd->materialRef = entry;
+    cmd->savedInvDepthBias = g_inverseDepthBias;
+    cmd->savedInvDepthScale = g_inverseDepthScale;
+    cmd->scanConvertMode = g_scanConvertMode;
     if ((image->formatFlagsPacked & 2) != 0) {
-        memcpy(&cmd.alphaOrShadeBits, &alphaOrShadeF, sizeof(float));
+        memcpy(&cmd->alphaOrShadeBits, &alphaOrShadeF, sizeof(float));
     } else {
-        cmd.alphaOrShadeBits = (int)(alphaOrShadeF * 255.0f);
+        cmd->alphaOrShadeBits = (int)(alphaOrShadeF * 255.0f);
     }
-    memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
-    memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
-    memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
+    memcpy(cmd->polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+    memcpy(cmd->triVerts, triData9f, 3 * sizeof(zVec3));
+    memcpy(cmd->triUVs, triUVs, 3 * sizeof(zVec2));
     if (clippedTriVerts != 0) {
-        memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
-        cmd.hasClippedTriVerts = 1;
+        memcpy(cmd->clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
+        cmd->hasClippedTriVerts = 1;
     } else {
-        cmd.hasClippedTriVerts = 0;
+        cmd->hasClippedTriVerts = 0;
     }
-    cmd.texKey = g_zRndr_ActivePaletteRemapKey;
-    ++zRndr::g_transparentQueueCount;
+    cmd->texKey = g_zRndr_ActivePaletteRemapKey;
+    ++g_transparentQueueCount;
 }
 
 /**
@@ -424,9 +419,11 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
     int usingDerivedPaletteKey = 0;
     zVidImagePartial* image = entry != 0 ? entry->image : 0;
     int texKey = g_zRndr_ActivePaletteRemapKey;
+    int queueIndex;
+    TransparentQueuedPolyDrawCmd* cmd;
 
     if (texKey == -1 && preservePaletteRemapKey == 0 && entry->image->paletteMetaPacked > 0) {
-        texKey = zVidPaletteRemapFindRecipeIndexFromRgb((zColorRgb*)(zRndr::g_fogParamsActive.colorRgb01));
+        texKey = zVidPaletteRemapFindRecipeIndexFromRgb((zColorRgb*)(g_fogParamsActive.colorRgb01));
         if (texKey >= 0) {
             int shadeBucket = (int)(perVertexAlphaOrShadeF[0] * 0.125f);
             if (shadeBucket > 0x1f) {
@@ -456,41 +453,43 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
     }
 
     if (queueOverwrite != 0) {
-        const int queueIndex = zRndr::g_overwriteQueueCount;
+        const int queueIndex = g_overwriteQueueCount;
+        OverwriteQueuedPolyDrawCmd* cmd;
         if (queueIndex >= kMaxQueuedPolys) {
-            zError::ReportOld(0x400, kSourceFile, 0x19e, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
+            ReportOld(0x400, kSourceFile, 0x19e, " Not enough MAX_OVERWRITE_POLYS: need %d\n", queueIndex);
             return;
         }
 
-        zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-        zRndr::g_overwriteQueueCount = queueIndex + 1;
-        cmd.commandTag = usingDerivedPaletteKey != 0 ? 1 : 2;
-        cmd.vertexCount = vertexCount;
-        cmd.materialRef = entry;
-        cmd.savedInvDepthBias = zRndr::g_inverseDepthBias;
-        cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
-        cmd.scanConvertMode = zRndr::g_scanConvertMode;
-        cmd.alphaOrShadeF = (float)(shadeOrSpanMode);
-        memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
-        memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
-        memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
+        cmd = &g_overwriteQueue[queueIndex];
+        g_overwriteQueueCount = queueIndex + 1;
+        cmd->commandTag = usingDerivedPaletteKey != 0 ? 1 : 2;
+        cmd->vertexCount = vertexCount;
+        cmd->materialRef = entry;
+        cmd->savedInvDepthBias = g_inverseDepthBias;
+        cmd->savedInvDepthScale = g_inverseDepthScale;
+        cmd->scanConvertMode = g_scanConvertMode;
+        cmd->alphaOrShadeF = (float)(shadeOrSpanMode);
+        memcpy(cmd->polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+        memcpy(cmd->triVerts, triData9f, 3 * sizeof(zVec3));
+        memcpy(cmd->triUVs, triUVs, 3 * sizeof(zVec2));
         if (usingDerivedPaletteKey == 0) {
-            memcpy(cmd.perVertexAlphaOrShadeF, perVertexAlphaOrShadeF, (size_t)(vertexCount) * sizeof(float));
+            memcpy(cmd->perVertexAlphaOrShadeF, perVertexAlphaOrShadeF, (size_t)(vertexCount) * sizeof(float));
         }
         if (clippedTriVerts != 0) {
-            memcpy(cmd.clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
-            cmd.hasClippedTriVerts = 1;
+            memcpy(cmd->clippedTriVertOverlay.clippedTriVerts, clippedTriVerts, 3 * sizeof(zVec3));
+            cmd->hasClippedTriVerts = 1;
         } else {
-            cmd.hasClippedTriVerts = 0;
+            cmd->hasClippedTriVerts = 0;
         }
-        cmd.texKey = texKey;
+        cmd->texKey = texKey;
         return;
     }
 
     fanVerts[0] = projectedPolyVerts[0];
     fanShade[0] = perVertexAlphaOrShadeF[0];
     if ((image->formatFlagsPacked & 2) == 0) {
-        for (int fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
+        int fanTriIndex;
+        for (fanTriIndex = 0; fanTriIndex < vertexCount - 2; ++fanTriIndex) {
             fanVerts[1] = projectedPolyVerts[fanTriIndex + 1];
             fanVerts[2] = projectedPolyVerts[fanTriIndex + 2];
             fanShade[1] = perVertexAlphaOrShadeF[fanTriIndex + 1];
@@ -510,24 +509,24 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
         return;
     }
 
-    const int queueIndex = zRndr::g_transparentQueueCount;
+    queueIndex = g_transparentQueueCount;
     if (queueIndex >= kMaxQueuedPolys) {
-        zError::ReportOld(0x400, kSourceFile, 0x1e1, " Not enough MAX_TRANSPARENT_POLYS: need %d\n", queueIndex);
+        ReportOld(0x400, kSourceFile, 0x1e1, " Not enough MAX_TRANSPARENT_POLYS: need %d\n", queueIndex);
         return;
     }
 
-    zRndr::TransparentQueuedPolyDrawCmd& cmd = zRndr::g_transparentQueue[queueIndex];
-    cmd.vertexCount = vertexCount;
-    cmd.materialRef = entry;
-    cmd.savedInvDepthBias = zRndr::g_inverseDepthBias;
-    cmd.savedInvDepthScale = zRndr::g_inverseDepthScale;
-    cmd.scanConvertMode = zRndr::g_scanConvertMode;
-    cmd.alphaOrShadeBits = 0xff;
-    memcpy(cmd.polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
-    memcpy(cmd.triVerts, triData9f, 3 * sizeof(zVec3));
-    memcpy(cmd.triUVs, triUVs, 3 * sizeof(zVec2));
-    cmd.texKey = texKey;
-    ++zRndr::g_transparentQueueCount;
+    cmd = &g_transparentQueue[queueIndex];
+    cmd->vertexCount = vertexCount;
+    cmd->materialRef = entry;
+    cmd->savedInvDepthBias = g_inverseDepthBias;
+    cmd->savedInvDepthScale = g_inverseDepthScale;
+    cmd->scanConvertMode = g_scanConvertMode;
+    cmd->alphaOrShadeBits = 0xff;
+    memcpy(cmd->polyVerts, projectedPolyVerts, (size_t)(vertexCount) * sizeof(zVec3));
+    memcpy(cmd->triVerts, triData9f, 3 * sizeof(zVec3));
+    memcpy(cmd->triUVs, triUVs, 3 * sizeof(zVec2));
+    cmd->texKey = texKey;
+    ++g_transparentQueueCount;
 }
 
 /**
@@ -538,26 +537,27 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Sort and draw queued transparent polygons, then reset the transparent queue.
  */
-void __cdecl zRndrFlushTransparentQueue()
+void __cdecl zRndrFlushTransparentQueue(void)
 {
+    // Retail clears the swap flag before every bubble pass.
+    int swapped;
     {
-        for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
-            zRndr::g_transparentQueueSortIndices[i] = zRndr::g_transparentQueueCount - i - 1;
+        int i;
+        for (i = 0; i < g_transparentQueueCount; ++i) {
+            g_transparentQueueSortIndices[i] = g_transparentQueueCount - i - 1;
         }
     }
 
-    // Retail clears the swap flag before every bubble pass.
-    int swapped;
     do {
         swapped = 0;
         {
-            for (int i = 0; i < zRndr::g_transparentQueueCount - 1; ++i) {
-                const int lhsIndex = zRndr::g_transparentQueueSortIndices[i];
-                const int rhsIndex = zRndr::g_transparentQueueSortIndices[i + 1];
-                if (zRndr::g_transparentQueue[rhsIndex].triVerts[0].z
-                    < zRndr::g_transparentQueue[lhsIndex].triVerts[0].z) {
-                    zRndr::g_transparentQueueSortIndices[i] = rhsIndex;
-                    zRndr::g_transparentQueueSortIndices[i + 1] = lhsIndex;
+            int i;
+            for (i = 0; i < g_transparentQueueCount - 1; ++i) {
+                const int lhsIndex = g_transparentQueueSortIndices[i];
+                const int rhsIndex = g_transparentQueueSortIndices[i + 1];
+                if (g_transparentQueue[rhsIndex].triVerts[0].z < g_transparentQueue[lhsIndex].triVerts[0].z) {
+                    g_transparentQueueSortIndices[i] = rhsIndex;
+                    g_transparentQueueSortIndices[i + 1] = lhsIndex;
                     swapped = 1;
                 }
             }
@@ -565,66 +565,67 @@ void __cdecl zRndrFlushTransparentQueue()
     } while (swapped);
 
     {
-        for (int i = 0; i < zRndr::g_transparentQueueCount; ++i) {
-            const int queueIndex = zRndr::g_transparentQueueSortIndices[i];
+        int i;
+        for (i = 0; i < g_transparentQueueCount; ++i) {
+            const int queueIndex = g_transparentQueueSortIndices[i];
 
-            zRndr::g_inverseDepthBias = zRndr::g_transparentQueue[queueIndex].savedInvDepthBias;
-            zRndr::g_inverseDepthScale = zRndr::g_transparentQueue[queueIndex].savedInvDepthScale;
-            zRndr::g_scanConvertMode = zRndr::g_transparentQueue[queueIndex].scanConvertMode;
+            g_inverseDepthBias = g_transparentQueue[queueIndex].savedInvDepthBias;
+            g_inverseDepthScale = g_transparentQueue[queueIndex].savedInvDepthScale;
+            g_scanConvertMode = g_transparentQueue[queueIndex].scanConvertMode;
 
-            if (zRndr::g_transparentQueue[queueIndex].materialRef != 0) {
+            if (g_transparentQueue[queueIndex].materialRef != 0) {
                 // Like zRndrFlushOverwriteQueue, retail reads the image through a local; both draw calls then
                 // share the texKey push that VC5 hoists past the alpha test (0x49a3ae).
-                zVidImagePartial* image = zRndr::g_transparentQueue[queueIndex].materialRef->image;
+                zVidImagePartial* image = g_transparentQueue[queueIndex].materialRef->image;
                 if ((image->formatFlagsPacked & 2) != 0) {
-                    const float alpha = *(float*)(&zRndr::g_transparentQueue[queueIndex].alphaOrShadeBits);
+                    const float alpha = *(float*)(&g_transparentQueue[queueIndex].alphaOrShadeBits);
                     if (alpha >= 1.0f) {
                         zRndrDrawFlatQueued(
-                            zRndr::g_transparentQueue[queueIndex].materialRef,
-                            (zVec3*)(zRndr::g_transparentQueue[queueIndex].polyVerts),
-                            (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
-                            (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
-                            zRndr::g_transparentQueue[queueIndex].vertexCount,
-                            zRndr::g_transparentQueue[queueIndex].texKey
+                            g_transparentQueue[queueIndex].materialRef,
+                            (zVec3*)(g_transparentQueue[queueIndex].polyVerts),
+                            (zVec3*)(g_transparentQueue[queueIndex].triVerts),
+                            (zVec2*)(g_transparentQueue[queueIndex].triUVs),
+                            g_transparentQueue[queueIndex].vertexCount,
+                            g_transparentQueue[queueIndex].texKey
                         );
                     } else {
                         RendererDrawPolyTLV(
-                            zRndr::g_transparentQueue[queueIndex].materialRef,
-                            (zVec3*)(zRndr::g_transparentQueue[queueIndex].polyVerts),
-                            (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
-                            (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
-                            zRndr::g_transparentQueue[queueIndex].vertexCount,
+                            g_transparentQueue[queueIndex].materialRef,
+                            (zVec3*)(g_transparentQueue[queueIndex].polyVerts),
+                            (zVec3*)(g_transparentQueue[queueIndex].triVerts),
+                            (zVec2*)(g_transparentQueue[queueIndex].triUVs),
+                            g_transparentQueue[queueIndex].vertexCount,
                             alpha,
-                            zRndr::g_transparentQueue[queueIndex].texKey
+                            g_transparentQueue[queueIndex].texKey
                         );
                     }
                 } else {
                     zRndrDrawTexturedFanTri(
-                        zRndr::g_transparentQueue[queueIndex].materialRef,
-                        (zVec3*)(zRndr::g_transparentQueue[queueIndex].polyVerts),
-                        zRndr::g_transparentQueue[queueIndex].hasClippedTriVerts != 0
-                            ? (zVec3*)(zRndr::g_transparentQueue[queueIndex].clippedTriVertOverlay.clippedTriVerts)
+                        g_transparentQueue[queueIndex].materialRef,
+                        (zVec3*)(g_transparentQueue[queueIndex].polyVerts),
+                        g_transparentQueue[queueIndex].hasClippedTriVerts != 0
+                            ? (zVec3*)(g_transparentQueue[queueIndex].clippedTriVertOverlay.clippedTriVerts)
                             : 0,
-                        (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
-                        (zVec2*)(zRndr::g_transparentQueue[queueIndex].triUVs),
-                        zRndr::g_transparentQueue[queueIndex].vertexCount,
-                        zRndr::g_transparentQueue[queueIndex].alphaOrShadeBits,
-                        zRndr::g_transparentQueue[queueIndex].texKey
+                        (zVec3*)(g_transparentQueue[queueIndex].triVerts),
+                        (zVec2*)(g_transparentQueue[queueIndex].triUVs),
+                        g_transparentQueue[queueIndex].vertexCount,
+                        g_transparentQueue[queueIndex].alphaOrShadeBits,
+                        g_transparentQueue[queueIndex].texKey
                     );
                 }
             } else {
                 zRndrDrawFlatImmediate(
-                    (zVec3*)(zRndr::g_transparentQueue[queueIndex].polyVerts),
-                    (zVec3*)(zRndr::g_transparentQueue[queueIndex].triVerts),
-                    zRndr::g_transparentQueue[queueIndex].vertexCount,
-                    zRndr::g_transparentQueue[queueIndex].alphaOrShadeBits,
-                    zRndr::g_transparentQueue[queueIndex].shadeOrSpanMode
+                    (zVec3*)(g_transparentQueue[queueIndex].polyVerts),
+                    (zVec3*)(g_transparentQueue[queueIndex].triVerts),
+                    g_transparentQueue[queueIndex].vertexCount,
+                    g_transparentQueue[queueIndex].alphaOrShadeBits,
+                    g_transparentQueue[queueIndex].shadeOrSpanMode
                 );
             }
         }
     }
 
-    zRndr::g_transparentQueueCount = 0;
+    g_transparentQueueCount = 0;
 }
 
 /**
@@ -635,30 +636,33 @@ void __cdecl zRndrFlushTransparentQueue()
  * Source file evidence: zRndr queued draw cluster in this source file.
  * Purpose: Draw queued overwrite polygons through the appropriate flat or textured paths.
  */
-void __cdecl zRndrFlushOverwriteQueue()
+void __cdecl zRndrFlushOverwriteQueue(void)
 {
     zVec3 fanVerts[64];
     float fanShade[64];
+    int queueIndex;
 
-    zRndr::g_pfnBuildSpanList = zRndrSpanOcclusionInsertSpanNodeNoDepthTest;
-    zRndr::g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanListFast;
+    g_pfnBuildSpanList = zRndrSpanOcclusionInsertSpanNodeNoDepthTest;
+    g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanListFast;
 
-    for (int queueIndex = 0; queueIndex < zRndr::g_overwriteQueueCount; ++queueIndex) {
-        zRndr::OverwriteQueuedPolyDrawCmd& cmd = zRndr::g_overwriteQueue[queueIndex];
-        zRndr::g_inverseDepthBias = cmd.savedInvDepthBias;
-        zRndr::g_inverseDepthScale = cmd.savedInvDepthScale;
-        zRndr::g_scanConvertMode = cmd.scanConvertMode;
+    for (queueIndex = 0; queueIndex < g_overwriteQueueCount; ++queueIndex) {
+        OverwriteQueuedPolyDrawCmd* cmd = &g_overwriteQueue[queueIndex];
+        int useFallback;
+        zVidImagePartial* image;
+        g_inverseDepthBias = cmd->savedInvDepthBias;
+        g_inverseDepthScale = cmd->savedInvDepthScale;
+        g_scanConvertMode = cmd->scanConvertMode;
 
-        int useFallback = 0;
-        zVidImagePartial* image = cmd.materialRef != 0 ? cmd.materialRef->image : 0;
-        switch (cmd.commandTag) {
+        useFallback = 0;
+        image = cmd->materialRef != 0 ? cmd->materialRef->image : 0;
+        switch (cmd->commandTag) {
         case 0:
-            if (cmd.alphaOrShadeF >= 255.0f) {
+            if (cmd->alphaOrShadeF >= 255.0f) {
                 zRndrRasterizePolyWithSpanList(
-                    (zVec3*)(cmd.polyVerts),
-                    (zVec3*)(cmd.triVerts),
-                    cmd.vertexCount,
-                    cmd.shadeOrSpanMode
+                    (zVec3*)(cmd->polyVerts),
+                    (zVec3*)(cmd->triVerts),
+                    cmd->vertexCount,
+                    cmd->shadeOrSpanMode
                 );
             } else {
                 useFallback = 1;
@@ -666,47 +670,48 @@ void __cdecl zRndrFlushOverwriteQueue()
             break;
 
         case 1:
-            if ((image->formatFlagsPacked & 2) == 0 && cmd.alphaOrShadeF >= 1.0f) {
+            if ((image->formatFlagsPacked & 2) == 0 && cmd->alphaOrShadeF >= 1.0f) {
                 zRndrDrawTexturedQueuedAlpha(
-                    cmd.materialRef,
-                    (zVec3*)(cmd.polyVerts),
-                    cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
-                    (zVec3*)(cmd.triVerts),
-                    (zVec2*)(cmd.triUVs),
-                    cmd.vertexCount,
-                    cmd.texKey
+                    cmd->materialRef,
+                    (zVec3*)(cmd->polyVerts),
+                    cmd->hasClippedTriVerts != 0 ? (zVec3*)(cmd->clippedTriVertOverlay.clippedTriVerts) : 0,
+                    (zVec3*)(cmd->triVerts),
+                    (zVec2*)(cmd->triUVs),
+                    cmd->vertexCount,
+                    cmd->texKey
                 );
                 break;
             }
             if ((image->formatFlagsPacked & 2) == 0) {
-                cmd.alphaOrShadeF *= 255.0f;
+                cmd->alphaOrShadeF *= 255.0f;
             }
             useFallback = 1;
             break;
 
         case 2:
-            fanVerts[0] = ((zVec3*)(cmd.polyVerts))[0];
-            fanShade[0] = cmd.perVertexAlphaOrShadeF[0];
+            fanVerts[0] = ((zVec3*)(cmd->polyVerts))[0];
+            fanShade[0] = cmd->perVertexAlphaOrShadeF[0];
             if ((image->formatFlagsPacked & 2) == 0) {
-                for (int fanTriIndex = 0; fanTriIndex < cmd.vertexCount - 2; ++fanTriIndex) {
-                    fanVerts[1] = ((zVec3*)(cmd.polyVerts))[fanTriIndex + 1];
-                    fanVerts[2] = ((zVec3*)(cmd.polyVerts))[fanTriIndex + 2];
-                    fanShade[1] = cmd.perVertexAlphaOrShadeF[fanTriIndex + 1];
-                    fanShade[2] = cmd.perVertexAlphaOrShadeF[fanTriIndex + 2];
+                int fanTriIndex;
+                for (fanTriIndex = 0; fanTriIndex < cmd->vertexCount - 2; ++fanTriIndex) {
+                    fanVerts[1] = ((zVec3*)(cmd->polyVerts))[fanTriIndex + 1];
+                    fanVerts[2] = ((zVec3*)(cmd->polyVerts))[fanTriIndex + 2];
+                    fanShade[1] = cmd->perVertexAlphaOrShadeF[fanTriIndex + 1];
+                    fanShade[2] = cmd->perVertexAlphaOrShadeF[fanTriIndex + 2];
                     zRndrDrawTexturedQueued(
-                        cmd.materialRef,
+                        cmd->materialRef,
                         fanVerts,
-                        cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
-                        (zVec3*)(cmd.triVerts),
-                        (zVec2*)(cmd.triUVs),
+                        cmd->hasClippedTriVerts != 0 ? (zVec3*)(cmd->clippedTriVertOverlay.clippedTriVerts) : 0,
+                        (zVec3*)(cmd->triVerts),
+                        (zVec2*)(cmd->triUVs),
                         (zVec3*)(fanShade),
                         3,
                         fanTriIndex,
-                        cmd.texKey
+                        cmd->texKey
                     );
                 }
             } else {
-                cmd.alphaOrShadeF = 255.0f;
+                cmd->alphaOrShadeF = 255.0f;
                 useFallback = 1;
             }
             break;
@@ -718,76 +723,77 @@ void __cdecl zRndrFlushOverwriteQueue()
 
         if (image != 0) {
             if ((image->formatFlagsPacked & 2) != 0) {
-                if (cmd.alphaOrShadeF >= 1.0f) {
+                if (cmd->alphaOrShadeF >= 1.0f) {
                     zRndrDrawFlatQueued(
-                        cmd.materialRef,
-                        (zVec3*)(cmd.polyVerts),
-                        (zVec3*)(cmd.triVerts),
-                        (zVec2*)(cmd.triUVs),
-                        cmd.vertexCount,
-                        cmd.texKey
+                        cmd->materialRef,
+                        (zVec3*)(cmd->polyVerts),
+                        (zVec3*)(cmd->triVerts),
+                        (zVec2*)(cmd->triUVs),
+                        cmd->vertexCount,
+                        cmd->texKey
                     );
                 } else {
                     RendererDrawPolyTLV(
-                        cmd.materialRef,
-                        (zVec3*)(cmd.polyVerts),
-                        (zVec3*)(cmd.triVerts),
-                        (zVec2*)(cmd.triUVs),
-                        cmd.vertexCount,
-                        cmd.alphaOrShadeF,
-                        cmd.texKey
+                        cmd->materialRef,
+                        (zVec3*)(cmd->polyVerts),
+                        (zVec3*)(cmd->triVerts),
+                        (zVec2*)(cmd->triUVs),
+                        cmd->vertexCount,
+                        cmd->alphaOrShadeF,
+                        cmd->texKey
                     );
                 }
             } else {
                 zRndrDrawTexturedFanTri(
-                    cmd.materialRef,
-                    (zVec3*)(cmd.polyVerts),
-                    cmd.hasClippedTriVerts != 0 ? (zVec3*)(cmd.clippedTriVertOverlay.clippedTriVerts) : 0,
-                    (zVec3*)(cmd.triVerts),
-                    (zVec2*)(cmd.triUVs),
-                    cmd.vertexCount,
-                    (int)(cmd.alphaOrShadeF),
-                    cmd.texKey
+                    cmd->materialRef,
+                    (zVec3*)(cmd->polyVerts),
+                    cmd->hasClippedTriVerts != 0 ? (zVec3*)(cmd->clippedTriVertOverlay.clippedTriVerts) : 0,
+                    (zVec3*)(cmd->triVerts),
+                    (zVec2*)(cmd->triUVs),
+                    cmd->vertexCount,
+                    (int)(cmd->alphaOrShadeF),
+                    cmd->texKey
                 );
             }
         } else {
             zRndrDrawFlatImmediate(
-                (zVec3*)(cmd.polyVerts),
-                (zVec3*)(cmd.triVerts),
-                cmd.vertexCount,
-                (int)(cmd.alphaOrShadeF),
-                cmd.shadeOrSpanMode
+                (zVec3*)(cmd->polyVerts),
+                (zVec3*)(cmd->triVerts),
+                cmd->vertexCount,
+                (int)(cmd->alphaOrShadeF),
+                cmd->shadeOrSpanMode
             );
         }
     }
 
-    zRndr::g_overwriteQueueCount = 0;
-    zRndr::g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
-    zRndr::g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanList;
+    g_overwriteQueueCount = 0;
+    g_pfnBuildSpanList = zRndr_SpanOcclusion_InsertSpanNode_Local;
+    g_pfnBuildSpanListSecondary = zRndrSpanOcclusionBuildSpanList;
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-queueprojectedsample
  * @recoil-artifact defines .text recoil:function:0x49a830: zRndrLensFlareQueueProjectedSample
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Queue a projected lens-flare sample after applying the active inverse-depth transform.
  */
 void __fastcall
 zRndrLensFlareQueueProjectedSample(zProjectedPoint* projectedPoint, int packedColor16, int lensFlareSource)
 {
-    if (zRndr::g_lensFlareSampleQueueCount >= 0x28a) {
+    LensFlareSamplePartial* sample;
+    if (g_lensFlareSampleQueueCount >= 0x28a) {
         return;
     }
 
-    projectedPoint->reciprocalZ = zRndr::g_inverseDepthScale * projectedPoint->reciprocalZ;
-    projectedPoint->reciprocalZ = zRndr::g_inverseDepthBias + projectedPoint->reciprocalZ;
+    projectedPoint->reciprocalZ = g_inverseDepthScale * projectedPoint->reciprocalZ;
+    projectedPoint->reciprocalZ = g_inverseDepthBias + projectedPoint->reciprocalZ;
 
-    zRndr::LensFlareSamplePartial* sample = &zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount];
+    sample = &g_lensFlareSampleQueue[g_lensFlareSampleQueueCount];
     memcpy(sample, projectedPoint, sizeof(*projectedPoint));
-    zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount].packedColor16 = packedColor16;
-    zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount].lensFlareSource = lensFlareSource;
-    ++zRndr::g_lensFlareSampleQueueCount;
+    g_lensFlareSampleQueue[g_lensFlareSampleQueueCount].packedColor16 = packedColor16;
+    g_lensFlareSampleQueue[g_lensFlareSampleQueueCount].lensFlareSource = lensFlareSource;
+    ++g_lensFlareSampleQueueCount;
 }
 
 /**
@@ -797,54 +803,49 @@ zRndrLensFlareQueueProjectedSample(zProjectedPoint* projectedPoint, int packedCo
  *
  * Purpose: Return the number of lens-flare samples queued for the frame.
  */
-int __cdecl zRndrLensFlareGetQueuedSampleCount()
+int __cdecl zRndrLensFlareGetQueuedSampleCount(void)
 {
-    return zRndr::g_lensFlareSampleQueueCount;
+    return g_lensFlareSampleQueueCount;
 }
 
-namespace zRndr
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsamplesscaled16-clippedframebuffer
+ * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer
+ * @recoil-match byte
+ *
+ * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
+ * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
+ * The scale precedes the Y offset: retail callers 0x42f51d/0x42f589 evaluate the
+ * register Y offset (xor ecx) before pushing the stack scale (VC5 right-to-left order).
+ */
+void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(float screenScale, int yOffsetPixels)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-drawqueuedsamplesscaled16-clippedframebuffer
-     * @recoil-artifact defines .text recoil:function:0x49a8c0: zRndr::LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer
-     * @recoil-match byte
-     *
-     * Source file evidence: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
-     * Purpose: Draw every queued lens-flare sample with a shared screen scale and Y offset.
-     * The scale precedes the Y offset: retail callers 0x42f51d/0x42f589 evaluate the
-     * register Y offset (xor ecx) before pushing the stack scale (VC5 right-to-left order).
-     */
-    void __fastcall LensFlareDrawQueuedSamplesScaled16ClippedFramebuffer(float screenScale, int yOffsetPixels)
     {
-        {
-            for (int sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
-                LensFlareDrawQueuedSample16ClippedFramebuffer(
-                    &g_lensFlareSampleQueue[sampleIndex],
-                    screenScale,
-                    yOffsetPixels
-                );
-            }
+        int sampleIndex;
+        for (sampleIndex = 0; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
+            LensFlareDrawQueuedSample16ClippedFramebuffer(
+                &g_lensFlareSampleQueue[sampleIndex],
+                screenScale,
+                yOffsetPixels
+            );
         }
-
-        g_lensFlareSampleQueueCount = 0;
-        g_overlayBlendEnabled = 0;
     }
-} // namespace zRndr
 
-namespace zRndr
+    g_lensFlareSampleQueueCount = 0;
+    g_overlayBlendEnabled = 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-resetsamplequeue
+ * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlareResetSampleQueue
+ * @recoil-match byte
+ *
+ * Purpose: Reset the queued lens-flare sample count for the frame.
+ */
+void __cdecl LensFlareResetSampleQueue(void)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-lensflare-resetsamplequeue
-     * @recoil-artifact defines .text recoil:function:0x49a910: zRndr::LensFlareResetSampleQueue
-     * @recoil-match byte
-     *
-     * Purpose: Reset the queued lens-flare sample count for the frame.
-     */
-    void __cdecl LensFlareResetSampleQueue()
-    {
-        g_lensFlareSampleQueueCount = 0;
-    }
-} // namespace zRndr
+    g_lensFlareSampleQueueCount = 0;
+}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawqueuedsamples16-andbuildvisiblelist
@@ -856,35 +857,35 @@ namespace zRndr
  */
 void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(int startIndex)
 {
-    if (startIndex >= zRndr::g_lensFlareSampleQueueCount) {
+    int sampleIndex;
+    if (startIndex >= g_lensFlareSampleQueueCount) {
         return;
     }
 
-    int sampleIndex = startIndex;
+    sampleIndex = startIndex;
     for (;;) {
-        if (zRndrSpanOcclusionTestPointVisibility((zVec3*)(&zRndr::g_lensFlareSampleQueue[sampleIndex])) != 0) {
+        if (zRndrSpanOcclusionTestPointVisibility((zVec3*)(&g_lensFlareSampleQueue[sampleIndex])) != 0) {
             zRndr_LensFlareSource* source
-                = (zRndr_LensFlareSource*)(zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource);
+                = (zRndr_LensFlareSource*)(g_lensFlareSampleQueue[sampleIndex].lensFlareSource);
             if (source != 0 && source->lensFlareEnabled != 0 && sampleIndex < 0x40
-                && zRndr::g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
+                && g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
                 zRndr_LensFlareVisibleSampleDef** const visibleSlot
-                    = &zRndr::g_lensFlareVisibleSampleDefs[zRndr::g_lensFlareVisibleSampleCount];
-                *visibleSlot = (zRndr_LensFlareVisibleSampleDef*)(&zRndr::g_lensFlareSampleQueue[sampleIndex]);
-                ++zRndr::g_lensFlareVisibleSampleCount;
+                    = &g_lensFlareVisibleSampleDefs[g_lensFlareVisibleSampleCount];
+                *visibleSlot = (zRndr_LensFlareVisibleSampleDef*)(&g_lensFlareSampleQueue[sampleIndex]);
+                ++g_lensFlareVisibleSampleCount;
             }
 
             ++sampleIndex;
-            if (sampleIndex >= zRndr::g_lensFlareSampleQueueCount) {
+            if (sampleIndex >= g_lensFlareSampleQueueCount) {
                 return;
             }
         } else {
-            --zRndr::g_lensFlareSampleQueueCount;
-            if (sampleIndex >= zRndr::g_lensFlareSampleQueueCount) {
+            --g_lensFlareSampleQueueCount;
+            if (sampleIndex >= g_lensFlareSampleQueueCount) {
                 return;
             }
 
-            zRndr::g_lensFlareSampleQueue[sampleIndex]
-                = zRndr::g_lensFlareSampleQueue[zRndr::g_lensFlareSampleQueueCount];
+            g_lensFlareSampleQueue[sampleIndex] = g_lensFlareSampleQueue[g_lensFlareSampleQueueCount];
         }
     }
 }
@@ -899,19 +900,19 @@ void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(int startIn
  */
 int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex)
 {
-    zRndr::g_lensFlareVisibleSampleCount = 0;
-    for (int sampleIndex = startIndex; sampleIndex < zRndr::g_lensFlareSampleQueueCount; ++sampleIndex) {
-        if (zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource != 0
-            && ((zRndr_LensFlareSource*)(zRndr::g_lensFlareSampleQueue[sampleIndex].lensFlareSource))->lensFlareEnabled
-                != 0
-            && sampleIndex < 0x40 && zRndr::g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
-            zRndr::g_lensFlareVisibleSampleDefs[zRndr::g_lensFlareVisibleSampleCount]
-                = (zRndr_LensFlareVisibleSampleDef*)(&zRndr::g_lensFlareSampleQueue[sampleIndex]);
-            ++zRndr::g_lensFlareVisibleSampleCount;
+    int sampleIndex;
+    g_lensFlareVisibleSampleCount = 0;
+    for (sampleIndex = startIndex; sampleIndex < g_lensFlareSampleQueueCount; ++sampleIndex) {
+        if (g_lensFlareSampleQueue[sampleIndex].lensFlareSource != 0
+            && ((zRndr_LensFlareSource*)(g_lensFlareSampleQueue[sampleIndex].lensFlareSource))->lensFlareEnabled != 0
+            && sampleIndex < 0x40 && g_lensFlareSampleQueue[sampleIndex].reciprocalZ != 0.0f) {
+            g_lensFlareVisibleSampleDefs[g_lensFlareVisibleSampleCount]
+                = (zRndr_LensFlareVisibleSampleDef*)(&g_lensFlareSampleQueue[sampleIndex]);
+            ++g_lensFlareVisibleSampleCount;
         }
     }
 
-    return zRndr::g_lensFlareVisibleSampleCount;
+    return g_lensFlareVisibleSampleCount;
 }
 
 /**
@@ -923,7 +924,7 @@ int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex)
  */
 void __fastcall zRndrSpanOcclusionFilterSampleList(int visibleSampleIndex, zVec3* outPoint)
 {
-    zRndr_LensFlareVisibleSampleDef* sample = zRndr::g_lensFlareVisibleSampleDefs[visibleSampleIndex];
+    zRndr_LensFlareVisibleSampleDef* sample = g_lensFlareVisibleSampleDefs[visibleSampleIndex];
     zMathUnprojectPointBatchZBuf((const zProjectedPoint*)(sample), outPoint, 1);
 }
 
@@ -937,21 +938,21 @@ void __fastcall zRndrSpanOcclusionFilterSampleList(int visibleSampleIndex, zVec3
 void __fastcall zRndrLensFlareSetVisibleSampleStage(int stageIndex, zImage_TexDirEntryPartial* stageTexDirEntry)
 {
     if (stageIndex >= 0 && stageIndex < 4) {
-        zRndr::g_lensFlareVisibleSampleStages[stageIndex] = stageTexDirEntry;
+        g_lensFlareVisibleSampleStages[stageIndex] = stageTexDirEntry;
     }
 
-    if (zRndr::g_lensFlareVisibleSampleStages[0] != 0 && zRndr::g_lensFlareVisibleSampleStages[1] != 0
-        && zRndr::g_lensFlareVisibleSampleStages[2] != 0 && zRndr::g_lensFlareVisibleSampleStages[3] != 0) {
-        zRndr::g_lensFlareVisibilityActive = 1;
+    if (g_lensFlareVisibleSampleStages[0] != 0 && g_lensFlareVisibleSampleStages[1] != 0
+        && g_lensFlareVisibleSampleStages[2] != 0 && g_lensFlareVisibleSampleStages[3] != 0) {
+        g_lensFlareVisibilityActive = 1;
     } else {
-        zRndr::g_lensFlareVisibilityActive = 0;
+        g_lensFlareVisibilityActive = 0;
     }
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawsamplestageclipped
  * @recoil-artifact defines .text recoil:function:0x49aa90: zRndrLensFlareDrawSampleStageClipped
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.
@@ -964,40 +965,47 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
     const zRndr_LineClipRect2I* clipRect
 )
 {
-    if (sampleRadius < 1.0f) {
-        return;
-    }
-
     // Retail keeps the corners in two 12-byte vector records; only x and y are used.
     zVec3 minCorner;
     zVec3 maxCorner;
-    minCorner.x = sampleCenter->x - sampleRadius;
-    minCorner.y = sampleCenter->y - sampleRadius;
-    maxCorner.x = sampleRadius + sampleCenter->x;
-    maxCorner.y = sampleRadius + sampleCenter->y;
-
     float uvScale;
     float uLeft;
     float uRight;
     float vTop;
     float vBottom;
+    zVec3 projectedVerts[4];
+    zVec2 triUVs[4];
+    float kSoftwareScale;
+    zVec3 clippedTriVerts[4];
+    if (sampleRadius < 1.0f) {
+        return;
+    }
+
+    minCorner.x = sampleCenter->x - sampleRadius;
+    minCorner.y = sampleCenter->y - sampleRadius;
+    maxCorner.x = sampleRadius + sampleCenter->x;
+    maxCorner.y = sampleRadius + sampleCenter->y;
+
     if (clipRect != 0) {
         const float clipRight = (float)(clipRect->right);
+        float clipBottom;
+        float clipLeft;
+        float clipTop;
         if (minCorner.x > clipRight - 2.0f) {
             return;
         }
 
-        const float clipBottom = (float)(clipRect->bottom);
+        clipBottom = (float)(clipRect->bottom);
         if (minCorner.y > clipBottom - 2.0f) {
             return;
         }
 
-        const float clipLeft = (float)(clipRect->left);
+        clipLeft = (float)(clipRect->left);
         if (maxCorner.x < clipLeft + 1.0f) {
             return;
         }
 
-        const float clipTop = (float)(clipRect->top);
+        clipTop = (float)(clipRect->top);
         if (maxCorner.y < clipTop + 1.0f) {
             return;
         }
@@ -1032,12 +1040,13 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
         }
     } else {
         // The active-region branch repeats the clamp with its zero origin folded in.
-        const float clipRight = (float)((unsigned int)(zRndr::g_activeRegionWidth));
+        const float clipRight = (float)((unsigned int)(g_activeRegionWidth));
+        float clipBottom;
         if (minCorner.x > clipRight - 2.0f) {
             return;
         }
 
-        const float clipBottom = (float)((unsigned int)(zRndr::g_activeRegionHeight));
+        clipBottom = (float)((unsigned int)(g_activeRegionHeight));
         if (minCorner.y > clipBottom - 2.0f) {
             return;
         }
@@ -1080,7 +1089,6 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
         }
     }
 
-    zVec3 projectedVerts[4];
     projectedVerts[0].x = maxCorner.x;
     projectedVerts[0].y = maxCorner.y;
     projectedVerts[1].x = maxCorner.x;
@@ -1090,7 +1098,6 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
     projectedVerts[3].x = minCorner.x;
     projectedVerts[3].y = maxCorner.y;
 
-    zVec2 triUVs[4];
     triUVs[0].x = uRight;
     triUVs[0].y = vBottom;
     triUVs[1].x = uRight;
@@ -1101,9 +1108,10 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
     triUVs[3].y = vBottom;
 
     if (g_zVideo_ActiveRendererPath != 0) {
+        zVideo_RenderClass* renderClass;
         projectedVerts[0].z = projectedVerts[1].z = projectedVerts[2].z = projectedVerts[3].z = 0.5f;
 
-        zVideo_RenderClass* renderClass = stageTexDirEntry != 0 ? (zVideo_RenderClass*)(stageTexDirEntry->texture) : 0;
+        renderClass = stageTexDirEntry != 0 ? (zVideo_RenderClass*)(stageTexDirEntry->texture) : 0;
         g_zVideo_pfnSubmitPolyRenderClass(
             (zVideo_XyzVertex*)(projectedVerts),
             (zVideo_TexCoord*)(triUVs),
@@ -1117,13 +1125,19 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
     }
 
     projectedVerts[0].z = projectedVerts[1].z = projectedVerts[2].z = projectedVerts[3].z = 10.0f;
-    const float kSoftwareScale = 0.100000001f;
-    zVec3 clippedTriVerts[4] = {
-        { maxCorner.x * kSoftwareScale, maxCorner.y * kSoftwareScale, kSoftwareScale },
-        { maxCorner.x * kSoftwareScale, minCorner.y * kSoftwareScale, kSoftwareScale },
-        { minCorner.x * kSoftwareScale, minCorner.y * kSoftwareScale, kSoftwareScale },
-        { minCorner.x * kSoftwareScale, maxCorner.y * kSoftwareScale, kSoftwareScale },
-    };
+    kSoftwareScale = 0.100000001f;
+    clippedTriVerts[0].x = maxCorner.x * kSoftwareScale;
+    clippedTriVerts[0].y = maxCorner.y * kSoftwareScale;
+    clippedTriVerts[0].z = kSoftwareScale;
+    clippedTriVerts[1].x = maxCorner.x * kSoftwareScale;
+    clippedTriVerts[1].y = minCorner.y * kSoftwareScale;
+    clippedTriVerts[1].z = kSoftwareScale;
+    clippedTriVerts[2].x = minCorner.x * kSoftwareScale;
+    clippedTriVerts[2].y = minCorner.y * kSoftwareScale;
+    clippedTriVerts[2].z = kSoftwareScale;
+    clippedTriVerts[3].x = minCorner.x * kSoftwareScale;
+    clippedTriVerts[3].y = maxCorner.y * kSoftwareScale;
+    clippedTriVerts[3].z = kSoftwareScale;
 
     zRndrSubmitTexturedPolyUniformAlphaOrShade(
         projectedVerts,
@@ -1146,14 +1160,15 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
  */
 void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex)
 {
-    zRndr_LensFlareVisibleSampleDef* visibleSampleDef = zRndr::g_lensFlareVisibleSampleDefs[sampleIndex];
+    zRndr_LensFlareVisibleSampleDef* visibleSampleDef = g_lensFlareVisibleSampleDefs[sampleIndex];
     zRndr_LensFlareSource* lensFlareSource = visibleSampleDef->lensFlareSource;
+    float visibility;
 
-    if (zRndr::g_lensFlareVisibilityActive == 0) {
+    if (g_lensFlareVisibilityActive == 0) {
         return;
     }
 
-    float visibility = 1.0f / visibleSampleDef->depthDivisor;
+    visibility = 1.0f / visibleSampleDef->depthDivisor;
     if (!(visibility < lensFlareSource->fadeFar)) {
         return;
     }
@@ -1181,46 +1196,34 @@ zRndrLensFlareDrawVisibleSampleStages(zRndr_LensFlareVisibleSampleDef* visibleSa
 {
     // Retail converts the active-region extent at each use (no width/height locals): the radius
     // multiply loads visibilityAlpha first and reuses the converted width.
-    const float baseRadius = visibilityAlpha * (float)((unsigned int)(zRndr::g_activeRegionWidth)) * 0.03125f;
+    const float baseRadius = visibilityAlpha * (float)((unsigned int)(g_activeRegionWidth)) * 0.03125f;
     const float largeRadius = baseRadius + baseRadius;
     // Retail keeps the clip half-size and sample offset in two 12-byte vector records; only x and y are used.
     zVec3 halfClip;
     zVec3 sampleOffset;
-    halfClip.x = (float)((unsigned int)(zRndr::g_activeRegionWidth)) * 0.5f;
-    halfClip.y = (float)((unsigned int)(zRndr::g_activeRegionHeight)) * 0.5f;
+    const zRndr_LineClipRect2I* clipRect;
+    zVec2 sampleCenter;
+    halfClip.x = (float)((unsigned int)(g_activeRegionWidth)) * 0.5f;
+    halfClip.y = (float)((unsigned int)(g_activeRegionHeight)) * 0.5f;
     sampleOffset.x = visibleSampleDef->sampleCenterX - halfClip.x;
     sampleOffset.y = visibleSampleDef->sampleCenterY - halfClip.y;
-    const zRndr_LineClipRect2I* clipRect = (const zRndr_LineClipRect2I*)(&zRndr::g_activeRegionRect);
+    clipRect = (const zRndr_LineClipRect2I*)(&g_activeRegionRect);
 
-    zVec2 sampleCenter = { visibleSampleDef->sampleCenterX, visibleSampleDef->sampleCenterY };
-    zRndrLensFlareDrawSampleStageClipped(
-        &sampleCenter,
-        zRndr::g_lensFlareVisibleSampleStages[0],
-        largeRadius,
-        clipRect
-    );
+    sampleCenter.x = visibleSampleDef->sampleCenterX;
+    sampleCenter.y = visibleSampleDef->sampleCenterY;
+    zRndrLensFlareDrawSampleStageClipped(&sampleCenter, g_lensFlareVisibleSampleStages[0], largeRadius, clipRect);
 
     sampleCenter.x = halfClip.x + sampleOffset.x * 0.5f;
     sampleCenter.y = halfClip.y + sampleOffset.y * 0.5f;
-    zRndrLensFlareDrawSampleStageClipped(
-        &sampleCenter,
-        zRndr::g_lensFlareVisibleSampleStages[1],
-        largeRadius,
-        clipRect
-    );
+    zRndrLensFlareDrawSampleStageClipped(&sampleCenter, g_lensFlareVisibleSampleStages[1], largeRadius, clipRect);
 
     sampleCenter.x = halfClip.x + sampleOffset.x * 0.100000001f;
     sampleCenter.y = halfClip.y + sampleOffset.y * 0.100000001f;
-    zRndrLensFlareDrawSampleStageClipped(&sampleCenter, zRndr::g_lensFlareVisibleSampleStages[2], baseRadius, clipRect);
+    zRndrLensFlareDrawSampleStageClipped(&sampleCenter, g_lensFlareVisibleSampleStages[2], baseRadius, clipRect);
 
     sampleCenter.x = halfClip.x - sampleOffset.x;
     sampleCenter.y = halfClip.y - sampleOffset.y;
-    zRndrLensFlareDrawSampleStageClipped(
-        &sampleCenter,
-        zRndr::g_lensFlareVisibleSampleStages[3],
-        baseRadius * 3.0f,
-        clipRect
-    );
+    zRndrLensFlareDrawSampleStageClipped(&sampleCenter, g_lensFlareVisibleSampleStages[3], baseRadius * 3.0f, clipRect);
 }
 
 /**
@@ -1230,15 +1233,16 @@ zRndrLensFlareDrawVisibleSampleStages(zRndr_LensFlareVisibleSampleDef* visibleSa
  *
  * Purpose: Draw all visible lens-flare samples and clear the visible-sample list.
  */
-void __cdecl zRndrLensFlareDrawVisibleSamples()
+void __cdecl zRndrLensFlareDrawVisibleSamples(void)
 {
-    if (zRndr::g_lensFlareVisibilityActive == 0) {
+    int sampleIndex;
+    if (g_lensFlareVisibilityActive == 0) {
         return;
     }
 
-    for (int sampleIndex = 0; sampleIndex < zRndr::g_lensFlareVisibleSampleCount; ++sampleIndex) {
+    for (sampleIndex = 0; sampleIndex < g_lensFlareVisibleSampleCount; ++sampleIndex) {
         zRndrLensFlareDrawVisibleSample(sampleIndex);
     }
 
-    zRndr::g_lensFlareVisibleSampleCount = 0;
+    g_lensFlareVisibleSampleCount = 0;
 }

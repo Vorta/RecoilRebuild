@@ -1139,20 +1139,20 @@ void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHe
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentrypartial-getvariantimageatindex
- * @recoil-artifact defines .text recoil:function:0x46e290: zImage_TexDirEntryPartial::GetVariantImageAtIndex.
+ * @recoil-artifact defines .text recoil:function:0x46e290: GetVariantImageAtIndex.
  * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.
  * Purpose: return the requested image from a texture-directory variant chain.
- * Evidence: BN treats this as a zImage_TexDirEntry member leaf: null self
- * returns g_zImage_DefaultImage, non-positive indexes return this->image,
- * and positive indexes walk nextVariant at offset 0x20 until the index or
- * chain tail is reached.
+ * Evidence: BN treats this as a zImage_TexDirEntry leaf with the entry in ECX:
+ * a null entry returns g_zImage_DefaultImage, non-positive indexes return
+ * entry->image, and positive indexes walk nextVariant at offset 0x20 until the
+ * index or chain tail is reached. Its only caller is the C unit zrndr_poly.c
+ * (zRndrTextureMipSelectVariantImage), so it has C linkage.
  */
-zVidImagePartial* __fastcall zImage_TexDirEntryPartial::GetVariantImageAtIndex(int variantIndex)
+extern "C" zVidImagePartial* __fastcall GetVariantImageAtIndex(zImage_TexDirEntryPartial* entry, int variantIndex)
 {
-    zImage_TexDirEntryPartial* entry = this;
     if (entry == 0) {
         return &zVid_Image::g_zImage_DefaultImage;
     }

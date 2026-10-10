@@ -35,7 +35,7 @@ RECOIL_NO_GS char* __fastcall FindFileOnDriveType(int driveType, const char* rel
 RECOIL_NO_GS void __fastcall
 ProbePlatformAndVideoCaps(zSysVideoCapsLevel* outVideoCaps, zSysPlatformCapsLevel* outPlatformCaps);
 
-int __cdecl CheckCpuSignatureMask();
+extern "C" int __cdecl CheckCpuSignatureMask();
 int __cdecl HasCpuidSupportRuntimeOptions();
 unsigned short __cdecl HasCpuidSupport();
 unsigned short __cdecl ReadCpuidVendorAndFamily();
