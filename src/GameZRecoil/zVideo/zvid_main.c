@@ -1,10 +1,11 @@
-#include "recoil/Mfc42Abi.h"
-
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include "GameZRecoil/zRender/zrndr.h"
-#include "GameZRecoil/zVideo/zvid_fx_pass3.h"
 #include "GameZRecoil/zVideo/zvid_state.h"
+
+/* zRender entry point; zrndr.h declares it for the C++ units only. */
+void __fastcall
+SetFrameBufferRegion(void* pixels, zOpt_ViewRectSection* activeRegionRect, int bitsPerPixel, int pitchBytes);
 
 /*
  * The retail gmod_init.c contributions compile from gmod_init.c rather than
@@ -21,105 +22,98 @@
  * src/GameZRecoil/zImage/zimg_texture.cpp rather than this translation unit.
  */
 
-namespace
+enum {
+    kZVidPaletteColorCount = 256,
+    kZVidPaletteRemapVariantCount = 32,
+    kZVidPaletteRemapColorsPerRecipe = kZVidPaletteColorCount * kZVidPaletteRemapVariantCount
+};
+
+/**
+ * Original-source helper evidence: no standalone retail function is present; callers inline
+ * the recipe-count scaling as recipeCount * 0x4000 + 0x200 bytes of 16-bit palette data.
+ * Purpose: compute the palette-remap table byte count for the current recipe count.
+ */
+static size_t zVidPaletteRemapTableBytesForRecipeCount(int recipeCount)
 {
-    const int kZVidPaletteColorCount = 256;
-    const int kZVidPaletteRemapVariantCount = 32;
-    const int kZVidPaletteRemapColorsPerRecipe = kZVidPaletteColorCount * kZVidPaletteRemapVariantCount;
+    return (size_t)((recipeCount * kZVidPaletteRemapColorsPerRecipe) + kZVidPaletteColorCount) * sizeof(unsigned short);
+}
 
-    /**
-     * Original-source helper evidence: no standalone retail function is present; callers inline
-     * the recipe-count scaling as recipeCount * 0x4000 + 0x200 bytes of 16-bit palette data.
-     * Purpose: compute the palette-remap table byte count for the current recipe count.
-     */
-    size_t zVidPaletteRemapTableBytesForRecipeCount(int recipeCount)
-    {
-        return (size_t)((recipeCount * kZVidPaletteRemapColorsPerRecipe) + kZVidPaletteColorCount)
-            * sizeof(unsigned short);
-    }
+/**
+ * Retail places this initialized zImage default-image owner before the
+ * texture-directory state rows at 0x4e0718 and the zVideo texture-pack state
+ * rows at 0x4e073c. Keep the writable pixel array and typed image record in
+ * source order so final linked .data can follow the retail initialized-data
+ * boundary instead of the later zVid_Image function cluster.
+ * Purpose: provide the fallback 8x8 default image and backing pixels.
+ */
+unsigned short g_zImage_DefaultImagePixels[64] = { 0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800,
+    0x03e0,
+    0x03e0,
+    0xf800,
+    0xf800 };
 
-} // namespace
+zVidImagePartial g_zImage_DefaultImage
+    = { 64, 8, 8, 0, 5, 0, 0, 0, 0, g_zImage_DefaultImagePixels, 0, 0, 0.0f, 0, 0, 0, 0, 0, 0 };
 
-namespace zVid_Image
-{
-    /**
-     * Retail places this initialized zImage default-image owner before the
-     * texture-directory state rows at 0x4e0718 and the zVideo texture-pack state
-     * rows at 0x4e073c. Keep the writable pixel array and typed image record in
-     * source order so final linked .data can follow the retail initialized-data
-     * boundary instead of the later zVid_Image function cluster.
-     * Purpose: provide the fallback 8x8 default image and backing pixels.
-     */
-    unsigned short g_zImage_DefaultImagePixels[64] = { 0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800,
-        0x03e0,
-        0x03e0,
-        0xf800,
-        0xf800 };
-
-    zVidImagePartial g_zImage_DefaultImage
-        = { 64, 8, 8, 0, 5, 0, 0, 0, 0, g_zImage_DefaultImagePixels, 0, 0, 0.0f, 0, 0, 0, 0, 0, 0 };
-} // namespace zVid_Image
-
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-globalstatestorage
  * @recoil-artifact defines .data recoil:data:0x632134: g_zVideo_GlobalStateStorage.primaryHasAttachedBackbuffer.
@@ -817,30 +811,14 @@ zVideo_FlushProc g_zVideo_pfnFlushOverwritePolys = 0;
  */
 zVideo_FlushProc g_zVideo_pfnFlushQuadBatch = 0;
 
-#if defined(_M_IX86) || defined(__i386__)
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, packedColor16) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, alpha) == 0x40);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, rootElement) == 0x28);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfacePixels) == 0x18);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfaceWidth) == 0x1c);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfaceHeight) == 0x20);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfacePitchBytes) == 0x24);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, currentRadius) == 0x38);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, sinPhase) == 0x48);
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot) == 0x4c);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slots) == 0x70);
-RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slotWriteIndex) == 0x1ec);
-RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
-#endif
-
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-primarysurfacerectscratch
  * @recoil-artifact defines .data recoil:data:0x56bbc8: g_zVideo_PrimarySurfaceRectScratch.
  * Purpose: stores the primary surface rectangle scratch used by zVideo
  * software-present adjustment code.
+ * The explicit zero initializer keeps this a definition (a C tentative definition would be communal).
  */
-zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
+zVidRect32 g_zVideo_PrimarySurfaceRectScratch = { 0 };
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-g-zvideo-surfacestateswapscratch
  * @recoil-artifact defines .data recoil:data:0x56bc78: g_zVideo_SurfaceStateSwapScratch.
@@ -851,9 +829,9 @@ zVidRect32 g_zVideo_PrimarySurfaceRectScratch;
  * present adjustment path.
  * Purpose: stores the surface-state swap scratch record used by zVideo
  * software-present adjustment code.
+ * The explicit zero initializer keeps this a definition (a C tentative definition would be communal).
  */
-zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch;
-}
+zVideo_SurfaceStatePartial g_zVideo_SurfaceStateSwapScratch = { 0 };
 
 RECOIL_STATIC_ASSERT(sizeof(zVidHwApiDeviceRecordPartial) == 0x6ec);
 RECOIL_STATIC_ASSERT(sizeof(zVidD3DDriverRecordPartial) == 0x190);
@@ -935,17 +913,12 @@ RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, surface) == 0x30);
 RECOIL_STATIC_ASSERT(offsetof(zVidImagePartial, pitchWords) == 0x34);
 RECOIL_STATIC_ASSERT(sizeof(zVidRect32) == sizeof(RECT));
 
-namespace zVid
-{
+/*
+ * The retail zgame_opt.c contribution compiles from the registered
+ * options/runtime-probe translation unit.
+ */
 
-    /*
-     * The retail zgame_opt.c contribution compiles from the registered
-     * options/runtime-probe translation unit.
-     */
-
-    /* The DirectDraw-backed zVid contributions compile from zvid_dd.c. */
-
-} // namespace zVid
+/* The DirectDraw-backed zVid contributions compile from zvid_dd.c. */
 
 /**
  * Draws the common HUD base, publishes the parent pass-3 source surface, then dispatches the
@@ -953,16 +926,10 @@ namespace zVid
  * The address-backed definition compiles through the registered zui.cpp
  * physical-order target.
  */
-/**
- * Original-source helper evidence: no standalone retail address is assigned to
- * the base virtual implementation in this owner. Draw at 0x4bdb60 dispatches
- * the pass callback virtually, and the address-backed overrides are
- * zVideoFxPass3RootElement::ApplyPass3 at 0x4bdbc0 and
- * zVideoFxPass3Slot::ApplyPass3 at 0x4bdc40.
- * Purpose: preserve the empty base pass-3 callback for element types that do
- * not override the pass operation.
+/*
+ * The empty base zVideoFxPass3Element::ApplyPass3 (no retail address) compiles
+ * from zui_fx.cpp, the C++ owner of the pass-3 element family.
  */
-void zVideoFxPass3Element::ApplyPass3() { }
 
 /**
  * Root pass-3 callback submits the currently selected input rectangle as a framebuffer overlay
@@ -1000,551 +967,506 @@ void zVideoFxPass3Element::ApplyPass3() { }
  * this translation unit.
  */
 
-namespace zVideo_buff { } // namespace zVideo_buff
-
-namespace zVideo
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getdisplaymodebpp
+ * @recoil-artifact defines .text recoil:function:0x4a66e0: zVideo::GetDisplayModeBpp.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached display-mode bits-per-pixel value.
+ * Evidence: BN assembly is a leaf load from g_zVideo_DisplayModeBpp at
+ * 0x632150 followed by return.
+ */
+int __cdecl GetDisplayModeBpp(void)
 {
+    return g_zVideo_DisplayModeBpp;
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getdisplaymodebpp
-     * @recoil-artifact defines .text recoil:function:0x4a66e0: zVideo::GetDisplayModeBpp.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached display-mode bits-per-pixel value.
-     * Evidence: BN assembly is a leaf load from g_zVideo_DisplayModeBpp at
-     * 0x632150 followed by return.
-     */
-    int __cdecl GetDisplayModeBpp()
-    {
-        return g_zVideo_DisplayModeBpp;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-init-applymodeindex
-     * @recoil-artifact defines .text recoil:function:0x4a66f0: zVideo::InitApplyModeIndex.
-     * @recoil-match byte
-     *
-     * Purpose: provide the recovered zVideo::InitApplyModeIndex behavior.
-     */
-    int __fastcall InitApplyModeIndex(int modeIndex)
-    {
-        InitSetSurfaceGeometryFromModeIndex(modeIndex);
-        return g_zVideo_pfnSetVideoMode(modeIndex);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepixels
-     * @recoil-artifact defines .text recoil:function:0x4a6710: zVideo::GetSwSurfacePixels.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the current locked software surface pixel pointer.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pixels at 0x632210.
-     */
-    void* __cdecl GetSwSurfacePixels()
-    {
-        return g_zVideo_SwSurfaceState.pixels;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacewidth
-     * @recoil-artifact defines .text recoil:function:0x4a6720: zVideo::GetSwSurfaceWidth.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached software surface width.
-     * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.width at 0x632200.
-     */
-    int __cdecl GetSwSurfaceWidth()
-    {
-        return g_zVideo_SwSurfaceState.width;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfaceheight
-     * @recoil-artifact defines .text recoil:function:0x4a6730: zVideo::GetSwSurfaceHeight.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached software surface height.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.height at 0x632204.
-     */
-    int __cdecl GetSwSurfaceHeight()
-    {
-        return g_zVideo_SwSurfaceState.height;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepitch
-     * @recoil-artifact defines .text recoil:function:0x4a6740: zVideo::GetSwSurfacePitch.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached software surface pitch.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pitch at 0x632208.
-     */
-    int __cdecl GetSwSurfacePitch()
-    {
-        return g_zVideo_SwSurfaceState.pitch;
-    }
-
-} // namespace zVideo
-
-namespace zVideo_dd3d
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-init-applymodeindex
+ * @recoil-artifact defines .text recoil:function:0x4a66f0: zVideo::InitApplyModeIndex.
+ * @recoil-match byte
+ *
+ * Purpose: provide the recovered zVideo::InitApplyModeIndex behavior.
+ */
+int __fastcall InitApplyModeIndex(int modeIndex)
 {
+    InitSetSurfaceGeometryFromModeIndex(modeIndex);
+    return g_zVideo_pfnSetVideoMode(modeIndex);
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearzbufferrect
-     * @recoil-artifact defines .text recoil:function:0x4a6750: zVideo_dd3d::CallClearZBufferRect.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Source file evidence: Binary Ninja function source comment.
-     * Purpose: Tail-dispatch the active Z-buffer clear callback.
-     */
-    void __fastcall CallClearZBufferRect(zVidRect32 * rect)
-    {
-        g_zVideo_pfnClearZBufferRect(rect);
-    }
-
-} // namespace zVideo_dd3d
-
-namespace zVideo
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepixels
+ * @recoil-artifact defines .text recoil:function:0x4a6710: zVideo::GetSwSurfacePixels.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the current locked software surface pixel pointer.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pixels at 0x632210.
+ */
+void* __cdecl GetSwSurfacePixels(void)
 {
+    return g_zVideo_SwSurfaceState.pixels;
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearswsurfaceandzbuffer
-     * @recoil-artifact defines .text recoil:function:0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer.
-     * @recoil-match byte
-     *
-     * Purpose: Tail-dispatches the installed software clear callback with surface
-     * and Z-buffer rectangles.
-     */
-    void __fastcall CallClearSwSurfaceAndZBuffer(zVidRect32 * surfaceRect, zVidRect32 * zRect)
-    {
-        g_zVideo_pfnClearSwSurfaceAndZBuffer(surfaceRect, zRect);
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacewidth
+ * @recoil-artifact defines .text recoil:function:0x4a6720: zVideo::GetSwSurfaceWidth.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface width.
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.width at 0x632200.
+ */
+int __cdecl GetSwSurfaceWidth(void)
+{
+    return g_zVideo_SwSurfaceState.width;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfaceheight
+ * @recoil-artifact defines .text recoil:function:0x4a6730: zVideo::GetSwSurfaceHeight.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface height.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.height at 0x632204.
+ */
+int __cdecl GetSwSurfaceHeight(void)
+{
+    return g_zVideo_SwSurfaceState.height;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacepitch
+ * @recoil-artifact defines .text recoil:function:0x4a6740: zVideo::GetSwSurfacePitch.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached software surface pitch.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.pitch at 0x632208.
+ */
+int __cdecl GetSwSurfacePitch(void)
+{
+    return g_zVideo_SwSurfaceState.pitch;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearzbufferrect
+ * @recoil-artifact defines .text recoil:function:0x4a6750: zVideo_dd3d::CallClearZBufferRect.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Source file evidence: Binary Ninja function source comment.
+ * Purpose: Tail-dispatch the active Z-buffer clear callback.
+ */
+void __fastcall CallClearZBufferRect(zVidRect32* rect)
+{
+    g_zVideo_pfnClearZBufferRect(rect);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearswsurfaceandzbuffer
+ * @recoil-artifact defines .text recoil:function:0x4a6760: zVideo::CallClearSwSurfaceAndZBuffer.
+ * @recoil-match byte
+ *
+ * Purpose: Tail-dispatches the installed software clear callback with surface
+ * and Z-buffer rectangles.
+ */
+void __fastcall CallClearSwSurfaceAndZBuffer(zVidRect32* surfaceRect, zVidRect32* zRect)
+{
+    g_zVideo_pfnClearSwSurfaceAndZBuffer(surfaceRect, zRect);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonswbuffer
+ * @recoil-artifact defines .text recoil:function:0x4a6770: zVideo::RunPostprocessOnSwBuffer.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: provide the recovered zVideo::RunPostprocessOnSwBuffer behavior.
+ */
+int __cdecl RunPostprocessOnSwBuffer(void)
+{
+    g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
+    SetFrameBufferRegion(g_zVideo_SwSurfaceState.pixels, 0, 0, g_zVideo_SwSurfaceState.pitch);
+    FxSetSurfaceState(
+        g_zVideo_SwSurfaceState.pixels,
+        g_zVideo_SwSurfaceState.width,
+        g_zVideo_SwSurfaceState.height,
+        g_zVideo_SwSurfaceState.pitch
+    );
+    FxPass3QueuePrimitive(
+        g_zVideo_SwSurfaceState.pixels,
+        g_zVideo_SwSurfaceState.width,
+        g_zVideo_SwSurfaceState.height,
+        g_zVideo_SwSurfaceState.pitch
+    );
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockswsurfacestate
+ * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::DispatchUnlockSwSurfaceState.
+ * @recoil-match byte
+ *
+ * Purpose: Dispatches the configured surface unlock provider for the software surface state.
+ */
+int __cdecl DispatchUnlockSwSurfaceState(void)
+{
+    return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacelockedflag
+ * @recoil-artifact defines .text recoil:function:0x4a67e0: zVideo::GetSwSurfaceLockedFlag.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns whether the software surface state currently holds a lock.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.locked at 0x632214.
+ */
+int __cdecl GetSwSurfaceLockedFlag(void)
+{
+    return g_zVideo_SwSurfaceState.locked;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepixels
+ * @recoil-artifact defines .text recoil:function:0x4a67f0: zVideo::GetPrimarySurfacePixels.
+ * @recoil-match byte
+ *
+ * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
+ */
+void* __cdecl GetPrimarySurfacePixels(void)
+{
+    return g_zVideo_PrimarySurfaceState.pixels;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacewidth
+ * @recoil-artifact defines .text recoil:function:0x4a6800: zVideo::GetPrimarySurfaceWidth.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
+ * Purpose: return the current primary surface width from the recovered surface-state global.
+ */
+int __cdecl GetPrimarySurfaceWidth(void)
+{
+    return g_zVideo_PrimarySurfaceState.width;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfaceheight
+ * @recoil-artifact defines .text recoil:function:0x4a6810: zVideo::GetPrimarySurfaceHeight.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached primary surface height.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.height at
+ * 0x632224.
+ */
+int __cdecl GetPrimarySurfaceHeight(void)
+{
+    return g_zVideo_PrimarySurfaceState.height;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepitch
+ * @recoil-artifact defines .text recoil:function:0x4a6820: zVideo::GetPrimarySurfacePitch.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: returns the cached primary surface pitch.
+ *
+ * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.pitch at
+ * 0x632228.
+ */
+int __cdecl GetPrimarySurfacePitch(void)
+{
+    return g_zVideo_PrimarySurfaceState.pitch;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearprimarysurfaceandzbuffer
+ * @recoil-artifact defines .text recoil:function:0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer.
+ * @recoil-match byte
+ *
+ * Purpose: Tail-dispatches the installed primary clear callback with the
+ * primary surface state.
+ */
+void __fastcall CallClearPrimarySurfaceAndZBuffer(zVidRect32* rect)
+{
+    g_zVideo_pfnClearStateSurfaceAndZBuffer(rect, &g_zVideo_PrimarySurfaceState);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonprimarybuffer
+ * @recoil-artifact defines .text recoil:function:0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
+ * @recoil-match byte
+ *
+ * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
+ */
+int __cdecl RunPostprocessOnPrimaryBuffer(void)
+{
+    if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
+        g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonswbuffer
-     * @recoil-artifact defines .text recoil:function:0x4a6770: zVideo::RunPostprocessOnSwBuffer.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Purpose: provide the recovered zVideo::RunPostprocessOnSwBuffer behavior.
-     */
-    int __cdecl RunPostprocessOnSwBuffer()
-    {
-        g_zVideo_pfnLockSurfaceState(&g_zVideo_SwSurfaceState);
-        zRndr::SetFrameBufferRegion(g_zVideo_SwSurfaceState.pixels, 0, 0, g_zVideo_SwSurfaceState.pitch);
-        FxSetSurfaceState(
-            g_zVideo_SwSurfaceState.pixels,
-            g_zVideo_SwSurfaceState.width,
-            g_zVideo_SwSurfaceState.height,
-            g_zVideo_SwSurfaceState.pitch
-        );
-        FxPass3QueuePrimitive(
-            g_zVideo_SwSurfaceState.pixels,
-            g_zVideo_SwSurfaceState.width,
-            g_zVideo_SwSurfaceState.height,
-            g_zVideo_SwSurfaceState.pitch
-        );
-        return 0;
+    SetFrameBufferRegion(g_zVideo_PrimarySurfaceState.pixels, 0, 0, g_zVideo_PrimarySurfaceState.pitch);
+    FxSetSurfaceState(
+        g_zVideo_PrimarySurfaceState.pixels,
+        g_zVideo_PrimarySurfaceState.width,
+        g_zVideo_PrimarySurfaceState.height,
+        g_zVideo_PrimarySurfaceState.pitch
+    );
+    FxPass3QueuePrimitive(
+        g_zVideo_PrimarySurfaceState.pixels,
+        g_zVideo_PrimarySurfaceState.width,
+        g_zVideo_PrimarySurfaceState.height,
+        g_zVideo_PrimarySurfaceState.pitch
+    );
+
+    if (g_zVideo_UseHalfResBackbuffer != 0) {
+        g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockswsurfacestate
-     * @recoil-artifact defines .text recoil:function:0x4a67d0: zVideo::DispatchUnlockSwSurfaceState.
-     * @recoil-match byte
-     *
-     * Purpose: Dispatches the configured surface unlock provider for the software surface state.
-     */
-    int __cdecl DispatchUnlockSwSurfaceState()
-    {
-        return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_SwSurfaceState);
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockprimarysurfacestate
+ * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::DispatchUnlockPrimarySurfaceState.
+ * @recoil-match byte
+ *
+ * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
+ */
+int __cdecl DispatchUnlockPrimarySurfaceState(void)
+{
+    return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-lockdisplaymodesurfacestate
+ * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::DispatchLockDisplayModeSurfaceState.
+ * @recoil-match byte
+ *
+ * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
+ */
+int __cdecl DispatchLockDisplayModeSurfaceState(void)
+{
+    return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockdisplaymodesurfacestate
+ * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::DispatchUnlockDisplayModeSurfaceState.
+ * @recoil-match byte
+ *
+ * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
+ */
+int __cdecl DispatchUnlockDisplayModeSurfaceState(void)
+{
+    return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-adjustsurfacesifenabled
+ * @recoil-artifact defines .text recoil:function:0x4a6900: zVideo::PresentOrAdjustSurfacesIfEnabled.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: forward enabled surface-present requests through the renderer dispatch and tick the video frame counter.
+ */
+int __fastcall
+AdjustSurfacesIfEnabled(zVidRect32* srcRect, zVidRect32* dstRect, int waitForPresent, int blitPrimaryToSwFirst)
+{
+    int result = g_zVideo_AdjustSurfacesDisableGate;
+    if (result <= 0) {
+        result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent, blitPrimaryToSwFirst);
+        ++g_zVideo_FrameTick;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getswsurfacelockedflag
-     * @recoil-artifact defines .text recoil:function:0x4a67e0: zVideo::GetSwSurfaceLockedFlag.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns whether the software surface state currently holds a lock.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_SwSurfaceState.locked at 0x632214.
-     */
-    int __cdecl GetSwSurfaceLockedFlag()
-    {
-        return g_zVideo_SwSurfaceState.locked;
+    return result;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-loadpalettefileandapplybrightness
+ * @recoil-artifact defines .text recoil:function:0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: provide the recovered zVideo::LoadPaletteFileAndApplyBrightness behavior.
+ */
+int __fastcall LoadPaletteFileAndApplyBrightness(const char* palettePath)
+{
+    FILE* paletteStream;
+    if (palettePath != 0) {
+        strcpy(g_zVideo_PalettePathBuffer, palettePath);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepixels
-     * @recoil-artifact defines .text recoil:function:0x4a67f0: zVideo::GetPrimarySurfacePixels.
-     * @recoil-match byte
-     *
-     * Purpose: Returns the current primary surface pixel pointer from the recovered surface-state global.
-     */
-    void* __cdecl GetPrimarySurfacePixels()
-    {
-        return g_zVideo_PrimarySurfaceState.pixels;
+    paletteStream = fopen(g_zVideo_PalettePathBuffer, "rb");
+    if (paletteStream == 0) {
+        fprintf(stderr, g_zVideo_PaletteOpenFailedFormat, g_zVideo_PalettePathBuffer);
+        return 0x800;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacewidth
-     * @recoil-artifact defines .text recoil:function:0x4a6800: zVideo::GetPrimarySurfaceWidth.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
-     * Purpose: return the current primary surface width from the recovered surface-state global.
-     */
-    int __cdecl GetPrimarySurfaceWidth()
-    {
-        return g_zVideo_PrimarySurfaceState.width;
+    fread(g_zVideo_PaletteFileEntries, 3, 256, paletteStream);
+    fclose(paletteStream);
+    return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-applybrightnesstopaletteentries
+ * @recoil-artifact defines .text recoil:function:0x4c8070: zVideo::ApplyBrightnessToPaletteEntries.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
+ * Purpose: adjust system-palette brightness, clamp RGB channels, and submit it.
+ */
+int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY* paletteEntries)
+{
+    PALETTEENTRY adjustedEntries[256];
+    int brightnessDelta;
+    if (g_zVideo_IsInitialized == 0) {
+        return 0x5a560000;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfaceheight
-     * @recoil-artifact defines .text recoil:function:0x4a6810: zVideo::GetPrimarySurfaceHeight.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached primary surface height.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.height at
-     * 0x632224.
-     */
-    int __cdecl GetPrimarySurfaceHeight()
-    {
-        return g_zVideo_PrimarySurfaceState.height;
+    if (paletteEntries != 0) {
+        memcpy(g_zVideo_SystemPaletteEntries, paletteEntries, sizeof(g_zVideo_SystemPaletteEntries));
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-getprimarysurfacepitch
-     * @recoil-artifact defines .text recoil:function:0x4a6820: zVideo::GetPrimarySurfacePitch.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: returns the cached primary surface pitch.
-     *
-     * Evidence: BN is a leaf load from g_zVideo_PrimarySurfaceState.pitch at
-     * 0x632228.
-     */
-    int __cdecl GetPrimarySurfacePitch()
-    {
-        return g_zVideo_PrimarySurfaceState.pitch;
-    }
+    brightnessDelta = ((int)((unsigned char)g_zVideo_PaletteBrightnessLevel) << 3) - 32;
+    memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-callclearprimarysurfaceandzbuffer
-     * @recoil-artifact defines .text recoil:function:0x4a6830: zVideo::CallClearPrimarySurfaceAndZBuffer.
-     * @recoil-match byte
-     *
-     * Purpose: Tail-dispatches the installed primary clear callback with the
-     * primary surface state.
-     */
-    void __fastcall CallClearPrimarySurfaceAndZBuffer(zVidRect32 * rect)
-    {
-        g_zVideo_pfnClearStateSurfaceAndZBuffer(rect, &g_zVideo_PrimarySurfaceState);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-runpostprocessonprimarybuffer
-     * @recoil-artifact defines .text recoil:function:0x4a6840: zVideo::RunPostprocessOnPrimaryBuffer.
-     * @recoil-match byte
-     *
-     * Purpose: Runs the pass-3 postprocess pipeline against the primary surface.
-     */
-    int __cdecl RunPostprocessOnPrimaryBuffer()
-    {
-        if (g_zVideo_RendererType != 0 || g_zVideo_UseHalfResBackbuffer != 0) {
-            g_zVideo_pfnLockSurfaceState(&g_zVideo_PrimarySurfaceState);
-        }
-
-        zRndr::SetFrameBufferRegion(g_zVideo_PrimarySurfaceState.pixels, 0, 0, g_zVideo_PrimarySurfaceState.pitch);
-        FxSetSurfaceState(
-            g_zVideo_PrimarySurfaceState.pixels,
-            g_zVideo_PrimarySurfaceState.width,
-            g_zVideo_PrimarySurfaceState.height,
-            g_zVideo_PrimarySurfaceState.pitch
-        );
-        FxPass3QueuePrimitive(
-            g_zVideo_PrimarySurfaceState.pixels,
-            g_zVideo_PrimarySurfaceState.width,
-            g_zVideo_PrimarySurfaceState.height,
-            g_zVideo_PrimarySurfaceState.pitch
-        );
-
-        if (g_zVideo_UseHalfResBackbuffer != 0) {
-            g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
-        }
-
-        return 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockprimarysurfacestate
-     * @recoil-artifact defines .text recoil:function:0x4a68d0: zVideo::DispatchUnlockPrimarySurfaceState.
-     * @recoil-match byte
-     *
-     * Purpose: Dispatches the configured surface unlock provider for the primary surface state.
-     */
-    int __cdecl DispatchUnlockPrimarySurfaceState()
-    {
-        return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_PrimarySurfaceState);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-lockdisplaymodesurfacestate
-     * @recoil-artifact defines .text recoil:function:0x4a68e0: zVideo::DispatchLockDisplayModeSurfaceState.
-     * @recoil-match byte
-     *
-     * Purpose: Dispatches the configured surface lock provider for the display-mode surface state.
-     */
-    int __cdecl DispatchLockDisplayModeSurfaceState()
-    {
-        return g_zVideo_pfnLockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-dispatch-unlockdisplaymodesurfacestate
-     * @recoil-artifact defines .text recoil:function:0x4a68f0: zVideo::DispatchUnlockDisplayModeSurfaceState.
-     * @recoil-match byte
-     *
-     * Purpose: Dispatches the configured surface unlock provider for the display-mode surface state.
-     */
-    int __cdecl DispatchUnlockDisplayModeSurfaceState()
-    {
-        return g_zVideo_pfnUnlockSurfaceState(&g_zVideo_DisplayModeSurfaceState);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-adjustsurfacesifenabled
-     * @recoil-artifact defines .text recoil:function:0x4a6900: zVideo::PresentOrAdjustSurfacesIfEnabled.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Purpose: forward enabled surface-present requests through the renderer dispatch and tick the video frame counter.
-     */
-    int __fastcall
-    AdjustSurfacesIfEnabled(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int blitPrimaryToSwFirst)
-    {
-        int result = g_zVideo_AdjustSurfacesDisableGate;
-        if (result <= 0) {
-            result = g_zVideo_pfnAdjustSurfaces(srcRect, dstRect, waitForPresent, blitPrimaryToSwFirst);
-            ++g_zVideo_FrameTick;
-        }
-
-        return result;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-loadpalettefileandapplybrightness
-     * @recoil-artifact defines .text recoil:function:0x4c7fd0: zVideo::LoadPaletteFileAndApplyBrightness.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Purpose: provide the recovered zVideo::LoadPaletteFileAndApplyBrightness behavior.
-     */
-    int __fastcall LoadPaletteFileAndApplyBrightness(const char* palettePath)
-    {
-        if (palettePath != 0) {
-            strcpy(g_zVideo_PalettePathBuffer, palettePath);
-        }
-
-        FILE* paletteStream = fopen(g_zVideo_PalettePathBuffer, "rb");
-        if (paletteStream == 0) {
-            fprintf(stderr, g_zVideo_PaletteOpenFailedFormat, g_zVideo_PalettePathBuffer);
-            return 0x800;
-        }
-
-        fread(g_zVideo_PaletteFileEntries, 3, 256, paletteStream);
-        fclose(paletteStream);
-        return ApplyBrightnessToPaletteEntries(g_zVideo_PaletteFileEntries);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-applybrightnesstopaletteentries
-     * @recoil-artifact defines .text recoil:function:0x4c8070: zVideo::ApplyBrightnessToPaletteEntries.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
-     * Purpose: adjust system-palette brightness, clamp RGB channels, and submit it.
-     */
-    int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY * paletteEntries)
-    {
-        if (g_zVideo_IsInitialized == 0) {
-            return 0x5a560000;
-        }
-
-        if (paletteEntries != 0) {
-            memcpy(g_zVideo_SystemPaletteEntries, paletteEntries, sizeof(g_zVideo_SystemPaletteEntries));
-        }
-
-        PALETTEENTRY adjustedEntries[256];
-        const int brightnessDelta = ((int)((unsigned char)g_zVideo_PaletteBrightnessLevel) << 3) - 32;
-        memcpy(adjustedEntries, g_zVideo_SystemPaletteEntries, sizeof(adjustedEntries));
-
-        if (brightnessDelta > 0) {
-            PALETTEENTRY* entry = adjustedEntries;
-            for (int index = 0; index < 256; ++index, ++entry) {
-                if (entry->peRed + brightnessDelta < 255) {
-                    entry->peRed += (BYTE)brightnessDelta;
-                } else {
-                    entry->peRed = 255;
-                }
-                if (entry->peGreen + brightnessDelta < 255) {
-                    entry->peGreen += (BYTE)brightnessDelta;
-                } else {
-                    entry->peGreen = 255;
-                }
-                if (entry->peBlue + brightnessDelta < 255) {
-                    entry->peBlue += (BYTE)brightnessDelta;
-                } else {
-                    entry->peBlue = 255;
-                }
+    if (brightnessDelta > 0) {
+        PALETTEENTRY* entry = adjustedEntries;
+        int index;
+        for (index = 0; index < 256; ++index, ++entry) {
+            if (entry->peRed + brightnessDelta < 255) {
+                entry->peRed += (BYTE)brightnessDelta;
+            } else {
+                entry->peRed = 255;
             }
-        } else if (brightnessDelta < 0) {
-            PALETTEENTRY* entry = adjustedEntries;
-            for (int index = 0; index < 256; ++index, ++entry) {
-                if (entry->peRed + brightnessDelta > 0) {
-                    entry->peRed += (BYTE)brightnessDelta;
-                } else {
-                    entry->peRed = 0;
-                }
-                if (entry->peGreen + brightnessDelta > 0) {
-                    entry->peGreen += (BYTE)brightnessDelta;
-                } else {
-                    entry->peGreen = 0;
-                }
-                if (entry->peBlue + brightnessDelta > 0) {
-                    entry->peBlue += (BYTE)brightnessDelta;
-                } else {
-                    entry->peBlue = 0;
-                }
+            if (entry->peGreen + brightnessDelta < 255) {
+                entry->peGreen += (BYTE)brightnessDelta;
+            } else {
+                entry->peGreen = 255;
+            }
+            if (entry->peBlue + brightnessDelta < 255) {
+                entry->peBlue += (BYTE)brightnessDelta;
+            } else {
+                entry->peBlue = 255;
             }
         }
-
-        return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
+    } else if (brightnessDelta < 0) {
+        PALETTEENTRY* entry = adjustedEntries;
+        int index;
+        for (index = 0; index < 256; ++index, ++entry) {
+            if (entry->peRed + brightnessDelta > 0) {
+                entry->peRed += (BYTE)brightnessDelta;
+            } else {
+                entry->peRed = 0;
+            }
+            if (entry->peGreen + brightnessDelta > 0) {
+                entry->peGreen += (BYTE)brightnessDelta;
+            } else {
+                entry->peGreen = 0;
+            }
+            if (entry->peBlue + brightnessDelta > 0) {
+                entry->peBlue += (BYTE)brightnessDelta;
+            } else {
+                entry->peBlue = 0;
+            }
+        }
     }
 
-} // namespace zVideo
+    return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
+}
 
-namespace zVideo
+/**
+ * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
+ * Purpose: return the zVideo success status for dispatch slots that need no
+ * backend-specific action.
+ *
+ * Evidence: BN is a leaf zero-return function with no callees or globals.
+ */
+int __cdecl ReturnSuccessStub(void)
 {
+    return 0;
+}
 
-    /**
-     * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
-     * Purpose: return the zVideo success status for dispatch slots that need no
-     * backend-specific action.
-     *
-     * Evidence: BN is a leaf zero-return function with no callees or globals.
-     */
-    int __cdecl ReturnSuccessStub()
-    {
-        return 0;
-    }
-
-    /**
-     * Purpose: accept the scene's world node (or 0 on reset) and report success;
-     * the shipped renderer needs no per-world binding. Retail folds this body with
-     * ReturnSuccessStub at 0x4a75e0; callers pass the node in ECX.
-     */
-    extern "C" int __fastcall BindWorldNode(CZNodePartial* /*worldNode*/)
-    {
-        return 0;
-    }
-
-} // namespace zVideo
-
-namespace zVideo { } // namespace zVideo
-
-namespace zVid { } // namespace zVid
-
-namespace zVideo_FxSurface { } // namespace zVideo_FxSurface
-
-namespace zVid_Image
+/**
+ * Purpose: accept the scene's world node (or 0 on reset) and report success;
+ * the shipped renderer needs no per-world binding. Retail folds this body with
+ * ReturnSuccessStub at 0x4a75e0; callers pass the node in ECX.
+ */
+int __fastcall BindWorldNode(CZNodePartial* worldNode)
 {
+    return 0;
+}
 
-    namespace
-    {
-        struct zVidImageFileHeader {
-            unsigned char formatCode;
-            unsigned char unknown_01[3];
-            short width;
-            short height;
-            unsigned char headerFlags;
-            unsigned char unknown_09[3];
-            short textureAddressFlagsPacked;
-            short paletteMeta;
-        };
+typedef struct zVidImageFileHeader {
+    unsigned char formatCode;
+    unsigned char unknown_01[3];
+    short width;
+    short height;
+    unsigned char headerFlags;
+    unsigned char unknown_09[3];
+    short textureAddressFlagsPacked;
+    short paletteMeta;
+} zVidImageFileHeader;
 
-        RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
-    } // namespace
-
-} // namespace zVid_Image
-
-namespace zVid_PaletteRemap { } // namespace zVid_PaletteRemap
-
-namespace zVid_TexturePack { } // namespace zVid_TexturePack
-
-namespace zVid_TexturePack { } // namespace zVid_TexturePack
-
-namespace zVideoD3D { } // namespace zVideoD3D
+RECOIL_STATIC_ASSERT(sizeof(zVidImageFileHeader) == 0x10);
 
 /*
  * The retail zvid_ddd3d.c contributions compile from zvid_ddd3d.c rather than
  * this translation unit.
  */
 
-namespace zVideo_dd
+/* The remaining DirectDraw backend contributions compile from zvid_dd.c. */
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-preparewindowformode
+ * @recoil-artifact defines .text recoil:function:0x4a6930: zVideo_dd::PrepareWindowForMode.
+ * @recoil-match byte
+ *
+ * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
+ * Purpose: switch the main window to fullscreen DirectDraw style and snapshot
+ * the system palette when the desktop is palettized.
+ *
+ * Evidence: BN calls only Win32/GDI providers, writes no local tables, reads
+ * g_zVideo_hWnd, and snapshots 256 PALETTEENTRY records into
+ * g_zVideo_SystemPaletteEntries before returning zero.
+ */
+int __cdecl PrepareWindowForMode(void)
 {
-    /* The remaining DirectDraw backend contributions compile from zvid_dd.c. */
+    SetMenu(g_zVideo_hWnd, 0);
+    SetWindowLongA(g_zVideo_hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+    SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, (LONG)(0x82000000u));
+    UpdateWindow(g_zVideo_hWnd);
+    SetFocus(g_zVideo_hWnd);
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zvideo-zvid-main-preparewindowformode
-     * @recoil-artifact defines .text recoil:function:0x4a6930: zVideo_dd::PrepareWindowForMode.
-     * @recoil-match byte
-     *
-     * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zvid_dd.c.
-     * Purpose: switch the main window to fullscreen DirectDraw style and snapshot
-     * the system palette when the desktop is palettized.
-     *
-     * Evidence: BN calls only Win32/GDI providers, writes no local tables, reads
-     * g_zVideo_hWnd, and snapshots 256 PALETTEENTRY records into
-     * g_zVideo_SystemPaletteEntries before returning zero.
-     */
-    int __cdecl PrepareWindowForMode()
-    {
-        SetMenu(g_zVideo_hWnd, 0);
-        SetWindowLongA(g_zVideo_hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
-        SetWindowLongA(g_zVideo_hWnd, GWL_STYLE, (LONG)(0x82000000u));
-        UpdateWindow(g_zVideo_hWnd);
-        SetFocus(g_zVideo_hWnd);
-
-        if (g_zVideo_hWnd != 0) {
-            HDC screenDc = GetDC(0);
-            if ((GetDeviceCaps(screenDc, RASTERCAPS) & RC_PALETTE) != 0) {
-                GetSystemPaletteEntries(screenDc, 0, 0x100, g_zVideo_SystemPaletteEntries);
-            }
-            ReleaseDC(0, screenDc);
+    if (g_zVideo_hWnd != 0) {
+        HDC screenDc = GetDC(0);
+        if ((GetDeviceCaps(screenDc, RASTERCAPS) & RC_PALETTE) != 0) {
+            GetSystemPaletteEntries(screenDc, 0, 0x100, g_zVideo_SystemPaletteEntries);
         }
-
-        return 0;
+        ReleaseDC(0, screenDc);
     }
 
-} // namespace zVideo_dd
+    return 0;
+}
+
 /*
  * The retail zvid_init.c contributions compile from zvid_init.c rather than
  * this translation unit.
  */
-
-#include "recoil/Mfc42Abi.h"
 
 RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, rendererType) == 0x0);
 RECOIL_STATIC_ASSERT(offsetof(zVideo_GlobalState, fullscreenOption) == 0x4);

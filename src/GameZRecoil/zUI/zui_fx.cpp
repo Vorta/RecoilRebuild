@@ -82,6 +82,17 @@ void zVideoFxPass3Element::Draw()
 }
 
 /**
+ * Original-source helper evidence: no standalone retail address is assigned to
+ * the base virtual implementation in this owner. Draw at 0x4bdb60 dispatches
+ * the pass callback virtually, and the address-backed overrides are
+ * zVideoFxPass3RootElement::ApplyPass3 at 0x4bdbc0 and
+ * zVideoFxPass3Slot::ApplyPass3 at 0x4bdc40.
+ * Purpose: preserve the empty base pass-3 callback for element types that do
+ * not override the pass operation.
+ */
+void zVideoFxPass3Element::ApplyPass3() { }
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3rootelement-applypass3
  * @recoil-artifact defines .text recoil:function:0x4bdbc0: zVideoFxPass3RootElement::ApplyPass3.
  * @recoil-match byte
@@ -895,6 +906,22 @@ void zVideoFxPass3Config::QueuePrimitiveRaw(void* primitive, int width, int heig
  */
 zVideoFxPass3Config g_zVideo_FxPass3ConfigLocal;
 RECOIL_STATIC_ASSERT(sizeof(g_zVideo_FxPass3ConfigLocal) == 0x1f0);
+#if defined(_M_IX86) || defined(__i386__)
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3RootElement) == 0x48);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, packedColor16) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3RootElement, alpha) == 0x40);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, rootElement) == 0x28);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfacePixels) == 0x18);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfaceWidth) == 0x1c);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfaceHeight) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, surfacePitchBytes) == 0x24);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, currentRadius) == 0x38);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Slot, sinPhase) == 0x48);
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Slot) == 0x4c);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slots) == 0x70);
+RECOIL_STATIC_ASSERT(offsetof(zVideoFxPass3Config, slotWriteIndex) == 0x1ec);
+RECOIL_STATIC_ASSERT(sizeof(zVideoFxPass3Config) == 0x1f0);
+#endif
 
 namespace zVideo {
 

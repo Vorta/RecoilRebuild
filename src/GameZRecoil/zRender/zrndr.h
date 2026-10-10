@@ -457,7 +457,7 @@ void __stdcall SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrect
 void __fastcall SetPerspectiveAdaptiveSpanParams(int minSpan, int maxSpan, float slope);
 extern "C" void* __fastcall
 GetActiveRegionState(int* outWidth, int* outHeight, int* outBitsPerPixel, int* outPitchBytes) throw();
-void __fastcall
+extern "C" void __fastcall
 SetFrameBufferRegion(void* pixels, zOpt_ViewRectSection* activeRegionRect, int bitsPerPixel, int pitchBytes);
 void __fastcall SetActiveRegionSizeFromRect(HudUiRect* rect);
 void __fastcall SetVideoStrideMirrors(int stride);
