@@ -241,7 +241,7 @@ extern "C" void __fastcall zSndTick(int skipA3dCommit)
     }
 
     if ((unsigned int)(markerIndex) >= (unsigned int)(g_zSndLastVoiceStopMarkerIndex)) {
-        g_zSndLastVoiceHandle->StopIfActive();
+        zSndPlayHandleStopIfActive(g_zSndLastVoiceHandle);
         g_zSndLastVoiceStopMarkerIndex = 999;
         return;
     }
@@ -419,22 +419,22 @@ zSndPlayHandle* zSndSample::AcquireVoice()
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3dsimple
- * @recoil-artifact defines .text recoil:function:0x49f960: zSndSample::PlayA3DSimple.
+ * @recoil-artifact defines .text recoil:function:0x49f960: zSndSamplePlayA3DSimple.
  * @recoil-match byte
  *
  * Purpose: play a non-positional A3D-capable sample or queue a stream group.
  */
-zSndPlayHandle* zSndSample::PlayA3DSimple(float gainScale)
+extern "C" zSndPlayHandle* __fastcall zSndSamplePlayA3DSimple(zSndSample* sample, float gainScale)
 {
-    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
+    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || sample == 0) {
         return 0;
     }
 
-    if (createGuard == 1) {
-        return ((zSndGroup*)(this))->QueueStreamRequestSimple(gainScale);
+    if (sample->createGuard == 1) {
+        return ((zSndGroup*)(sample))->QueueStreamRequestSimple(gainScale);
     }
 
-    return PlayA3D(gainScale, 0, 0);
+    return zSndSamplePlayA3D(sample, gainScale, 0, 0);
 }
 
 /**
@@ -542,7 +542,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnA3D(zVec3* worldPos, float gainScal
 
     if (worldPos != 0) {
         ((zA3dProviderSource*)(result->backendBuffer))->SetRenderMode(0);
-        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
+        if (zSndPlayHandleUpdate3DDispatch(result, worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
             return 0;
         }
     } else {
@@ -617,7 +617,7 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
 
     result->gainScaled = attenuation;
     if (worldPos != 0) {
-        if (result->Update3DDispatch(worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
+        if (zSndPlayHandleUpdate3DDispatch(result, worldPos, velocity, 0) == 0 && (replayFields.flags & 0x01) == 0) {
             return 0;
         }
     } else {
@@ -651,28 +651,29 @@ zSndPlayHandle* __fastcall zSndSample::PlayOnDirectSound(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsample-playa3d
- * @recoil-artifact defines .text recoil:function:0x49fcf0: zSndSample::PlayA3D.
+ * @recoil-artifact defines .text recoil:function:0x49fcf0: zSndSamplePlayA3D.
  * @recoil-match byte
  *
  * Purpose: play a 3D-capable sample through a queued group or active backend.
  */
-zSndPlayHandle* __fastcall zSndSample::PlayA3D(float gainScale, zVec3* worldPos, zVec3* velocity)
+extern "C" zSndPlayHandle* __fastcall
+zSndSamplePlayA3D(zSndSample* sample, float gainScale, zVec3* worldPos, zVec3* velocity)
 {
-    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || this == 0) {
+    if (g_zSnd_IsInitialized == 0 || g_zSnd_PreInitialized == 0 || sample == 0) {
         return 0;
     }
 
-    if (createGuard == 1) {
-        return ((zSndGroup*)(this))->QueueStreamRequestWithWorldPos(worldPos, gainScale, velocity);
+    if (sample->createGuard == 1) {
+        return ((zSndGroup*)(sample))->QueueStreamRequestWithWorldPos(worldPos, gainScale, velocity);
     }
 
-    if ((replayFields.flags & 0x08) == 0) {
+    if ((sample->replayFields.flags & 0x08) == 0) {
         return 0;
     }
 
-    markerBaseTime = 0.0f;
-    return PlayOnActiveBackend(
-        gainScale * (replayFields.gain * *(float*)(g_zSnd_GlobalVolumeScalePtr)),
+    sample->markerBaseTime = 0.0f;
+    return sample->PlayOnActiveBackend(
+        gainScale * (sample->replayFields.gain * *(float*)(g_zSnd_GlobalVolumeScalePtr)),
         worldPos,
         velocity,
         0
@@ -709,15 +710,14 @@ zSndPlayHandle* __fastcall zSndSample::PlayDirectSound(int variantIndex, float g
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndplayhandle-stopifactive
- * @recoil-artifact defines .text recoil:function:0x49fda0: zSndPlayHandle::StopIfActive.
+ * @recoil-artifact defines .text recoil:function:0x49fda0: zSndPlayHandleStopIfActive.
  * @recoil-match byte
  *
  * Purpose: stop the active provider buffer/source for this play handle and
  * clear any matching last-voice marker state.
  */
-int zSndPlayHandle::StopIfActive()
+extern "C" int __fastcall zSndPlayHandleStopIfActive(zSndPlayHandle* playHandle)
 {
-    zSndPlayHandle* playHandle = this;
     int status;
     int error;
     zA3dProviderSource* source;
@@ -1099,7 +1099,7 @@ int __fastcall zSnd::StopSnapshotVoicesIfPlaying(zSndPlayHandleSnapshotList* sna
             LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(it->playHandle->backendBuffer);
             buffer->GetStatus((LPDWORD)&status);
             if ((status & result) != 0) {
-                it->playHandle->StopIfActive();
+                zSndPlayHandleStopIfActive(it->playHandle);
             }
             break;
         }
@@ -1107,7 +1107,7 @@ int __fastcall zSnd::StopSnapshotVoicesIfPlaying(zSndPlayHandleSnapshotList* sna
             zA3dProviderSource* const source = (zA3dProviderSource*)(it->playHandle->backendBuffer);
             source->GetStatus((LPDWORD)&status);
             if ((status & result) != 0) {
-                it->playHandle->StopIfActive();
+                zSndPlayHandleStopIfActive(it->playHandle);
             }
             break;
         }

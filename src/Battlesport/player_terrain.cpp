@@ -522,7 +522,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-checkprobesamplemaskoverlap
  * @recoil-artifact defines .text recoil:function:0x42cbd0: Player::CheckProbeSampleMaskOverlap.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Returns the shared mask bits of three environment probe samples.
  */

@@ -2167,7 +2167,7 @@ void HudUiZrdWidget::ShowPreview()
     }
 
     if (rolloverSound != 0) {
-        rolloverPlayHandle = rolloverSound->PlayA3DSimple(rolloverSoundScale);
+        rolloverPlayHandle = zSndSamplePlayA3DSimple(rolloverSound, rolloverSoundScale);
     }
 
     if (rolloverLabelPanels.begin() != 0) {
@@ -2272,12 +2272,12 @@ void HudUiZrdWidget::OnActivate()
     }
 
     if (rolloverPlayHandle != 0) {
-        rolloverPlayHandle->StopIfActive();
+        zSndPlayHandleStopIfActive(rolloverPlayHandle);
         rolloverPlayHandle = 0;
     }
 
     if (activateSound != 0) {
-        activatePlayHandle = activateSound->PlayA3DSimple(activateSoundScale);
+        activatePlayHandle = zSndSamplePlayA3DSimple(activateSound, activateSoundScale);
     }
 
     HudUiSetPanelVectorVisible(rolloverLabelPanels, 0);
@@ -2491,7 +2491,7 @@ void HudUiCheckToggleWidget::ShowPreview()
     }
 
     if (rolloverSound != 0) {
-        rolloverPlayHandle = rolloverSound->PlayA3DSimple(rolloverSoundScale);
+        rolloverPlayHandle = zSndSamplePlayA3DSimple(rolloverSound, rolloverSoundScale);
     }
 
     HudUiZrdWidget::ShowPreview();
@@ -2511,7 +2511,7 @@ void HudUiCheckToggleWidget::HidePreview()
     }
 
     if (rolloverPlayHandle != 0) {
-        rolloverPlayHandle->StopIfActive();
+        zSndPlayHandleStopIfActive(rolloverPlayHandle);
         rolloverPlayHandle = 0;
     }
 
@@ -3921,7 +3921,7 @@ void HudUiBackground::SetEnabled(int enabled)
             ++entryIndex14) {
             HudUiBackgroundSoundEntry& entry = backgroundSounds[entryIndex14];
             if (entry.sample != 0) {
-                entry.playHandle = entry.sample->PlayA3DSimple(entry.volume);
+                entry.playHandle = zSndSamplePlayA3DSimple(entry.sample, entry.volume);
             }
         }
 
@@ -3932,7 +3932,7 @@ void HudUiBackground::SetEnabled(int enabled)
             ++entryIndex15) {
             HudUiBackgroundSoundEntry& entry = backgroundSounds[entryIndex15];
             if (entry.playHandle != 0) {
-                entry.playHandle->StopIfActive();
+                zSndPlayHandleStopIfActive(entry.playHandle);
             }
 
             entry.playHandle = 0;

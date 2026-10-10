@@ -577,9 +577,9 @@ namespace zEffect
             worldPosition.x += event->offsetX;
             worldPosition.y += event->offsetY;
             worldPosition.z += event->offsetZ;
-            self->sampleRefList[event->refIndex].sample->PlayA3D(1.0f, &worldPosition, 0);
+            zSndSamplePlayA3D(self->sampleRefList[event->refIndex].sample, 1.0f, &worldPosition, 0);
         } else {
-            self->sampleRefList[event->refIndex].sample->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(self->sampleRefList[event->refIndex].sample, 1.0f);
         }
         return 2;
     }
@@ -1526,7 +1526,7 @@ namespace zEffect
                     = animEvent->lookupScale < 0.0f ? animEvent->nodeAlphaEnd * 10.0f : animEvent->lookupScale;
                 const float gain = speed >= threshold ? 1.0f : speed / threshold;
                 zSndSample* const sample = self->sampleRefList[animEvent->sampleRefIndex].sample;
-                sample->PlayA3D(gain, &worldPos, 0);
+                zSndSamplePlayA3D(sample, gain, &worldPos, 0);
             }
 
             animEvent->rotationOrCameraPosEnd.z += animEvent->rotationOrCameraPosRate.z * frameStepSec;
@@ -2980,7 +2980,7 @@ namespace zEffect
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
      * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
-     * @recoil-match source
+     * @recoil-match byte
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: evaluate a conditional event chain and skip to the matching branch
@@ -3518,7 +3518,7 @@ namespace zEffect_Anim
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequenceevents
      * @recoil-artifact defines .text recoil:function:0x45cc00: zEffect_Anim::RunSequenceEvents.
-     * @recoil-match byte
+     * @recoil-match source
      *
      * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
      * Purpose: advance a runtime event stream by trigger timing and dispatch

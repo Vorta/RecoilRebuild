@@ -57,9 +57,9 @@ zImage_TexDirEntryPartial* __fastcall FindTexDirEntryByName(const char* baseName
 extern "C" zImage_TexDirEntryPartial* __cdecl GetDefaultImageRefPtr();
 int __cdecl InitTextureDirectory();
 zImage_TexDirEntryPartial* __fastcall TexDirFindOrAppendByPath(char* path);
-int __cdecl TexDirLoadPendingEntries();
-int __fastcall WriteTextureDirectory(void* stream);
-int __fastcall ReadTextureDirectory(int entryCount, void* stream);
+extern "C" int __cdecl TexDirLoadPendingEntries();
+extern "C" int __fastcall WriteTextureDirectory(void* stream);
+extern "C" int __fastcall ReadTextureDirectory(int entryCount, void* stream);
 extern "C" void __fastcall InvalidateLoadedVariantChain(zImage_TexDirEntryPartial* texDirHead);
 int __cdecl ShutdownTextureDirectoryRuntime();
 int __cdecl Shutdown();

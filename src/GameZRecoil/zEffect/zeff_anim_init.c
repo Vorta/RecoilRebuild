@@ -1240,7 +1240,7 @@ namespace zEffectAnim
         }
 
         if (self->runtimeNode != 0) {
-            CZObject3D::DeleteNode(self->runtimeNode);
+            CZObject3DDeleteNode(self->runtimeNode);
         }
 
         const unsigned char activationMode = self->activationMode;

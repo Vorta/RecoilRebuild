@@ -1352,7 +1352,7 @@ void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState)
     if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable && g_PlayerStatusMeterRatio < 0.25f) {
         HudLowMeterLoopSound::SetLoopActive(0);
         if (g_Time_AccumulatedTimeSec > g_Hud_LowMeterNextBeepTime) {
-            g_Hud_LowMeterBeepSample->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(g_Hud_LowMeterBeepSample, 1.0f);
             const float beepInterval = g_Hud_LowMeterBeepInterval;
             g_Hud_LowMeterNextBeepTime = beepInterval + g_Time_AccumulatedTimeSec;
         }
@@ -1411,7 +1411,7 @@ void __fastcall SetLoopActive(int enabled)
     const int wasActive = g_Hud_LowMeterLoopActive;
     if (enabled != 0) {
         if (wasActive == 0) {
-            g_Hud_LowMeterLoopSample->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(g_Hud_LowMeterLoopSample, 1.0f);
             g_Hud_LowMeterLoopActive = 1;
         }
         return;
@@ -2349,7 +2349,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */

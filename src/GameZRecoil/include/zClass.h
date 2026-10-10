@@ -780,131 +780,131 @@ inline const float* zClassNodeViewSphereRadius(const CZNodePartial* node)
 {
     return &node->cachedSphereCenter[3];
 }
-
+extern "C" {
 namespace CZBBox {
-void __fastcall ExpandToCorners(const zBBox3f* bbox, zBBoxCorners* outCorners);
-float* __fastcall MinMaxToBoundingSphere(const zBBox3f* bbox, zVec3* outCenter, float* outRadius);
-void __fastcall CornersToBoundingSphere(zBBoxCorners* corners, zVec3* outCenter, float* outRadius);
+    void __fastcall ExpandToCorners(const zBBox3f* bbox, zBBoxCorners* outCorners);
+    float* __fastcall MinMaxToBoundingSphere(const zBBox3f* bbox, zVec3* outCenter, float* outRadius);
+    void __fastcall CornersToBoundingSphere(zBBoxCorners* corners, zVec3* outCenter, float* outRadius);
 } // namespace CZBBox
 
 namespace zTag4 {
-extern "C" void __fastcall Clear(zTag4Partial* tag);
+    extern "C" void __fastcall Clear(zTag4Partial* tag);
 }
 
 namespace CZWindow {
-CZNodePartial* __cdecl gwWindowNew();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall gwWindowSetResolution(CZNodePartial* node, int width, int height);
-extern "C" int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
-int __fastcall gwWindowSetSize(CZNodePartial* node, int width, int height);
-extern "C" int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);
-int __fastcall gwWindowSetBuffer(CZNodePartial* node, int bufferIndex);
-int __fastcall gwWindowSetClearPolygon(CZNodePartial* node, int enabled);
-int __fastcall gwWindowAddClearPolygonVertex(CZNodePartial* node, const zVec3* point);
-int __fastcall gwWindowCloseClearPolygon(CZNodePartial* node);
+    CZNodePartial* __cdecl gwWindowNew();
+    int __fastcall gwWindowSetResolution(CZNodePartial* node, int width, int height);
+    extern "C" int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
+    int __fastcall gwWindowSetSize(CZNodePartial* node, int width, int height);
+    extern "C" int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);
+    int __fastcall gwWindowSetBuffer(CZNodePartial* node, int bufferIndex);
+    int __fastcall gwWindowSetClearPolygon(CZNodePartial* node, int enabled);
+    int __fastcall gwWindowAddClearPolygonVertex(CZNodePartial* node, const zVec3* point);
+    int __fastcall gwWindowCloseClearPolygon(CZNodePartial* node);
 } // namespace CZWindow
+int __fastcall CZWindowDeleteNode(CZNodePartial* node);
 
 namespace CZDisplay {
-CZNodePartial* __cdecl gwDisplayInit();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall gwDisplaySetSize(CZNodePartial* node, int width, int height);
-int __fastcall gwDisplaySetPosition(CZNodePartial* node, int x, int y);
-int __fastcall gwDisplaySetBackgroundColor(CZNodePartial* node, float red, float green, float blue);
+    CZNodePartial* __cdecl gwDisplayInit();
+    int __fastcall gwDisplaySetSize(CZNodePartial* node, int width, int height);
+    int __fastcall gwDisplaySetPosition(CZNodePartial* node, int x, int y);
+    int __fastcall gwDisplaySetBackgroundColor(CZNodePartial* node, float red, float green, float blue);
 } // namespace CZDisplay
+int __fastcall CZDisplayDeleteNode(CZNodePartial* node);
+int __fastcall CZDisplayRemoveChild(CZNodePartial* parent, CZNodePartial* child);
 
 namespace CZWorld {
-int __fastcall WriteSettingsSection(zZbdSectionCallbackCtx* callbackCtx, void* userData);
-void __fastcall ReadSettingsSection(
-    zZbdSectionCallbackCtx* callbackCtx,
-    const char* worldName,
-    CZWorldSettingsSectionRecord* settings,
-    unsigned int size,
-    void* userData
-);
-CZNodePartial* __cdecl gwWorldNew();
-int __fastcall DeleteNode(CZNodePartial* world);
-int __fastcall FreeVirtualAreaPartitions(CZNodePartial* world);
-int __fastcall QueueAreaUpdate(CZNodePartial* world, CZWorldDataPartial* worldData, zWorldAreaPartial* area);
-int __fastcall RebuildAreaBounds(CZWorldDataPartial* worldData, zWorldAreaPartial* area);
-int __fastcall ApplyPendingFogSettings(CZNodePartial* world);
-int __fastcall SetPendingFogState(CZNodePartial* world, int fogState);
-int __fastcall SetPendingFogColorRgb01(CZNodePartial* world, float red, float green, float blue);
-int __fastcall SetPendingFogAltitudeRange(CZNodePartial* world, float minAlt, float maxAlt);
-int __fastcall SetPendingFogRange(CZNodePartial* world, float nearRange, float farRange);
-int __fastcall GetPendingFogDensity(CZNodePartial* world, float* outDensity);
-int __fastcall GetPendingFogState(CZNodePartial* world, int* outState);
-int __fastcall GetPendingFogColorRgb01(CZNodePartial* world, float* outRed, float* outGreen, float* outBlue);
-int __fastcall GetPendingFogRange(CZNodePartial* world, float* outNearRange, float* outFarRange);
-int __fastcall GetPendingFogAltitudeRange(CZNodePartial* world, float* outMinAlt, float* outMaxAlt);
-int __fastcall SetPendingFogDensity(CZNodePartial* world, float density);
-int __fastcall gwWorldSetOrigin(CZNodePartial* world, float originX, float originZ);
-int __fastcall gwWorldSetSize(CZNodePartial* world, float sizeX, float sizeZ);
-int __fastcall gwWorldSetPartitionInclusionTolerance(CZNodePartial* world, float toleranceX, float toleranceZ);
-int __fastcall gwWorldSetMaxDecFeatures(CZNodePartial* world, int maxFeatures);
-int __fastcall gwWorldSetVirtualAreaPartition(CZNodePartial* world, float cellSizeX, float cellSizeZ);
-int __fastcall InitVirtualAreaPartitions(CZNodePartial* world);
-int __fastcall SetVirtualPartition(CZNodePartial* world, int enabled);
-// Grid query parameter order (inputs, then out-pointers) follows the retail call-site argument order.
-int __fastcall WorldRectToGridIndex(
-    CZNodePartial* world,
-    float minX,
-    float maxX,
-    float minZ,
-    float maxZ,
-    int* outGridCol,
-    int* outGridRow
-);
-int __fastcall WorldToGridCoordsClampedEx(
-    CZNodePartial* world,
-    float worldX,
-    float worldZ,
-    int* outGridCol,
-    int* outGridRow,
-    int* clampedGridColOut,
-    int* clampedGridRowOut,
-    int* insideBoundsOut
-);
-int __fastcall
-WorldToGridCoordsClamped(CZNodePartial* world, float worldX, float worldZ, int* outGridCol, int* outGridRow);
-zWorldAreaPartial* __fastcall GetAreaPartitionAtGrid(CZNodePartial* world, int gridCol, int gridRow);
-int __fastcall AddChildAtGrid(CZNodePartial* world, CZNodePartial* child);
-int __fastcall EnsureGridCellDisplayPosition(CZNodePartial* world, int gridCol, int gridRow);
-int __fastcall AddChildToGridCell(CZNodePartial* world, CZNodePartial* child, int gridCol, int gridRow);
-int __fastcall RemoveChildAtGrid(CZNodePartial* world, CZNodePartial* child);
-int __fastcall AddLight(CZNodePartial* world, CZNodePartial* light);
-int __fastcall RemoveLight(CZNodePartial* world, CZNodePartial* light);
-int __fastcall InitLightPointInPolygonXZ(CZNodePartial* world);
-int __fastcall UpdateAllLights(CZNodePartial* world);
-int __fastcall AddSound(CZNodePartial* world, CZNodePartial* sound);
-int __fastcall RemoveSound(CZNodePartial* world, CZNodePartial* sound);
-int __fastcall UpdateAllSounds(CZNodePartial* world);
+    int __fastcall WriteSettingsSection(zZbdSectionCallbackCtx* callbackCtx, void* userData);
+    void __fastcall ReadSettingsSection(
+        zZbdSectionCallbackCtx* callbackCtx,
+        const char* worldName,
+        CZWorldSettingsSectionRecord* settings,
+        unsigned int size,
+        void* userData
+    );
+    CZNodePartial* __cdecl gwWorldNew();
+    int __fastcall FreeVirtualAreaPartitions(CZNodePartial* world);
+    int __fastcall QueueAreaUpdate(CZNodePartial* world, CZWorldDataPartial* worldData, zWorldAreaPartial* area);
+    int __fastcall RebuildAreaBounds(CZWorldDataPartial* worldData, zWorldAreaPartial* area);
+    int __fastcall ApplyPendingFogSettings(CZNodePartial* world);
+    int __fastcall SetPendingFogState(CZNodePartial* world, int fogState);
+    int __fastcall SetPendingFogColorRgb01(CZNodePartial* world, float red, float green, float blue);
+    int __fastcall SetPendingFogAltitudeRange(CZNodePartial* world, float minAlt, float maxAlt);
+    int __fastcall SetPendingFogRange(CZNodePartial* world, float nearRange, float farRange);
+    int __fastcall GetPendingFogDensity(CZNodePartial* world, float* outDensity);
+    int __fastcall GetPendingFogState(CZNodePartial* world, int* outState);
+    int __fastcall GetPendingFogColorRgb01(CZNodePartial* world, float* outRed, float* outGreen, float* outBlue);
+    int __fastcall GetPendingFogRange(CZNodePartial* world, float* outNearRange, float* outFarRange);
+    int __fastcall GetPendingFogAltitudeRange(CZNodePartial* world, float* outMinAlt, float* outMaxAlt);
+    int __fastcall SetPendingFogDensity(CZNodePartial* world, float density);
+    int __fastcall gwWorldSetOrigin(CZNodePartial* world, float originX, float originZ);
+    int __fastcall gwWorldSetSize(CZNodePartial* world, float sizeX, float sizeZ);
+    int __fastcall gwWorldSetPartitionInclusionTolerance(CZNodePartial* world, float toleranceX, float toleranceZ);
+    int __fastcall gwWorldSetMaxDecFeatures(CZNodePartial* world, int maxFeatures);
+    int __fastcall gwWorldSetVirtualAreaPartition(CZNodePartial* world, float cellSizeX, float cellSizeZ);
+    int __fastcall InitVirtualAreaPartitions(CZNodePartial* world);
+    int __fastcall SetVirtualPartition(CZNodePartial* world, int enabled);
+    // Grid query parameter order (inputs, then out-pointers) follows the retail call-site argument order.
+    int __fastcall WorldRectToGridIndex(
+        CZNodePartial* world,
+        float minX,
+        float maxX,
+        float minZ,
+        float maxZ,
+        int* outGridCol,
+        int* outGridRow
+    );
+    int __fastcall WorldToGridCoordsClampedEx(
+        CZNodePartial* world,
+        float worldX,
+        float worldZ,
+        int* outGridCol,
+        int* outGridRow,
+        int* clampedGridColOut,
+        int* clampedGridRowOut,
+        int* insideBoundsOut
+    );
+    int __fastcall
+    WorldToGridCoordsClamped(CZNodePartial* world, float worldX, float worldZ, int* outGridCol, int* outGridRow);
+    zWorldAreaPartial* __fastcall GetAreaPartitionAtGrid(CZNodePartial* world, int gridCol, int gridRow);
+    int __fastcall AddChildAtGrid(CZNodePartial* world, CZNodePartial* child);
+    int __fastcall EnsureGridCellDisplayPosition(CZNodePartial* world, int gridCol, int gridRow);
+    int __fastcall AddChildToGridCell(CZNodePartial* world, CZNodePartial* child, int gridCol, int gridRow);
+    int __fastcall RemoveChildAtGrid(CZNodePartial* world, CZNodePartial* child);
+    int __fastcall AddLight(CZNodePartial* world, CZNodePartial* light);
+    int __fastcall RemoveLight(CZNodePartial* world, CZNodePartial* light);
+    int __fastcall InitLightPointInPolygonXZ(CZNodePartial* world);
+    int __fastcall UpdateAllLights(CZNodePartial* world);
+    int __fastcall AddSound(CZNodePartial* world, CZNodePartial* sound);
+    int __fastcall RemoveSound(CZNodePartial* world, CZNodePartial* sound);
+    int __fastcall UpdateAllSounds(CZNodePartial* world);
 } // namespace CZWorld
+int __fastcall CZWorldDeleteNode(CZNodePartial* world);
 
 namespace CZObject3D {
-CZNodePartial* __fastcall gwObject3DInit();
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-int __fastcall PropagateTransformDirty(CZNodePartial* node);
-int __fastcall gwObject3DSetVisibleFlag(CZNodePartial* node, int visible);
-int __fastcall gwObject3DSetColorAlpha(CZNodePartial* node, zColorRgb* color, float alpha);
-int __fastcall gwObject3DSetAlphaScale(CZNodePartial* node, float alphaScale);
-int __fastcall gwObject3DGetAlphaScale(CZNodePartial* node, float* outAlphaScale);
-int __fastcall gwObject3DSetLitFlag(CZNodePartial* node, int lit);
-int __fastcall gwObject3DSetScale(CZNodePartial* node, float x, float y, float z);
-int __fastcall gwObject3DGetScale(CZNodePartial* node, float* outX, float* outY, float* outZ);
-int __fastcall gwObject3DGetRotation(CZNodePartial* node, float* outX, float* outY, float* outZ);
-int __fastcall gwObject3DSetRotation(CZNodePartial* node, float x, float y, float z);
-int __fastcall gwObject3DTranslateRotation(CZNodePartial* node, float dx, float dy, float dz);
-int __fastcall gwObject3DGetPosition(CZNodePartial* node, float* outX, float* outY, float* outZ);
-int __fastcall gwObject3DSetPosition(CZNodePartial* node, float x, float y, float z);
-int __fastcall gwObject3DTranslatePosition(CZNodePartial* node, float dx, float dy, float dz);
-float* __fastcall gwObject3DGetMatrixPtr(CZNodePartial* node);
-int __fastcall gwObject3DSetMatrix(CZNodePartial* node, float* matrix);
-int __fastcall gwObject3DAddChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall DeleteNode(CZNodePartial* node);
+    CZNodePartial* __fastcall gwObject3DInit();
+    int __fastcall PropagateTransformDirty(CZNodePartial* node);
+    int __fastcall gwObject3DSetVisibleFlag(CZNodePartial* node, int visible);
+    int __fastcall gwObject3DSetColorAlpha(CZNodePartial* node, zColorRgb* color, float alpha);
+    int __fastcall gwObject3DSetAlphaScale(CZNodePartial* node, float alphaScale);
+    int __fastcall gwObject3DGetAlphaScale(CZNodePartial* node, float* outAlphaScale);
+    int __fastcall gwObject3DSetLitFlag(CZNodePartial* node, int lit);
+    int __fastcall gwObject3DSetScale(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwObject3DGetScale(CZNodePartial* node, float* outX, float* outY, float* outZ);
+    int __fastcall gwObject3DGetRotation(CZNodePartial* node, float* outX, float* outY, float* outZ);
+    int __fastcall gwObject3DSetRotation(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwObject3DTranslateRotation(CZNodePartial* node, float dx, float dy, float dz);
+    int __fastcall gwObject3DGetPosition(CZNodePartial* node, float* outX, float* outY, float* outZ);
+    int __fastcall gwObject3DSetPosition(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwObject3DTranslatePosition(CZNodePartial* node, float dx, float dy, float dz);
+    float* __fastcall gwObject3DGetMatrixPtr(CZNodePartial* node);
+    int __fastcall gwObject3DSetMatrix(CZNodePartial* node, float* matrix);
+    int __fastcall gwObject3DAddChild(CZNodePartial* parent, CZNodePartial* child);
 } // namespace CZObject3D
-
+int __fastcall CZObject3DRenderTraverse(CZNodePartial* node, int siblingCountHint);
+int __fastcall CZObject3DRemoveChild(CZNodePartial* parent, CZNodePartial* child);
+int __fastcall CZObject3DDeleteNode(CZNodePartial* node);
+}
 struct CZObject3DModelRefLerpTask {
     CZNodePartial* node;
     void* callbackCtx;
@@ -950,310 +950,310 @@ Add(CZNodePartial* node,
 void __cdecl Reset();
 void __cdecl Update();
 } // namespace CZObject3DModelRefLerpQueue
-
+extern "C" {
 namespace CZLod {
-CZNodePartial* __cdecl gwLodNew();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-int __fastcall gwLodAddChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall SetComputeOwnDistance(CZNodePartial* node, int enabled);
-int __fastcall SetTargetNodeAndRange(CZNodePartial* node, CZNodePartial* target, float range);
+    CZNodePartial* __cdecl gwLodNew();
+    int __fastcall gwLodAddChild(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall SetComputeOwnDistance(CZNodePartial* node, int enabled);
+    int __fastcall SetTargetNodeAndRange(CZNodePartial* node, CZNodePartial* target, float range);
 } // namespace CZLod
+int __fastcall CZLodDeleteNode(CZNodePartial* node);
+int __fastcall CZLodRenderTraverse(CZNodePartial* node, int siblingCountHint);
+int __fastcall CZLodRemoveChild(CZNodePartial* parent, CZNodePartial* child);
 
 namespace CZLight {
-CZNodePartial* __fastcall gwLightNew();
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall gwLightSetIntensity(CZNodePartial* node, float intensity);
-int __fastcall gwLightSetFalloff(CZNodePartial* node, float falloff);
-int __fastcall gwLightSetDirectional(CZNodePartial* node, int directional);
-int __fastcall gwLightSetDirectedSource(CZNodePartial* node);
-int __fastcall gwLightSetPointSource(CZNodePartial* node);
-int __fastcall gwLightSetParam(CZNodePartial* node, int param);
-int __fastcall gwLightSetRange(CZNodePartial* node, float rangeA, float rangeB);
-int __fastcall gwLightGetRange(CZNodePartial* node, float* outRange1, float* outRange2);
-int __fastcall gwLightSetPosition(CZNodePartial* node, float x, float y, float z);
-int __fastcall gwLightSetRotation(CZNodePartial* node, float x, float y, float z);
-int __fastcall ComputeWorldTransform(CZNodePartial* node, CZLightDataPartial* data);
-int __fastcall gwLightUpdate(CZNodePartial* node);
-int __fastcall gwLightGetSpecularColor(CZNodePartial* node, float* outRed, float* outGreen, float* outBlue);
-int __fastcall gwLightSetSpecularColor(CZNodePartial* node, float red, float green, float blue);
+    CZNodePartial* __fastcall gwLightNew();
+    int __fastcall gwLightSetIntensity(CZNodePartial* node, float intensity);
+    int __fastcall gwLightSetFalloff(CZNodePartial* node, float falloff);
+    int __fastcall gwLightSetDirectional(CZNodePartial* node, int directional);
+    int __fastcall gwLightSetDirectedSource(CZNodePartial* node);
+    int __fastcall gwLightSetPointSource(CZNodePartial* node);
+    int __fastcall gwLightSetParam(CZNodePartial* node, int param);
+    int __fastcall gwLightSetRange(CZNodePartial* node, float rangeA, float rangeB);
+    int __fastcall gwLightGetRange(CZNodePartial* node, float* outRange1, float* outRange2);
+    int __fastcall gwLightSetPosition(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwLightSetRotation(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwLightUpdate(CZNodePartial* node);
+    int __fastcall gwLightGetSpecularColor(CZNodePartial* node, float* outRed, float* outGreen, float* outBlue);
+    int __fastcall gwLightSetSpecularColor(CZNodePartial* node, float red, float green, float blue);
 } // namespace CZLight
+int __fastcall CZLightRenderTraverse(CZNodePartial* node, int siblingCountHint);
+int __fastcall CZLightDeleteNode(CZNodePartial* node);
+int __fastcall CZLightRemoveChild(CZNodePartial* parent, CZNodePartial* child);
+int __fastcall CZLightComputeWorldTransform(CZNodePartial* node, CZLightDataPartial* data);
 
 namespace CZCamera {
-CZNodePartial* __cdecl gwCameraNew();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-int __fastcall gwCameraAddChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall gwCameraRemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall gwCameraSetActive(CZNodePartial* node, int active);
-int __fastcall gwCameraSetFlagBit0(CZNodePartial* node, int enabled);
-int __fastcall SetTargetNode(CZNodePartial* target);
-CZNodePartial* __fastcall SetActiveCamera(CZNodePartial* camera);
-int __fastcall SetObjectHseTestEnabled(int enabled);
-int __fastcall gwCameraSetWorld(CZNodePartial* camera, CZNodePartial* world);
-CZNodePartial* __fastcall gwCameraGetWorld(CZNodePartial* camera);
-int __fastcall gwCameraSetWindow(CZNodePartial* camera, CZNodePartial* window);
-int __fastcall ActivateChildren(CZNodePartial* camera, CZCameraDataPartial* data);
-int __fastcall gwCameraSetEulerAngles(CZNodePartial* camera, float x, float y, float z);
-int __fastcall gwCameraAddEulerAngles(CZNodePartial* camera, float dx, float dy, float dz);
-int __fastcall gwCameraGetEulerAngles(CZNodePartial* camera, float* outX, float* outY, float* outZ);
-int __fastcall gwCameraSetPosition(CZNodePartial* camera, float x, float y, float z);
-int __fastcall gwCameraTranslate(CZNodePartial* camera, float dx, float dy, float dz);
-int __fastcall gwCameraGetPosition(CZNodePartial* camera, float* outX, float* outY, float* outZ);
-int __fastcall gwCameraSetNearFarClip(CZNodePartial* camera, float nearClip, float farClip);
-int __fastcall gwCameraGetNearFarClip(CZNodePartial* camera, float* outNear, float* outFar);
-int __fastcall gwCameraSetViewport(CZNodePartial* camera, float viewportWidth, float viewportHeight);
-int __fastcall gwCameraGetViewport(CZNodePartial* camera, float* outWidth, float* outHeight);
-int __fastcall gwCameraGetFOV(CZNodePartial* camera, float* outFovX, float* outFovY);
-int __fastcall gwCameraSetFOV(CZNodePartial* camera, float fovX, float fovY);
-int __fastcall gwCameraGetClipDistance(CZNodePartial* camera, float* outClipDistance);
-int __fastcall gwCameraSetClipDistance(CZNodePartial* camera, float clipDistance);
-int __fastcall gwCameraSetHorizon(CZNodePartial* camera, CZNodePartial* horizonNode);
-int __fastcall gwCameraSetHorizonXZ(CZNodePartial* camera, CZNodePartial* horizonXZNode);
-void __fastcall SetViewDistance(int enableAutoClip, float distance);
-float __fastcall theta_x_z(zVec3* point1, zVec3* point2);
-int __fastcall find_convex_hull_xz(zVec3* points, int count);
-int __fastcall
-BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
-int __fastcall
-BuildFrustumGridTilesFromParams(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
-void __fastcall RenderFrustumGridTiles(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
-void __fastcall RenderOverlayNodes(CZNodePartial* world);
-void __fastcall RenderWorld(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
-int __fastcall gwCameraSetVariantTagOverride(CZNodePartial* camera, zTag4Partial* variantTag);
-int __fastcall RenderScene(CZNodePartial* camera, int updateFxPass3Local);
-int __fastcall BuildWorldTransform(CZNodePartial* camera, CZCameraDataPartial* data, zVec3* posOffset);
-int __fastcall UpdateImpl(CZNodePartial* camera, zVec3* posOffset);
-int __fastcall gwCameraUpdate(CZNodePartial* camera);
-void __cdecl SyncViewContextPositions();
+    CZNodePartial* __cdecl gwCameraNew();
+    int __fastcall gwCameraAddChild(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall gwCameraRemoveChild(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall gwCameraSetActive(CZNodePartial* node, int active);
+    int __fastcall gwCameraSetFlagBit0(CZNodePartial* node, int enabled);
+    int __fastcall SetTargetNode(CZNodePartial* target);
+    CZNodePartial* __fastcall SetActiveCamera(CZNodePartial* camera);
+    int __fastcall SetObjectHseTestEnabled(int enabled);
+    int __fastcall gwCameraSetWorld(CZNodePartial* camera, CZNodePartial* world);
+    CZNodePartial* __fastcall gwCameraGetWorld(CZNodePartial* camera);
+    int __fastcall gwCameraSetWindow(CZNodePartial* camera, CZNodePartial* window);
+    int __fastcall ActivateChildren(CZNodePartial* camera, CZCameraDataPartial* data);
+    int __fastcall gwCameraSetEulerAngles(CZNodePartial* camera, float x, float y, float z);
+    int __fastcall gwCameraAddEulerAngles(CZNodePartial* camera, float dx, float dy, float dz);
+    int __fastcall gwCameraGetEulerAngles(CZNodePartial* camera, float* outX, float* outY, float* outZ);
+    int __fastcall gwCameraSetPosition(CZNodePartial* camera, float x, float y, float z);
+    int __fastcall gwCameraTranslate(CZNodePartial* camera, float dx, float dy, float dz);
+    int __fastcall gwCameraGetPosition(CZNodePartial* camera, float* outX, float* outY, float* outZ);
+    int __fastcall gwCameraSetNearFarClip(CZNodePartial* camera, float nearClip, float farClip);
+    int __fastcall gwCameraGetNearFarClip(CZNodePartial* camera, float* outNear, float* outFar);
+    int __fastcall gwCameraSetViewport(CZNodePartial* camera, float viewportWidth, float viewportHeight);
+    int __fastcall gwCameraGetViewport(CZNodePartial* camera, float* outWidth, float* outHeight);
+    int __fastcall gwCameraGetFOV(CZNodePartial* camera, float* outFovX, float* outFovY);
+    int __fastcall gwCameraSetFOV(CZNodePartial* camera, float fovX, float fovY);
+    int __fastcall gwCameraGetClipDistance(CZNodePartial* camera, float* outClipDistance);
+    int __fastcall gwCameraSetClipDistance(CZNodePartial* camera, float clipDistance);
+    int __fastcall gwCameraSetHorizon(CZNodePartial* camera, CZNodePartial* horizonNode);
+    int __fastcall gwCameraSetHorizonXZ(CZNodePartial* camera, CZNodePartial* horizonXZNode);
+    void __fastcall SetViewDistance(int enableAutoClip, float distance);
+    float __fastcall theta_x_z(zVec3* point1, zVec3* point2);
+    int __fastcall find_convex_hull_xz(zVec3* points, int count);
+    int __fastcall
+    BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCameraDataPartial* cameraData);
+    int __fastcall BuildFrustumGridTilesFromParams(
+        CZNodePartial* world,
+        CZWorldDataPartial* worldData,
+        CZCameraDataPartial* cameraData
+    );
+    void __fastcall
+    RenderFrustumGridTiles(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
+    void __fastcall RenderOverlayNodes(CZNodePartial* world);
+    void __fastcall RenderWorld(CZNodePartial* world, CZNodePartial* camera, CZCameraDataPartial* cameraData);
+    int __fastcall gwCameraSetVariantTagOverride(CZNodePartial* camera, zTag4Partial* variantTag);
+    int __fastcall RenderScene(CZNodePartial* camera, int updateFxPass3Local);
+    int __fastcall BuildWorldTransform(CZNodePartial* camera, CZCameraDataPartial* data, zVec3* posOffset);
+    int __fastcall UpdateImpl(CZNodePartial* camera, zVec3* posOffset);
+    int __fastcall gwCameraUpdate(CZNodePartial* camera);
+    void __cdecl SyncViewContextPositions();
 } // namespace CZCamera
+int __fastcall CZCameraDeleteNode(CZNodePartial* node);
+int __fastcall CZCameraRenderTraverse(CZNodePartial* node, int siblingCountHint);
 
 namespace CZNode {
-int __fastcall ClearPickupFlagsRecursive(CZNodePartial* node);
-int __fastcall SetPickupFlagsRecursive(CZNodePartial* node);
-void __fastcall PropagateTransformDirtyRecursive(CZNodePartial* self);
-void __fastcall MaskExtraFlagsRecursive(CZNodePartial* self, int mask);
-void __fastcall PropagateExtraFlagsRecursive(CZNodePartial* self, int flags);
-void __fastcall PropagateFlagsRecursive(CZNodePartial* self, int flags);
-void __fastcall SetContextRecursive(CZNodePartial* self, CZNodePartial* context, int flagMask);
-void __fastcall SetDiFlagBit0Recursive(CZNodePartial* node, int enabled);
-int __fastcall HasRenderableDiPredicate(CZNodePartial* node);
-void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(CZNodePartial* node, int enabled);
-void __fastcall InvalidateFlagBit8MaterialImagesRecursive(CZNodePartial* node);
-void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(CZNodePartial* node);
-void __fastcall AssignInt32ToDiRecursive(CZNodePartial* node, int value);
-void __fastcall AssignDamageHandlerRecursiveIfMissing(CZNodePartial* node, OptCatalogDamageHandlerPartial* handler);
-void __fastcall ClearDamageHandlerRecursive(CZNodePartial* node, OptCatalogDamageHandlerPartial* handler);
-int __fastcall SetDamageHitCallback(void* context, CZNodePartial* node, void* callback);
-int __fastcall ClearDamageHandler(CZNodePartial* node);
-int __fastcall SetDamageTimerCallback(void* context, CZNodePartial* node, void* callback);
+    int __fastcall ClearPickupFlagsRecursive(CZNodePartial* node);
+    int __fastcall SetPickupFlagsRecursive(CZNodePartial* node);
+    void __fastcall PropagateTransformDirtyRecursive(CZNodePartial* self);
+    void __fastcall MaskExtraFlagsRecursive(CZNodePartial* self, int mask);
+    void __fastcall PropagateExtraFlagsRecursive(CZNodePartial* self, int flags);
+    void __fastcall PropagateFlagsRecursive(CZNodePartial* self, int flags);
+    void __fastcall SetContextRecursive(CZNodePartial* self, CZNodePartial* context, int flagMask);
+    void __fastcall SetDiFlagBit0Recursive(CZNodePartial* node, int enabled);
+    int __fastcall HasRenderableDiPredicate(CZNodePartial* node);
+    void __fastcall SetMaterialFlagBit9ForFlagBit0EntriesRecursive(CZNodePartial* node, int enabled);
+    void __fastcall InvalidateFlagBit8MaterialImagesRecursive(CZNodePartial* node);
+    void __fastcall LoadFlagBit8MaterialImagesAndTexturePack(CZNodePartial* node);
+    void __fastcall AssignInt32ToDiRecursive(CZNodePartial* node, int value);
+    void __fastcall AssignDamageHandlerRecursiveIfMissing(CZNodePartial* node, OptCatalogDamageHandlerPartial* handler);
+    void __fastcall ClearDamageHandlerRecursive(CZNodePartial* node, OptCatalogDamageHandlerPartial* handler);
+    int __fastcall SetDamageHitCallback(void* context, CZNodePartial* node, void* callback);
+    int __fastcall ClearDamageHandler(CZNodePartial* node);
+    int __fastcall SetDamageTimerCallback(void* context, CZNodePartial* node, void* callback);
 } // namespace CZNode
 
 namespace CZTypeList {
-CZTypeListLink* __cdecl AllocLink();
-void __fastcall FreeLink(CZTypeListLink* link);
-void __cdecl FreeAll();
-int __fastcall ProcessPendingRemovals(int bucket);
-int __fastcall CountNodes(int bucket);
-void __fastcall PrintBucket(int bucket);
-CZTypeListLink* __fastcall GetBucketHead(int bucket);
-int __fastcall MarkPendingRemoval(int bucket, CZNodePartial* node);
-int __fastcall Insert(int bucket, CZNodePartial* node);
-int __fastcall InsertChildNodes(int bucket, CZNodePartial* node);
-void __cdecl UpdateAllBuckets();
-void __fastcall UpdateBucket(CZTypeListLink* bucket);
-int __cdecl UpdateQueuedTrees();
-int __fastcall UpdateSequences();
-int __fastcall UpdateAnimations();
+    CZTypeListLink* __cdecl AllocLink();
+    void __fastcall FreeLink(CZTypeListLink* link);
+    void __cdecl FreeAll();
+    int __fastcall ProcessPendingRemovals(int bucket);
+    int __fastcall CountNodes(int bucket);
+    void __fastcall PrintBucket(int bucket);
+    CZTypeListLink* __fastcall GetBucketHead(int bucket);
+    int __fastcall MarkPendingRemoval(int bucket, CZNodePartial* node);
+    int __fastcall InsertChildNodes(int bucket, CZNodePartial* node);
+    void __cdecl UpdateAllBuckets();
+    void __fastcall UpdateBucket(CZTypeListLink* bucket);
+    int __cdecl UpdateQueuedTrees();
+    int __fastcall UpdateSequences();
+    int __fastcall UpdateAnimations();
 } // namespace CZTypeList
+int __fastcall CZTypeListInsert(int bucket, CZNodePartial* node);
 
 namespace CZNode {
-int __fastcall gwNodeBuildNodeToAncestorMatrix(CZNodePartial* node, int matMode);
-int __fastcall GetWorldPosition(CZNodePartial* node, zVec3* outPosition);
-int __fastcall TransformPoint(CZNodePartial* node, zVec3* point);
-int __fastcall GetWorldPosAndOrientation(CZNodePartial* node, zVec3* inOutPosition, zVec3* outOrientation);
-int __fastcall UpdateSubtree(CZNodePartial* node);
-void __fastcall UpdateTree(CZNodePartial* node);
+    int __fastcall gwNodeBuildNodeToAncestorMatrix(CZNodePartial* node, int matMode);
+    int __fastcall GetWorldPosition(CZNodePartial* node, zVec3* outPosition);
+    int __fastcall TransformPoint(CZNodePartial* node, zVec3* point);
+    int __fastcall GetWorldPosAndOrientation(CZNodePartial* node, zVec3* inOutPosition, zVec3* outOrientation);
+    int __fastcall UpdateSubtree(CZNodePartial* node);
+    void __fastcall UpdateTree(CZNodePartial* node);
 } // namespace CZNode
 
 namespace CZNodeList {
-int __fastcall Insert(CZNodePartial* node);
-void __cdecl ProcessPendingFrees();
+    void __cdecl ProcessPendingFrees();
 } // namespace CZNodeList
+int __fastcall CZNodeListInsert(CZNodePartial* node);
 
 namespace CZList {
-int __fastcall DeleteNodeFromLists(CZNodePartial* node);
-int __fastcall _gwListDeleteANode(CZNodePartial* node);
-int __fastcall DeleteAllOfType(int bucket);
-int __cdecl RenderActiveCameras();
-CZNodePartial* __fastcall IterateBucketFiltered(const char* filterText, int bucket, CZNodePredicate predicate);
+    int __fastcall DeleteNodeFromLists(CZNodePartial* node);
+    int __fastcall _gwListDeleteANode(CZNodePartial* node);
+    int __fastcall DeleteAllOfType(int bucket);
+    int __cdecl RenderActiveCameras();
+    CZNodePartial* __fastcall IterateBucketFiltered(const char* filterText, int bucket, CZNodePredicate predicate);
 } // namespace CZList
 
 namespace CZClass {
-void __fastcall SetNodeArraySize(int size);
-int __cdecl IsInitialized();
-int __cdecl Init();
-int __cdecl ResetCurrentZbdPath();
-int __cdecl ShutdownCore();
-int __cdecl Shutdown();
-int __fastcall ProcessDeferredWork();
-int __fastcall NodePtrToValidatedIndex(CZNodePartial* node);
-CZNodePartial* __fastcall FindByTypeAndName(int bucket, const char* name);
-int __fastcall FindNextByTypePrefixPredicate(CZNodePartial* node);
-CZNodePartial* __fastcall FindNextByTypePrefix(const char* prefixText, int bucket);
-int __fastcall AnyNodeMatchesPredicateRecursive(CZNodePartial* root, CZNodePredicate predicate);
-int __fastcall RemoveChildChecked(CZNodePartial* parent, CZNodePartial* child);
+    void __fastcall SetNodeArraySize(int size);
+    int __cdecl IsInitialized();
+    int __cdecl Init();
+    int __cdecl ResetCurrentZbdPath();
+    int __cdecl ShutdownCore();
+    int __cdecl Shutdown();
+    int __fastcall ProcessDeferredWork();
+    int __fastcall NodePtrToValidatedIndex(CZNodePartial* node);
+    CZNodePartial* __fastcall FindByTypeAndName(int bucket, const char* name);
+    int __fastcall FindNextByTypePrefixPredicate(CZNodePartial* node);
+    CZNodePartial* __fastcall FindNextByTypePrefix(const char* prefixText, int bucket);
+    int __fastcall AnyNodeMatchesPredicateRecursive(CZNodePartial* root, CZNodePredicate predicate);
+    int __fastcall RemoveChildChecked(CZNodePartial* parent, CZNodePartial* child);
 } // namespace CZClass
 
 namespace CZClass {
-CZNodePartial* __fastcall gwNodeNew();
-int __fastcall DeleteNodeByType(CZNodePartial* node);
-int __fastcall gwNodeUpdate(CZNodePartial* node);
-int __cdecl gwNodeUpdateAll();
-int __fastcall gwNodeUpdateDisplayInstance(CZNodePartial* node);
-int __fastcall gwNodeGetBBox(CZNodePartial* node, zBBox3f* outBBox);
-int __fastcall gwNodeGetWorldBBoxCorners(CZNodePartial* node, zBBoxCorners* outCorners);
-int __fastcall gwNodeGetViewBBoxCorners(CZNodePartial* node, zBBoxCorners* outCorners);
-int __fastcall gwNodeComputeChildBBox(CZNodePartial* node);
-int __fastcall gwNodeRecalcBBox(CZNodePartial* node);
-int __fastcall gwNodeSetActive(CZNodePartial* node, int active);
-int __fastcall gwNodeSetFlag16(CZNodePartial* node, int value);
-int __fastcall gwNodeSetFlag17(CZNodePartial* node, int value);
-int __fastcall gwNodeSetDisplayInstance(CZNodePartial* node, zDiPartial* displayInstance);
-int __fastcall gwNodeSetName(CZNodePartial* node, const char* name);
-char* __fastcall gwNodeGetName(CZNodePartial* node);
-int __fastcall gwNodeGetUserData(CZNodePartial* node, unsigned int* outData);
-int __fastcall gwNodeSetActionCallback(CZNodePartial* node, void* actionCallback);
-int __fastcall gwNodeSetActionCallbackTail(CZNodePartial* node, void* actionCallback);
-int __fastcall gwNodeSetPriority(CZNodePartial* node, int priority);
-int __fastcall gwNodeSetCellPickable(CZNodePartial* node, int value);
-int __fastcall gwNodeGetCellPickable(CZNodePartial* node, int* outValue);
-int __fastcall gwNodeGetNodeType(CZNodePartial* node, int* outValue);
-int __fastcall gwNodeSetRaycastable(CZNodePartial* node, int value);
-int __fastcall gwNodeGetRaycastable(CZNodePartial* node, int* outValue);
-int __fastcall gwNodeSetPickable(CZNodePartial* node, int value);
-int __fastcall gwNodeGetPickable(CZNodePartial* node, int* outValue);
-int __fastcall gwNodeSetHasHitCallback(CZNodePartial* node, int value);
-int __fastcall gwNodeSetBypassFarClip(CZNodePartial* node, int value);
-int __fastcall gwNodeSetNodeType(CZNodePartial* node, int nodeType);
-int __fastcall gwNodeClearVariantGate(CZNodePartial* node, int value);
-int __fastcall gwNodeSetVertexAlphaOverride(CZNodePartial* node, int value);
-CZNodePartial* __fastcall gwNodeGetRoot(CZNodePartial* node);
-CZNodePartial* __fastcall gwNodeGetWorldChild(CZNodePartial* node);
-int __fastcall gwNodeFindNextByNamePredicate(CZNodePartial* node);
-CZNodePartial* __fastcall gwNodeFindNextByName(const char* name, int bucket);
-CZNodePartial* __fastcall FindSubNodeByName(CZNodePartial* root, const char* name);
-CZNodePartial* __fastcall FindNodeRecursiveByName(CZNodePartial* root, const char* name);
-int __fastcall SetSingleParentFlagRecursive(CZNodePartial* node, int setFlag);
-int __fastcall AddChildValidated(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall RemoveChildValidated(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall AddChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall AddChildGeneric(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall RemoveChildGeneric(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall FreeNodeToFreeList(CZNodePartial* node);
-int __fastcall TryFreeNode(CZNodePartial* node);
-int __fastcall gwNodeRenderDispatch(CZNodePartial* node, int siblingCountHint);
+    CZNodePartial* __fastcall gwNodeNew();
+    int __fastcall DeleteNodeByType(CZNodePartial* node);
+    int __fastcall gwNodeUpdate(CZNodePartial* node);
+    int __cdecl gwNodeUpdateAll();
+    int __fastcall gwNodeUpdateDisplayInstance(CZNodePartial* node);
+    int __fastcall gwNodeGetBBox(CZNodePartial* node, zBBox3f* outBBox);
+    int __fastcall gwNodeGetWorldBBoxCorners(CZNodePartial* node, zBBoxCorners* outCorners);
+    int __fastcall gwNodeGetViewBBoxCorners(CZNodePartial* node, zBBoxCorners* outCorners);
+    int __fastcall gwNodeComputeChildBBox(CZNodePartial* node);
+    int __fastcall gwNodeRecalcBBox(CZNodePartial* node);
+    int __fastcall gwNodeSetActive(CZNodePartial* node, int active);
+    int __fastcall gwNodeSetFlag16(CZNodePartial* node, int value);
+    int __fastcall gwNodeSetFlag17(CZNodePartial* node, int value);
+    int __fastcall gwNodeSetDisplayInstance(CZNodePartial* node, zDiPartial* displayInstance);
+    int __fastcall gwNodeSetName(CZNodePartial* node, const char* name);
+    char* __fastcall gwNodeGetName(CZNodePartial* node);
+    int __fastcall gwNodeGetUserData(CZNodePartial* node, unsigned int* outData);
+    int __fastcall gwNodeSetActionCallback(CZNodePartial* node, void* actionCallback);
+    int __fastcall gwNodeSetActionCallbackTail(CZNodePartial* node, void* actionCallback);
+    int __fastcall gwNodeSetPriority(CZNodePartial* node, int priority);
+    int __fastcall gwNodeSetCellPickable(CZNodePartial* node, int value);
+    int __fastcall gwNodeGetCellPickable(CZNodePartial* node, int* outValue);
+    int __fastcall gwNodeGetNodeType(CZNodePartial* node, int* outValue);
+    int __fastcall gwNodeSetRaycastable(CZNodePartial* node, int value);
+    int __fastcall gwNodeGetRaycastable(CZNodePartial* node, int* outValue);
+    int __fastcall gwNodeSetPickable(CZNodePartial* node, int value);
+    int __fastcall gwNodeGetPickable(CZNodePartial* node, int* outValue);
+    int __fastcall gwNodeSetHasHitCallback(CZNodePartial* node, int value);
+    int __fastcall gwNodeSetBypassFarClip(CZNodePartial* node, int value);
+    int __fastcall gwNodeSetNodeType(CZNodePartial* node, int nodeType);
+    int __fastcall gwNodeClearVariantGate(CZNodePartial* node, int value);
+    int __fastcall gwNodeSetVertexAlphaOverride(CZNodePartial* node, int value);
+    CZNodePartial* __fastcall gwNodeGetRoot(CZNodePartial* node);
+    CZNodePartial* __fastcall gwNodeGetWorldChild(CZNodePartial* node);
+    int __fastcall gwNodeFindNextByNamePredicate(CZNodePartial* node);
+    CZNodePartial* __fastcall gwNodeFindNextByName(const char* name, int bucket);
+    CZNodePartial* __fastcall FindSubNodeByName(CZNodePartial* root, const char* name);
+    CZNodePartial* __fastcall FindNodeRecursiveByName(CZNodePartial* root, const char* name);
+    int __fastcall SetSingleParentFlagRecursive(CZNodePartial* node, int setFlag);
+    int __fastcall AddChildValidated(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall RemoveChildValidated(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall AddChild(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall AddChildGeneric(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall RemoveChildGeneric(CZNodePartial* parent, CZNodePartial* child);
+    int __fastcall FreeNodeToFreeList(CZNodePartial* node);
+    int __fastcall TryFreeNode(CZNodePartial* node);
+    int __fastcall gwNodeRenderDispatch(CZNodePartial* node, int siblingCountHint);
 } // namespace CZClass
 
-namespace CZSound {
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-}
+int __fastcall CZSoundRenderTraverse(CZNodePartial* node, int siblingCountHint);
 
-namespace CZAnimate {
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-}
+int __fastcall CZAnimateRenderTraverse(CZNodePartial* node, int siblingCountHint);
 
-namespace CZSequence {
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
-}
+int __fastcall CZSequenceRenderTraverse(CZNodePartial* node, int siblingCountHint);
 
-namespace CZSwitch {
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RenderTraverse(CZNodePartial* node, int siblingCountHint);
+int __fastcall CZSwitchDeleteNode(CZNodePartial* node);
+int __fastcall CZSwitchRenderTraverse(CZNodePartial* node, int siblingCountHint);
+
+namespace CZUtil {
+    int __fastcall DestroyNodeRecursive(CZNodePartial* node);
 }
 
 namespace CZUtil {
-int __fastcall DestroyNodeRecursive(CZNodePartial* node);
-}
-
-namespace CZUtil {
-int __fastcall CopyNodeDisplayInstance(CZNodePartial* source, CZNodePartial* dest);
-int __fastcall CopyNodeBaseData(CZNodePartial* source, CZNodePartial* dest);
-CZNodePartial* __fastcall CopyLightNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopySoundNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopyCameraNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopyObject3DNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopyAnimateNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopyLodNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopySequenceNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopySwitchNode(CZNodePartial* source);
-CZNodePartial* __fastcall CopyNodeDispatch(CZNodePartial* source);
-CZNodePartial* __fastcall CopyNodeWithCloneOptions(CZNodePartial* source, int cloneDiMode, int diArg0);
-CZNodePartial* __fastcall CopyNode(CZNodePartial* source, int cloneDiMode, int diArg0, int diArg1);
+    int __fastcall CopyNodeDisplayInstance(CZNodePartial* source, CZNodePartial* dest);
+    int __fastcall CopyNodeBaseData(CZNodePartial* source, CZNodePartial* dest);
+    CZNodePartial* __fastcall CopyLightNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopySoundNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyCameraNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyObject3DNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyAnimateNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyLodNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopySequenceNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopySwitchNode(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyNodeDispatch(CZNodePartial* source);
+    CZNodePartial* __fastcall CopyNodeWithCloneOptions(CZNodePartial* source, int cloneDiMode, int diArg0);
+    CZNodePartial* __fastcall CopyNode(CZNodePartial* source, int cloneDiMode, int diArg0, int diArg1);
 } // namespace CZUtil
 
 namespace CZSound {
-CZNodePartial* __cdecl gwSoundNew();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall SetSampleSetByName(CZNodePartial* node, const char* name);
-int __fastcall gwSoundSetActive(CZNodePartial* node, int active);
-int __fastcall gwSoundSetPosition(CZNodePartial* node, float x, float y, float z);
-int __fastcall gwSoundGetPosition(CZNodePartial* node, float* outX, float* outY, float* outZ);
-int __fastcall UpdatePlayback(CZNodePartial* node);
-int __fastcall ComputeWorldTransform(CZNodePartial* node, CZSoundDataPartial* soundData);
+    CZNodePartial* __cdecl gwSoundNew();
+    int __fastcall SetSampleSetByName(CZNodePartial* node, const char* name);
+    int __fastcall gwSoundSetActive(CZNodePartial* node, int active);
+    int __fastcall gwSoundSetPosition(CZNodePartial* node, float x, float y, float z);
+    int __fastcall gwSoundGetPosition(CZNodePartial* node, float* outX, float* outY, float* outZ);
+    int __fastcall UpdatePlayback(CZNodePartial* node);
 } // namespace CZSound
+int __fastcall CZSoundDeleteNode(CZNodePartial* node);
+int __fastcall CZSoundRemoveChild(CZNodePartial* parent, CZNodePartial* child);
+int __fastcall CZSoundComputeWorldTransform(CZNodePartial* node, CZSoundDataPartial* soundData);
 
 namespace CZAnimate {
-short __fastcall AdvanceTime(CZAnimateRuntimePartial* runtime, float deltaTime);
-short __fastcall SampleTransform(CZAnimateRuntimePartial* runtime);
-int __fastcall UpdateNode(CZNodePartial* node);
-int __fastcall AddChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
+    short __fastcall AdvanceTime(CZAnimateRuntimePartial* runtime, float deltaTime);
+    short __fastcall SampleTransform(CZAnimateRuntimePartial* runtime);
+    int __fastcall UpdateNode(CZNodePartial* node);
 } // namespace CZAnimate
+int __fastcall CZAnimateAddChild(CZNodePartial* parent, CZNodePartial* child);
+int __fastcall CZAnimateDeleteNode(CZNodePartial* node);
+int __fastcall CZAnimateRemoveChild(CZNodePartial* parent, CZNodePartial* child);
 
 namespace CZSequence {
-CZNodePartial* __cdecl gwSequenceNew();
-int __fastcall DeleteNode(CZNodePartial* node);
-int __fastcall gwSequenceAddChild(CZNodePartial* parent, CZNodePartial* child, int insertIndex, float delay);
-int __fastcall SetActive(CZNodePartial* node, int active);
-int __fastcall SetRepeat(CZNodePartial* node, int repeat);
-int __fastcall SetLoop(CZNodePartial* node, int loop);
-int __fastcall SetPause(CZNodePartial* node, int paused);
-int __fastcall RemoveChild(CZNodePartial* parent, CZNodePartial* child);
-int __fastcall Update(CZNodePartial* node);
+    CZNodePartial* __cdecl gwSequenceNew();
+    int __fastcall gwSequenceAddChild(CZNodePartial* parent, CZNodePartial* child, int insertIndex, float delay);
+    int __fastcall SetActive(CZNodePartial* node, int active);
+    int __fastcall SetRepeat(CZNodePartial* node, int repeat);
+    int __fastcall SetLoop(CZNodePartial* node, int loop);
+    int __fastcall SetPause(CZNodePartial* node, int paused);
+    int __fastcall Update(CZNodePartial* node);
 } // namespace CZSequence
+int __fastcall CZSequenceDeleteNode(CZNodePartial* node);
+int __fastcall CZSequenceRemoveChild(CZNodePartial* parent, CZNodePartial* child);
 
 namespace CZLight {
-int __fastcall InitThermalGlowPool();
-int __cdecl DestroyThermalGlowPool();
-CZNodePartial* __fastcall AllocFromFreeListAndAttach(zColorRgb* specularColor);
-void __fastcall ReturnToFreeList(CZNodePartial* lightNode);
+    int __fastcall InitThermalGlowPool();
+    int __cdecl DestroyThermalGlowPool();
+    CZNodePartial* __fastcall AllocFromFreeListAndAttach(zColorRgb* specularColor);
+    void __fastcall ReturnToFreeList(CZNodePartial* lightNode);
 } // namespace CZLight
 
 namespace CZZbd {
-RECOIL_NO_GS int __fastcall WriteZBDFile(const char* filename);
-RECOIL_NO_GS int __fastcall ReadZBDFile(const char* filename);
-FILE* __fastcall OpenAndReadZBDHeader(const char* filename, CZZbdHeader* outHeader);
+    RECOIL_NO_GS int __fastcall WriteZBDFile(const char* filename);
+    RECOIL_NO_GS int __fastcall ReadZBDFile(const char* filename);
+    FILE* __fastcall OpenAndReadZBDHeader(const char* filename, CZZbdHeader* outHeader);
 } // namespace CZZbd
 
 namespace CZZbd {
-int __fastcall NodePtrToIndex(CZNodePartial* node);
-CZNodePartial* __fastcall NodeIndexToPtr(int index);
-int __fastcall WriteNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
-RECOIL_NO_GS int __fastcall gClsWriteNode(CZNodePartial* node, void* stream);
-int __fastcall WriteNodeTable(void* stream);
-int __fastcall ReadNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
-int __fastcall gClsReadNode(CZNodePartial* node, void* stream);
-int __fastcall ReadNodeTable(int nodeCount, void* stream);
-RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(CZNodePartial* node, int recurseChildren);
-RECOIL_NO_GS int __fastcall
-ReloadDisplayInstancesRecursive_Local(void* stream, CZZbdHeader* zbdHeader, CZNodePartial* node, int recurseChildren);
+    int __fastcall NodePtrToIndex(CZNodePartial* node);
+    CZNodePartial* __fastcall NodeIndexToPtr(int index);
+    int __fastcall WriteNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
+    RECOIL_NO_GS int __fastcall gClsWriteNode(CZNodePartial* node, void* stream);
+    int __fastcall WriteNodeTable(void* stream);
+    int __fastcall ReadNodeRefListIndices(CZNodePartial** nodeRefList, int entryCount, void* stream);
+    int __fastcall gClsReadNode(CZNodePartial* node, void* stream);
+    int __fastcall ReadNodeTable(int nodeCount, void* stream);
+    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesFromCurrentPath_Local(CZNodePartial* node, int recurseChildren);
+    RECOIL_NO_GS int __fastcall ReloadDisplayInstancesRecursive_Local(
+        void* stream,
+        CZZbdHeader* zbdHeader,
+        CZNodePartial* node,
+        int recurseChildren
+    );
 } // namespace CZZbd
 
 extern "C" {
@@ -1297,7 +1297,7 @@ extern int g_CZClass_CopyNodeDiArg1;
 extern int g_CZClass_RebuildGwWorldBltRectOnShutdown;
 extern char g_CZClass_GWWorldNodeName[8];
 }
-
+}
 namespace CZTypeList {
 /**
  * Original inline helper; no standalone retail function exists. Observed in
@@ -1451,7 +1451,7 @@ inline void SetPendingRemovalDirty(int bucket, int value)
 }
 } // namespace CZTypeList
 #else
-/* C units' view of the zClass members they call (the zClass units are C++). */
+/* Other C units' view of the zClass members they call; the zClass units declare their API in cls_api.h. */
 void __fastcall Clear(zTag4Partial* tag);
 int __fastcall gwWindowGetResolution(CZNodePartial* node, int* outWidth, int* outHeight);
 int __fastcall gwWindowGetSize(CZNodePartial* node, int* outWidth, int* outHeight);

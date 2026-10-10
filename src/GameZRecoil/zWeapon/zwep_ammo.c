@@ -485,7 +485,7 @@ namespace OptCatalog
             zEffect_Anim::zEffAnimReset(asyncFxHandle, 0);
         }
 
-        CZObject3D::RemoveChild(runtimeInstance->projectileNode, runtimeInstance->attachCloneChild);
+        CZObject3DRemoveChild(runtimeInstance->projectileNode, runtimeInstance->attachCloneChild);
         runtimeInstance->attachCloneChild->callbackContext = self->attachCloneChildFreeList;
         self->attachCloneChildFreeList = runtimeInstance->attachCloneChild;
         runtimeInstance->attachCloneChild = 0;
@@ -660,7 +660,7 @@ namespace OptCatalog
         }
 
         if (self->fireFxSelectedSoundIndex != -1) {
-            self->fireFxSoundSamples[self->fireFxSelectedSoundIndex]->PlayA3D(1.0f, &runtimeInstance->pos, 0);
+            zSndSamplePlayA3D(self->fireFxSoundSamples[self->fireFxSelectedSoundIndex], 1.0f, &runtimeInstance->pos, 0);
         }
 
         if (self->fireFxEffectTemplateIndex != 0) {
@@ -990,8 +990,8 @@ namespace OptCatalog
         (void)playerOrdinal;
 
         OptCatalogEntryDef* const ownerEntry = trailRuntimeState->ownerEntry;
-        ownerEntry->trailStopSample->PlayA3DSimple(1.0f);
-        zSndPlayHandle* const loopHandle = ownerEntry->trailLoopSample->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(ownerEntry->trailStopSample, 1.0f);
+        zSndPlayHandle* const loopHandle = zSndSamplePlayA3DSimple(ownerEntry->trailLoopSample, 1.0f);
         trailRuntimeState->stopSoundHandle = loopHandle;
         if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
             loopHandle->SetFreqScaled(0.0f);
@@ -1072,12 +1072,12 @@ namespace OptCatalog
         OptCatalogEntryDef* const ownerEntry = trailRuntimeState->ownerEntry;
 
         if (stopSoundHandle != 0) {
-            stopSoundHandle->StopIfActive();
+            zSndPlayHandleStopIfActive(stopSoundHandle);
         }
 
         zSndSample* const trailStopSample = ownerEntry->trailStopSample;
         if (trailStopSample != 0) {
-            trailStopSample->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(trailStopSample, 1.0f);
         }
 
         zEffectAnimEntry* const trailEffectAnim = ownerEntry->trailEffectAnim;
@@ -1942,7 +1942,7 @@ namespace OptCatalog
 
         if (nearestLockOnDistance != (float)(_HUGE)
             && g_OptCatalogRuntimeNowSec >= g_OptCatalogLockOnWarningGateTimeSec) {
-            g_OptCatalogSndLockOnWarning->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(g_OptCatalogSndLockOnWarning, 1.0f);
             g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec + 5.0f;
         }
 
@@ -2022,7 +2022,7 @@ namespace OptCatalog
      */
     void __cdecl PlayTriggerInactiveWarning()
     {
-        g_OptCatalogSndTriggerInactive->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(g_OptCatalogSndTriggerInactive, 1.0f);
     }
 
     /**
@@ -2035,7 +2035,7 @@ namespace OptCatalog
      */
     void __cdecl PlayWeaponInactiveWarning()
     {
-        g_OptCatalogSndWeaponInactive->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(g_OptCatalogSndWeaponInactive, 1.0f);
     }
 
     /**
@@ -2048,7 +2048,7 @@ namespace OptCatalog
      */
     void __cdecl PlayNoAmmoWarning()
     {
-        g_OptCatalogSndNoAmmoWarning->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(g_OptCatalogSndNoAmmoWarning, 1.0f);
     }
 
     /**
@@ -2149,7 +2149,7 @@ namespace OptCatalog
     /**
      * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
      * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
-     * @recoil-match source
+     * @recoil-match byte
      *
      * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
      * BN behavior: ECX is OptCatalogEntryDef*, EDX is
@@ -2612,7 +2612,7 @@ namespace OptCatalog
         }
 
         const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].soundCount) >> 15;
-        self->impactFxTable[impactSlot].soundSamples[soundIndex]->PlayA3D(gainScale, &hitEvent->hitPos, 0);
+        zSndSamplePlayA3D(self->impactFxTable[impactSlot].soundSamples[soundIndex], gainScale, &hitEvent->hitPos, 0);
     }
 
     /**
@@ -2630,6 +2630,6 @@ namespace OptCatalog
         }
 
         const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].bounceSoundCount) >> 15;
-        self->impactFxTable[impactSlot].bounceSoundSamples[soundIndex]->PlayA3D(gainScale, &hitEvent->pos, 0);
+        zSndSamplePlayA3D(self->impactFxTable[impactSlot].bounceSoundSamples[soundIndex], gainScale, &hitEvent->pos, 0);
     }
 } // namespace OptCatalog

@@ -417,10 +417,10 @@ void CZFMVActionPlaySound::Begin(double)
 {
     sample = zSnd::FindSampleByName(sampleName);
     if (voice != 0) {
-        voice->StopIfActive();
+        zSndPlayHandleStopIfActive(voice);
     }
     if (sample != 0) {
-        voice = sample->PlayA3DSimple(1.0f);
+        voice = zSndSamplePlayA3DSimple(sample, 1.0f);
     }
 }
 
@@ -837,7 +837,7 @@ void CZFMVActionFade::End()
 /**
  * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-avi-czfmvaction-play-avi
  * @recoil-artifact defines .text recoil:function:0x463570: CZFMVActionPlayAvi::CZFMVActionPlayAvi.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: build the AVI media path, resolve CD-ROM fallback, and store mode flags.
  */
@@ -1139,7 +1139,7 @@ int CZFMVActionBlurV::Update(double)
 /**
  * @recoil-anchor recoil:anchor:zfmv.fmv-script.czfmvaction-play-mci-czfmvaction-play-mci
  * @recoil-artifact defines .text recoil:function:0x463b00: CZFMVActionPlayMci::CZFMVActionPlayMci.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: build the MCI media path, create playback state, and set its destination rect.
  */

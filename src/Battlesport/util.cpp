@@ -231,7 +231,7 @@ zSndPlayHandle* zUtil_SaveGameState::StartMasterTypeLoopSfxHandle(int modeIndex,
         worldPos = &saveState->playerState->worldPos;
     }
     zSndPlayHandle* const handle
-        = saveState->playerState->masterCommonData->sfxWeaponUp[modeIndex]->PlayA3D(sfxVolume, worldPos, 0);
+        = zSndSamplePlayA3D(saveState->playerState->masterCommonData->sfxWeaponUp[modeIndex], sfxVolume, worldPos, 0);
     saveState->playerState->modeLoopSfxHandle[modeIndex] = handle;
     return handle;
 }
@@ -249,7 +249,7 @@ void zUtil_SaveGameState::StartModalLoopSfxHandle(int modalSfxIndex, float sfxVo
     zUtil_SaveGameState* const saveState = this;
     PlayerModalState* const modalState = saveState->primaryModalState;
     zSndSample* const sample = modalState->masterModalData->sfxEngine[modalSfxIndex];
-    zSndPlayHandle* const handle = sample->PlayA3D(sfxVolume, &saveState->playerState->worldPos, 0);
+    zSndPlayHandle* const handle = zSndSamplePlayA3D(sample, sfxVolume, &saveState->playerState->worldPos, 0);
     saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = handle;
 }
 
@@ -281,7 +281,7 @@ void zUtil_SaveGameState::StopMasterTypeLoopSfxHandle(int modeIndex)
     zUtil_SaveGameState* const saveState = this;
     zSndPlayHandle* const handle = saveState->playerState->modeLoopSfxHandle[modeIndex];
     if (handle != 0) {
-        handle->StopIfActive();
+        zSndPlayHandleStopIfActive(handle);
         saveState->playerState->modeLoopSfxHandle[modeIndex] = 0;
     }
 }
@@ -298,7 +298,7 @@ void zUtil_SaveGameState::StopModalLoopSfxHandle(int modalSfxIndex)
     zUtil_SaveGameState* const saveState = this;
     zSndPlayHandle* const handle = saveState->primaryModalState->modalSfxHandle[modalSfxIndex];
     if (handle != 0) {
-        handle->StopIfActive();
+        zSndPlayHandleStopIfActive(handle);
         saveState->primaryModalState->modalSfxHandle[modalSfxIndex] = 0;
     }
 }
@@ -354,7 +354,7 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(int enabled)
             primaryModalState->masterModalData->sfxPitchScale * modeLoopBlend
         );
         primaryModalState->modalSfxHandle[2]->SetEnableScale(1.0f - modeLoopBlend);
-        primaryModalState->modalSfxHandle[2]->Update3DDispatch(&playerState->worldPos, 0, 0);
+        zSndPlayHandleUpdate3DDispatch(primaryModalState->modalSfxHandle[2], &playerState->worldPos, 0, 0);
     }
 
     float engineEnableScale = primaryModalState->masterModalData->sfxVolumeScale * modeLoopBlend + 0.699999988f;
@@ -368,10 +368,10 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(int enabled)
         primaryModalState->masterModalData->sfxPitchScale * modeLoopBlend
     );
     primaryModalState->modalSfxHandle[0]->SetEnableScale(engineEnableScale);
-    primaryModalState->modalSfxHandle[0]->Update3DDispatch(&playerState->worldPos, 0, 0);
+    zSndPlayHandleUpdate3DDispatch(primaryModalState->modalSfxHandle[0], &playerState->worldPos, 0, 0);
 
     if (primaryModalState->modalSfxHandle[1] != 0) {
         primaryModalState->modalSfxHandle[1]->SetEnableScale(modeLoopBlend);
-        primaryModalState->modalSfxHandle[1]->Update3DDispatch(&playerState->worldPos, 0, 0);
+        zSndPlayHandleUpdate3DDispatch(primaryModalState->modalSfxHandle[1], &playerState->worldPos, 0, 0);
     }
 }

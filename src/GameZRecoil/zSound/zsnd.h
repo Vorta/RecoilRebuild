@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef __cplusplus
 #include "recoil/recoil_types.h"
 #include <list>
 #include <stddef.h>
@@ -66,10 +66,8 @@ struct zSndPlayHandle {
     int backendState1;
     int backendState2;
 
-    int StopIfActive();
     int SetFreqScaled(float scale);
     int __fastcall SetEnableScale(float scale);
-    int __fastcall Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     static void __fastcall PlayWithDeltaA3D(
@@ -192,9 +190,7 @@ struct zSndSample {
     zSndPlayHandle* __fastcall PlayOnActiveBackend(float gainScale, zVec3* worldPos, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnA3D(zVec3* worldPos, float gainScale, zVec3* velocity, int backendArg);
     zSndPlayHandle* __fastcall PlayOnDirectSound(int attenuation, zVec3* worldPos, zVec3* velocity, int backendArg);
-    zSndPlayHandle* __fastcall PlayA3D(float gainScale, zVec3* worldPos, zVec3* velocity);
     zSndPlayHandle* __fastcall PlayDirectSound(int variantIndex, float gainScale, int stopMarkerIndex);
-    zSndPlayHandle* PlayA3DSimple(float gainScale);
     int StopActiveVoicesIfPlaying();
     int __fastcall InitFromWaveData(zSndWaveData* waveData);
     int __fastcall InitFromWaveDataDirectSound(zSndWaveData* waveData);
@@ -368,7 +364,7 @@ int GetCDAudioOption();
 int __fastcall SetActiveBackendPreInit(int backend);
 int __cdecl GetActiveBackend();
 void __fastcall SetUseArchiveBanksFlag(int useArchiveBanks);
-zSndSample* __fastcall FindSampleByName(const char* sampleName);
+extern "C" zSndSample* __fastcall FindSampleByName(const char* sampleName);
 int __stdcall GainScaleToDirectSoundAttenuation(float gainScale);
 int __fastcall ApplyMuteStateToActiveVoices(int enableMute);
 int __cdecl IsMuted();
@@ -528,6 +524,12 @@ extern "C" int __fastcall zSndGroupLoadConfigBlock(
 extern "C" zSndGroup* __fastcall zSndGroupLoadFromConfigNode(zReader::Node* readerNode);
 extern "C" int __fastcall zSndGroupQueuePendingLoadsFromConfigNode(zReader::Node* readerNode);
 extern "C" int __fastcall zSndStreamRequestStopIfActive(zSndPlayHandle* request);
+extern "C" int __fastcall zSndPlayHandleStopIfActive(zSndPlayHandle* playHandle);
+extern "C" int __fastcall
+zSndPlayHandleUpdate3DDispatch(zSndPlayHandle* playHandle, zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
+extern "C" zSndPlayHandle* __fastcall
+zSndSamplePlayA3D(zSndSample* sample, float gainScale, zVec3* worldPos, zVec3* velocity);
+extern "C" zSndPlayHandle* __fastcall zSndSamplePlayA3DSimple(zSndSample* sample, float gainScale);
 extern "C" int __fastcall zSndPlayHandleTryEnableManaged(zSndPlayHandle* handle);
 extern "C" int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle);
 extern "C" int __fastcall zSndStreamRequestMatchGroupPredicate(void* payload, void* group);
@@ -536,3 +538,23 @@ extern "C" zSndSample* __fastcall zSndPendingListFindByName(const char* sampleNa
 extern "C" int __fastcall zSndPendingListMatchNamePredicate(void* payload, void* sampleName);
 extern "C" int __cdecl zSndStreamMgrEnsureInit();
 extern "C" void __cdecl zSndStreamMgrRecycleFinishedRequest();
+#else
+/* C view of the zSound entry points the zClass units call. */
+#include "recoil/recoil_callconv.h"
+#include "zclass.h"
+
+typedef struct zSndListenerState zSndListenerState;
+
+extern zVec3 g_zSnd_PreviousListenerPos;
+
+zSndSample* __fastcall FindSampleByName(const char* sampleName);
+int __fastcall zSndPlayHandleStopIfActive(zSndPlayHandle* playHandle);
+int __fastcall
+zSndPlayHandleUpdate3DDispatch(zSndPlayHandle* playHandle, zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
+zSndPlayHandle* __fastcall zSndSamplePlayA3D(zSndSample* sample, float gainScale, zVec3* worldPos, zVec3* velocity);
+zSndPlayHandle* __fastcall zSndSamplePlayA3DSimple(zSndSample* sample, float gainScale);
+int __fastcall zSndPlayHandleTryEnableManaged(zSndPlayHandle* handle);
+int __fastcall zSndPlayHandleTryDisableManaged(zSndPlayHandle* handle);
+int __fastcall zSndUpdateListenerState(zSndListenerState* listenerState, zVec3* listenerVelocity);
+float __cdecl zSndGetSpeedOfSoundMps();
+#endif

@@ -1455,7 +1455,7 @@ namespace zVideo
      * the shipped renderer needs no per-world binding. Retail folds this body with
      * ReturnSuccessStub at 0x4a75e0; callers pass the node in ECX.
      */
-    int __fastcall BindWorldNode(CZNodePartial* /*worldNode*/)
+    extern "C" int __fastcall BindWorldNode(CZNodePartial* /*worldNode*/)
     {
         return 0;
     }

@@ -584,7 +584,7 @@ void __cdecl ThreadMain(void*)
              */
             HudUiBriefingRuntime* const runtime = g_Briefing_Runtime;
             if (g_Briefing_CurrentSndHandle != 0) {
-                g_Briefing_CurrentSndHandle->StopIfActive();
+                zSndPlayHandleStopIfActive(g_Briefing_CurrentSndHandle);
             }
 
             CBriefingActionQueue* const actionQueue = &runtime->actionQueue;
@@ -867,7 +867,7 @@ int BriefingActionPlaySample::Tick(float)
 {
     zSndPlayHandle* handle = g_Briefing_CurrentSndHandle;
     if (handle != 0) {
-        handle->StopIfActive();
+        zSndPlayHandleStopIfActive(handle);
     }
 
     zSndSample* sample = zSnd::FindSampleByName(sampleName);
@@ -878,7 +878,7 @@ int BriefingActionPlaySample::Tick(float)
             return 1;
         }
 
-        g_Briefing_CurrentSndHandle = sample->PlayA3DSimple(gain);
+        g_Briefing_CurrentSndHandle = zSndSamplePlayA3DSimple(sample, gain);
         return 1;
     } else {
         if (useVariant != 0) {

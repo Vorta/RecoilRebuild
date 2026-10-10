@@ -136,7 +136,7 @@ typedef enum zOptHudTypeOption {
 
 #ifdef __cplusplus
 namespace zGame {
-void __cdecl ReturnOnlyStub();
+extern "C" void __cdecl ReturnOnlyStub();
 extern "C" {
 #endif
 zOptionEntryPartial* __fastcall OptionsFindOption(const char* name);

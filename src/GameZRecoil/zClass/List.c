@@ -1,3 +1,4 @@
+#include "cls_api.h"
 #include "zclass.h"
 
 #include "GameZRecoil/zError/zerr.h"
@@ -7,17 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace zDi
-{
-    extern "C" int __fastcall GetRefCount(zDiPartial * self);
-}
+extern int __fastcall GetRefCount(zDiPartial* self);
 
-namespace zModel_DiPool
-{
-    extern "C" int __fastcall FreeIfUnreferenced(zDiPartial * di);
-}
+extern int __fastcall FreeIfUnreferenced(zDiPartial* di);
 
-extern "C" {
 /**
  * Unresolved candidate: retail references do not establish a TypeList
  * zero-shadow object at 0x4f49ac, its extent, or the scalar identities below.
@@ -195,1254 +189,1219 @@ unsigned int g_CZClass_FilterIterUnknownDword1 = 0;
  * Purpose: cached prefix length used by filtered type-list prefix searches.
  */
 int g_CZClass_FilterIterPrefixLen = 0;
-}
 
-namespace
+enum { kQueuedTreeBucket = 7, kZClassNodeWorld = 2, kTypeListInsertedFlag = 0x01 };
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.alloclink
+ * @recoil-artifact defines .text recoil:function:0x44e630: CZTypeList::AllocLink.
+ * @recoil-match byte
+ *
+ * Purpose: allocate or recycle a type-list link while maintaining live
+ * link accounting.
+ */
+CZTypeListLink* __cdecl AllocLink(void)
 {
-    const int kQueuedTreeBucket = 7;
-    const int kZClassNodeWorld = 2;
-    const int kTypeListInsertedFlag = 0x01;
-}
-
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.alloclink
-     * @recoil-artifact defines .text recoil:function:0x44e630: CZTypeList::AllocLink.
-     * @recoil-match byte
-     *
-     * Purpose: allocate or recycle a type-list link while maintaining live
-     * link accounting.
-     */
-    CZTypeListLink* __cdecl AllocLink()
-    {
-        const int liveCount = g_CZTypeList_LiveLinkCount + 1;
-        g_CZTypeList_LiveLinkCount = liveCount;
-        if (liveCount > g_CZTypeList_PeakLiveLinkCount) {
-            g_CZTypeList_PeakLiveLinkCount = liveCount;
-        }
-
-        CZTypeListLink* link = g_CZTypeList_FreeLinkHead;
-        if (link != 0) {
-            // Pop through the global head: retail keeps &link->next in ECX for the later clear (0x44e656).
-            g_CZTypeList_FreeLinkHead = g_CZTypeList_FreeLinkHead->next;
-            if (g_CZTypeList_FreeLinkHead != 0) {
-                g_CZTypeList_FreeLinkHead->prev = 0;
-            }
-
-            link->next = 0;
-            link->prev = 0;
-            link->pendingRemove = 0;
-            return link;
-        }
-
-        return (CZTypeListLink*)(calloc(1, sizeof(CZTypeListLink)));
+    const int liveCount = g_CZTypeList_LiveLinkCount + 1;
+    CZTypeListLink* link;
+    g_CZTypeList_LiveLinkCount = liveCount;
+    if (liveCount > g_CZTypeList_PeakLiveLinkCount) {
+        g_CZTypeList_PeakLiveLinkCount = liveCount;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freelink
-     * @recoil-artifact defines .text recoil:function:0x44e690: CZTypeList::FreeLink.
-     * @recoil-match byte
-     *
-     * Purpose: return an unused type-list link to the global recycled-link
-     * list and update live link accounting.
-     */
-    void __fastcall FreeLink(CZTypeListLink * link)
-    {
-        --g_CZTypeList_LiveLinkCount;
-
-        CZTypeListLink* head = g_CZTypeList_FreeLinkHead;
-        if (head == 0) {
-            g_CZTypeList_FreeLinkHead = link;
-            link->prev = 0;
-            g_CZTypeList_FreeLinkHead->next = 0;
-            return;
+    link = g_CZTypeList_FreeLinkHead;
+    if (link != 0) {
+        // Pop through the global head: retail keeps &link->next in ECX for the later clear (0x44e656).
+        g_CZTypeList_FreeLinkHead = g_CZTypeList_FreeLinkHead->next;
+        if (g_CZTypeList_FreeLinkHead != 0) {
+            g_CZTypeList_FreeLinkHead->prev = 0;
         }
 
-        link->next = head;
+        link->next = 0;
         link->prev = 0;
-        g_CZTypeList_FreeLinkHead->prev = link;
+        link->pendingRemove = 0;
+        return link;
+    }
+
+    return (CZTypeListLink*)(calloc(1, sizeof(CZTypeListLink)));
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freelink
+ * @recoil-artifact defines .text recoil:function:0x44e690: CZTypeList::FreeLink.
+ * @recoil-match byte
+ *
+ * Purpose: return an unused type-list link to the global recycled-link
+ * list and update live link accounting.
+ */
+void __fastcall FreeLink(CZTypeListLink* link)
+{
+    CZTypeListLink* head;
+    --g_CZTypeList_LiveLinkCount;
+
+    head = g_CZTypeList_FreeLinkHead;
+    if (head == 0) {
         g_CZTypeList_FreeLinkHead = link;
+        link->prev = 0;
+        g_CZTypeList_FreeLinkHead->next = 0;
+        return;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freeall
-     * @recoil-artifact defines .text recoil:function:0x44e6d0: CZTypeList::FreeAll.
-     * @recoil-match byte
-     *
-     * Purpose: release every recycled type-list link owned by the global
-     * free-list cache.
-     */
-    void __cdecl FreeAll()
-    {
-        CZTypeListLink* link = g_CZTypeList_FreeLinkHead;
-        while (link != 0) {
-            g_CZTypeList_FreeLinkHead = link->next;
-            free(link);
-            link = g_CZTypeList_FreeLinkHead;
-        }
+    link->next = head;
+    link->prev = 0;
+    g_CZTypeList_FreeLinkHead->prev = link;
+    g_CZTypeList_FreeLinkHead = link;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.freeall
+ * @recoil-artifact defines .text recoil:function:0x44e6d0: CZTypeList::FreeAll.
+ * @recoil-match byte
+ *
+ * Purpose: release every recycled type-list link owned by the global
+ * free-list cache.
+ */
+void __cdecl FreeAll(void)
+{
+    CZTypeListLink* link = g_CZTypeList_FreeLinkHead;
+    while (link != 0) {
+        g_CZTypeList_FreeLinkHead = link->next;
+        free(link);
+        link = g_CZTypeList_FreeLinkHead;
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingremovals
+ * @recoil-artifact defines .text recoil:function:0x44e700: CZTypeList::ProcessPendingRemovals.
+ * @recoil-match byte
+ *
+ * Purpose: unlink deferred-removal entries from one type-list bucket and
+ * recycle their list links.
+ */
+int __fastcall ProcessPendingRemovals(int bucket)
+{
+    CZTypeListLink* head;
+    CZTypeListLink* tail;
+    CZTypeListLink* next;
+    int removed;
+    if (g_CZClass_DeferredProcessingEnabled == 0) {
+        return 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingremovals
-     * @recoil-artifact defines .text recoil:function:0x44e700: CZTypeList::ProcessPendingRemovals.
-     * @recoil-match byte
-     *
-     * Purpose: unlink deferred-removal entries from one type-list bucket and
-     * recycle their list links.
-     */
-    int __fastcall ProcessPendingRemovals(int bucket)
-    {
-        if (g_CZClass_DeferredProcessingEnabled == 0) {
-            return 0;
+    head = *g_CZTypeList_HeadSlotPtrs[bucket];
+    tail = *g_CZTypeList_TailSlotPtrs[bucket];
+    next = head;
+    do {
+        removed = 0;
+        while (next != 0 && next->pendingRemove == 0) {
+            next = next->next;
         }
 
-        CZTypeListLink* head = *g_CZTypeList_HeadSlotPtrs[bucket];
-        CZTypeListLink* tail = *g_CZTypeList_TailSlotPtrs[bucket];
-        CZTypeListLink* next = head;
-        int removed;
-        do {
-            removed = 0;
-            while (next != 0 && next->pendingRemove == 0) {
-                next = next->next;
-            }
+        if (next != 0) {
+            CZTypeListLink* link = next;
+            next = link->next;
+            removed = 1;
 
-            if (next != 0) {
-                CZTypeListLink* link = next;
-                next = link->next;
-                removed = 1;
-
-                if (bucket == 7 && (link->node->flags & 0x02) != 0) {
-                    link->pendingRemove = 0;
-                } else {
-                    if (link == head) {
-                        head = head->next;
-                        *g_CZTypeList_HeadSlotPtrs[bucket] = head;
-                    }
-                    if (link == tail) {
-                        tail = tail->prev;
-                        *g_CZTypeList_TailSlotPtrs[bucket] = tail;
-                    }
-                    if (link->prev != 0) {
-                        link->prev->next = link->next;
-                    }
-                    if (link->next != 0) {
-                        link->next->prev = link->prev;
-                    }
-                    if (bucket == 7) {
-                        link->node->flags &= ~0x01;
-                    }
-                    FreeLink(link);
+            if (bucket == 7 && (link->node->flags & 0x02) != 0) {
+                link->pendingRemove = 0;
+            } else {
+                if (link == head) {
+                    head = head->next;
+                    *g_CZTypeList_HeadSlotPtrs[bucket] = head;
                 }
+                if (link == tail) {
+                    tail = tail->prev;
+                    *g_CZTypeList_TailSlotPtrs[bucket] = tail;
+                }
+                if (link->prev != 0) {
+                    link->prev->next = link->next;
+                }
+                if (link->next != 0) {
+                    link->next->prev = link->prev;
+                }
+                if (bucket == 7) {
+                    link->node->flags &= ~0x01;
+                }
+                FreeLink(link);
             }
-        } while (removed);
+        }
+    } while (removed);
 
+    switch (bucket) {
+    case 6:
+        g_CZTypeList_Buckets[0].pendingRemovalDirty = 0;
+        break;
+    case 0:
+        g_CZTypeList_Buckets[1].pendingRemovalDirty = 0;
+        break;
+    case 1:
+        g_CZTypeList_Buckets[2].pendingRemovalDirty = 0;
+        break;
+    case 2:
+        g_CZTypeList_Buckets[3].pendingRemovalDirty = 0;
+        break;
+    case 3:
+        g_CZTypeList_Buckets[4].pendingRemovalDirty = 0;
+        break;
+    case 4:
+        g_CZTypeList_Buckets[5].pendingRemovalDirty = 0;
+        break;
+    case 5:
+        g_CZTypeList_Buckets[6].pendingRemovalDirty = 0;
+        break;
+    case 7:
+        g_CZTypeList_Buckets[7].pendingRemovalDirty = 0;
+        break;
+    case 8:
+        g_CZTypeList_Buckets[8].pendingRemovalDirty = 0;
+        break;
+    case 9:
+        g_CZTypeList_Buckets[9].pendingRemovalDirty = 0;
+        break;
+    case 10:
+        g_CZTypeList_Buckets[10].pendingRemovalDirty = 0;
+        break;
+    case 13:
+        g_CZTypeList_Buckets[11].pendingRemovalDirty = 0;
+        break;
+    case 14:
+        g_CZTypeList_Buckets[12].pendingRemovalDirty = 0;
+        break;
+    case 15:
+        g_CZTypeList_Buckets[13].pendingRemovalDirty = 0;
+        break;
+    case 11:
+        g_CZTypeList_Buckets[14].pendingRemovalDirty = 0;
+        break;
+    case 12:
+        g_CZTypeList_Buckets[15].pendingRemovalDirty = 0;
+        break;
+    }
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processdeferredwork
+ * @recoil-artifact defines .text recoil:function:0x44e920: CZClass::ProcessDeferredWork.
+ * @recoil-match byte
+ *
+ * Purpose: process dirty deferred-removal buckets and then drain pending
+ * node frees while deferred work is enabled.
+ */
+int __fastcall ProcessDeferredWork(void)
+{
+    if (g_CZClass_DeferredProcessingEnabled == 0) {
+        return 1;
+    }
+
+    if (g_CZTypeList_Buckets[0].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(6);
+    }
+    if (g_CZTypeList_Buckets[1].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(0);
+    }
+    if (g_CZTypeList_Buckets[2].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(1);
+    }
+    if (g_CZTypeList_Buckets[3].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(2);
+    }
+    if (g_CZTypeList_Buckets[4].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(3);
+    }
+    if (g_CZTypeList_Buckets[5].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(4);
+    }
+    if (g_CZTypeList_Buckets[6].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(5);
+    }
+    if (g_CZTypeList_Buckets[7].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(7);
+    }
+    if (g_CZTypeList_Buckets[8].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(8);
+    }
+    if (g_CZTypeList_Buckets[9].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(9);
+    }
+    if (g_CZTypeList_Buckets[10].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(10);
+    }
+    if (g_CZTypeList_Buckets[11].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(13);
+    }
+    if (g_CZTypeList_Buckets[12].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(14);
+    }
+    if (g_CZTypeList_Buckets[13].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(15);
+    }
+    if (g_CZTypeList_Buckets[14].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(11);
+    }
+    if (g_CZTypeList_Buckets[15].pendingRemovalDirty != 0) {
+        ProcessPendingRemovals(12);
+    }
+
+    if (g_CZNodeList_PendingFreeHead != 0) {
+        ProcessPendingFrees();
+    }
+
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateallbuckets
+ * @recoil-artifact defines .text recoil:function:0x44ea70: CZTypeList::UpdateAllBuckets.
+ * @recoil-match byte
+ *
+ * Purpose: update each non-empty callback-priority bucket and then flush
+ * queued node update work.
+ */
+void __cdecl UpdateAllBuckets(void)
+{
+    int i;
+    for (i = 0; i < 6; ++i) {
+        CZTypeListLink* bucket = *g_CZClassCallbackPriorityHeadSlotPtrs[i];
+        if (bucket != 0) {
+            UpdateBucket(bucket);
+            gwNodeUpdateAll();
+        }
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatebucket
+ * @recoil-artifact defines .text recoil:function:0x44eaa0: CZTypeList::UpdateBucket.
+ * @recoil-match byte
+ *
+ * Purpose: run eligible action callbacks in one bucket while deferring
+ * list mutations until the pass completes.
+ */
+void __fastcall UpdateBucket(CZTypeListLink* bucket)
+{
+    const int wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
+    g_CZClass_DeferredProcessingEnabled = 0;
+
+    while (bucket != 0) {
+        CZNodePartial* node = bucket->node;
+        CZNodeActionCallback callback = (CZNodeActionCallback)(node->actionCallback);
+        if (callback == 0) {
+            bucket->pendingRemove = 1;
+        } else if (bucket->pendingRemove == 0 && (node->flags & 0x04) != 0) {
+            callback(node);
+        }
+        bucket = bucket->next;
+    }
+    g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
+    ProcessDeferredWork();
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesubtree
+ * @recoil-artifact defines .text recoil:function:0x44eb00: CZNode::UpdateSubtree.
+ * @recoil-match byte
+ *
+ * Purpose: update a node subtree and mark each visited node for queued
+ * tree-list removal.
+ */
+int __fastcall UpdateSubtree(CZNodePartial* node)
+{
+    int i;
+    for (i = 0; i < node->listCountB; ++i) {
+        CZNodePartial* child = node->listB[i];
+        if ((child->flags & 0x01) != 0) {
+            UpdateSubtree(child);
+        }
+    }
+
+    gwNodeUpdate(node);
+    MarkPendingRemoval(kQueuedTreeBucket, node);
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatetree
+ * @recoil-artifact defines .text recoil:function:0x44eb50: CZNode::UpdateTree.
+ * @recoil-match byte
+ *
+ * Purpose: update a node tree upward through its non-world parents and
+ * process deferred work when enabled.
+ */
+void __fastcall UpdateTree(CZNodePartial* node)
+{
+    int i;
+    UpdateSubtree(node);
+    for (i = 0; i < node->listCountA; ++i) {
+        CZNodePartial* parent = node->listA[i];
+        if (parent->classId != kZClassNodeWorld) {
+            UpdateTree(parent);
+        }
+    }
+
+    if (g_CZClass_DeferredProcessingEnabled != 0) {
+        ProcessDeferredWork();
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatequeuedtrees
+ * @recoil-artifact defines .text recoil:function:0x44eba0: CZTypeList::UpdateQueuedTrees.
+ * @recoil-match byte
+ *
+ * Purpose: Update queued trees, reloading the queue after each update
+ * and skipping links whose removal is still pending.
+ */
+int __cdecl UpdateQueuedTrees(void)
+{
+    CZTypeListLink* link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
+    while (link != 0) {
+        if (link->pendingRemove == 0) {
+            UpdateTree(link->node);
+        }
+        link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
+        while (link != 0 && link->pendingRemove != 0) {
+            link = link->next;
+        }
+    }
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences
+ * @recoil-artifact defines .text recoil:function:0x44ebe0: CZTypeList::UpdateSequences.
+ * @recoil-match byte
+ *
+ * Purpose: update all non-pending sequence nodes while deferring list
+ * mutations during the pass.
+ */
+int __fastcall UpdateSequences(void)
+{
+    CZTypeListLink* link = g_CZTypeList_Buckets[14].head;
+    int wasDeferredEnabled;
+    if (link == 0) {
+        return 0;
+    }
+
+    wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
+    g_CZClass_DeferredProcessingEnabled = 0;
+    do {
+        if (link->pendingRemove == 0) {
+            Update(link->node);
+        }
+
+        link = link->next;
+    } while (link != 0);
+
+    g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
+    ProcessDeferredWork();
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateanimations
+ * @recoil-artifact defines .text recoil:function:0x44ec30: CZTypeList::UpdateAnimations.
+ * @recoil-match byte
+ *
+ * Purpose: update active animation nodes while deferring list mutations
+ * during the pass.
+ */
+int __fastcall UpdateAnimations(void)
+{
+    CZTypeListLink* link = g_CZTypeList_Buckets[15].head;
+    int wasDeferredEnabled;
+    if (link == 0) {
+        return 0;
+    }
+
+    wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
+    g_CZClass_DeferredProcessingEnabled = 0;
+    do {
+        if (link->pendingRemove == 0 && (link->node->flags & 0x04) != 0) {
+            UpdateNode(link->node);
+        }
+
+        link = link->next;
+    } while (link != 0);
+
+    g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
+    ProcessDeferredWork();
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodeupdateall
+ * @recoil-artifact defines .text recoil:function:0x44ec80: CZClass::gwNodeUpdateAll.
+ * @recoil-match byte
+ *
+ * Purpose: update sequence, animation, and queued-tree work in order.
+ */
+int __cdecl gwNodeUpdateAll(void)
+{
+    UpdateSequences();
+    UpdateAnimations();
+    return UpdateQueuedTrees();
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.countnodes
+ * @recoil-artifact defines .text recoil:function:0x44ec90: CZTypeList::CountNodes.
+ * @recoil-match byte
+ *
+ * Purpose: count the links currently present in one type-list bucket.
+ */
+int __fastcall CountNodes(int bucket)
+{
+    CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
+    int count = 0;
+    for (; link != 0; link = link->next) {
+        ++count;
+    }
+    return count;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.printbucket
+ * @recoil-artifact defines .text recoil:function:0x44ecb0: CZTypeList::PrintBucket.
+ * @recoil-match byte
+ *
+ * Purpose: print each node name in one type-list bucket for diagnostics.
+ */
+void __fastcall PrintBucket(int bucket)
+{
+    int index = 0;
+    CZTypeListLink* link;
+    for (link = *g_CZTypeList_HeadSlotPtrs[bucket]; link != 0; link = link->next) {
+        printf("Node %d desc: %s\n", index, link->node->name);
+        ++index;
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findbytypeandname
+ * @recoil-artifact defines .text recoil:function:0x44ecf0: CZClass::FindByTypeAndName.
+ * @recoil-match byte
+ *
+ * Purpose: find the first node in a type-list bucket whose name matches.
+ */
+CZNodePartial* __fastcall FindByTypeAndName(int bucket, const char* name)
+{
+    CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
+    CZNodePartial* result = 0;
+    for (; link != 0; link = link->next) {
+        if (strcmp(link->node->name, name) == 0) {
+            result = link->node;
+            break;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.getbuckethead
+ * @recoil-artifact defines .text recoil:function:0x44ed50: CZTypeList::GetBucketHead.
+ * @recoil-match byte
+ *
+ * Purpose: return the head link for one type-list bucket.
+ */
+CZTypeListLink* __fastcall GetBucketHead(int bucket)
+{
+    return *g_CZTypeList_HeadSlotPtrs[bucket];
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed60
+ * @recoil-artifact defines .text recoil:function:0x44ed60: CZNodeListInsert.
+ * @recoil-match byte
+ *
+ * Purpose: queue a node for deferred free processing on the pending-free
+ * node list.
+ */
+int __fastcall CZNodeListInsert(CZNodePartial* node)
+{
+    CZTypeListLink* link = AllocLink();
+    CZTypeListLink* head;
+    link->node = node;
+
+    head = g_CZNodeList_PendingFreeHead;
+    if (head != 0) {
+        link->next = head;
+        head->prev = link;
+    }
+    g_CZNodeList_PendingFreeHead = link;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed90
+ * @recoil-artifact defines .text recoil:function:0x44ed90: CZTypeListInsert.
+ * @recoil-match byte
+ *
+ * Purpose: insert a node at the head of a type-list bucket and queue
+ * eligible child nodes.
+ */
+int __fastcall CZTypeListInsert(int bucket, CZNodePartial* node)
+{
+    CZTypeListLink* link = AllocLink();
+    CZTypeListLink** headSlot;
+    CZTypeListLink* head;
+    link->node = node;
+
+    headSlot = g_CZTypeList_HeadSlotPtrs[bucket];
+    head = *headSlot;
+    if (head == 0) {
+        *g_CZTypeList_TailSlotPtrs[bucket] = link;
+    } else {
+        link->next = head;
+        head->prev = link;
+    }
+    *g_CZTypeList_HeadSlotPtrs[bucket] = link;
+
+    if (bucket == kQueuedTreeBucket) {
+        int i;
+        node->flags |= kTypeListInsertedFlag;
+        for (i = 0; i < node->listCountA; ++i) {
+            CZNodePartial* child = node->listA[i];
+            if ((child->flags & kTypeListInsertedFlag) == 0 && child->classId != kZClassNodeWorld) {
+                InsertChildNodes(kQueuedTreeBucket, child);
+            }
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insertchildnodes
+ * @recoil-artifact defines .text recoil:function:0x44ee10: CZTypeList::InsertChildNodes.
+ * @recoil-match byte
+ *
+ * Purpose: append a node to a type-list bucket and queue eligible child
+ * nodes.
+ */
+int __fastcall InsertChildNodes(int bucket, CZNodePartial* node)
+{
+    CZTypeListLink* link = AllocLink();
+    CZTypeListLink** tailSlot;
+    CZTypeListLink* tail;
+    CZTypeListLink** headSlot;
+    link->node = node;
+
+    tailSlot = g_CZTypeList_TailSlotPtrs[bucket];
+    tail = *tailSlot;
+    headSlot = g_CZTypeList_HeadSlotPtrs[bucket];
+    if (*headSlot == 0) {
+        *headSlot = link;
+        *g_CZTypeList_TailSlotPtrs[bucket] = link;
+    } else {
+        link->prev = tail;
+        tail->next = link;
+        *g_CZTypeList_TailSlotPtrs[bucket] = link;
+    }
+
+    if (bucket == kQueuedTreeBucket) {
+        int i;
+        node->flags |= kTypeListInsertedFlag;
+        for (i = 0; i < node->listCountA; ++i) {
+            CZNodePartial* child = node->listA[i];
+            if ((child->flags & kTypeListInsertedFlag) == 0 && child->classId != kZClassNodeWorld) {
+                InsertChildNodes(kQueuedTreeBucket, child);
+            }
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingfrees
+ * @recoil-artifact defines .text recoil:function:0x44eea0: CZNodeList::ProcessPendingFrees.
+ * @recoil-match byte
+ *
+ * Purpose: drain pending node frees through the class free-list and
+ * recycle their queue links.
+ */
+void __cdecl ProcessPendingFrees(void)
+{
+    CZTypeListLink* link = g_CZNodeList_PendingFreeHead;
+    while (link != 0) {
+        g_CZNodeList_PendingFreeHead = link->next;
+        FreeNodeToFreeList(link->node);
+        FreeLink(link);
+        link = g_CZNodeList_PendingFreeHead;
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.markpendingremoval
+ * @recoil-artifact defines .text recoil:function:0x44eed0: CZTypeList::MarkPendingRemoval.
+ * @recoil-match byte
+ *
+ * Purpose: mark a matching type-list link for deferred removal and set
+ * the bucket dirty flag.
+ */
+int __fastcall MarkPendingRemoval(int bucket, CZNodePartial* node)
+{
+    CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
+    if (link == 0) {
+        return 1;
+    }
+
+    while (link != 0 && (link->node != node || link->pendingRemove != 0)) {
+        link = link->next;
+    }
+
+    if (link != 0) {
+        link->pendingRemove = 1;
         switch (bucket) {
         case 6:
-            g_CZTypeList_Buckets[0].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[0].pendingRemovalDirty = 1;
             break;
         case 0:
-            g_CZTypeList_Buckets[1].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[1].pendingRemovalDirty = 1;
             break;
         case 1:
-            g_CZTypeList_Buckets[2].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[2].pendingRemovalDirty = 1;
             break;
         case 2:
-            g_CZTypeList_Buckets[3].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[3].pendingRemovalDirty = 1;
             break;
         case 3:
-            g_CZTypeList_Buckets[4].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[4].pendingRemovalDirty = 1;
             break;
         case 4:
-            g_CZTypeList_Buckets[5].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[5].pendingRemovalDirty = 1;
             break;
         case 5:
-            g_CZTypeList_Buckets[6].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[6].pendingRemovalDirty = 1;
             break;
         case 7:
-            g_CZTypeList_Buckets[7].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[7].pendingRemovalDirty = 1;
             break;
         case 8:
-            g_CZTypeList_Buckets[8].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[8].pendingRemovalDirty = 1;
             break;
         case 9:
-            g_CZTypeList_Buckets[9].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[9].pendingRemovalDirty = 1;
             break;
         case 10:
-            g_CZTypeList_Buckets[10].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[10].pendingRemovalDirty = 1;
             break;
         case 13:
-            g_CZTypeList_Buckets[11].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[11].pendingRemovalDirty = 1;
             break;
         case 14:
-            g_CZTypeList_Buckets[12].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[12].pendingRemovalDirty = 1;
             break;
         case 15:
-            g_CZTypeList_Buckets[13].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[13].pendingRemovalDirty = 1;
             break;
         case 11:
-            g_CZTypeList_Buckets[14].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[14].pendingRemovalDirty = 1;
             break;
         case 12:
-            g_CZTypeList_Buckets[15].pendingRemovalDirty = 0;
+            g_CZTypeList_Buckets[15].pendingRemovalDirty = 1;
             break;
         }
-        return 0;
     }
+
+    return 0;
 }
 
-namespace CZClass
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletenodefromlists
+ * @recoil-artifact defines .text recoil:function:0x44f000: CZList::DeleteNodeFromLists.
+ * @recoil-match byte
+ *
+ * Purpose: queue a node for removal from every type, callback, and
+ * update list that can reference it.
+ */
+int __fastcall DeleteNodeFromLists(CZNodePartial* node)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processdeferredwork
-     * @recoil-artifact defines .text recoil:function:0x44e920: CZClass::ProcessDeferredWork.
-     * @recoil-match byte
-     *
-     * Purpose: process dirty deferred-removal buckets and then drain pending
-     * node frees while deferred work is enabled.
-     */
-    int __fastcall ProcessDeferredWork()
-    {
-        if (g_CZClass_DeferredProcessingEnabled == 0) {
-            return 1;
-        }
-
-        if (g_CZTypeList_Buckets[0].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(6);
-        }
-        if (g_CZTypeList_Buckets[1].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(0);
-        }
-        if (g_CZTypeList_Buckets[2].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(1);
-        }
-        if (g_CZTypeList_Buckets[3].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(2);
-        }
-        if (g_CZTypeList_Buckets[4].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(3);
-        }
-        if (g_CZTypeList_Buckets[5].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(4);
-        }
-        if (g_CZTypeList_Buckets[6].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(5);
-        }
-        if (g_CZTypeList_Buckets[7].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(7);
-        }
-        if (g_CZTypeList_Buckets[8].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(8);
-        }
-        if (g_CZTypeList_Buckets[9].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(9);
-        }
-        if (g_CZTypeList_Buckets[10].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(10);
-        }
-        if (g_CZTypeList_Buckets[11].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(13);
-        }
-        if (g_CZTypeList_Buckets[12].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(14);
-        }
-        if (g_CZTypeList_Buckets[13].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(15);
-        }
-        if (g_CZTypeList_Buckets[14].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(11);
-        }
-        if (g_CZTypeList_Buckets[15].pendingRemovalDirty != 0) {
-            CZTypeList::ProcessPendingRemovals(12);
-        }
-
-        if (g_CZNodeList_PendingFreeHead != 0) {
-            CZNodeList::ProcessPendingFrees();
-        }
-
-        return 0;
+    switch (node->classId) {
+    case 1:
+        MarkPendingRemoval(8, node);
+        break;
+    case 8:
+        MarkPendingRemoval(12, node);
+        break;
+    case 7:
+        MarkPendingRemoval(11, node);
+        break;
+    case 4:
+        MarkPendingRemoval(15, node);
+        break;
+    case 3:
+        MarkPendingRemoval(14, node);
+        break;
+    case 2:
+        MarkPendingRemoval(13, node);
+        break;
+    case 9:
+        MarkPendingRemoval(9, node);
+        break;
+    case 10:
+        MarkPendingRemoval(10, node);
+        break;
+    case 0:
+    case 5:
+    case 6:
+    case 11:
+        break;
+    default:
+        sprintf(
+            g_zError_DebugMsgBuffer,
+            "%s: Line %d: Unknown class type while deleting node from lists.\n",
+            "D:\\Proj\\GameZRecoil\\zClass\\List.c",
+            0x75d
+        );
+        EmitDebugBuffer(3);
+        break;
     }
+
+    if ((node->flags & kTypeListInsertedFlag) != 0) {
+        MarkPendingRemoval(kQueuedTreeBucket, node);
+    }
+
+    if (node->actionCallback != 0 && node->callbackPriority >= 0 && node->callbackPriority < 6) {
+        MarkPendingRemoval(node->callbackPriority, node);
+    }
+
+    MarkPendingRemoval(6, node);
+    return 0;
 }
 
-namespace CZTypeList
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletealloftype
+ * @recoil-artifact defines .text recoil:function:0x44f120: CZList::DeleteAllOfType.
+ * @recoil-match byte
+ *
+ * Purpose: repeatedly delete every node in one type-list bucket and
+ * verify that the bucket is empty afterward.
+ */
+int __fastcall DeleteAllOfType(int bucket)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateallbuckets
-     * @recoil-artifact defines .text recoil:function:0x44ea70: CZTypeList::UpdateAllBuckets.
-     * @recoil-match byte
-     *
-     * Purpose: update each non-empty callback-priority bucket and then flush
-     * queued node update work.
-     */
-    void __cdecl UpdateAllBuckets()
-    {
-        for (int i = 0; i < 6; ++i) {
-            CZTypeListLink* bucket = *g_CZClassCallbackPriorityHeadSlotPtrs[i];
-            if (bucket != 0) {
-                UpdateBucket(bucket);
-                CZClass::gwNodeUpdateAll();
-            }
-        }
-    }
+    CZTypeListLink* link;
+    int deletedInLastPass;
+    ProcessDeferredWork();
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatebucket
-     * @recoil-artifact defines .text recoil:function:0x44eaa0: CZTypeList::UpdateBucket.
-     * @recoil-match byte
-     *
-     * Purpose: run eligible action callbacks in one bucket while deferring
-     * list mutations until the pass completes.
-     */
-    void __fastcall UpdateBucket(CZTypeListLink * bucket)
-    {
-        const int wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
-        g_CZClass_DeferredProcessingEnabled = 0;
-
-        while (bucket != 0) {
-            CZNodePartial* node = bucket->node;
-            CZNodeActionCallback callback = (CZNodeActionCallback)(node->actionCallback);
-            if (callback == 0) {
-                bucket->pendingRemove = 1;
-            } else if (bucket->pendingRemove == 0 && (node->flags & 0x04) != 0) {
-                callback(node);
-            }
-            bucket = bucket->next;
-        }
-        g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        CZClass::ProcessDeferredWork();
-    }
-}
-
-namespace CZNode
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesubtree
-     * @recoil-artifact defines .text recoil:function:0x44eb00: CZNode::UpdateSubtree.
-     * @recoil-match byte
-     *
-     * Purpose: update a node subtree and mark each visited node for queued
-     * tree-list removal.
-     */
-    int __fastcall UpdateSubtree(CZNodePartial * node)
-    {
-        for (int i = 0; i < node->listCountB; ++i) {
-            CZNodePartial* child = node->listB[i];
-            if ((child->flags & 0x01) != 0) {
-                UpdateSubtree(child);
-            }
-        }
-
-        CZClass::gwNodeUpdate(node);
-        CZTypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
-        return 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatetree
-     * @recoil-artifact defines .text recoil:function:0x44eb50: CZNode::UpdateTree.
-     * @recoil-match byte
-     *
-     * Purpose: update a node tree upward through its non-world parents and
-     * process deferred work when enabled.
-     */
-    void __fastcall UpdateTree(CZNodePartial * node)
-    {
-        UpdateSubtree(node);
-        for (int i = 0; i < node->listCountA; ++i) {
-            CZNodePartial* parent = node->listA[i];
-            if (parent->classId != kZClassNodeWorld) {
-                UpdateTree(parent);
-            }
-        }
-
-        if (g_CZClass_DeferredProcessingEnabled != 0) {
-            CZClass::ProcessDeferredWork();
-        }
-    }
-}
-
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatequeuedtrees
-     * @recoil-artifact defines .text recoil:function:0x44eba0: CZTypeList::UpdateQueuedTrees.
-     * @recoil-match byte
-     *
-     * Purpose: Update queued trees, reloading the queue after each update
-     * and skipping links whose removal is still pending.
-     */
-    int __cdecl UpdateQueuedTrees()
-    {
-        CZTypeListLink* link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
-        while (link != 0) {
-            if (link->pendingRemove == 0) {
-                CZNode::UpdateTree(link->node);
-            }
-            link = g_CZTypeList_Buckets[kQueuedTreeBucket].head;
-            while (link != 0 && link->pendingRemove != 0) {
-                link = link->next;
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updatesequences
-     * @recoil-artifact defines .text recoil:function:0x44ebe0: CZTypeList::UpdateSequences.
-     * @recoil-match byte
-     *
-     * Purpose: update all non-pending sequence nodes while deferring list
-     * mutations during the pass.
-     */
-    int __fastcall UpdateSequences()
-    {
-        CZTypeListLink* link = g_CZTypeList_Buckets[14].head;
-        if (link == 0) {
-            return 0;
-        }
-
-        const int wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
-        g_CZClass_DeferredProcessingEnabled = 0;
+    link = *g_CZTypeList_HeadSlotPtrs[bucket];
+    deletedInLastPass = 1;
+    while (link != 0 && deletedInLastPass == 1) {
+        CZTypeListLink* passLink;
+        deletedInLastPass = 0;
+        passLink = link;
         do {
-            if (link->pendingRemove == 0) {
-                CZSequence::Update(link->node);
+            CZNodePartial* node = passLink->node;
+            if (_gwListDeleteANode(node) == 0) {
+                deletedInLastPass = 1;
+            } else {
+                passLink = passLink->next;
             }
+        } while (passLink != 0 && deletedInLastPass == 0);
 
-            link = link->next;
-        } while (link != 0);
-
-        g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        CZClass::ProcessDeferredWork();
-        return 0;
+        ProcessDeferredWork();
+        link = *g_CZTypeList_HeadSlotPtrs[bucket];
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.updateanimations
-     * @recoil-artifact defines .text recoil:function:0x44ec30: CZTypeList::UpdateAnimations.
-     * @recoil-match byte
-     *
-     * Purpose: update active animation nodes while deferring list mutations
-     * during the pass.
-     */
-    int __fastcall UpdateAnimations()
-    {
-        CZTypeListLink* link = g_CZTypeList_Buckets[15].head;
-        if (link == 0) {
-            return 0;
-        }
-
-        const int wasDeferredEnabled = g_CZClass_DeferredProcessingEnabled;
-        g_CZClass_DeferredProcessingEnabled = 0;
-        do {
-            if (link->pendingRemove == 0 && (link->node->flags & 0x04) != 0) {
-                CZAnimate::UpdateNode(link->node);
-            }
-
-            link = link->next;
-        } while (link != 0);
-
-        g_CZClass_DeferredProcessingEnabled = wasDeferredEnabled;
-        CZClass::ProcessDeferredWork();
-        return 0;
+    if (link != 0) {
+        ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zClass\\List.c",
+            0x92d,
+            "ERROR deleting list nodes; Not all nodes were deleteable"
+        );
+        return 1;
     }
+
+    if (CountNodes(bucket) != 0) {
+        ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zClass\\List.c",
+            0x935,
+            "ERROR deleting list nodes; %d nodes left on list"
+        );
+        return 1;
+    }
+
+    *g_CZTypeList_TailSlotPtrs[bucket] = 0;
+    return 0;
 }
 
-namespace CZClass
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
+ * @recoil-artifact defines .text recoil:function:0x44f1d0: CZList::_gwListDeleteANode.
+ * @recoil-match byte
+ *
+ * Purpose: delete one node according to its class-specific child,
+ * ownership, and object-data cleanup rules.
+ */
+int __fastcall _gwListDeleteANode(CZNodePartial* node)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodeupdateall
-     * @recoil-artifact defines .text recoil:function:0x44ec80: CZClass::gwNodeUpdateAll.
-     * @recoil-match byte
-     *
-     * Purpose: update sequence, animation, and queued-tree work in order.
-     */
-    int __cdecl gwNodeUpdateAll()
-    {
-        CZTypeList::UpdateSequences();
-        CZTypeList::UpdateAnimations();
-        return CZTypeList::UpdateQueuedTrees();
-    }
-}
-
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.countnodes
-     * @recoil-artifact defines .text recoil:function:0x44ec90: CZTypeList::CountNodes.
-     * @recoil-match byte
-     *
-     * Purpose: count the links currently present in one type-list bucket.
-     */
-    int __fastcall CountNodes(int bucket)
-    {
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
-        int count = 0;
-        for (; link != 0; link = link->next) {
-            ++count;
-        }
-        return count;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.printbucket
-     * @recoil-artifact defines .text recoil:function:0x44ecb0: CZTypeList::PrintBucket.
-     * @recoil-match byte
-     *
-     * Purpose: print each node name in one type-list bucket for diagnostics.
-     */
-    void __fastcall PrintBucket(int bucket)
-    {
-        int index = 0;
-        for (CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket]; link != 0; link = link->next) {
-            printf("Node %d desc: %s\n", index, link->node->name);
-            ++index;
-        }
-    }
-}
-
-namespace CZClass
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findbytypeandname
-     * @recoil-artifact defines .text recoil:function:0x44ecf0: CZClass::FindByTypeAndName.
-     * @recoil-match byte
-     *
-     * Purpose: find the first node in a type-list bucket whose name matches.
-     */
-    CZNodePartial* __fastcall FindByTypeAndName(int bucket, const char* name)
-    {
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
-        CZNodePartial* result = 0;
-        for (; link != 0; link = link->next) {
-            if (strcmp(link->node->name, name) == 0) {
-                result = link->node;
-                break;
-            }
-        }
-
+    unsigned int displayInstanceWord;
+    int result = gwNodeGetUserData(node, &displayInstanceWord);
+    if (result != 0) {
         return result;
     }
-}
 
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.getbuckethead
-     * @recoil-artifact defines .text recoil:function:0x44ed50: CZTypeList::GetBucketHead.
-     * @recoil-match byte
-     *
-     * Purpose: return the head link for one type-list bucket.
-     */
-    CZTypeListLink* __fastcall GetBucketHead(int bucket)
-    {
-        return *g_CZTypeList_HeadSlotPtrs[bucket];
-    }
-}
-
-namespace CZNodeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed60
-     * @recoil-artifact defines .text recoil:function:0x44ed60: CZNodeList::Insert.
-     * @recoil-match byte
-     *
-     * Purpose: queue a node for deferred free processing on the pending-free
-     * node list.
-     */
-    int __fastcall Insert(CZNodePartial * node)
-    {
-        CZTypeListLink* link = CZTypeList::AllocLink();
-        link->node = node;
-
-        CZTypeListLink* head = g_CZNodeList_PendingFreeHead;
-        if (head != 0) {
-            link->next = head;
-            head->prev = link;
-        }
-        g_CZNodeList_PendingFreeHead = link;
-        return 0;
-    }
-}
-
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insert-44ed90
-     * @recoil-artifact defines .text recoil:function:0x44ed90: CZTypeList::Insert.
-     * @recoil-match byte
-     *
-     * Purpose: insert a node at the head of a type-list bucket and queue
-     * eligible child nodes.
-     */
-    int __fastcall Insert(int bucket, CZNodePartial* node)
-    {
-        CZTypeListLink* link = AllocLink();
-        link->node = node;
-
-        CZTypeListLink** headSlot = g_CZTypeList_HeadSlotPtrs[bucket];
-        CZTypeListLink* head = *headSlot;
-        if (head == 0) {
-            *g_CZTypeList_TailSlotPtrs[bucket] = link;
-        } else {
-            link->next = head;
-            head->prev = link;
-        }
-        *g_CZTypeList_HeadSlotPtrs[bucket] = link;
-
-        if (bucket == kQueuedTreeBucket) {
-            node->flags |= kTypeListInsertedFlag;
-            for (int i = 0; i < node->listCountA; ++i) {
-                CZNodePartial* child = node->listA[i];
-                if ((child->flags & kTypeListInsertedFlag) == 0 && child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(kQueuedTreeBucket, child);
-                }
+    if (displayInstanceWord != 0) {
+        gwNodeSetDisplayInstance(node, 0);
+        if (GetRefCount((zDiPartial*)(unsigned int)displayInstanceWord) == 0) {
+            result = FreeIfUnreferenced((zDiPartial*)(unsigned int)displayInstanceWord);
+            if (result != 0) {
+                return result;
             }
         }
-
-        return 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.insertchildnodes
-     * @recoil-artifact defines .text recoil:function:0x44ee10: CZTypeList::InsertChildNodes.
-     * @recoil-match byte
-     *
-     * Purpose: append a node to a type-list bucket and queue eligible child
-     * nodes.
-     */
-    int __fastcall InsertChildNodes(int bucket, CZNodePartial* node)
-    {
-        CZTypeListLink* link = AllocLink();
-        link->node = node;
-
-        CZTypeListLink** tailSlot = g_CZTypeList_TailSlotPtrs[bucket];
-        CZTypeListLink* tail = *tailSlot;
-        CZTypeListLink** headSlot = g_CZTypeList_HeadSlotPtrs[bucket];
-        if (*headSlot == 0) {
-            *headSlot = link;
-            *g_CZTypeList_TailSlotPtrs[bucket] = link;
-        } else {
-            link->prev = tail;
-            tail->next = link;
-            *g_CZTypeList_TailSlotPtrs[bucket] = link;
+    // BN emits the switch bodies in object3D/animate/lod/sequence/camera/window/display/switch/light/sound/world
+    // order.
+    switch (node->classId) {
+    case 5:
+        while (node->listCountB > 0) {
+            result = CZObject3DRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
         }
+        if (node->listCountA == 0) {
+            return CZObject3DDeleteNode(node);
+        }
+        return 1;
 
-        if (bucket == kQueuedTreeBucket) {
-            node->flags |= kTypeListInsertedFlag;
-            for (int i = 0; i < node->listCountA; ++i) {
-                CZNodePartial* child = node->listA[i];
-                if ((child->flags & kTypeListInsertedFlag) == 0 && child->classId != kZClassNodeWorld) {
-                    InsertChildNodes(kQueuedTreeBucket, child);
-                }
+    case 8:
+        while (node->listCountB > 0) {
+            result = CZAnimateRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZAnimateDeleteNode(node);
+        }
+        return 1;
+
+    case 6:
+        while (node->listCountB > 0) {
+            result = CZLodRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
             }
         }
 
-        return 0;
-    }
-}
-
-namespace CZNodeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.processpendingfrees
-     * @recoil-artifact defines .text recoil:function:0x44eea0: CZNodeList::ProcessPendingFrees.
-     * @recoil-match byte
-     *
-     * Purpose: drain pending node frees through the class free-list and
-     * recycle their queue links.
-     */
-    void __cdecl ProcessPendingFrees()
-    {
-        CZTypeListLink* link = g_CZNodeList_PendingFreeHead;
-        while (link != 0) {
-            g_CZNodeList_PendingFreeHead = link->next;
-            CZClass::FreeNodeToFreeList(link->node);
-            CZTypeList::FreeLink(link);
-            link = g_CZNodeList_PendingFreeHead;
+        if (node->listCountA == 0) {
+            return CZLodDeleteNode(node);
         }
-    }
-}
+        return 1;
 
-namespace CZTypeList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.markpendingremoval
-     * @recoil-artifact defines .text recoil:function:0x44eed0: CZTypeList::MarkPendingRemoval.
-     * @recoil-match byte
-     *
-     * Purpose: mark a matching type-list link for deferred removal and set
-     * the bucket dirty flag.
-     */
-    int __fastcall MarkPendingRemoval(int bucket, CZNodePartial* node)
-    {
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
-        if (link == 0) {
+    case 7:
+        while (node->listCountB > 0) {
+            result = CZSequenceRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZSequenceDeleteNode(node);
+        }
+        return 1;
+
+    case 1:
+        while (node->listCountB > 0) {
+            result = gwCameraRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZCameraDeleteNode(node);
+        }
+        return 1;
+
+    case 3:
+        while (node->listCountB > 0) {
+            result = RemoveChildChecked(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZWindowDeleteNode(node);
+        }
+        return 1;
+
+    case 4:
+        while (node->listCountB > 0) {
+            result = CZDisplayRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZDisplayDeleteNode(node);
+        }
+        return 1;
+
+    case 11:
+        while (node->listCountB > 0) {
+            result = RemoveChildValidated(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        if (node->listCountA == 0) {
+            return CZSwitchDeleteNode(node);
+        }
+        return 1;
+
+    case 9: {
+        CZLightDataPartial* lightData;
+        while (node->listCountB > 0) {
+            result = CZLightRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
+        lightData = (CZLightDataPartial*)(node->classData);
+        if (lightData->attachedWorldCount > 0) {
             return 1;
         }
-
-        while (link != 0 && (link->node != node || link->pendingRemove != 0)) {
-            link = link->next;
+        if (node->listCountA == 0) {
+            return CZLightDeleteNode(node);
         }
-
-        if (link != 0) {
-            link->pendingRemove = 1;
-            switch (bucket) {
-            case 6:
-                g_CZTypeList_Buckets[0].pendingRemovalDirty = 1;
-                break;
-            case 0:
-                g_CZTypeList_Buckets[1].pendingRemovalDirty = 1;
-                break;
-            case 1:
-                g_CZTypeList_Buckets[2].pendingRemovalDirty = 1;
-                break;
-            case 2:
-                g_CZTypeList_Buckets[3].pendingRemovalDirty = 1;
-                break;
-            case 3:
-                g_CZTypeList_Buckets[4].pendingRemovalDirty = 1;
-                break;
-            case 4:
-                g_CZTypeList_Buckets[5].pendingRemovalDirty = 1;
-                break;
-            case 5:
-                g_CZTypeList_Buckets[6].pendingRemovalDirty = 1;
-                break;
-            case 7:
-                g_CZTypeList_Buckets[7].pendingRemovalDirty = 1;
-                break;
-            case 8:
-                g_CZTypeList_Buckets[8].pendingRemovalDirty = 1;
-                break;
-            case 9:
-                g_CZTypeList_Buckets[9].pendingRemovalDirty = 1;
-                break;
-            case 10:
-                g_CZTypeList_Buckets[10].pendingRemovalDirty = 1;
-                break;
-            case 13:
-                g_CZTypeList_Buckets[11].pendingRemovalDirty = 1;
-                break;
-            case 14:
-                g_CZTypeList_Buckets[12].pendingRemovalDirty = 1;
-                break;
-            case 15:
-                g_CZTypeList_Buckets[13].pendingRemovalDirty = 1;
-                break;
-            case 11:
-                g_CZTypeList_Buckets[14].pendingRemovalDirty = 1;
-                break;
-            case 12:
-                g_CZTypeList_Buckets[15].pendingRemovalDirty = 1;
-                break;
-            }
-        }
-
-        return 0;
-    }
-}
-
-namespace CZList
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletenodefromlists
-     * @recoil-artifact defines .text recoil:function:0x44f000: CZList::DeleteNodeFromLists.
-     * @recoil-match byte
-     *
-     * Purpose: queue a node for removal from every type, callback, and
-     * update list that can reference it.
-     */
-    int __fastcall DeleteNodeFromLists(CZNodePartial * node)
-    {
-        switch (node->classId) {
-        case 1:
-            CZTypeList::MarkPendingRemoval(8, node);
-            break;
-        case 8:
-            CZTypeList::MarkPendingRemoval(12, node);
-            break;
-        case 7:
-            CZTypeList::MarkPendingRemoval(11, node);
-            break;
-        case 4:
-            CZTypeList::MarkPendingRemoval(15, node);
-            break;
-        case 3:
-            CZTypeList::MarkPendingRemoval(14, node);
-            break;
-        case 2:
-            CZTypeList::MarkPendingRemoval(13, node);
-            break;
-        case 9:
-            CZTypeList::MarkPendingRemoval(9, node);
-            break;
-        case 10:
-            CZTypeList::MarkPendingRemoval(10, node);
-            break;
-        case 0:
-        case 5:
-        case 6:
-        case 11:
-            break;
-        default:
-            sprintf(
-                g_zError_DebugMsgBuffer,
-                "%s: Line %d: Unknown class type while deleting node from lists.\n",
-                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
-                0x75d
-            );
-            zError::EmitDebugBuffer(3);
-            break;
-        }
-
-        if ((node->flags & kTypeListInsertedFlag) != 0) {
-            CZTypeList::MarkPendingRemoval(kQueuedTreeBucket, node);
-        }
-
-        if (node->actionCallback != 0 && node->callbackPriority >= 0 && node->callbackPriority < 6) {
-            CZTypeList::MarkPendingRemoval(node->callbackPriority, node);
-        }
-
-        CZTypeList::MarkPendingRemoval(6, node);
-        return 0;
+        return 1;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.deletealloftype
-     * @recoil-artifact defines .text recoil:function:0x44f120: CZList::DeleteAllOfType.
-     * @recoil-match byte
-     *
-     * Purpose: repeatedly delete every node in one type-list bucket and
-     * verify that the bucket is empty afterward.
-     */
-    int __fastcall DeleteAllOfType(int bucket)
-    {
-        CZClass::ProcessDeferredWork();
-
-        CZTypeListLink* link = *g_CZTypeList_HeadSlotPtrs[bucket];
-        int deletedInLastPass = 1;
-        while (link != 0 && deletedInLastPass == 1) {
-            deletedInLastPass = 0;
-            CZTypeListLink* passLink = link;
-            do {
-                CZNodePartial* node = passLink->node;
-                if (_gwListDeleteANode(node) == 0) {
-                    deletedInLastPass = 1;
-                } else {
-                    passLink = passLink->next;
-                }
-            } while (passLink != 0 && deletedInLastPass == 0);
-
-            CZClass::ProcessDeferredWork();
-            link = *g_CZTypeList_HeadSlotPtrs[bucket];
+    case 10: {
+        CZSoundDataPartial* soundData;
+        while (node->listCountB > 0) {
+            result = CZSoundRemoveChild(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
         }
-
-        if (link != 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
-                0x92d,
-                "ERROR deleting list nodes; Not all nodes were deleteable"
-            );
+        soundData = (CZSoundDataPartial*)(node->classData);
+        if (soundData->attachedWorldCount > 0) {
             return 1;
         }
-
-        if (CZTypeList::CountNodes(bucket) != 0) {
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
-                0x935,
-                "ERROR deleting list nodes; %d nodes left on list"
-            );
-            return 1;
+        if (node->listCountA == 0) {
+            return CZSoundDeleteNode(node);
         }
-
-        *g_CZTypeList_TailSlotPtrs[bucket] = 0;
-        return 0;
+        return 1;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwlistdeleteanode
-     * @recoil-artifact defines .text recoil:function:0x44f1d0: CZList::_gwListDeleteANode.
-     * @recoil-match byte
-     *
-     * Purpose: delete one node according to its class-specific child,
-     * ownership, and object-data cleanup rules.
-     */
-    int __fastcall _gwListDeleteANode(CZNodePartial * node)
-    {
-        unsigned int displayInstanceWord;
-        int result = CZClass::gwNodeGetUserData(node, &displayInstanceWord);
-        if (result != 0) {
-            return result;
-        }
-
-        if (displayInstanceWord != 0) {
-            CZClass::gwNodeSetDisplayInstance(node, 0);
-            if (zDi::GetRefCount((zDiPartial*)(unsigned int)displayInstanceWord) == 0) {
-                result = zModel_DiPool::FreeIfUnreferenced((zDiPartial*)(unsigned int)displayInstanceWord);
-                if (result != 0) {
-                    return result;
-                }
-            }
-        }
-
-        // BN emits the switch bodies in object3D/animate/lod/sequence/camera/window/display/switch/light/sound/world
-        // order.
-        switch (node->classId) {
-        case 5:
-            while (node->listCountB > 0) {
-                result = CZObject3D::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZObject3D::DeleteNode(node);
-            }
-            return 1;
-
-        case 8:
-            while (node->listCountB > 0) {
-                result = CZAnimate::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZAnimate::DeleteNode(node);
-            }
-            return 1;
-
-        case 6:
-            while (node->listCountB > 0) {
-                result = CZLod::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-
-            if (node->listCountA == 0) {
-                return CZLod::DeleteNode(node);
-            }
-            return 1;
-
-        case 7:
-            while (node->listCountB > 0) {
-                result = CZSequence::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZSequence::DeleteNode(node);
-            }
-            return 1;
-
-        case 1:
-            while (node->listCountB > 0) {
-                result = CZCamera::gwCameraRemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZCamera::DeleteNode(node);
-            }
-            return 1;
-
-        case 3:
-            while (node->listCountB > 0) {
-                result = CZClass::RemoveChildChecked(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZWindow::DeleteNode(node);
-            }
-            return 1;
-
-        case 4:
-            while (node->listCountB > 0) {
-                result = CZDisplay::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZDisplay::DeleteNode(node);
-            }
-            return 1;
-
-        case 11:
-            while (node->listCountB > 0) {
-                result = CZClass::RemoveChildValidated(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            if (node->listCountA == 0) {
-                return CZSwitch::DeleteNode(node);
-            }
-            return 1;
-
-        case 9: {
-            while (node->listCountB > 0) {
-                result = CZLight::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            CZLightDataPartial* lightData = (CZLightDataPartial*)(node->classData);
-            if (lightData->attachedWorldCount > 0) {
-                return 1;
-            }
-            if (node->listCountA == 0) {
-                return CZLight::DeleteNode(node);
-            }
-            return 1;
-        }
-
-        case 10: {
-            while (node->listCountB > 0) {
-                result = CZSound::RemoveChild(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
-            }
-            CZSoundDataPartial* soundData = (CZSoundDataPartial*)(node->classData);
-            if (soundData->attachedWorldCount > 0) {
-                return 1;
-            }
-            if (node->listCountA == 0) {
-                return CZSound::DeleteNode(node);
-            }
-            return 1;
-        }
-
-        case 2: {
-            {
-                CZWorldDataPartial* worldData = (CZWorldDataPartial*)(node->classData);
-
-                while (worldData->lightCount > 0) {
-                    result = CZWorld::RemoveLight(node, worldData->lightNodes[0]);
-                    if (result != 0) {
-                        return result;
-                    }
-                }
-                if (worldData->lightNodes != 0) {
-                    free(worldData->lightNodes);
-                    worldData->lightNodes = 0;
-                    free(worldData->lightDataList);
-                    worldData->lightDataList = 0;
-                }
-            }
-
+    case 2: {
+        CZWorldDataPartial* worldData;
+        {
             CZWorldDataPartial* worldData = (CZWorldDataPartial*)(node->classData);
 
-            while (worldData->soundCount > 0) {
-                result = CZWorld::RemoveSound(node, worldData->soundNodes[0]);
+            while (worldData->lightCount > 0) {
+                result = RemoveLight(node, worldData->lightNodes[0]);
                 if (result != 0) {
                     return result;
                 }
             }
-            if (worldData->soundNodes != 0) {
-                free(worldData->soundNodes);
-                worldData->soundNodes = 0;
-                free(worldData->soundDataList);
-                worldData->soundDataList = 0;
+            if (worldData->lightNodes != 0) {
+                free(worldData->lightNodes);
+                worldData->lightNodes = 0;
+                free(worldData->lightDataList);
+                worldData->lightDataList = 0;
             }
+        }
 
-            while (node->listCountB > 0) {
-                result = CZWorld::RemoveChildAtGrid(node, node->listB[0]);
-                if (result != 0) {
-                    return result;
-                }
+        worldData = (CZWorldDataPartial*)(node->classData);
+
+        while (worldData->soundCount > 0) {
+            result = RemoveSound(node, worldData->soundNodes[0]);
+            if (result != 0) {
+                return result;
             }
+        }
+        if (worldData->soundNodes != 0) {
+            free(worldData->soundNodes);
+            worldData->soundNodes = 0;
+            free(worldData->soundDataList);
+            worldData->soundDataList = 0;
+        }
 
-            // Each grid row contains contiguous areas. Remove every area child
-            // before checking whether the world node can be deleted.
+        while (node->listCountB > 0) {
+            result = RemoveChildAtGrid(node, node->listB[0]);
+            if (result != 0) {
+                return result;
+            }
+        }
 
-            {
-                zWorldAreaPartial** rowCursor = worldData->areaGridRows;
-                int row = 0;
-                for (; row < worldData->areaGridRowCount; ++row) {
-                    zWorldAreaPartial* area = *rowCursor;
-                    int col = 0;
-                    if (worldData->areaGridColCount > 0) {
-                        do {
-                            while (area->childCount > 0) {
-                                result = CZWorld::RemoveChildAtGrid(node, area->childList[0]);
-                                if (result != 0) {
-                                    return result;
-                                }
+        // Each grid row contains contiguous areas. Remove every area child
+        // before checking whether the world node can be deleted.
+
+        {
+            zWorldAreaPartial** rowCursor = worldData->areaGridRows;
+            int row = 0;
+            for (; row < worldData->areaGridRowCount; ++row) {
+                zWorldAreaPartial* area = *rowCursor;
+                int col = 0;
+                if (worldData->areaGridColCount > 0) {
+                    do {
+                        while (area->childCount > 0) {
+                            result = RemoveChildAtGrid(node, area->childList[0]);
+                            if (result != 0) {
+                                return result;
                             }
-                            ++area;
-                            ++col;
-                        } while (col < worldData->areaGridColCount);
-                    }
-                    ++rowCursor;
+                        }
+                        ++area;
+                        ++col;
+                    } while (col < worldData->areaGridColCount);
                 }
+                ++rowCursor;
             }
-
-            if (node->listCountA == 0) {
-                return CZWorld::DeleteNode(node);
-            }
-            return 1;
         }
 
-        default:
-            zError::ReportOld(
-                0x400,
-                "D:\\Proj\\GameZRecoil\\zClass\\List.c",
-                0x8d4,
-                "_gwListDeleteANode(): Unrecognized node class type:node = %s ptr = 0x%08x class_type = %d",
-                node,
-                node,
-                node->classId
-            );
-            return 3;
+        if (node->listCountA == 0) {
+            return CZWorldDeleteNode(node);
         }
+        return 1;
+    }
+
+    default:
+        ReportOld(
+            0x400,
+            "D:\\Proj\\GameZRecoil\\zClass\\List.c",
+            0x8d4,
+            "_gwListDeleteANode(): Unrecognized node class type:node = %s ptr = 0x%08x class_type = %d",
+            node,
+            node,
+            node->classId
+        );
+        return 3;
     }
 }
 
-namespace CZList
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.renderactivecameras
+ * @recoil-artifact defines .text recoil:function:0x44f630: CZList::RenderActiveCameras (GameZRecoil/zClass/List.c).
+ * @recoil-match byte
+ *
+ * Purpose: walk the active camera bucket and render each enabled camera through
+ * the current software or scene-render path.
+ */
+int __cdecl RenderActiveCameras(void)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.renderactivecameras
-     * @recoil-artifact defines .text recoil:function:0x44f630: CZList::RenderActiveCameras (GameZRecoil/zClass/List.c).
-     * @recoil-match byte
-     *
-     * Purpose: walk the active camera bucket and render each enabled camera through
-     * the current software or scene-render path.
-     */
-    int __cdecl RenderActiveCameras()
-    {
-        CZTypeListLink* link = CZTypeList::GetBucketHead(8);
-        if (link == 0) {
-            fprintf(stderr, "ERROR: No camera on camera list.\n");
-            return 1;
+    CZTypeListLink* link = GetBucketHead(8);
+    if (link == 0) {
+        fprintf(stderr, "ERROR: No camera on camera list.\n");
+        return 1;
+    }
+
+    do {
+        CZNodePartial* const camera = link->node;
+        CZTypeListLink* const next = link->next;
+
+        if ((camera->flags & 4) != 0) {
+            if (g_zVideo_ActiveRendererPath != 0) {
+                zVideoswRenderFrame(camera, 0);
+            } else {
+                RenderScene(camera, 0);
+            }
         }
 
-        do {
-            CZNodePartial* const camera = link->node;
-            CZTypeListLink* const next = link->next;
+        link = next;
+    } while (link != 0);
 
-            if ((camera->flags & 4) != 0) {
-                if (g_zVideo_ActiveRendererPath != 0) {
-                    zVideoswRenderFrame(camera, 0);
-                } else {
-                    CZCamera::RenderScene(camera, 0);
-                }
-            }
+    return 0;
+}
 
-            link = next;
-        } while (link != 0);
-
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.iteratebucketfiltered
+ * @recoil-artifact defines .text recoil:function:0x44f690: CZList::IterateBucketFiltered.
+ * @recoil-match byte
+ *
+ * Purpose: initialize or continue filtered iteration over one type-list
+ * bucket using a caller-supplied predicate.
+ */
+CZNodePartial* __fastcall IterateBucketFiltered(const char* filterText, int bucket, CZNodePredicate predicate)
+{
+    CZTypeListLink* link;
+    if (filterText != 0) {
+        g_CZClass_FilterIterText = filterText;
+        g_CZClass_FilterIterCursor = GetBucketHead(bucket);
         return 0;
     }
+
+    link = g_CZClass_FilterIterCursor;
+    while (link != 0) {
+        CZNodePartial* node = link->node;
+        g_CZClass_FilterIterCursor = link->next;
+        if (predicate(node) != 0) {
+            return node;
+        }
+        link = g_CZClass_FilterIterCursor;
+    }
+
+    return 0;
 }
 
-namespace CZList
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix
+ * @recoil-artifact defines .text recoil:function:0x44f6f0: CZClass::FindNextByTypePrefix.
+ * @recoil-match byte
+ *
+ * Purpose: initialize or continue prefix search over one type-list bucket.
+ */
+CZNodePartial* __fastcall FindNextByTypePrefix(const char* prefixText, int bucket)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.iteratebucketfiltered
-     * @recoil-artifact defines .text recoil:function:0x44f690: CZList::IterateBucketFiltered.
-     * @recoil-match byte
-     *
-     * Purpose: initialize or continue filtered iteration over one type-list
-     * bucket using a caller-supplied predicate.
-     */
-    CZNodePartial* __fastcall IterateBucketFiltered(const char* filterText, int bucket, CZNodePredicate predicate)
-    {
-        if (filterText != 0) {
-            g_CZClass_FilterIterText = filterText;
-            g_CZClass_FilterIterCursor = CZTypeList::GetBucketHead(bucket);
-            return 0;
-        }
-
-        CZTypeListLink* link = g_CZClass_FilterIterCursor;
-        while (link != 0) {
-            CZNodePartial* node = link->node;
-            g_CZClass_FilterIterCursor = link->next;
-            if (predicate(node) != 0) {
-                return node;
-            }
-            link = g_CZClass_FilterIterCursor;
-        }
-
-        return 0;
+    if (prefixText != 0) {
+        g_CZClass_FilterIterPrefixLen = (int)(strlen(prefixText));
     }
+
+    return IterateBucketFiltered(prefixText, bucket, FindNextByTypePrefixPredicate);
 }
 
-namespace CZClass
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix-predicate
+ * @recoil-artifact defines .text recoil:function:0x44f720: CZClass::FindNextByTypePrefixPredicate.
+ * @recoil-match byte
+ *
+ * Purpose: test whether a node name matches the active prefix-search text.
+ */
+int __fastcall FindNextByTypePrefixPredicate(CZNodePartial* node)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix
-     * @recoil-artifact defines .text recoil:function:0x44f6f0: CZClass::FindNextByTypePrefix.
-     * @recoil-match byte
-     *
-     * Purpose: initialize or continue prefix search over one type-list bucket.
-     */
-    CZNodePartial* __fastcall FindNextByTypePrefix(const char* prefixText, int bucket)
-    {
-        if (prefixText != 0) {
-            g_CZClass_FilterIterPrefixLen = (int)(strlen(prefixText));
-        }
-
-        return CZList::IterateBucketFiltered(prefixText, bucket, FindNextByTypePrefixPredicate);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.findnextbytypeprefix-predicate
-     * @recoil-artifact defines .text recoil:function:0x44f720: CZClass::FindNextByTypePrefixPredicate.
-     * @recoil-match byte
-     *
-     * Purpose: test whether a node name matches the active prefix-search text.
-     */
-    int __fastcall FindNextByTypePrefixPredicate(CZNodePartial * node)
-    {
-        return strncmp(node->name, g_CZClass_FilterIterText, (size_t)(g_CZClass_FilterIterPrefixLen)) == 0;
-    }
-
-    /**
-     * Source-shape note: the definition is emitted by cls_util.c; List.c
-     * retains callers and the public declaration.
-     */
-
-    /**
-     * Source-shape note: the definition is emitted by Window.c; List.c retains
-     * callers of the shared class operation.
-     */
+    return strncmp(node->name, g_CZClass_FilterIterText, (size_t)(g_CZClass_FilterIterPrefixLen)) == 0;
 }
 
-namespace CZClass
+/**
+ * Source-shape note: the definition is emitted by cls_util.c; List.c
+ * retains callers and the public declaration.
+ */
+
+/**
+ * Source-shape note: the definition is emitted by Window.c; List.c retains
+ * callers of the shared class operation.
+ */
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname
+ * @recoil-artifact defines .text recoil:function:0x44f740: CZClass::gwNodeFindNextByName.
+ * @recoil-match byte
+ *
+ * Purpose: initialize or continue exact-name search over one type-list
+ * bucket.
+ */
+CZNodePartial* __fastcall gwNodeFindNextByName(const char* name, int bucket)
 {
+    return IterateBucketFiltered(name, bucket, gwNodeFindNextByNamePredicate);
+}
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname
-     * @recoil-artifact defines .text recoil:function:0x44f740: CZClass::gwNodeFindNextByName.
-     * @recoil-match byte
-     *
-     * Purpose: initialize or continue exact-name search over one type-list
-     * bucket.
-     */
-    CZNodePartial* __fastcall gwNodeFindNextByName(const char* name, int bucket)
-    {
-        return CZList::IterateBucketFiltered(name, bucket, gwNodeFindNextByNamePredicate);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname-predicate
-     * @recoil-artifact defines .text recoil:function:0x44f750: CZClass::gwNodeFindNextByNamePredicate.
-     * @recoil-match byte
-     *
-     * Purpose: test whether a node name matches the active exact-name search
-     * text.
-     */
-    int __fastcall gwNodeFindNextByNamePredicate(CZNodePartial * node)
-    {
-        return strcmp(node->name, g_CZClass_FilterIterText) == 0;
-    }
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zclass.list.gwnodefindnextbyname-predicate
+ * @recoil-artifact defines .text recoil:function:0x44f750: CZClass::gwNodeFindNextByNamePredicate.
+ * @recoil-match byte
+ *
+ * Purpose: test whether a node name matches the active exact-name search
+ * text.
+ */
+int __fastcall gwNodeFindNextByNamePredicate(CZNodePartial* node)
+{
+    return strcmp(node->name, g_CZClass_FilterIterText) == 0;
 }

@@ -24,7 +24,7 @@
 #endif
 
 namespace zVideo {
-int __fastcall BindWorldNode(CZNodePartial* worldNode);
+extern "C" int __fastcall BindWorldNode(CZNodePartial* worldNode);
 }
 
 /**

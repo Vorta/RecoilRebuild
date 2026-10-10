@@ -715,7 +715,7 @@ int __fastcall zVideoFrustumTestSphereClipMask(zVec3* sphereCenter, float radius
 #ifdef __cplusplus
 }
 
-int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local);
+extern "C" int __fastcall zVideoswRenderFrame(CZNodePartial* camera, int updateFxPass3Local);
 
 namespace zVid {
 void __fastcall SetAccelerationOption(int accelerationOption);
@@ -877,7 +877,7 @@ void __fastcall FxPass3QueueElementLocal(
 );
 void __fastcall FxPass3QueuePrimitive(void* primitive, int width, int height, int pitchBytes);
 void __fastcall FxPass3SetInputRectByIndex(int index, HudUiRect* rectOrNull);
-void __fastcall FxPass3UpdateLocal(float deltaTime);
+extern "C" void __fastcall FxPass3UpdateLocal(float deltaTime);
 int __cdecl RunPostprocessOnSwBuffer();
 int __cdecl RunPostprocessOnPrimaryBuffer();
 int __fastcall
@@ -1012,7 +1012,7 @@ int __fastcall PaletteSetEntries(unsigned short firstEntry, unsigned short entry
 } // namespace zVideo_dd
 
 namespace zVideo_dd3d {
-void __fastcall CallClearZBufferRect(zVidRect32* rect);
+extern "C" void __fastcall CallClearZBufferRect(zVidRect32* rect);
 void __fastcall SetPendingWireframeState(int pendingWireframeState);
 void __fastcall SetPendingDitherEnable(int enabled);
 int __cdecl BeginSceneAndFlushPendingRenderStates();
@@ -1113,7 +1113,7 @@ void __fastcall TextureRecordDestroy(zVideo_TextureRecordPartial* textureRecord)
 } // namespace zVideo_dd3d
 
 namespace zVideoD3D {
-int __cdecl SceneEnter();
-int __cdecl SceneLeave();
+extern "C" int __cdecl SceneEnter();
+extern "C" int __cdecl SceneLeave();
 } // namespace zVideoD3D
 #endif

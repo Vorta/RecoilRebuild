@@ -455,17 +455,18 @@ void __fastcall SetPerspectiveTextureDeltaX(int deltaX);
 void __stdcall SetPerspectiveTextureFarZ(float farZ);
 void __stdcall SetPerspectiveAdaptiveCorrection(float perspectiveAdaptiveCorrection);
 void __fastcall SetPerspectiveAdaptiveSpanParams(int minSpan, int maxSpan, float slope);
-void* __fastcall GetActiveRegionState(int* outWidth, int* outHeight, int* outBitsPerPixel, int* outPitchBytes) throw();
+extern "C" void* __fastcall
+GetActiveRegionState(int* outWidth, int* outHeight, int* outBitsPerPixel, int* outPitchBytes) throw();
 void __fastcall
 SetFrameBufferRegion(void* pixels, zOpt_ViewRectSection* activeRegionRect, int bitsPerPixel, int pitchBytes);
 void __fastcall SetActiveRegionSizeFromRect(HudUiRect* rect);
 void __fastcall SetVideoStrideMirrors(int stride);
-void __fastcall SpanOcclusionAddPolygon(const zVec3* vertices, int vertCount);
+extern "C" void __fastcall SpanOcclusionAddPolygon(const zVec3* vertices, int vertCount);
 void __fastcall SpanOcclusionSubmitOccluderRect(const HudUiRect* rect, int halveIfReplicate, float z);
 int __fastcall SpanOcclusionInit(int height);
-void __cdecl SpanOcclusionBuildColumnHeadTable();
+extern "C" void __cdecl SpanOcclusionBuildColumnHeadTable();
 void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly, int vertCount);
-void __cdecl SpanOcclusionResetFrame();
+extern "C" void __cdecl SpanOcclusionResetFrame();
 int __cdecl SpanOcclusionShutdown();
 void __fastcall OverlayBlendRow555Scalar(unsigned short* rowPixels16, int rightDelta);
 void __fastcall OverlayBlendRow565Scalar(unsigned short* rowPixels16, int rightDelta);
@@ -690,10 +691,10 @@ void __fastcall zRndrSubmitTexturedPolyPerVertexAlphaOrShade(
 #ifdef __cplusplus
 }
 
-void __cdecl zRndrFlushTransparentQueue();
-void __cdecl zRndrFlushOverwriteQueue();
+extern "C" void __cdecl zRndrFlushTransparentQueue();
+extern "C" void __cdecl zRndrFlushOverwriteQueue();
 void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, double alpha, zVidRect32* rectOrNull);
-void __fastcall zRndrOverlayRectFlushSw();
+extern "C" void __fastcall zRndrOverlayRectFlushSw();
 
 void __fastcall zRndrDrawImmediateLine(int x0, int y0, int x1, int y1, int color16);
 
@@ -711,11 +712,11 @@ zRndrLensFlareQueueProjectedSample(zProjectedPoint* projectedPoint, int packedCo
 #ifdef __cplusplus
 }
 
-int __cdecl zRndrLensFlareGetQueuedSampleCount();
+extern "C" int __cdecl zRndrLensFlareGetQueuedSampleCount();
 
-void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(int startIndex);
+extern "C" void __fastcall zRndrLensFlareDrawQueuedSamples16AndBuildVisibleList(int startIndex);
 
-int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex);
+extern "C" int __fastcall zRndrLensFlareBuildVisibleSampleListFromQueue(int startIndex);
 
 void __fastcall zRndrLensFlareSetVisibleSampleStage(int stageIndex, zImage_TexDirEntryPartial* stageTexDirEntry);
 
@@ -729,11 +730,11 @@ void __fastcall zRndrLensFlareDrawSampleStageClipped(
 void __fastcall
 zRndrLensFlareDrawVisibleSampleStages(zRndr_LensFlareVisibleSampleDef* visibleSampleDef, float visibilityAlpha);
 
-void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex);
+extern "C" void __fastcall zRndrLensFlareDrawVisibleSample(int sampleIndex);
 
-void __cdecl zRndrLensFlareDrawVisibleSamples();
+extern "C" void __cdecl zRndrLensFlareDrawVisibleSamples();
 
-void __fastcall zRndrSpanOcclusionFilterSampleList(int visibleSampleIndex, zVec3* outPoint);
+extern "C" void __fastcall zRndrSpanOcclusionFilterSampleList(int visibleSampleIndex, zVec3* outPoint);
 
 extern "C" {
 #endif

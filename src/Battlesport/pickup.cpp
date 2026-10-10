@@ -926,7 +926,7 @@ int __fastcall Pickup::OnCollected(CZNodePartial* hitNode, zUtil_SaveGameState* 
     if (animEntry != 0) {
         zVec3 worldPosition;
         CZNode::GetWorldPosition(pickupObj, &worldPosition);
-        g_PickupTypes[pickupTypeId].pickupSound->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(g_PickupTypes[pickupTypeId].pickupSound, 1.0f);
         CZClass::gwNodeSetName(pickupObj, pickupAnimName);
         zEffectAnimEntry* const runtimeEntry = zEffectAnim::SetTransformRefsThunk(
             animEntry,

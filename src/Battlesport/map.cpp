@@ -863,7 +863,7 @@ void __fastcall HudSensorTrackerMap::DrawDiamondMarker(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-cliporsplitsegment
  * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
@@ -1045,7 +1045,7 @@ int __fastcall HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmen
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudgeom2d-classifypointagainstsegment
  * @recoil-artifact defines .text recoil:function:0x416390: HudGeom2D::ClassifyPointAgainstSegment
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */
@@ -1391,7 +1391,7 @@ int HudSensorTrackerMap::MapOverlayBeginShow()
     mapScaleGoal.z = scaleExtent / (mapBoundsMaxZ - mapBoundsMinZ);
 
     if (mapLoadedFlag != 0) {
-        mapSndOn->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(mapSndOn, 1.0f);
         mapScaleLerpRunning = 1;
     }
 
@@ -1419,7 +1419,7 @@ int HudSensorTrackerMap::MapOverlayEndShow()
 
     if (mapLoadedFlag != 0) {
         mapScaleLerpRunning = 1;
-        mapSndOff->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(mapSndOff, 1.0f);
     }
 
     return 1;
@@ -1461,7 +1461,7 @@ void HudSensorTrackerMap::MapZoomIn()
 {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 1.10000002f;
-        mapSndClick->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(mapSndClick, 1.0f);
     }
 }
 
@@ -1476,7 +1476,7 @@ void HudSensorTrackerMap::MapZoomOut()
 {
     if (mapScaleLerpActive != 0) {
         mapZoom *= 0.899999976f;
-        mapSndClick->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(mapSndClick, 1.0f);
     }
 }
 

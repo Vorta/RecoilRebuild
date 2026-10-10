@@ -96,7 +96,7 @@ int zSndFadeEntry::TickAndMaybeDispatch(float deltaTime)
 
     if (currentValue == targetValue) {
         if (stopOnComplete != 0) {
-            handle->StopIfActive();
+            zSndPlayHandleStopIfActive(handle);
         }
 
         g_zSndFadeDispatchList.push_back(this);
@@ -160,7 +160,7 @@ namespace {
 struct zSndFadeStopAndQueue {
     void operator()(zSndFadeEntry* fadeEntry) const
     {
-        fadeEntry->handle->StopIfActive();
+        zSndPlayHandleStopIfActive(fadeEntry->handle);
         zSndFadeDispatchList::PushBack(fadeEntry);
     }
 };

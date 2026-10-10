@@ -94,22 +94,23 @@ extern "C" int __fastcall zSndUpdateListenerState(zSndListenerState* listenerSta
 
 /**
  * @recoil-anchor recoil:anchor:zsound.zsnd-3d.z-snd-play-handle-update3-ddispatch
- * @recoil-artifact defines .text recoil:function:0x4a2a30: zSndPlayHandle::Update3DDispatch.
+ * @recoil-artifact defines .text recoil:function:0x4a2a30: zSndPlayHandleUpdate3DDispatch.
  * @recoil-match byte
  *
  * Purpose: route play-handle 3D updates to the active sound backend.
  */
-int __fastcall zSndPlayHandle::Update3DDispatch(zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
+extern "C" int __fastcall
+zSndPlayHandleUpdate3DDispatch(zSndPlayHandle* playHandle, zVec3* worldPos, zVec3* velocity, int velocityScaleMode)
 {
     int result = 0;
 
     switch (g_zSnd_ActiveBackend) {
     case ZSND_AUDIO_API_A3D:
-        result = Update3DA3D(worldPos, velocity, velocityScaleMode);
+        result = playHandle->Update3DA3D(worldPos, velocity, velocityScaleMode);
         break;
 
     case ZSND_AUDIO_API_DIRECTSOUND:
-        result = Update3D(worldPos, velocity, velocityScaleMode);
+        result = playHandle->Update3D(worldPos, velocity, velocityScaleMode);
         break;
     }
 

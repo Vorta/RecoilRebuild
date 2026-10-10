@@ -1076,7 +1076,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-rebuildsteerbasisrawfromref
  * @recoil-artifact defines .text recoil:function:0x42b8c0: Player::RebuildSteerBasisRawFromRef.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: normalize the steering direction projected onto the reference plane.
  */
@@ -1407,7 +1407,7 @@ void __fastcall PlayPowerupSfx(int shouldPlay)
     static zSndSample* powerupSample = zSnd::FindSampleByName("snd_powerup");
 
     if (shouldPlay != 0) {
-        powerupSample->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(powerupSample, 1.0f);
         return;
     }
 

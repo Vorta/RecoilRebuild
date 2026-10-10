@@ -1673,16 +1673,16 @@ int CZInterp::DispatchCoreCommand(char* commandToken)
             int result;
             switch (node->classId) {
             case 1:
-                result = CZCamera::DeleteNode(node);
+                result = CZCameraDeleteNode(node);
                 break;
             case 2:
-                result = CZWorld::DeleteNode(node);
+                result = CZWorldDeleteNode(node);
                 break;
             case 3:
-                result = CZWindow::DeleteNode(node);
+                result = CZWindowDeleteNode(node);
                 break;
             case 5:
-                result = CZObject3D::DeleteNode(node);
+                result = CZObject3DDeleteNode(node);
                 break;
             default:
                 printf("Unrecognized node class = %d\n", node->classId);

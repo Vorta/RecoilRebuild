@@ -605,9 +605,9 @@ void zSndStreamRequest::StatePlayCurrentEntry()
             zSndSample* sample = currentEntry->cachedSample;
             if (sample != 0) {
                 if (hasWorldPos != 0) {
-                    sample->PlayA3D(gain, &worldPos, &velocity);
+                    zSndSamplePlayA3D(sample, gain, &worldPos, &velocity);
                 } else {
-                    sample->PlayA3DSimple(gain);
+                    zSndSamplePlayA3DSimple(sample, gain);
                 }
             }
 
@@ -719,7 +719,7 @@ int __cdecl Shutdown()
     if (g_zSndStream_RootNode != 0) {
         if (CZClass::IsInitialized() != 0) {
             CZClass::gwNodeSetActionCallback(g_zSndStream_RootNode, 0);
-            CZObject3D::DeleteNode(g_zSndStream_RootNode);
+            CZObject3DDeleteNode(g_zSndStream_RootNode);
         }
         g_zSndStream_RootNode = 0;
     }

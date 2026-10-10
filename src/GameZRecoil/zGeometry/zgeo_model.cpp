@@ -608,7 +608,7 @@ zDiPartial* __fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
             *outNode = 0;
         }
 
-        CZObject3D::DeleteNode(child);
+        CZObject3DDeleteNode(child);
         return 0;
     }
 

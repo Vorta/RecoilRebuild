@@ -379,7 +379,7 @@ int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance)
         }
 
         if (node != 0) {
-            CZObject3D::DeleteNode(node);
+            CZObject3DDeleteNode(node);
         }
 
         return -1;
@@ -498,7 +498,7 @@ int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance)
         }
 
         if (node != 0) {
-            CZObject3D::DeleteNode(node);
+            CZObject3DDeleteNode(node);
         }
 
         return -1;

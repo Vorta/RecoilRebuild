@@ -282,7 +282,7 @@ int __fastcall zModelInstanceAddCycleTexture(zDiPartial* instance, zImage_TexDir
 #ifdef __cplusplus
 }
 
-extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime;
+extern "C" CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime;
 #endif
 
 #define g_CZDisplayInstance_FilterRegions_NodeNamePrefix                                                               \
@@ -313,6 +313,7 @@ extern CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRu
 
 #ifdef __cplusplus
 namespace CZDisplayInstance {
+extern "C" {
 void __fastcall SetBreakOnFirstCandidate(int enabled);
 void __fastcall SetStopAfterFirstHit(int flag);
 int __fastcall FindBestPickCandidateBelowPoint(
@@ -344,7 +345,6 @@ int __fastcall BuildPickCandidatesForLight(CZNodePartial* node, int cullCount);
 int __fastcall IsPickQueryPointOutsideViewBBoxXZ(CZNodePartial* node);
 int __fastcall PickTestBBox2D(CZNodePartial* node, int* hitFlags);
 int __fastcall FrustumTestAndPick(CZNodePartial* node, int* activeMask);
-extern "C" {
 #endif
 int __fastcall TryGetPolygonHitAtQueryXZ(
     zClassDiPickCandidateEntry* candidate,
@@ -363,7 +363,6 @@ void __fastcall PickTestMeshAtQueryXZ(
     PlayerProbeSampleCandidateBuffer* outputBuckets
 );
 #ifdef __cplusplus
-}
 int __fastcall BuildPickCandidatesForSegment(CZNodePartial* self);
 int __fastcall RaycastSelectClosestHitBetweenPoints(
     CZNodePartial* world,
@@ -395,12 +394,10 @@ void __fastcall BuildProbeHitBatchesForSegments(
     PlayerProbeSampleCandidateBuffer* hitBatches
 );
 void __fastcall BuildPickCandidatesForSegmentsInGridWindow(CZNodePartial* world, int* activeMask);
-extern "C" {
 #endif
 int __fastcall FilterRegionsAgainstMeshFaces(zVec3* meshVertices, int faceCount);
 int __fastcall FilterRegionsAgainstHexahedronFaces(zVec3* center, float radius);
 #ifdef __cplusplus
-}
 int __fastcall FilterRegionsAgainstSphere(
     CZNodePartial* world,
     zVec3* center,
@@ -412,7 +409,6 @@ int __fastcall FilterRegionsAgainstSphere(
 );
 int __fastcall FilterRegionsTryAppendNode(CZNodePartial* node);
 int __fastcall FilterPointsBBox(CZNodePartial* node, void* pointData);
-extern "C" {
 #endif
 int __fastcall FilterRegionsAgainstPolygonWithDamageMaskUv(
     CZNodePartial* candidateOwner,

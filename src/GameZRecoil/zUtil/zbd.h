@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef __cplusplus
 #include "recoil/recoil_types.h"
 #include <list>
 #include <stddef.h>
@@ -92,14 +92,14 @@ void __cdecl ZBDDestroyGlobalManager();
 } // namespace zUtil
 
 namespace zUtil_ZAR {
-void __fastcall RegisterSectionHandler(
+extern "C" void __fastcall RegisterSectionHandler(
     const char* sectionName,
     zZbdSectionCallback onWrite,
     zZbdSectionCallback onDataReady,
     int sortOrder,
     void* userData
 );
-int __fastcall WriteSectionBlob(
+extern "C" int __fastcall WriteSectionBlob(
     zZbdSectionCallbackCtx* callbackCtx,
     const char* sectionToken,
     const void* data,
@@ -114,3 +114,23 @@ void __fastcall
 FlushTempWriteStreamToSectionRecord(FILE* tempStream, zZbdSectionCallbackCtx* callbackCtx, const char* sectionToken);
 void __fastcall CloseTempReadStream(FILE* tempStream);
 } // namespace zUtil_ZBD
+#else
+/* C view of the zUtil ZBD entry points the zClass units call. */
+#include "recoil/recoil_callconv.h"
+
+typedef void* zZbdSectionCallback;
+
+void __fastcall RegisterSectionHandler(
+    const char* sectionName,
+    zZbdSectionCallback onWrite,
+    zZbdSectionCallback onDataReady,
+    int sortOrder,
+    void* userData
+);
+int __fastcall WriteSectionBlob(
+    struct zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    const void* data,
+    unsigned int dataSize
+);
+#endif

@@ -422,7 +422,7 @@ int zFMV_Stream::ReadAndDecodeFrame(unsigned int frameIndex)
     if (hasAudioStream != 0) {
         if (readStreamingAudio != 0) {
             readStreamingAudio = 0;
-            audioSample->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(audioSample, 1.0f);
             return currentFrameIndex;
         }
 

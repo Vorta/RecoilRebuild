@@ -1147,7 +1147,7 @@ void HudSensorTracker::AdvanceObjectiveState()
     const int flowState = objectiveFlowState;
     if (flowState != 0x6b && flowState != 0x67 && flowState != 0x64) {
         if (objectiveUiMode != 1) {
-            objectiveCompleteSfx->PlayA3DSimple(1.0f);
+            zSndSamplePlayA3DSimple(objectiveCompleteSfx, 1.0f);
             SetObjectiveReviewVisible(1);
             return;
         }
@@ -1155,7 +1155,7 @@ void HudSensorTracker::AdvanceObjectiveState()
         if (currentObjectiveReadSound != 0) {
             currentObjectiveReadSound->StopActiveVoicesIfPlaying();
         }
-        objectiveCompleteSfx->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(objectiveCompleteSfx, 1.0f);
         SetObjectiveReviewVisible(0);
         return;
     }
@@ -1168,7 +1168,7 @@ void HudSensorTracker::AdvanceObjectiveState()
     if (firstIncompleteObjectiveIndex == currentObjectiveIndex + 1) {
         SetObjectivePanelVisible(1);
         currentObjectiveReadSound = objectiveSlots[firstIncompleteObjectiveIndex].readSoundSample;
-        currentObjectiveReadSound->PlayA3DSimple(1.0f);
+        zSndSamplePlayA3DSimple(currentObjectiveReadSound, 1.0f);
         objectiveFlowDeadlineSecRaw = objectiveReadTimeSecRaw + g_Time_UnscaledAccumulatedTimeSec;
         objectiveFlowState = 0x68;
     } else {
@@ -1252,7 +1252,7 @@ int HudSensorTracker::GetObjectiveBriefingStringsAndImageRef(
  */
 void HudSensorTracker::CommandToggleObjectivePanel()
 {
-    objectiveReviewSfx->PlayA3DSimple(1.0f);
+    zSndSamplePlayA3DSimple(objectiveReviewSfx, 1.0f);
     SetObjectivePanelVisible(objectiveUiMode != 2 ? 1 : 0);
 }
 
@@ -1326,7 +1326,7 @@ void HudSensorTracker::SetObjectivePanelVisible(int visible)
  */
 void HudSensorTracker::CommandShowObjectivePickupInfo()
 {
-    objectiveReviewSfx->PlayA3DSimple(1.0f);
+    zSndSamplePlayA3DSimple(objectiveReviewSfx, 1.0f);
 
     const int visible = (objectiveUiMode == 3 || objectiveUiMode == 4) ? 0 : 1;
     zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
@@ -1551,7 +1551,7 @@ int HudSensorTracker::UpdateObjectiveFlow()
         case 0x64:
         case 0x67:
             if (g_Time_UnscaledAccumulatedTimeSec >= objectiveFlowDeadlineSecRaw) {
-                objectiveIncomingSfx->PlayA3DSimple(1.0f);
+                zSndSamplePlayA3DSimple(objectiveIncomingSfx, 1.0f);
                 HudUiMgrObjective::SetVisibleAndResetMeterFill(1);
                 objectiveFlowState = 0x6b;
             }
