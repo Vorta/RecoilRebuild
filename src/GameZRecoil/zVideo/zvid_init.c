@@ -213,6 +213,10 @@ zVideo_PackedColor16 __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* col
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-texture-pixel-pack-setup-from-masks
+ * @recoil-artifact defines .text recoil:function:0x4a6db0: zVideo::TexturePixelPackSetupFromMasks.
+ * @recoil-match source
+ *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: initializes the global texture pixel-pack bit counts, masks,
  * shifted channel masks, and inverse non-RGB shifted mask.

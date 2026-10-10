@@ -2044,6 +2044,10 @@ void __fastcall SubmitPolygonLit(
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-draw-point-color16
+ * @recoil-artifact defines .text recoil:function:0x4acbd0: zVideo_dd3d::DrawPointColor16.
+ * @recoil-match source
+ *
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Convert one 16-bit colored point to a Direct3D TL vertex and draw it
  * through the cached point-list render-state path.
