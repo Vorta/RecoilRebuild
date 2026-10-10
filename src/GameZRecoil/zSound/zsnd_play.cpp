@@ -1409,7 +1409,7 @@ zSndSample* __fastcall zSnd::FindSampleByName(const char* sampleName)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-play.zsndsampleset-registryaddentry
  * @recoil-artifact defines .text recoil:function:0x4a09e0: zSndSampleSet::zSndSampleSet.
- *
+ * @recoil-match byte
  *
  * Purpose: Allocates sample entries, stores the set name, and appends this set to the registry.
  */

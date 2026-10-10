@@ -700,34 +700,29 @@ int __fastcall BuildPickCandidateForSegmentVsPolygon(
     int cullBackface
 )
 {
-    float endSide;
+    // Declaration order matches retail operand order (endSide ^ startSide, t * delta.x).
     float startSide;
-    float t;
+    float endSide;
     int axis;
     float maxAbs;
-    float absY;
     int index;
     int current;
     zVec3 edgeNormal;
-    union {
-        float f;
-        unsigned int u;
-    } startBits, endBits;
     zVec3 delta;
+    float t;
 
     zMathVec3TriangleNormal(&polygonVertices[0], &polygonVertices[1], &polygonVertices[2], &candidate->surfaceNormal);
 
     Vec3Subtract(segmentEnd, polygonVertices, &delta);
     endSide = Vec3Dot(&delta, &candidate->surfaceNormal);
-    endBits.f = endSide;
     if (cullBackface == 0 && endSide >= 0.0) {
         return 0;
     }
 
     Vec3Subtract(segmentStart, polygonVertices, &delta);
     startSide = Vec3Dot(&delta, &candidate->surfaceNormal);
-    startBits.f = startSide;
-    if (((startBits.u ^ endBits.u) & 0x80000000u) == 0) {
+    // Bit-level sign test, as in BuildPickCandidateForSegmentVsPolygonWithUv.
+    if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
         return 0;
     }
 
@@ -738,11 +733,12 @@ int __fastcall BuildPickCandidateForSegmentVsPolygon(
     delta.z = t * delta.z;
     Vec3Add(segmentStart, &delta, &candidate->hitPos);
 
+    // endSide is dead here; retail reuses its stack home for |normal.y|.
     axis = 0;
     maxAbs = (float)fabs(candidate->surfaceNormal.x);
-    absY = (float)fabs(candidate->surfaceNormal.y);
-    if (absY > maxAbs) {
-        maxAbs = absY;
+    endSide = (float)fabs(candidate->surfaceNormal.y);
+    if (endSide > maxAbs) {
+        maxAbs = endSide;
         axis = 1;
     }
     if ((float)fabs(candidate->surfaceNormal.z) > maxAbs) {
@@ -1101,7 +1097,7 @@ int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentbatchvspolygon
  * @recoil-artifact defines .text recoil:function:0x486290: CZDisplayInstance::BuildPickCandidatesForSegmentBatchVsPolygon.
- *
+ * @recoil-match source
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1117,10 +1113,6 @@ int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
     zModel_PickFaceEntry* faceEntry
 )
 {
-    union {
-        float f;
-        unsigned int u;
-    } startBits, endBits;
     zVec3 scratch;
     int segmentIndex;
     int edgeIndex;
@@ -1150,15 +1142,14 @@ int __fastcall BuildPickCandidatesForSegmentBatchVsPolygon(
         segmentEnd = &segment->end;
         if (localActive[segmentIndex] != 0) {
             Vec3Subtract(segmentEnd, polygonVertices, &scratch);
-            ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
-            endBits.f = endSide;
+            endSide = Vec3Dot(&scratch, &normal);
             if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                 localActive[segmentIndex] = 0;
             } else {
                 Vec3Subtract(&segment->start, polygonVertices, &scratch);
-                ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
-                startBits.f = startSide;
-                if (((endBits.u ^ startBits.u) & 0x80000000u) == 0) {
+                startSide = Vec3Dot(&scratch, &normal);
+                // Bit-level sign test, as in BuildPickCandidateForSegmentVsPolygonWithUv.
+                if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
                     localActive[segmentIndex] = 0;
                 } else {
                     anyActive = 1;
@@ -1369,14 +1360,11 @@ void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
     zModel_PickFaceEntry* faceEntry
 )
 {
-    union {
-        float f;
-        unsigned int u;
-    } startBits, endBits;
     float absZ;
     int dominantAxis;
-    float endSide;
+    // Declaration order matches the retail xor operand order (endSide ^ startSide).
     float startSide;
+    float endSide;
     const zVec3* segmentEnd;
     int anyActive;
     zVec2 uGrad;
@@ -1404,15 +1392,14 @@ void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
         segmentEnd = &segment->end;
         if (localActive[segmentIndex] != 0) {
             Vec3Subtract(segmentEnd, polygonVertices, &scratch);
-            ZMTH_VECTOR_DOT(endSide, &scratch, &normal);
-            endBits.f = endSide;
+            endSide = Vec3Dot(&scratch, &normal);
             if (faceEntry->doubleSided == 0 && endSide >= 0.0) {
                 localActive[segmentIndex] = 0;
             } else {
                 Vec3Subtract(&segment->start, polygonVertices, &scratch);
-                ZMTH_VECTOR_DOT(startSide, &scratch, &normal);
-                startBits.f = startSide;
-                if (((endBits.u ^ startBits.u) & 0x80000000u) == 0) {
+                startSide = Vec3Dot(&scratch, &normal);
+                // Bit-level sign test, as in BuildPickCandidateForSegmentVsPolygonWithUv.
+                if (((*(int*)&endSide ^ *(int*)&startSide) & 0x80000000) == 0) {
                     localActive[segmentIndex] = 0;
                 } else {
                     anyActive = 1;

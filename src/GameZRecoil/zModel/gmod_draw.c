@@ -2047,38 +2047,47 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
 )
 {
     const unsigned int wrapExtent = g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800;
+    float deltaU;
+    float deltaV;
+    float minU;
+    float minV;
+    float maxU;
+    float maxV;
+    int floorMinU;
+    int floorMinV;
+    int ceilMaxU;
+    int ceilMaxV;
+    int extentU;
+    int extentV;
+    int correctionU;
+    int correctionV;
+    zModel_Uv* uv;
     int i;
 
     if (scrollRates[0] != 0.0f && scrollRates[1] != 0.0f) {
-        const float deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
-        const float deltaV = g_FrameDeltaTimeSec * scrollRates[1];
+        deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
+        deltaV = g_FrameDeltaTimeSec * scrollRates[1];
         // Retail seeds the bounds from the scrolled first UV before storing it (as in the one-axis paths).
-        float minU = deltaU + uvs[0].u;
-        float minV = deltaV + uvs[0].v;
-        float maxU = minU;
-        float maxV = minV;
-        int floorMinU;
-        int floorMinV;
-        int ceilMaxU;
-        int ceilMaxV;
-        int extentU;
-        int extentV;
-        int correctionU;
-        int correctionV;
+        minU = deltaU + uvs[0].u;
+        minV = deltaV + uvs[0].v;
+        maxU = minU;
+        maxV = minV;
         uvs[0].u = minU;
         uvs[0].v = minV;
-        for (i = 1; i < uvCount; ++i) {
-            uvs[i].u = deltaU + uvs[i].u;
-            uvs[i].v = deltaV + uvs[i].v;
-            if (uvs[i].u < minU) {
-                minU = uvs[i].u;
-            } else if (uvs[i].u > maxU) {
-                maxU = uvs[i].u;
+        // Walking the scrolled UVs keeps minU x87-resident through this loop, as retail does.
+        uv = &uvs[1];
+        for (i = 1; i < uvCount; ++i, ++uv) {
+            uv->u = deltaU + uv->u;
+            uv->v = deltaV + uv->v;
+            if (uv->u < minU) {
+                minU = uv->u;
+            } else if (uv->u > maxU) {
+                maxU = uv->u;
             }
-            if (uvs[i].v < minV) {
-                minV = uvs[i].v;
-            } else if (uvs[i].v > maxV) {
-                maxV = uvs[i].v;
+            if (uv->v < minV) {
+                minV = uv->v;
+            } else if (uv->v > maxV) {
+                maxV = uv->v;
             }
         }
 
@@ -2116,20 +2125,17 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
             }
         }
     } else if (scrollRates[0] != 0.0f) {
-        const float deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
-        float minU = deltaU + uvs[0].u;
-        float maxU = minU;
-        int floorMinU;
-        int ceilMaxU;
-        int extentU;
-        int correctionU;
+        deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
+        minU = deltaU + uvs[0].u;
+        maxU = minU;
         uvs[0].u = minU;
-        for (i = 1; i < uvCount; ++i) {
-            uvs[i].u = deltaU + uvs[i].u;
-            if (uvs[i].u < minU) {
-                minU = uvs[i].u;
-            } else if (uvs[i].u > maxU) {
-                maxU = uvs[i].u;
+        uv = &uvs[1];
+        for (i = 1; i < uvCount; ++i, ++uv) {
+            uv->u = deltaU + uv->u;
+            if (uv->u < minU) {
+                minU = uv->u;
+            } else if (uv->u > maxU) {
+                maxU = uv->u;
             }
         }
 
@@ -2149,20 +2155,17 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
             }
         }
     } else if (scrollRates[1] != 0.0f) {
-        const float deltaV = g_FrameDeltaTimeSec * scrollRates[1];
-        float minV = deltaV + uvs[0].v;
-        float maxV = minV;
-        int floorMinV;
-        int ceilMaxV;
-        int extentV;
-        int correctionV;
+        deltaV = g_FrameDeltaTimeSec * scrollRates[1];
+        minV = deltaV + uvs[0].v;
+        maxV = minV;
         uvs[0].v = minV;
-        for (i = 1; i < uvCount; ++i) {
-            uvs[i].v = deltaV + uvs[i].v;
-            if (uvs[i].v < minV) {
-                minV = uvs[i].v;
-            } else if (uvs[i].v > maxV) {
-                maxV = uvs[i].v;
+        uv = &uvs[1];
+        for (i = 1; i < uvCount; ++i, ++uv) {
+            uv->v = deltaV + uv->v;
+            if (uv->v < minV) {
+                minV = uv->v;
+            } else if (uv->v > maxV) {
+                maxV = uv->v;
             }
         }
 

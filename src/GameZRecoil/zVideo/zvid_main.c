@@ -1389,28 +1389,6 @@ int __fastcall ApplyBrightnessToPaletteEntries(PALETTEENTRY* paletteEntries)
     return g_zVideo_pfnPaletteSetEntries(0, 256, adjustedEntries);
 }
 
-/**
- * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
- * Purpose: return the zVideo success status for dispatch slots that need no
- * backend-specific action.
- *
- * Evidence: BN is a leaf zero-return function with no callees or globals.
- */
-int __cdecl ReturnSuccessStub(void)
-{
-    return 0;
-}
-
-/**
- * Purpose: accept the scene's world node (or 0 on reset) and report success;
- * the shipped renderer needs no per-world binding. Retail folds this body with
- * ReturnSuccessStub at 0x4a75e0; callers pass the node in ECX.
- */
-int __fastcall BindWorldNode(CZNodePartial* worldNode)
-{
-    return 0;
-}
-
 typedef struct zVidImageFileHeader {
     unsigned char formatCode;
     unsigned char unknown_01[3];

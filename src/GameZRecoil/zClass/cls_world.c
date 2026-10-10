@@ -508,7 +508,7 @@ int __fastcall ApplyPendingFogSettings(CZNodePartial* world)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-world.worldtogridcoordsclampedex
  * @recoil-artifact defines .text recoil:function:0x450650: CZWorld::WorldToGridCoordsClampedEx.
- *
+ * @recoil-match byte
  *
  * BN source path evidence: D:\Proj\GameZRecoil\zClass\cls_world.c.
  * Purpose: clamp world X/Z coordinates to valid grid coordinates while also returning unclamped grid coordinates
@@ -527,10 +527,13 @@ int __fastcall WorldToGridCoordsClampedEx(
 {
     CZWorldDataPartial* data = (CZWorldDataPartial*)(world->classData);
 
-    float clampedX = worldX;
-    float clampedZ = worldZ;
+    float clampedX;
+    float clampedZ;
     zVec2 offset;
     *insideBoundsOut = 1;
+    // Seeding after the store lets VC5 park clampedX in insideBoundsOut's dead home ([esp+0x30]), as retail does.
+    clampedX = worldX;
+    clampedZ = worldZ;
 
     if (worldX < data->originX) {
         clampedX = data->originX + 0.1f;

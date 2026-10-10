@@ -790,6 +790,36 @@ int __cdecl ModuleInit(void)
 }
 
 /**
+ * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-return-success-stub
+ * @recoil-artifact defines .text recoil:function:0x4a75e0: zVideo::ReturnSuccessStub.
+ * @recoil-match byte
+ *
+ * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_init.c.
+ * Purpose: return the zVideo success status for callers that need no
+ * backend-specific action.
+ *
+ * Evidence: retail 0x4a75e0 (xor eax,eax; ret) lies inside the zvid_init.c
+ * contribution 0x4a6b40-0x4a7b40, between zVideo::ModuleInit (0x4a7530) and
+ * zVideo::InitVideoSystem (0x4a75f0). Five retail callers load no argument
+ * register for it.
+ */
+int __cdecl ReturnSuccessStub(void)
+{
+    return 0;
+}
+
+/**
+ * Purpose: accept the scene's world node (or 0 on reset) and report success;
+ * the shipped renderer needs no per-world binding. Retail folds this body with
+ * ReturnSuccessStub at 0x4a75e0 (/OPT:ICF); its three callers pass the node
+ * in ECX.
+ */
+int __fastcall BindWorldNode(CZNodePartial* worldNode)
+{
+    return 0;
+}
+
+/**
  * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-init-video-system
  * @recoil-artifact defines .text recoil:function:0x4a75f0: zVideo::InitVideoSystem.
  * @recoil-match byte
