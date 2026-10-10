@@ -3509,11 +3509,11 @@ int __fastcall Intersect2d(
                 createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
                 createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
 
-                // Retail recomputes the float edge deltas for the z interpolation instead of reusing the doubles.
-                if (edge1Start.x - edge1End.x != 0.0) {
-                    createdXing->point.z = (edge1Start.x - createdXing->point.x) / (edge1Start.x - edge1End.x)
-                            * (edge1End.z - edge1Start.z)
-                        + edge1Start.z;
+                // Retail reuses divisor as the z-interpolation x span, kept on the x87 stack (0x468d6c..0x468d93).
+                divisor = edge1Start.x - edge1End.x;
+                if (divisor != 0.0) {
+                    createdXing->point.z
+                        = (edge1Start.x - createdXing->point.x) / divisor * (edge1End.z - edge1Start.z) + edge1Start.z;
                 } else {
                     createdXing->point.z = (edge1Start.y - createdXing->point.y) / (edge1Start.y - edge1End.y)
                             * (edge1End.z - edge1Start.z)

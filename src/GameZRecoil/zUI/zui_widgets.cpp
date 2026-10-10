@@ -896,8 +896,7 @@ namespace {
  */
 inline const HudFontStyle* HudUiZrdOwnerFontStyle(const HudUiBackground* owner, int styleIndex)
 {
-    const HudFontStyle* const style = &owner->fontStyles[styleIndex];
-    return style->validMarker != 0 ? style : 0;
+    return owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
 }
 
 /**
@@ -2606,8 +2605,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style
-                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
+            const HudFontStyle* style = HudUiZrdOwnerFontStyle(owner, styleIndex);
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
@@ -2635,8 +2633,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style
-                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
+            const HudFontStyle* style = HudUiZrdOwnerFontStyle(owner, styleIndex);
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
@@ -2666,8 +2663,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
                 textOriginY + textNode->value.nodes[3].value.i32
             );
             const int styleIndex = textNode->value.nodes[4].value.i32;
-            const HudFontStyle* style
-                = owner->fontStyles[styleIndex].validMarker != 0 ? &owner->fontStyles[styleIndex] : 0;
+            const HudFontStyle* style = HudUiZrdOwnerFontStyle(owner, styleIndex);
             if (style != 0) {
                 checkedLabelPanel->SetFont(style->fontName, style->fontSize, style->fontWeight, 0, 0, 0, 2);
                 checkedLabelPanel->SetTextColorsAndMarkDirty(style->textColor, style->textColor);
@@ -3610,7 +3606,7 @@ HudCmdBindButtonBase::HudCmdBindButtonBase()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-hudcmdbindbuttonbase-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b8de0: HudCmdBindButtonBase::LoadFromZrd.
- *
+ * @recoil-match byte
  *
  * Purpose: load binding button fonts, spacing, offsets, slot counts, and
  * child panel setup from a ZRD node.
@@ -3630,8 +3626,7 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
     if (selectedFontNode != 0) {
         selectedFontStyleRef = selectedFontNode->value.i32;
         // Retail tests the style pointer after the inline select (neg/sbb/and then a compare).
-        const HudFontStyle* const selectedStyle
-            = owner->fontStyles[selectedFontStyleRef].validMarker != 0 ? &owner->fontStyles[selectedFontStyleRef] : 0;
+        const HudFontStyle* const selectedStyle = HudUiZrdOwnerFontStyle(owner, selectedFontStyleRef);
         if (selectedStyle != 0) {
             HudUiPanel* const panel = &bindPanel;
             panel->SetFont(selectedStyle->fontName, selectedStyle->fontSize, selectedStyle->fontWeight, 0, 0, 0, 2);
@@ -3676,26 +3671,25 @@ int HudCmdBindButtonBase::LoadFromZrd(zReader::Node* zrdSection, HudUiBackground
         {
             for (int index = 0; index < bindingSlotTotalCount; ++index) {
                 ((HudUiContainer*)(ownerDialog))->AddChild(&bindingSlotPanels[index]);
-                bindingSlotPanels[index].SetVisible(1);
+                {
+                    HudUiElement* const panel = &bindingSlotPanels[index];
+                    panel->SetVisible(1);
+                }
                 bindingSlotPanels[index].owner = this;
                 if (clipSource != 0) {
                     bindingSlotPanels[index].SetBltSourceAndClipRect(clipSource, &clipRect);
                 }
 
-                const HudFontStyle* const listStyle
-                    = owner->fontStyles[listFontStyleRef].validMarker != 0 ? &owner->fontStyles[listFontStyleRef] : 0;
+                const HudFontStyle* const listStyle = HudUiZrdOwnerFontStyle(owner, listFontStyleRef);
                 if (listStyle != 0) {
                     // Retail repeats the complete font pass inside the child loop.
                     for (int fontIndex = 0; fontIndex < bindingSlotTotalCount; ++fontIndex) {
                         bindingSlotPanels[fontIndex]
                             .SetFont(listStyle->fontName, listStyle->fontSize, listStyle->fontWeight, 0, 0, 0, 2);
-                        {
-                            HudUiPanel* const panel = &bindingSlotPanels[fontIndex];
-                            const unsigned int color = listStyle->textColor;
-                            panel->textColor0 = color;
-                            panel->textColor1 = color;
-                            panel->textDirty = 1;
-                        }
+                        bindingSlotPanels[fontIndex].SetTextColorsAndMarkDirty(
+                            listStyle->textColor,
+                            listStyle->textColor
+                        );
                         {
                             HudUiPanel* const panel = &bindingSlotPanels[fontIndex];
                             panel->shadowEnabled = listStyle->shadowEnabled;

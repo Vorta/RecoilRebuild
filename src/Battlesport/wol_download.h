@@ -46,7 +46,11 @@ enum WestwoodOnlineUpgradeDownloadState {
 
 ULONG __stdcall WestwoodOnlineUpgradeSharedComAddRef(void* self);
 
-struct WestwoodOnlineUpgradeDownloadEventSink : WestwoodOnlineUpgradeRefCountAndLock, IUnknown {
+/** Implementation base of the download sink: the reference-count root and the COM interface. The sink's
+ * constructor, destructor and unwind funclets destroy it as one subobject at offset 0 (retail 0x442860). */
+struct WestwoodOnlineUpgradeDownloadEventSinkImpl : WestwoodOnlineUpgradeRefCountAndLock, IUnknown { };
+
+struct WestwoodOnlineUpgradeDownloadEventSink : WestwoodOnlineUpgradeDownloadEventSinkImpl {
     WestwoodOnlineUpgradeDownloadEventSink();
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
     virtual ULONG STDMETHODCALLTYPE AddRef();

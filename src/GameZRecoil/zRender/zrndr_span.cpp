@@ -1487,9 +1487,9 @@ void __fastcall SpanMasked16FromTex16To565(int texU, int texV, int pixelCount, i
             } else {
                 // BN 0x49c1bb blends the destination word with itself: the source color is the
                 // destination, so the red/green deltas fold to zero and the stored word is unchanged.
-                int srcColor, dstColor;
-                dstColor = (short)(*dst);
-                srcColor = dstColor;
+                // Same head as the pal8 sibling 0x49c020, with the destination word itself as the source color.
+                int dstColor = (short)(*dst);
+                const int srcColor = dstColor;
                 int redDelta
                     = ((((srcColor & 0xf800) - (dstColor & 0xf800)) * (unsigned int)(g_spanActiveConstAlphaBits)) >> 8)
                     & 0xfffff800;
@@ -2398,10 +2398,15 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
         ++dst;
     }
 
-    // Retail doubles the steps in their own homes ([esp+0x18]/[esp+0x1c]) for the pixel-pair loop.
+    // Retail returns on a zero pair count, then doubles the steps in their homes [esp+0x18]/[esp+0x1c] (0x49d2b7).
+    pixelCount >>= 1;
+    if (pixelCount == 0) {
+        return;
+    }
+
     uStep *= 2;
     vStep *= 2;
-    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+    do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
@@ -2427,7 +2432,7 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
         texU += uStep;
         texV += vStep;
         dst += 2;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -2474,10 +2479,15 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
         ++dst;
     }
 
-    // Retail doubles the steps in their own homes ([esp+0x18]/[esp+0x1c]) for the pixel-pair loop.
+    // Retail returns on a zero pair count, then doubles the steps in their homes [esp+0x18]/[esp+0x1c] (0x49d4c7).
+    pixelCount >>= 1;
+    if (pixelCount == 0) {
+        return;
+    }
+
     uStep *= 2;
     vStep *= 2;
-    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+    do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
         const int alpha = alphaMap[sourceIndex];
@@ -2503,7 +2513,7 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
         texU += uStep;
         texV += vStep;
         dst += 2;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 

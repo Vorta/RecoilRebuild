@@ -2306,7 +2306,7 @@ void __fastcall WestwoodOnlineUpgrade::TruncateStringAtFirstSpace(char* text)
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-createinstance
  * @recoil-artifact defines .text recoil:function:0x43f610: WestwoodOnlineUpgradeApiEventSink::CreateInstance.
- *
+ * @recoil-match byte
  *
  * Purpose: Allocates and initializes the Westwood API event sink for COM callbacks.
  */
@@ -2325,7 +2325,13 @@ HRESULT __stdcall WestwoodOnlineUpgradeApiEventSink::CreateInstance(WestwoodOnli
     }
 
     if (eventSink != 0) {
-        result = S_OK;
+        // FinalConstruct always succeeds, so the release path below is never taken. Retail still keeps
+        // the EH state of the inline destructor expanded inside it (FuncInfo state 4, no action).
+        result = eventSink->FinalConstruct();
+        if (result != S_OK) {
+            delete eventSink;
+            eventSink = 0;
+        }
     }
 
     *outSink = eventSink;
@@ -3684,6 +3690,15 @@ WestwoodOnlineUpgradeRefCountAndLock::WestwoodOnlineUpgradeRefCountAndLock()
 }
 
 /**
+ * Purpose: Completes construction of an event-sink root. The root has no further work, so the sinks'
+ * CreateInstance never takes its release path.
+ */
+inline HRESULT WestwoodOnlineUpgradeRefCountAndLock::FinalConstruct()
+{
+    return S_OK;
+}
+
+/**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradeapieventsink-release
  * @recoil-artifact defines .text recoil:function:0x441620: WestwoodOnlineUpgradeApiEventSink::Release.
  * @recoil-match byte
@@ -3731,7 +3746,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeApiEventSink::QueryInterface(REFI
  *
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
-WestwoodOnlineUpgradeApiEventSink::~WestwoodOnlineUpgradeApiEventSink()
+inline WestwoodOnlineUpgradeApiEventSink::~WestwoodOnlineUpgradeApiEventSink()
 {
     refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);
@@ -4287,7 +4302,7 @@ int __fastcall WestwoodOnlineUpgradeDialog::ShowDownloadReadyList(
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedownloadeventsink-createinstance
  * @recoil-artifact defines .text recoil:function:0x4425c0: WestwoodOnlineUpgradeDownloadEventSink::CreateInstance.
- *
+ * @recoil-match byte
  *
  * Purpose: Allocates and initializes a download event sink for connection-point advising.
  */
@@ -4308,7 +4323,13 @@ HRESULT __stdcall WestwoodOnlineUpgradeDownloadEventSink::CreateInstance(
     }
 
     if (eventSink != 0) {
-        result = S_OK;
+        // FinalConstruct always succeeds, so the release path below is never taken. Retail still keeps
+        // the EH state of the inline destructor expanded inside it (FuncInfo state 4, no action).
+        result = eventSink->FinalConstruct();
+        if (result != S_OK) {
+            delete eventSink;
+            eventSink = 0;
+        }
     }
 
     *outSink = eventSink;
@@ -4470,7 +4491,7 @@ HRESULT STDMETHODCALLTYPE WestwoodOnlineUpgradeDownloadEventSink::QueryInterface
  *
  * Purpose: Tears down the embedded lock and decrements the live Westwood event-sink count.
  */
-WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink()
+inline WestwoodOnlineUpgradeDownloadEventSink::~WestwoodOnlineUpgradeDownloadEventSink()
 {
     refCount = 1;
     InterlockedDecrement(&g_WestwoodOnlineUpgradeApiInitState.eventSinkLiveCount);

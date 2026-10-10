@@ -16,6 +16,9 @@ struct WestwoodOnlineUpgradeRefCountAndLock {
     {
         DeleteCriticalSection(&lock);
     }
+
+    /** Construction hook checked by the sinks' CreateInstance; defined with the constructor in WOL.cpp. */
+    HRESULT FinalConstruct();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(WestwoodOnlineUpgradeRefCountAndLock) == 0x1c);

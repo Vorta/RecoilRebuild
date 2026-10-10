@@ -14,7 +14,11 @@ struct WestwoodOnlineUpgradeBrowseRecord;
 struct WestwoodOnlineUpgradeBootstrapServerRecord;
 struct WestwoodOnlineUpgradeSessionRequest;
 
-struct WestwoodOnlineUpgradeApiEventSink : WestwoodOnlineUpgradeRefCountAndLock, IUnknown {
+/** Implementation base of the API sink: the reference-count root and the COM interface. The sink's
+ * constructor, destructor and unwind funclets destroy it as one subobject at offset 0 (retail 0x442860). */
+struct WestwoodOnlineUpgradeApiEventSinkImpl : WestwoodOnlineUpgradeRefCountAndLock, IUnknown { };
+
+struct WestwoodOnlineUpgradeApiEventSink : WestwoodOnlineUpgradeApiEventSinkImpl {
     WestwoodOnlineUpgradeApiEventSink();
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** outInterface);
     virtual ULONG STDMETHODCALLTYPE AddRef();
