@@ -47,11 +47,33 @@ RECOIL_STATIC_ASSERT(sizeof(zClipUV) == 0x08);
 namespace zClipRect {
 extern "C" {
 #endif
-int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount);
-int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCount);
-int __fastcall ClipPolyZRange_NoUV(zClipRectPartial* clipRect, int* vertexCount);
-int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial* clipRect, int* vertexCount);
-int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, int* vertexCount);
+/*
+ * Source-model evidence: five Z clippers, reviewed 2026-10-10.
+ *
+ * vertexCount is reconstructed as pointer to volatile int for retail
+ * 0x47a200, 0x47a4e0, 0x47aa80, 0x47af60 and 0x47e900.
+ * This declaration is inferred from retail accesses, not recovered
+ * original header text.
+ *
+ * Each function reads the count separately at evaluated guards in the
+ * store-free far/near pre-scans, reads it again for the early-return
+ * comparison, and uses distinct reads for prevIndex and the initial
+ * main-loop guard. Same-body VC5SP3 C1 controls with int* cache or
+ * combine those reads. Retail 0x47dfb0 provides the XY entry control.
+ *
+ * Scope: these five prototypes and definitions only. The six XY
+ * interfaces and caller-local declarations remain unchanged.
+ * No asynchronous-update or synchronization contract is inferred.
+ *
+ * Evidence: retained zclip-volatile-count review packet,
+ * retail_count_access_sites.txt sections A-D, complete retail listings,
+ * same-body plain-int controls, and compile_profile.txt (r12168).
+ */
+int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, volatile int* vertexCount);
+int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, volatile int* vertexCount);
+int __fastcall ClipPolyZRange_NoUV(zClipRectPartial* clipRect, volatile int* vertexCount);
+int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial* clipRect, volatile int* vertexCount);
+int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, volatile int* vertexCount);
 int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount);
 int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount);
 int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount);

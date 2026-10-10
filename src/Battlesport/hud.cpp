@@ -1159,10 +1159,10 @@ int RecoilStateBase::OnTryBecomeCurrent()
 /**
  * Original helper evidence: no standalone retail function exists; vtable slot 4 in
  * g_RecoilStateBase_Vtbl @ 0x4ccd50 folds to the return-zero body at 0x407140;
- * verified through recoil_state_base_default_table.
+ * verified through recoil_state_base_default_table. Inline (select-any COMDAT): ICF folds it only with inline bodies.
  * Purpose: Report that a default state does not request app shutdown.
  */
-int RecoilStateBase::OnUpdateShouldQuit()
+inline int RecoilStateBase::OnUpdateShouldQuit()
 {
     return 0;
 }

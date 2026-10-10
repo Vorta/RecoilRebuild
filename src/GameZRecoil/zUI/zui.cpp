@@ -1039,9 +1039,9 @@ void HudUiElement::OnHoverRepeat() { }
 /**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
- * Purpose: return the recovered HUD value exposed by HudUiElement::GetBoundsRectOrNull.
+ * Purpose: return the null default bounds; inline (select-any) like the other 0x407140 ICF members.
  */
-HudUiRect* HudUiElement::GetBoundsRectOrNull()
+inline HudUiRect* HudUiElement::GetBoundsRectOrNull()
 {
     return 0;
 }

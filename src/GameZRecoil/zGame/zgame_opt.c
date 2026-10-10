@@ -731,9 +731,9 @@ namespace zSys
      * @recoil-artifact defines .text recoil:function:0x4b3210: zSys::ReturnZeroStub.
      * @recoil-match byte
      *
-     * Purpose: return zero for callers that need a stable legacy system stub.
+     * Purpose: return zero for this file's capability probes; file-local, so ICF never folds it (retail 0x4b3210).
      */
-    int __cdecl ReturnZeroStub()
+    static int __cdecl ReturnZeroStub()
     {
         return 0;
     }

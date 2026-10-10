@@ -1361,8 +1361,85 @@ void __fastcall zMathMatTransformDirectionBatch(const zVec3* normals, zVec3* out
 }
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-point-in-place
+ *
+ * Purpose: Transform a point in place by the matrix's 3x3 part plus
+ * translation; in the raw arm all reads precede the x/z/y binary32 stores.
+ * Reconstruction: zmth_main.c-resident copy of the reviewed gmod_pick.c
+ * in-place helper (same body; retail family 0x4747f9, 0x4852a9); original
+ * spelling and declaration location unproved.
+ * Raw assembly: identical body to the reviewed gmod_pick.c island.
+ * Island contract: EAX/EBX hold vector/matrix from compiler-owned parameter
+ * homes and are clobbered; integer flags and the x87 control word unchanged;
+ * x87 entry/peak/exit depth 0/6/0 on normal completion; x87 status and
+ * exceptions are not preserved. The vector must not overlap the matrix.
+ * Consumers are scoped by the raw-assembly allowlist.
+ * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+ * sequence and result stores without a call at that site; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x4747d0.
+ */
+__inline void Vec3TransformPointInPlace(const zMat4x3* matrix, zVec3* vector)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+    mov eax, vector
+    mov ebx, matrix
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xx
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xy
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xz
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yx
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yy
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(2)
+    faddp st(5), st
+    faddp st(3), st
+    faddp st(1), st
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zx
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zy
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    faddp st(5), st
+    faddp st(3), st
+    faddp st(1), st
+    fxch st(2)
+    fadd dword ptr [ebx]zMat4x3.posX
+    fxch st(1)
+    fadd dword ptr [ebx]zMat4x3.posY
+    fxch st(2)
+    fadd dword ptr [ebx]zMat4x3.posZ
+    fxch st(1)
+    fstp dword ptr [eax]zVec3.x
+    fstp dword ptr [eax]zVec3.z
+    fstp dword ptr [eax]zVec3.y
+    }
+#else
+    const zVec3 source = *vector;
+    vector->x = source.x * matrix->xx + source.y * matrix->yx + source.z * matrix->zx + matrix->posX;
+    vector->y = source.x * matrix->xy + source.y * matrix->yy + source.z * matrix->zy + matrix->posY;
+    vector->z = source.x * matrix->xz + source.y * matrix->yz + source.z * matrix->zz + matrix->posZ;
+#endif
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mattransformpointbatchinplace
  * @recoil-artifact defines .text recoil:function:0x4747d0: zMath::MatTransformPointBatchInPlace.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-point-in-place
+ * @recoil-match byte
+ *
+ * Raw assembly: the zmth_main.c-resident inline helper expansion at
+ * retail [0x4747f9,0x47485a), including both parameter-home reloads
+ * (requires zmth_main.c /Ob1).
  *
  *
  * Purpose: transforms an array of points in place by the current 4x3 matrix
@@ -1370,18 +1447,12 @@ void __fastcall zMathMatTransformDirectionBatch(const zVec3* normals, zVec3* out
  */
 void __fastcall MatTransformPointBatchInPlace(zVec3* points, int count)
 {
-    const zMat4x3* matrix;
-    int i;
-    if (*g_currentMatrixIdentityFlagSlot != 0 || count == 0) {
+    if (*g_currentMatrixIdentityFlagSlot != 0) {
         return;
     }
 
-    matrix = (const zMat4x3*)(*g_currentMatrixPtrSlot);
-    for (i = 0; i < count; ++i) {
-        const zVec3 point = points[i];
-        points[i].x = point.x * matrix->xx + point.y * matrix->yx + point.z * matrix->zx + matrix->posX;
-        points[i].z = point.x * matrix->xz + point.y * matrix->yz + point.z * matrix->zz + matrix->posZ;
-        points[i].y = point.x * matrix->xy + point.y * matrix->yy + point.z * matrix->zy + matrix->posY;
+    while (count--) {
+        Vec3TransformPointInPlace((const zMat4x3*)(*g_currentMatrixPtrSlot), points++);
     }
 }
 

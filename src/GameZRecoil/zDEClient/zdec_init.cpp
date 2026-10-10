@@ -245,7 +245,7 @@ namespace zDEClient {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-init-zdeclient-loadconfigresources
  * @recoil-artifact defines .text recoil:function:0x4558f0: zDEClient::LoadConfigResources.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zDEClient\zdec_init.cpp.
  * Purpose: load declient.zrd crater and quicksand resource defaults, bind the

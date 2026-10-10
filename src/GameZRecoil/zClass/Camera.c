@@ -3119,7 +3119,7 @@ int __fastcall
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.renderscene
  * @recoil-artifact defines .text recoil:function:0x44d3a0: CZCamera::RenderScene.
- *
+ * @recoil-match byte
  *
  * Purpose: update camera scene state and render the active world.
  */
@@ -3219,7 +3219,7 @@ RenderScene(CZNodePartial * camera, int updateFxPass3Local)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.zvideo-sw-renderframe
  * @recoil-artifact defines .text recoil:function:0x44d600: zVideo_sw::RenderFrame.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Data evidence: BN writes the render-frame active view context at 0x5398fc,

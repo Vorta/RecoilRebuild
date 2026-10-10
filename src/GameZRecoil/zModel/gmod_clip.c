@@ -212,212 +212,24 @@ void __fastcall zClipAltBuildFrustumPlanes(CZCameraDataPartial* cameraData)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-nouv
  * @recoil-artifact defines .text recoil:function:0x47a200: zClipRect::ClipPolyZRange_NoUV
- *
+ * @recoil-match byte
  *
  * Purpose: Clip the scratch polygon vertex stream against the configured Z range without attributes.
+ *
+ * Source model: inferred volatile-pointee count interface; see the
+ * five-Z declaration evidence in zclip_rect.h.
+ * Retail head count reads: 0x47a21d, 0x47a241, 0x47a265, 0x47a289,
+ * 0x47a299, 0x47a2aa and 0x47a2ac.
  */
-int __fastcall ClipPolyZRange_NoUV(zClipRectPartial* clipRect, int* vertexCount)
+int __fastcall ClipPolyZRange_NoUV(zClipRectPartial* clipRect, volatile int* vertexCount)
 {
     zVec3 clippedVerts[kClipBufferCapacity];
     int outputCount;
     int edgeIndex;
-    zClipRectPartial* rect = clipRect;
-    int* count = vertexCount;
-    const int flags = rect->flags;
     int allInsideNear;
     int i;
     int prevIndex;
-
-    if ((flags & 0x20) != 0) {
-        int allBeyondFar = 1;
-        for (i = 0; i < *count && allBeyondFar != 0; ++i) {
-            if (g_Clip_PolyVertsScratch[i].z < rect->zMax) {
-                allBeyondFar = 0;
-            }
-        }
-
-        if (allBeyondFar != 0) {
-            return 0;
-        }
-    }
-
-    if ((flags & 0x10) == 0) {
-        return 1;
-    }
-
-    allInsideNear = 1;
-    for (i = 0; i < *count && allInsideNear != 0; ++i) {
-        if (g_Clip_PolyVertsScratch[i].z < rect->zMin) {
-            allInsideNear = 0;
-        }
-    }
-
-    if (allInsideNear != 0) {
-        return *count >= 3 ? 1 : 0;
-    }
-
-    outputCount = 0;
-    edgeIndex = 0;
-
-    prevIndex = *count - 1;
-    for (; edgeIndex < *count; ++edgeIndex) {
-        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
-        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
-        if (prevVert->z >= rect->zMin && currVert->z >= rect->zMin) {
-            clippedVerts[outputCount] = *currVert;
-            ++outputCount;
-        } else if (prevVert->z >= rect->zMin && currVert->z < rect->zMin) {
-            const float t = (rect->zMin - prevVert->z) / (currVert->z - prevVert->z);
-            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
-            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
-            clippedVerts[outputCount].z = rect->zMin;
-            ++outputCount;
-        } else if (currVert->z >= rect->zMin) {
-            const float t = (rect->zMin - prevVert->z) / (currVert->z - prevVert->z);
-            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
-            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
-            clippedVerts[outputCount].z = rect->zMin;
-            ++outputCount;
-            clippedVerts[outputCount] = *currVert;
-            ++outputCount;
-        }
-
-        prevIndex = edgeIndex;
-    }
-
-    *count = outputCount;
-    if (outputCount < 3) {
-        return 0;
-    }
-
-    memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
-    return 1;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-nouv-withattribs
- * @recoil-artifact defines .text recoil:function:0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
- *
- *
- * Purpose: Clip the scratch polygon vertex stream against the configured Z range while preserving three attributes.
- */
-int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial* clipRect, int* vertexCount)
-{
-    const int count = *vertexCount;
     const int flags = clipRect->flags;
-    int allInsideNear;
-    int i;
-    zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
-    float clippedAttr0[kClipBufferCapacity] = { 0 };
-    float clippedAttr1[kClipBufferCapacity] = { 0 };
-    float clippedAttr2[kClipBufferCapacity] = { 0 };
-    int outputCount;
-
-    if ((flags & 0x20) != 0) {
-        int allBeyondFar = 1;
-        for (i = 0; i < count && allBeyondFar != 0; ++i) {
-            if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
-                allBeyondFar = 0;
-            }
-        }
-
-        if (allBeyondFar != 0) {
-            return 0;
-        }
-    }
-
-    if ((flags & 0x10) == 0) {
-        return 1;
-    }
-
-    allInsideNear = 1;
-    for (i = 0; i < count && allInsideNear != 0; ++i) {
-        if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
-            allInsideNear = 0;
-        }
-    }
-
-    if (allInsideNear != 0) {
-        return count >= 3 ? 1 : 0;
-    }
-
-    outputCount = 0;
-
-    if (count > 0) {
-        zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
-        float prevAttr0 = g_Clip_PolyAttr0[count - 1];
-        float prevAttr1 = g_Clip_PolyAttr1[count - 1];
-        float prevAttr2 = g_Clip_PolyAttr2[count - 1];
-        int prevInside = prevVert.z >= clipRect->zMin;
-
-        for (i = 0; i < count; ++i) {
-            const zVec3 currVert = g_Clip_PolyVertsScratch[i];
-            const float currAttr0 = g_Clip_PolyAttr0[i];
-            const float currAttr1 = g_Clip_PolyAttr1[i];
-            const float currAttr2 = g_Clip_PolyAttr2[i];
-            const int currInside = currVert.z >= clipRect->zMin;
-
-            if (prevInside != currInside) {
-                const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                zVec3 intersection = { 0 };
-                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
-                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
-                intersection.z = clipRect->zMin;
-                if (outputCount < kClipBufferCapacity) {
-                    clippedVerts[outputCount] = intersection;
-                    clippedAttr0[outputCount] = prevAttr0 + (currAttr0 - prevAttr0) * t;
-                    clippedAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
-                    clippedAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
-                    ++outputCount;
-                }
-            }
-
-            if (currInside && outputCount < kClipBufferCapacity) {
-                clippedVerts[outputCount] = currVert;
-                clippedAttr0[outputCount] = currAttr0;
-                clippedAttr1[outputCount] = currAttr1;
-                clippedAttr2[outputCount] = currAttr2;
-                ++outputCount;
-            }
-
-            prevVert = currVert;
-            prevAttr0 = currAttr0;
-            prevAttr1 = currAttr1;
-            prevAttr2 = currAttr2;
-            prevInside = currInside;
-        }
-    }
-
-    *vertexCount = outputCount;
-    if (outputCount < 3) {
-        return 0;
-    }
-
-    memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
-    memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)(outputCount) * sizeof(float));
-    memcpy(g_Clip_PolyAttr1, clippedAttr1, (size_t)(outputCount) * sizeof(float));
-    memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)(outputCount) * sizeof(float));
-    return 1;
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz
- * @recoil-artifact defines .text recoil:function:0x47aa80: zClipRect::ClipPolyNearZ
- *
- *
- * Purpose: Clip the scratch polygon vertex and UV streams against the configured near Z plane.
- */
-int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount)
-{
-    const int flags = clipRect->flags;
-    int i;
-    int allInsideNear;
-    zVec3 clippedVerts[kClipBufferCapacity];
-    zClipUV clippedUvs[kClipBufferCapacity];
-    zVec3* outVert;
-    zClipUV* outUv;
-    int outputCount;
-    int prevIndex;
 
     if ((flags & 0x20) != 0) {
         int allBeyondFar = 1;
@@ -444,55 +256,38 @@ int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount)
     }
 
     if (allInsideNear != 0) {
-        return *vertexCount >= 3 ? 1 : 0;
+        return *vertexCount >= 3;
     }
 
-    outVert = clippedVerts;
-    outUv = clippedUvs;
+    edgeIndex = 0;
     outputCount = 0;
+
     prevIndex = *vertexCount - 1;
-
-    for (i = 0; i < *vertexCount; ++i) {
-        zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
-        zVec3* currVert = &g_Clip_PolyVertsScratch[i];
-        zClipUV* prevUv = &g_Clip_PolyUvs[prevIndex];
-        zClipUV* currUv = &g_Clip_PolyUvs[i];
-
+    for (; edgeIndex < *vertexCount; ++edgeIndex) {
+        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
         if (prevVert->z >= clipRect->zMin && currVert->z >= clipRect->zMin) {
-            *outVert = *currVert;
-            *outUv = *currUv;
-            ++outVert;
-            ++outUv;
+            clippedVerts[outputCount] = *currVert;
             ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z < clipRect->zMin) {
+            // Both endpoints are clipped away; retail tests this case explicitly.
         } else if (prevVert->z >= clipRect->zMin && currVert->z < clipRect->zMin) {
             const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
-            outVert->x = prevVert->x + (currVert->x - prevVert->x) * t;
-            outVert->y = prevVert->y + (currVert->y - prevVert->y) * t;
-            outVert->z = clipRect->zMin;
-            outUv->u = prevUv->u + (currUv->u - prevUv->u) * t;
-            outUv->v = prevUv->v + (currUv->v - prevUv->v) * t;
-            ++outVert;
-            ++outUv;
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
             ++outputCount;
-        } else if (currVert->z >= clipRect->zMin) {
+        } else if (prevVert->z < clipRect->zMin && currVert->z >= clipRect->zMin) {
             const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
-            outVert->x = prevVert->x + (currVert->x - prevVert->x) * t;
-            outVert->y = prevVert->y + (currVert->y - prevVert->y) * t;
-            outVert->z = clipRect->zMin;
-            outUv->u = prevUv->u + (currUv->u - prevUv->u) * t;
-            outUv->v = prevUv->v + (currUv->v - prevUv->v) * t;
-            ++outVert;
-            ++outUv;
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
             ++outputCount;
-
-            *outVert = *currVert;
-            *outUv = *currUv;
-            ++outVert;
-            ++outUv;
+            clippedVerts[outputCount] = *currVert;
             ++outputCount;
         }
 
-        prevIndex = i;
+        prevIndex = edgeIndex;
     }
 
     *vertexCount = outputCount;
@@ -501,32 +296,37 @@ int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, int* vertexCount)
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
-    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
     return 1;
 }
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz-withattr0
- * @recoil-artifact defines .text recoil:function:0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-nouv-withattribs
+ * @recoil-artifact defines .text recoil:function:0x47a4e0: zClipRect::ClipPolyZRange_NoUV_WithAttribs
+ * @recoil-match byte
  *
+ * Purpose: Clip the scratch polygon vertex stream against the configured Z range while preserving three attributes.
  *
- * Purpose: Clip the scratch polygon vertex, UV, and first-attribute streams against near Z.
+ * Source model: inferred volatile-pointee count interface; see the
+ * five-Z declaration evidence in zclip_rect.h.
+ * Retail head count reads: 0x47a4fd, 0x47a521, 0x47a545, 0x47a569,
+ * 0x47a577, 0x47a58c and 0x47a58e.
  */
-int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCount)
+int __fastcall ClipPolyZRange_NoUV_WithAttribs(zClipRectPartial* clipRect, volatile int* vertexCount)
 {
-    const int count = *vertexCount;
-    const int flags = clipRect->flags;
+    zVec3 clippedVerts[kClipBufferCapacity];
+    float clippedAttr0[kClipBufferCapacity];
+    float clippedAttr1[kClipBufferCapacity];
+    float clippedAttr2[kClipBufferCapacity];
+    int outputCount;
+    int edgeIndex;
     int allInsideNear;
     int i;
-    int result;
-    zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
-    zClipUV clippedUvs[kClipBufferCapacity] = { 0 };
-    float clippedAttrs[kClipBufferCapacity] = { 0 };
-    int outputCount;
+    int prevIndex;
+    const int flags = clipRect->flags;
 
     if ((flags & 0x20) != 0) {
         int allBeyondFar = 1;
-        for (i = 0; i < count && allBeyondFar != 0; ++i) {
+        for (i = 0; i < *vertexCount && allBeyondFar != 0; ++i) {
             if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
                 allBeyondFar = 0;
             }
@@ -542,61 +342,63 @@ int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCo
     }
 
     allInsideNear = 1;
-    for (i = 0; i < count && allInsideNear != 0; ++i) {
+    for (i = 0; i < *vertexCount && allInsideNear != 0; ++i) {
         if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
             allInsideNear = 0;
         }
     }
 
-    result = 0;
-    if (allInsideNear != result) {
-        result = count >= 3;
-        return result;
+    if (allInsideNear != 0) {
+        return *vertexCount >= 3;
     }
 
+    prevIndex = *vertexCount - 1;
+    edgeIndex = 0;
     outputCount = 0;
 
-    if (count > 0) {
-        zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
-        zClipUV prevUv = g_Clip_PolyUvs[count - 1];
-        float prevAttr = g_Clip_PolyAttr0[count - 1];
-        int prevInside = prevVert.z >= clipRect->zMin;
-
-        for (i = 0; i < count; ++i) {
-            const zVec3 currVert = g_Clip_PolyVertsScratch[i];
-            const zClipUV currUv = g_Clip_PolyUvs[i];
-            const float currAttr = g_Clip_PolyAttr0[i];
-            const int currInside = currVert.z >= clipRect->zMin;
-
-            if (prevInside != currInside) {
-                const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                zVec3 intersection = { 0 };
-                zClipUV intersectionUv = { 0 };
-                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
-                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
-                intersection.z = clipRect->zMin;
-                intersectionUv.u = prevUv.u + (currUv.u - prevUv.u) * t;
-                intersectionUv.v = prevUv.v + (currUv.v - prevUv.v) * t;
-                if (outputCount < kClipBufferCapacity) {
-                    clippedVerts[outputCount] = intersection;
-                    clippedUvs[outputCount] = intersectionUv;
-                    clippedAttrs[outputCount] = prevAttr + (currAttr - prevAttr) * t;
-                    ++outputCount;
-                }
-            }
-
-            if (currInside && outputCount < kClipBufferCapacity) {
-                clippedVerts[outputCount] = currVert;
-                clippedUvs[outputCount] = currUv;
-                clippedAttrs[outputCount] = currAttr;
-                ++outputCount;
-            }
-
-            prevVert = currVert;
-            prevUv = currUv;
-            prevAttr = currAttr;
-            prevInside = currInside;
+    for (; edgeIndex < *vertexCount; ++edgeIndex) {
+        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
+        const float* prevAttr0 = &g_Clip_PolyAttr0[prevIndex];
+        const float* currAttr0 = &g_Clip_PolyAttr0[edgeIndex];
+        const float* prevAttr1 = &g_Clip_PolyAttr1[prevIndex];
+        const float* currAttr1 = &g_Clip_PolyAttr1[edgeIndex];
+        const float* prevAttr2 = &g_Clip_PolyAttr2[prevIndex];
+        const float* currAttr2 = &g_Clip_PolyAttr2[edgeIndex];
+        if (prevVert->z >= clipRect->zMin && currVert->z >= clipRect->zMin) {
+            clippedVerts[outputCount] = *currVert;
+            clippedAttr0[outputCount] = *currAttr0;
+            clippedAttr1[outputCount] = *currAttr1;
+            clippedAttr2[outputCount] = *currAttr2;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z < clipRect->zMin) {
+            // Both endpoints are clipped away; retail tests this case explicitly.
+        } else if (prevVert->z >= clipRect->zMin && currVert->z < clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            clippedAttr1[outputCount] = *prevAttr1 + (*currAttr1 - *prevAttr1) * t;
+            clippedAttr2[outputCount] = *prevAttr2 + (*currAttr2 - *prevAttr2) * t;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z >= clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            clippedAttr1[outputCount] = *prevAttr1 + (*currAttr1 - *prevAttr1) * t;
+            clippedAttr2[outputCount] = *prevAttr2 + (*currAttr2 - *prevAttr2) * t;
+            ++outputCount;
+            clippedVerts[outputCount] = *currVert;
+            clippedAttr0[outputCount] = *currAttr0;
+            clippedAttr1[outputCount] = *currAttr1;
+            clippedAttr2[outputCount] = *currAttr2;
+            ++outputCount;
         }
+
+        prevIndex = edgeIndex;
     }
 
     *vertexCount = outputCount;
@@ -605,8 +407,217 @@ int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, int* vertexCo
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
-    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
-    memcpy(g_Clip_PolyAttr0, clippedAttrs, (size_t)(outputCount) * sizeof(float));
+    memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)*vertexCount * sizeof(float));
+    memcpy(g_Clip_PolyAttr1, clippedAttr1, (size_t)*vertexCount * sizeof(float));
+    memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)*vertexCount * sizeof(float));
+    return 1;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz
+ * @recoil-artifact defines .text recoil:function:0x47aa80: zClipRect::ClipPolyNearZ
+ * @recoil-match byte
+ *
+ * Purpose: Clip the scratch polygon vertex and UV streams against the configured near Z plane.
+ *
+ * Source model: inferred volatile-pointee count interface; see the
+ * five-Z declaration evidence in zclip_rect.h.
+ * Retail head count reads: 0x47aa9d, 0x47aac1, 0x47aae5, 0x47ab09,
+ * 0x47ab19, 0x47ab2a and 0x47ab2c.
+ */
+int __fastcall ClipPolyNearZ(zClipRectPartial* clipRect, volatile int* vertexCount)
+{
+    zVec3 clippedVerts[kClipBufferCapacity];
+    zClipUV clippedUvs[kClipBufferCapacity];
+    int outputCount;
+    int edgeIndex;
+    int allInsideNear;
+    int i;
+    int prevIndex;
+    const int flags = clipRect->flags;
+
+    if ((flags & 0x20) != 0) {
+        int allBeyondFar = 1;
+        for (i = 0; i < *vertexCount && allBeyondFar != 0; ++i) {
+            if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
+                allBeyondFar = 0;
+            }
+        }
+
+        if (allBeyondFar != 0) {
+            return 0;
+        }
+    }
+
+    if ((flags & 0x10) == 0) {
+        return 1;
+    }
+
+    allInsideNear = 1;
+    for (i = 0; i < *vertexCount && allInsideNear != 0; ++i) {
+        if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
+            allInsideNear = 0;
+        }
+    }
+
+    if (allInsideNear != 0) {
+        return *vertexCount >= 3;
+    }
+
+    edgeIndex = 0;
+    outputCount = 0;
+
+    prevIndex = *vertexCount - 1;
+    for (; edgeIndex < *vertexCount; ++edgeIndex) {
+        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
+        const zClipUV* prevUv = &g_Clip_PolyUvs[prevIndex];
+        const zClipUV* currUv = &g_Clip_PolyUvs[edgeIndex];
+        if (prevVert->z >= clipRect->zMin && currVert->z >= clipRect->zMin) {
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z < clipRect->zMin) {
+            // Both endpoints are clipped away; retail tests this case explicitly.
+        } else if (prevVert->z >= clipRect->zMin && currVert->z < clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z >= clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            ++outputCount;
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            ++outputCount;
+        }
+
+        prevIndex = edgeIndex;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
+    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)*vertexCount * sizeof(zClipUV));
+    return 1;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolynearz-withattr0
+ * @recoil-artifact defines .text recoil:function:0x47af60: zClipRect::ClipPolyNearZ_WithAttr0
+ * @recoil-match byte
+ *
+ * Purpose: Clip the scratch polygon vertex, UV, and first-attribute streams against near Z.
+ *
+ * Source model: inferred volatile-pointee count interface; see the
+ * five-Z declaration evidence in zclip_rect.h.
+ * Retail head count reads: 0x47af7d, 0x47afa1, 0x47afc5, 0x47afe9,
+ * 0x47aff9, 0x47b00a and 0x47b00c.
+ */
+int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, volatile int* vertexCount)
+{
+    zVec3 clippedVerts[kClipBufferCapacity];
+    zClipUV clippedUvs[kClipBufferCapacity];
+    float clippedAttr0[kClipBufferCapacity];
+    int outputCount;
+    int edgeIndex;
+    int allInsideNear;
+    int i;
+    int prevIndex;
+    const int flags = clipRect->flags;
+
+    if ((flags & 0x20) != 0) {
+        int allBeyondFar = 1;
+        for (i = 0; i < *vertexCount && allBeyondFar != 0; ++i) {
+            if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
+                allBeyondFar = 0;
+            }
+        }
+
+        if (allBeyondFar != 0) {
+            return 0;
+        }
+    }
+
+    if ((flags & 0x10) == 0) {
+        return 1;
+    }
+
+    allInsideNear = 1;
+    for (i = 0; i < *vertexCount && allInsideNear != 0; ++i) {
+        if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
+            allInsideNear = 0;
+        }
+    }
+
+    if (allInsideNear != 0) {
+        return *vertexCount >= 3;
+    }
+
+    edgeIndex = 0;
+    outputCount = 0;
+
+    prevIndex = *vertexCount - 1;
+    for (; edgeIndex < *vertexCount; ++edgeIndex) {
+        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
+        const zClipUV* prevUv = &g_Clip_PolyUvs[prevIndex];
+        const zClipUV* currUv = &g_Clip_PolyUvs[edgeIndex];
+        const float* prevAttr0 = &g_Clip_PolyAttr0[prevIndex];
+        const float* currAttr0 = &g_Clip_PolyAttr0[edgeIndex];
+        if (prevVert->z >= clipRect->zMin && currVert->z >= clipRect->zMin) {
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            clippedAttr0[outputCount] = *currAttr0;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z < clipRect->zMin) {
+            // Both endpoints are clipped away; retail tests this case explicitly.
+        } else if (prevVert->z >= clipRect->zMin && currVert->z < clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z >= clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            ++outputCount;
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            clippedAttr0[outputCount] = *currAttr0;
+            ++outputCount;
+        }
+
+        prevIndex = edgeIndex;
+    }
+
+    *vertexCount = outputCount;
+    if (outputCount < 3) {
+        return 0;
+    }
+
+    memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
+    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)*vertexCount * sizeof(zClipUV));
+    memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)*vertexCount * sizeof(float));
     return 1;
 }
 
@@ -1883,26 +1894,32 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippolyzrange-withattr012
  * @recoil-artifact defines .text recoil:function:0x47e900: zClipRect::ClipPolyZRange_WithAttr012
- *
+ * @recoil-match byte
  *
  * Purpose: Clip the scratch polygon vertex, UV, and three-attribute streams against the Z range.
+ *
+ * Source model: inferred volatile-pointee count interface; see the
+ * five-Z declaration evidence in zclip_rect.h.
+ * Retail head count reads: 0x47e91c, 0x47e940, 0x47e964, 0x47e988,
+ * 0x47e996, 0x47e9ab and 0x47e9ad.
  */
-int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, int* vertexCount)
+int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, volatile int* vertexCount)
 {
-    const int count = *vertexCount;
-    const int flags = clipRect->flags;
+    zVec3 clippedVerts[kClipBufferCapacity];
+    zClipUV clippedUvs[kClipBufferCapacity];
+    float clippedAttr0[kClipBufferCapacity];
+    float clippedAttr2[kClipBufferCapacity];
+    float clippedAttr1[kClipBufferCapacity];
+    int outputCount;
+    int edgeIndex;
     int allInsideNear;
     int i;
-    zVec3 clippedVerts[kClipBufferCapacity] = { 0 };
-    zClipUV clippedUvs[kClipBufferCapacity] = { 0 };
-    float clippedAttr0[kClipBufferCapacity] = { 0 };
-    float clippedAttr1[kClipBufferCapacity] = { 0 };
-    float clippedAttr2[kClipBufferCapacity] = { 0 };
-    int outputCount;
+    int prevIndex;
+    const int flags = clipRect->flags;
 
     if ((flags & 0x20) != 0) {
         int allBeyondFar = 1;
-        for (i = 0; i < count && allBeyondFar != 0; ++i) {
+        for (i = 0; i < *vertexCount && allBeyondFar != 0; ++i) {
             if (g_Clip_PolyVertsScratch[i].z < clipRect->zMax) {
                 allBeyondFar = 0;
             }
@@ -1918,69 +1935,71 @@ int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, int* verte
     }
 
     allInsideNear = 1;
-    for (i = 0; i < count && allInsideNear != 0; ++i) {
+    for (i = 0; i < *vertexCount && allInsideNear != 0; ++i) {
         if (g_Clip_PolyVertsScratch[i].z < clipRect->zMin) {
             allInsideNear = 0;
         }
     }
 
     if (allInsideNear != 0) {
-        return count >= 3 ? 1 : 0;
+        return *vertexCount >= 3;
     }
 
+    prevIndex = *vertexCount - 1;
+    edgeIndex = 0;
     outputCount = 0;
 
-    if (count > 0) {
-        zVec3 prevVert = g_Clip_PolyVertsScratch[count - 1];
-        zClipUV prevUv = g_Clip_PolyUvs[count - 1];
-        float prevAttr0 = g_Clip_PolyAttr0[count - 1];
-        float prevAttr1 = g_Clip_PolyAttr1[count - 1];
-        float prevAttr2 = g_Clip_PolyAttr2[count - 1];
-        int prevInside = prevVert.z >= clipRect->zMin;
-
-        for (i = 0; i < count; ++i) {
-            const zVec3 currVert = g_Clip_PolyVertsScratch[i];
-            const zClipUV currUv = g_Clip_PolyUvs[i];
-            const float currAttr0 = g_Clip_PolyAttr0[i];
-            const float currAttr1 = g_Clip_PolyAttr1[i];
-            const float currAttr2 = g_Clip_PolyAttr2[i];
-            const int currInside = currVert.z >= clipRect->zMin;
-
-            if (prevInside != currInside) {
-                const float t = (clipRect->zMin - prevVert.z) / (currVert.z - prevVert.z);
-                zVec3 intersection = { 0 };
-                zClipUV intersectionUv = { 0 };
-                intersection.x = prevVert.x + (currVert.x - prevVert.x) * t;
-                intersection.y = prevVert.y + (currVert.y - prevVert.y) * t;
-                intersection.z = clipRect->zMin;
-                intersectionUv.u = prevUv.u + (currUv.u - prevUv.u) * t;
-                intersectionUv.v = prevUv.v + (currUv.v - prevUv.v) * t;
-                if (outputCount < kClipBufferCapacity) {
-                    clippedVerts[outputCount] = intersection;
-                    clippedUvs[outputCount] = intersectionUv;
-                    clippedAttr0[outputCount] = prevAttr0 + (currAttr0 - prevAttr0) * t;
-                    clippedAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
-                    clippedAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
-                    ++outputCount;
-                }
-            }
-
-            if (currInside && outputCount < kClipBufferCapacity) {
-                clippedVerts[outputCount] = currVert;
-                clippedUvs[outputCount] = currUv;
-                clippedAttr0[outputCount] = currAttr0;
-                clippedAttr1[outputCount] = currAttr1;
-                clippedAttr2[outputCount] = currAttr2;
-                ++outputCount;
-            }
-
-            prevVert = currVert;
-            prevUv = currUv;
-            prevAttr0 = currAttr0;
-            prevAttr1 = currAttr1;
-            prevAttr2 = currAttr2;
-            prevInside = currInside;
+    for (; edgeIndex < *vertexCount; ++edgeIndex) {
+        const zVec3* prevVert = &g_Clip_PolyVertsScratch[prevIndex];
+        const zVec3* currVert = &g_Clip_PolyVertsScratch[edgeIndex];
+        const zClipUV* prevUv = &g_Clip_PolyUvs[prevIndex];
+        const zClipUV* currUv = &g_Clip_PolyUvs[edgeIndex];
+        const float* prevAttr0 = &g_Clip_PolyAttr0[prevIndex];
+        const float* currAttr0 = &g_Clip_PolyAttr0[edgeIndex];
+        const float* prevAttr2 = &g_Clip_PolyAttr2[prevIndex];
+        const float* currAttr2 = &g_Clip_PolyAttr2[edgeIndex];
+        const float* prevAttr1 = &g_Clip_PolyAttr1[prevIndex];
+        const float* currAttr1 = &g_Clip_PolyAttr1[edgeIndex];
+        if (prevVert->z >= clipRect->zMin && currVert->z >= clipRect->zMin) {
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            clippedAttr0[outputCount] = *currAttr0;
+            clippedAttr2[outputCount] = *currAttr2;
+            clippedAttr1[outputCount] = *currAttr1;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z < clipRect->zMin) {
+            // Both endpoints are clipped away; retail tests this case explicitly.
+        } else if (prevVert->z >= clipRect->zMin && currVert->z < clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            clippedAttr2[outputCount] = *prevAttr2 + (*currAttr2 - *prevAttr2) * t;
+            clippedAttr1[outputCount] = *prevAttr1 + (*currAttr1 - *prevAttr1) * t;
+            ++outputCount;
+        } else if (prevVert->z < clipRect->zMin && currVert->z >= clipRect->zMin) {
+            const float t = (clipRect->zMin - prevVert->z) / (currVert->z - prevVert->z);
+            clippedVerts[outputCount].z = clipRect->zMin;
+            clippedVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
+            clippedVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
+            clippedUvs[outputCount].u = prevUv->u + (currUv->u - prevUv->u) * t;
+            clippedUvs[outputCount].v = prevUv->v + (currUv->v - prevUv->v) * t;
+            clippedAttr0[outputCount] = *prevAttr0 + (*currAttr0 - *prevAttr0) * t;
+            clippedAttr2[outputCount] = *prevAttr2 + (*currAttr2 - *prevAttr2) * t;
+            clippedAttr1[outputCount] = *prevAttr1 + (*currAttr1 - *prevAttr1) * t;
+            ++outputCount;
+            clippedVerts[outputCount] = *currVert;
+            clippedUvs[outputCount] = *currUv;
+            clippedAttr0[outputCount] = *currAttr0;
+            clippedAttr2[outputCount] = *currAttr2;
+            clippedAttr1[outputCount] = *currAttr1;
+            ++outputCount;
         }
+
+        prevIndex = edgeIndex;
     }
 
     *vertexCount = outputCount;
@@ -1989,10 +2008,10 @@ int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, int* verte
     }
 
     memcpy(g_Clip_PolyVertsScratch, clippedVerts, (size_t)(outputCount) * sizeof(zVec3));
-    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)(outputCount) * sizeof(zClipUV));
-    memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)(outputCount) * sizeof(float));
-    memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)(outputCount) * sizeof(float));
-    memcpy(g_Clip_PolyAttr1, clippedAttr1, (size_t)(outputCount) * sizeof(float));
+    memcpy(g_Clip_PolyUvs, clippedUvs, (size_t)*vertexCount * sizeof(zClipUV));
+    memcpy(g_Clip_PolyAttr0, clippedAttr0, (size_t)*vertexCount * sizeof(float));
+    memcpy(g_Clip_PolyAttr2, clippedAttr2, (size_t)*vertexCount * sizeof(float));
+    memcpy(g_Clip_PolyAttr1, clippedAttr1, (size_t)*vertexCount * sizeof(float));
     return 1;
 }
 
