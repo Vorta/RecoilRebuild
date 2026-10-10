@@ -250,9 +250,9 @@ typedef void(__fastcall* OptCatalogRemoveRuntimeRelayCallback)(
 
 #ifdef __cplusplus
 namespace OptCatalog {
+extern "C" {
 void __fastcall
 BlendDirectionTowardTarget(zVec3* direction, const zVec3* targetDirection, float xWeight, float yWeight, float zWeight);
-OptCatalogEntryDef* __fastcall FindEntryByName(const char* name);
 OptCatalogEntryDef* __fastcall FindEntryById(int entryId);
 CZNodePartial* __fastcall CreateTrailSegmentNodeFromTemplate(CZNodePartial* templateNode);
 OptCatalogTrailRuntimeState* __fastcall CreateTrailRuntimeState(
@@ -287,14 +287,10 @@ OptCatalogRuntimeInstanceStorage* __fastcall AllocRuntimeInstance(
     void* saveState,
     OptCatalogRuntimeInstanceStorage* runtimeInstanceOrNull
 );
-OptCatalogRuntimeInstanceStorage* __fastcall
-SpawnRuntimeInstanceAt(OptCatalogEntryDef* self, zVec3* spawnPos, CZNodePartial* ownerNode);
 void __fastcall RecycleRuntimeInstance(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance);
 void __fastcall ClearRuntimeInstances(OptCatalogEntryDef* self);
 void __fastcall
 RecycleRuntimeInstanceStorage(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance);
-int __cdecl Shutdown();
-int __fastcall ShutdownCore();
 int __fastcall FreeTrailRuntimeStateStorage(void* trailRuntimeState);
 int __fastcall DeactivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState);
 int __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState, int playerOrdinal);
@@ -316,13 +312,11 @@ int __fastcall InvokeDamageFeedbackAndHitCallback(
     float damageAmount
 );
 void __fastcall SetDamageContext(int contextKind, OptCatalogHitEventPartial* contextHitEvent);
-extern "C" {
 #endif
 void __fastcall SetDamageMaskSlotIndex(int slotIndex);
 void __fastcall RegisterDamageMaskSlotPtr(void* slotPtr);
 void __fastcall ApplyDamageMaskStampOnHit(OptCatalogHitEventPartial* hitEvent);
 #ifdef __cplusplus
-}
 float __fastcall CaptureHitSnapshotAndInvokeDamageTimerCallback(
     zVec3* sourcePos,
     OptCatalogHitEventPartial* hitEvent,
@@ -388,26 +382,32 @@ int __fastcall ComputeTrailImpactResponse(
     const zVec3* targetPos
 );
 void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot* segment);
+}
 } // namespace OptCatalog
 
 namespace OptCatalog_MineIterator {
-OptCatalogRuntimeInstanceStorage* __fastcall Begin(OptCatalogEntryDef* entry);
-OptCatalogRuntimeInstanceStorage* __fastcall Next(OptCatalogEntryDef* entry);
+extern "C" OptCatalogRuntimeInstanceStorage* __fastcall Begin(OptCatalogEntryDef* entry);
+extern "C" OptCatalogRuntimeInstanceStorage* __fastcall Next(OptCatalogEntryDef* entry);
 } // namespace OptCatalog_MineIterator
 
 namespace DamageFeedback {
-void __stdcall SetIntensityScalar(float scalar);
+extern "C" void __stdcall SetIntensityScalar(float scalar);
 } // namespace DamageFeedback
 
 namespace HitSource {
-int __fastcall UpdateTimedStatus(OptCatalogEntryDef* self, PlayerTimedHitStatus* status, float amount);
+extern "C" int __fastcall UpdateTimedStatus(OptCatalogEntryDef* self, PlayerTimedHitStatus* status, float amount);
 } // namespace HitSource
 
 namespace HitContext {
-void* __cdecl GetCurrentOwnerOrCtx();
+extern "C" void* __cdecl GetCurrentOwnerOrCtx();
 } // namespace HitContext
 
 extern "C" {
+OptCatalogEntryDef* __fastcall OptCatalogFindEntryByName(const char* name);
+OptCatalogRuntimeInstanceStorage* __fastcall
+OptCatalogSpawnRuntimeInstanceAt(OptCatalogEntryDef* self, zVec3* spawnPos, CZNodePartial* ownerNode);
+int __cdecl OptCatalogShutdown();
+int __fastcall OptCatalogShutdownCore();
 #endif
 extern int g_OptCatalog_CaptureHitSnapshotEnabled;
 extern int g_OptCatalog_FallbackImpactProbeEnabled;

@@ -11,19 +11,15 @@
 #include "opt_catalog.h"
 #include "zwep.h"
 
-#include "Battlesport/game_net.h"
-#include "Battlesport/player.h"
-#include "GameZRecoil/zDEClient/zdec.h"
 #include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd.h"
 #include "GameZRecoil/zTime/time.h"
-#include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zWeapon/zwep_api.h"
 #include "zdi.h"
 
 #include <math.h>
@@ -31,14 +27,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct OptCatalogQueuedImpactRecord {
+typedef struct OptCatalogQueuedImpactRecord {
     OptCatalogEntryDef* entry;
     CZNodePartial* ownerNode;
     zVec3 sourcePos;
     OptCatalogRaycastHitEntry hit;
     float damageAmount;
     unsigned char unknown_40[4];
-};
+} OptCatalogQueuedImpactRecord;
 
 RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
 
@@ -47,205 +43,201 @@ RECOIL_STATIC_ASSERT(sizeof(OptCatalogQueuedImpactRecord) == 68);
  * in one object (0x77896c..0x779a70): HandleImpactFromRuntimeProbe re-reads
  * the count after every record store, as VC5 does for stores into one aggregate.
  */
-struct OptCatalogQueuedImpactQueue {
+typedef struct OptCatalogQueuedImpactQueue {
     int count;
     OptCatalogQueuedImpactRecord records[64];
-};
+} OptCatalogQueuedImpactQueue;
 
-// Defined in zwep_init.c inside its extern "C" data block.
-extern "C" OptCatalogQueuedImpactQueue g_OptCatalogQueuedImpactQueue;
+// Defined in zwep_init.c.
+extern OptCatalogQueuedImpactQueue g_OptCatalogQueuedImpactQueue;
 
-namespace zMath
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ *
+ * Purpose: Subtract all three components before storing x/y/z as binary32.
+ * Reconstruction: zwep_ammo.c-resident copy of the zmth.h inline helper,
+ * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
+ * at 0x4b0ba0 and 0x4b0ca0 with simple identifier arguments bound
+ * directly and other arguments given homes.
+ * Raw assembly: identical body to the reviewed zmth.h Vec3Subtract island.
+ * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
+ * consumer ranges in 0x4b0ba0 and 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x4b0ba0 and 0x4b0ca0.
+ */
+__inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
 {
-    /**
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     *
-     * Purpose: Subtract all three components before storing x/y/z as binary32.
-     * Reconstruction: zwep_ammo.c-resident copy of the zmth.h inline helper,
-     * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
-     * at 0x4b0ba0 and 0x4b0ca0 with simple identifier arguments bound
-     * directly and other arguments given homes.
-     * Raw assembly: identical body to the reviewed zmth.h Vec3Subtract island.
-     * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
-     * consumer ranges in 0x4b0ba0 and 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
-     * Original inline helper evidence: no standalone retail function; observed at
-     * retail 0x4b0ba0 and 0x4b0ca0.
-     */
-    inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
-    {
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-        mov ebx, left
-        mov ecx, right
-        mov edx, dest
-        fld dword ptr [ebx]zVec3.x
-        fsub dword ptr [ecx]zVec3.x
-        fld dword ptr [ebx]zVec3.y
-        fsub dword ptr [ecx]zVec3.y
-        fld dword ptr [ebx]zVec3.z
-        fsub dword ptr [ecx]zVec3.z
-        fxch st(2)
-        fstp dword ptr [edx]zVec3.x
-        fstp dword ptr [edx]zVec3.y
-        fstp dword ptr [edx]zVec3.z
-        }
-#else
-        const float x = left->x - right->x;
-        const float y = left->y - right->y;
-        const float z = left->z - right->z;
-        dest->x = x;
-        dest->y = y;
-        dest->z = z;
-#endif
+    __asm {
+    mov ebx, left
+    mov ecx, right
+    mov edx, dest
+    fld dword ptr [ebx]zVec3.x
+    fsub dword ptr [ecx]zVec3.x
+    fld dword ptr [ebx]zVec3.y
+    fsub dword ptr [ecx]zVec3.y
+    fld dword ptr [ebx]zVec3.z
+    fsub dword ptr [ecx]zVec3.z
+    fxch st(2)
+    fstp dword ptr [edx]zVec3.x
+    fstp dword ptr [edx]zVec3.y
+    fstp dword ptr [edx]zVec3.z
     }
+#else
+    const float x = left->x - right->x;
+    const float y = left->y - right->y;
+    const float z = left->z - right->z;
+    dest->x = x;
+    dest->y = y;
+    dest->z = z;
+#endif
+}
 
-    /**
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-dot
-     *
-     * Purpose: return the full XYZ dot product as binary32.
-     * Reconstruction: inline-function form of the reviewed ZMTH_VECTOR_DOT
-     * ECX/EDX x87 core; retail 0x4b0ca0 binds the simple left pointer
-     * directly, gives &delta its own home and stores the result to a binary32
-     * home before the integer copy. zwep_ammo.c-resident inline definition.
-     * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
-     * consumer range [0x4b0d5c,0x4b0d7b) in 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
-     * Original inline helper evidence: no standalone retail function; observed at
-     * retail 0x4b0ca0.
-     */
-    inline float Vec3Dot(const zVec3* left, const zVec3* right)
-    {
-        float dot;
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-dot
+ *
+ * Purpose: return the full XYZ dot product as binary32.
+ * Reconstruction: inline-function form of the reviewed ZMTH_VECTOR_DOT
+ * ECX/EDX x87 core; retail 0x4b0ca0 binds the simple left pointer
+ * directly, gives &delta its own home and stores the result to a binary32
+ * home before the integer copy. zwep_ammo.c-resident inline definition.
+ * Raw assembly evidence: VC5 /Ob1 inlines this helper at the Pro-reviewed retail
+ * consumer range [0x4b0d5c,0x4b0d7b) in 0x4b0ca0 (run 2026-10-05T14-05-46-292Z-d71d0010).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x4b0ca0.
+ */
+__inline float Vec3Dot(const zVec3* left, const zVec3* right)
+{
+    float dot;
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-        mov ecx, left
-        mov edx, right
-        fld dword ptr [ecx]zVec3.x
-        fmul dword ptr [edx]zVec3.x
-        fld dword ptr [ecx]zVec3.y
-        fmul dword ptr [edx]zVec3.y
-        fld dword ptr [ecx]zVec3.z
-        fmul dword ptr [edx]zVec3.z
-        fxch st(1)
-        faddp st(2), st
-        faddp st(1), st
-        fstp dot
-        }
-#else
-        dot = left->x * right->x + left->y * right->y + left->z * right->z;
-#endif
-        return dot;
+    __asm {
+    mov ecx, left
+    mov edx, right
+    fld dword ptr [ecx]zVec3.x
+    fmul dword ptr [edx]zVec3.x
+    fld dword ptr [ecx]zVec3.y
+    fmul dword ptr [edx]zVec3.y
+    fld dword ptr [ecx]zVec3.z
+    fmul dword ptr [edx]zVec3.z
+    fxch st(1)
+    faddp st(2), st
+    faddp st(1), st
+    fstp dot
     }
+#else
+    dot = left->x * right->x + left->y * right->y + left->z * right->z;
+#endif
+    return dot;
+}
 
-    /**
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-length
-     *
-     * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
-     * Reconstruction: zwep_ammo.c-resident copy of the Camera.c inline helper,
-     * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
-     * at 0x4ae660 with the simple parameter argument bound directly and the
-     * result home packed into a dead parameter slot.
-     * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
-     * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
-     * sequence and result store without a call at that site; the original inline helper's header
-     * ownership and declaration placement are not established (TU-resident reconstruction model).
-     * Original inline helper evidence: no standalone retail function; observed at
-     * retail 0x4ae660.
-     */
-    inline float Vec3Length(const zVec3* vec)
-    {
-        float vecLength;
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-length
+ *
+ * Purpose: return FSQRT of the grouped (x*x + y*y) + z*z sum as binary32.
+ * Reconstruction: zwep_ammo.c-resident copy of the Camera.c inline helper,
+ * following the Camera.c-resident helper precedent; this /Ob1 TU inlines it
+ * at 0x4ae660 with the simple parameter argument bound directly and the
+ * result home packed into a dead parameter slot.
+ * Raw assembly: identical body to the reviewed Camera.c Vec3Length island.
+ * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
+ * sequence and result store without a call at that site; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x4ae660.
+ */
+__inline float Vec3Length(const zVec3* vec)
+{
+    float vecLength;
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-        mov ecx, vec
-        fld dword ptr [ecx]zVec3.x
-        fmul dword ptr [ecx]zVec3.x
-        fld dword ptr [ecx]zVec3.y
-        fmul dword ptr [ecx]zVec3.y
-        fld dword ptr [ecx]zVec3.z
-        fmul dword ptr [ecx]zVec3.z
-        fxch st(1)
-        faddp st(2), st
-        faddp st(1), st
-        fsqrt
-        fstp vecLength
-        }
-#else
-        vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
-#endif
-        return vecLength;
+    __asm {
+    mov ecx, vec
+    fld dword ptr [ecx]zVec3.x
+    fmul dword ptr [ecx]zVec3.x
+    fld dword ptr [ecx]zVec3.y
+    fmul dword ptr [ecx]zVec3.y
+    fld dword ptr [ecx]zVec3.z
+    fmul dword ptr [ecx]zVec3.z
+    fxch st(1)
+    faddp st(2), st
+    faddp st(1), st
+    fsqrt
+    fstp vecLength
     }
+#else
+    vecLength = (float)sqrt((vec->x * vec->x + vec->y * vec->y) + vec->z * vec->z);
+#endif
+    return vecLength;
+}
 
-    /**
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-add
-     *
-     * Raw assembly: reviewed after VC5 C++ addition spellings failed to give
-     * retail's EBP-frame expansion (Pro batch Z, run 96d501c4).
-     * Purpose: add two vectors component-wise and store x/y/z as binary32.
-     *
-     * Reconstruction: zwep_ammo.c-resident inline addition carrying the reviewed
-     * zmth.h Vec3Add body (this TU defines its own zMath helpers instead of
-     * including zmth.h). Original inline helper status is inferred: no standalone
-     * retail function exists, and retail 0x4af060 inline-expands this body at
-     * [0x4af78f,0x4af7b2) (35 bytes including the three home reloads). This is a
-     * reconstruction model; the historical declaration location is not
-     * established.
-     *
-     * Island contract: loads the named left/right/dest pointer parameters into
-     * EBX/ECX/EDX and clobbers EBX, ECX and EDX; integer flags and the x87
-     * control word are unchanged; x87 entry/peak/exit depth 0/3/0 on normal
-     * completion; all six component reads precede the X, Y, Z binary32 stores;
-     * x87 status and exceptions follow retail. The compiler owns argument homes,
-     * frame and register saves. The fallback computes its three result
-     * temporaries before any destination store, so it keeps the family's
-     * supported-alias contract.
-     */
-    inline void Vec3Add(const zVec3* left, const zVec3* right, zVec3* dest)
-    {
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.vector-add
+ *
+ * Raw assembly: reviewed after VC5 C++ addition spellings failed to give
+ * retail's EBP-frame expansion (Pro batch Z, run 96d501c4).
+ * Purpose: add two vectors component-wise and store x/y/z as binary32.
+ *
+ * Reconstruction: zwep_ammo.c-resident inline addition carrying the reviewed
+ * zmth.h Vec3Add body (this TU defines its own zMath helpers instead of
+ * including zmth.h). Original inline helper status is inferred: no standalone
+ * retail function exists, and retail 0x4af060 inline-expands this body at
+ * [0x4af78f,0x4af7b2) (35 bytes including the three home reloads). This is a
+ * reconstruction model; the historical declaration location is not
+ * established.
+ *
+ * Island contract: loads the named left/right/dest pointer parameters into
+ * EBX/ECX/EDX and clobbers EBX, ECX and EDX; integer flags and the x87
+ * control word are unchanged; x87 entry/peak/exit depth 0/3/0 on normal
+ * completion; all six component reads precede the X, Y, Z binary32 stores;
+ * x87 status and exceptions follow retail. The compiler owns argument homes,
+ * frame and register saves. The fallback computes its three result
+ * temporaries before any destination store, so it keeps the family's
+ * supported-alias contract.
+ */
+__inline void Vec3Add(const zVec3* left, const zVec3* right, zVec3* dest)
+{
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-        mov ebx, left
-        mov ecx, right
-        mov edx, dest
-        fld dword ptr [ebx]zVec3.x
-        fadd dword ptr [ecx]zVec3.x
-        fld dword ptr [ebx]zVec3.y
-        fadd dword ptr [ecx]zVec3.y
-        fld dword ptr [ebx]zVec3.z
-        fadd dword ptr [ecx]zVec3.z
-        fxch st(2)
-        fstp dword ptr [edx]zVec3.x
-        fstp dword ptr [edx]zVec3.y
-        fstp dword ptr [edx]zVec3.z
-        }
+    __asm {
+    mov ebx, left
+    mov ecx, right
+    mov edx, dest
+    fld dword ptr [ebx]zVec3.x
+    fadd dword ptr [ecx]zVec3.x
+    fld dword ptr [ebx]zVec3.y
+    fadd dword ptr [ecx]zVec3.y
+    fld dword ptr [ebx]zVec3.z
+    fadd dword ptr [ecx]zVec3.z
+    fxch st(2)
+    fstp dword ptr [edx]zVec3.x
+    fstp dword ptr [edx]zVec3.y
+    fstp dword ptr [edx]zVec3.z
+    }
 #else
-        const float x = left->x + right->x;
-        const float y = left->y + right->y;
-        const float z = left->z + right->z;
-        dest->x = x;
-        dest->y = y;
-        dest->z = z;
+    const float x = left->x + right->x;
+    const float y = left->y + right->y;
+    const float z = left->z + right->z;
+    dest->x = x;
+    dest->y = y;
+    dest->z = z;
 #endif
-    }
+}
 
-    /**
-     * Purpose: scale a vector by a scalar into an output vector.
-     *
-     * Reconstruction: original inline helper status is inferred: no standalone
-     * retail function exists, and retail 0x4af060 expands this shape at
-     * 0x4af3da, 0x4af500 and 0x4af967, loading the non-trivial scale argument once
-     * (fld scale; fld st(0); fmul [vec.x]). Same shape as the Camera.c and
-     * player_contact.cpp Vec3ScaleTo helpers. This is a reconstruction model; the
-     * historical declaration location is not established.
-     */
-    inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
-    {
-        out->x = vec->x * scale;
-        out->y = vec->y * scale;
-        out->z = vec->z * scale;
-    }
-} // namespace zMath
+/**
+ * Purpose: scale a vector by a scalar into an output vector.
+ *
+ * Reconstruction: original inline helper status is inferred: no standalone
+ * retail function exists, and retail 0x4af060 expands this shape at
+ * 0x4af3da, 0x4af500 and 0x4af967, loading the non-trivial scale argument once
+ * (fld scale; fld st(0); fmul [vec.x]). Same shape as the Camera.c and
+ * player_contact.cpp Vec3ScaleTo helpers. This is a reconstruction model; the
+ * historical declaration location is not established.
+ */
+__inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
+{
+    out->x = vec->x * scale;
+    out->y = vec->y * scale;
+    out->z = vec->z * scale;
+}
 
-extern "C" {
 /**
  * Retail .data bytes 00 00 00 3f (0.5f); read only by
  * OptCatalog::ProcessRuntimeInstances at 0x4af954 (fmul dword ptr [0x4e42e4]).
@@ -302,9 +294,7 @@ float g_OptCatalogRuntimeDeltaTime = 0.0f;
  * warning-sound gates.
  */
 float g_OptCatalogRuntimeNowSec = 0.0f;
-}
 
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogprocessruntimerelayenabled
  * @recoil-artifact defines .data recoil:data:0x4dcf7c: g_OptCatalogProcessRuntimeRelayEnabled.
@@ -316,705 +306,363 @@ extern "C" {
  * is being handled.
  */
 int g_OptCatalogProcessRuntimeRelayEnabled = 1;
+
+enum {
+    kOptCatalogFlagImmediateProbeImpact = 1u << 12,
+    kOptCatalogFlagFullProbeDamage = 1u << 13,
+    kOptCatalogFlagCraterImpact = 0x08,
+    kOptCatalogFlagQuickSandImpact = 0x20000,
+    kOptCatalogFlagAlwaysPlayImpactFx = 4194304,
+    kOptCatalogFlagTrailRuntime = 2,
+    kOptCatalogFlagImpactWhenScaleExpired = 4
+};
+
+enum { kOptCatalogFlagAllowOutOfRangeAimPitch = 0x2000 };
+
+enum {
+    kOptCatalogFlagForceSpawnVelocity = 0x400,
+    kOptCatalogFlagRelativeSpeed = 0x800000,
+    kOptCatalogFlagFlyoutSkipRotation = 0x2000,
+    kOptCatalogFlagFlyoutModelRotation = 0x100,
+    kOptCatalogFlagUsePendingSpawnTarget = 1u << 22,
+    kOptCatalogFlagTrailUsePendingSpawnTargets = 1u << 14,
+    kOptCatalogFlagTrailStartMutedAndLight = 1u << 11,
+    kOptCatalogFlagExpires = 1u << 6,
+    kOptCatalogFlagFixedRotate = 1u << 7,
+    kOptCatalogFlagInstant = 1u << 10,
+    kOptCatalogFlagLockOn = 1u << 14,
+    kOptCatalogFlagLockOnLead = 1u << 15
+};
+
+enum { kOptCatalogFlagRemoteDetonate = 1u << 19, kOptCatalogFlagTetherGuided = 1u << 20 };
+
+enum { kOptCatalogNodeFlagAcceptsTerrainDeformation = 0x10000, kOptCatalogFastSqrtBias = 0x1fc00000 };
+
+enum { kMaxQueuedImpacts = 64 };
+static const double kOptCatalogPi = 3.14159265359;
+
+typedef void(__fastcall* OptCatalogRuntimeUpdateCallback)(OptCatalogRuntimeInstanceStorage* runtimeInstance);
+
+/**
+ * Original inline helper evidence: no standalone retail function.
+ * Observed in OptCatalog aim and trail math callsites in this source file.
+ * Purpose: approximate square root through the recovered bit-bias idiom.
+ */
+static float FastSqrtApprox(float value)
+{
+    unsigned int bits = 0;
+    memcpy(&bits, &value, sizeof(bits));
+    bits = (bits >> 1) + kOptCatalogFastSqrtBias;
+    memcpy(&value, &bits, sizeof(value));
+    return value;
 }
 
-namespace
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-blenddirectiontowardtarget
+ * @recoil-artifact defines .text recoil:function:0x4ae380: OptCatalog::BlendDirectionTowardTarget
+ * @recoil-match byte
+ *
+ * Purpose: blend an active direction vector toward a target direction
+ * using per-axis weights, then renormalize the result.
+ */
+void __fastcall
+BlendDirectionTowardTarget(zVec3* direction, const zVec3* targetDirection, float xWeight, float yWeight, float zWeight)
 {
-    const unsigned int kOptCatalogFlagImmediateProbeImpact = 1u << 12;
-    const unsigned int kOptCatalogFlagFullProbeDamage = 1u << 13;
-    const unsigned int kOptCatalogFlagCraterImpact = 0x08;
-    const unsigned int kOptCatalogFlagQuickSandImpact = 0x20000;
-    const unsigned int kOptCatalogFlagAlwaysPlayImpactFx = 4194304;
-    const unsigned int kOptCatalogFlagTrailRuntime = 2;
-    const unsigned int kOptCatalogFlagImpactWhenScaleExpired = 4;
+    direction->x += (targetDirection->x - direction->x) * xWeight;
+    direction->y += (targetDirection->y - direction->y) * yWeight;
+    direction->z += (targetDirection->z - direction->z) * zWeight;
+    Vec3Normalize(direction);
+}
 
-    const unsigned int kOptCatalogFlagAllowOutOfRangeAimPitch = 0x2000;
-
-    const unsigned int kOptCatalogFlagForceSpawnVelocity = 0x400;
-    const unsigned int kOptCatalogFlagRelativeSpeed = 0x800000;
-    const unsigned int kOptCatalogFlagFlyoutSkipRotation = 0x2000;
-    const unsigned int kOptCatalogFlagFlyoutModelRotation = 0x100;
-    const unsigned int kOptCatalogFlagUsePendingSpawnTarget = 1u << 22;
-    const unsigned int kOptCatalogFlagTrailUsePendingSpawnTargets = 1u << 14;
-    const unsigned int kOptCatalogFlagTrailStartMutedAndLight = 1u << 11;
-    const unsigned int kOptCatalogFlagExpires = 1u << 6;
-    const unsigned int kOptCatalogFlagFixedRotate = 1u << 7;
-    const unsigned int kOptCatalogFlagInstant = 1u << 10;
-    const unsigned int kOptCatalogFlagLockOn = 1u << 14;
-    const unsigned int kOptCatalogFlagLockOnLead = 1u << 15;
-
-    const unsigned int kOptCatalogFlagRemoteDetonate = 1u << 19;
-    const unsigned int kOptCatalogFlagTetherGuided = 1u << 20;
-
-    const unsigned int kOptCatalogNodeFlagAcceptsTerrainDeformation = 0x10000;
-    const unsigned int kOptCatalogFastSqrtBias = 0x1fc00000;
-
-    const int kMaxQueuedImpacts = 64;
-    const double kOptCatalogPi = 3.14159265359;
-
-    typedef void(__fastcall * OptCatalogRuntimeUpdateCallback)(OptCatalogRuntimeInstanceStorage * runtimeInstance);
-
-    /**
-     * Original inline helper evidence: no standalone retail function.
-     * Observed in OptCatalog aim and trail math callsites in this source file.
-     * Purpose: approximate square root through the recovered bit-bias idiom.
-     */
-    float FastSqrtApprox(float value)
-    {
-        unsigned int bits = 0;
-        memcpy(&bits, &value, sizeof(bits));
-        bits = (bits >> 1) + kOptCatalogFastSqrtBias;
-        memcpy(&value, &bits, sizeof(value));
-        return value;
-    }
-} // namespace
-
-namespace OptCatalog
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyname
+ * @recoil-artifact defines .text recoil:function:0x4ae3c0: OptCatalogFindEntryByName
+ * @recoil-match byte
+ *
+ * Purpose: return the first loaded OptCatalog entry whose keyName matches
+ * the requested catalog name.
+ */
+OptCatalogEntryDef* __fastcall OptCatalogFindEntryByName(const char* name)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-blenddirectiontowardtarget
-     * @recoil-artifact defines .text recoil:function:0x4ae380: OptCatalog::BlendDirectionTowardTarget
-     * @recoil-match byte
-     *
-     * Purpose: blend an active direction vector toward a target direction
-     * using per-axis weights, then renormalize the result.
-     */
-    void __fastcall BlendDirectionTowardTarget(
-        zVec3 * direction,
-        const zVec3* targetDirection,
-        float xWeight,
-        float yWeight,
-        float zWeight
-    )
-    {
-        direction->x += (targetDirection->x - direction->x) * xWeight;
-        direction->y += (targetDirection->y - direction->y) * yWeight;
-        direction->z += (targetDirection->z - direction->z) * zWeight;
-        zMath::Vec3Normalize(direction);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyname
-     * @recoil-artifact defines .text recoil:function:0x4ae3c0: OptCatalog::FindEntryByName
-     * @recoil-match byte
-     *
-     * Purpose: return the first loaded OptCatalog entry whose keyName matches
-     * the requested catalog name.
-     */
-    OptCatalogEntryDef* __fastcall FindEntryByName(const char* name)
-    {
-        for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
-            OptCatalogEntryDef& entry = g_OptCatalog_EntryTable[i];
-            if (entry.keyName != 0 && strcmp(name, entry.keyName) == 0) {
-                return &g_OptCatalog_EntryTable[i];
-            }
+    int i;
+    for (i = 0; i < g_OptCatalog_EntryCount; ++i) {
+        OptCatalogEntryDef* entry = &g_OptCatalog_EntryTable[i];
+        if (entry->keyName != 0 && strcmp(name, entry->keyName) == 0) {
+            return &g_OptCatalog_EntryTable[i];
         }
+    }
 
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyid
+ * @recoil-artifact defines .text recoil:function:0x4ae450: OptCatalog::FindEntryById
+ * @recoil-match byte
+ *
+ * Purpose: return the first loaded OptCatalog entry whose ordinalIndex
+ * matches the requested catalog id.
+ */
+OptCatalogEntryDef* __fastcall FindEntryById(int entryId)
+{
+    int i;
+    for (i = 0; i < g_OptCatalog_EntryCount; ++i) {
+        OptCatalogEntryDef* entry = &g_OptCatalog_EntryTable[i];
+        if (entry->keyName != 0 && entryId == entry->ordinalIndex) {
+            return &g_OptCatalog_EntryTable[i];
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setpendingspawntargetoverrides
+ * @recoil-artifact defines .text recoil:function:0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
+ * @recoil-match byte
+ *
+ * Purpose: install the pending-spawn target count and list pointers used
+ * by OptCatalog runtime spawn setup.
+ */
+void __fastcall SetPendingSpawnTargetOverrides(void* pendingSpawnTargetCountPtr, void* pendingSpawnTargetListPtr)
+{
+    g_OptCatalogPendingSpawnTargetCountPtr = (int*)(pendingSpawnTargetCountPtr);
+    g_OptCatalogPendingSpawnTargetListPtr = (PlayerProgressTargetSlotRuntime*)(pendingSpawnTargetListPtr);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodechildclone
+ * @recoil-artifact defines .text recoil:function:0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
+ * @recoil-match byte
+ *
+ * Purpose: reuse an attach-clone child from the entry free list, or clone
+ * the template node when none are available.
+ */
+CZNodePartial* __fastcall AllocOrReuseAttachNodeChildClone(OptCatalogEntryDef* self)
+{
+    CZNodePartial* const clone = self->attachCloneChildFreeList;
+    if (clone != 0) {
+        self->attachCloneChildFreeList = clone->callbackContext;
+        clone->callbackContext = 0;
+        return clone;
+    }
+
+    return CopyNodeWithCloneOptions(self->attachCloneTemplateNode, 0, 1);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleattachnodeclone
+ * @recoil-artifact defines .text recoil:function:0x4ae4e0: OptCatalog::RecycleAttachNodeClone
+ * @recoil-match byte
+ *
+ * Purpose: stop pending attach animation work, detach the child clone,
+ * and return it to the entry clone free list.
+ */
+void __fastcall RecycleAttachNodeClone(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance)
+{
+    zEffectAnimEntry* const asyncFxHandle = runtimeInstance->asyncFxHandle;
+    if (asyncFxHandle != 0) {
+        zEffAnimReset(asyncFxHandle, 0);
+    }
+
+    CZObject3DRemoveChild(runtimeInstance->projectileNode, runtimeInstance->attachCloneChild);
+    runtimeInstance->attachCloneChild->callbackContext = self->attachCloneChildFreeList;
+    self->attachCloneChildFreeList = runtimeInstance->attachCloneChild;
+    runtimeInstance->attachCloneChild = 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstanceasyncfxhandlecallback
+ * @recoil-artifact defines .text recoil:function:0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
+ * @recoil-match byte
+ *
+ * Purpose: clear the runtime instance async FX handle after the attached
+ * model animation completes.
+ */
+void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
+    void* unused,
+    OptCatalogRuntimeInstanceStorage* runtimeInstance,
+    void* unusedStackArg
+)
+{
+    runtimeInstance->asyncFxHandle = 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodeclone
+ * @recoil-artifact defines .text recoil:function:0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
+ * @recoil-match byte
+ *
+ * Purpose: take a runtime instance from the free list, attach any flyout
+ * child clone, and reset per-spawn lifetime state.
+ */
+OptCatalogRuntimeInstanceStorage* __fastcall AllocOrReuseAttachNodeClone(OptCatalogEntryDef* self)
+{
+    OptCatalogRuntimeInstanceStorage* const runtimeInstance = g_OptCatalogFreeRuntimeInstanceList;
+    CZNodePartial* attachChildNode;
+    if (runtimeInstance == 0) {
         return 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-findentrybyid
-     * @recoil-artifact defines .text recoil:function:0x4ae450: OptCatalog::FindEntryById
-     * @recoil-match byte
-     *
-     * Purpose: return the first loaded OptCatalog entry whose ordinalIndex
-     * matches the requested catalog id.
-     */
-    OptCatalogEntryDef* __fastcall FindEntryById(int entryId)
-    {
-        for (int i = 0; i < g_OptCatalog_EntryCount; ++i) {
-            OptCatalogEntryDef& entry = g_OptCatalog_EntryTable[i];
-            if (entry.keyName != 0 && entryId == entry.ordinalIndex) {
-                return &g_OptCatalog_EntryTable[i];
-            }
+    g_OptCatalogFreeRuntimeInstanceList = runtimeInstance->next;
+
+    attachChildNode = self->attachCloneTemplateNode;
+    if (attachChildNode != 0) {
+        if (self->flyoutModelAnimationEntry != 0) {
+            CZNodePartial* const clonedAttachChildNode = AllocOrReuseAttachNodeChildClone(self);
+            runtimeInstance->attachCloneChild = clonedAttachChildNode;
+            attachChildNode = clonedAttachChildNode;
         }
 
-        return 0;
+        gwObject3DAddChild(runtimeInstance->projectileNode, attachChildNode);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setpendingspawntargetoverrides
-     * @recoil-artifact defines .text recoil:function:0x4ae4a0: OptCatalog::SetPendingSpawnTargetOverrides
-     * @recoil-match byte
-     *
-     * Purpose: install the pending-spawn target count and list pointers used
-     * by OptCatalog runtime spawn setup.
-     */
-    void __fastcall SetPendingSpawnTargetOverrides(void* pendingSpawnTargetCountPtr, void* pendingSpawnTargetListPtr)
-    {
-        g_OptCatalogPendingSpawnTargetCountPtr = (int*)(pendingSpawnTargetCountPtr);
-        g_OptCatalogPendingSpawnTargetListPtr = (PlayerProgressTargetSlotRuntime*)(pendingSpawnTargetListPtr);
+    runtimeInstance->lifetime = 0.0f;
+    runtimeInstance->updateCallback = 0;
+    return runtimeInstance;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstancestorage
+ * @recoil-artifact defines .text recoil:function:0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
+ * @recoil-match byte
+ *
+ * Purpose: detach projectile children, restore transform and collision
+ * state, and push the runtime storage back onto the free list.
+ */
+void __fastcall
+RecycleRuntimeInstanceStorage(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance)
+{
+    if (runtimeInstance->lifetime > 0.0f) {
+        return;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodechildclone
-     * @recoil-artifact defines .text recoil:function:0x4ae4b0: OptCatalog::AllocOrReuseAttachNodeChildClone
-     * @recoil-match byte
-     *
-     * Purpose: reuse an attach-clone child from the entry free list, or clone
-     * the template node when none are available.
-     */
-    CZNodePartial* __fastcall AllocOrReuseAttachNodeChildClone(OptCatalogEntryDef * self)
-    {
-        CZNodePartial* const clone = self->attachCloneChildFreeList;
-        if (clone != 0) {
-            self->attachCloneChildFreeList = clone->callbackContext;
-            clone->callbackContext = 0;
-            return clone;
-        }
-
-        return CZUtil::CopyNodeWithCloneOptions(self->attachCloneTemplateNode, 0, 1);
+    while (runtimeInstance->projectileNode->listCountA != 0) {
+        RemoveChild(runtimeInstance->projectileNode->listA[0], runtimeInstance->projectileNode);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleattachnodeclone
-     * @recoil-artifact defines .text recoil:function:0x4ae4e0: OptCatalog::RecycleAttachNodeClone
-     * @recoil-match byte
-     *
-     * Purpose: stop pending attach animation work, detach the child clone,
-     * and return it to the entry clone free list.
-     */
-    void __fastcall RecycleAttachNodeClone(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance
-    )
-    {
-        zEffectAnimEntry* const asyncFxHandle = runtimeInstance->asyncFxHandle;
-        if (asyncFxHandle != 0) {
-            zEffect_Anim::zEffAnimReset(asyncFxHandle, 0);
-        }
-
-        CZObject3DRemoveChild(runtimeInstance->projectileNode, runtimeInstance->attachCloneChild);
-        runtimeInstance->attachCloneChild->callbackContext = self->attachCloneChildFreeList;
-        self->attachCloneChildFreeList = runtimeInstance->attachCloneChild;
-        runtimeInstance->attachCloneChild = 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstanceasyncfxhandlecallback
-     * @recoil-artifact defines .text recoil:function:0x4ae520: OptCatalog::ClearRuntimeInstanceAsyncFxHandleCallback
-     * @recoil-match byte
-     *
-     * Purpose: clear the runtime instance async FX handle after the attached
-     * model animation completes.
-     */
-    void __fastcall ClearRuntimeInstanceAsyncFxHandleCallback(
-        void*,
-        OptCatalogRuntimeInstanceStorage* runtimeInstance,
-        void*
-    )
-    {
-        runtimeInstance->asyncFxHandle = 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocorreuseattachnodeclone
-     * @recoil-artifact defines .text recoil:function:0x4ae530: OptCatalog::AllocOrReuseAttachNodeClone
-     * @recoil-match byte
-     *
-     * Purpose: take a runtime instance from the free list, attach any flyout
-     * child clone, and reset per-spawn lifetime state.
-     */
-    OptCatalogRuntimeInstanceStorage* __fastcall AllocOrReuseAttachNodeClone(OptCatalogEntryDef * self)
-    {
-        OptCatalogRuntimeInstanceStorage* const runtimeInstance = g_OptCatalogFreeRuntimeInstanceList;
-        if (runtimeInstance == 0) {
-            return 0;
-        }
-
-        g_OptCatalogFreeRuntimeInstanceList = runtimeInstance->next;
-
-        CZNodePartial* attachChildNode = self->attachCloneTemplateNode;
-        if (attachChildNode != 0) {
-            if (self->flyoutModelAnimationEntry != 0) {
-                CZNodePartial* const clonedAttachChildNode = AllocOrReuseAttachNodeChildClone(self);
-                runtimeInstance->attachCloneChild = clonedAttachChildNode;
-                attachChildNode = clonedAttachChildNode;
-            }
-
-            CZObject3D::gwObject3DAddChild(runtimeInstance->projectileNode, attachChildNode);
-        }
-
-        runtimeInstance->lifetime = 0.0f;
-        runtimeInstance->updateCallback = 0;
-        return runtimeInstance;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstancestorage
-     * @recoil-artifact defines .text recoil:function:0x4ae590: OptCatalog::RecycleRuntimeInstanceStorage
-     * @recoil-match byte
-     *
-     * Purpose: detach projectile children, restore transform and collision
-     * state, and push the runtime storage back onto the free list.
-     */
-    void __fastcall RecycleRuntimeInstanceStorage(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance
-    )
-    {
-        if (runtimeInstance->lifetime > 0.0f) {
-            return;
-        }
-
-        while (runtimeInstance->projectileNode->listCountA != 0) {
-            CZClass::RemoveChild(runtimeInstance->projectileNode->listA[0], runtimeInstance->projectileNode);
-        }
-
-        if (self->attachCloneTemplateNode != 0) {
-            if (runtimeInstance->attachCloneChild == 0) {
-                CZClass::RemoveChild(runtimeInstance->projectileNode, self->attachCloneTemplateNode);
-            } else {
-                RecycleAttachNodeClone(self, runtimeInstance);
-            }
-        }
-
-        while (runtimeInstance->projectileNode->listCountB != 0) {
-            CZClass::RemoveChild(runtimeInstance->projectileNode, runtimeInstance->projectileNode->listB[0]);
-        }
-
-        runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
-        g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
-        CZObject3D::gwObject3DSetScale(runtimeInstance->projectileNode, 1.0f, 1.0f, 1.0f);
-        CZObject3D::gwObject3DSetRotation(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
-        CZObject3D::gwObject3DSetPosition(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
-        ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocruntimeinstance
-     * @recoil-artifact defines .text recoil:function:0x4ae660: OptCatalog::AllocRuntimeInstance
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
-     * @recoil-match byte
-     *
-     * Raw assembly: the zwep_ammo.c-resident zMath::Vec3Length expansion
-     * [0x4ae7aa,0x4ae7c8) and zMath::Vec3Subtract expansion [0x4ae803,0x4ae826)
-     * (requires zwep_ammo.c /Ob1).
-     *
-     * Purpose: allocate or reuse a projectile runtime instance, link it active,
-     * initialize motion, FX, target, and collision state for the spawn.
-     */
-    OptCatalogRuntimeInstanceStorage* __fastcall AllocRuntimeInstance(
-        OptCatalogEntryDef * self,
-        CZNodePartial * ownerNode,
-        zTag4Partial * variantTagOrNull,
-        zVec3 * spawnPos,
-        zVec3 * spawnDir,
-        zVec3 * spawnVelocity,
-        void* saveState,
-        OptCatalogRuntimeInstanceStorage* runtimeInstanceOrNull
-    )
-    {
-        if (g_OptCatalogNetworkOptionState != 0 && g_OptCatalog_AllocRuntimeGateCallback != 0
-            && g_OptCatalog_AllocRuntimeGateCallback(self, &saveState) == 0) {
-            return 0;
-        }
-
-        OptCatalogRuntimeInstanceStorage* runtimeInstance = runtimeInstanceOrNull;
-        if (runtimeInstance == 0) {
-            runtimeInstance = AllocOrReuseAttachNodeClone(self);
-            if (runtimeInstance == 0) {
-                return 0;
-            }
-        }
-
-        runtimeInstance->next = self->activeRuntimeListHead;
-        self->activeRuntimeListHead = runtimeInstance;
-        CZClass::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
-
-        runtimeInstance->origin = *spawnPos;
-        runtimeInstance->pos = *spawnPos;
-        runtimeInstance->dir = *spawnDir;
-        runtimeInstance->ownerNode = ownerNode;
-        runtimeInstance->rangeProgress = 0.0f;
-        runtimeInstance->scaleFade = 0.0f;
-        runtimeInstance->saveState = saveState;
-        if (variantTagOrNull != 0) {
-            runtimeInstance->variantTag = *variantTagOrNull;
+    if (self->attachCloneTemplateNode != 0) {
+        if (runtimeInstance->attachCloneChild == 0) {
+            RemoveChild(runtimeInstance->projectileNode, self->attachCloneTemplateNode);
         } else {
-            // Retail stores only the tag count byte (mov byte ptr [esi+8], 4).
-            runtimeInstance->variantTag.count = 4;
-        }
-        runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
-        g_OptCatalogNextSpawnScale = 1.0f;
-
-        runtimeInstance->speed = self->velocity;
-        if (self->acceleration == 0.0f && (self->flags & kOptCatalogFlagForceSpawnVelocity) == 0) {
-            runtimeInstance->lifetime = self->velocity;
-            zMath::Vec3ScaleAdd(spawnVelocity, spawnDir, self->velocity, &runtimeInstance->velocity);
-        } else {
-            runtimeInstance->lifetime = 0.0000999999975f;
-            runtimeInstance->velocity = *spawnVelocity;
-            if ((self->flags & kOptCatalogFlagRelativeSpeed) != 0) {
-                const float relativeSpeed = zMath::Vec3Length(spawnVelocity);
-                runtimeInstance->speed += relativeSpeed;
-                runtimeInstance->lifetime += relativeSpeed;
-                zVec3 relativeVelocity;
-                relativeVelocity.x = spawnDir->x * relativeSpeed;
-                relativeVelocity.y = spawnDir->y * relativeSpeed;
-                relativeVelocity.z = spawnDir->z * relativeSpeed;
-                zMath::Vec3Subtract(&runtimeInstance->velocity, &relativeVelocity, &runtimeInstance->velocity);
-            }
-        }
-
-        if (self->fireFxSelectedSoundIndex != -1) {
-            zSndSamplePlayA3D(self->fireFxSoundSamples[self->fireFxSelectedSoundIndex], 1.0f, &runtimeInstance->pos, 0);
-        }
-
-        if (self->fireFxEffectTemplateIndex != 0) {
-            zEffect::SpawnRuntimeInstanceAt(self->fireFxEffectTemplateIndex, &runtimeInstance->pos);
-        } else if (self->fireFxSelectedEffectIndex != -1) {
-            zEffectAnimEntry* const fireAnim = self->fireFxAnimationEntries[self->fireFxSelectedEffectIndex];
-            if (fireAnim != 0) {
-                float randomRoll;
-                if ((self->fireFxFlags & 1u) != 0) {
-                    randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
-                } else {
-                    randomRoll = 0.0f;
-                }
-
-                // Retail null-checks the selected entry but always animates entry 0.
-                zEffectAnim::SetTransformRotAndVelocityThunk(
-                    self->fireFxAnimationEntries[0],
-                    0,
-                    runtimeInstance->pos.x,
-                    runtimeInstance->pos.y,
-                    runtimeInstance->pos.z,
-                    (float)asin((double)spawnDir->y),
-                    (float)(atan2(-spawnDir->x, -spawnDir->z)),
-                    randomRoll,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
-            }
-        }
-
-        if ((self->flags & kOptCatalogFlagFlyoutSkipRotation) == 0
-            && (((self->flags & kOptCatalogFlagFlyoutModelRotation) != 0 && self->attachCloneTemplateNode != 0)
-                || (self->flyoutAnimationEntry != 0 && self->attachCloneTemplateNode == 0))) {
-            CZObject3D::gwObject3DSetRotation(
-                runtimeInstance->projectileNode,
-                (float)asin((double)spawnDir->y),
-                (float)(atan2(-spawnDir->x, -spawnDir->z)),
-                0.0f
-            );
-        }
-
-        CZObject3D::gwObject3DSetPosition(
-            runtimeInstance->projectileNode,
-            runtimeInstance->pos.x,
-            runtimeInstance->pos.y,
-            runtimeInstance->pos.z
-        );
-
-        const int flyoutSelected = self->flyoutSelectedEffectIndex != -1;
-        if (flyoutSelected && self->flyoutAnimationEntry != 0) {
-            runtimeInstance->flyoutAnimPrimary = zEffectAnim::SetTransformRefsThunk(
-                self->flyoutAnimationEntry,
-                0,
-                runtimeInstance->projectileNode,
-                0,
-                runtimeInstance->projectileNode,
-                0
-            );
-        }
-        if (flyoutSelected && self->flyoutAttachedAnimationEntry != 0) {
-            runtimeInstance->flyoutAnimSecondary = zEffectAnim::SetPositionRefAndVelocityThunk(
-                self->flyoutAttachedAnimationEntry,
-                0,
-                runtimeInstance->projectileNode,
-                0,
-                0
-            );
-        }
-        if (flyoutSelected && self->flyoutModelAnimationEntry != 0) {
-            zEffectAnimEntry* const asyncFxHandle = zEffectAnim::SetVelocityThunk(
-                self->flyoutModelAnimationEntry,
-                runtimeInstance->attachCloneChild,
-                0.0f,
-                0.0f,
-                0.0f
-            );
-            runtimeInstance->asyncFxHandle = asyncFxHandle;
-            zEffectAnimEntrySetOnStateDoneCallback(
-                asyncFxHandle,
-                (void*)(&ClearRuntimeInstanceAsyncFxHandleCallback),
-                runtimeInstance
-            );
-        }
-
-        runtimeInstance->aux = zMath::g_zMath_Vec3Zero;
-        runtimeInstance->spawnGateAccum = 0.0f;
-        runtimeInstance->pendingTargetA = 0;
-        runtimeInstance->pendingTargetB = 0;
-        if ((self->flags & kOptCatalogFlagLockOn) != 0 && g_OptCatalogPendingSpawnTargetListPtr != 0) {
-            runtimeInstance->aux = *spawnVelocity;
-            int* const pendingTargetCount = g_OptCatalogPendingSpawnTargetCountPtr;
-            if (pendingTargetCount != 0 && *pendingTargetCount > 0) {
-                PlayerProgressTargetSlotRuntime* const targetList = g_OptCatalogPendingSpawnTargetListPtr;
-                runtimeInstance->pendingTargetA = targetList[0].targetPos;
-                runtimeInstance->pendingTargetB = targetList[0].targetVelocity;
-            }
-            g_OptCatalogPendingSpawnTargetCountPtr = 0;
-        }
-
-        if ((self->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
-            runtimeInstance->projectileNode->flags |= 0x08000000;
-            ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = (void*)(1);
-            runtimeInstance->projectileNode->callbackContext = (CZNodePartial*)(runtimeInstance);
-            runtimeInstance->projectileScale = self->flyoutHealth;
-        } else {
-            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
-            runtimeInstance->projectileNode->flags &= ~0x08000000u;
-        }
-
-        self->fireFxSelectedSoundIndex = 0;
-        self->fireFxSelectedEffectIndex = 0;
-        self->flyoutSelectedEffectIndex = 0;
-        return runtimeInstance;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-spawnruntimeinstanceat
-     * @recoil-artifact defines .text recoil:function:0x4aeaa0: OptCatalog::SpawnRuntimeInstanceAt
-     * @recoil-match byte
-     *
-     * Purpose: spawn a positioned impact-scale runtime instance and attach
-     * its projectile node to the OptCatalog runtime world.
-     */
-    OptCatalogRuntimeInstanceStorage* __fastcall SpawnRuntimeInstanceAt(
-        OptCatalogEntryDef * self,
-        zVec3 * spawnPos,
-        CZNodePartial * ownerNode
-    )
-    {
-        OptCatalogRuntimeInstanceStorage* const runtimeInstance = AllocOrReuseAttachNodeClone(self);
-
-        runtimeInstance->next = self->activeRuntimeListHead;
-        self->activeRuntimeListHead = runtimeInstance;
-        runtimeInstance->pos = *spawnPos;
-        runtimeInstance->lifetime = 0.0f;
-        runtimeInstance->ownerNode = ownerNode;
-        runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
-        g_OptCatalogNextSpawnScale = 1.0f;
-
-        CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
-        runtimeInstance->projectileNode->flags |= 0x08000000;
-        ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = (void*)(1);
-        runtimeInstance->projectileNode->callbackContext = (CZNodePartial*)(runtimeInstance);
-        runtimeInstance->projectileScale = self->flyoutHealth;
-
-        CZObject3D::gwObject3DSetPosition(runtimeInstance->projectileNode, spawnPos->x, spawnPos->y, spawnPos->z);
-        CZClass::AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
-        return runtimeInstance;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstance
-     * @recoil-artifact defines .text recoil:function:0x4aeb50: OptCatalog::RecycleRuntimeInstance
-     * @recoil-match byte
-     *
-     * Purpose: stop runtime FX, recycle any attach clone, detach the projectile
-     * node from the runtime world, and return storage to the free list.
-     */
-    void __fastcall RecycleRuntimeInstance(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance
-    )
-    {
-        runtimeInstance->lifetime = 0.0f;
-
-        zEffectAnimEntry* const flyoutAnimPrimary = runtimeInstance->flyoutAnimPrimary;
-        if (flyoutAnimPrimary != 0) {
-            zEffect_Anim::zEffAnimReset(flyoutAnimPrimary, 0);
-            runtimeInstance->flyoutAnimPrimary = 0;
-        }
-
-        zEffectAnimEntry* const flyoutAnimSecondary = runtimeInstance->flyoutAnimSecondary;
-        if (flyoutAnimSecondary != 0) {
-            zEffect_Anim::zEffAnimReset(flyoutAnimSecondary, 0);
-            runtimeInstance->flyoutAnimSecondary = 0;
-        }
-
-        if (runtimeInstance->attachCloneChild != 0) {
             RecycleAttachNodeClone(self, runtimeInstance);
         }
-
-        CZClass::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
-        RecycleRuntimeInstanceStorage(self, runtimeInstance);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstances
-     * @recoil-artifact defines .text recoil:function:0x4aebc0: OptCatalog::ClearRuntimeInstances
-     * @recoil-match byte
-     *
-     * Purpose: unlink and recycle every active runtime instance owned by the
-     * catalog entry.
-     */
-    void __fastcall ClearRuntimeInstances(OptCatalogEntryDef * self)
-    {
-        OptCatalogRuntimeInstanceStorage* runtimeInstance = self->activeRuntimeListHead;
-        self->activeRuntimeListHead = 0;
-        while (runtimeInstance != 0) {
-            OptCatalogRuntimeInstanceStorage* const current = runtimeInstance;
-            runtimeInstance = runtimeInstance->next;
-            RecycleRuntimeInstance(self, current);
+    while (runtimeInstance->projectileNode->listCountB != 0) {
+        RemoveChild(runtimeInstance->projectileNode, runtimeInstance->projectileNode->listB[0]);
+    }
+
+    runtimeInstance->next = g_OptCatalogFreeRuntimeInstanceList;
+    g_OptCatalogFreeRuntimeInstanceList = runtimeInstance;
+    gwObject3DSetScale(runtimeInstance->projectileNode, 1.0f, 1.0f, 1.0f);
+    gwObject3DSetRotation(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
+    gwObject3DSetPosition(runtimeInstance->projectileNode, 0.0f, 0.0f, 0.0f);
+    ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-allocruntimeinstance
+ * @recoil-artifact defines .text recoil:function:0x4ae660: OptCatalog::AllocRuntimeInstance
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
+ * @recoil-match byte
+ *
+ * Raw assembly: the zwep_ammo.c-resident zMath::Vec3Length expansion
+ * [0x4ae7aa,0x4ae7c8) and zMath::Vec3Subtract expansion [0x4ae803,0x4ae826)
+ * (requires zwep_ammo.c /Ob1).
+ *
+ * Purpose: allocate or reuse a projectile runtime instance, link it active,
+ * initialize motion, FX, target, and collision state for the spawn.
+ */
+OptCatalogRuntimeInstanceStorage* __fastcall AllocRuntimeInstance(
+    OptCatalogEntryDef* self,
+    CZNodePartial* ownerNode,
+    zTag4Partial* variantTagOrNull,
+    zVec3* spawnPos,
+    zVec3* spawnDir,
+    zVec3* spawnVelocity,
+    void* saveState,
+    OptCatalogRuntimeInstanceStorage* runtimeInstanceOrNull
+)
+{
+    OptCatalogRuntimeInstanceStorage* runtimeInstance;
+    int flyoutSelected;
+    if (g_OptCatalogNetworkOptionState != 0 && g_OptCatalog_AllocRuntimeGateCallback != 0
+        && g_OptCatalog_AllocRuntimeGateCallback(self, &saveState) == 0) {
+        return 0;
+    }
+
+    runtimeInstance = runtimeInstanceOrNull;
+    if (runtimeInstance == 0) {
+        runtimeInstance = AllocOrReuseAttachNodeClone(self);
+        if (runtimeInstance == 0) {
+            return 0;
         }
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-removeruntimeinstance
-     * @recoil-artifact defines .text recoil:function:0x4aebf0: OptCatalog::RemoveRuntimeInstance
-     * @recoil-match byte
-     *
-     * Purpose: process and recycle matching active runtime instances, or probe
-     * a supplied point, then notify the remove-runtime relay callback.
-     */
-    int __fastcall RemoveRuntimeInstance(OptCatalogEntryDef * self, zVec3 * pointOrVec3, CZNodePartial * ownerNode)
-    {
-        int result = 0;
+    runtimeInstance->next = self->activeRuntimeListHead;
+    self->activeRuntimeListHead = runtimeInstance;
+    AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
 
-        if (pointOrVec3 == 0) {
-            OptCatalogRuntimeInstanceStorage* next = self->activeRuntimeListHead;
-            OptCatalogRuntimeInstanceStorage** link = &self->activeRuntimeListHead;
-            while (next != 0) {
-                OptCatalogRuntimeInstanceStorage* const runtimeInstance = next;
-                next = runtimeInstance->next;
-                if ((self->flags & (1u << 20)) != 0
-                    || (runtimeInstance->lifetime == 0.0f
-                        && (ownerNode == 0 || runtimeInstance->ownerNode == ownerNode))) {
-                    *link = next;
-                    result += ProcessRuntimeInstance(self, runtimeInstance);
-                    RecycleRuntimeInstance(self, runtimeInstance);
-                } else {
-                    link = &runtimeInstance->next;
-                }
-            }
-        } else {
-            OptCatalogRuntimeInstanceStorage runtimeInstance = { 0 };
-            runtimeInstance.pos = *pointOrVec3;
-            runtimeInstance.ownerNode = ownerNode;
-            runtimeInstance.spawnScale = 1.0f;
-            result = ProcessRuntimeInstance(self, &runtimeInstance);
+    runtimeInstance->origin = *spawnPos;
+    runtimeInstance->pos = *spawnPos;
+    runtimeInstance->dir = *spawnDir;
+    runtimeInstance->ownerNode = ownerNode;
+    runtimeInstance->rangeProgress = 0.0f;
+    runtimeInstance->scaleFade = 0.0f;
+    runtimeInstance->saveState = saveState;
+    if (variantTagOrNull != 0) {
+        runtimeInstance->variantTag = *variantTagOrNull;
+    } else {
+        // Retail stores only the tag count byte (mov byte ptr [esi+8], 4).
+        runtimeInstance->variantTag.count = 4;
+    }
+    runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
+    g_OptCatalogNextSpawnScale = 1.0f;
+
+    runtimeInstance->speed = self->velocity;
+    if (self->acceleration == 0.0f && (self->flags & kOptCatalogFlagForceSpawnVelocity) == 0) {
+        runtimeInstance->lifetime = self->velocity;
+        Vec3ScaleAdd(spawnVelocity, spawnDir, self->velocity, &runtimeInstance->velocity);
+    } else {
+        runtimeInstance->lifetime = 0.0000999999975f;
+        runtimeInstance->velocity = *spawnVelocity;
+        if ((self->flags & kOptCatalogFlagRelativeSpeed) != 0) {
+            const float relativeSpeed = Vec3Length(spawnVelocity);
+            zVec3 relativeVelocity;
+            runtimeInstance->speed += relativeSpeed;
+            runtimeInstance->lifetime += relativeSpeed;
+            relativeVelocity.x = spawnDir->x * relativeSpeed;
+            relativeVelocity.y = spawnDir->y * relativeSpeed;
+            relativeVelocity.z = spawnDir->z * relativeSpeed;
+            Vec3Subtract(&runtimeInstance->velocity, &relativeVelocity, &runtimeInstance->velocity);
         }
-
-        if (result != 0 && g_OptCatalog_RemoveRuntimeRelayCallback != 0) {
-            g_OptCatalog_RemoveRuntimeRelayCallback(self, pointOrVec3, ownerNode);
-        }
-
-        return result;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstance
-     * @recoil-artifact defines .text recoil:function:0x4aed00: OptCatalog::ProcessRuntimeInstance
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogEntryDef* and EDX is
-     * OptCatalogRuntimeInstanceStorage*. Builds a vertical probe from runtime
-     * position, masks and restores projectile active state for closest-hit
-     * raycast against g_OptCatalogRuntimeWorld, dispatches direct hits through
-     * HandleImpactEvent, then optionally runs the fallback impact probe using
-     * BuildImpactHitList and HandleImpactFromRuntimeProbe.
-     * Purpose: advance one runtime projectile through direct and fallback impact checks.
-     */
-    int __fastcall ProcessRuntimeInstance(OptCatalogEntryDef * self, OptCatalogRuntimeInstanceStorage * runtimeInstance)
-    {
-        CZNodePartial* const projectileNode = runtimeInstance->projectileNode;
-        zVec3 startPoint = runtimeInstance->pos;
-        zVec3 endPoint = runtimeInstance->pos;
-        startPoint.y += 1.0f;
-        endPoint.y -= self->impactProximity * 0.1f;
-
-        int result = 0;
-        int restoreProjectileActive = 0;
-        if (projectileNode != 0 && (projectileNode->flags & 0x04) != 0) {
-            restoreProjectileActive = 1;
-            CZClass::gwNodeSetActive(projectileNode, 0);
-        }
-
-        PlayerProbeSampleCandidateBuffer rayData;
-        if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
-                g_OptCatalogRuntimeWorld,
-                &startPoint,
-                &endPoint,
-                &rayData
-            )
-            == 0) {
-            OptCatalogHitEventPartial* const hitEvent
-                = (OptCatalogHitEventPartial*)(void*)(&rayData.entries[rayData.candidateCount]);
-            HandleImpactEvent(self, hitEvent, runtimeInstance);
-            result = 1;
-        }
-
-        if (restoreProjectileActive != 0) {
-            CZClass::gwNodeSetActive(projectileNode, 1);
-        }
-
-        if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
-            OptCatalogRaycastHitList fallbackHits;
-            if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
-                runtimeInstance->pos = startPoint;
-                HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
-            }
-        }
-
-        return result;
+    if (self->fireFxSelectedSoundIndex != -1) {
+        zSndSamplePlayA3D(self->fireFxSoundSamples[self->fireFxSelectedSoundIndex], 1.0f, &runtimeInstance->pos, 0);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-activatetrailruntimestate
-     * @recoil-artifact defines .text recoil:function:0x4aee40: OptCatalog::ActivateTrailRuntimeState
-     * @recoil-match byte
-     *
-     * BN source path: src/Battlesport/zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogTrailRuntimeState*, EDX carries
-     * playerOrdinal but is not consumed. Starts trail stop/loop audio,
-     * optionally mutes the loop, spawns the fire effect or trail animation,
-     * resets trail timers, consumes g_OptCatalogNextSpawnScale, captures
-     * pending spawn targets, optionally allocates a glow light, and links the
-     * state at owner->activeTrailRuntime.
-     * Data touch: reads/writes g_OptCatalogNextSpawnScale at 0x779aac and
-     * reads/clears g_OptCatalogPendingSpawnTargetCountPtr at 0x77895c when
-     * pending trail targets are enabled.
-     * Purpose: activate a prebuilt trail runtime state for a weapon owner.
-     */
-    int __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState * trailRuntimeState, int playerOrdinal)
-    {
-        (void)playerOrdinal;
-
-        OptCatalogEntryDef* const ownerEntry = trailRuntimeState->ownerEntry;
-        zSndSamplePlayA3DSimple(ownerEntry->trailStopSample, 1.0f);
-        zSndPlayHandle* const loopHandle = zSndSamplePlayA3DSimple(ownerEntry->trailLoopSample, 1.0f);
-        trailRuntimeState->stopSoundHandle = loopHandle;
-        if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
-            loopHandle->SetFreqScaled(0.0f);
-        }
-
-        if (ownerEntry->fireFxEffectTemplateIndex != 0) {
-            zEffect::SpawnRuntimeInstanceAt(ownerEntry->fireFxEffectTemplateIndex, trailRuntimeState->spawnPos);
-        } else if (ownerEntry->fireFxAnimationEntries[0] != 0) {
-            const zVec3* const spawnPos = trailRuntimeState->spawnPos;
-            const zVec3* const spawnDir = trailRuntimeState->spawnDir;
+    if (self->fireFxEffectTemplateIndex != 0) {
+        SpawnRuntimeInstanceAt(self->fireFxEffectTemplateIndex, &runtimeInstance->pos);
+    } else if (self->fireFxSelectedEffectIndex != -1) {
+        zEffectAnimEntry* const fireAnim = self->fireFxAnimationEntries[self->fireFxSelectedEffectIndex];
+        if (fireAnim != 0) {
             float randomRoll;
-            if ((ownerEntry->fireFxFlags & 1u) != 0) {
+            if ((self->fireFxFlags & 1u) != 0) {
                 randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
             } else {
                 randomRoll = 0.0f;
             }
 
-            ownerEntry->trailEffectAnim = zEffectAnim::SetTransformRotAndVelocityThunk(
-                ownerEntry->fireFxAnimationEntries[0],
+            // Retail null-checks the selected entry but always animates entry 0.
+            SetTransformRotAndVelocityThunk(
+                self->fireFxAnimationEntries[0],
                 0,
-                spawnPos->x,
-                spawnPos->y,
-                spawnPos->z,
+                runtimeInstance->pos.x,
+                runtimeInstance->pos.y,
+                runtimeInstance->pos.z,
                 (float)asin((double)spawnDir->y),
                 (float)(atan2(-spawnDir->x, -spawnDir->z)),
                 randomRoll,
@@ -1022,1063 +670,1425 @@ namespace OptCatalog
                 0.0f,
                 0.0f
             );
+        }
+    }
+
+    if ((self->flags & kOptCatalogFlagFlyoutSkipRotation) == 0
+        && (((self->flags & kOptCatalogFlagFlyoutModelRotation) != 0 && self->attachCloneTemplateNode != 0)
+            || (self->flyoutAnimationEntry != 0 && self->attachCloneTemplateNode == 0))) {
+        gwObject3DSetRotation(
+            runtimeInstance->projectileNode,
+            (float)asin((double)spawnDir->y),
+            (float)(atan2(-spawnDir->x, -spawnDir->z)),
+            0.0f
+        );
+    }
+
+    gwObject3DSetPosition(
+        runtimeInstance->projectileNode,
+        runtimeInstance->pos.x,
+        runtimeInstance->pos.y,
+        runtimeInstance->pos.z
+    );
+
+    flyoutSelected = self->flyoutSelectedEffectIndex != -1;
+    if (flyoutSelected && self->flyoutAnimationEntry != 0) {
+        runtimeInstance->flyoutAnimPrimary = SetTransformRefsThunk(
+            self->flyoutAnimationEntry,
+            0,
+            runtimeInstance->projectileNode,
+            0,
+            runtimeInstance->projectileNode,
+            0
+        );
+    }
+    if (flyoutSelected && self->flyoutAttachedAnimationEntry != 0) {
+        runtimeInstance->flyoutAnimSecondary = SetPositionRefAndVelocityThunk(
+            self->flyoutAttachedAnimationEntry,
+            0,
+            runtimeInstance->projectileNode,
+            0,
+            0
+        );
+    }
+    if (flyoutSelected && self->flyoutModelAnimationEntry != 0) {
+        zEffectAnimEntry* const asyncFxHandle
+            = SetVelocityThunk(self->flyoutModelAnimationEntry, runtimeInstance->attachCloneChild, 0.0f, 0.0f, 0.0f);
+        runtimeInstance->asyncFxHandle = asyncFxHandle;
+        zEffectAnimEntrySetOnStateDoneCallback(
+            asyncFxHandle,
+            (void*)(&ClearRuntimeInstanceAsyncFxHandleCallback),
+            runtimeInstance
+        );
+    }
+
+    runtimeInstance->aux = g_zMath_Vec3Zero;
+    runtimeInstance->spawnGateAccum = 0.0f;
+    runtimeInstance->pendingTargetA = 0;
+    runtimeInstance->pendingTargetB = 0;
+    if ((self->flags & kOptCatalogFlagLockOn) != 0 && g_OptCatalogPendingSpawnTargetListPtr != 0) {
+        int* pendingTargetCount;
+        runtimeInstance->aux = *spawnVelocity;
+        pendingTargetCount = g_OptCatalogPendingSpawnTargetCountPtr;
+        if (pendingTargetCount != 0 && *pendingTargetCount > 0) {
+            PlayerProgressTargetSlotRuntime* const targetList = g_OptCatalogPendingSpawnTargetListPtr;
+            runtimeInstance->pendingTargetA = targetList[0].targetPos;
+            runtimeInstance->pendingTargetB = targetList[0].targetVelocity;
+        }
+        g_OptCatalogPendingSpawnTargetCountPtr = 0;
+    }
+
+    if ((self->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
+        gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+        runtimeInstance->projectileNode->flags |= 0x08000000;
+        ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = (void*)(1);
+        runtimeInstance->projectileNode->callbackContext = (CZNodePartial*)(runtimeInstance);
+        runtimeInstance->projectileScale = self->flyoutHealth;
+    } else {
+        gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
+        runtimeInstance->projectileNode->flags &= ~0x08000000u;
+    }
+
+    self->fireFxSelectedSoundIndex = 0;
+    self->fireFxSelectedEffectIndex = 0;
+    self->flyoutSelectedEffectIndex = 0;
+    return runtimeInstance;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-spawnruntimeinstanceat
+ * @recoil-artifact defines .text recoil:function:0x4aeaa0: OptCatalogSpawnRuntimeInstanceAt
+ * @recoil-match byte
+ *
+ * Purpose: spawn a positioned impact-scale runtime instance and attach
+ * its projectile node to the OptCatalog runtime world.
+ */
+OptCatalogRuntimeInstanceStorage* __fastcall
+OptCatalogSpawnRuntimeInstanceAt(OptCatalogEntryDef* self, zVec3* spawnPos, CZNodePartial* ownerNode)
+{
+    OptCatalogRuntimeInstanceStorage* const runtimeInstance = AllocOrReuseAttachNodeClone(self);
+
+    runtimeInstance->next = self->activeRuntimeListHead;
+    self->activeRuntimeListHead = runtimeInstance;
+    runtimeInstance->pos = *spawnPos;
+    runtimeInstance->lifetime = 0.0f;
+    runtimeInstance->ownerNode = ownerNode;
+    runtimeInstance->spawnScale = g_OptCatalogNextSpawnScale;
+    g_OptCatalogNextSpawnScale = 1.0f;
+
+    gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+    runtimeInstance->projectileNode->flags |= 0x08000000;
+    ((CZNodeFreeListSlot*)(runtimeInstance->projectileNode))->damageHandler = (void*)(1);
+    runtimeInstance->projectileNode->callbackContext = (CZNodePartial*)(runtimeInstance);
+    runtimeInstance->projectileScale = self->flyoutHealth;
+
+    gwObject3DSetPosition(runtimeInstance->projectileNode, spawnPos->x, spawnPos->y, spawnPos->z);
+    AddChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+    return runtimeInstance;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-recycleruntimeinstance
+ * @recoil-artifact defines .text recoil:function:0x4aeb50: OptCatalog::RecycleRuntimeInstance
+ * @recoil-match byte
+ *
+ * Purpose: stop runtime FX, recycle any attach clone, detach the projectile
+ * node from the runtime world, and return storage to the free list.
+ */
+void __fastcall RecycleRuntimeInstance(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance)
+{
+    zEffectAnimEntry* flyoutAnimPrimary;
+    zEffectAnimEntry* flyoutAnimSecondary;
+    runtimeInstance->lifetime = 0.0f;
+
+    flyoutAnimPrimary = runtimeInstance->flyoutAnimPrimary;
+    if (flyoutAnimPrimary != 0) {
+        zEffAnimReset(flyoutAnimPrimary, 0);
+        runtimeInstance->flyoutAnimPrimary = 0;
+    }
+
+    flyoutAnimSecondary = runtimeInstance->flyoutAnimSecondary;
+    if (flyoutAnimSecondary != 0) {
+        zEffAnimReset(flyoutAnimSecondary, 0);
+        runtimeInstance->flyoutAnimSecondary = 0;
+    }
+
+    if (runtimeInstance->attachCloneChild != 0) {
+        RecycleAttachNodeClone(self, runtimeInstance);
+    }
+
+    RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+    RecycleRuntimeInstanceStorage(self, runtimeInstance);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-clearruntimeinstances
+ * @recoil-artifact defines .text recoil:function:0x4aebc0: OptCatalog::ClearRuntimeInstances
+ * @recoil-match byte
+ *
+ * Purpose: unlink and recycle every active runtime instance owned by the
+ * catalog entry.
+ */
+void __fastcall ClearRuntimeInstances(OptCatalogEntryDef* self)
+{
+    OptCatalogRuntimeInstanceStorage* runtimeInstance = self->activeRuntimeListHead;
+    self->activeRuntimeListHead = 0;
+    while (runtimeInstance != 0) {
+        OptCatalogRuntimeInstanceStorage* const current = runtimeInstance;
+        runtimeInstance = runtimeInstance->next;
+        RecycleRuntimeInstance(self, current);
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-removeruntimeinstance
+ * @recoil-artifact defines .text recoil:function:0x4aebf0: OptCatalog::RemoveRuntimeInstance
+ * @recoil-match byte
+ *
+ * Purpose: process and recycle matching active runtime instances, or probe
+ * a supplied point, then notify the remove-runtime relay callback.
+ */
+int __fastcall RemoveRuntimeInstance(OptCatalogEntryDef* self, zVec3* pointOrVec3, CZNodePartial* ownerNode)
+{
+    int result = 0;
+
+    if (pointOrVec3 == 0) {
+        OptCatalogRuntimeInstanceStorage* next = self->activeRuntimeListHead;
+        OptCatalogRuntimeInstanceStorage** link = &self->activeRuntimeListHead;
+        while (next != 0) {
+            OptCatalogRuntimeInstanceStorage* const runtimeInstance = next;
+            next = runtimeInstance->next;
+            if ((self->flags & (1u << 20)) != 0
+                || (runtimeInstance->lifetime == 0.0f && (ownerNode == 0 || runtimeInstance->ownerNode == ownerNode))) {
+                *link = next;
+                result += ProcessRuntimeInstance(self, runtimeInstance);
+                RecycleRuntimeInstance(self, runtimeInstance);
+            } else {
+                link = &runtimeInstance->next;
+            }
+        }
+    } else {
+        OptCatalogRuntimeInstanceStorage runtimeInstance = { 0 };
+        runtimeInstance.pos = *pointOrVec3;
+        runtimeInstance.ownerNode = ownerNode;
+        runtimeInstance.spawnScale = 1.0f;
+        result = ProcessRuntimeInstance(self, &runtimeInstance);
+    }
+
+    if (result != 0 && g_OptCatalog_RemoveRuntimeRelayCallback != 0) {
+        g_OptCatalog_RemoveRuntimeRelayCallback(self, pointOrVec3, ownerNode);
+    }
+
+    return result;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstance
+ * @recoil-artifact defines .text recoil:function:0x4aed00: OptCatalog::ProcessRuntimeInstance
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogEntryDef* and EDX is
+ * OptCatalogRuntimeInstanceStorage*. Builds a vertical probe from runtime
+ * position, masks and restores projectile active state for closest-hit
+ * raycast against g_OptCatalogRuntimeWorld, dispatches direct hits through
+ * HandleImpactEvent, then optionally runs the fallback impact probe using
+ * BuildImpactHitList and HandleImpactFromRuntimeProbe.
+ * Purpose: advance one runtime projectile through direct and fallback impact checks.
+ */
+int __fastcall ProcessRuntimeInstance(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance)
+{
+    CZNodePartial* const projectileNode = runtimeInstance->projectileNode;
+    zVec3 startPoint = runtimeInstance->pos;
+    zVec3 endPoint = runtimeInstance->pos;
+    int result;
+    int restoreProjectileActive;
+    PlayerProbeSampleCandidateBuffer rayData;
+    startPoint.y += 1.0f;
+    endPoint.y -= self->impactProximity * 0.1f;
+
+    result = 0;
+    restoreProjectileActive = 0;
+    if (projectileNode != 0 && (projectileNode->flags & 0x04) != 0) {
+        restoreProjectileActive = 1;
+        gwNodeSetActive(projectileNode, 0);
+    }
+
+    if (RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, &startPoint, &endPoint, &rayData) == 0) {
+        OptCatalogHitEventPartial* const hitEvent
+            = (OptCatalogHitEventPartial*)(void*)(&rayData.entries[rayData.candidateCount]);
+        HandleImpactEvent(self, hitEvent, runtimeInstance);
+        result = 1;
+    }
+
+    if (restoreProjectileActive != 0) {
+        gwNodeSetActive(projectileNode, 1);
+    }
+
+    if (g_OptCatalog_FallbackImpactProbeEnabled != 0 && self->impactProximity > 0.0f) {
+        OptCatalogRaycastHitList fallbackHits;
+        if (BuildImpactHitList(self, runtimeInstance, 1, &fallbackHits) != 0) {
+            runtimeInstance->pos = startPoint;
+            HandleImpactFromRuntimeProbe(self, runtimeInstance, &fallbackHits, 0);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-activatetrailruntimestate
+ * @recoil-artifact defines .text recoil:function:0x4aee40: OptCatalog::ActivateTrailRuntimeState
+ * @recoil-match byte
+ *
+ * BN source path: src/Battlesport/zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogTrailRuntimeState*, EDX carries
+ * playerOrdinal but is not consumed. Starts trail stop/loop audio,
+ * optionally mutes the loop, spawns the fire effect or trail animation,
+ * resets trail timers, consumes g_OptCatalogNextSpawnScale, captures
+ * pending spawn targets, optionally allocates a glow light, and links the
+ * state at owner->activeTrailRuntime.
+ * Data touch: reads/writes g_OptCatalogNextSpawnScale at 0x779aac and
+ * reads/clears g_OptCatalogPendingSpawnTargetCountPtr at 0x77895c when
+ * pending trail targets are enabled.
+ * Purpose: activate a prebuilt trail runtime state for a weapon owner.
+ */
+int __fastcall ActivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState, int playerOrdinal)
+{
+    OptCatalogEntryDef* ownerEntry;
+    zSndPlayHandle* loopHandle;
+    (void)playerOrdinal;
+
+    ownerEntry = trailRuntimeState->ownerEntry;
+    zSndSamplePlayA3DSimple(ownerEntry->trailStopSample, 1.0f);
+    loopHandle = zSndSamplePlayA3DSimple(ownerEntry->trailLoopSample, 1.0f);
+    trailRuntimeState->stopSoundHandle = loopHandle;
+    if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
+        zSndPlayHandleSetFreqScaled(loopHandle, 0.0f);
+    }
+
+    if (ownerEntry->fireFxEffectTemplateIndex != 0) {
+        SpawnRuntimeInstanceAt(ownerEntry->fireFxEffectTemplateIndex, trailRuntimeState->spawnPos);
+    } else if (ownerEntry->fireFxAnimationEntries[0] != 0) {
+        const zVec3* const spawnPos = trailRuntimeState->spawnPos;
+        const zVec3* const spawnDir = trailRuntimeState->spawnDir;
+        float randomRoll;
+        if ((ownerEntry->fireFxFlags & 1u) != 0) {
+            randomRoll = (((float)(rand()) * 0.0000305185094f) - 0.5f) * 3.14159265f;
         } else {
-            ownerEntry->trailEffectAnim = 0;
+            randomRoll = 0.0f;
         }
 
-        trailRuntimeState->trailDistance = 0.0f;
-        trailRuntimeState->volumeFadeTimer = 0.0f;
-        trailRuntimeState->alphaPulsePhase = 0.0f;
-        trailRuntimeState->spawnScale = g_OptCatalogNextSpawnScale;
-        g_OptCatalogNextSpawnScale = 1.0f;
+        ownerEntry->trailEffectAnim = SetTransformRotAndVelocityThunk(
+            ownerEntry->fireFxAnimationEntries[0],
+            0,
+            spawnPos->x,
+            spawnPos->y,
+            spawnPos->z,
+            (float)asin((double)spawnDir->y),
+            (float)(atan2(-spawnDir->x, -spawnDir->z)),
+            randomRoll,
+            0.0f,
+            0.0f,
+            0.0f
+        );
+    } else {
+        ownerEntry->trailEffectAnim = 0;
+    }
 
-        if ((ownerEntry->flags & kOptCatalogFlagTrailUsePendingSpawnTargets) != 0) {
-            trailRuntimeState->pendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
-            trailRuntimeState->pendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
-            g_OptCatalogPendingSpawnTargetCountPtr = 0;
+    trailRuntimeState->trailDistance = 0.0f;
+    trailRuntimeState->volumeFadeTimer = 0.0f;
+    trailRuntimeState->alphaPulsePhase = 0.0f;
+    trailRuntimeState->spawnScale = g_OptCatalogNextSpawnScale;
+    g_OptCatalogNextSpawnScale = 1.0f;
+
+    if ((ownerEntry->flags & kOptCatalogFlagTrailUsePendingSpawnTargets) != 0) {
+        trailRuntimeState->pendingSpawnTargetCountPtr = g_OptCatalogPendingSpawnTargetCountPtr;
+        trailRuntimeState->pendingSpawnTargetListPtr = g_OptCatalogPendingSpawnTargetListPtr;
+        g_OptCatalogPendingSpawnTargetCountPtr = 0;
+    }
+
+    if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
+        trailRuntimeState->lightNode = AllocFromFreeListAndAttach(&ownerEntry->timedStatusLightSpecularColor);
+        gwLightSetRange(
+            trailRuntimeState->lightNode,
+            ownerEntry->timedStatusLightRangeMin,
+            ownerEntry->timedStatusLightRangeMax
+        );
+        gwNodeSetActive(trailRuntimeState->lightNode, 0);
+    }
+
+    if (ownerEntry->activeTrailRuntime != 0) {
+        ownerEntry->activeTrailRuntime->prev = trailRuntimeState;
+    }
+    trailRuntimeState->prev = 0;
+    trailRuntimeState->next = ownerEntry->activeTrailRuntime;
+    ownerEntry->activeTrailRuntime = trailRuntimeState;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-deactivatetrailruntimestate
+ * @recoil-artifact defines .text recoil:function:0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
+ * @recoil-match byte
+ *
+ * Purpose: stop trail runtime resources, unlink the active trail state,
+ * return any glow light, and deactivate live trail segment nodes.
+ */
+int __fastcall DeactivateTrailRuntimeState(OptCatalogTrailRuntimeState* trailRuntimeState)
+{
+    zSndPlayHandle* const stopSoundHandle = trailRuntimeState->stopSoundHandle;
+    OptCatalogEntryDef* const ownerEntry = trailRuntimeState->ownerEntry;
+    zSndSample* trailStopSample;
+    zEffectAnimEntry* trailEffectAnim;
+    OptCatalogTrailRuntimeState* next;
+    OptCatalogTrailRuntimeState* prev;
+    CZNodePartial* lightNode;
+    int i;
+
+    if (stopSoundHandle != 0) {
+        zSndPlayHandleStopIfActive(stopSoundHandle);
+    }
+
+    trailStopSample = ownerEntry->trailStopSample;
+    if (trailStopSample != 0) {
+        zSndSamplePlayA3DSimple(trailStopSample, 1.0f);
+    }
+
+    trailEffectAnim = ownerEntry->trailEffectAnim;
+    if (trailEffectAnim != 0) {
+        Stop(trailEffectAnim);
+        ownerEntry->trailEffectAnim = 0;
+    }
+
+    next = trailRuntimeState->next;
+    if (next != 0) {
+        next->prev = trailRuntimeState->prev;
+    }
+
+    prev = trailRuntimeState->prev;
+    if (prev != 0) {
+        prev->next = trailRuntimeState->next;
+    }
+
+    if (trailRuntimeState == ownerEntry->activeTrailRuntime) {
+        ownerEntry->activeTrailRuntime = trailRuntimeState->next;
+    }
+
+    lightNode = trailRuntimeState->lightNode;
+    trailRuntimeState->prev = 0;
+    trailRuntimeState->next = 0;
+    if (lightNode != 0) {
+        ReturnToFreeList(lightNode);
+    }
+
+    for (i = 0; i < trailRuntimeState->activeNodeSlotCount; ++i) {
+        CZNodePartial* const node = trailRuntimeState->activeNodeSlots[i].node;
+        if (node != 0) {
+            gwNodeSetActive(node, 0);
         }
+    }
 
-        if ((ownerEntry->flags & kOptCatalogFlagTrailStartMutedAndLight) != 0) {
-            trailRuntimeState->lightNode
-                = CZLight::AllocFromFreeListAndAttach(&ownerEntry->timedStatusLightSpecularColor);
-            CZLight::gwLightSetRange(
-                trailRuntimeState->lightNode,
-                ownerEntry->timedStatusLightRangeMin,
-                ownerEntry->timedStatusLightRangeMax
+    trailRuntimeState->activeNodeSlotCursor = 0;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstances
+ * @recoil-artifact defines .text recoil:function:0x4af060: OptCatalog::ProcessRuntimeInstances
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-dot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-add
+ *
+ *
+ * Raw assembly: inline expansions of the TU-resident zMath::Vec3Dot at retail
+ * [0x4af2e4,0x4af303) (runtimeInstance->dir . targetDirection), Vec3Length at
+ * [0x4af5ec,0x4af60d) (movementDelta) and Vec3Add at [0x4af78f,0x4af7b2)
+ * (runtimeInstance->pos + movementDelta into endPoint); Pro review
+ * 2026-10-07T09-38-31-221Z-96d501c4 (Z4-D, Z4-L, Z4-A). The islands give this
+ * function its EBP frame; the compiler owns homes, frame, saves and all
+ * surrounding code.
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: drains queued impact callbacks, stores unscaled delta/time,
+ * walks every loaded OptCatalog entry, updates trail-runtime segment
+ * visuals and projectile runtime instances, recycles expired instances,
+ * handles lock-on warning audio, and restores the packed variant tag.
+ * Data touch: reads/writes g_OptCatalogQueuedImpactQueue.count at 0x77896c,
+ * g_OptCatalogRuntimeDeltaTime at 0x56bca8, g_OptCatalogRuntimeNowSec at
+ * 0x56bcac, and lock-on warning gate state.
+ * Purpose: frame-update all active OptCatalog runtime state.
+ */
+void __cdecl ProcessRuntimeInstances(void)
+{
+    OptCatalogEntryDef* const entryEnd = g_OptCatalog_EntryTable + g_OptCatalog_EntryCount;
+    float nearestLockOnDistance = (float)(_HUGE);
+    const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
+    OptCatalogEntryDef* entry;
+
+    g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
+    g_OptCatalogRuntimeNowSec = g_Time_UnscaledAccumulatedTimeSec;
+
+    // Retail drains with a post-decrement and resets the count on exit (0x4af0bc-0x4af10e).
+    if (g_OptCatalogQueuedImpactQueue.count != 0) {
+        while (g_OptCatalogQueuedImpactQueue.count-- != 0) {
+            InvokeDamageFeedbackAndHitCallback(
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry,
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode,
+                &g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos,
+                (OptCatalogHitEventPartial*)(void*)(&g_OptCatalogQueuedImpactQueue
+                        .records[g_OptCatalogQueuedImpactQueue.count]
+                        .hit),
+                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount
             );
-            CZClass::gwNodeSetActive(trailRuntimeState->lightNode, 0);
         }
-
-        if (ownerEntry->activeTrailRuntime != 0) {
-            ownerEntry->activeTrailRuntime->prev = trailRuntimeState;
-        }
-        trailRuntimeState->prev = 0;
-        trailRuntimeState->next = ownerEntry->activeTrailRuntime;
-        ownerEntry->activeTrailRuntime = trailRuntimeState;
-        return 0;
+        g_OptCatalogQueuedImpactQueue.count = 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-deactivatetrailruntimestate
-     * @recoil-artifact defines .text recoil:function:0x4aefb0: OptCatalog::DeactivateTrailRuntimeState
-     * @recoil-match byte
-     *
-     * Purpose: stop trail runtime resources, unlink the active trail state,
-     * return any glow light, and deactivate live trail segment nodes.
-     */
-    int __fastcall DeactivateTrailRuntimeState(OptCatalogTrailRuntimeState * trailRuntimeState)
-    {
-        zSndPlayHandle* const stopSoundHandle = trailRuntimeState->stopSoundHandle;
-        OptCatalogEntryDef* const ownerEntry = trailRuntimeState->ownerEntry;
-
-        if (stopSoundHandle != 0) {
-            zSndPlayHandleStopIfActive(stopSoundHandle);
+    for (entry = g_OptCatalog_EntryTable; entry < entryEnd; ++entry) {
+        if (entry->keyName == 0) {
+            continue;
         }
 
-        zSndSample* const trailStopSample = ownerEntry->trailStopSample;
-        if (trailStopSample != 0) {
-            zSndSamplePlayA3DSimple(trailStopSample, 1.0f);
-        }
+        if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
+            OptCatalogRuntimeInstanceStorage** link = &entry->activeRuntimeListHead;
+            OptCatalogRuntimeInstanceStorage* runtimeInstance = entry->activeRuntimeListHead;
+            while (runtimeInstance != 0) {
+                int accelerated = 0;
+                int updateState = 1;
+                // No default, as in retail (no stores between 0x4af140 and 0x4af154).
+                // Every path that keeps updateState == 1 writes movementDelta before
+                // the 0x4af78f addition except lifetime == 0 without FullProbeDamage.
+                // Lifetime-0 instances come from SpawnRuntimeInstanceAt (0x4aeaa0,
+                // restored mine records) and the full-probe stop path, so that path is
+                // outside the supported state domain; retail reads the uninitialised
+                // frame slot there (retained retail defect, not given a zero default).
+                zVec3 movementDelta;
+                zVec3 endPoint;
 
-        zEffectAnimEntry* const trailEffectAnim = ownerEntry->trailEffectAnim;
-        if (trailEffectAnim != 0) {
-            zEffectAnim::Stop(trailEffectAnim);
-            ownerEntry->trailEffectAnim = 0;
-        }
+                if (runtimeInstance->updateCallback != 0) {
+                    OptCatalogRuntimeUpdateCallback callback
+                        = (OptCatalogRuntimeUpdateCallback)(runtimeInstance->updateCallback);
+                    callback(runtimeInstance);
+                }
 
-        OptCatalogTrailRuntimeState* const next = trailRuntimeState->next;
-        if (next != 0) {
-            next->prev = trailRuntimeState->prev;
-        }
+                if (runtimeInstance->variantTag.count != 4) {
+                    g_Variant_CurrentTag = runtimeInstance->variantTag;
+                } else {
+                    g_Variant_CurrentTag = savedVariantTag;
+                }
 
-        OptCatalogTrailRuntimeState* const prev = trailRuntimeState->prev;
-        if (prev != 0) {
-            prev->next = trailRuntimeState->next;
-        }
-
-        if (trailRuntimeState == ownerEntry->activeTrailRuntime) {
-            ownerEntry->activeTrailRuntime = trailRuntimeState->next;
-        }
-
-        CZNodePartial* const lightNode = trailRuntimeState->lightNode;
-        trailRuntimeState->prev = 0;
-        trailRuntimeState->next = 0;
-        if (lightNode != 0) {
-            CZLight::ReturnToFreeList(lightNode);
-        }
-
-        for (int i = 0; i < trailRuntimeState->activeNodeSlotCount; ++i) {
-            CZNodePartial* const node = trailRuntimeState->activeNodeSlots[i].node;
-            if (node != 0) {
-                CZClass::gwNodeSetActive(node, 0);
-            }
-        }
-
-        trailRuntimeState->activeNodeSlotCursor = 0;
-        return 0;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-processruntimeinstances
-     * @recoil-artifact defines .text recoil:function:0x4af060: OptCatalog::ProcessRuntimeInstances
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-dot
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-length
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-add
-     *
-     *
-     * Raw assembly: inline expansions of the TU-resident zMath::Vec3Dot at retail
-     * [0x4af2e4,0x4af303) (runtimeInstance->dir . targetDirection), Vec3Length at
-     * [0x4af5ec,0x4af60d) (movementDelta) and Vec3Add at [0x4af78f,0x4af7b2)
-     * (runtimeInstance->pos + movementDelta into endPoint); Pro review
-     * 2026-10-07T09-38-31-221Z-96d501c4 (Z4-D, Z4-L, Z4-A). The islands give this
-     * function its EBP frame; the compiler owns homes, frame, saves and all
-     * surrounding code.
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: drains queued impact callbacks, stores unscaled delta/time,
-     * walks every loaded OptCatalog entry, updates trail-runtime segment
-     * visuals and projectile runtime instances, recycles expired instances,
-     * handles lock-on warning audio, and restores the packed variant tag.
-     * Data touch: reads/writes g_OptCatalogQueuedImpactQueue.count at 0x77896c,
-     * g_OptCatalogRuntimeDeltaTime at 0x56bca8, g_OptCatalogRuntimeNowSec at
-     * 0x56bcac, and lock-on warning gate state.
-     * Purpose: frame-update all active OptCatalog runtime state.
-     */
-    void __cdecl ProcessRuntimeInstances()
-    {
-        OptCatalogEntryDef* const entryEnd = g_OptCatalog_EntryTable + g_OptCatalog_EntryCount;
-        float nearestLockOnDistance = (float)(_HUGE);
-        const zTag4Partial savedVariantTag = g_Variant_CurrentTag;
-
-        g_OptCatalogRuntimeDeltaTime = g_Time_UnscaledDeltaTimeSec;
-        g_OptCatalogRuntimeNowSec = g_Time_UnscaledAccumulatedTimeSec;
-
-        // Retail drains with a post-decrement and resets the count on exit (0x4af0bc-0x4af10e).
-        if (g_OptCatalogQueuedImpactQueue.count != 0) {
-            while (g_OptCatalogQueuedImpactQueue.count-- != 0) {
-                InvokeDamageFeedbackAndHitCallback(
-                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry,
-                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode,
-                    &g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos,
-                    (OptCatalogHitEventPartial*)(void*)(&g_OptCatalogQueuedImpactQueue
-                            .records[g_OptCatalogQueuedImpactQueue.count]
-                            .hit),
-                    g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount
-                );
-            }
-            g_OptCatalogQueuedImpactQueue.count = 0;
-        }
-
-        for (OptCatalogEntryDef* entry = g_OptCatalog_EntryTable; entry < entryEnd; ++entry) {
-            if (entry->keyName == 0) {
-                continue;
-            }
-
-            if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
-                OptCatalogRuntimeInstanceStorage** link = &entry->activeRuntimeListHead;
-                OptCatalogRuntimeInstanceStorage* runtimeInstance = entry->activeRuntimeListHead;
-                while (runtimeInstance != 0) {
-                    int accelerated = 0;
-                    int updateState = 1;
-                    // No default, as in retail (no stores between 0x4af140 and 0x4af154).
-                    // Every path that keeps updateState == 1 writes movementDelta before
-                    // the 0x4af78f addition except lifetime == 0 without FullProbeDamage.
-                    // Lifetime-0 instances come from SpawnRuntimeInstanceAt (0x4aeaa0,
-                    // restored mine records) and the full-probe stop path, so that path is
-                    // outside the supported state domain; retail reads the uninitialised
-                    // frame slot there (retained retail defect, not given a zero default).
-                    zVec3 movementDelta;
-                    zVec3 endPoint;
-
-                    if (runtimeInstance->updateCallback != 0) {
-                        OptCatalogRuntimeUpdateCallback callback
-                            = (OptCatalogRuntimeUpdateCallback)(runtimeInstance->updateCallback);
-                        callback(runtimeInstance);
-                    }
-
-                    if (runtimeInstance->variantTag.count != 4) {
-                        g_Variant_CurrentTag = runtimeInstance->variantTag;
-                    } else {
-                        g_Variant_CurrentTag = savedVariantTag;
-                    }
-
-                    if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0
-                        && runtimeInstance->projectileScale <= 0.0f) {
-                        HandleImpactEventFromRuntimeState(entry, runtimeInstance);
-                        updateState = 0;
-                    } else if (runtimeInstance->lifetime != 0.0f) {
-                        if ((entry->flags & kOptCatalogFlagLockOn) != 0 && runtimeInstance->pendingTargetA != 0) {
-                            zVec3 targetDirection;
-                            const float targetDistance = zMath::Vec3DirectionTo(
+                if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0
+                    && runtimeInstance->projectileScale <= 0.0f) {
+                    HandleImpactEventFromRuntimeState(entry, runtimeInstance);
+                    updateState = 0;
+                } else if (runtimeInstance->lifetime != 0.0f) {
+                    if ((entry->flags & kOptCatalogFlagLockOn) != 0 && runtimeInstance->pendingTargetA != 0) {
+                        zVec3 targetDirection;
+                        const float targetDistance = Vec3DirectionTo(
+                            &runtimeInstance->pos,
+                            (zVec3*)(runtimeInstance->pendingTargetA),
+                            &targetDirection
+                        );
+                        float turnBlend;
+                        float turnStep;
+                        if ((entry->flags & kOptCatalogFlagLockOnLead) != 0 && runtimeInstance->pendingTargetB != 0) {
+                            LineVsSphereHit(
                                 &runtimeInstance->pos,
                                 (zVec3*)(runtimeInstance->pendingTargetA),
+                                runtimeInstance->lifetime,
+                                (zVec3*)(runtimeInstance->pendingTargetB),
                                 &targetDirection
                             );
-                            if ((entry->flags & kOptCatalogFlagLockOnLead) != 0
-                                && runtimeInstance->pendingTargetB != 0) {
-                                zMath::LineVsSphereHit(
-                                    &runtimeInstance->pos,
-                                    (zVec3*)(runtimeInstance->pendingTargetA),
-                                    runtimeInstance->lifetime,
-                                    (zVec3*)(runtimeInstance->pendingTargetB),
-                                    &targetDirection
-                                );
-                            }
-
-                            float turnBlend;
-                            if (runtimeInstance->spawnGateAccum < entry->turnSuspendTime) {
-                                turnBlend = 0.0f;
-                            } else if (entry->lockOnTime + entry->turnSuspendTime <= entry->lockOnTime) {
-                                turnBlend = 1.0f;
-                            } else {
-                                turnBlend
-                                    = (runtimeInstance->spawnGateAccum - entry->turnSuspendTime) / entry->lockOnTime;
-                            }
-
-                            float turnStep = entry->turnRate * turnBlend * g_OptCatalogRuntimeDeltaTime;
-                            if ((entry->flags & kOptCatalogFlagTetherGuided) != 0) {
-                                PlayerProbeSampleCandidateBuffer groundPick;
-                                CZDisplayInstance::FindBestPickCandidateBelowPoint(
-                                    g_OptCatalogRuntimeWorld,
-                                    &runtimeInstance->pos,
-                                    &groundPick
-                                );
-                                if (groundPick.candidateCount == 1) {
-                                    // Height difference: projectile Y minus the sampled ground Y
-                                    // (retail 0x4af26b-0x4af274, fst [esi+0x158]).
-                                    entry->tetherAltitude = runtimeInstance->pos.y - groundPick.entries[0].hitPos.y;
-                                    if (entry->tetherAltitude > g_zWeapon_MaxTetherAltitude - 5.0f
-                                        && targetDirection.y > 0.0f) {
-                                        targetDirection.y = 0.0f;
-                                    }
-                                    BlendDirectionTowardTarget(
-                                        &runtimeInstance->dir,
-                                        &targetDirection,
-                                        turnStep,
-                                        turnStep,
-                                        entry->pitchRate * turnBlend * g_OptCatalogRuntimeDeltaTime
-                                    );
-                                } else {
-                                    runtimeInstance->rangeProgress = entry->range;
-                                }
-                            } else {
-                                const float directionDot = zMath::Vec3Dot(&runtimeInstance->dir, &targetDirection);
-                                float turnAngle;
-                                if (directionDot >= 1.0f) {
-                                    turnAngle = 0.0f;
-                                } else if (directionDot <= -1.0f) {
-                                    turnAngle = 3.14159265f;
-                                } else {
-                                    turnAngle = (float)(acos(directionDot));
-                                    while (turnAngle < 0.0f) {
-                                        turnAngle += 6.28318548f;
-                                    }
-                                    while (turnAngle >= 6.28318548f) {
-                                        turnAngle -= 6.28318548f;
-                                    }
-                                    if (turnAngle > 3.14159265f) {
-                                        turnAngle = 6.28318548f - turnAngle;
-                                    }
-                                }
-
-                                if (turnAngle > 0.0f) {
-                                    if (turnStep > turnAngle) {
-                                        turnStep = turnAngle;
-                                    }
-                                    zMath::Vec3Slerp(
-                                        &runtimeInstance->dir,
-                                        &targetDirection,
-                                        turnStep / turnAngle,
-                                        &runtimeInstance->dir
-                                    );
-                                    zMath::Vec3Normalize(&runtimeInstance->dir);
-                                }
-                            }
-
-                            if (runtimeInstance->spawnGateAccum > entry->lockOnTime) {
-                                zMath::Vec3ScaleTo(
-                                    &runtimeInstance->dir,
-                                    runtimeInstance->lifetime,
-                                    &runtimeInstance->velocity
-                                );
-                            } else {
-                                const float retainedVelocity = (entry->lockOnTime - runtimeInstance->spawnGateAccum)
-                                    * (1.0f / entry->lockOnTime);
-                                runtimeInstance->spawnGateAccum += g_OptCatalogRuntimeDeltaTime;
-                                runtimeInstance->velocity.x = runtimeInstance->dir.x * runtimeInstance->lifetime
-                                    + runtimeInstance->aux.x * retainedVelocity;
-                                runtimeInstance->velocity.y = runtimeInstance->dir.y * runtimeInstance->lifetime
-                                    + runtimeInstance->aux.y * retainedVelocity;
-                                runtimeInstance->velocity.z = runtimeInstance->dir.z * runtimeInstance->lifetime
-                                    + runtimeInstance->aux.z * retainedVelocity;
-                            }
-
-                            CZObject3D::gwObject3DSetRotation(
-                                runtimeInstance->projectileNode,
-                                (float)(asin(runtimeInstance->dir.y)),
-                                (float)(atan2(-runtimeInstance->dir.x, -runtimeInstance->dir.z)),
-                                0.0f
-                            );
-
-                            // Lock-on warning (retail 0x4af469-0x4af4f2): a tracked node must
-                            // exist and differ from this projectile's owner node; in network
-                            // play the target position must also lie within Manhattan distance
-                            // 5 of g_Player_LocalFxOffsetWorldPtr. There is no target-node test.
-                            if (g_OptCatalogDamageFeedbackTrackedNode != 0
-                                && g_OptCatalogDamageFeedbackTrackedNode != runtimeInstance->ownerNode) {
-                                int warnLocalPlayer = 1;
-                                if (g_OptCatalogNetworkOptionState != 0) {
-                                    const zVec3* const target = (const zVec3*)(runtimeInstance->pendingTargetA);
-                                    const zVec3* const localPos = g_Player_LocalFxOffsetWorldPtr;
-                                    if ((float)(fabs(target->y - localPos->y)) + (float)(fabs(target->z - localPos->z))
-                                            + (float)(fabs(target->x - localPos->x))
-                                        > 5.0f) {
-                                        warnLocalPlayer = 0;
-                                    }
-                                }
-                                if (warnLocalPlayer != 0) {
-                                    if (targetDistance < nearestLockOnDistance) {
-                                        nearestLockOnDistance = targetDistance;
-                                    }
-                                    if (g_OptCatalogLockOnWarningGateTimeSec < g_OptCatalogRuntimeNowSec) {
-                                        g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec;
-                                    }
-                                }
-                            }
                         }
 
-                        if ((entry->flags & kOptCatalogFlagInstant) != 0) {
-                            zMath::Vec3ScaleTo(&runtimeInstance->dir, entry->range, &movementDelta);
+                        if (runtimeInstance->spawnGateAccum < entry->turnSuspendTime) {
+                            turnBlend = 0.0f;
+                        } else if (entry->lockOnTime + entry->turnSuspendTime <= entry->lockOnTime) {
+                            turnBlend = 1.0f;
                         } else {
-                            if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0
-                                && runtimeInstance->lifetime < runtimeInstance->speed) {
-                                runtimeInstance->lifetime += entry->acceleration * g_OptCatalogRuntimeDeltaTime;
-                                if (runtimeInstance->speed < runtimeInstance->lifetime) {
-                                    runtimeInstance->lifetime = runtimeInstance->speed;
-                                }
-                                accelerated = 1;
-                            }
-                            if (entry->gravity != 0.0f) {
-                                runtimeInstance->velocity.y -= entry->gravity * g_OptCatalogRuntimeDeltaTime;
-                            }
-                            if (accelerated != 0) {
-                                zMath::Vec3ScaleAdd(
-                                    &runtimeInstance->velocity,
-                                    &runtimeInstance->dir,
-                                    runtimeInstance->lifetime,
-                                    &runtimeInstance->velocity
-                                );
-                            }
+                            turnBlend = (runtimeInstance->spawnGateAccum - entry->turnSuspendTime) / entry->lockOnTime;
+                        }
 
-                            movementDelta.x = runtimeInstance->velocity.x * g_OptCatalogRuntimeDeltaTime;
-                            movementDelta.y = runtimeInstance->velocity.y * g_OptCatalogRuntimeDeltaTime;
-                            movementDelta.z = runtimeInstance->velocity.z * g_OptCatalogRuntimeDeltaTime;
-                            if ((entry->flags & kOptCatalogFlagTetherGuided) != 0
-                                && movementDelta.y + entry->tetherAltitude > g_zWeapon_MaxTetherAltitude) {
-                                movementDelta.y = g_zWeapon_MaxTetherAltitude - entry->tetherAltitude;
-                            }
-
-                            runtimeInstance->rangeProgress += zMath::Vec3Length(&movementDelta);
-                            if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
-                                runtimeInstance->rangeProgress *= 0.5f;
-                            }
-                            if (runtimeInstance->rangeProgress >= entry->range) {
-                                if ((entry->flags & kOptCatalogFlagLockOn) != 0
-                                    && (entry->flags & kOptCatalogFlagExpires) == 0) {
-                                    HandleImpactEventFromRuntimeState(entry, runtimeInstance);
-                                }
-                                updateState = 0;
-                            } else if ((entry->flags & kOptCatalogFlagLockOn) != 0
-                                && runtimeInstance->pendingTargetA != 0 && entry->detonationDistSq != 0.0f
-                                && zMath::Vec3DeltaLengthSq(
-                                       &runtimeInstance->pos,
-                                       (zVec3*)(runtimeInstance->pendingTargetA)
-                                   ) <= entry->detonationDistSq) {
-                                updateState = 0;
-                                g_OptCatalog_FallbackImpactProbeEnabled = 0;
-                                RemoveRuntimeInstance(entry, &runtimeInstance->pos, 0);
-                                g_OptCatalog_FallbackImpactProbeEnabled = 1;
-                            }
-                        }
-                    } else if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
-                        OptCatalogRaycastHitList mineHits;
-                        int foundMineImpact = 0;
-                        updateState = 2;
-                        if (g_OptCatalogNetworkOptionState != 0
-                            && g_Time_UnscaledAccumulatedTimeSec > runtimeInstance->spawnGateAccum) {
-                            BuildImpactHitList(entry, runtimeInstance, 0, &mineHits);
-                            foundMineImpact = 1;
-                        } else if ((entry->flags & kOptCatalogFlagRemoteDetonate) == 0
-                            && BuildImpactHitList(entry, runtimeInstance, 0, &mineHits) != 0) {
-                            foundMineImpact = 1;
-                        }
-                        if (foundMineImpact != 0) {
-                            HandleImpactFromRuntimeProbe(entry, runtimeInstance, &mineHits, 0);
-                            updateState = 0;
-                            g_OptCatalog_FallbackImpactProbeEnabled = 0;
-                            ProcessRuntimeInstance(entry, runtimeInstance);
-                            g_OptCatalog_FallbackImpactProbeEnabled = 1;
-                        } else {
-                            CZObject3D::gwObject3DTranslateRotation(
-                                runtimeInstance->projectileNode,
-                                0.0f,
-                                g_OptCatalogRuntimeDeltaTime * 3.4906585f,
-                                0.0f
-                            );
-                        }
-                    }
-
-                    if (updateState == 1) {
-                        zMath::Vec3Add(&runtimeInstance->pos, &movementDelta, &endPoint);
-                        SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                        CZClass::gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
-                        if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
-                        }
-                        CZDisplayInstance::SetStopAfterFirstHit(0x40000);
-                        PlayerProbeSampleCandidateBuffer segmentHits;
-                        if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
+                        turnStep = entry->turnRate * turnBlend * g_OptCatalogRuntimeDeltaTime;
+                        if ((entry->flags & kOptCatalogFlagTetherGuided) != 0) {
+                            PlayerProbeSampleCandidateBuffer groundPick;
+                            FindBestPickCandidateBelowPoint(
                                 g_OptCatalogRuntimeWorld,
                                 &runtimeInstance->pos,
-                                &endPoint,
-                                &segmentHits
-                            )
-                            == 0) {
-                            zClassDiPickCandidateEntry* const candidate
-                                = &segmentHits.entries[segmentHits.candidateCount];
-                            OptCatalogRaycastHitEntry* rayHit = (OptCatalogRaycastHitEntry*)(void*)(candidate);
-                            void* const excludedDamageHandler = ((CZNodeFreeListSlot*)(candidate->node))->damageHandler;
-                            if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0) {
-                                if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
-                                    g_OptCatalog_CapturedDamageSourcePos = runtimeInstance->pos;
-                                    g_OptCatalog_CapturedDamageHitPos = rayHit->pos;
+                                &groundPick
+                            );
+                            if (groundPick.candidateCount == 1) {
+                                // Height difference: projectile Y minus the sampled ground Y
+                                // (retail 0x4af26b-0x4af274, fst [esi+0x158]).
+                                entry->tetherAltitude = runtimeInstance->pos.y - groundPick.entries[0].hitPos.y;
+                                if (entry->tetherAltitude > g_zWeapon_MaxTetherAltitude - 5.0f
+                                    && targetDirection.y > 0.0f) {
+                                    targetDirection.y = 0.0f;
                                 }
-                                runtimeInstance->pos = rayHit->pos;
-                                updateState = 0;
-                                g_OptCatalog_CaptureHitSnapshotEnabled = 0;
-                                HandleImpactEvent(entry, (OptCatalogHitEventPartial*)(void*)(rayHit), runtimeInstance);
-                                if (entry->impactProximity > 0.0f) {
-                                    OptCatalogRaycastHitList proximityHits;
-                                    if (BuildImpactHitList(entry, runtimeInstance, 1, &proximityHits) != 0) {
-                                        HandleImpactFromRuntimeProbe(
-                                            entry,
-                                            runtimeInstance,
-                                            &proximityHits,
-                                            excludedDamageHandler
-                                        );
-                                    }
-                                }
-                                g_OptCatalog_CaptureHitSnapshotEnabled = 1;
+                                BlendDirectionTowardTarget(
+                                    &runtimeInstance->dir,
+                                    &targetDirection,
+                                    turnStep,
+                                    turnStep,
+                                    entry->pitchRate * turnBlend * g_OptCatalogRuntimeDeltaTime
+                                );
                             } else {
-                                int impactSlot;
-                                if (rayHit->surfaceRef != 0) {
-                                    impactSlot = rayHit->surfaceRef->impactSlot;
-                                } else {
-                                    impactSlot = 0;
+                                runtimeInstance->rangeProgress = entry->range;
+                            }
+                        } else {
+                            const float directionDot = Vec3Dot(&runtimeInstance->dir, &targetDirection);
+                            float turnAngle;
+                            if (directionDot >= 1.0f) {
+                                turnAngle = 0.0f;
+                            } else if (directionDot <= -1.0f) {
+                                turnAngle = 3.14159265f;
+                            } else {
+                                turnAngle = (float)(acos(directionDot));
+                                while (turnAngle < 0.0f) {
+                                    turnAngle += 6.28318548f;
                                 }
-                                // Owns every reflected hit that rayHit points at across bounce
-                                // iterations (retail frame buffer [ebp-0x1060]); each raycast
-                                // overwrites it while reading the previous hit's position.
-                                PlayerProbeSampleCandidateBuffer reflectedHits;
-                                while (1) {
-                                    float rayLength;
-                                    float reflectedLength;
-                                    const int response = CanSpawnThroughRay(
-                                        entry,
-                                        rayHit,
-                                        &runtimeInstance->pos,
-                                        &endPoint,
-                                        &rayLength,
-                                        &reflectedLength,
-                                        &runtimeInstance->dir
-                                    );
-                                    if (response == 0) {
-                                        updateState = 0;
-                                        HandleImpactEvent(
-                                            entry,
-                                            (OptCatalogHitEventPartial*)(void*)(rayHit),
-                                            runtimeInstance
-                                        );
-                                        break;
-                                    }
-                                    if (runtimeInstance->lifetime <= 0.2f) {
-                                        runtimeInstance->lifetime = 0.0f;
-                                        if (g_OptCatalogNetworkOptionState != 0) {
-                                            runtimeInstance->spawnGateAccum = g_Time_UnscaledAccumulatedTimeSec
-                                                + runtimeInstance->spawnGateAccum + 120.0f;
-                                        }
-                                        runtimeInstance->rangeProgress = entry->range;
-                                        endPoint = rayHit->pos;
-                                        updateState = 2;
-                                        CZObject3D::gwObject3DTranslateRotation(
-                                            runtimeInstance->projectileNode,
-                                            0.0f,
-                                            g_OptCatalogRuntimeDeltaTime * 3.4906585f,
-                                            0.0f
-                                        );
-                                        CZObject3D::gwObject3DSetScale(
-                                            runtimeInstance->projectileNode,
-                                            5.0f,
-                                            5.0f,
-                                            5.0f
-                                        );
-                                        break;
-                                    }
+                                while (turnAngle >= 6.28318548f) {
+                                    turnAngle -= 6.28318548f;
+                                }
+                                if (turnAngle > 3.14159265f) {
+                                    turnAngle = 6.28318548f - turnAngle;
+                                }
+                            }
 
-                                    const float oldMagnitude = runtimeInstance->lifetime;
-                                    runtimeInstance->lifetime *= g_OptCatalogBounceSpeedScale;
-                                    reflectedLength *= g_OptCatalogBounceRangeScale;
-                                    zMath::Vec3ScaleTo(
-                                        &runtimeInstance->dir,
-                                        runtimeInstance->lifetime,
-                                        &runtimeInstance->velocity
-                                    );
-                                    zMath::Vec3ScaleAdd(
-                                        &rayHit->pos,
-                                        &runtimeInstance->dir,
-                                        reflectedLength,
-                                        &endPoint
-                                    );
-                                    if (oldMagnitude > 0.2f) {
-                                        PlayBounceSound(
-                                            entry,
-                                            rayHit,
-                                            impactSlot,
-                                            (oldMagnitude / runtimeInstance->speed + 1.0f) * 0.5f
-                                        );
-                                    }
-                                    SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                                    CZDisplayInstance::SetStopAfterFirstHit(0x40000);
-                                    if (CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
-                                            g_OptCatalogRuntimeWorld,
-                                            &rayHit->pos,
-                                            &endPoint,
-                                            &reflectedHits
-                                        )
-                                        != 0) {
-                                        break;
-                                    }
-                                    runtimeInstance->pos = rayHit->pos;
-                                    rayHit = (OptCatalogRaycastHitEntry*)(void*)(&reflectedHits
-                                            .entries[reflectedHits.candidateCount]);
+                            if (turnAngle > 0.0f) {
+                                if (turnStep > turnAngle) {
+                                    turnStep = turnAngle;
+                                }
+                                Vec3Slerp(
+                                    &runtimeInstance->dir,
+                                    &targetDirection,
+                                    turnStep / turnAngle,
+                                    &runtimeInstance->dir
+                                );
+                                Vec3Normalize(&runtimeInstance->dir);
+                            }
+                        }
+
+                        if (runtimeInstance->spawnGateAccum > entry->lockOnTime) {
+                            Vec3ScaleTo(&runtimeInstance->dir, runtimeInstance->lifetime, &runtimeInstance->velocity);
+                        } else {
+                            const float retainedVelocity
+                                = (entry->lockOnTime - runtimeInstance->spawnGateAccum) * (1.0f / entry->lockOnTime);
+                            runtimeInstance->spawnGateAccum += g_OptCatalogRuntimeDeltaTime;
+                            runtimeInstance->velocity.x = runtimeInstance->dir.x * runtimeInstance->lifetime
+                                + runtimeInstance->aux.x * retainedVelocity;
+                            runtimeInstance->velocity.y = runtimeInstance->dir.y * runtimeInstance->lifetime
+                                + runtimeInstance->aux.y * retainedVelocity;
+                            runtimeInstance->velocity.z = runtimeInstance->dir.z * runtimeInstance->lifetime
+                                + runtimeInstance->aux.z * retainedVelocity;
+                        }
+
+                        gwObject3DSetRotation(
+                            runtimeInstance->projectileNode,
+                            (float)(asin(runtimeInstance->dir.y)),
+                            (float)(atan2(-runtimeInstance->dir.x, -runtimeInstance->dir.z)),
+                            0.0f
+                        );
+
+                        // Lock-on warning (retail 0x4af469-0x4af4f2): a tracked node must
+                        // exist and differ from this projectile's owner node; in network
+                        // play the target position must also lie within Manhattan distance
+                        // 5 of g_Player_LocalFxOffsetWorldPtr. There is no target-node test.
+                        if (g_OptCatalogDamageFeedbackTrackedNode != 0
+                            && g_OptCatalogDamageFeedbackTrackedNode != runtimeInstance->ownerNode) {
+                            int warnLocalPlayer = 1;
+                            if (g_OptCatalogNetworkOptionState != 0) {
+                                const zVec3* const target = (const zVec3*)(runtimeInstance->pendingTargetA);
+                                const zVec3* const localPos = g_Player_LocalFxOffsetWorldPtr;
+                                if ((float)(fabs(target->y - localPos->y)) + (float)(fabs(target->z - localPos->z))
+                                        + (float)(fabs(target->x - localPos->x))
+                                    > 5.0f) {
+                                    warnLocalPlayer = 0;
+                                }
+                            }
+                            if (warnLocalPlayer != 0) {
+                                if (targetDistance < nearestLockOnDistance) {
+                                    nearestLockOnDistance = targetDistance;
+                                }
+                                if (g_OptCatalogLockOnWarningGateTimeSec < g_OptCatalogRuntimeNowSec) {
+                                    g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec;
                                 }
                             }
                         }
-                        if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
-                            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
-                        }
-                        CZClass::gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
                     }
 
                     if ((entry->flags & kOptCatalogFlagInstant) != 0) {
-                        updateState = 0;
-                    }
+                        Vec3ScaleTo(&runtimeInstance->dir, entry->range, &movementDelta);
+                    } else {
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0
+                            && runtimeInstance->lifetime < runtimeInstance->speed) {
+                            runtimeInstance->lifetime += entry->acceleration * g_OptCatalogRuntimeDeltaTime;
+                            if (runtimeInstance->speed < runtimeInstance->lifetime) {
+                                runtimeInstance->lifetime = runtimeInstance->speed;
+                            }
+                            accelerated = 1;
+                        }
+                        if (entry->gravity != 0.0f) {
+                            runtimeInstance->velocity.y -= entry->gravity * g_OptCatalogRuntimeDeltaTime;
+                        }
+                        if (accelerated != 0) {
+                            Vec3ScaleAdd(
+                                &runtimeInstance->velocity,
+                                &runtimeInstance->dir,
+                                runtimeInstance->lifetime,
+                                &runtimeInstance->velocity
+                            );
+                        }
 
-                    if (updateState != 0) {
-                        if (updateState == 1) {
-                            if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0 && entry->gravity != 0.0f
-                                && (entry->flags & kOptCatalogFlagFixedRotate) == 0) {
-                                zVec3 direction = runtimeInstance->velocity;
-                                zMath::Vec3Normalize(&direction);
-                                CZObject3D::gwObject3DSetRotation(
-                                    runtimeInstance->projectileNode,
-                                    (float)(asin(direction.y)),
-                                    (float)(atan2(-direction.x, -direction.z)),
-                                    0.0f
+                        movementDelta.x = runtimeInstance->velocity.x * g_OptCatalogRuntimeDeltaTime;
+                        movementDelta.y = runtimeInstance->velocity.y * g_OptCatalogRuntimeDeltaTime;
+                        movementDelta.z = runtimeInstance->velocity.z * g_OptCatalogRuntimeDeltaTime;
+                        if ((entry->flags & kOptCatalogFlagTetherGuided) != 0
+                            && movementDelta.y + entry->tetherAltitude > g_zWeapon_MaxTetherAltitude) {
+                            movementDelta.y = g_zWeapon_MaxTetherAltitude - entry->tetherAltitude;
+                        }
+
+                        runtimeInstance->rangeProgress += Vec3Length(&movementDelta);
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                            runtimeInstance->rangeProgress *= 0.5f;
+                        }
+                        if (runtimeInstance->rangeProgress >= entry->range) {
+                            if ((entry->flags & kOptCatalogFlagLockOn) != 0
+                                && (entry->flags & kOptCatalogFlagExpires) == 0) {
+                                HandleImpactEventFromRuntimeState(entry, runtimeInstance);
+                            }
+                            updateState = 0;
+                        } else if ((entry->flags & kOptCatalogFlagLockOn) != 0 && runtimeInstance->pendingTargetA != 0
+                            && entry->detonationDistSq != 0.0f
+                            && Vec3DeltaLengthSq(&runtimeInstance->pos, (zVec3*)(runtimeInstance->pendingTargetA))
+                                <= entry->detonationDistSq) {
+                            updateState = 0;
+                            g_OptCatalog_FallbackImpactProbeEnabled = 0;
+                            RemoveRuntimeInstance(entry, &runtimeInstance->pos, 0);
+                            g_OptCatalog_FallbackImpactProbeEnabled = 1;
+                        }
+                    }
+                } else if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                    OptCatalogRaycastHitList mineHits;
+                    int foundMineImpact = 0;
+                    updateState = 2;
+                    if (g_OptCatalogNetworkOptionState != 0
+                        && g_Time_UnscaledAccumulatedTimeSec > runtimeInstance->spawnGateAccum) {
+                        BuildImpactHitList(entry, runtimeInstance, 0, &mineHits);
+                        foundMineImpact = 1;
+                    } else if ((entry->flags & kOptCatalogFlagRemoteDetonate) == 0
+                        && BuildImpactHitList(entry, runtimeInstance, 0, &mineHits) != 0) {
+                        foundMineImpact = 1;
+                    }
+                    if (foundMineImpact != 0) {
+                        HandleImpactFromRuntimeProbe(entry, runtimeInstance, &mineHits, 0);
+                        updateState = 0;
+                        g_OptCatalog_FallbackImpactProbeEnabled = 0;
+                        ProcessRuntimeInstance(entry, runtimeInstance);
+                        g_OptCatalog_FallbackImpactProbeEnabled = 1;
+                    } else {
+                        gwObject3DTranslateRotation(
+                            runtimeInstance->projectileNode,
+                            0.0f,
+                            g_OptCatalogRuntimeDeltaTime * 3.4906585f,
+                            0.0f
+                        );
+                    }
+                }
+
+                if (updateState == 1) {
+                    PlayerProbeSampleCandidateBuffer segmentHits;
+                    Vec3Add(&runtimeInstance->pos, &movementDelta, &endPoint);
+                    SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                    gwNodeSetRaycastable(runtimeInstance->ownerNode, 0);
+                    if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
+                        gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
+                    }
+                    SetStopAfterFirstHit(0x40000);
+                    if (RaycastSelectClosestHitBetweenPoints(
+                            g_OptCatalogRuntimeWorld,
+                            &runtimeInstance->pos,
+                            &endPoint,
+                            &segmentHits
+                        )
+                        == 0) {
+                        zClassDiPickCandidateEntry* const candidate = &segmentHits.entries[segmentHits.candidateCount];
+                        OptCatalogRaycastHitEntry* rayHit = (OptCatalogRaycastHitEntry*)(void*)(candidate);
+                        void* const excludedDamageHandler = ((CZNodeFreeListSlot*)(candidate->node))->damageHandler;
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0) {
+                            if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
+                                g_OptCatalog_CapturedDamageSourcePos = runtimeInstance->pos;
+                                g_OptCatalog_CapturedDamageHitPos = rayHit->pos;
+                            }
+                            runtimeInstance->pos = rayHit->pos;
+                            updateState = 0;
+                            g_OptCatalog_CaptureHitSnapshotEnabled = 0;
+                            HandleImpactEvent(entry, (OptCatalogHitEventPartial*)(void*)(rayHit), runtimeInstance);
+                            if (entry->impactProximity > 0.0f) {
+                                OptCatalogRaycastHitList proximityHits;
+                                if (BuildImpactHitList(entry, runtimeInstance, 1, &proximityHits) != 0) {
+                                    HandleImpactFromRuntimeProbe(
+                                        entry,
+                                        runtimeInstance,
+                                        &proximityHits,
+                                        excludedDamageHandler
+                                    );
+                                }
+                            }
+                            g_OptCatalog_CaptureHitSnapshotEnabled = 1;
+                        } else {
+                            int impactSlot;
+                            // Owns every reflected hit that rayHit points at across bounce
+                            // iterations (retail frame buffer [ebp-0x1060]); each raycast
+                            // overwrites it while reading the previous hit's position.
+                            PlayerProbeSampleCandidateBuffer reflectedHits;
+                            if (rayHit->surfaceRef != 0) {
+                                impactSlot = rayHit->surfaceRef->impactSlot;
+                            } else {
+                                impactSlot = 0;
+                            }
+                            while (1) {
+                                float rayLength;
+                                float reflectedLength;
+                                const int response = CanSpawnThroughRay(
+                                    entry,
+                                    rayHit,
+                                    &runtimeInstance->pos,
+                                    &endPoint,
+                                    &rayLength,
+                                    &reflectedLength,
+                                    &runtimeInstance->dir
                                 );
-                            } else if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
-                                if (runtimeInstance->scaleFade > 0.0f) {
-                                    CZObject3D::gwObject3DTranslateRotation(
+                                float oldMagnitude;
+                                if (response == 0) {
+                                    updateState = 0;
+                                    HandleImpactEvent(
+                                        entry,
+                                        (OptCatalogHitEventPartial*)(void*)(rayHit),
+                                        runtimeInstance
+                                    );
+                                    break;
+                                }
+                                if (runtimeInstance->lifetime <= 0.2f) {
+                                    runtimeInstance->lifetime = 0.0f;
+                                    if (g_OptCatalogNetworkOptionState != 0) {
+                                        runtimeInstance->spawnGateAccum = g_Time_UnscaledAccumulatedTimeSec
+                                            + runtimeInstance->spawnGateAccum + 120.0f;
+                                    }
+                                    runtimeInstance->rangeProgress = entry->range;
+                                    endPoint = rayHit->pos;
+                                    updateState = 2;
+                                    gwObject3DTranslateRotation(
                                         runtimeInstance->projectileNode,
                                         0.0f,
                                         g_OptCatalogRuntimeDeltaTime * 3.4906585f,
                                         0.0f
                                     );
-                                }
-                                if (runtimeInstance->scaleFade < 1.0f) {
-                                    const float scale = 1.0f + runtimeInstance->scaleFade * 4.0f;
-                                    CZObject3D::gwObject3DSetScale(
-                                        runtimeInstance->projectileNode,
-                                        scale,
-                                        scale,
-                                        scale
-                                    );
-                                    runtimeInstance->scaleFade += g_OptCatalogRuntimeDeltaTime;
-                                }
-                            }
-                            runtimeInstance->pos = endPoint;
-                            CZObject3D::gwObject3DSetPosition(
-                                runtimeInstance->projectileNode,
-                                runtimeInstance->pos.x,
-                                runtimeInstance->pos.y,
-                                runtimeInstance->pos.z
-                            );
-                        }
-                        link = &runtimeInstance->next;
-                        runtimeInstance = runtimeInstance->next;
-                    } else {
-                        runtimeInstance->lifetime = 0.0f;
-                        *link = runtimeInstance->next;
-                        if (runtimeInstance->flyoutAnimPrimary != 0) {
-                            zEffect_Anim::zEffAnimReset(runtimeInstance->flyoutAnimPrimary, 0);
-                            runtimeInstance->flyoutAnimPrimary = 0;
-                        }
-                        if (runtimeInstance->flyoutAnimSecondary != 0) {
-                            zEffect_Anim::zEffAnimReset(runtimeInstance->flyoutAnimSecondary, 0);
-                            runtimeInstance->flyoutAnimSecondary = 0;
-                        }
-                        CZClass::RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
-                        if ((entry->flags & kOptCatalogFlagTetherGuided) == 0) {
-                            RecycleRuntimeInstanceStorage(entry, runtimeInstance);
-                        } else {
-                            runtimeInstance->ownerNode = 0;
-                        }
-                        runtimeInstance = *link;
-                    }
-                }
-            } else {
-                OptCatalogTrailRuntimeState* trailRuntime = entry->activeTrailRuntime;
-                while (trailRuntime != 0) {
-                    int visibleSegmentCount = 0;
-                    OptCatalogTrailNodeSlot* segment = trailRuntime->activeNodeSlots;
-                    if (trailRuntime->variantTagPtr != 0) {
-                        g_Variant_CurrentTag = *trailRuntime->variantTagPtr;
-                    } else {
-                        g_Variant_CurrentTag = savedVariantTag;
-                    }
-
-                    if ((entry->flags & 0x10000u) != 0) {
-                        zVec3 segmentEnd;
-                        int targetCount = 0;
-                        if (trailRuntime->pendingSpawnTargetCountPtr != 0) {
-                            targetCount = *trailRuntime->pendingSpawnTargetCountPtr;
-                            if (targetCount > 8) {
-                                targetCount = 8;
-                            }
-                        }
-                        segment[0].pos = *trailRuntime->spawnPos;
-                        segment[0].dir = *trailRuntime->spawnDir;
-
-                        if (targetCount > 1) {
-                            float targetProjectionScratch[8];
-                            zVec3 sortedDirection;
-                            int stopped = 0;
-                            ReflectAndSortImpactTraceList(trailRuntime, targetProjectionScratch, &sortedDirection);
-                            if (targetCount > 4) {
-                                targetCount = 4;
-                            }
-
-                            int targetIndex;
-                            for (targetIndex = 0; targetIndex < targetCount - 1; ++targetIndex) {
-                                targetProjectionScratch[targetIndex] *= 0.4f;
-                            }
-
-                            segmentEnd = *trailRuntime->spawnPos;
-                            for (targetIndex = 0; targetIndex < targetCount; ++targetIndex) {
-                                trailRuntime->activeNodeSlots[targetIndex].pos = segmentEnd;
-                                zMath::Vec3ScaleAdd(
-                                    &trailRuntime->activeNodeSlots[targetIndex].pos,
-                                    &sortedDirection,
-                                    targetProjectionScratch[targetIndex],
-                                    &segmentEnd
-                                );
-                            }
-
-                            const int lastTargetIndex = targetIndex - 1;
-                            const float jitter = targetProjectionScratch[targetCount - 1] * 0.1f;
-                            for (targetIndex = 1; targetIndex < targetCount; ++targetIndex) {
-                                trailRuntime->activeNodeSlots[targetIndex].pos.x
-                                    += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
-                                trailRuntime->activeNodeSlots[targetIndex].pos.z
-                                    += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
-                            }
-
-                            // Retail walks the current and branch slot pointers (0x4afe1d-0x4aff23).
-                            OptCatalogTrailNodeSlot* current = segment;
-                            OptCatalogTrailNodeSlot* branch = &segment[targetCount];
-                            for (targetIndex = 0; targetIndex < lastTargetIndex; ++targetIndex, ++current, ++branch) {
-                                current->scale = zMath::Vec3DirectionTo(&current->pos, &current[1].pos, &current->dir);
-                                stopped = ComputeTrailImpactResponse(entry, trailRuntime, current, &current[1].pos);
-                                UpdateTrailSegmentVisual(current);
-                                ++visibleSegmentCount;
-                                if (stopped != 0) {
+                                    gwObject3DSetScale(runtimeInstance->projectileNode, 5.0f, 5.0f, 5.0f);
                                     break;
                                 }
 
-                                branch->pos = current[1].pos;
-                                branch->scale = zMath::Vec3DirectionTo(
-                                    &branch->pos,
-                                    trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,
-                                    &branch->dir
+                                oldMagnitude = runtimeInstance->lifetime;
+                                runtimeInstance->lifetime *= g_OptCatalogBounceSpeedScale;
+                                reflectedLength *= g_OptCatalogBounceRangeScale;
+                                Vec3ScaleTo(
+                                    &runtimeInstance->dir,
+                                    runtimeInstance->lifetime,
+                                    &runtimeInstance->velocity
                                 );
-                                current->scale = zMath::Vec3DirectionTo(&current->pos, &branch->pos, &current->dir);
-                                ComputeTrailImpactResponse(
-                                    entry,
-                                    trailRuntime,
-                                    branch,
-                                    trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos
-                                );
-                                UpdateTrailSegmentVisual(branch);
-                                ++visibleSegmentCount;
-                            }
-
-                            if (stopped == 0) {
-                                current->scale = zMath::Vec3DirectionTo(
-                                    &current->pos,
-                                    trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,
-                                    &current->dir
-                                );
-                                ComputeTrailImpactResponse(
-                                    entry,
-                                    trailRuntime,
-                                    current,
-                                    trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos
-                                );
-                                UpdateTrailSegmentVisual(current);
-                                ++visibleSegmentCount;
-                            }
-                        } else if (targetCount == 1) {
-                            OptCatalogTrailNodeSlot* const nextSegment = &segment[1];
-                            segment->scale = zMath::Vec3DirectionTo(
-                                                 &segment->pos,
-                                                 trailRuntime->pendingSpawnTargetListPtr[0].targetPos,
-                                                 &segment->dir
-                                             )
-                                * 0.5f;
-                            zMath::Vec3ScaleAdd(&segment->pos, &segment->dir, segment->scale, &nextSegment->pos);
-                            const float jitter = segment->scale * 0.2f;
-                            nextSegment->pos.x += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
-                            nextSegment->pos.z += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
-                            segment->scale = zMath::Vec3DirectionTo(&segment->pos, &nextSegment->pos, &segment->dir);
-                            const int stopped
-                                = ComputeTrailImpactResponse(entry, trailRuntime, segment, &nextSegment->pos);
-                            UpdateTrailSegmentVisual(segment);
-                            visibleSegmentCount = 1;
-                            if (stopped == 0) {
-                                segment = nextSegment;
-                                segment->scale = zMath::Vec3DirectionTo(
-                                    &segment->pos,
-                                    trailRuntime->pendingSpawnTargetListPtr[0].targetPos,
-                                    &segment->dir
-                                );
-                                ComputeTrailImpactResponse(
-                                    entry,
-                                    trailRuntime,
-                                    segment,
-                                    trailRuntime->pendingSpawnTargetListPtr[0].targetPos
-                                );
-                                UpdateTrailSegmentVisual(segment);
-                                visibleSegmentCount = 2;
-                            }
-                        } else {
-                            segment[0].scale = entry->range;
-                            zMath::Vec3ScaleAdd(&segment[0].pos, &segment[0].dir, segment[0].scale, &segmentEnd);
-                            ComputeTrailImpactResponse(entry, trailRuntime, &segment[0], &segmentEnd);
-                            UpdateTrailSegmentVisual(&segment[0]);
-                            visibleSegmentCount = 1;
-                        }
-                    } else {
-                        if (trailRuntime->trailDistance != entry->range) {
-                            const float remainingDistance = entry->range - trailRuntime->trailDistance;
-                            if (remainingDistance > 0.1) {
-                                trailRuntime->trailDistance
-                                    += entry->velocity * remainingDistance * g_OptCatalogRuntimeDeltaTime;
-                            } else {
-                                trailRuntime->trailDistance = entry->range;
+                                Vec3ScaleAdd(&rayHit->pos, &runtimeInstance->dir, reflectedLength, &endPoint);
+                                if (oldMagnitude > 0.2f) {
+                                    PlayBounceSound(
+                                        entry,
+                                        rayHit,
+                                        impactSlot,
+                                        (oldMagnitude / runtimeInstance->speed + 1.0f) * 0.5f
+                                    );
+                                }
+                                SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                                SetStopAfterFirstHit(0x40000);
+                                if (RaycastSelectClosestHitBetweenPoints(
+                                        g_OptCatalogRuntimeWorld,
+                                        &rayHit->pos,
+                                        &endPoint,
+                                        &reflectedHits
+                                    )
+                                    != 0) {
+                                    break;
+                                }
+                                runtimeInstance->pos = rayHit->pos;
+                                rayHit = (OptCatalogRaycastHitEntry*)(void*)(&reflectedHits
+                                        .entries[reflectedHits.candidateCount]);
                             }
                         }
-                        const float alphaPulseStep = g_OptCatalogRuntimeDeltaTime * 15.707963f;
-                        trailRuntime->alphaPulsePhase += alphaPulseStep;
+                    }
+                    if ((entry->flags & kOptCatalogFlagImpactWhenScaleExpired) != 0) {
+                        gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+                    }
+                    gwNodeSetRaycastable(runtimeInstance->ownerNode, 1);
+                }
 
-                        zVec3* rayStart = trailRuntime->spawnPos;
-                        zVec3* rayDirection = trailRuntime->spawnDir;
-                        zVec3 reflectedDirection;
-                        float travelledDistance = 0.0f;
-                        int continueReflection;
-                        PlayerProbeSampleCandidateBuffer trailRayHits;
-                        do {
-                            ++visibleSegmentCount;
-                            continueReflection = 0;
-                            CZClass::gwNodeSetActive(segment->node, 1);
-                            CZObject3D::gwObject3DSetPosition(segment->node, rayStart->x, rayStart->y, rayStart->z);
-                            CZObject3D::gwObject3DSetRotation(
-                                segment->node,
-                                (float)(asin(rayDirection->y)),
-                                (float)(atan2(-rayDirection->x, -rayDirection->z)),
+                if ((entry->flags & kOptCatalogFlagInstant) != 0) {
+                    updateState = 0;
+                }
+
+                if (updateState != 0) {
+                    if (updateState == 1) {
+                        if ((entry->flags & kOptCatalogFlagFullProbeDamage) == 0 && entry->gravity != 0.0f
+                            && (entry->flags & kOptCatalogFlagFixedRotate) == 0) {
+                            zVec3 direction = runtimeInstance->velocity;
+                            Vec3Normalize(&direction);
+                            gwObject3DSetRotation(
+                                runtimeInstance->projectileNode,
+                                (float)(asin(direction.y)),
+                                (float)(atan2(-direction.x, -direction.z)),
                                 0.0f
                             );
-                            // Retail 0x4b0187-0x4b019b: fsin, fmul [0x4d33d4] (bytes 00 00 80 be,
-                            // -0.25f), fsubr [0x4d3394] (bytes 00 00 00 3f, 0.5f), i.e.
-                            // 0.5f - sin * -0.25f; VC5 emits that form for 0.5f + sin * 0.25f.
-                            CZObject3D::gwObject3DSetAlphaScale(
-                                segment->node,
-                                0.5f + (float)(sin(trailRuntime->alphaPulsePhase)) * 0.25f
-                            );
-
-                            float rayLength = trailRuntime->trailDistance - travelledDistance;
-                            zMath::Vec3ScaleAdd(rayStart, rayDirection, rayLength, &segment->pos);
-                            SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
-                            CZDisplayInstance::SetStopAfterFirstHit(0x40000);
-                            if (visibleSegmentCount == 1) {
-                                CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
+                        } else if ((entry->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+                            if (runtimeInstance->scaleFade > 0.0f) {
+                                gwObject3DTranslateRotation(
+                                    runtimeInstance->projectileNode,
+                                    0.0f,
+                                    g_OptCatalogRuntimeDeltaTime * 3.4906585f,
+                                    0.0f
+                                );
                             }
-                            const int rayResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
-                                g_OptCatalogRuntimeWorld,
+                            if (runtimeInstance->scaleFade < 1.0f) {
+                                const float scale = 1.0f + runtimeInstance->scaleFade * 4.0f;
+                                gwObject3DSetScale(runtimeInstance->projectileNode, scale, scale, scale);
+                                runtimeInstance->scaleFade += g_OptCatalogRuntimeDeltaTime;
+                            }
+                        }
+                        runtimeInstance->pos = endPoint;
+                        gwObject3DSetPosition(
+                            runtimeInstance->projectileNode,
+                            runtimeInstance->pos.x,
+                            runtimeInstance->pos.y,
+                            runtimeInstance->pos.z
+                        );
+                    }
+                    link = &runtimeInstance->next;
+                    runtimeInstance = runtimeInstance->next;
+                } else {
+                    runtimeInstance->lifetime = 0.0f;
+                    *link = runtimeInstance->next;
+                    if (runtimeInstance->flyoutAnimPrimary != 0) {
+                        zEffAnimReset(runtimeInstance->flyoutAnimPrimary, 0);
+                        runtimeInstance->flyoutAnimPrimary = 0;
+                    }
+                    if (runtimeInstance->flyoutAnimSecondary != 0) {
+                        zEffAnimReset(runtimeInstance->flyoutAnimSecondary, 0);
+                        runtimeInstance->flyoutAnimSecondary = 0;
+                    }
+                    RemoveChild(g_OptCatalogRuntimeWorld, runtimeInstance->projectileNode);
+                    if ((entry->flags & kOptCatalogFlagTetherGuided) == 0) {
+                        RecycleRuntimeInstanceStorage(entry, runtimeInstance);
+                    } else {
+                        runtimeInstance->ownerNode = 0;
+                    }
+                    runtimeInstance = *link;
+                }
+            }
+        } else {
+            OptCatalogTrailRuntimeState* trailRuntime = entry->activeTrailRuntime;
+            while (trailRuntime != 0) {
+                int visibleSegmentCount = 0;
+                OptCatalogTrailNodeSlot* segment = trailRuntime->activeNodeSlots;
+                int segmentIndex;
+                if (trailRuntime->variantTagPtr != 0) {
+                    g_Variant_CurrentTag = *trailRuntime->variantTagPtr;
+                } else {
+                    g_Variant_CurrentTag = savedVariantTag;
+                }
+
+                if ((entry->flags & 0x10000u) != 0) {
+                    zVec3 segmentEnd;
+                    int targetCount = 0;
+                    if (trailRuntime->pendingSpawnTargetCountPtr != 0) {
+                        targetCount = *trailRuntime->pendingSpawnTargetCountPtr;
+                        if (targetCount > 8) {
+                            targetCount = 8;
+                        }
+                    }
+                    segment[0].pos = *trailRuntime->spawnPos;
+                    segment[0].dir = *trailRuntime->spawnDir;
+
+                    if (targetCount > 1) {
+                        float targetProjectionScratch[8];
+                        zVec3 sortedDirection;
+                        int stopped = 0;
+                        int targetIndex;
+                        int lastTargetIndex;
+                        float jitter;
+                        OptCatalogTrailNodeSlot* current;
+                        OptCatalogTrailNodeSlot* branch;
+                        ReflectAndSortImpactTraceList(trailRuntime, targetProjectionScratch, &sortedDirection);
+                        if (targetCount > 4) {
+                            targetCount = 4;
+                        }
+
+                        for (targetIndex = 0; targetIndex < targetCount - 1; ++targetIndex) {
+                            targetProjectionScratch[targetIndex] *= 0.4f;
+                        }
+
+                        segmentEnd = *trailRuntime->spawnPos;
+                        for (targetIndex = 0; targetIndex < targetCount; ++targetIndex) {
+                            trailRuntime->activeNodeSlots[targetIndex].pos = segmentEnd;
+                            Vec3ScaleAdd(
+                                &trailRuntime->activeNodeSlots[targetIndex].pos,
+                                &sortedDirection,
+                                targetProjectionScratch[targetIndex],
+                                &segmentEnd
+                            );
+                        }
+
+                        lastTargetIndex = targetIndex - 1;
+                        jitter = targetProjectionScratch[targetCount - 1] * 0.1f;
+                        for (targetIndex = 1; targetIndex < targetCount; ++targetIndex) {
+                            trailRuntime->activeNodeSlots[targetIndex].pos.x
+                                += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                            trailRuntime->activeNodeSlots[targetIndex].pos.z
+                                += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                        }
+
+                        // Retail walks the current and branch slot pointers (0x4afe1d-0x4aff23).
+                        current = segment;
+                        branch = &segment[targetCount];
+                        for (targetIndex = 0; targetIndex < lastTargetIndex; ++targetIndex, ++current, ++branch) {
+                            current->scale = Vec3DirectionTo(&current->pos, &current[1].pos, &current->dir);
+                            stopped = ComputeTrailImpactResponse(entry, trailRuntime, current, &current[1].pos);
+                            UpdateTrailSegmentVisual(current);
+                            ++visibleSegmentCount;
+                            if (stopped != 0) {
+                                break;
+                            }
+
+                            branch->pos = current[1].pos;
+                            branch->scale = Vec3DirectionTo(
+                                &branch->pos,
+                                trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,
+                                &branch->dir
+                            );
+                            current->scale = Vec3DirectionTo(&current->pos, &branch->pos, &current->dir);
+                            ComputeTrailImpactResponse(
+                                entry,
+                                trailRuntime,
+                                branch,
+                                trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos
+                            );
+                            UpdateTrailSegmentVisual(branch);
+                            ++visibleSegmentCount;
+                        }
+
+                        if (stopped == 0) {
+                            current->scale = Vec3DirectionTo(
+                                &current->pos,
+                                trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos,
+                                &current->dir
+                            );
+                            ComputeTrailImpactResponse(
+                                entry,
+                                trailRuntime,
+                                current,
+                                trailRuntime->pendingSpawnTargetListPtr[targetIndex].targetPos
+                            );
+                            UpdateTrailSegmentVisual(current);
+                            ++visibleSegmentCount;
+                        }
+                    } else if (targetCount == 1) {
+                        OptCatalogTrailNodeSlot* const nextSegment = &segment[1];
+                        float jitter;
+                        int stopped;
+                        segment->scale = Vec3DirectionTo(
+                                             &segment->pos,
+                                             trailRuntime->pendingSpawnTargetListPtr[0].targetPos,
+                                             &segment->dir
+                                         )
+                            * 0.5f;
+                        Vec3ScaleAdd(&segment->pos, &segment->dir, segment->scale, &nextSegment->pos);
+                        jitter = segment->scale * 0.2f;
+                        nextSegment->pos.x += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                        nextSegment->pos.z += ((float)(rand()) * 0.0000305185094f - 0.5f) * jitter;
+                        segment->scale = Vec3DirectionTo(&segment->pos, &nextSegment->pos, &segment->dir);
+                        stopped = ComputeTrailImpactResponse(entry, trailRuntime, segment, &nextSegment->pos);
+                        UpdateTrailSegmentVisual(segment);
+                        visibleSegmentCount = 1;
+                        if (stopped == 0) {
+                            segment = nextSegment;
+                            segment->scale = Vec3DirectionTo(
+                                &segment->pos,
+                                trailRuntime->pendingSpawnTargetListPtr[0].targetPos,
+                                &segment->dir
+                            );
+                            ComputeTrailImpactResponse(
+                                entry,
+                                trailRuntime,
+                                segment,
+                                trailRuntime->pendingSpawnTargetListPtr[0].targetPos
+                            );
+                            UpdateTrailSegmentVisual(segment);
+                            visibleSegmentCount = 2;
+                        }
+                    } else {
+                        segment[0].scale = entry->range;
+                        Vec3ScaleAdd(&segment[0].pos, &segment[0].dir, segment[0].scale, &segmentEnd);
+                        ComputeTrailImpactResponse(entry, trailRuntime, &segment[0], &segmentEnd);
+                        UpdateTrailSegmentVisual(&segment[0]);
+                        visibleSegmentCount = 1;
+                    }
+                } else {
+                    float alphaPulseStep;
+                    zVec3* rayStart;
+                    zVec3* rayDirection;
+                    zVec3 reflectedDirection;
+                    float travelledDistance;
+                    int continueReflection;
+                    PlayerProbeSampleCandidateBuffer trailRayHits;
+                    if (trailRuntime->trailDistance != entry->range) {
+                        const float remainingDistance = entry->range - trailRuntime->trailDistance;
+                        if (remainingDistance > 0.1) {
+                            trailRuntime->trailDistance
+                                += entry->velocity * remainingDistance * g_OptCatalogRuntimeDeltaTime;
+                        } else {
+                            trailRuntime->trailDistance = entry->range;
+                        }
+                    }
+                    alphaPulseStep = g_OptCatalogRuntimeDeltaTime * 15.707963f;
+                    trailRuntime->alphaPulsePhase += alphaPulseStep;
+
+                    rayStart = trailRuntime->spawnPos;
+                    rayDirection = trailRuntime->spawnDir;
+                    travelledDistance = 0.0f;
+                    do {
+                        float rayLength;
+                        int rayResult;
+                        ++visibleSegmentCount;
+                        continueReflection = 0;
+                        gwNodeSetActive(segment->node, 1);
+                        gwObject3DSetPosition(segment->node, rayStart->x, rayStart->y, rayStart->z);
+                        gwObject3DSetRotation(
+                            segment->node,
+                            (float)(asin(rayDirection->y)),
+                            (float)(atan2(-rayDirection->x, -rayDirection->z)),
+                            0.0f
+                        );
+                        // Retail 0x4b0187-0x4b019b: fsin, fmul [0x4d33d4] (bytes 00 00 80 be,
+                        // -0.25f), fsubr [0x4d3394] (bytes 00 00 00 3f, 0.5f), i.e.
+                        // 0.5f - sin * -0.25f; VC5 emits that form for 0.5f + sin * 0.25f.
+                        gwObject3DSetAlphaScale(
+                            segment->node,
+                            0.5f + (float)(sin(trailRuntime->alphaPulsePhase)) * 0.25f
+                        );
+
+                        rayLength = trailRuntime->trailDistance - travelledDistance;
+                        Vec3ScaleAdd(rayStart, rayDirection, rayLength, &segment->pos);
+                        SetDamageMaskSlotIndex(entry->damageMaskSlotIndex);
+                        SetStopAfterFirstHit(0x40000);
+                        if (visibleSegmentCount == 1) {
+                            gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
+                        }
+                        rayResult = RaycastSelectClosestHitBetweenPoints(
+                            g_OptCatalogRuntimeWorld,
+                            rayStart,
+                            &segment->pos,
+                            &trailRayHits
+                        );
+                        if (visibleSegmentCount == 1) {
+                            gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
+                        }
+
+                        if (rayResult == 0) {
+                            OptCatalogRaycastHitEntry* const hit = (OptCatalogRaycastHitEntry*)(void*)(&trailRayHits
+                                    .entries[trailRayHits.candidateCount]);
+                            float reflectedLength;
+                            const int spawnResult = CanSpawnThroughRay(
+                                entry,
+                                hit,
                                 rayStart,
                                 &segment->pos,
-                                &trailRayHits
+                                &rayLength,
+                                &reflectedLength,
+                                &reflectedDirection
                             );
-                            if (visibleSegmentCount == 1) {
-                                CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
-                            }
-
-                            if (rayResult == 0) {
-                                OptCatalogRaycastHitEntry* const hit = (OptCatalogRaycastHitEntry*)(void*)(&trailRayHits
-                                        .entries[trailRayHits.candidateCount]);
-                                float reflectedLength;
-                                const int spawnResult = CanSpawnThroughRay(
-                                    entry,
-                                    hit,
-                                    rayStart,
-                                    &segment->pos,
-                                    &rayLength,
-                                    &reflectedLength,
-                                    &reflectedDirection
-                                );
-                                travelledDistance += rayLength;
-                                if (spawnResult == 0) {
-                                    if ((entry->flags & 0x800u) != 0) {
-                                        trailRuntime->volumeFadeTimer += g_OptCatalogRuntimeDeltaTime;
-                                        if (trailRuntime->volumeFadeTimer < entry->detonationDistSq) {
-                                            trailRuntime->stopSoundHandle->SetFreqScaled(
-                                                trailRuntime->volumeFadeTimer / entry->detonationDistSq
-                                            );
-                                            InvokeDamageFeedbackAndHitCallback(
-                                                entry,
-                                                trailRuntime->projectileNode,
-                                                rayStart,
-                                                (OptCatalogHitEventPartial*)(void*)(hit),
-                                                0.0f
-                                            );
-                                            CZClass::gwNodeSetActive(trailRuntime->lightNode, 1);
-                                            CZLight::gwLightSetPosition(
-                                                trailRuntime->lightNode,
-                                                hit->pos.x,
-                                                hit->pos.y,
-                                                hit->pos.z
-                                            );
-                                        } else {
-                                            OptCatalogRuntimeInstanceStorage impactRuntime = { 0 };
-                                            impactRuntime.pos = *trailRuntime->spawnPos;
-                                            impactRuntime.ownerNode = trailRuntime->projectileNode;
-                                            impactRuntime.spawnScale = trailRuntime->spawnScale;
-                                            HandleImpactEvent(
-                                                entry,
-                                                (OptCatalogHitEventPartial*)(void*)(hit),
-                                                &impactRuntime
-                                            );
-                                            trailRuntime->volumeFadeTimer = 0.0f;
-                                            trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
-                                        }
-                                    } else {
-                                        trailRuntime->trailBlend
-                                            = ((float)(cos(
-                                                   (double)(trailRuntime->trailDistance) * kOptCatalogPi / entry->range
-                                               )) + 1.0f)
-                                            * 0.5f;
-                                        if (trailRuntime->trailBlend < 0.25) {
-                                            trailRuntime->trailBlend = 0.25f;
-                                        }
+                            travelledDistance += rayLength;
+                            if (spawnResult == 0) {
+                                if ((entry->flags & 0x800u) != 0) {
+                                    trailRuntime->volumeFadeTimer += g_OptCatalogRuntimeDeltaTime;
+                                    if (trailRuntime->volumeFadeTimer < entry->detonationDistSq) {
+                                        zSndPlayHandleSetFreqScaled(
+                                            trailRuntime->stopSoundHandle,
+                                            trailRuntime->volumeFadeTimer / entry->detonationDistSq
+                                        );
                                         InvokeDamageFeedbackAndHitCallback(
                                             entry,
                                             trailRuntime->projectileNode,
                                             rayStart,
                                             (OptCatalogHitEventPartial*)(void*)(hit),
-                                            entry->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend
+                                            0.0f
                                         );
-                                        trailRuntime->trailDistance = travelledDistance;
+                                        gwNodeSetActive(trailRuntime->lightNode, 1);
+                                        gwLightSetPosition(trailRuntime->lightNode, hit->pos.x, hit->pos.y, hit->pos.z);
+                                    } else {
+                                        OptCatalogRuntimeInstanceStorage impactRuntime = { 0 };
+                                        impactRuntime.pos = *trailRuntime->spawnPos;
+                                        impactRuntime.ownerNode = trailRuntime->projectileNode;
+                                        impactRuntime.spawnScale = trailRuntime->spawnScale;
+                                        HandleImpactEvent(
+                                            entry,
+                                            (OptCatalogHitEventPartial*)(void*)(hit),
+                                            &impactRuntime
+                                        );
+                                        trailRuntime->volumeFadeTimer = 0.0f;
+                                        zSndPlayHandleSetFreqScaled(trailRuntime->stopSoundHandle, 0.0f);
                                     }
                                 } else {
-                                    if ((entry->flags & 0x800u) != 0) {
-                                        trailRuntime->volumeFadeTimer -= g_OptCatalogRuntimeDeltaTime;
-                                        if (trailRuntime->volumeFadeTimer > 0.0f) {
-                                            trailRuntime->stopSoundHandle->SetFreqScaled(
-                                                trailRuntime->volumeFadeTimer / entry->detonationDistSq
-                                            );
-                                        } else {
-                                            trailRuntime->volumeFadeTimer = 0.0f;
-                                        }
+                                    trailRuntime->trailBlend
+                                        = ((float)(cos(
+                                               (double)(trailRuntime->trailDistance) * kOptCatalogPi / entry->range
+                                           )) + 1.0f)
+                                        * 0.5f;
+                                    if (trailRuntime->trailBlend < 0.25) {
+                                        trailRuntime->trailBlend = 0.25f;
                                     }
-                                    if (spawnResult == 1) {
-                                        segment->pos = hit->pos;
-                                        rayStart = &segment->pos;
-                                        rayDirection = &reflectedDirection;
-                                        continueReflection = 1;
+                                    InvokeDamageFeedbackAndHitCallback(
+                                        entry,
+                                        trailRuntime->projectileNode,
+                                        rayStart,
+                                        (OptCatalogHitEventPartial*)(void*)(hit),
+                                        entry->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend
+                                    );
+                                    trailRuntime->trailDistance = travelledDistance;
+                                }
+                            } else {
+                                if ((entry->flags & 0x800u) != 0) {
+                                    trailRuntime->volumeFadeTimer -= g_OptCatalogRuntimeDeltaTime;
+                                    if (trailRuntime->volumeFadeTimer > 0.0f) {
+                                        zSndPlayHandleSetFreqScaled(
+                                            trailRuntime->stopSoundHandle,
+                                            trailRuntime->volumeFadeTimer / entry->detonationDistSq
+                                        );
                                     } else {
-                                        segment->pos = hit->pos;
+                                        trailRuntime->volumeFadeTimer = 0.0f;
                                     }
                                 }
-                            } else if ((entry->flags & 0x800u) != 0) {
-                                trailRuntime->volumeFadeTimer = 0.0f;
-                                trailRuntime->stopSoundHandle->SetFreqScaled(0.0f);
-                                CZClass::gwNodeSetActive(trailRuntime->lightNode, 0);
+                                if (spawnResult == 1) {
+                                    segment->pos = hit->pos;
+                                    rayStart = &segment->pos;
+                                    rayDirection = &reflectedDirection;
+                                    continueReflection = 1;
+                                } else {
+                                    segment->pos = hit->pos;
+                                }
                             }
+                        } else if ((entry->flags & 0x800u) != 0) {
+                            trailRuntime->volumeFadeTimer = 0.0f;
+                            zSndPlayHandleSetFreqScaled(trailRuntime->stopSoundHandle, 0.0f);
+                            gwNodeSetActive(trailRuntime->lightNode, 0);
+                        }
 
-                            CZObject3D::gwObject3DSetScale(segment->node, 1.0f, 1.0f, rayLength);
-                            ++segment;
-                        } while (continueReflection != 0 && visibleSegmentCount < trailRuntime->activeNodeSlotCount);
-                    }
-
-                    for (int segmentIndex = visibleSegmentCount; segmentIndex < trailRuntime->activeNodeSlotCursor;
-                        ++segmentIndex) {
-                        CZClass::gwNodeSetActive(trailRuntime->activeNodeSlots[segmentIndex].node, 0);
-                    }
-                    trailRuntime->activeNodeSlotCursor = visibleSegmentCount;
-
-                    trailRuntime = trailRuntime->next;
+                        gwObject3DSetScale(segment->node, 1.0f, 1.0f, rayLength);
+                        ++segment;
+                    } while (continueReflection != 0 && visibleSegmentCount < trailRuntime->activeNodeSlotCount);
                 }
+
+                for (segmentIndex = visibleSegmentCount; segmentIndex < trailRuntime->activeNodeSlotCursor;
+                    ++segmentIndex) {
+                    gwNodeSetActive(trailRuntime->activeNodeSlots[segmentIndex].node, 0);
+                }
+                trailRuntime->activeNodeSlotCursor = visibleSegmentCount;
+
+                trailRuntime = trailRuntime->next;
             }
         }
-
-        if (nearestLockOnDistance != (float)(_HUGE)
-            && g_OptCatalogRuntimeNowSec >= g_OptCatalogLockOnWarningGateTimeSec) {
-            zSndSamplePlayA3DSimple(g_OptCatalogSndLockOnWarning, 1.0f);
-            g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec + 5.0f;
-        }
-
-        g_Variant_CurrentTag = savedVariantTag;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computeaimpitchfortarget
-     * @recoil-artifact defines .text recoil:function:0x4b0530: OptCatalog::ComputeAimPitchForTarget
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate recoil:function:0x4b0530
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate
-     * @recoil-match byte
-     *
-     * Raw assembly: the inline zMath::Vec3Subtract expansion [0x4b0543,0x4b0566)
-     * and one in-body 13-byte fast-sqrt estimate island at retail
-     * [0x4b057f,0x4b058c).
-     *
-     * Purpose: Computes launch pitch to hit a target and writes the approximated target distance.
-     */
-    float __fastcall ComputeAimPitchForTarget(
-        OptCatalogEntryDef * self,
-        const zVec3* origin,
-        const zVec3* unusedDirection,
-        const zVec3* target,
-        float* distanceApproxOut
-    )
-    {
-        (void)unusedDirection;
+    if (nearestLockOnDistance != (float)(_HUGE) && g_OptCatalogRuntimeNowSec >= g_OptCatalogLockOnWarningGateTimeSec) {
+        zSndSamplePlayA3DSimple(g_OptCatalogSndLockOnWarning, 1.0f);
+        g_OptCatalogLockOnWarningGateTimeSec = g_OptCatalogRuntimeNowSec + 5.0f;
+    }
 
-        zVec3 delta;
-        zMath::Vec3Subtract(target, origin, &delta);
+    g_Variant_CurrentTag = savedVariantTag;
+}
 
-        float distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
-        float distanceApprox;
-        // Raw-assembly fast square-root estimate: retail transforms the named distanceSq
-        // bits through EAX ((bits >> 1) + 0x1fc00000) into the named distanceApprox local.
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computeaimpitchfortarget
+ * @recoil-artifact defines .text recoil:function:0x4b0530: OptCatalog::ComputeAimPitchForTarget
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate recoil:function:0x4b0530
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.compute-aim-pitch-for-target.fast-sqrt-estimate
+ * @recoil-match byte
+ *
+ * Raw assembly: the inline zMath::Vec3Subtract expansion [0x4b0543,0x4b0566)
+ * and one in-body 13-byte fast-sqrt estimate island at retail
+ * [0x4b057f,0x4b058c).
+ *
+ * Purpose: Computes launch pitch to hit a target and writes the approximated target distance.
+ */
+float __fastcall ComputeAimPitchForTarget(
+    OptCatalogEntryDef* self,
+    const zVec3* origin,
+    const zVec3* unusedDirection,
+    const zVec3* target,
+    float* distanceApproxOut
+)
+{
+    zVec3 delta;
+    float distanceSq;
+    float distanceApprox;
+    (void)unusedDirection;
+
+    Vec3Subtract(target, origin, &delta);
+
+    distanceSq = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
+    // Raw-assembly fast square-root estimate: retail transforms the named distanceSq
+    // bits through EAX ((bits >> 1) + 0x1fc00000) into the named distanceApprox local.
 #if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-        __asm {
-            mov eax, distanceSq
-            sar eax, 1
-            add eax, 01fc00000h
-            mov distanceApprox, eax
-        }
+    __asm {
+        mov eax, distanceSq
+        sar eax, 1
+        add eax, 01fc00000h
+        mov distanceApprox, eax
+    }
 #else
-        {
-            int distanceBits;
-            memcpy(&distanceBits, &distanceSq, sizeof distanceBits);
-            distanceBits = (distanceBits >> 1) + (int)(kOptCatalogFastSqrtBias);
-            memcpy(&distanceApprox, &distanceBits, sizeof distanceApprox);
-        }
+    {
+        int distanceBits;
+        memcpy(&distanceBits, &distanceSq, sizeof distanceBits);
+        distanceBits = (distanceBits >> 1) + (int)(kOptCatalogFastSqrtBias);
+        memcpy(&distanceApprox, &distanceBits, sizeof distanceApprox);
+    }
 #endif
-        *distanceApproxOut = distanceApprox;
+    *distanceApproxOut = distanceApprox;
 
-        if (self->gravity == 0.0f) {
-            return -1.0f;
-        }
-
-        if (distanceApprox < self->range) {
-            return delta.y / distanceApprox - (distanceApprox / self->range) * (-0.239999995f);
-        }
-
-        if ((self->flags & kOptCatalogFlagAllowOutOfRangeAimPitch) != 0) {
-            return delta.y / distanceApprox - (-0.239999995f);
-        }
-
+    if (self->gravity == 0.0f) {
         return -1.0f;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playtriggerinactivewarning
-     * @recoil-artifact defines .text recoil:function:0x4b0600: OptCatalog::PlayTriggerInactiveWarning
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: play the trigger-inactive warning sound at full gain.
-     */
-    void __cdecl PlayTriggerInactiveWarning()
-    {
-        zSndSamplePlayA3DSimple(g_OptCatalogSndTriggerInactive, 1.0f);
+    if (distanceApprox < self->range) {
+        return delta.y / distanceApprox - (distanceApprox / self->range) * (-0.239999995f);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playweaponinactivewarning
-     * @recoil-artifact defines .text recoil:function:0x4b0620: OptCatalog::PlayWeaponInactiveWarning
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: play the weapon-inactive warning sound at full gain.
-     */
-    void __cdecl PlayWeaponInactiveWarning()
-    {
-        zSndSamplePlayA3DSimple(g_OptCatalogSndWeaponInactive, 1.0f);
+    if ((self->flags & kOptCatalogFlagAllowOutOfRangeAimPitch) != 0) {
+        return delta.y / distanceApprox - (-0.239999995f);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playnoammowarning
-     * @recoil-artifact defines .text recoil:function:0x4b0640: OptCatalog::PlayNoAmmoWarning
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\Battlesport\OptCatalog.cpp.
-     * Purpose: play the no-ammo warning sound at full gain.
-     */
-    void __cdecl PlayNoAmmoWarning()
-    {
-        zSndSamplePlayA3DSimple(g_OptCatalogSndNoAmmoWarning, 1.0f);
+    return -1.0f;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playtriggerinactivewarning
+ * @recoil-artifact defines .text recoil:function:0x4b0600: OptCatalog::PlayTriggerInactiveWarning
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: play the trigger-inactive warning sound at full gain.
+ */
+void __cdecl PlayTriggerInactiveWarning(void)
+{
+    zSndSamplePlayA3DSimple(g_OptCatalogSndTriggerInactive, 1.0f);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playweaponinactivewarning
+ * @recoil-artifact defines .text recoil:function:0x4b0620: OptCatalog::PlayWeaponInactiveWarning
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: play the weapon-inactive warning sound at full gain.
+ */
+void __cdecl PlayWeaponInactiveWarning(void)
+{
+    zSndSamplePlayA3DSimple(g_OptCatalogSndWeaponInactive, 1.0f);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playnoammowarning
+ * @recoil-artifact defines .text recoil:function:0x4b0640: OptCatalog::PlayNoAmmoWarning
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\Battlesport\OptCatalog.cpp.
+ * Purpose: play the no-ammo warning sound at full gain.
+ */
+void __cdecl PlayNoAmmoWarning(void)
+{
+    zSndSamplePlayA3DSimple(g_OptCatalogSndNoAmmoWarning, 1.0f);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitqsandimpactevent
+ * @recoil-artifact defines .text recoil:function:0x4b0660: OptCatalog::EmitQSandImpactEvent
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: if the hit node accepts terrain deformation, builds a
+ * quicksand event at the hit position, selects randomized or clamped
+ * radius, and dispatches it through the quicksand net relay.
+ * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
+ * Purpose: emit a quicksand terrain-deformation event for an OptCatalog hit.
+ */
+void __fastcall EmitQSandImpactEvent(
+    OptCatalogEntryDef* self,
+    OptCatalogHitEventPartial* hitEvent,
+    CZNodePartial* unusedOwnerNode,
+    CZNodePartial* damageOwnerNode
+)
+{
+    zDEClient_QSandEventTemplate eventTemplate;
+    (void)unusedOwnerNode;
+
+    if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) == 0) {
+        return;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitqsandimpactevent
-     * @recoil-artifact defines .text recoil:function:0x4b0660: OptCatalog::EmitQSandImpactEvent
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: if the hit node accepts terrain deformation, builds a
-     * quicksand event at the hit position, selects randomized or clamped
-     * radius, and dispatches it through the quicksand net relay.
-     * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
-     * Purpose: emit a quicksand terrain-deformation event for an OptCatalog hit.
-     */
-    void __fastcall EmitQSandImpactEvent(
-        OptCatalogEntryDef * self,
-        OptCatalogHitEventPartial * hitEvent,
-        CZNodePartial * unusedOwnerNode,
-        CZNodePartial * damageOwnerNode
-    )
-    {
-        (void)unusedOwnerNode;
+    CopyQSandEventTemplateDefaults(&eventTemplate);
 
-        if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) == 0) {
-            return;
+    eventTemplate.center = hitEvent->hitPos;
+    if (self->craterRadiusRandomRange != 0) {
+        const unsigned int radius
+            = (unsigned int)(self->craterRadiusBase + ((unsigned int)(rand() * self->craterRadiusRandomRange) >> 15));
+        eventTemplate.radius = (float)(radius);
+    } else {
+        const float radius = self->impactProximity * 0.5f;
+        if (g_OptCatalogMaxCraterRadius < radius) {
+            eventTemplate.radius = g_OptCatalogMaxCraterRadius;
+        } else {
+            eventTemplate.radius = radius;
         }
+    }
 
-        zDEClient_QSandEventTemplate eventTemplate;
-        zDEClient::CopyQSandEventTemplateDefaults(&eventTemplate);
+    eventTemplate.damageOwnerNode = damageOwnerNode;
+    zDEClientQSandInstanceEventMaybeRelay(&eventTemplate);
+}
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitcraterimpactevent
+ * @recoil-artifact defines .text recoil:function:0x4b0710: OptCatalog::EmitCraterImpactEvent
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: if the hit node accepts terrain deformation, builds a
+ * crater event at the hit position, selects randomized or clamped radius,
+ * invokes the crater net relay, and returns 1 only when the relay does
+ * not consume the impact.
+ * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
+ * Purpose: emit a crater terrain-deformation event for an OptCatalog hit.
+ */
+int __fastcall EmitCraterImpactEvent(
+    OptCatalogEntryDef* self,
+    OptCatalogHitEventPartial* hitEvent,
+    CZNodePartial* unusedOwnerNode,
+    CZNodePartial* damageOwnerNode
+)
+{
+    int result;
+    (void)unusedOwnerNode;
+
+    result = 0;
+    if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) != 0) {
+        zDEClient_CraterEventTemplate eventTemplate;
+        InitEventTemplateDefaults(&eventTemplate);
+
+        eventTemplate.craterMaterialSlot = (zModel_MaterialSlot*)(hitEvent->surfaceRef);
         eventTemplate.center = hitEvent->hitPos;
         if (self->craterRadiusRandomRange != 0) {
             const unsigned int radius = (unsigned int)(self->craterRadiusBase
@@ -2094,542 +2104,491 @@ namespace OptCatalog
         }
 
         eventTemplate.damageOwnerNode = damageOwnerNode;
-        zDEClient_QSand::InstanceEventMaybeRelay(&eventTemplate);
+        result = zDEClientCraterInstanceEventMaybeRelay(&eventTemplate) == 0 ? 1 : 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-emitcraterimpactevent
-     * @recoil-artifact defines .text recoil:function:0x4b0710: OptCatalog::EmitCraterImpactEvent
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: if the hit node accepts terrain deformation, builds a
-     * crater event at the hit position, selects randomized or clamped radius,
-     * invokes the crater net relay, and returns 1 only when the relay does
-     * not consume the impact.
-     * Data touch: reads g_OptCatalogMaxCraterRadius at 0x779a7c.
-     * Purpose: emit a crater terrain-deformation event for an OptCatalog hit.
-     */
-    int __fastcall EmitCraterImpactEvent(
-        OptCatalogEntryDef * self,
-        OptCatalogHitEventPartial * hitEvent,
-        CZNodePartial * unusedOwnerNode,
-        CZNodePartial * damageOwnerNode
-    )
-    {
-        (void)unusedOwnerNode;
+    return result;
+}
 
-        int result = 0;
-        if ((hitEvent->hitNode->flags & kOptCatalogNodeFlagAcceptsTerrainDeformation) != 0) {
-            zDEClient_CraterEventTemplate eventTemplate;
-            zDEClient_Crater::InitEventTemplateDefaults(&eventTemplate);
-
-            eventTemplate.craterMaterialSlot = (zModel_MaterialSlot*)(hitEvent->surfaceRef);
-            eventTemplate.center = hitEvent->hitPos;
-            if (self->craterRadiusRandomRange != 0) {
-                const unsigned int radius = (unsigned int)(self->craterRadiusBase
-                    + ((unsigned int)(rand() * self->craterRadiusRandomRange) >> 15));
-                eventTemplate.radius = (float)(radius);
-            } else {
-                const float radius = self->impactProximity * 0.5f;
-                if (g_OptCatalogMaxCraterRadius < radius) {
-                    eventTemplate.radius = g_OptCatalogMaxCraterRadius;
-                } else {
-                    eventTemplate.radius = radius;
-                }
-            }
-
-            eventTemplate.damageOwnerNode = damageOwnerNode;
-            result = zDEClient_Crater::InstanceEventMaybeRelay(&eventTemplate) == 0 ? 1 : 0;
-        }
-
-        return result;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
+ * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
+ * @recoil-match source
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+ * OptCatalogHitEventPartial*, and the runtime instance is passed on the
+ * stack. Reads the impact slot from the surface reference, invokes the
+ * optional impact callback, scales damage by runtime spawnScale, dispatches
+ * damage feedback, terrain impact events, impact sound, and fallback
+ * animation/effect spawning according to entry flags and damage-context
+ * state.
+ * Purpose: apply all direct impact feedback for a runtime projectile hit.
+ */
+void __fastcall HandleImpactEvent(
+    OptCatalogEntryDef* self,
+    OptCatalogHitEventPartial* hitEvent,
+    OptCatalogRuntimeInstanceStorage* runtimeInstance
+)
+{
+    int suppressFallbackFx = 0;
+    int impactSlot;
+    float damageAmount;
+    int damageHandled;
+    if (hitEvent->surfaceRef != 0) {
+        impactSlot = hitEvent->surfaceRef->impactSlot;
+    } else {
+        impactSlot = 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
-     * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
-     * @recoil-match source
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
-     * OptCatalogHitEventPartial*, and the runtime instance is passed on the
-     * stack. Reads the impact slot from the surface reference, invokes the
-     * optional impact callback, scales damage by runtime spawnScale, dispatches
-     * damage feedback, terrain impact events, impact sound, and fallback
-     * animation/effect spawning according to entry flags and damage-context
-     * state.
-     * Purpose: apply all direct impact feedback for a runtime projectile hit.
-     */
-    void __fastcall HandleImpactEvent(
-        OptCatalogEntryDef * self,
-        OptCatalogHitEventPartial * hitEvent,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance
-    )
-    {
-        int suppressFallbackFx = 0;
-        int impactSlot;
-        if (hitEvent->surfaceRef != 0) {
-            impactSlot = hitEvent->surfaceRef->impactSlot;
-        } else {
-            impactSlot = 0;
+    if (self->impactCallback != 0) {
+        self->impactCallback(self, hitEvent, runtimeInstance);
+    }
+
+    damageAmount = runtimeInstance->spawnScale * self->damage;
+    damageHandled = InvokeDamageFeedbackAndHitCallback(
+        self,
+        runtimeInstance->ownerNode,
+        &runtimeInstance->pos,
+        hitEvent,
+        damageAmount
+    );
+
+    if ((self->flags & kOptCatalogFlagCraterImpact) != 0) {
+        if ((self->flags & kOptCatalogFlagAlwaysPlayImpactFx) == 0) {
+            suppressFallbackFx = 1;
         }
-
-        if (self->impactCallback != 0) {
-            self->impactCallback(self, hitEvent, runtimeInstance);
-        }
-
-        const float damageAmount = runtimeInstance->spawnScale * self->damage;
-        int damageHandled = InvokeDamageFeedbackAndHitCallback(
-            self,
-            runtimeInstance->ownerNode,
-            &runtimeInstance->pos,
-            hitEvent,
-            damageAmount
-        );
-
-        if ((self->flags & kOptCatalogFlagCraterImpact) != 0) {
-            if ((self->flags & kOptCatalogFlagAlwaysPlayImpactFx) == 0) {
-                suppressFallbackFx = 1;
-            }
-            suppressFallbackFx
-                &= EmitCraterImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
-        } else if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0) {
-            OptCatalogHitEventPartial* const contextHitEvent
-                = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
-            if (contextHitEvent != 0) {
-                EmitQSandImpactEvent(
-                    self,
-                    contextHitEvent,
-                    contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
-                    runtimeInstance->ownerNode
-                );
-            } else {
-                EmitQSandImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
-            }
-        }
-
-        if (g_OptCatalog_DamageContextKind != 0 && (self->flags & kOptCatalogFlagCraterImpact) != 0
-            && g_OptCatalog_DamageContextHitEvent != 0) {
-            OptCatalogHitEventPartial* const contextHitEvent
-                = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
-            EmitCraterImpactEvent(
-                self,
-                contextHitEvent,
-                contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
-                runtimeInstance->ownerNode
-            );
-        }
-
-        if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0 && g_OptCatalog_DamageContextHitEvent != 0) {
-            OptCatalogHitEventPartial* const contextHitEvent
-                = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
+        suppressFallbackFx
+            &= EmitCraterImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
+    } else if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0) {
+        OptCatalogHitEventPartial* const contextHitEvent
+            = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
+        if (contextHitEvent != 0) {
             EmitQSandImpactEvent(
                 self,
                 contextHitEvent,
                 contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
                 runtimeInstance->ownerNode
             );
-            return;
-        }
-
-        PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
-        if (suppressFallbackFx == 0 && damageHandled == 0) {
-            zEffectAnimEntry* const animationEntry = self->impactFxTable[impactSlot].animationEntry;
-            if (animationEntry != 0) {
-                zEffectAnim::SetTransformRotAndVelocityThunk(
-                    animationEntry,
-                    0,
-                    hitEvent->hitPos.x,
-                    hitEvent->hitPos.y,
-                    hitEvent->hitPos.z,
-                    0.0f,
-                    0.0f,
-                    0.0f,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                );
-            }
-        }
-
-        if (self->impactFxTable[impactSlot].effectTemplateIndex != 0) {
-            zEffect::SpawnRuntimeInstanceAt(self->impactFxTable[impactSlot].effectTemplateIndex, &hitEvent->hitPos);
+        } else {
+            EmitQSandImpactEvent(self, hitEvent, (CZNodePartial*)(impactSlot), runtimeInstance->ownerNode);
         }
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpacteventfromruntimestate
-     * @recoil-artifact defines .text recoil:function:0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogEntryDef* and EDX is
-     * OptCatalogRuntimeInstanceStorage*. Builds a stack hit event from
-     * runtimeInstance->pos, a zero-slot surface-material reference, and
-     * runtimeInstance->projectileNode, then forwards to HandleImpactEvent with
-     * the original runtime instance.
-     * Purpose: synthesize a simple hit event from runtime state and dispatch it.
-     */
-    void __fastcall HandleImpactEventFromRuntimeState(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance
-    )
-    {
-        OptCatalogHitEventPartial hitEvent;
-        OptCatalogSurfaceMaterialRef surfaceRef;
-
-        surfaceRef.flags &= 0xfeff;
-        surfaceRef.impactSlot = 0;
-        hitEvent.hitPos = runtimeInstance->pos;
-        hitEvent.surfaceRef = &surfaceRef;
-        hitEvent.hitNode = runtimeInstance->projectileNode;
-
-        HandleImpactEvent(self, &hitEvent, runtimeInstance);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-buildimpacthitlist
-     * @recoil-artifact defines .text recoil:function:0x4b09d0: OptCatalog::BuildImpactHitList
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
-     * OptCatalogRuntimeInstanceStorage*, with allowOwnerOnlyHit and outHitList
-     * on the stack. Temporarily clears projectile raycastability, filters
-     * g_OptCatalogRuntimeWorld against a sphere at runtimeInstance->pos using
-     * impactProximity, restores raycastability, rejects owner-only hits when
-     * requested, and returns success for an accepted hit list.
-     * Purpose: collect nearby impact candidates for runtime-probe handling.
-     */
-    int __fastcall BuildImpactHitList(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance,
-        int allowOwnerOnlyHit,
-        OptCatalogRaycastHitList* outHitList
-    )
-    {
-        int restoreRaycastable = 0;
-        if (runtimeInstance->projectileNode != 0 && (runtimeInstance->projectileNode->flags & 0x10) != 0) {
-            restoreRaycastable = 1;
-            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
-        }
-
-        int result = CZDisplayInstance::FilterRegionsAgainstSphere(
-            g_OptCatalogRuntimeWorld,
-            &runtimeInstance->pos,
-            0,
-            self->impactProximity,
-            1,
-            1,
-            outHitList
+    if (g_OptCatalog_DamageContextKind != 0 && (self->flags & kOptCatalogFlagCraterImpact) != 0
+        && g_OptCatalog_DamageContextHitEvent != 0) {
+        OptCatalogHitEventPartial* const contextHitEvent
+            = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
+        EmitCraterImpactEvent(
+            self,
+            contextHitEvent,
+            contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
+            runtimeInstance->ownerNode
         );
-
-        if (restoreRaycastable != 0) {
-            CZClass::gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
-        }
-
-        if (allowOwnerOnlyHit == 0 && outHitList->hitCount == 1
-            && outHitList->hits[0].hitNode == runtimeInstance->ownerNode) {
-            result = 1;
-        }
-
-        return result == 0 ? 1 : 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactfromruntimeprobe
-     * @recoil-artifact defines .text recoil:function:0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN behavior: ECX is OptCatalogEntryDef*, EDX is
-     * OptCatalogRuntimeInstanceStorage*, with hitList and excludedDamageHandler
-     * on the stack. Walks probe hits, skips the excluded damage handler,
-     * computes full or distance-scaled damage multiplied by spawnScale, then
-     * either dispatches damage feedback immediately or queues a
-     * OptCatalogQueuedImpactRecord; returns nonzero when any hit was processed.
-     * Purpose: process or queue damage feedback for fallback probe hits.
-     */
-    int __fastcall HandleImpactFromRuntimeProbe(
-        OptCatalogEntryDef * self,
-        OptCatalogRuntimeInstanceStorage * runtimeInstance,
-        OptCatalogRaycastHitList * hitList,
-        void* excludedDamageHandler
-    )
-    {
-        int processedAny = 0;
-        for (int i = 0; i < hitList->hitCount; ++i) {
-            OptCatalogRaycastHitEntry* hit = &hitList->hits[i];
-            CZNodeFreeListSlot* hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
-            if (hitSlot->damageHandler == excludedDamageHandler) {
-                continue;
-            }
-
-            float damageAmount;
-            if ((self->flags & kOptCatalogFlagFullProbeDamage) != 0) {
-                damageAmount = self->damage;
-            } else {
-                damageAmount = (1.0f - hit->distance / self->damageFalloffRange) * self->damage;
-            }
-            damageAmount *= runtimeInstance->spawnScale;
-
-            if ((self->flags & kOptCatalogFlagImmediateProbeImpact) != 0
-                || g_OptCatalogQueuedImpactQueue.count >= kMaxQueuedImpacts) {
-                OptCatalogHitEventPartial* hitEvent = (OptCatalogHitEventPartial*)(void*)(hit);
-                InvokeDamageFeedbackAndHitCallback(
-                    self,
-                    runtimeInstance->ownerNode,
-                    &runtimeInstance->pos,
-                    hitEvent,
-                    damageAmount
-                );
-            } else {
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry = self;
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode
-                    = runtimeInstance->ownerNode;
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos
-                    = runtimeInstance->pos;
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].hit = *hit;
-                g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount = damageAmount;
-                ++g_OptCatalogQueuedImpactQueue.count;
-            }
-
-            processedAny = 1;
-        }
-
-        return processedAny;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-canspawnthroughray
-     * @recoil-artifact defines .text recoil:function:0x4b0ba0: OptCatalog::CanSpawnThroughRay
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-match byte
-     *
-     * Purpose: test whether a trail segment can continue through a ray hit and
-     * compute reflected distance/direction outputs.
-     */
-    int __fastcall CanSpawnThroughRay(
-        OptCatalogEntryDef * self,
-        OptCatalogRaycastHitEntry * hit,
-        const zVec3* rayStart,
-        const zVec3* rayEnd,
-        float* rayLengthOut,
-        float* reflectedLengthOut,
-        zVec3* reflectedDirOut
-    )
-    {
-        const float rayLength = zMath::Vec3DeltaLength(&hit->pos, rayStart);
-        *rayLengthOut = rayLength;
-        if (rayLength != 0.0f) {
-            const unsigned int flags = self->flags;
-            if ((flags & (1u << 19)) == 0) {
-                CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
-                if (hitSlot->damageHandler != 0) {
-                    if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
-                        g_OptCatalog_CapturedDamageSourcePos = *rayStart;
-                        g_OptCatalog_CapturedDamageHitPos = *rayEnd;
-                    }
-
-                    return 0;
-                }
-            }
-
-            if ((flags & 1u) != 0) {
-                zVec3 incident;
-                zMath::Vec3Subtract(rayEnd, rayStart, &incident);
-                zMath::Vec3Reflect((zVec3*)(void*)(hit), &incident, reflectedDirOut);
-                *reflectedLengthOut = zMath::Vec3Normalize(reflectedDirOut);
-                return 1;
-            }
-        }
-
-        return 2;
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-reflectandsortimpacttracelist
-     * @recoil-artifact defines .text recoil:function:0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-dot
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: choose the farthest pending trail target direction and sort
-     * pending target slots by projection along that direction.
-     */
-    void __fastcall ReflectAndSortImpactTraceList(
-        OptCatalogTrailRuntimeState * runtime,
-        float* targetProjectionScratch,
-        zVec3* directionOut
-    )
-    {
-        zVec3* farthestTarget = directionOut;
-        float farthestDistance = 0.0f;
-        for (int projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr; ++projectionIndex) {
-            const float distance = zMath::Vec3DeltaLength(
-                runtime->spawnPos,
-                runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos
-            );
-            if (distance > farthestDistance) {
-                farthestDistance = distance;
-                farthestTarget = runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
-            }
-        }
-
-        zMath::Vec3DirectionTo(runtime->spawnPos, farthestTarget, directionOut);
-
-        for (int targetProjectionIndex = 0; targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
-            ++targetProjectionIndex) {
-            zVec3 delta;
-            zMath::Vec3Subtract(
-                runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos,
-                runtime->spawnPos,
-                &delta
-            );
-            targetProjectionScratch[targetProjectionIndex] = zMath::Vec3Dot(directionOut, &delta);
-        }
-
-        int swapped;
-        do {
-            swapped = 0;
-            for (int i = 0; i < *runtime->pendingSpawnTargetCountPtr - 1; ++i) {
-                if (targetProjectionScratch[i] > targetProjectionScratch[i + 1]) {
-                    PlayerProgressTargetSlotRuntime targetSwap = runtime->pendingSpawnTargetListPtr[i];
-                    runtime->pendingSpawnTargetListPtr[i] = runtime->pendingSpawnTargetListPtr[i + 1];
-                    runtime->pendingSpawnTargetListPtr[i + 1] = targetSwap;
-
-                    const float projectionSwap = targetProjectionScratch[i];
-                    targetProjectionScratch[i] = targetProjectionScratch[i + 1];
-                    targetProjectionScratch[i + 1] = projectionSwap;
-                    swapped = 1;
-                }
-            }
-        } while (swapped != 0);
-    }
-
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computetrailimpactresponse
-     * @recoil-artifact defines .text recoil:function:0x4b0e20: OptCatalog::ComputeTrailImpactResponse
-     * @recoil-match source
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: raycast a trail segment against the runtime world, apply
-     * damage feedback on hits, play impact audio, and trim segment length to
-     * the selected hit.
-     */
-    int __fastcall ComputeTrailImpactResponse(
-        OptCatalogEntryDef * self,
-        OptCatalogTrailRuntimeState * trailRuntime,
-        OptCatalogTrailNodeSlot * segment,
-        const zVec3* targetPos
-    )
-    {
-        SetDamageMaskSlotIndex(self->damageMaskSlotIndex);
-        CZDisplayInstance::SetStopAfterFirstHit(0x40000);
-        CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
-
-        PlayerProbeSampleCandidateBuffer rayData;
-        const int raycastResult = CZDisplayInstance::RaycastSelectClosestHitBetweenPoints(
-            g_OptCatalogRuntimeWorld,
-            &segment->pos,
-            targetPos,
-            &rayData
+    if ((self->flags & kOptCatalogFlagQuickSandImpact) != 0 && g_OptCatalog_DamageContextHitEvent != 0) {
+        OptCatalogHitEventPartial* const contextHitEvent
+            = (OptCatalogHitEventPartial*)(g_OptCatalog_DamageContextHitEvent);
+        EmitQSandImpactEvent(
+            self,
+            contextHitEvent,
+            contextHitEvent->surfaceRef != 0 ? contextHitEvent->surfaceRef->impactOwnerNode : 0,
+            runtimeInstance->ownerNode
         );
+        return;
+    }
 
-        CZClass::gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
+    PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
+    if (suppressFallbackFx == 0 && damageHandled == 0) {
+        zEffectAnimEntry* const animationEntry = self->impactFxTable[impactSlot].animationEntry;
+        if (animationEntry != 0) {
+            SetTransformRotAndVelocityThunk(
+                animationEntry,
+                0,
+                hitEvent->hitPos.x,
+                hitEvent->hitPos.y,
+                hitEvent->hitPos.z,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f
+            );
+        }
+    }
 
-        if (raycastResult == 0) {
-            zClassDiPickCandidateEntry* const selectedHit = &rayData.entries[rayData.candidateCount];
-            OptCatalogHitEventPartial* const hitEvent = (OptCatalogHitEventPartial*)(void*)(selectedHit);
-            CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(selectedHit->node);
+    if (self->impactFxTable[impactSlot].effectTemplateIndex != 0) {
+        SpawnRuntimeInstanceAt(self->impactFxTable[impactSlot].effectTemplateIndex, &hitEvent->hitPos);
+    }
+}
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpacteventfromruntimestate
+ * @recoil-artifact defines .text recoil:function:0x4b0980: OptCatalog::HandleImpactEventFromRuntimeState
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogEntryDef* and EDX is
+ * OptCatalogRuntimeInstanceStorage*. Builds a stack hit event from
+ * runtimeInstance->pos, a zero-slot surface-material reference, and
+ * runtimeInstance->projectileNode, then forwards to HandleImpactEvent with
+ * the original runtime instance.
+ * Purpose: synthesize a simple hit event from runtime state and dispatch it.
+ */
+void __fastcall
+HandleImpactEventFromRuntimeState(OptCatalogEntryDef* self, OptCatalogRuntimeInstanceStorage* runtimeInstance)
+{
+    OptCatalogHitEventPartial hitEvent;
+    OptCatalogSurfaceMaterialRef surfaceRef;
+
+    surfaceRef.flags &= 0xfeff;
+    surfaceRef.impactSlot = 0;
+    hitEvent.hitPos = runtimeInstance->pos;
+    hitEvent.surfaceRef = &surfaceRef;
+    hitEvent.hitNode = runtimeInstance->projectileNode;
+
+    HandleImpactEvent(self, &hitEvent, runtimeInstance);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-buildimpacthitlist
+ * @recoil-artifact defines .text recoil:function:0x4b09d0: OptCatalog::BuildImpactHitList
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+ * OptCatalogRuntimeInstanceStorage*, with allowOwnerOnlyHit and outHitList
+ * on the stack. Temporarily clears projectile raycastability, filters
+ * g_OptCatalogRuntimeWorld against a sphere at runtimeInstance->pos using
+ * impactProximity, restores raycastability, rejects owner-only hits when
+ * requested, and returns success for an accepted hit list.
+ * Purpose: collect nearby impact candidates for runtime-probe handling.
+ */
+int __fastcall BuildImpactHitList(
+    OptCatalogEntryDef* self,
+    OptCatalogRuntimeInstanceStorage* runtimeInstance,
+    int allowOwnerOnlyHit,
+    OptCatalogRaycastHitList* outHitList
+)
+{
+    int restoreRaycastable = 0;
+    int result;
+    if (runtimeInstance->projectileNode != 0 && (runtimeInstance->projectileNode->flags & 0x10) != 0) {
+        restoreRaycastable = 1;
+        gwNodeSetRaycastable(runtimeInstance->projectileNode, 0);
+    }
+
+    result = FilterRegionsAgainstSphere(
+        g_OptCatalogRuntimeWorld,
+        &runtimeInstance->pos,
+        0,
+        self->impactProximity,
+        1,
+        1,
+        outHitList
+    );
+
+    if (restoreRaycastable != 0) {
+        gwNodeSetRaycastable(runtimeInstance->projectileNode, 1);
+    }
+
+    if (allowOwnerOnlyHit == 0 && outHitList->hitCount == 1
+        && outHitList->hits[0].hitNode == runtimeInstance->ownerNode) {
+        result = 1;
+    }
+
+    return result == 0 ? 1 : 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactfromruntimeprobe
+ * @recoil-artifact defines .text recoil:function:0x4b0a50: OptCatalog::HandleImpactFromRuntimeProbe
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN behavior: ECX is OptCatalogEntryDef*, EDX is
+ * OptCatalogRuntimeInstanceStorage*, with hitList and excludedDamageHandler
+ * on the stack. Walks probe hits, skips the excluded damage handler,
+ * computes full or distance-scaled damage multiplied by spawnScale, then
+ * either dispatches damage feedback immediately or queues a
+ * OptCatalogQueuedImpactRecord; returns nonzero when any hit was processed.
+ * Purpose: process or queue damage feedback for fallback probe hits.
+ */
+int __fastcall HandleImpactFromRuntimeProbe(
+    OptCatalogEntryDef* self,
+    OptCatalogRuntimeInstanceStorage* runtimeInstance,
+    OptCatalogRaycastHitList* hitList,
+    void* excludedDamageHandler
+)
+{
+    int processedAny = 0;
+    int i;
+    for (i = 0; i < hitList->hitCount; ++i) {
+        OptCatalogRaycastHitEntry* hit = &hitList->hits[i];
+        CZNodeFreeListSlot* hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
+        float damageAmount;
+        if (hitSlot->damageHandler == excludedDamageHandler) {
+            continue;
+        }
+
+        if ((self->flags & kOptCatalogFlagFullProbeDamage) != 0) {
+            damageAmount = self->damage;
+        } else {
+            damageAmount = (1.0f - hit->distance / self->damageFalloffRange) * self->damage;
+        }
+        damageAmount *= runtimeInstance->spawnScale;
+
+        if ((self->flags & kOptCatalogFlagImmediateProbeImpact) != 0
+            || g_OptCatalogQueuedImpactQueue.count >= kMaxQueuedImpacts) {
+            OptCatalogHitEventPartial* hitEvent = (OptCatalogHitEventPartial*)(void*)(hit);
+            InvokeDamageFeedbackAndHitCallback(
+                self,
+                runtimeInstance->ownerNode,
+                &runtimeInstance->pos,
+                hitEvent,
+                damageAmount
+            );
+        } else {
+            g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].entry = self;
+            g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].ownerNode
+                = runtimeInstance->ownerNode;
+            g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].sourcePos = runtimeInstance->pos;
+            g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].hit = *hit;
+            g_OptCatalogQueuedImpactQueue.records[g_OptCatalogQueuedImpactQueue.count].damageAmount = damageAmount;
+            ++g_OptCatalogQueuedImpactQueue.count;
+        }
+
+        processedAny = 1;
+    }
+
+    return processedAny;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-canspawnthroughray
+ * @recoil-artifact defines .text recoil:function:0x4b0ba0: OptCatalog::CanSpawnThroughRay
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-match byte
+ *
+ * Purpose: test whether a trail segment can continue through a ray hit and
+ * compute reflected distance/direction outputs.
+ */
+int __fastcall CanSpawnThroughRay(
+    OptCatalogEntryDef* self,
+    OptCatalogRaycastHitEntry* hit,
+    const zVec3* rayStart,
+    const zVec3* rayEnd,
+    float* rayLengthOut,
+    float* reflectedLengthOut,
+    zVec3* reflectedDirOut
+)
+{
+    const float rayLength = Vec3DeltaLength(&hit->pos, rayStart);
+    *rayLengthOut = rayLength;
+    if (rayLength != 0.0f) {
+        const unsigned int flags = self->flags;
+        if ((flags & (1u << 19)) == 0) {
+            CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(hit->hitNode);
             if (hitSlot->damageHandler != 0) {
-                trailRuntime->trailBlend
-                    = ((float)cos((trailRuntime->trailDistance * kOptCatalogPi) / self->range) + 1.0f) * 0.5f;
-                if (0.25f < trailRuntime->trailBlend) {
-                    trailRuntime->trailBlend = 0.25f;
+                if (g_OptCatalog_CaptureHitSnapshotEnabled == 1) {
+                    g_OptCatalog_CapturedDamageSourcePos = *rayStart;
+                    g_OptCatalog_CapturedDamageHitPos = *rayEnd;
                 }
 
-                InvokeDamageFeedbackAndHitCallback(
-                    self,
-                    trailRuntime->projectileNode,
-                    &segment->pos,
-                    hitEvent,
-                    trailRuntime->spawnScale * self->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend
-                );
-
-                int impactSlot;
-                if (hitEvent->surfaceRef != 0) {
-                    impactSlot = hitEvent->surfaceRef->impactSlot;
-                } else {
-                    impactSlot = 0;
-                }
-                PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
+                return 0;
             }
+        }
 
-            segment->scale = zMath::Vec3DeltaLength(&segment->pos, &selectedHit->hitPos);
+        if ((flags & 1u) != 0) {
+            zVec3 incident;
+            Vec3Subtract(rayEnd, rayStart, &incident);
+            Vec3Reflect((zVec3*)(void*)(hit), &incident, reflectedDirOut);
+            *reflectedLengthOut = Vec3Normalize(reflectedDirOut);
             return 1;
         }
-
-        segment->scale = zMath::Vec3DeltaLength(&segment->pos, targetPos);
-        return 0;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetrailsegmentvisual
-     * @recoil-artifact defines .text recoil:function:0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: activate and transform a trail segment node from its recovered
-     * position, direction, and scale state.
-     */
-    void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot * segment)
-    {
-        CZClass::gwNodeSetActive(segment->node, 1);
-        CZObject3D::gwObject3DSetPosition(segment->node, segment->pos.x, segment->pos.y, segment->pos.z);
+    return 2;
+}
 
-        const float yaw = (float)(atan2(-segment->dir.x, -segment->dir.z));
-        const float pitch = (float)(asin(segment->dir.y));
-        CZObject3D::gwObject3DSetRotation(segment->node, pitch, yaw, 0.0f);
-        CZObject3D::gwObject3DSetScale(segment->node, 1.0f, 1.0f, segment->scale);
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-reflectandsortimpacttracelist
+ * @recoil-artifact defines .text recoil:function:0x4b0ca0: OptCatalog::ReflectAndSortImpactTraceList
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.vector-dot
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: choose the farthest pending trail target direction and sort
+ * pending target slots by projection along that direction.
+ */
+void __fastcall
+ReflectAndSortImpactTraceList(OptCatalogTrailRuntimeState* runtime, float* targetProjectionScratch, zVec3* directionOut)
+{
+    zVec3* farthestTarget = directionOut;
+    float farthestDistance = 0.0f;
+    int projectionIndex;
+    int targetProjectionIndex;
+    int swapped;
+    for (projectionIndex = 0; projectionIndex < *runtime->pendingSpawnTargetCountPtr; ++projectionIndex) {
+        const float distance
+            = Vec3DeltaLength(runtime->spawnPos, runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos);
+        if (distance > farthestDistance) {
+            farthestDistance = distance;
+            farthestTarget = runtime->pendingSpawnTargetListPtr[projectionIndex].targetPos;
+        }
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playimpactsound
-     * @recoil-artifact defines .text recoil:function:0x4b0fd0: OptCatalog::PlayImpactSound
-     * @recoil-match byte
-     *
-     * Purpose: choose and play an impact sound sample at the hit position.
-     */
-    void __fastcall
-    PlayImpactSound(OptCatalogEntryDef * self, OptCatalogHitEventPartial * hitEvent, int impactSlot, float gainScale)
-    {
-        if (self->impactFxTable[impactSlot].soundCount == 0) {
-            return;
+    Vec3DirectionTo(runtime->spawnPos, farthestTarget, directionOut);
+
+    for (targetProjectionIndex = 0; targetProjectionIndex < *runtime->pendingSpawnTargetCountPtr;
+        ++targetProjectionIndex) {
+        zVec3 delta;
+        Vec3Subtract(runtime->pendingSpawnTargetListPtr[targetProjectionIndex].targetPos, runtime->spawnPos, &delta);
+        targetProjectionScratch[targetProjectionIndex] = Vec3Dot(directionOut, &delta);
+    }
+
+    do {
+        int i;
+        swapped = 0;
+        for (i = 0; i < *runtime->pendingSpawnTargetCountPtr - 1; ++i) {
+            if (targetProjectionScratch[i] > targetProjectionScratch[i + 1]) {
+                PlayerProgressTargetSlotRuntime targetSwap = runtime->pendingSpawnTargetListPtr[i];
+                float projectionSwap;
+                runtime->pendingSpawnTargetListPtr[i] = runtime->pendingSpawnTargetListPtr[i + 1];
+                runtime->pendingSpawnTargetListPtr[i + 1] = targetSwap;
+
+                projectionSwap = targetProjectionScratch[i];
+                targetProjectionScratch[i] = targetProjectionScratch[i + 1];
+                targetProjectionScratch[i + 1] = projectionSwap;
+                swapped = 1;
+            }
+        }
+    } while (swapped != 0);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computetrailimpactresponse
+ * @recoil-artifact defines .text recoil:function:0x4b0e20: OptCatalog::ComputeTrailImpactResponse
+ * @recoil-match source
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: raycast a trail segment against the runtime world, apply
+ * damage feedback on hits, play impact audio, and trim segment length to
+ * the selected hit.
+ */
+int __fastcall ComputeTrailImpactResponse(
+    OptCatalogEntryDef* self,
+    OptCatalogTrailRuntimeState* trailRuntime,
+    OptCatalogTrailNodeSlot* segment,
+    const zVec3* targetPos
+)
+{
+    PlayerProbeSampleCandidateBuffer rayData;
+    int raycastResult;
+    SetDamageMaskSlotIndex(self->damageMaskSlotIndex);
+    SetStopAfterFirstHit(0x40000);
+    gwNodeSetRaycastable(trailRuntime->projectileNode, 0);
+
+    raycastResult = RaycastSelectClosestHitBetweenPoints(g_OptCatalogRuntimeWorld, &segment->pos, targetPos, &rayData);
+
+    gwNodeSetRaycastable(trailRuntime->projectileNode, 1);
+
+    if (raycastResult == 0) {
+        zClassDiPickCandidateEntry* const selectedHit = &rayData.entries[rayData.candidateCount];
+        OptCatalogHitEventPartial* const hitEvent = (OptCatalogHitEventPartial*)(void*)(selectedHit);
+        CZNodeFreeListSlot* const hitSlot = (CZNodeFreeListSlot*)(selectedHit->node);
+
+        if (hitSlot->damageHandler != 0) {
+            int impactSlot;
+            trailRuntime->trailBlend
+                = ((float)cos((trailRuntime->trailDistance * kOptCatalogPi) / self->range) + 1.0f) * 0.5f;
+            if (0.25f < trailRuntime->trailBlend) {
+                trailRuntime->trailBlend = 0.25f;
+            }
+
+            InvokeDamageFeedbackAndHitCallback(
+                self,
+                trailRuntime->projectileNode,
+                &segment->pos,
+                hitEvent,
+                trailRuntime->spawnScale * self->damage * g_OptCatalogRuntimeDeltaTime * trailRuntime->trailBlend
+            );
+
+            if (hitEvent->surfaceRef != 0) {
+                impactSlot = hitEvent->surfaceRef->impactSlot;
+            } else {
+                impactSlot = 0;
+            }
+            PlayImpactSound(self, hitEvent, impactSlot, 1.0f);
         }
 
-        const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].soundCount) >> 15;
-        zSndSamplePlayA3D(self->impactFxTable[impactSlot].soundSamples[soundIndex], gainScale, &hitEvent->hitPos, 0);
+        segment->scale = Vec3DeltaLength(&segment->pos, &selectedHit->hitPos);
+        return 1;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playbouncesound
-     * @recoil-artifact defines .text recoil:function:0x4b1030: OptCatalog::PlayBounceSound
-     * @recoil-match byte
-     *
-     * Purpose: choose and play a bounce sound sample at the raycast hit.
-     */
-    void __fastcall
-    PlayBounceSound(OptCatalogEntryDef * self, OptCatalogRaycastHitEntry * hitEvent, int impactSlot, float gainScale)
-    {
-        if (self->impactFxTable[impactSlot].bounceSoundCount == 0) {
-            return;
-        }
+    segment->scale = Vec3DeltaLength(&segment->pos, targetPos);
+    return 0;
+}
 
-        const int soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].bounceSoundCount) >> 15;
-        zSndSamplePlayA3D(self->impactFxTable[impactSlot].bounceSoundSamples[soundIndex], gainScale, &hitEvent->pos, 0);
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-updatetrailsegmentvisual
+ * @recoil-artifact defines .text recoil:function:0x4b0f70: OptCatalog::UpdateTrailSegmentVisual
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: activate and transform a trail segment node from its recovered
+ * position, direction, and scale state.
+ */
+void __fastcall UpdateTrailSegmentVisual(OptCatalogTrailNodeSlot* segment)
+{
+    float yaw;
+    float pitch;
+    gwNodeSetActive(segment->node, 1);
+    gwObject3DSetPosition(segment->node, segment->pos.x, segment->pos.y, segment->pos.z);
+
+    yaw = (float)(atan2(-segment->dir.x, -segment->dir.z));
+    pitch = (float)(asin(segment->dir.y));
+    gwObject3DSetRotation(segment->node, pitch, yaw, 0.0f);
+    gwObject3DSetScale(segment->node, 1.0f, 1.0f, segment->scale);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playimpactsound
+ * @recoil-artifact defines .text recoil:function:0x4b0fd0: OptCatalog::PlayImpactSound
+ * @recoil-match byte
+ *
+ * Purpose: choose and play an impact sound sample at the hit position.
+ */
+void __fastcall
+PlayImpactSound(OptCatalogEntryDef* self, OptCatalogHitEventPartial* hitEvent, int impactSlot, float gainScale)
+{
+    int soundIndex;
+    if (self->impactFxTable[impactSlot].soundCount == 0) {
+        return;
     }
-} // namespace OptCatalog
+
+    soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].soundCount) >> 15;
+    zSndSamplePlayA3D(self->impactFxTable[impactSlot].soundSamples[soundIndex], gainScale, &hitEvent->hitPos, 0);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-playbouncesound
+ * @recoil-artifact defines .text recoil:function:0x4b1030: OptCatalog::PlayBounceSound
+ * @recoil-match byte
+ *
+ * Purpose: choose and play a bounce sound sample at the raycast hit.
+ */
+void __fastcall
+PlayBounceSound(OptCatalogEntryDef* self, OptCatalogRaycastHitEntry* hitEvent, int impactSlot, float gainScale)
+{
+    int soundIndex;
+    if (self->impactFxTable[impactSlot].bounceSoundCount == 0) {
+        return;
+    }
+
+    soundIndex = (unsigned int)(rand() * self->impactFxTable[impactSlot].bounceSoundCount) >> 15;
+    zSndSamplePlayA3D(self->impactFxTable[impactSlot].bounceSoundSamples[soundIndex], gainScale, &hitEvent->pos, 0);
+}

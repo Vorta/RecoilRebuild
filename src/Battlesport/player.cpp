@@ -2173,7 +2173,7 @@ void __fastcall ApplyMissionSaveData(PlayerMissionSaveData* saveData)
         saveData->cameraPosition.z
     );
 
-    ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->timedHitStatus.ClearLightAndReset();
+    PlayerTimedHitStatusClearLightAndReset(&((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->timedHitStatus);
     playerState->damageProtectionActive = 0;
     if (hasTimedHitStatus != 0) {
         memcpy(&playerState->timedHitStatus, &saveData->timedHitStatus, sizeof(saveData->timedHitStatus));
@@ -2808,12 +2808,12 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
 
         node = zRdrFindTag(root, g_Player_ConfigKey_MakeHot);
         if (node != 0) {
-            g_Player_MakeHotOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(node, 1));
+            g_Player_MakeHotOptEntry = OptCatalogFindEntryByName(PlayerZrdArrayString(node, 1));
         }
 
         node = zRdrFindTag(root, g_Player_ConfigKey_MakeCold);
         if (node != 0) {
-            g_Player_MakeColdOptEntry = OptCatalog::FindEntryByName(PlayerZrdArrayString(node, 1));
+            g_Player_MakeColdOptEntry = OptCatalogFindEntryByName(PlayerZrdArrayString(node, 1));
         }
 
         node = zRdrFindTag(root, g_Player_BurningAnimName);

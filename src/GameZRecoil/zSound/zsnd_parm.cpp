@@ -10,19 +10,20 @@ namespace {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-parm.zsndplayhandle-setfreqscaled
- * @recoil-artifact defines .text recoil:function:0x4a10e0: zSndPlayHandle::SetFreqScaled
+ * @recoil-artifact defines .text recoil:function:0x4a10e0: zSndPlayHandleSetFreqScaled
  * @recoil-match byte
  *
  * Purpose: clamp and interpolate a playback-rate scale, then apply it to the
- * active DirectSound or A3D backend handle.
+ * active DirectSound or A3D backend handle. Called by the C unit zwep_ammo.c,
+ * so it is a C function taking the play handle (ECX, as the former member's this).
  */
-int zSndPlayHandle::SetFreqScaled(float scale)
+extern "C" int __fastcall zSndPlayHandleSetFreqScaled(zSndPlayHandle* playHandle, float scale)
 {
-    if (handleKind != ZSND_PLAYHANDLE_BACKEND) {
+    if (playHandle->handleKind != ZSND_PLAYHANDLE_BACKEND) {
         return -1;
     }
 
-    zSndSample* const sample = ownerSample;
+    zSndSample* const sample = playHandle->ownerSample;
     if (sample->createGuard != 0) {
         return -1;
     }
@@ -37,7 +38,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
 
     switch (g_zSnd_ActiveBackend) {
     case ZSND_AUDIO_API_A3D: {
-        zA3dProviderSource* const source = (zA3dProviderSource*)(backendBuffer);
+        zA3dProviderSource* const source = (zA3dProviderSource*)(playHandle->backendBuffer);
         if (source == 0) {
             return -1;
         }
@@ -48,7 +49,7 @@ int zSndPlayHandle::SetFreqScaled(float scale)
         return 1;
     }
     case ZSND_AUDIO_API_DIRECTSOUND: {
-        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(backendBuffer);
+        LPDIRECTSOUNDBUFFER const buffer = (LPDIRECTSOUNDBUFFER)(playHandle->backendBuffer);
         if (buffer == 0) {
             return -1;
         }

@@ -1609,7 +1609,7 @@ int __cdecl Pickup::InitAndLoadPuppySpawns()
     for (int index = 17; index <= 33; ++index) {
         PickupType& pickupType = g_PickupTypes[index];
         if (pickupType.weaponKeyName != 0) {
-            pickupType.optEntry = OptCatalog::FindEntryByName(pickupType.weaponKeyName);
+            pickupType.optEntry = OptCatalogFindEntryByName(pickupType.weaponKeyName);
             pickupType.weaponPresenceCount = 0;
         }
     }

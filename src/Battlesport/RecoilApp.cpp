@@ -1115,7 +1115,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
  * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.
@@ -2181,7 +2181,7 @@ void RecoilApp::ShutdownSubsystems()
     zRdrShutdownWildcardPath();
     zVid::ShutdownFrameScratchBuffers();
     zEffect::ShutdownAll();
-    OptCatalog::Shutdown();
+    OptCatalogShutdown();
     CZClass::Shutdown();
     zModel_Display::ShutdownThunk();
     zSndSystem::Shutdown();

@@ -874,7 +874,7 @@ namespace Player {
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-contact.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-contact.vector-length
- * @recoil-match byte
+ * @recoil-match source
  *
  * Raw assembly: reviewed (Pro batch Z, run 96d501c4), each range separately:
  * Vec3Subtract [0x4242f7,0x42431a), [0x4243fb,0x42441e), [0x424485,0x4244a8);

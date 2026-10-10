@@ -632,7 +632,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -685,7 +685,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
             const int sideIndex = optCatalogName[6] - '0';
             PlayerGunFireController* const controller = &playerState->altWeaponBanks[bankIndex].controllerA + sideIndex;
 
-            controller->optCatalogEntry = OptCatalog::FindEntryByName(optCatalogName);
+            controller->optCatalogEntry = OptCatalogFindEntryByName(optCatalogName);
 
             int available;
             CheckMissionWeaponAvailability(
@@ -830,7 +830,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
 
     playerState->pendingAltCameraToggle = 0;
     playerState->timedHitStatus.lightParentNode = playerState->rootNode;
-    playerState->timedHitStatus.ResetFields();
+    PlayerTimedHitStatusResetFields(&playerState->timedHitStatus);
 
     zUtil_ZAR::RegisterSectionHandler(
         "Mines",
@@ -1292,7 +1292,7 @@ void __fastcall ResetDamageStateAndTimedHitStatus(zUtil_SaveGameState* saveState
     playerState->queuedFixedDamageFlag = 0;
     playerState->damageProtectionActive = 0;
     playerState->damageVisualFlag = 0;
-    playerState->timedHitStatus.ClearLightAndReset();
+    PlayerTimedHitStatusClearLightAndReset(&playerState->timedHitStatus);
 }
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-resetdamagevisualsandtimedstatus
@@ -1314,8 +1314,10 @@ void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState)
     }
 
     if ((playerState->timedHitStatus.runtimeFlags & kPlayerTimedHitStatusActiveFlag) != 0) {
-        const int timedResult
-            = playerState->timedHitStatus.TickAndUpdateLight(playerState->rootNode->cachedSphereCenter[3]);
+        const int timedResult = PlayerTimedHitStatusTickAndUpdateLight(
+            &playerState->timedHitStatus,
+            playerState->rootNode->cachedSphereCenter[3]
+        );
         playerState->damageProtectionActive = timedResult == 2;
     }
 
@@ -2349,7 +2351,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -3465,7 +3467,7 @@ void __fastcall ResetAltGunRuntimeState(zUtil_SaveGameState* saveState)
     }
 
     ResetAltGunDoorAnimationState(saveState);
-    playerState->timedHitStatus.ClearLightAndReset();
+    PlayerTimedHitStatusClearLightAndReset(&playerState->timedHitStatus);
     playerState->altGunTransitionState = 1;
     playerState->altGunTransitionController = 0;
     playerState->altGunTransitionTimerA = 0.0f;
@@ -3708,11 +3710,11 @@ MinesZARReadEntryOrReset(zZbdSectionCallbackCtx*, const char*, PlayerMineSaveEnt
         return;
     }
 
-    OptCatalogEntryDef* const entry = OptCatalog::FindEntryByName(mineData->optCatalogName);
+    OptCatalogEntryDef* const entry = OptCatalogFindEntryByName(mineData->optCatalogName);
     CZNodePartial* const ownerNode = CZClass::FindByTypeAndName(6, mineData->ownerNodeName);
     if (entry != 0 && ownerNode != 0) {
         OptCatalogRuntimeInstanceStorage* const runtime
-            = OptCatalog::SpawnRuntimeInstanceAt(entry, &mineData->spawnPos, ownerNode);
+            = OptCatalogSpawnRuntimeInstanceAt(entry, &mineData->spawnPos, ownerNode);
         CZObject3D::gwObject3DSetScale(
             runtime->projectileNode,
             mineData->scale.x,

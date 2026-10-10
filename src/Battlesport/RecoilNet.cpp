@@ -1621,7 +1621,7 @@ int __fastcall NetRelayCallback(int, NetPkt0F_CraterEvent* packet)
         eventTemplate.craterMaterialSlot = zModel_Matl::GetPoolEntry(packet->craterTypeId);
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
-        if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
+        if (zDEClientCraterInstanceEventMaybeRelay(&eventTemplate) == 0) {
             packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
             packet->eventFlags |= 0x80u;
             zNetworkSendPacketReliable(&packet->header);
@@ -1632,7 +1632,7 @@ int __fastcall NetRelayCallback(int, NetPkt0F_CraterEvent* packet)
         eventTemplate.craterMaterialSlot = zModel_Matl::GetPoolEntry(packet->craterTypeId);
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
-        InstanceEventMaybeRelay(&eventTemplate);
+        zDEClientCraterInstanceEventMaybeRelay(&eventTemplate);
     }
     return 1;
 }
@@ -1705,7 +1705,7 @@ int __fastcall NetRelayCallback(int, NetPkt10_QSandEvent* packet)
     if (zNetwork::IsHost() != 0) {
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
-        if (InstanceEventMaybeRelay(&eventTemplate) == 0) {
+        if (zDEClientQSandInstanceEventMaybeRelay(&eventTemplate) == 0) {
             packet->header.payloadDword0 = zNetworkGetLocalPlayerKey();
             packet->eventFlags |= 0x80u;
             zNetworkSendPacketReliable(&packet->header);
@@ -1715,7 +1715,7 @@ int __fastcall NetRelayCallback(int, NetPkt10_QSandEvent* packet)
     if ((packet->eventFlags & 0x80u) != 0) {
         eventTemplate.center = packet->center;
         eventTemplate.radius = -packet->radius;
-        InstanceEventMaybeRelay(&eventTemplate);
+        zDEClientQSandInstanceEventMaybeRelay(&eventTemplate);
     }
     return 1;
 }

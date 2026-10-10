@@ -66,7 +66,7 @@ struct zSndPlayHandle {
     int backendState1;
     int backendState2;
 
-    int SetFreqScaled(float scale);
+    /* SetFreqScaled is the C function zSndPlayHandleSetFreqScaled (zsnd_parm.cpp). */
     int __fastcall SetEnableScale(float scale);
     int __fastcall Update3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);
     int __fastcall Update3DA3D(zVec3* worldPos, zVec3* velocity, int velocityScaleMode);

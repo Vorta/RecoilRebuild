@@ -202,7 +202,7 @@ int __cdecl ClearFeatureEntriesAndMapTree();
 void __cdecl ClearFeatureDisplayNodes();
 void __fastcall SetCameraNode(CZNodePartial* cameraNode);
 int __fastcall WriteFeatureSectionsToZAR(zZbdSectionCallbackCtx* callbackCtx);
-int __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate);
+extern "C" int __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* eventTemplate);
 zDEClient_FeatureGridCell* __fastcall GetFeatureGridCell(int gridCol, int gridRow);
 CZNodePartial* __cdecl GetCameraNode();
 zDiPartial* __fastcall CreateFeatureNodeAndDiFromClipPatchPartition(
@@ -218,9 +218,8 @@ namespace zDEClient_Crater {
 int __fastcall Execute(zDEClient_CraterEventTemplate* eventTemplate);
 int __fastcall NetRelayCallback(int senderPlayerId, NetPkt0F_CraterEvent* packet);
 void __fastcall DestroyFeature(zDEClient_CraterFeature* featureInstance);
-int __fastcall InitEventTemplateDefaults(zDEClient_CraterEventTemplate* eventTemplate);
+extern "C" int __fastcall InitEventTemplateDefaults(zDEClient_CraterEventTemplate* eventTemplate);
 int __fastcall InstanceEvent(zDEClient_CraterEventTemplate* eventTemplate, int playEffectAnim);
-int __fastcall InstanceEventMaybeRelay(zDEClient_CraterEventTemplate* eventTemplate);
 zDEClient_CraterFeature* __fastcall CreateFeatureStructFromEventTemplate(zDEClient_CraterEventTemplate* eventTemplate);
 zDEClient_CraterFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_CraterEventTemplate* eventTemplate);
 int __fastcall Build(zDEClient_CraterFeature* featureInstance);
@@ -234,5 +233,7 @@ zDEClient_QSandFeature* __fastcall CreateFeatureStructFromEventTemplate(zDEClien
 zDEClient_QSandFeature* __fastcall InitFeatureFromEventTemplate(zDEClient_QSandEventTemplate* eventTemplate);
 int __fastcall Build(zDEClient_QSandFeature* featureInstance);
 int __fastcall CreateFeature(zDEClient_QSandFeature* featureInstance);
-int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTemplate);
 } // namespace zDEClient_QSand
+
+extern "C" int __fastcall zDEClientCraterInstanceEventMaybeRelay(zDEClient_CraterEventTemplate* eventTemplate);
+extern "C" int __fastcall zDEClientQSandInstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTemplate);

@@ -1,9 +1,9 @@
 #pragma once
 
 /*
- * C declarations of the zClass API for the zClass and zEffect units (C++ units
- * see the same functions with C linkage in zclass.h and zdi.h; the zMath and
- * zModel C units see only the zclass.h C view).
+ * C declarations of the zClass API for the zClass, zEffect and zWeapon units
+ * (C++ units see the same functions with C linkage in zclass.h and zdi.h; the
+ * zMath and zModel C units see only the zclass.h C view).
  */
 
 #include "recoil/recoil_callconv.h"

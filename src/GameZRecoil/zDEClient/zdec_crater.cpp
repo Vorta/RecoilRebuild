@@ -186,23 +186,26 @@ int __fastcall InstanceEvent(zDEClient_CraterEventTemplate* eventTemplate, int p
     return 0;
 }
 
+} // namespace zDEClient_Crater
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zdeclient-zdec-crater-instanceeventmayberelay
- * @recoil-artifact defines .text recoil:function:0x456c50: zDEClient_Crater::InstanceEventMaybeRelay
+ * @recoil-artifact defines .text recoil:function:0x456c50: zDEClientCraterInstanceEventMaybeRelay
  * @recoil-match byte
  *
  * Purpose: let the registered crater relay callback veto remote crater
- * instancing before creating the crater locally.
+ * instancing before creating the crater locally. Called by the C unit
+ * zwep_ammo.c: a C function, prefixed because the quicksand relay shares
+ * the member name.
  */
-int __fastcall InstanceEventMaybeRelay(zDEClient_CraterEventTemplate* eventTemplate)
+extern "C" int __fastcall zDEClientCraterInstanceEventMaybeRelay(zDEClient_CraterEventTemplate* eventTemplate)
 {
     if (g_zDEClientCraterNetRelayCallback != 0 && g_zDEClientCraterNetRelayCallback(eventTemplate) == 0) {
         return -1;
     }
 
-    return InstanceEvent(eventTemplate, 1);
+    return zDEClient_Crater::InstanceEvent(eventTemplate, 1);
 }
-} // namespace zDEClient_Crater
 
 /*
  * Grow a [minValue, maxValue] range to include value. Retail compares and copies the
@@ -707,7 +710,7 @@ void __stdcall ApplyFeatureEntry(zDEClient_FeatureEntry* container, void*, void*
 
     switch (container->featureType) {
     case 3:
-        zDEClient_QSand::InstanceEventMaybeRelay(&container->eventData.quickSand);
+        zDEClientQSandInstanceEventMaybeRelay(&container->eventData.quickSand);
         break;
 
     case 1:

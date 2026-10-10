@@ -80,16 +80,17 @@ int __fastcall CopyQSandEventTemplateDefaults(zDEClient_QSandEventTemplate* even
     return 0;
 }
 } /* namespace zDEClient */
-namespace zDEClient_QSand {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zdeclient.zdec-qsand.zdeclient-qsand-instanceeventmayberelay
- * @recoil-artifact defines .text recoil:function:0x455ef0: zDEClient_QSand::InstanceEventMaybeRelay
+ * @recoil-artifact defines .text recoil:function:0x455ef0: zDEClientQSandInstanceEventMaybeRelay
  * @recoil-match byte
  *
  * Purpose: let the registered quicksand relay callback veto instancing before
- * building and submitting the quicksand feature locally.
+ * building and submitting the quicksand feature locally. Called by the C unit
+ * zwep_ammo.c: a C function, prefixed because the crater relay shares the
+ * member name.
  */
-int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTemplate)
+extern "C" int __fastcall zDEClientQSandInstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTemplate)
 {
     if (g_zDEClientQSandNetRelayCallback != 0 && g_zDEClientQSandNetRelayCallback(eventTemplate) == 0) {
         return -1;
@@ -102,7 +103,7 @@ int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTempla
     const float vertexMergeEpsilon = zModel_Const::GetVertexMergeEpsilon();
     zModel_Const::SetVertexMergeEpsilon(0.00499999989f);
 
-    zDEClient_QSandFeature* const featureInstance = InitFeatureFromEventTemplate(eventTemplate);
+    zDEClient_QSandFeature* const featureInstance = zDEClient_QSand::InitFeatureFromEventTemplate(eventTemplate);
     if (featureInstance == 0) {
         zError::ReportOld(
             0x100,
@@ -114,15 +115,15 @@ int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTempla
         return -1;
     }
 
-    if (Build(featureInstance) == 0) {
-        DestroyFeature(featureInstance);
+    if (zDEClient_QSand::Build(featureInstance) == 0) {
+        zDEClient_QSand::DestroyFeature(featureInstance);
         zError::ReportOld(0x100, g_zDEClient_SourceFile_ZdecQsandCpp, 0x92, g_zDEClient_QuickSandInstanceClipFailedMsg);
         zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
         return -1;
     }
 
-    if (CreateFeature(featureInstance) != 0) {
-        DestroyFeature(featureInstance);
+    if (zDEClient_QSand::CreateFeature(featureInstance) != 0) {
+        zDEClient_QSand::DestroyFeature(featureInstance);
         zError::ReportOld(
             0x100,
             g_zDEClient_SourceFile_ZdecQsandCpp,
@@ -140,7 +141,6 @@ int __fastcall InstanceEventMaybeRelay(zDEClient_QSandEventTemplate* eventTempla
     zModel_Const::SetVertexMergeEpsilon(vertexMergeEpsilon);
     return 0;
 }
-} // namespace zDEClient_QSand
 
 /*
  * Grow a [minValue, maxValue] range to include value. Retail compares and copies the

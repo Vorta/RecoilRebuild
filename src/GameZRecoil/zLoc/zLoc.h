@@ -21,7 +21,7 @@ namespace zLoc {
 int __fastcall LoadMessagesDll(const char* dllPath);
 void __cdecl UnloadMessagesDll();
 extern "C" unsigned int __fastcall GetMessageId(const char* key);
-char* __fastcall ResolveMessageKeyOrFallback(const char* key);
+extern "C" char* __fastcall ResolveMessageKeyOrFallback(const char* key);
 unsigned int __cdecl FormatMessage(char* outBuffer, int maxChars, unsigned int messageId, ...);
 extern "C" char* __fastcall GetMessageString(unsigned int messageId);
 } // namespace zLoc

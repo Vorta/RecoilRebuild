@@ -1,15 +1,13 @@
 #include "opt_catalog.h"
 #include "zwep.h"
 
-#include "Battlesport/player.h"
 #include "GameZRecoil/zEffect/zeff.h"
 #include "GameZRecoil/zError/zerr.h"
-#include "GameZRecoil/zHud/zhud_ui.h"
 #include "GameZRecoil/zLoc/zloc.h"
 #include "GameZRecoil/zReader/zreader.h"
 #include "GameZRecoil/zSound/zsnd.h"
-#include "GameZRecoil/zUtil/zsave_game.h"
 #include "GameZRecoil/zVideo/zvid.h"
+#include "GameZRecoil/zWeapon/zwep_api.h"
 #include "zdi.h"
 
 #include <math.h>
@@ -17,26 +15,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct OptCatalogQueuedImpactRecord {
+typedef struct OptCatalogQueuedImpactRecord {
     OptCatalogEntryDef* entry;
     CZNodePartial* ownerNode;
     zVec3 sourcePos;
     OptCatalogRaycastHitEntry hit;
     float damageAmount;
     unsigned char unknown_40[4];
-};
+} OptCatalogQueuedImpactRecord;
 
 /**
  * Deferred OptCatalog impact queue. Retail keeps the count and the 64 records
  * in one object (0x77896c..0x779a70): HandleImpactFromRuntimeProbe re-reads
  * the count after every record store, as VC5 does for stores into one aggregate.
  */
-struct OptCatalogQueuedImpactQueue {
+typedef struct OptCatalogQueuedImpactQueue {
     int count;
     OptCatalogQueuedImpactRecord records[64];
-};
+} OptCatalogQueuedImpactQueue;
 
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogruntimeworld
  * @recoil-artifact defines .data recoil:data:0x778920: g_OptCatalogRuntimeWorld.
@@ -136,7 +133,7 @@ PlayerProgressTargetSlotRuntime* g_OptCatalogPendingSpawnTargetListPtr = 0;
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalog-fallbackimpactprobeenabled
  * @recoil-artifact defines .data recoil:data:0x778964: g_OptCatalog_FallbackImpactProbeEnabled.
  * BN xrefs: OptCatalog::ProcessRuntimeInstance, ProcessRuntimeInstances,
- * zWeapon::Init, and OptCatalog::ShutdownCore.
+ * zWeapon::Init, and OptCatalogShutdownCore.
  * Purpose: enables deferred fallback impact probes for runtime projectile
  * processing.
  */
@@ -159,11 +156,11 @@ OptCatalogQueuedImpactQueue g_OptCatalogQueuedImpactQueue = { 0 };
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogloadedtreeroot
  * @recoil-artifact defines .data recoil:data:0x779a70: g_OptCatalogLoadedTreeRoot.
  * BN xrefs: zWeapon::LoadOptCatalogFromPath stores the loaded root;
- * OptCatalog::ShutdownCore frees it through zReader::Free and
+ * OptCatalogShutdownCore frees it through zReader::Free and
  * clears the pointer.
  * Purpose: owning pointer for the currently loaded OptCatalog zReader tree.
  */
-zReader::Node* g_OptCatalogLoadedTreeRoot = 0;
+Node* g_OptCatalogLoadedTreeRoot = 0;
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-optcatalogsndlockonwarning
  * @recoil-artifact defines .data recoil:data:0x779a74: g_OptCatalogSndLockOnWarning.
@@ -286,57 +283,54 @@ char g_zEffectAnim_TokenBounceSound[0x0d] = "BOUNCE_SOUND";
  * records.
  */
 char g_Player_KillVerbToken[0x0a] = "KILL_VERB";
-}
 
-namespace
-{
-    const unsigned int kOptCatalogFlagImmediateProbeImpact = 1u << 12;
-    const unsigned int kOptCatalogFlagFullProbeDamage = 1u << 13;
-    const unsigned int kOptCatalogFlagCraterImpact = 0x08;
-    const unsigned int kOptCatalogFlagQuickSandImpact = 0x20000;
-    const unsigned int kOptCatalogFlagAlwaysPlayImpactFx = 4194304;
-    const unsigned int kOptCatalogFlagTrailRuntime = 2;
-    const unsigned int kOptCatalogFlagImpactWhenScaleExpired = 4;
-    const unsigned int kOptCatalogFlagSingleTrailSegment = 0x800;
+enum {
+    kOptCatalogFlagImmediateProbeImpact = 1u << 12,
+    kOptCatalogFlagFullProbeDamage = 1u << 13,
+    kOptCatalogFlagCraterImpact = 0x08,
+    kOptCatalogFlagQuickSandImpact = 0x20000,
+    kOptCatalogFlagAlwaysPlayImpactFx = 4194304,
+    kOptCatalogFlagTrailRuntime = 2,
+    kOptCatalogFlagImpactWhenScaleExpired = 4,
+    kOptCatalogFlagSingleTrailSegment = 0x800
+};
 
-    const unsigned int kOptCatalogFlagSkipTrailSegmentLighting = 0x10000;
-    const unsigned int kOptCatalogFlagNoRenderableAttachment = 1u << 8;
+enum { kOptCatalogFlagSkipTrailSegmentLighting = 0x10000, kOptCatalogFlagNoRenderableAttachment = 1u << 8 };
 
-    const unsigned int kOptCatalogFlagRelativeSpeed = 0x800000;
+enum { kOptCatalogFlagRelativeSpeed = 0x800000 };
 
-    const unsigned int kOptCatalogFlagExpires = 1u << 6;
-    const unsigned int kOptCatalogFlagFixedRotate = 1u << 7;
-    const unsigned int kOptCatalogFlagInstant = 1u << 10;
-    const unsigned int kOptCatalogFlagLockOn = 1u << 14;
-    const unsigned int kOptCatalogFlagLockOnLead = 1u << 15;
-    const unsigned int kOptCatalogFlagMultiTarget = 1u << 16;
-    const unsigned int kOptCatalogFlagReload = 1u << 18;
-    const unsigned int kOptCatalogFlagRemoteDetonate = 1u << 19;
-    const unsigned int kOptCatalogFlagTetherGuided = 1u << 20;
-    const unsigned int kOptCatalogFlagAppliesTimedHitStatus = 1u << 21;
-    const unsigned int kOptCatalogFlagTimedStatusSubtractive = 1u << 9;
-    const unsigned int kOptCatalogFlagHeatTimedStatus = 1u << 5;
+enum {
+    kOptCatalogFlagExpires = 1u << 6,
+    kOptCatalogFlagFixedRotate = 1u << 7,
+    kOptCatalogFlagInstant = 1u << 10,
+    kOptCatalogFlagLockOn = 1u << 14,
+    kOptCatalogFlagLockOnLead = 1u << 15,
+    kOptCatalogFlagMultiTarget = 1u << 16,
+    kOptCatalogFlagReload = 1u << 18,
+    kOptCatalogFlagRemoteDetonate = 1u << 19,
+    kOptCatalogFlagTetherGuided = 1u << 20,
+    kOptCatalogFlagAppliesTimedHitStatus = 1u << 21,
+    kOptCatalogFlagTimedStatusSubtractive = 1u << 9,
+    kOptCatalogFlagHeatTimedStatus = 1u << 5
+};
 
-    const unsigned int kOptCatalogFastSqrtBias = 0x1fc00000;
-    const int kOptCatalogRequiredVersion = 2;
+enum { kOptCatalogFastSqrtBias = 0x1fc00000, kOptCatalogRequiredVersion = 2 };
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-beamreflectnamefmt
-     * @recoil-artifact defines .data recoil:data:0x4e4600: g_zWeapon_BeamReflectNameFmt.
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * BN data shape: char[15] "BeamReflect_%d"; xref only from
-     * OptCatalog::CreateTrailRuntimeState at 0x4b1ec0.
-     * Purpose: format the inactive BeamReflect segment node names created
-     * for OptCatalog trail runtime state.
-     * Retail keeps it in writable .data, where VC5 places only non-const
-     * arrays, so it is not declared const.
-     */
-    char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
-} // namespace
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-beamreflectnamefmt
+ * @recoil-artifact defines .data recoil:data:0x4e4600: g_zWeapon_BeamReflectNameFmt.
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * BN data shape: char[15] "BeamReflect_%d"; xref only from
+ * OptCatalog::CreateTrailRuntimeState at 0x4b1ec0.
+ * Purpose: format the inactive BeamReflect segment node names created
+ * for OptCatalog trail runtime state.
+ * Retail keeps it in writable .data, where VC5 places only non-const
+ * arrays, so it is not declared const.
+ */
+static char g_zWeapon_BeamReflectNameFmt[15] = "BeamReflect_%d";
 
 #include "GameZRecoil/zUtil/zbd.h"
 
-extern "C" {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-g-zweapon-zarhandlerregistered
  * @recoil-artifact defines .data recoil:data:0x4e42ec: g_zWeapon_ZarHandlerRegistered.
@@ -360,7 +354,6 @@ char g_zWeapon_ArchiveName[8] = "Weapons";
  * Purpose: runtime maximum tether altitude loaded from weapon configuration.
  */
 float g_zWeapon_MaxTetherAltitude = 0.0f;
-}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-zwepinit
@@ -370,7 +363,7 @@ float g_zWeapon_MaxTetherAltitude = 0.0f;
  * Purpose: reset weapon and OptCatalog runtime globals, restore weapon
  * defaults, and optionally register the Weapons ZAR section callbacks.
  */
-extern "C" int __cdecl zWepInit()
+int __cdecl zWepInit(void)
 {
     // Clearing EntryCount first keeps 0 in EAX and 1 in ECX, as in retail.
     g_OptCatalog_EntryCount = 0;
@@ -395,10 +388,10 @@ extern "C" int __cdecl zWepInit()
     g_OptCatalogNextSpawnScale = 1.0f;
 
     if (g_zWeapon_ZarHandlerRegistered != 0) {
-        zUtil_ZAR::RegisterSectionHandler(
+        RegisterSectionHandler(
             g_zWeapon_ArchiveName,
-            (zZbdSectionCallback)(&zWeapon::OnWeaponsSectionPreLoad),
-            (zZbdSectionCallback)(&zWeapon::OnWeaponsSectionDataReady),
+            (zZbdSectionCallback)(&OnWeaponsSectionPreLoad),
+            (zZbdSectionCallback)(&OnWeaponsSectionDataReady),
             0x3e8,
             0
         );
@@ -407,797 +400,798 @@ extern "C" int __cdecl zWepInit()
     return 0;
 }
 
-namespace zWeapon
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectionpreload
+ * @recoil-artifact defines .text recoil:function:0x4b1140: zWeapon::OnWeaponsSectionPreLoad
+ * @recoil-match byte
+ *
+ * Purpose: write the current weapon damage-feedback hit count into the
+ * WeaponData section blob before the Weapons archive section is saved.
+ */
+int __fastcall OnWeaponsSectionPreLoad(zZbdSectionCallbackCtx* callbackCtx, void* userData)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectionpreload
-     * @recoil-artifact defines .text recoil:function:0x4b1140: zWeapon::OnWeaponsSectionPreLoad
-     * @recoil-match byte
-     *
-     * Purpose: write the current weapon damage-feedback hit count into the
-     * WeaponData section blob before the Weapons archive section is saved.
-     */
-    int __fastcall OnWeaponsSectionPreLoad(zZbdSectionCallbackCtx * callbackCtx, void*)
-    {
-        int weaponDataHitCount = g_OptCatalog_DamageFeedbackHitCount;
-        return zUtil_ZAR::WriteSectionBlob(callbackCtx, "WeaponData", &weaponDataHitCount, sizeof(weaponDataHitCount));
+    int weaponDataHitCount = g_OptCatalog_DamageFeedbackHitCount;
+    return WriteSectionBlob(callbackCtx, "WeaponData", &weaponDataHitCount, sizeof(weaponDataHitCount));
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectiondataready
+ * @recoil-artifact defines .text recoil:function:0x4b1160: zWeapon::OnWeaponsSectionDataReady
+ * @recoil-match byte
+ *
+ * Purpose: restore the weapon damage-feedback hit count from the WeaponData
+ * section blob and reset the lock-on warning gate.
+ */
+void __fastcall OnWeaponsSectionDataReady(
+    zZbdSectionCallbackCtx* callbackCtx,
+    const char* sectionToken,
+    void* weaponData,
+    unsigned int dataSize,
+    void* userData
+)
+{
+    g_OptCatalog_DamageFeedbackHitCount = *(int*)(weaponData);
+    g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdown
+ * @recoil-artifact defines .text recoil:function:0x4b1180: OptCatalogShutdown
+ * @recoil-match byte
+ *
+ * Purpose: public shutdown wrapper for OptCatalog runtime cleanup.
+ */
+int __cdecl OptCatalogShutdown(void)
+{
+    OptCatalogShutdownCore();
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadoptcatalogfrompath
+ * @recoil-artifact defines .text recoil:function:0x4b1190: zWeapon::LoadOptCatalogFromPath
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate recoil:function:0x4b1190
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate
+ *
+ *
+ * Raw assembly: one in-body fast-sqrt estimate at retail [0x4b1bc5,0x4b1bd2),
+ * transforming the stored bits of velocityProduct into velocityEstimate through
+ * EAX (Pro batch Y, run 0f1cfa97). The block clobbers EAX and the arithmetic
+ * flags; it does not use or alter the x87 stack or control word.
+ *
+ * Purpose: load weapons.zrd, build the OptCatalog entry table, initialize
+ * runtime storage, and publish the loaded runtime globals.
+ */
+int __fastcall LoadOptCatalogFromPath(
+    CZNodePartial* worldNode,
+    const char* path,
+    int networkState,
+    zWeaponOptCatalogEntryCallback entryCallback
+)
+{
+    // Retail keeps the last parsed RANGE in one function-scope float: an entry
+    // without a RANGE node reuses a previously parsed value in the instance
+    // count below. It is not entry->range; before any RANGE has been parsed it
+    // is uninitialized, as in retail.
+    float range;
+    short entryIndex = 0;
+    Node* rootNode;
+    Node* versionNode;
+
+    g_OptCatalogRuntimeWorld = worldNode;
+    InitThermalGlowPool();
+
+    rootNode = Load(path, 0, 0);
+    g_OptCatalogLoadedTreeRoot = rootNode;
+    if (rootNode == 0) {
+        ReportOld(
+            0x200,
+            "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
+            0xc6,
+            g_HudSensorTracker_ReadFileFailedFmt,
+            path
+        );
+        return -1;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-onweaponssectiondataready
-     * @recoil-artifact defines .text recoil:function:0x4b1160: zWeapon::OnWeaponsSectionDataReady
-     * @recoil-match byte
-     *
-     * Purpose: restore the weapon damage-feedback hit count from the WeaponData
-     * section blob and reset the lock-on warning gate.
-     */
-    void __fastcall
-    OnWeaponsSectionDataReady(zZbdSectionCallbackCtx*, const char*, void* weaponData, unsigned int, void*)
-    {
-        g_OptCatalog_DamageFeedbackHitCount = *(int*)(weaponData);
-        g_OptCatalogLockOnWarningGateTimeSec = 0.0f;
-    }
-} // namespace zWeapon
-
-namespace OptCatalog
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdown
-     * @recoil-artifact defines .text recoil:function:0x4b1180: OptCatalog::Shutdown
-     * @recoil-match byte
-     *
-     * Purpose: public shutdown wrapper for OptCatalog runtime cleanup.
-     */
-    int __cdecl Shutdown()
-    {
-        ShutdownCore();
-        return 0;
-    }
-} // namespace OptCatalog
-
-namespace zWeapon
-{
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadoptcatalogfrompath
-     * @recoil-artifact defines .text recoil:function:0x4b1190: zWeapon::LoadOptCatalogFromPath
-     * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate recoil:function:0x4b1190
-     * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zweapon.load-opt-catalog.fast-sqrt-estimate
-     *
-     *
-     * Raw assembly: one in-body fast-sqrt estimate at retail [0x4b1bc5,0x4b1bd2),
-     * transforming the stored bits of velocityProduct into velocityEstimate through
-     * EAX (Pro batch Y, run 0f1cfa97). The block clobbers EAX and the arithmetic
-     * flags; it does not use or alter the x87 stack or control word.
-     *
-     * Purpose: load weapons.zrd, build the OptCatalog entry table, initialize
-     * runtime storage, and publish the loaded runtime globals.
-     */
-    int __fastcall LoadOptCatalogFromPath(
-        CZNodePartial * worldNode,
-        const char* path,
-        int networkState,
-        zWeaponOptCatalogEntryCallback entryCallback
-    )
-    {
-        // Retail keeps the last parsed RANGE in one function-scope float: an entry
-        // without a RANGE node reuses a previously parsed value in the instance
-        // count below. It is not entry->range; before any RANGE has been parsed it
-        // is uninitialized, as in retail.
-        float range;
-        short entryIndex = 0;
-
-        g_OptCatalogRuntimeWorld = worldNode;
-        CZLight::InitThermalGlowPool();
-
-        zReader::Node* const rootNode = zReader::Load(path, 0, 0);
-        g_OptCatalogLoadedTreeRoot = rootNode;
-        if (rootNode == 0) {
-            zError::ReportOld(
-                0x200,
+    versionNode = zRdrFindTag(rootNode, "VERSION");
+    if (versionNode != 0) {
+        const int version = versionNode->value.nodes[1].value.i32;
+        Node* node;
+        Node* ballisticsNode;
+        OptCatalogRuntimeInstanceStorage* runtime;
+        unsigned int runtimeIndex;
+        CZNodePartial* callbackNode;
+        if (version != kOptCatalogRequiredVersion) {
+            ReportOld(
+                0x400,
                 "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
-                0xc6,
-                g_HudSensorTracker_ReadFileFailedFmt,
-                path
+                0xd3,
+                "Incorrect ZWEP version (found %d, wanted %d)",
+                version,
+                kOptCatalogRequiredVersion
             );
             return -1;
         }
 
-        zReader::Node* const versionNode = zRdrFindTag(rootNode, "VERSION");
-        if (versionNode != 0) {
-            const int version = versionNode->value.nodes[1].value.i32;
-            if (version != kOptCatalogRequiredVersion) {
-                zError::ReportOld(
-                    0x400,
-                    "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
-                    0xd3,
-                    "Incorrect ZWEP version (found %d, wanted %d)",
-                    version,
-                    kOptCatalogRequiredVersion
-                );
-                return -1;
-            }
+        node = zRdrFindTag(rootNode, "LOCK_ON_WARNING");
+        if (node != 0) {
+            g_OptCatalogSndLockOnWarning = FindSampleByName(node->value.nodes[1].value.str);
+        }
 
-            zReader::Node* node = zRdrFindTag(rootNode, "LOCK_ON_WARNING");
-            if (node != 0) {
-                g_OptCatalogSndLockOnWarning = zSnd::FindSampleByName(node->value.nodes[1].value.str);
-            }
+        node = zRdrFindTag(rootNode, "NO_AMMO_WARNING");
+        if (node != 0) {
+            g_OptCatalogSndTriggerInactive = FindSampleByName(node->value.nodes[1].value.str);
+        }
 
-            node = zRdrFindTag(rootNode, "NO_AMMO_WARNING");
-            if (node != 0) {
-                g_OptCatalogSndTriggerInactive = zSnd::FindSampleByName(node->value.nodes[1].value.str);
-            }
+        node = zRdrFindTag(rootNode, "TRIGGER_INACTIVE");
+        if (node != 0) {
+            g_OptCatalogSndWeaponInactive = FindSampleByName(node->value.nodes[1].value.str);
+        }
 
-            node = zRdrFindTag(rootNode, "TRIGGER_INACTIVE");
-            if (node != 0) {
-                g_OptCatalogSndWeaponInactive = zSnd::FindSampleByName(node->value.nodes[1].value.str);
-            }
+        node = zRdrFindTag(rootNode, "WEAPON_INACTIVE");
+        if (node != 0) {
+            g_OptCatalogSndNoAmmoWarning = FindSampleByName(node->value.nodes[1].value.str);
+        }
 
-            node = zRdrFindTag(rootNode, "WEAPON_INACTIVE");
-            if (node != 0) {
-                g_OptCatalogSndNoAmmoWarning = zSnd::FindSampleByName(node->value.nodes[1].value.str);
-            }
+        node = zRdrFindTag(rootNode, "MAX_CRATER_RADIUS");
+        if (node != 0) {
+            g_OptCatalogMaxCraterRadius = node->value.nodes[1].value.f32;
+        }
 
-            node = zRdrFindTag(rootNode, "MAX_CRATER_RADIUS");
-            if (node != 0) {
-                g_OptCatalogMaxCraterRadius = node->value.nodes[1].value.f32;
-            }
+        ballisticsNode = zRdrFindTag(rootNode, "BALLISTICS");
+        if (ballisticsNode != 0) {
+            // Retail stores the first item index directly and compares the count in memory (0x4b1319).
+            OptCatalogEntryDef* entry;
+            unsigned int itemIndex;
+            g_OptCatalog_EntryCount = (ballisticsNode->value.nodes[0].value.i32 - 1) / 2;
+            g_OptCatalog_EntryTable
+                = (OptCatalogEntryDef*)(calloc(1, g_OptCatalog_EntryCount * sizeof(OptCatalogEntryDef)));
 
-            zReader::Node* const ballisticsNode = zRdrFindTag(rootNode, "BALLISTICS");
-            if (ballisticsNode != 0) {
-                g_OptCatalog_EntryCount = (ballisticsNode->value.nodes[0].value.i32 - 1) / 2;
-                g_OptCatalog_EntryTable
-                    = (OptCatalogEntryDef*)(calloc(1, g_OptCatalog_EntryCount * sizeof(OptCatalogEntryDef)));
+            for (itemIndex = 1, entry = g_OptCatalog_EntryTable;
+                itemIndex < (unsigned int)(ballisticsNode->value.nodes[0].value.i32);
+                itemIndex += 2, ++entry) {
+                Node* entryNode;
+                CZNodePartial* attachNode;
+                entry->ammoOrChargeMax = 50.0f;
+                entry->range = 500.0f;
+                entry->velocity = 120.0f;
+                entry->damage = 0.100000001f;
+                entry->timedStatusInterpRate = 1.0f;
+                entry->ordinalIndex = entryIndex++;
+                entry->impactFxTable
+                    = (OptCatalogFxSpec*)(calloc(1, g_zRndr_GlobalStringCount * sizeof(OptCatalogFxSpec)));
 
-                // Retail stores the first item index directly and compares the count in memory (0x4b1319).
-                OptCatalogEntryDef* entry;
-                unsigned int itemIndex;
-                for (itemIndex = 1, entry = g_OptCatalog_EntryTable;
-                    itemIndex < (unsigned int)(ballisticsNode->value.nodes[0].value.i32);
-                    itemIndex += 2, ++entry) {
-                    entry->ammoOrChargeMax = 50.0f;
-                    entry->range = 500.0f;
-                    entry->velocity = 120.0f;
-                    entry->damage = 0.100000001f;
-                    entry->timedStatusInterpRate = 1.0f;
-                    entry->ordinalIndex = entryIndex++;
-                    entry->impactFxTable
-                        = (OptCatalogFxSpec*)(calloc(1, g_zRndr_GlobalStringCount * sizeof(OptCatalogFxSpec)));
+                // Each weapon block follows its name inside the BALLISTICS array.
+                entryNode = zRdrFindTag(ballisticsNode, ballisticsNode->value.nodes[itemIndex].value.str);
+                if (entryNode != 0) {
+                    Node* fieldNode;
+                    float floatValue;
+                    Node* impactNode;
+                    entry->keyName = (char*)(ballisticsNode->value.nodes[itemIndex].value.str);
 
-                    // Each weapon block follows its name inside the BALLISTICS array.
-                    zReader::Node* const entryNode
-                        = zRdrFindTag(ballisticsNode, ballisticsNode->value.nodes[itemIndex].value.str);
-                    if (entryNode != 0) {
-                        entry->keyName = (char*)(ballisticsNode->value.nodes[itemIndex].value.str);
+                    fieldNode = zRdrFindTag(entryNode, "NAME");
+                    if (fieldNode != 0) {
+                        entry->displayName = (char*)(fieldNode->value.nodes[1].value.str);
+                    } else {
+                        entry->displayName = entry->keyName;
+                    }
 
-                        zReader::Node* fieldNode = zRdrFindTag(entryNode, "NAME");
-                        if (fieldNode != 0) {
-                            entry->displayName = (char*)(fieldNode->value.nodes[1].value.str);
+                    // Retail pushes the _strdup argument in each arm (0x4b13e8, 0x4b13eb).
+                    fieldNode = zRdrFindTag(entryNode, "DESC");
+                    if (fieldNode != 0) {
+                        entry->description = _strdup(ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
+                    } else {
+                        entry->description = _strdup(entry->keyName);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "MILITARY_NAME");
+                    if (fieldNode != 0) {
+                        entry->militaryName = _strdup(ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
+                    } else {
+                        entry->militaryName = _strdup(entry->keyName);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "ACCELERATION");
+                    if (fieldNode != 0) {
+                        entry->acceleration = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "AMMO_LIMIT");
+                    if (fieldNode != 0) {
+                        entry->ammoOrChargeMax = (float)(fieldNode->value.nodes[1].value.i32);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "BEAM");
+                    if (fieldNode != 0) {
+                        entry->flags |= kOptCatalogFlagTrailRuntime;
+                        entry->velocity = 1.0f / fieldNode->value.nodes[1].value.f32;
+                        entry->timedStatusInterpRate = fieldNode->value.nodes[2].value.f32;
+                        entry->flags ^= (fieldNode->value.nodes[3].value.i32 ^ entry->flags) & 1u;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "CATCHES_FIRE");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagImmediateProbeImpact)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "CRATER");
+                    if (fieldNode != 0) {
+                        if (fieldNode->value.nodes[1].value.i32 != 0) {
+                            entry->flags |= kOptCatalogFlagCraterImpact;
+                        }
+                        if (fieldNode->value.nodes[0].value.i32 > 2) {
+                            entry->craterRadiusBase = fieldNode->value.nodes[1].value.i32;
+                            entry->craterRadiusRandomRange
+                                = fieldNode->value.nodes[2].value.i32 - fieldNode->value.nodes[1].value.i32;
                         } else {
-                            entry->displayName = entry->keyName;
+                            entry->craterRadiusRandomRange = 0;
                         }
+                    }
 
-                        // Retail pushes the _strdup argument in each arm (0x4b13e8, 0x4b13eb).
-                        fieldNode = zRdrFindTag(entryNode, "DESC");
-                        if (fieldNode != 0) {
-                            entry->description
-                                = _strdup(zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
+                    fieldNode = zRdrFindTag(entryNode, "DAMAGE");
+                    if (fieldNode != 0) {
+                        entry->damage = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "DETONATION_DISTANCE");
+                    if (fieldNode != 0) {
+                        floatValue = fieldNode->value.nodes[1].value.f32;
+                        entry->detonationDistSq = floatValue * floatValue;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "EXPIRES");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagExpires)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "FIRE_RATE");
+                    if (fieldNode != 0) {
+                        entry->fireRateInterval = 1.0f / fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "FIXED_ROTATE");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagFixedRotate)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "GRAVITY");
+                    if (fieldNode != 0 && (entry->flags & kOptCatalogFlagLockOn) == 0) {
+                        entry->gravity = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "IMPACT_PROXIMITY");
+                    if (fieldNode != 0) {
+                        entry->impactProximity = fieldNode->value.nodes[1].value.f32;
+                        floatValue = fieldNode->value.nodes[1].value.f32;
+                        entry->damageFalloffRange = floatValue * floatValue;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "IMPACT_TYPE");
+                    if (fieldNode != 0) {
+                        entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "INSTANT");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagInstant)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "LOCK_ON");
+                    if (fieldNode != 0) {
+                        entry->lockOnTime = fieldNode->value.nodes[1].value.f32;
+                        entry->flags |= kOptCatalogFlagLockOn;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "LOCK_ON_LEAD");
+                    if (fieldNode != 0) {
+                        entry->flags |= kOptCatalogFlagLockOnLead;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "MINE");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagFullProbeDamage)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 13) | 1u;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "MULTI_TARGET");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagMultiTarget)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "QUICKSAND");
+                    if (fieldNode != 0) {
+                        if (fieldNode->value.nodes[1].value.i32 != 0) {
+                            entry->flags |= kOptCatalogFlagQuickSandImpact;
+                        }
+                        if (fieldNode->value.nodes[0].value.i32 > 2) {
+                            entry->craterRadiusBase = fieldNode->value.nodes[1].value.i32;
+                            entry->craterRadiusRandomRange
+                                = fieldNode->value.nodes[2].value.i32 - fieldNode->value.nodes[1].value.i32;
                         } else {
-                            entry->description = _strdup(entry->keyName);
+                            entry->craterRadiusRandomRange = 0;
                         }
+                    }
 
-                        fieldNode = zRdrFindTag(entryNode, "MILITARY_NAME");
-                        if (fieldNode != 0) {
-                            entry->militaryName
-                                = _strdup(zLoc::ResolveMessageKeyOrFallback(fieldNode->value.nodes[1].value.str));
-                        } else {
-                            entry->militaryName = _strdup(entry->keyName);
+                    fieldNode = zRdrFindTag(entryNode, g_zEffectAnim_TokenRange);
+                    if (fieldNode != 0) {
+                        range = fieldNode->value.nodes[1].value.f32;
+                        entry->range = range;
+                        entry->rangeSq = range * range;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "RELATIVE_SPEED");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagRelativeSpeed)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "REMOTE_DETONATE");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagRemoteDetonate)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "TETHER_GUIDED");
+                    if (fieldNode != 0) {
+                        entry->flags |= kOptCatalogFlagTetherGuided;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "TURN_RATE");
+                    if (fieldNode != 0) {
+                        entry->turnRate = fieldNode->value.nodes[1].value.f32;
+                    } else {
+                        entry->turnRate = 0.159999996f;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "TURN_SUSPEND_TIME");
+                    if (fieldNode != 0) {
+                        entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "PITCH_RATE");
+                    if (fieldNode != 0) {
+                        entry->pitchRate = fieldNode->value.nodes[1].value.f32;
+                    } else {
+                        entry->pitchRate = 0.159999996f;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "VELOCITY");
+                    if (fieldNode != 0 && (entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
+                        entry->velocity = fieldNode->value.nodes[1].value.f32;
+                    }
+
+                    fieldNode = zRdrFindTag(entryNode, "RELOAD");
+                    if (fieldNode != 0) {
+                        entry->flags = (entry->flags & ~kOptCatalogFlagReload)
+                            | ((fieldNode->value.nodes[1].value.i32 & 1) << 18);
+                    }
+                    entry->killVerbString = 0;
+
+                    if (entryCallback != 0) {
+                        entryCallback(entryNode, entry);
+                    }
+
+                    LoadFxSpecFromReaderNode(entryNode, &entry->fireFxSpec, "FIRE");
+                    LoadFxSpecFromReaderNode(entryNode, &entry->flyoutFxSpec, "FLYOUT");
+
+                    fieldNode = zRdrFindTag(entryNode, "FLYOUT_HEALTH");
+                    if (fieldNode != 0) {
+                        entry->flags |= kOptCatalogFlagImpactWhenScaleExpired;
+                        entry->flyoutHealth = (float)(fieldNode->value.nodes[1].value.i32);
+                        if (entry->attachCloneTemplateNode != 0) {
+                            gwNodeSetRaycastable(entry->attachCloneTemplateNode, 0);
                         }
+                    }
 
-                        fieldNode = zRdrFindTag(entryNode, "ACCELERATION");
-                        if (fieldNode != 0) {
-                            entry->acceleration = fieldNode->value.nodes[1].value.f32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "AMMO_LIMIT");
-                        if (fieldNode != 0) {
-                            entry->ammoOrChargeMax = (float)(fieldNode->value.nodes[1].value.i32);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "BEAM");
-                        if (fieldNode != 0) {
-                            entry->flags |= kOptCatalogFlagTrailRuntime;
-                            entry->velocity = 1.0f / fieldNode->value.nodes[1].value.f32;
-                            entry->timedStatusInterpRate = fieldNode->value.nodes[2].value.f32;
-                            entry->flags ^= (fieldNode->value.nodes[3].value.i32 ^ entry->flags) & 1u;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "CATCHES_FIRE");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagImmediateProbeImpact)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 12);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "CRATER");
-                        if (fieldNode != 0) {
-                            if (fieldNode->value.nodes[1].value.i32 != 0) {
-                                entry->flags |= kOptCatalogFlagCraterImpact;
-                            }
-                            if (fieldNode->value.nodes[0].value.i32 > 2) {
-                                entry->craterRadiusBase = fieldNode->value.nodes[1].value.i32;
-                                entry->craterRadiusRandomRange
-                                    = fieldNode->value.nodes[2].value.i32 - fieldNode->value.nodes[1].value.i32;
+                    impactNode = zRdrFindTag(entryNode, "IMPACT");
+                    if (impactNode != 0) {
+                        int materialIndex;
+                        LoadFxSpecFromReaderNode(impactNode, &entry->impactFxTable[0], g_zRndr_GlobalStringTable[0]);
+                        for (materialIndex = 1; materialIndex < g_zRndr_GlobalStringCount; ++materialIndex) {
+                            if (zRdrFindTag(impactNode, g_zRndr_GlobalStringTable[materialIndex]) != 0) {
+                                LoadFxSpecFromReaderNode(
+                                    impactNode,
+                                    &entry->impactFxTable[materialIndex],
+                                    g_zRndr_GlobalStringTable[materialIndex]
+                                );
                             } else {
-                                entry->craterRadiusRandomRange = 0;
+                                entry->impactFxTable[materialIndex] = entry->impactFxTable[0];
                             }
                         }
 
-                        fieldNode = zRdrFindTag(entryNode, "DAMAGE");
+                        if (zRdrFindTag(impactNode, "ANIMATION_ALWAYS") != 0) {
+                            entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
+                        }
+
+                        fieldNode = zRdrFindTag(impactNode, "FREEZE");
+                        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay = fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[5].value.f32;
+                            entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[6].value.f32;
+                            entry->flags
+                                |= kOptCatalogFlagTimedStatusSubtractive | kOptCatalogFlagAppliesTimedHitStatus;
+                        }
+
+                        fieldNode = zRdrFindTag(impactNode, "HEAT");
+                        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay = fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[5].value.f32;
+                            entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[6].value.f32;
+                            entry->flags |= kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus;
+                        }
+
+                        fieldNode = zRdrFindTag(impactNode, "DESIGNATE");
+                        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
+                            entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
+                            entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
+                            entry->timedStatusUpdateDelay = 0.0f;
+                            entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[3].value.f32;
+                            entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[4].value.f32;
+                            entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[5].value.f32;
+                            entry->flags &= ~(kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus);
+                            entry->flags |= kOptCatalogFlagSingleTrailSegment;
+                            entry->detonationDistSq = fieldNode->value.nodes[6].value.f32;
+                        }
+
+                        fieldNode = zRdrFindTag(impactNode, "KILL_ANIMATION");
                         if (fieldNode != 0) {
-                            entry->damage = fieldNode->value.nodes[1].value.f32;
+                            entry->damageContextEffect = FindEntryByName(fieldNode->value.nodes[1].value.str);
                         }
 
-                        float floatValue;
-                        fieldNode = zRdrFindTag(entryNode, "DETONATION_DISTANCE");
+                        fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIMATION");
                         if (fieldNode != 0) {
-                            floatValue = fieldNode->value.nodes[1].value.f32;
-                            entry->detonationDistSq = floatValue * floatValue;
+                            entry->damageFeedbackVariantCount = 1;
+                            entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
+                            entry->damageFeedbackVariants[0].effect
+                                = FindEntryByName(fieldNode->value.nodes[1].value.str);
                         }
 
-                        fieldNode = zRdrFindTag(entryNode, "EXPIRES");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagExpires)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 6);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "FIRE_RATE");
-                        if (fieldNode != 0) {
-                            entry->fireRateInterval = 1.0f / fieldNode->value.nodes[1].value.f32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "FIXED_ROTATE");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagFixedRotate)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 7);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "GRAVITY");
-                        if (fieldNode != 0 && (entry->flags & kOptCatalogFlagLockOn) == 0) {
-                            entry->gravity = fieldNode->value.nodes[1].value.f32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "IMPACT_PROXIMITY");
-                        if (fieldNode != 0) {
-                            entry->impactProximity = fieldNode->value.nodes[1].value.f32;
-                            floatValue = fieldNode->value.nodes[1].value.f32;
-                            entry->damageFalloffRange = floatValue * floatValue;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "IMPACT_TYPE");
-                        if (fieldNode != 0) {
-                            entry->damageMaskSlotIndex = fieldNode->value.nodes[1].value.i32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "INSTANT");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagInstant)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 10);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "LOCK_ON");
-                        if (fieldNode != 0) {
-                            entry->lockOnTime = fieldNode->value.nodes[1].value.f32;
-                            entry->flags |= kOptCatalogFlagLockOn;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "LOCK_ON_LEAD");
-                        if (fieldNode != 0) {
-                            entry->flags |= kOptCatalogFlagLockOnLead;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "MINE");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagFullProbeDamage)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 13) | 1u;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "MULTI_TARGET");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagMultiTarget)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 16);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "QUICKSAND");
-                        if (fieldNode != 0) {
-                            if (fieldNode->value.nodes[1].value.i32 != 0) {
-                                entry->flags |= kOptCatalogFlagQuickSandImpact;
-                            }
-                            if (fieldNode->value.nodes[0].value.i32 > 2) {
-                                entry->craterRadiusBase = fieldNode->value.nodes[1].value.i32;
-                                entry->craterRadiusRandomRange
-                                    = fieldNode->value.nodes[2].value.i32 - fieldNode->value.nodes[1].value.i32;
-                            } else {
-                                entry->craterRadiusRandomRange = 0;
-                            }
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, g_zEffectAnim_TokenRange);
-                        if (fieldNode != 0) {
-                            range = fieldNode->value.nodes[1].value.f32;
-                            entry->range = range;
-                            entry->rangeSq = range * range;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "RELATIVE_SPEED");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagRelativeSpeed)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 23);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "REMOTE_DETONATE");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagRemoteDetonate)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 19);
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "TETHER_GUIDED");
-                        if (fieldNode != 0) {
-                            entry->flags |= kOptCatalogFlagTetherGuided;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "TURN_RATE");
-                        if (fieldNode != 0) {
-                            entry->turnRate = fieldNode->value.nodes[1].value.f32;
-                        } else {
-                            entry->turnRate = 0.159999996f;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "TURN_SUSPEND_TIME");
-                        if (fieldNode != 0) {
-                            entry->turnSuspendTime = fieldNode->value.nodes[1].value.f32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "PITCH_RATE");
-                        if (fieldNode != 0) {
-                            entry->pitchRate = fieldNode->value.nodes[1].value.f32;
-                        } else {
-                            entry->pitchRate = 0.159999996f;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "VELOCITY");
-                        if (fieldNode != 0 && (entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
-                            entry->velocity = fieldNode->value.nodes[1].value.f32;
-                        }
-
-                        fieldNode = zRdrFindTag(entryNode, "RELOAD");
-                        if (fieldNode != 0) {
-                            entry->flags = (entry->flags & ~kOptCatalogFlagReload)
-                                | ((fieldNode->value.nodes[1].value.i32 & 1) << 18);
-                        }
-                        entry->killVerbString = 0;
-
-                        if (entryCallback != 0) {
-                            entryCallback(entryNode, entry);
-                        }
-
-                        OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->fireFxSpec, "FIRE");
-                        OptCatalog::LoadFxSpecFromReaderNode(entryNode, &entry->flyoutFxSpec, "FLYOUT");
-
-                        fieldNode = zRdrFindTag(entryNode, "FLYOUT_HEALTH");
-                        if (fieldNode != 0) {
-                            entry->flags |= kOptCatalogFlagImpactWhenScaleExpired;
-                            entry->flyoutHealth = (float)(fieldNode->value.nodes[1].value.i32);
-                            if (entry->attachCloneTemplateNode != 0) {
-                                CZClass::gwNodeSetRaycastable(entry->attachCloneTemplateNode, 0);
-                            }
-                        }
-
-                        zReader::Node* const impactNode = zRdrFindTag(entryNode, "IMPACT");
-                        if (impactNode != 0) {
-                            OptCatalog::LoadFxSpecFromReaderNode(
-                                impactNode,
-                                &entry->impactFxTable[0],
-                                g_zRndr_GlobalStringTable[0]
-                            );
-                            for (int materialIndex = 1; materialIndex < g_zRndr_GlobalStringCount; ++materialIndex) {
-                                if (zRdrFindTag(impactNode, g_zRndr_GlobalStringTable[materialIndex]) != 0) {
-                                    OptCatalog::LoadFxSpecFromReaderNode(
-                                        impactNode,
-                                        &entry->impactFxTable[materialIndex],
-                                        g_zRndr_GlobalStringTable[materialIndex]
-                                    );
-                                } else {
-                                    entry->impactFxTable[materialIndex] = entry->impactFxTable[0];
-                                }
-                            }
-
-                            if (zRdrFindTag(impactNode, "ANIMATION_ALWAYS") != 0) {
-                                entry->flags |= kOptCatalogFlagAlwaysPlayImpactFx;
-                            }
-
-                            fieldNode = zRdrFindTag(impactNode, "FREEZE");
-                            if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
-                                entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
-                                entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
-                                entry->timedStatusUpdateDelay = fieldNode->value.nodes[3].value.f32;
-                                entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[4].value.f32;
-                                entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[5].value.f32;
-                                entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[6].value.f32;
-                                entry->flags
-                                    |= kOptCatalogFlagTimedStatusSubtractive | kOptCatalogFlagAppliesTimedHitStatus;
-                            }
-
-                            fieldNode = zRdrFindTag(impactNode, "HEAT");
-                            if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
-                                entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
-                                entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
-                                entry->timedStatusUpdateDelay = fieldNode->value.nodes[3].value.f32;
-                                entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[4].value.f32;
-                                entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[5].value.f32;
-                                entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[6].value.f32;
-                                entry->flags |= kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus;
-                            }
-
-                            fieldNode = zRdrFindTag(impactNode, "DESIGNATE");
-                            if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 6) {
-                                entry->timedStatusLightRangeMin = fieldNode->value.nodes[1].value.f32;
-                                entry->timedStatusLightRangeMax = fieldNode->value.nodes[2].value.f32;
-                                entry->timedStatusUpdateDelay = 0.0f;
-                                entry->timedStatusLightSpecularColor.red = fieldNode->value.nodes[3].value.f32;
-                                entry->timedStatusLightSpecularColor.green = fieldNode->value.nodes[4].value.f32;
-                                entry->timedStatusLightSpecularColor.blue = fieldNode->value.nodes[5].value.f32;
-                                entry->flags
-                                    &= ~(kOptCatalogFlagAppliesTimedHitStatus | kOptCatalogFlagHeatTimedStatus);
-                                entry->flags |= kOptCatalogFlagSingleTrailSegment;
-                                entry->detonationDistSq = fieldNode->value.nodes[6].value.f32;
-                            }
-
-                            fieldNode = zRdrFindTag(impactNode, "KILL_ANIMATION");
+                        if (g_zVideo_ActiveRendererPath != 0) {
+                            fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIM_ON_HEALTH");
                             if (fieldNode != 0) {
-                                entry->damageContextEffect
-                                    = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
-                            }
-
-                            fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIMATION");
-                            if (fieldNode != 0) {
-                                entry->damageFeedbackVariantCount = 1;
-                                entry->damageFeedbackVariants[0].minFeedbackScale = 1.0f;
-                                entry->damageFeedbackVariants[0].effect
-                                    = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
-                            }
-
-                            if (g_zVideo_ActiveRendererPath != 0) {
-                                fieldNode = zRdrFindTag(impactNode, "DAMAGE_ANIM_ON_HEALTH");
-                                if (fieldNode != 0) {
-                                    entry->damageFeedbackVariantCount = fieldNode->value.nodes[0].value.i32 - 1;
-                                    for (unsigned int feedbackIndex = 0;
-                                        feedbackIndex < (unsigned int)(entry->damageFeedbackVariantCount);
-                                        ++feedbackIndex) {
-                                        // Retail strength-reduces the shifted node index as one value.
-                                        const unsigned int nodeIndex = feedbackIndex + 1;
-                                        zReader::Node* const feedbackNode
-                                            = fieldNode->value.nodes[nodeIndex].value.nodes;
-                                        entry->damageFeedbackVariants[feedbackIndex].minFeedbackScale
-                                            = feedbackNode[1].value.f32;
-                                        entry->damageFeedbackVariants[feedbackIndex].effect
-                                            = zEffectAnim::FindEntryByName(feedbackNode[2].value.str);
-                                    }
+                                unsigned int feedbackIndex;
+                                entry->damageFeedbackVariantCount = fieldNode->value.nodes[0].value.i32 - 1;
+                                for (feedbackIndex = 0;
+                                    feedbackIndex < (unsigned int)(entry->damageFeedbackVariantCount);
+                                    ++feedbackIndex) {
+                                    // Retail strength-reduces the shifted node index as one value.
+                                    const unsigned int nodeIndex = feedbackIndex + 1;
+                                    Node* const feedbackNode = fieldNode->value.nodes[nodeIndex].value.nodes;
+                                    entry->damageFeedbackVariants[feedbackIndex].minFeedbackScale
+                                        = feedbackNode[1].value.f32;
+                                    entry->damageFeedbackVariants[feedbackIndex].effect
+                                        = FindEntryByName(feedbackNode[2].value.str);
                                 }
                             }
                         }
-                    }
-
-                    if (entry->gravity != 0.0f) {
-                        const float speed = entry->velocity;
-                        entry->trailSegmentTimeSec = speed * speed / (entry->gravity * 2.0f);
-                        float velocityProduct = entry->gravity * entry->range * 2.0f;
-                        float velocityEstimate;
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-                        __asm {
-                            mov eax, velocityProduct
-                            sar eax, 1
-                            add eax, 01fc00000h
-                            mov velocityEstimate, eax
-                        }
-#else
-                        {
-                            int estimateBits;
-                            memcpy(&estimateBits, &velocityProduct, sizeof estimateBits);
-                            estimateBits = (estimateBits >> 1) + 0x1fc00000;
-                            memcpy(&velocityEstimate, &estimateBits, sizeof velocityEstimate);
-                        }
-#endif
-                        entry->velocity = velocityEstimate;
-                    }
-
-                    CZNodePartial* const attachNode = entry->attachCloneTemplateNode;
-                    if (attachNode != 0) {
-                        CZClass::gwNodeSetActive(attachNode, 1);
-                        // Retail stores the "no renderable DI" result in bit 8.
-                        const int hasRenderable
-                            = CZClass::AnyNodeMatchesPredicateRecursive(attachNode, CZNode::HasRenderableDiPredicate);
-                        entry->flags = (entry->flags & ~kOptCatalogFlagNoRenderableAttachment)
-                            | (((hasRenderable == 0) & 1) << 8);
-                    }
-
-                    if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
-                        g_OptCatalogRuntimeInstanceCount
-                            += (int)(range / entry->velocity / entry->fireRateInterval) + 1;
                     }
                 }
+
+                if (entry->gravity != 0.0f) {
+                    const float speed = entry->velocity;
+                    float velocityProduct;
+                    float velocityEstimate;
+                    entry->trailSegmentTimeSec = speed * speed / (entry->gravity * 2.0f);
+                    velocityProduct = entry->gravity * entry->range * 2.0f;
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                    __asm {
+                        mov eax, velocityProduct
+                        sar eax, 1
+                        add eax, 01fc00000h
+                        mov velocityEstimate, eax
+                    }
+#else
+                    {
+                        int estimateBits;
+                        memcpy(&estimateBits, &velocityProduct, sizeof estimateBits);
+                        estimateBits = (estimateBits >> 1) + 0x1fc00000;
+                        memcpy(&velocityEstimate, &estimateBits, sizeof velocityEstimate);
+                    }
+#endif
+                    entry->velocity = velocityEstimate;
+                }
+
+                attachNode = entry->attachCloneTemplateNode;
+                if (attachNode != 0) {
+                    int hasRenderable;
+                    gwNodeSetActive(attachNode, 1);
+                    // Retail stores the "no renderable DI" result in bit 8.
+                    hasRenderable = AnyNodeMatchesPredicateRecursive(attachNode, HasRenderableDiPredicate);
+                    entry->flags
+                        = (entry->flags & ~kOptCatalogFlagNoRenderableAttachment) | (((hasRenderable == 0) & 1) << 8);
+                }
+
+                if ((entry->flags & kOptCatalogFlagTrailRuntime) == 0) {
+                    g_OptCatalogRuntimeInstanceCount += (int)(range / entry->velocity / entry->fireRateInterval) + 1;
+                }
             }
+        }
 
-            // Retail stores the calloc result to the pool global first (0x4b1c67).
-            g_OptCatalogRuntimeInstancePool
-                = calloc(g_OptCatalogRuntimeInstanceCount, sizeof(OptCatalogRuntimeInstanceStorage));
-            OptCatalogRuntimeInstanceStorage* runtime
-                = (OptCatalogRuntimeInstanceStorage*)(g_OptCatalogRuntimeInstancePool);
-            g_OptCatalogFreeRuntimeInstanceList = 0;
-            for (unsigned int runtimeIndex = 0; runtimeIndex < (unsigned int)(g_OptCatalogRuntimeInstanceCount);
-                ++runtimeIndex, ++runtime) {
-                runtime->projectileNode = CZObject3D::gwObject3DInit();
+        // Retail stores the calloc result to the pool global first (0x4b1c67).
+        g_OptCatalogRuntimeInstancePool
+            = calloc(g_OptCatalogRuntimeInstanceCount, sizeof(OptCatalogRuntimeInstanceStorage));
+        runtime = (OptCatalogRuntimeInstanceStorage*)(g_OptCatalogRuntimeInstancePool);
+        g_OptCatalogFreeRuntimeInstanceList = 0;
+        for (runtimeIndex = 0; runtimeIndex < (unsigned int)(g_OptCatalogRuntimeInstanceCount);
+            ++runtimeIndex, ++runtime) {
+            char projectileName[32];
+            runtime->projectileNode = gwObject3DInit();
 
-                char projectileName[32];
-                sprintf(projectileName, "Projectile_%d", runtimeIndex);
-                CZClass::gwNodeSetName(runtime->projectileNode, projectileName);
+            sprintf(projectileName, "Projectile_%d", runtimeIndex);
+            gwNodeSetName(runtime->projectileNode, projectileName);
 
-                runtime->flyoutAnimPrimary = 0;
-                runtime->flyoutAnimSecondary = 0;
-                runtime->asyncFxHandle = 0;
-                runtime->next = g_OptCatalogFreeRuntimeInstanceList;
-                g_OptCatalogFreeRuntimeInstanceList = runtime;
+            runtime->flyoutAnimPrimary = 0;
+            runtime->flyoutAnimSecondary = 0;
+            runtime->asyncFxHandle = 0;
+            runtime->next = g_OptCatalogFreeRuntimeInstanceList;
+            g_OptCatalogFreeRuntimeInstanceList = runtime;
 
-                CZClass::gwNodeSetRaycastable(runtime->projectileNode, 0);
-                CZClass::gwNodeSetCellPickable(runtime->projectileNode, 0);
-                CZClass::gwNodeSetPickable(runtime->projectileNode, 1);
-            }
+            gwNodeSetRaycastable(runtime->projectileNode, 0);
+            gwNodeSetCellPickable(runtime->projectileNode, 0);
+            gwNodeSetPickable(runtime->projectileNode, 1);
+        }
 
-            CZNodePartial* const callbackNode = CZObject3D::gwObject3DInit();
-            if (callbackNode == 0) {
-                zError::ReportOld(
-                    0x400,
-                    "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
-                    0x2d9,
-                    "Error allocating weapon_tick callback"
-                );
-                g_OptCatalogNetworkOptionState = networkState;
-                return 0;
-            }
-
-            CZClass::gwNodeSetPriority(callbackNode, 3);
-            CZClass::gwNodeSetActionCallback(callbackNode, (void*)(&OptCatalog::ProcessRuntimeInstances));
+        callbackNode = gwObject3DInit();
+        if (callbackNode == 0) {
+            ReportOld(
+                0x400,
+                "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c",
+                0x2d9,
+                "Error allocating weapon_tick callback"
+            );
             g_OptCatalogNetworkOptionState = networkState;
             return 0;
         }
 
-        zError::ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c", 0xdb, "No ZWEP version found");
-        return -1;
+        gwNodeSetPriority(callbackNode, 3);
+        gwNodeSetActionCallback(callbackNode, (void*)(&ProcessRuntimeInstances));
+        g_OptCatalogNetworkOptionState = networkState;
+        return 0;
     }
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setmaxtetheraltitude
-     * @recoil-artifact defines .text recoil:function:0x4b1d80: zWeapon::SetMaxTetherAltitude
-     * @recoil-match byte
-     *
-     * Purpose: store the maximum tether altitude used by weapon script commands.
-     */
-    void __stdcall SetMaxTetherAltitude(float altitude)
-    {
-        g_zWeapon_MaxTetherAltitude = altitude;
-    }
-} // namespace zWeapon
 
-namespace OptCatalog
+    ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zWeapon\\zwep_init.c", 0xdb, "No ZWEP version found");
+    return -1;
+}
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-setmaxtetheraltitude
+ * @recoil-artifact defines .text recoil:function:0x4b1d80: zWeapon::SetMaxTetherAltitude
+ * @recoil-match byte
+ *
+ * Purpose: store the maximum tether altitude used by weapon script commands.
+ */
+void __stdcall SetMaxTetherAltitude(float altitude)
 {
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdowncore
-     * @recoil-artifact defines .text recoil:function:0x4b1d90: OptCatalog::ShutdownCore.
-     * @recoil-match byte
-     *
-     * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
-     * and reset runtime globals to initialization defaults.
-     */
-    int __fastcall ShutdownCore()
-    {
-        OptCatalogEntryDef* entryPtr = g_OptCatalog_EntryTable;
-        for (int i = 0; i < g_OptCatalog_EntryCount; ++i, ++entryPtr) {
-            OptCatalogEntryDef& entry = *entryPtr;
-            if (entry.impactFxTable != 0) {
-                free(entry.impactFxTable);
-                entry.impactFxTable = 0;
-            }
-            if (entry.killVerbString != 0) {
-                free(entry.killVerbString);
-                entry.killVerbString = 0;
-            }
-            if (entry.description != 0) {
-                free(entry.description);
-                entry.description = 0;
-            }
-            if (entry.militaryName != 0) {
-                free(entry.militaryName);
-                entry.militaryName = 0;
-            }
+    g_zWeapon_MaxTetherAltitude = altitude;
+}
 
-            CZNodePartial* impactNode = entry.impactNodeListHead;
-            while (impactNode != 0) {
-                CZNodePartial* const next = impactNode->callbackContext;
-                entry.impactNodeListHead = next;
-                CZUtil::DestroyNodeRecursive(impactNode);
-                impactNode = entry.impactNodeListHead;
-            }
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-shutdowncore
+ * @recoil-artifact defines .text recoil:function:0x4b1d90: OptCatalogShutdownCore.
+ * @recoil-match byte
+ *
+ * Purpose: release loaded OptCatalog entries, runtime pools, reader tree,
+ * and reset runtime globals to initialization defaults.
+ */
+int __fastcall OptCatalogShutdownCore(void)
+{
+    OptCatalogEntryDef* entryPtr = g_OptCatalog_EntryTable;
+    int i;
+    for (i = 0; i < g_OptCatalog_EntryCount; ++i, ++entryPtr) {
+        OptCatalogEntryDef* entry = &(*entryPtr);
+        CZNodePartial* impactNode;
+        if (entry->impactFxTable != 0) {
+            free(entry->impactFxTable);
+            entry->impactFxTable = 0;
+        }
+        if (entry->killVerbString != 0) {
+            free(entry->killVerbString);
+            entry->killVerbString = 0;
+        }
+        if (entry->description != 0) {
+            free(entry->description);
+            entry->description = 0;
+        }
+        if (entry->militaryName != 0) {
+            free(entry->militaryName);
+            entry->militaryName = 0;
         }
 
-        if (g_OptCatalog_EntryTable != 0) {
-            free(g_OptCatalog_EntryTable);
-            g_OptCatalog_EntryTable = 0;
+        impactNode = entry->impactNodeListHead;
+        while (impactNode != 0) {
+            CZNodePartial* const next = impactNode->callbackContext;
+            entry->impactNodeListHead = next;
+            DestroyNodeRecursive(impactNode);
+            impactNode = entry->impactNodeListHead;
         }
-        if (g_OptCatalogRuntimeInstancePool != 0) {
-            free(g_OptCatalogRuntimeInstancePool);
-            g_OptCatalogRuntimeInstancePool = 0;
-        }
-        CZLight::DestroyThermalGlowPool();
-        g_OptCatalogRuntimeWorld = 0;
-        zReader::Free(g_OptCatalogLoadedTreeRoot);
-        g_OptCatalogLoadedTreeRoot = 0;
+    }
 
-        g_OptCatalog_EntryCount = 0;
+    if (g_OptCatalog_EntryTable != 0) {
+        free(g_OptCatalog_EntryTable);
         g_OptCatalog_EntryTable = 0;
-        g_OptCatalogRuntimeInstanceCount = 0;
+    }
+    if (g_OptCatalogRuntimeInstancePool != 0) {
+        free(g_OptCatalogRuntimeInstancePool);
         g_OptCatalogRuntimeInstancePool = 0;
-        g_OptCatalogFreeRuntimeInstanceList = 0;
-        g_OptCatalogRuntimeWorld = 0;
-        g_OptCatalogPendingSpawnTargetCountPtr = 0;
-        g_OptCatalogPendingSpawnTargetListPtr = 0;
-        g_OptCatalog_FallbackImpactProbeEnabled = 1;
-        g_OptCatalog_CaptureHitSnapshotEnabled = 1;
-        g_OptCatalogQueuedImpactQueue.count = 0;
-        g_OptCatalog_DamageFeedbackHitCount = 0;
-        return 0;
+    }
+    DestroyThermalGlowPool();
+    g_OptCatalogRuntimeWorld = 0;
+    Free(g_OptCatalogLoadedTreeRoot);
+    g_OptCatalogLoadedTreeRoot = 0;
+
+    g_OptCatalog_EntryCount = 0;
+    g_OptCatalog_EntryTable = 0;
+    g_OptCatalogRuntimeInstanceCount = 0;
+    g_OptCatalogRuntimeInstancePool = 0;
+    g_OptCatalogFreeRuntimeInstanceList = 0;
+    g_OptCatalogRuntimeWorld = 0;
+    g_OptCatalogPendingSpawnTargetCountPtr = 0;
+    g_OptCatalogPendingSpawnTargetListPtr = 0;
+    g_OptCatalog_FallbackImpactProbeEnabled = 1;
+    g_OptCatalog_CaptureHitSnapshotEnabled = 1;
+    g_OptCatalogQueuedImpactQueue.count = 0;
+    g_OptCatalog_DamageFeedbackHitCount = 0;
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailruntimestate
+ * @recoil-artifact defines .text recoil:function:0x4b1ec0: OptCatalog::CreateTrailRuntimeState
+ * @recoil-match byte
+ *
+ * Purpose: allocate trail runtime state, create inactive BeamReflect
+ * segment nodes, and attach them to the OptCatalog runtime world.
+ */
+OptCatalogTrailRuntimeState* __fastcall CreateTrailRuntimeState(
+    OptCatalogEntryDef* entry,
+    CZNodePartial* projectileNode,
+    zTag4Partial* variantTagPtr,
+    void* reserved,
+    zVec3* spawnPos,
+    zVec3* spawnDir,
+    int segmentCount
+)
+{
+    OptCatalogTrailRuntimeState* runtime;
+    int i;
+    (void)reserved;
+
+    runtime = (OptCatalogTrailRuntimeState*)(calloc(1, sizeof(OptCatalogTrailRuntimeState)));
+    runtime->ownerEntry = entry;
+    runtime->projectileNode = projectileNode;
+    runtime->spawnPos = spawnPos;
+    runtime->variantTagPtr = variantTagPtr;
+    runtime->spawnDir = spawnDir;
+
+    if (segmentCount > 8) {
+        segmentCount = 8;
+    } else if ((entry->flags & kOptCatalogFlagSingleTrailSegment) != 0) {
+        segmentCount = 1;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailruntimestate
-     * @recoil-artifact defines .text recoil:function:0x4b1ec0: OptCatalog::CreateTrailRuntimeState
-     * @recoil-match byte
-     *
-     * Purpose: allocate trail runtime state, create inactive BeamReflect
-     * segment nodes, and attach them to the OptCatalog runtime world.
-     */
-    OptCatalogTrailRuntimeState* __fastcall CreateTrailRuntimeState(
-        OptCatalogEntryDef * entry,
-        CZNodePartial * projectileNode,
-        zTag4Partial * variantTagPtr,
-        void* reserved,
-        zVec3* spawnPos,
-        zVec3* spawnDir,
-        int segmentCount
-    )
-    {
-        (void)reserved;
+    runtime->activeNodeSlotCount = segmentCount;
+    for (i = 0; i < segmentCount; ++i) {
+        char nodeName[40];
+        runtime->activeNodeSlots[i].node = CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode);
 
-        OptCatalogTrailRuntimeState* const runtime
-            = (OptCatalogTrailRuntimeState*)(calloc(1, sizeof(OptCatalogTrailRuntimeState)));
-        runtime->ownerEntry = entry;
-        runtime->projectileNode = projectileNode;
-        runtime->spawnPos = spawnPos;
-        runtime->variantTagPtr = variantTagPtr;
-        runtime->spawnDir = spawnDir;
-
-        if (segmentCount > 8) {
-            segmentCount = 8;
-        } else if ((entry->flags & kOptCatalogFlagSingleTrailSegment) != 0) {
-            segmentCount = 1;
+        sprintf(nodeName, g_zWeapon_BeamReflectNameFmt, i);
+        gwNodeSetName(runtime->activeNodeSlots[i].node, nodeName);
+        gwNodeSetActive(runtime->activeNodeSlots[i].node, 0);
+        if ((entry->flags & kOptCatalogFlagSkipTrailSegmentLighting) == 0) {
+            gwObject3DSetLitFlag(runtime->activeNodeSlots[i].node, 1);
         }
-
-        runtime->activeNodeSlotCount = segmentCount;
-        for (int i = 0; i < segmentCount; ++i) {
-            runtime->activeNodeSlots[i].node = CreateTrailSegmentNodeFromTemplate(entry->attachCloneTemplateNode);
-
-            char nodeName[40];
-            sprintf(nodeName, g_zWeapon_BeamReflectNameFmt, i);
-            CZClass::gwNodeSetName(runtime->activeNodeSlots[i].node, nodeName);
-            CZClass::gwNodeSetActive(runtime->activeNodeSlots[i].node, 0);
-            if ((entry->flags & kOptCatalogFlagSkipTrailSegmentLighting) == 0) {
-                CZObject3D::gwObject3DSetLitFlag(runtime->activeNodeSlots[i].node, 1);
-            }
-            CZClass::AddChild(g_OptCatalogRuntimeWorld, runtime->activeNodeSlots[i].node);
-        }
-
-        return runtime;
+        AddChild(g_OptCatalogRuntimeWorld, runtime->activeNodeSlots[i].node);
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-freetrailruntimestatestorage
-     * @recoil-artifact defines .text recoil:function:0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
-     * @recoil-match byte
-     *
-     * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
-     * Purpose: release trail runtime-state storage and return zero status.
-     */
-    int __fastcall FreeTrailRuntimeStateStorage(void* trailRuntimeState)
-    {
-        free(trailRuntimeState);
-        return 0;
+    return runtime;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-freetrailruntimestatestorage
+ * @recoil-artifact defines .text recoil:function:0x4b1f90: OptCatalog::FreeTrailRuntimeStateStorage
+ * @recoil-match byte
+ *
+ * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
+ * Purpose: release trail runtime-state storage and return zero status.
+ */
+int __fastcall FreeTrailRuntimeStateStorage(void* trailRuntimeState)
+{
+    free(trailRuntimeState);
+    return 0;
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadfxspecfromreadernode
+ * @recoil-artifact defines .text recoil:function:0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
+ * @recoil-match byte
+ *
+ * Purpose: load one named impact effect spec from a zReader node.
+ */
+void __fastcall LoadFxSpecFromReaderNode(Node* parentNode, OptCatalogFxSpec* spec, const char* childName)
+{
+    Node* const specNode = zRdrFindTag(parentNode, childName);
+    Node* fieldNode;
+    if (specNode == 0) {
+        return;
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-loadfxspecfromreadernode
-     * @recoil-artifact defines .text recoil:function:0x4b1fa0: OptCatalog::LoadFxSpecFromReaderNode
-     * @recoil-match byte
-     *
-     * Purpose: load one named impact effect spec from a zReader node.
-     */
-    void __fastcall LoadFxSpecFromReaderNode(zReader::Node * parentNode, OptCatalogFxSpec * spec, const char* childName)
-    {
-        zReader::Node* const specNode = zRdrFindTag(parentNode, childName);
-        if (specNode == 0) {
-            return;
+    fieldNode = zRdrFindTag(specNode, "EFFECT");
+    if (fieldNode != 0) {
+        if (fieldNode->value.nodes[0].value.i32 > 1) {
+            spec->effectTemplateIndex = FindTemplateIndexByName(fieldNode->value.nodes[1].value.str);
         }
-
-        zReader::Node* fieldNode = zRdrFindTag(specNode, "EFFECT");
-        if (fieldNode != 0) {
-            if (fieldNode->value.nodes[0].value.i32 > 1) {
-                spec->effectTemplateIndex = zEffect::FindTemplateIndexByName(fieldNode->value.nodes[1].value.str);
-            }
-        } else {
-            fieldNode = zRdrFindTag(specNode, "MODEL");
-            if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-                spec->modelNode = CZClass::FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
-            }
-        }
-
-        fieldNode = zRdrFindTag(specNode, "ANIMATION_ATTACHED");
+    } else {
+        fieldNode = zRdrFindTag(specNode, "MODEL");
         if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-            spec->attachedAnimationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
-        }
-
-        fieldNode = zRdrFindTag(specNode, "MODEL_ANIMATION");
-        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-            spec->modelAnimationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
-        }
-
-        fieldNode = zRdrFindTag(specNode, "ANIMATION");
-        if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
-            spec->animationEntry = zEffectAnim::FindEntryByName(fieldNode->value.nodes[1].value.str);
-        }
-
-        fieldNode = zRdrFindTag(specNode, "RANDOM_ROTATE");
-        if (fieldNode != 0) {
-            spec->flags = (((unsigned int)(fieldNode->value.nodes[1].value.i32) ^ spec->flags) & 1) ^ spec->flags;
-        }
-
-        fieldNode = zRdrFindTag(specNode, g_HudZrd_Key_Sound);
-        if (fieldNode != 0) {
-            spec->soundCount = fieldNode->value.nodes[0].value.i32 - 1;
-            for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
-                spec->soundSamples[i - 1] = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
-            }
-        }
-
-        fieldNode = zRdrFindTag(specNode, g_zEffectAnim_TokenBounceSound);
-        if (fieldNode != 0) {
-            spec->bounceSoundCount = fieldNode->value.nodes[0].value.i32 - 1;
-            for (int i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
-                spec->bounceSoundSamples[i - 1] = zSnd::FindSampleByName(fieldNode->value.nodes[i].value.str);
-            }
+            spec->modelNode = FindByTypeAndName(6, fieldNode->value.nodes[1].value.str);
         }
     }
 
-    /**
-     * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailsegmentnodefromtemplate
-     * @recoil-artifact defines .text recoil:function:0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
-     * @recoil-match byte
-     *
-     * Purpose: allocate an active Object3D segment node and attach an optional
-     * template child to it.
-     */
-    CZNodePartial* __fastcall CreateTrailSegmentNodeFromTemplate(CZNodePartial * templateNode)
-    {
-        CZNodePartial* const parent = CZObject3D::gwObject3DInit();
-        CZClass::gwNodeSetActive(parent, 1);
-        if (templateNode != 0) {
-            CZObject3D::gwObject3DAddChild(parent, templateNode);
-        }
-
-        return parent;
+    fieldNode = zRdrFindTag(specNode, "ANIMATION_ATTACHED");
+    if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
+        spec->attachedAnimationEntry = FindEntryByName(fieldNode->value.nodes[1].value.str);
     }
-} // namespace OptCatalog
+
+    fieldNode = zRdrFindTag(specNode, "MODEL_ANIMATION");
+    if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
+        spec->modelAnimationEntry = FindEntryByName(fieldNode->value.nodes[1].value.str);
+    }
+
+    fieldNode = zRdrFindTag(specNode, "ANIMATION");
+    if (fieldNode != 0 && fieldNode->value.nodes[0].value.i32 > 1) {
+        spec->animationEntry = FindEntryByName(fieldNode->value.nodes[1].value.str);
+    }
+
+    fieldNode = zRdrFindTag(specNode, "RANDOM_ROTATE");
+    if (fieldNode != 0) {
+        spec->flags = (((unsigned int)(fieldNode->value.nodes[1].value.i32) ^ spec->flags) & 1) ^ spec->flags;
+    }
+
+    fieldNode = zRdrFindTag(specNode, g_HudZrd_Key_Sound);
+    if (fieldNode != 0) {
+        int i;
+        spec->soundCount = fieldNode->value.nodes[0].value.i32 - 1;
+        for (i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
+            spec->soundSamples[i - 1] = FindSampleByName(fieldNode->value.nodes[i].value.str);
+        }
+    }
+
+    fieldNode = zRdrFindTag(specNode, g_zEffectAnim_TokenBounceSound);
+    if (fieldNode != 0) {
+        int i;
+        spec->bounceSoundCount = fieldNode->value.nodes[0].value.i32 - 1;
+        for (i = 1; i < fieldNode->value.nodes[0].value.i32; ++i) {
+            spec->bounceSoundSamples[i - 1] = FindSampleByName(fieldNode->value.nodes[i].value.str);
+        }
+    }
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-createtrailsegmentnodefromtemplate
+ * @recoil-artifact defines .text recoil:function:0x4b2130: OptCatalog::CreateTrailSegmentNodeFromTemplate
+ * @recoil-match byte
+ *
+ * Purpose: allocate an active Object3D segment node and attach an optional
+ * template child to it.
+ */
+CZNodePartial* __fastcall CreateTrailSegmentNodeFromTemplate(CZNodePartial* templateNode)
+{
+    CZNodePartial* const parent = gwObject3DInit();
+    gwNodeSetActive(parent, 1);
+    if (templateNode != 0) {
+        gwObject3DAddChild(parent, templateNode);
+    }
+
+    return parent;
+}

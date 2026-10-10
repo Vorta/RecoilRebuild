@@ -454,9 +454,9 @@ void __stdcall DispatchSetScale(float deltaTime);
 
 extern char g_HudUiMessage_NodeName[8];
 extern char g_HudUiMessage_SeparatorColon[2];
-extern char g_HudSensorTracker_ReadFileFailedFmt[18];
+extern "C" char g_HudSensorTracker_ReadFileFailedFmt[18];
 extern char g_HudCfgKey_Fonts[6];
-extern char g_HudZrd_Key_Sound[6];
+extern "C" char g_HudZrd_Key_Sound[6];
 extern int g_HudUiMgrObjectiveChatComposeActive;
 extern HudUiWidget g_HudUiMgrSensorPanel;
 extern HudUiWidget g_HudUiMgrSensorOverlay;

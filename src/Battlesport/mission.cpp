@@ -827,7 +827,7 @@ int HudSensorTracker::ShutdownMissionGameplaySystems()
     zTurret_System::FreeAllRuntimes();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingWeaponsMsg);
-    OptCatalog::ShutdownCore();
+    OptCatalogShutdownCore();
 
     HudUiLoadingCheckpoint::AdvanceAndLog(g_HudSensorTracker_ClosingEffectsMsg);
     zEffect::Reset();

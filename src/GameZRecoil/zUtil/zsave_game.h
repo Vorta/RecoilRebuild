@@ -84,11 +84,11 @@ struct PlayerTimedHitStatus {
     CZNodePartial* lightNode;
     float nextUpdateTime;
     CZNodePartial* lightParentNode;
-
-    void ResetFields();
-    void ClearLightAndReset();
-    int TickAndUpdateLight(float hitStatus);
 };
+
+extern "C" void __fastcall PlayerTimedHitStatusResetFields(PlayerTimedHitStatus* status);
+extern "C" void __fastcall PlayerTimedHitStatusClearLightAndReset(PlayerTimedHitStatus* status);
+extern "C" int __fastcall PlayerTimedHitStatusTickAndUpdateLight(PlayerTimedHitStatus* status, float hitStatus);
 
 struct zUtil_PlayerStateStorage {
     union {

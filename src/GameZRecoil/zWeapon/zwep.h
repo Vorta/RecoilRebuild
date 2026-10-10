@@ -8,6 +8,7 @@ struct zZbdSectionCallbackCtx;
 struct CZNodePartial;
 struct OptCatalogEntryDef;
 
+#ifdef __cplusplus
 namespace zReader {
 struct Node;
 }
@@ -15,14 +16,17 @@ struct Node;
 typedef void(__fastcall* zWeaponOptCatalogEntryCallback)(zReader::Node* entryNode, OptCatalogEntryDef* entry);
 
 extern "C" {
+#endif
 extern int g_zWeapon_ZarHandlerRegistered;
 extern char g_zWeapon_ArchiveName[8];
 extern float g_zWeapon_MaxTetherAltitude;
 
 int __cdecl zWepInit();
+#ifdef __cplusplus
 }
 
 namespace zWeapon {
+extern "C" {
 int __fastcall LoadOptCatalogFromPath(
     CZNodePartial* worldNode,
     const char* path,
@@ -38,8 +42,10 @@ void __fastcall OnWeaponsSectionDataReady(
     void* userData
 );
 void __stdcall SetMaxTetherAltitude(float altitude);
+}
 } // namespace zWeapon
 
 namespace zWeapon_OptCatalog {
 void __fastcall LoadKillVerbString(zReader::Node* entryNode, OptCatalogEntryDef* entry);
 }
+#endif

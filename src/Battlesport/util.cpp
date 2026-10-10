@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* zSound entry point (zsnd_parm.cpp); a C function since zwep_ammo.c calls it too. */
+extern "C" int __fastcall zSndPlayHandleSetFreqScaled(zSndPlayHandle* playHandle, float scale);
+
 /**
  * @recoil-anchor recoil:anchor:battlesport-util-g-huduimessageboxdialog-sectionname
  * @recoil-artifact defines .data recoil:data:0x4dd1c8: g_HudUiMessageBoxDialog_SectionName.
@@ -350,7 +353,8 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(int enabled)
     }
 
     if (primaryModalState->modalSfxHandle[2] != 0) {
-        primaryModalState->modalSfxHandle[2]->SetFreqScaled(
+        zSndPlayHandleSetFreqScaled(
+            primaryModalState->modalSfxHandle[2],
             primaryModalState->masterModalData->sfxPitchScale * modeLoopBlend
         );
         primaryModalState->modalSfxHandle[2]->SetEnableScale(1.0f - modeLoopBlend);
@@ -364,7 +368,8 @@ void zUtil_SaveGameState::UpdateModalLoopSfx(int enabled)
         engineEnableScale = 0.0f;
     }
 
-    primaryModalState->modalSfxHandle[0]->SetFreqScaled(
+    zSndPlayHandleSetFreqScaled(
+        primaryModalState->modalSfxHandle[0],
         primaryModalState->masterModalData->sfxPitchScale * modeLoopBlend
     );
     primaryModalState->modalSfxHandle[0]->SetEnableScale(engineEnableScale);
