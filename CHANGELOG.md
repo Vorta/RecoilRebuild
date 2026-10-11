@@ -250,7 +250,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 - Mission CD music now adapts to the disc's track count instead of cycling through three fixed tracks.
 - Skid sounds now stop when a collision is resolved in HOVER mode.
 - Primary fire now pauses for one second after changing vehicle form.
-- Vehicle movement speed is no longer reduced according to remaining health.
+- Damaged enemy vehicles no longer have their movement speed limits reduced in proportion to remaining health.
 - Model fog now accounts for distance to the side of the camera as well as forward distance.
 - Scripted screen fades now use the selected accelerator when hardware rendering is active.
 - Multiplayer setup now labels the match goal as kills or laps according to the selected world.
