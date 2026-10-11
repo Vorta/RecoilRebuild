@@ -1189,13 +1189,13 @@ int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(SpanNodePartial* lhs, Sp
     float depthA;
     float depthB;
     float lhsWidth;
-    float lhsDepthDelta;
     float rhsStartOffset;
+    float lhsDepthDelta;
     float rhsStartDepthDelta;
     float lhsStartSide;
     float negativeBias;
-    float rhsDepthDelta;
     float lhsStartOffset;
+    float rhsDepthDelta;
     float rhsWidth;
     float lhsStartDepthDelta;
     float rhsStartSide;
@@ -1392,9 +1392,9 @@ void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(SpanNodePartial** spanL
         } else {
             maxPendingDepth = pending->invDepthStep;
         }
-        scaledOccluderDepth = (*(int*)(&current->invDepth) < *(int*)(&current->invDepthStep) ? current->invDepth
-                                                                                             : current->invDepthStep)
-            * g_spanDepthBiasPlusOne;
+        scaledOccluderDepth
+            = *(int*)(&current->invDepth) < *(int*)(&current->invDepthStep) ? current->invDepth : current->invDepthStep;
+        scaledOccluderDepth *= g_spanDepthBiasPlusOne;
         if (*(int*)(&scaledOccluderDepth) >= *(int*)(&maxPendingDepth)) {
             pendingInFront = 0;
         } else {

@@ -800,6 +800,17 @@ inline void HudUiSetPanelVectorVisible(HudUiPanelPtrVector& panels, int visible)
 }
 
 struct HudUiZrdDeleteChildIfPresent {
+    /**
+     * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-delete-child-if-present
+     * @recoil-artifact defines .text recoil:function:0x4b52f0: HudUiZrdDeleteChildIfPresent::operator().
+     * @recoil-match byte
+     *
+     * Purpose: delete one label panel and replace its vector slot with null.
+     * Evidence: retail ~HudUiZrdWidget (0x4b50c0) calls 0x4b52f0 from its first
+     * std::transform with ECX set to the functor copy's address (thiscall, ret 4);
+     * the other two transforms expand it inline. Same deleting-functor shape as
+     * HudCmdBindingEntryDelete::operator() (0x40bf20).
+     */
     HudUiPanel* operator()(HudUiPanel* childWidgetOrNull)
     {
         delete childWidgetOrNull;
@@ -2023,21 +2034,6 @@ HudUiZrdWidget::~HudUiZrdWidget()
     if (image != 0 && ownsImage == 0) {
         zVid_Image::ReleaseIfNotDefault(image);
     }
-}
-
-/**
- * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-delete-child-if-present
- * @recoil-artifact defines .text recoil:function:0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent.
- * @recoil-match source
- * Purpose: delete a child widget when one is given; used to empty the label-panel lists.
- */
-void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)
-{
-    if (childWidgetOrNull != 0) {
-        delete ((HudUiElement*)(childWidgetOrNull));
-    }
-
-    return 0;
 }
 
 /**

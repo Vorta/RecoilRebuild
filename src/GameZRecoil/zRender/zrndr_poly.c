@@ -1332,15 +1332,17 @@ unsigned short g_mmxMaskBlueBits[4] = { 0 };
  */
 #define ZRNDR_SCAN_EDGE_ADD(edgeTable, edgeCount)                                                                      \
     if (edgeSampleY <= vertices[nextIndex].y) {                                                                        \
-        const float dy = vertices[nextIndex].y - vertices[edgeVertexIndex].y;                                          \
+        const zVec3* const start = &vertices[edgeVertexIndex];                                                         \
+        const zVec3* const end = &vertices[nextIndex];                                                                 \
+        const float dy = end->y - start->y;                                                                            \
         ScanConvertEdge* const edge = &edgeTable[edgeCount++];                                                         \
         edge->yStart = edgeYStart;                                                                                     \
         if (dy != 0.0f) {                                                                                              \
-            const float xSlope = (vertices[nextIndex].x - vertices[edgeVertexIndex].x) / dy;                           \
+            const float xSlope = (end->x - start->x) / dy;                                                             \
             ZRNDR_FIXED16_FROM_FLOAT(edge->xStepFixed, xSlope);                                                        \
             ZRNDR_FIXED16_FROM_FLOAT(                                                                                  \
                 edge->currentXFixed,                                                                                   \
-                vertices[edgeVertexIndex].x + ((float)(edgeYStart) - -0.5f - vertices[edgeVertexIndex].y) * xSlope     \
+                start->x + ((float)(edgeYStart) - -0.5f - start->y) * xSlope                                           \
             );                                                                                                         \
         }                                                                                                              \
         ZRNDR_FIXED16_FROM_FLOAT(fixed16Value, vertices[nextIndex].y);                                                 \
@@ -1402,7 +1404,7 @@ unsigned short g_mmxMaskBlueBits[4] = { 0 };
  * @recoil-artifact defines .text recoil:function:0x492000: zRndrRasterizePolyWithSpanList
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.poly.plane-gradient.rasterize-span-list recoil:function:0x492000
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.poly.plane-gradient.rasterize-span-list
- *
+ * @recoil-match byte
  *
  * Purpose: Rasterize one polygon through the active span-list builder and selected span routine.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
@@ -1464,7 +1466,6 @@ void __fastcall zRndrRasterizePolyWithSpanList(zVec3* vertices, zVec3* planeVert
     int nextIndex;
     int edgeYStart;
     float edgeSampleY;
-    int firstScanline;
     int lastScanline;
     SpanNodePartial* visibleSpans[0x141];
     int edgeIndexA;
@@ -1581,9 +1582,10 @@ void __fastcall zRndrRasterizePolyWithSpanList(zVec3* vertices, zVec3* planeVert
     }
 
     ZRNDR_FIXED16_FROM_FLOAT(fixed16Value, vertices[topVertexIndex].y);
-    firstScanline = (fixed16Value + 0x7fff) >> 16;
+    y = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_FIXED16_FROM_FLOAT(fixed16Value, vertices[bottomVertexIndex].y);
     lastScanline = (fixed16Value - 0x8041) >> 16;
+    scanlineBase = (unsigned char*)(g_frameBuffer) + y * g_pitchBytes;
 
     edgeIndexA = 0;
     edgeIndexB = 0;
@@ -1591,9 +1593,8 @@ void __fastcall zRndrRasterizePolyWithSpanList(zVec3* vertices, zVec3* planeVert
     currentXFixedB = edgeTableB[0].currentXFixed;
     xStepFixedA = edgeTableA[0].xStepFixed;
     xStepFixedB = edgeTableB[0].xStepFixed;
-    scanlineBase = (unsigned char*)(g_frameBuffer) + firstScanline * g_pitchBytes;
 
-    for (y = firstScanline; y <= lastScanline; ++y) {
+    for (; y <= lastScanline; ++y) {
         int xMin;
         int xMax;
         while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {
@@ -1619,11 +1620,12 @@ void __fastcall zRndrRasterizePolyWithSpanList(zVec3* vertices, zVec3* planeVert
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-            const float rowDepthBase = (float)(y)*invDepthSlope.y + invDepthBiasBase;
+            float rowDepthBase;
             int spanCount;
             int spanIndex;
             g_spanAllocCursor->sampleXMin = xMin;
             g_spanAllocCursor->sampleXMax = xMax;
+            rowDepthBase = (float)(y)*invDepthSlope.y + invDepthBiasBase;
             g_spanAllocCursor->invDepth
                 = ((float)(xMin)*invDepthSlope.x + rowDepthBase) * g_inverseDepthScale + g_inverseDepthBias;
             g_spanAllocCursor->invDepthStep
@@ -1648,7 +1650,7 @@ void __fastcall zRndrRasterizePolyWithSpanList(zVec3* vertices, zVec3* planeVert
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanocclusionrasterizeoccluderpoly
  * @recoil-artifact defines .text recoil:function:0x4927d0: zRndr::SpanOcclusionRasterizeOccluderPoly.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: rasterize one saved occluder polygon into span nodes for each
@@ -1677,7 +1679,6 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
     int edgeYStart;
     float edgeSampleY;
     ScanConvertEdge* edge;
-    int firstScanline;
     int lastScanline;
     int y;
     int edgeIndexA;
@@ -1744,12 +1745,13 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
                 }
                 if (edgeSampleY <= reducedVerts[nextIndex].y) {
                     double fixedBits;
-                    const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                     const zVec3* start = &reducedVerts[edgeVertexIndex];
+                    const zVec3* end = &reducedVerts[nextIndex];
+                    const float dy = end->y - start->y;
                     edge = &edgeTableA[edgeCountA++];
                     edge->yStart = edgeYStart;
                     if (dy != 0.0f) {
-                        const float xSlope = (reducedVerts[nextIndex].x - start->x) / dy;
+                        const float xSlope = (end->x - start->x) / dy;
                         fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                         edge->xStepFixed = *(int*)(&fixedBits);
                         fixedBits = 6755399441055744.0
@@ -1775,12 +1777,13 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
                 }
                 if (edgeSampleY <= reducedVerts[nextIndex].y) {
                     double fixedBits;
-                    const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                     const zVec3* start = &reducedVerts[edgeVertexIndex];
+                    const zVec3* end = &reducedVerts[nextIndex];
+                    const float dy = end->y - start->y;
                     edge = &edgeTableB[edgeCountB++];
                     edge->yStart = edgeYStart;
                     if (dy != 0.0f) {
-                        const float xSlope = (reducedVerts[nextIndex].x - start->x) / dy;
+                        const float xSlope = (end->x - start->x) / dy;
                         fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                         edge->xStepFixed = *(int*)(&fixedBits);
                         fixedBits = 6755399441055744.0
@@ -1806,12 +1809,13 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
                 }
                 if (edgeSampleY <= reducedVerts[nextIndex].y) {
                     double fixedBits;
-                    const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                     const zVec3* start = &reducedVerts[edgeVertexIndex];
+                    const zVec3* end = &reducedVerts[nextIndex];
+                    const float dy = end->y - start->y;
                     edge = &edgeTableB[edgeCountB++];
                     edge->yStart = edgeYStart;
                     if (dy != 0.0f) {
-                        const float xSlope = (reducedVerts[nextIndex].x - start->x) / dy;
+                        const float xSlope = (end->x - start->x) / dy;
                         fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                         edge->xStepFixed = *(int*)(&fixedBits);
                         fixedBits = 6755399441055744.0
@@ -1837,12 +1841,13 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
                 }
                 if (edgeSampleY <= reducedVerts[nextIndex].y) {
                     double fixedBits;
-                    const float dy = reducedVerts[nextIndex].y - reducedVerts[edgeVertexIndex].y;
                     const zVec3* start = &reducedVerts[edgeVertexIndex];
+                    const zVec3* end = &reducedVerts[nextIndex];
+                    const float dy = end->y - start->y;
                     edge = &edgeTableA[edgeCountA++];
                     edge->yStart = edgeYStart;
                     if (dy != 0.0f) {
-                        const float xSlope = (reducedVerts[nextIndex].x - start->x) / dy;
+                        const float xSlope = (end->x - start->x) / dy;
                         fixedBits = 6755399441055744.0 - (double)(xSlope * -65536.0f);
                         edge->xStepFixed = *(int*)(&fixedBits);
                         fixedBits = 6755399441055744.0
@@ -1859,7 +1864,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
         }
 
         ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[topVertexIndex].y);
-        firstScanline = (fixed16Value + 0x7fff) >> 16;
+        y = (fixed16Value + 0x7fff) >> 16;
         currentXFixedA = edgeTableA[0].currentXFixed;
         currentXFixedB = edgeTableB[0].currentXFixed;
         edgeIndexB = 0;
@@ -1872,7 +1877,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
     {
         SpanNodePartial* spanList[0x141];
         int spanCount;
-        for (y = firstScanline; y <= lastScanline; ++y) {
+        for (; y <= lastScanline; ++y) {
             while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {
                 currentXFixedA = edgeTableA[edgeIndexA].currentXFixed;
                 xStepFixedA = edgeTableA[edgeIndexA].xStepFixed;
@@ -1912,7 +1917,7 @@ void __fastcall SpanOcclusionRasterizeOccluderPoly(SpanOccluderPolyPartial* poly
  * @recoil-artifact defines .text recoil:function:0x492f00: zRndrDrawFlatImmediate
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.poly.plane-gradient.flat-immediate recoil:function:0x492f00
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.poly.plane-gradient.flat-immediate
- *
+ * @recoil-match byte
  *
  * Purpose: Draw an immediate flat polygon through the flat span callback path.
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
@@ -1975,7 +1980,6 @@ zRndrDrawFlatImmediate(zVec3* vertices, zVec3* planeVertices, int vertCount, int
     int nextIndex;
     int edgeYStart;
     float edgeSampleY;
-    int firstScanline;
     int lastScanline;
     SpanNodePartial* visibleSpans[0x141];
     int edgeIndexA;
@@ -2092,9 +2096,10 @@ zRndrDrawFlatImmediate(zVec3* vertices, zVec3* planeVertices, int vertCount, int
     }
 
     ZRNDR_FIXED16_FROM_FLOAT(fixed16Value, vertices[topVertexIndex].y);
-    firstScanline = (fixed16Value + 0x7fff) >> 16;
+    y = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_FIXED16_FROM_FLOAT(fixed16Value, vertices[bottomVertexIndex].y);
     lastScanline = (fixed16Value - 0x8041) >> 16;
+    scanlineBase = (unsigned char*)(g_frameBuffer) + y * g_pitchBytes;
 
     edgeIndexA = 0;
     edgeIndexB = 0;
@@ -2102,9 +2107,8 @@ zRndrDrawFlatImmediate(zVec3* vertices, zVec3* planeVertices, int vertCount, int
     currentXFixedB = edgeTableB[0].currentXFixed;
     xStepFixedA = edgeTableA[0].xStepFixed;
     xStepFixedB = edgeTableB[0].xStepFixed;
-    scanlineBase = (unsigned char*)(g_frameBuffer) + firstScanline * g_pitchBytes;
 
-    for (y = firstScanline; y <= lastScanline; ++y) {
+    for (; y <= lastScanline; ++y) {
         int xMin;
         int xMax;
         while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {
@@ -2130,11 +2134,12 @@ zRndrDrawFlatImmediate(zVec3* vertices, zVec3* planeVertices, int vertCount, int
         currentXFixedA += xStepFixedA;
         currentXFixedB += xStepFixedB;
         if (xMin <= xMax) {
-            const float rowDepthBase = (float)(y)*invDepthSlope.y + invDepthBiasBase;
+            float rowDepthBase;
             int spanCount;
             int spanIndex;
             g_spanAllocCursor->sampleXMin = xMin;
             g_spanAllocCursor->sampleXMax = xMax;
+            rowDepthBase = (float)(y)*invDepthSlope.y + invDepthBiasBase;
             g_spanAllocCursor->invDepth
                 = ((float)(xMin)*invDepthSlope.x + rowDepthBase) * g_inverseDepthScale + g_inverseDepthBias;
             g_spanAllocCursor->invDepthStep
@@ -2159,7 +2164,7 @@ zRndrDrawFlatImmediate(zVec3* vertices, zVec3* planeVertices, int vertCount, int
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-rasterizepoly
  * @recoil-artifact defines .text recoil:function:0x4936d0: zRndrRasterizePoly
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: Scan-convert a polygon and dispatch each covered span to the selected span routine.
@@ -2371,14 +2376,14 @@ void __fastcall zRndrRasterizePoly(zVec3* vertices, int vertCount, int spanOpCon
     firstScanline = (fixed16Value + 0x7fff) >> 16;
     // Retail converts the bottom vertex before forming scanlineBase (fld at 0x493cac precedes the add at 0x493cb6).
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, reducedVerts[bottomVertexIndex].y);
-    scanlineBase = (unsigned char*)(g_frameBuffer) + firstScanline * g_pitchBytes;
     lastScanline = (fixed16Value - 0x8041) >> 16;
     edgeIndexB = 0;
     edgeIndexA = 0;
     currentXFixedB = edgeTableB[0].currentXFixed;
+    scanlineBase = (unsigned char*)(g_frameBuffer) + firstScanline * g_pitchBytes;
     currentXFixedA = edgeTableA[0].currentXFixed;
-    xStepFixedB = edgeTableB[0].xStepFixed;
     xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
     if (firstScanline > lastScanline) {
         return;
     }
@@ -5554,7 +5559,7 @@ void __fastcall zRndrFillSpan555Solid(int packedColor16, int blendAlpha, int pix
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan565solid
  * @recoil-artifact defines .text recoil:function:0x4998a0: zRndrFillSpan565Solid
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Blend a solid color into the active 565 span using the supplied alpha.
  *

@@ -1669,39 +1669,33 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
         prevIndex = *vertexCount - 1;
         for (i = 0; i < *vertexCount; ++i) {
             if (g_Clip_PolyVerts[prevIndex].x >= clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
-                destVerts->x = g_Clip_PolyVerts[i].x;
-                destVerts->y = g_Clip_PolyVerts[i].y;
-                ++destVerts;
-                *destAttrs = g_Clip_PolyAttr0[i];
-                ++destAttrs;
+                destVerts[outputCount].x = g_Clip_PolyVerts[i].x;
+                destVerts[outputCount].y = g_Clip_PolyVerts[i].y;
+                destAttrs[outputCount] = g_Clip_PolyAttr0[i];
                 ++outputCount;
             } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x < clipRect->xMin) {
                 // Both outside: nothing is emitted.
             } else if (g_Clip_PolyVerts[prevIndex].x >= clipRect->xMin && g_Clip_PolyVerts[i].x < clipRect->xMin) {
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
-                destVerts->x = clipRect->xMin;
-                destVerts->y
+                destVerts[outputCount].x = clipRect->xMin;
+                destVerts[outputCount].y
                     = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                ++destVerts;
-                *destAttrs = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                ++destAttrs;
+                destAttrs[outputCount]
+                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
                 ++outputCount;
             } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
-                destVerts->x = clipRect->xMin;
-                destVerts->y
+                destVerts[outputCount].x = clipRect->xMin;
+                destVerts[outputCount].y
                     = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                ++destVerts;
-                *destAttrs = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                ++destAttrs;
+                destAttrs[outputCount]
+                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
                 ++outputCount;
-                destVerts->x = g_Clip_PolyVerts[i].x;
-                destVerts->y = g_Clip_PolyVerts[i].y;
-                ++destVerts;
-                *destAttrs = g_Clip_PolyAttr0[i];
-                ++destAttrs;
+                destVerts[outputCount].x = g_Clip_PolyVerts[i].x;
+                destVerts[outputCount].y = g_Clip_PolyVerts[i].y;
+                destAttrs[outputCount] = g_Clip_PolyAttr0[i];
                 ++outputCount;
             }
 
@@ -1729,35 +1723,27 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
         prevIndex = *vertexCount - 1;
         for (i = 0; i < *vertexCount; ++i) {
             if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                 // Both outside: nothing is emitted.
             } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
-                destVerts->x = clipRect->xMaxAlt;
-                destVerts->y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].x = clipRect->xMaxAlt;
+                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
             } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
-                destVerts->x = clipRect->xMaxAlt;
-                destVerts->y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].x = clipRect->xMaxAlt;
+                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             }
 
@@ -1785,35 +1771,27 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
         prevIndex = *vertexCount - 1;
         for (i = 0; i < *vertexCount; ++i) {
             if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                 // Both outside: nothing is emitted.
             } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
-                destVerts->y = clipRect->yMin;
-                destVerts->x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].y = clipRect->yMin;
+                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
-                destVerts->y = clipRect->yMin;
-                destVerts->x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].y = clipRect->yMin;
+                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             }
 
@@ -1841,35 +1819,27 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
         prevIndex = *vertexCount - 1;
         for (i = 0; i < *vertexCount; ++i) {
             if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                 // Both outside: nothing is emitted.
             } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
-                destVerts->y = clipRect->yMaxAlt;
-                destVerts->x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].y = clipRect->yMaxAlt;
+                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
-                destVerts->y = clipRect->yMaxAlt;
-                destVerts->x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                ++destVerts;
-                *destAttrs = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
-                ++destAttrs;
+                destVerts[outputCount].y = clipRect->yMaxAlt;
+                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
                 ++outputCount;
-                destVerts->x = sourceVerts[i].x;
-                destVerts->y = sourceVerts[i].y;
-                ++destVerts;
-                *destAttrs = sourceAttrs[i];
-                ++destAttrs;
+                destVerts[outputCount].x = sourceVerts[i].x;
+                destVerts[outputCount].y = sourceVerts[i].y;
+                destAttrs[outputCount] = sourceAttrs[i];
                 ++outputCount;
             }
 
