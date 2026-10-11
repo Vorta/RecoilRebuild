@@ -346,10 +346,11 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int col
         return color1;
     }
 
-    const float inverseBlend = 1.0 - blend;
-    const int blue = (int)(GetRValue(color0) * inverseBlend + GetRValue(color1) * blend);
-    const int green = (int)(GetGValue(color0) * inverseBlend + GetGValue(color1) * blend);
-    const int red = (int)((int)((color0 >> 16) & 0xffu) * inverseBlend + (int)((color1 >> 16) & 0xffu) * blend);
+    // Retail computes 1.0 - blend once in double precision (fsubr qword) and keeps it unrounded on the x87
+    // stack for all three channels (0x4bb0ff); the inline double term reproduces that without a float local.
+    const int blue = (int)(GetRValue(color0) * (1.0 - blend) + GetRValue(color1) * blend);
+    const int green = (int)(GetGValue(color0) * (1.0 - blend) + GetGValue(color1) * blend);
+    const int red = (int)(GetBValue(color0) * (1.0 - blend) + GetBValue(color1) * blend);
     return RGB(blue, green, red);
 }
 

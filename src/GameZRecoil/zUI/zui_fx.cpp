@@ -174,39 +174,6 @@ const int kHudWeatherFxSnowTextureWidth = 16;
 const int kHudWeatherFxSnowTextureHeight = 8;
 const int kHudWeatherFxSnowTextureTexels = kHudWeatherFxSnowTextureWidth * kHudWeatherFxSnowTextureHeight;
 
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update and 0x4be880 HudWeatherFxRain::Update.
- * Purpose: Compute a weather particle velocity vector's squared length before normalization.
- */
-inline float HudWeatherFxVec3LengthSq(const zVec3* value)
-{
-    return value->x * value->x + value->y * value->y + value->z * value->z;
-}
-
-/**
- * Original inline helper; no standalone retail function exists.
- * Observed callers: 0x4be2f0 HudWeatherFxSnow::Update.
- * Purpose: Decide whether a snow particle left the visible weather cone and must respawn.
- */
-inline int HudWeatherFxSnowNeedsReset(const zVec3* position)
-{
-    const float absZ = (float)(fabs(position->z));
-    if ((float)(fabs(position->y)) > absZ) {
-        return 1;
-    }
-    if ((float)(fabs(position->x)) > absZ) {
-        return 1;
-    }
-    if (position->z > 1.0) {
-        return 1;
-    }
-    if (position->z < 0.5) {
-        return 1;
-    }
-    return 0;
-}
-
 enum zVideoRendererBackend {
     ZVID_RENDERER_BACKEND_SOFTWARE = 0,
 };
@@ -624,17 +591,22 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
         // Retail multiplies by the constant last and consumes sourceDepthFactor here (fxch/fmulp).
         particleQuads[particleIndex].slantOffset = (int)(3.5 * sourceDepthFactor * (float)(activeParticleCount + 1));
 
-        if (HudWeatherFxSnowNeedsReset(&particlePositions[destBufferIndex][particleIndex]) != 0) {
+        // Retail tests the respawn cone inline: with a helper or a position pointer VC5 picks the
+        // ResetParticleSlot index (EDX) and HudUiElement::Update argument (EAX) registers one step off.
+        const float absZ = (float)(fabs(particlePositions[destBufferIndex][particleIndex].z));
+        if ((float)(fabs(particlePositions[destBufferIndex][particleIndex].y)) > absZ
+            || (float)(fabs(particlePositions[destBufferIndex][particleIndex].x)) > absZ
+            || particlePositions[destBufferIndex][particleIndex].z > 1.0
+            || particlePositions[destBufferIndex][particleIndex].z < 0.5) {
             ResetParticleSlot(particleIndex, 0);
         }
     }
 
     HudUiElement::Update(deltaSeconds);
 
-    // Both buffer indices are read before either is stored, as in retail.
+    // VC5 still loads both indices before either store (retail 0x4be7ee).
     const int oldSourceBufferIndex = sourceBufferIndex;
-    const int oldDestBufferIndex = destBufferIndex;
-    sourceBufferIndex = oldDestBufferIndex;
+    sourceBufferIndex = destBufferIndex;
     destBufferIndex = oldSourceBufferIndex;
 }
 

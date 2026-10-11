@@ -1658,7 +1658,7 @@ int __fastcall gwNodeUpdate(CZNodePartial* node)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.class.gwnoderecalcbbox
  * @recoil-artifact defines .text recoil:function:0x448e90: CZClass::gwNodeRecalcBBox.
- *
+ * @recoil-match byte
  *
  * Purpose: select or merge primary and child bounds, cache the result, and
  * propagate parent/world-grid bounds updates.
@@ -1698,9 +1698,11 @@ int __fastcall gwNodeRecalcBBox(CZNodePartial* node)
         value = nodeSlot->primaryBounds.max.y > nodeSlot->secondaryBounds.max.y ? nodeSlot->primaryBounds.max.y
                                                                                 : nodeSlot->secondaryBounds.max.y;
         merged.max.y = value;
-        value = nodeSlot->primaryBounds.max.z > nodeSlot->secondaryBounds.max.z ? nodeSlot->primaryBounds.max.z
-                                                                                : nodeSlot->secondaryBounds.max.z;
-        merged.max.z = value;
+        // The captured last select stores inside each arm (retail fld; fstp; lea &merged).
+        merged.max.z
+            = (value = nodeSlot->primaryBounds.max.z > nodeSlot->secondaryBounds.max.z
+                    ? nodeSlot->primaryBounds.max.z
+                    : nodeSlot->secondaryBounds.max.z);
         bboxSource = &merged;
     } else if ((node->flags & 0x200) != 0) {
         bboxSource = &nodeSlot->primaryBounds;
