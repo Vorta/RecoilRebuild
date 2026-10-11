@@ -2814,7 +2814,7 @@ int __fastcall MergeContours(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-newcontour
  * @recoil-artifact defines .text recoil:function:0x4680b0: zGeometry_Weiler::NewContour
- *
+ * @recoil-match byte
  *
  * Purpose: Rebuild contour output type and point counts, clear stale segment output ownership, and track
  * all-single-sided state.
@@ -2832,6 +2832,9 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
     while (contourCount != 0) {
         if (contour->firstSegment != 0) {
             zGeometry_WeilerContourSegmentPartial* const firstSegment = contour->firstSegment;
+            // The contour's point count is updated through this alias (retail stores the count reset after the type
+            // merge).
+            int& pointCount = contour->pointCount;
             int primarySide = firstSegment->contourType & 3;
             contour->contourType = firstSegment->contourType;
 
@@ -2841,7 +2844,7 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
                 firstSegment->next = oldPrev;
             }
 
-            contour->pointCount = 1;
+            pointCount = 1;
             zGeometry_WeilerContourSegmentPartial* segment
                 = zGeometry_Weiler::GetNextContourSegmentForTraversal(firstSegment);
 
@@ -2849,7 +2852,7 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
                 if (primarySide == 0 && (segment->contourType & 3) != 0) {
                     primarySide = 1;
                     contour->contourType |= segment->contourType;
-                    contour->pointCount = 1;
+                    pointCount = 1;
 
                     zGeometry_WeilerContourSegmentPartial* const oldNext = firstSegment->next;
                     firstSegment->next = firstSegment->prev;
@@ -2861,7 +2864,7 @@ void __fastcall NewContour(zGeometry_WeilerStatePartial* self)
 
                     segment = zGeometry_Weiler::GetNextContourSegmentForTraversal(firstSegment);
                 } else {
-                    ++contour->pointCount;
+                    ++pointCount;
                     contour->contourType |= segment->contourType;
 
                     zGeometry_WeilerContourOutputPartial* const oldOutput = segment->contourOutput;

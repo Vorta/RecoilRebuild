@@ -473,13 +473,25 @@ void __stdcall zMathMatLoadProjection(float zOffset)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-mat-loadview
  * @recoil-artifact defines .text recoil:function:0x473060: zMathMatLoadView
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-negate
+ *
+ *
+ * Raw assembly: two unchanged zmth.h ZMTH_VECTOR_NEGATE expansions:
+ * [0x4730b9,0x4730e0) for the camera y row and
+ * [0x4730f0,0x473117) for the camera z row. Each 39-byte island
+ * flips the three binary32 sign bits in place using integer
+ * operations, with all component loads before the stores.
+ * The compiler owns row-address evaluation, pointer captures and
+ * homes, current-matrix-slot reloads, frame, register saves, calls
+ * and surrounding control flow. The translation initialization
+ * remains native C outside these islands.
  *
  *
  * Purpose: builds the current view matrix from camera and parent transforms.
  */
 void __cdecl zMathMatLoadView(void)
 {
-    zVec3 parentEuler = g_zMath_Vec3Zero;
+    zVec3 parentEuler;
     zMat4x3* current;
     zVec3 cameraEuler;
     zQuat parentQuat;
@@ -489,32 +501,31 @@ void __cdecl zMathMatLoadView(void)
     const zMat4x3* parent;
     if (g_currentMatrixIdentityFlagSlot[-1] == 0) {
         zMathMatExtractEulerAngles((const zMat4x3*)(g_currentMatrixPtrSlot[-1]), &parentEuler);
+    } else {
+        parentEuler = g_zMath_Vec3Zero;
     }
 
     MatLoadCameraScratchA();
     current = (zMat4x3*)(*g_currentMatrixPtrSlot);
-    current->yx = -current->yx;
-    current->yy = -current->yy;
-    current->yz = -current->yz;
-    current->zx = -current->zx;
-    current->zy = -current->zy;
-    current->zz = -current->zz;
+    ZMTH_VECTOR_NEGATE((const zVec3*)(&current->yx), (zVec3*)(&current->yx));
+    current = (zMat4x3*)(*g_currentMatrixPtrSlot);
+    ZMTH_VECTOR_NEGATE((const zVec3*)(&current->zx), (zVec3*)(&current->zx));
 
-    cameraEuler = g_zMath_Vec3Zero;
-    zMathMatExtractEulerAngles(current, &cameraEuler);
+    zMathMatExtractEulerAngles((const zMat4x3*)(*g_currentMatrixPtrSlot), &cameraEuler);
 
     zMathQuatFromEulerYXZ(&parentQuat, parentEuler.y, parentEuler.x, parentEuler.z);
     zMathQuatFromEulerYXZ(&cameraQuat, cameraEuler.y, cameraEuler.x, cameraEuler.z);
     zMathQuatMultiplyConjugate(&cameraQuat, &parentQuat, &relativeQuat);
     zMathQuatToMatrix(&relativeQuat, &viewMatrix);
+    // Retail restoration: zMathQuatToMatrix writes only the 3x3, and retail
+    // initializes the translation from g_zMath_Vec3Zero before the load.
+    *(zVec3*)(&viewMatrix.posX) = g_zMath_Vec3Zero;
     MatLoadCurrentFrom(&viewMatrix);
     MatMultiply((const zMat4x3*)(g_currentMatrixPtrSlot[-1]), 1);
 
     current = (zMat4x3*)(*g_currentMatrixPtrSlot);
     parent = (const zMat4x3*)(g_currentMatrixPtrSlot[-1]);
-    current->posX = parent->posX;
-    current->posY = parent->posY;
-    current->posZ = parent->posZ;
+    *(zVec3*)(&current->posX) = *(const zVec3*)(&parent->posX);
 
     MatStackPushPtr((float*)(&viewMatrix));
     MatLoadCameraScratchB();
@@ -641,47 +652,400 @@ void __cdecl MatLoadIdentity(void)
 }
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-3x3
+ *
+ * Purpose: Multiply the 3x3 rotation parts, product = left * right (row-vector
+ * convention); the translation members of product are not written.
+ * Reconstruction: reconstructed as a zmth_main.c-resident inline helper
+ * expansion inferred from the two retail MatMultiply kernels and placed
+ * immediately before its consumer; it is not proved to have been this
+ * original inline function, and original spelling and declaration location
+ * are unproved. The recorded whole-image search found this kernel head only
+ * in the two MatMultiply expansions.
+ * Island contract: the named left/right/product operands are reloaded into
+ * EAX/EBX/ECX from compiler-owned homes; EAX/EBX/ECX are unavailable to
+ * surrounding C across the island; ESP/EBP, integer flags and the x87
+ * control word are unchanged. Reads the nine 3x3 members of each input and
+ * writes exactly the nine 3x3 members of product. product must not overlap
+ * left or right; the two read-only inputs need not be mutually disjoint.
+ * x87 entry/peak/exit depth 0/6/0 on normal completion (three left-row
+ * values stay on the stack while each row is formed); x87 status and
+ * exceptions are not preserved.
+ * Consumers are scoped by the raw-assembly allowlist.
+ * Fallback: mathematical reference only, not a floating-point substitute
+ * for the instruction schedule (grouping, rounding, exceptional inputs and
+ * status effects may differ). It also leaves product's translation
+ * unwritten, but does not define the stale values retail later copies.
+ * Original inline helper evidence (inferential): no standalone retail
+ * function; observed at retail 0x473370.
+ */
+__inline void MatMultiply3x3(const zMat4x3* left, const zMat4x3* right, zMat4x3* product)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+    mov eax, left
+    mov ebx, right
+    mov ecx, product
+    fld dword ptr [eax]zMat4x3.xx
+    fld dword ptr [eax]zMat4x3.xy
+    fld dword ptr [eax]zMat4x3.xz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.xx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.xy
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.yx
+    fxch st(2)
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.yz
+    fld dword ptr [eax]zMat4x3.yy
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.xz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.yx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.yy
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.zx
+    fxch st(2)
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.zz
+    fld dword ptr [eax]zMat4x3.zy
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.yz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.zx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.zy
+    faddp st(1), st
+    faddp st(1), st
+    fstp dword ptr [ecx]zMat4x3.zz
+    }
+#else
+    product->xx = left->xx * right->xx + left->xy * right->yx + left->xz * right->zx;
+    product->xy = left->xx * right->xy + left->xy * right->yy + left->xz * right->zy;
+    product->xz = left->xx * right->xz + left->xy * right->yz + left->xz * right->zz;
+    product->yx = left->yx * right->xx + left->yy * right->yx + left->yz * right->zx;
+    product->yy = left->yx * right->xy + left->yy * right->yy + left->yz * right->zy;
+    product->yz = left->yx * right->xz + left->yy * right->yz + left->yz * right->zz;
+    product->zx = left->zx * right->xx + left->zy * right->yx + left->zz * right->zx;
+    product->zy = left->zx * right->xy + left->zy * right->yy + left->zz * right->zy;
+    product->zz = left->zx * right->xz + left->zy * right->yz + left->zz * right->zz;
+#endif
+}
+
+/**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-4x3
+ *
+ * Purpose: Multiply two affine 4x3 matrices, product = left * right (row-vector
+ * convention), including the translation row.
+ * Reconstruction: reconstructed as a zmth_main.c-resident inline helper
+ * expansion inferred from the two retail MatMultiply kernels and placed
+ * immediately before its consumer; it is not proved to have been this
+ * original inline function, and original spelling and declaration location
+ * are unproved. With the operand homes named by role, its first 110
+ * instructions equal the 3x3 kernel (the home displacements differ). It is
+ * not the 3x3 kernel followed by an independent translation block: the
+ * translation row is loaded before the final 3x3 store.
+ * Island contract: the named left/right/product operands are reloaded into
+ * EAX/EBX/ECX from compiler-owned homes; EAX/EBX/ECX are unavailable to
+ * surrounding C across the island; ESP/EBP, integer flags and the x87
+ * control word are unchanged. Reads the members of left and right used by
+ * the affine 4x3 product and writes all twelve members of product, the
+ * translation by the listed schedule. product must not overlap left or
+ * right; the two read-only inputs need not be mutually disjoint. x87
+ * entry/peak/exit depth 0/6/0 on normal completion; x87 status and
+ * exceptions are not preserved.
+ * Consumers are scoped by the raw-assembly allowlist.
+ * Fallback: mathematical reference only, not a floating-point substitute
+ * for the instruction schedule (grouping, rounding, exceptional inputs and
+ * status effects may differ).
+ * Original inline helper evidence (inferential): no standalone retail
+ * function; observed at retail 0x473370.
+ */
+__inline void MatMultiply4x3(const zMat4x3* left, const zMat4x3* right, zMat4x3* product)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+    mov eax, left
+    mov ebx, right
+    mov ecx, product
+    fld dword ptr [eax]zMat4x3.xx
+    fld dword ptr [eax]zMat4x3.xy
+    fld dword ptr [eax]zMat4x3.xz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.xx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.xy
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.yx
+    fxch st(2)
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.yz
+    fld dword ptr [eax]zMat4x3.yy
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.xz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.yx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.yy
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.zx
+    fxch st(2)
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.zz
+    fld dword ptr [eax]zMat4x3.zy
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.yz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.zx
+    faddp st(1), st
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(4)
+    faddp st(1), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fstp dword ptr [ecx]zMat4x3.zy
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.posX
+    fxch st(2)
+    faddp st(1), st
+    fld dword ptr [eax]zMat4x3.posZ
+    fld dword ptr [eax]zMat4x3.posY
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.zz
+    fld dword ptr [ebx]zMat4x3.xx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.yx
+    fmul st, st(3)
+    fld dword ptr [ebx]zMat4x3.zx
+    fmul st, st(3)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.xy
+    fmul st, st(5)
+    fxch st(1)
+    faddp st(2), st
+    fld dword ptr [ebx]zMat4x3.yy
+    fmul st, st(4)
+    fxch st(2)
+    fadd dword ptr [ebx]zMat4x3.posX
+    fxch st(1)
+    faddp st(2), st
+    fstp dword ptr [ecx]zMat4x3.posX
+    fld dword ptr [ebx]zMat4x3.zy
+    fmul st, st(2)
+    fxch st(4)
+    fmul dword ptr [ebx]zMat4x3.xz
+    fxch st(1)
+    faddp st(4), st
+    fxch st(1)
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(3)
+    fadd dword ptr [ebx]zMat4x3.posY
+    fxch st(2)
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(1)
+    fadd dword ptr [ebx]zMat4x3.posZ
+    fxch st(2)
+    fstp dword ptr [ecx]zMat4x3.posY
+    faddp st(2), st
+    faddp st(1), st
+    fstp dword ptr [ecx]zMat4x3.posZ
+    }
+#else
+    MatMultiply3x3(left, right, product);
+    product->posX = left->posX * right->xx + left->posY * right->yx + left->posZ * right->zx + right->posX;
+    product->posY = left->posX * right->xy + left->posY * right->yy + left->posZ * right->zy + right->posY;
+    product->posZ = left->posX * right->xz + left->posY * right->yz + left->posZ * right->zz + right->posZ;
+#endif
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matmultiply
  * @recoil-artifact defines .text recoil:function:0x473370: zMath::MatMultiply.
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-3x3
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-4x3
  *
  *
- * Purpose: multiplies the current matrix stack slot by a source matrix,
- * optionally preserving the current translation for mode 2.
+ * Raw assembly: the zmth_main.c-resident inline helper expansions at retail
+ * [0x4733c3,0x4734ce) (3x3, mode 2) and [0x4734e1,0x473653) (4x3),
+ * including their operand-home reloads (requires zmth_main.c /Ob1). The
+ * compiler owns the frame, register saves, src spill, identity fast path,
+ * mode branch, argument captures, join, final 12-dword copy (ordinary C memcpy)
+ * and the identity-flag stores.
+ *
+ *
+ * Purpose: Update the current matrix as src * current, using the retail x87
+ * evaluation schedule. If the current identity flag is set, copy the
+ * complete source matrix and return, irrespective of mode. Otherwise, mode 2
+ * computes only the nine 3x3 elements of the local result. Retail then
+ * copies all twelve dwords of that local result into the current matrix,
+ * including the three translation dwords that this invocation has not
+ * initialized. The reconstruction preserves this observed machine-level
+ * behavior; it does not preserve the previous current translation or define
+ * numerical translation values for that path.
  */
 void __fastcall MatMultiply(const zMat4x3* src, int mode)
 {
-    zMat4x3* current = (zMat4x3*)(*g_currentMatrixPtrSlot);
-    zMat4x3 lhs;
     zMat4x3 out;
     if (*g_currentMatrixIdentityFlagSlot != 0) {
-        memcpy(current, src, sizeof(zMat4x3));
+        memcpy(*g_currentMatrixPtrSlot, src, sizeof(zMat4x3));
         *g_currentMatrixIdentityFlagSlot = 0;
         return;
     }
 
-    lhs = *current;
-
-    out.xx = lhs.xx * src->xx + lhs.yx * src->xy + lhs.zx * src->xz;
-    out.xy = lhs.xy * src->xx + lhs.yy * src->xy + lhs.zy * src->xz;
-    out.xz = lhs.xz * src->xx + lhs.yz * src->xy + lhs.zz * src->xz;
-    out.yx = lhs.xx * src->yx + lhs.yx * src->yy + lhs.zx * src->yz;
-    out.yy = lhs.xy * src->yx + lhs.yy * src->yy + lhs.zy * src->yz;
-    out.yz = lhs.xz * src->yx + lhs.yz * src->yy + lhs.zz * src->yz;
-    out.zx = lhs.xx * src->zx + lhs.yx * src->zy + lhs.zx * src->zz;
-    out.zy = lhs.xy * src->zx + lhs.yy * src->zy + lhs.zy * src->zz;
-    out.zz = lhs.xz * src->zx + lhs.yz * src->zy + lhs.zz * src->zz;
-
-    if (mode != 2) {
-        out.posX = lhs.xx * src->posX + lhs.yx * src->posY + lhs.zx * src->posZ + lhs.posX;
-        out.posY = lhs.xy * src->posX + lhs.yy * src->posY + lhs.zy * src->posZ + lhs.posY;
-        out.posZ = lhs.xz * src->posX + lhs.yz * src->posY + lhs.zz * src->posZ + lhs.posZ;
+    if (mode == 2) {
+        MatMultiply3x3(src, (const zMat4x3*)(*g_currentMatrixPtrSlot), &out);
     } else {
-        out.posX = lhs.posX;
-        out.posY = lhs.posY;
-        out.posZ = lhs.posZ;
+        MatMultiply4x3(src, (const zMat4x3*)(*g_currentMatrixPtrSlot), &out);
     }
-
-    *current = out;
+    memcpy(*g_currentMatrixPtrSlot, &out, sizeof(zMat4x3));
     *g_currentMatrixIdentityFlagSlot = 0;
 }
 
@@ -933,54 +1297,126 @@ void __stdcall MatRotateZ(float angleRad)
 }
 
 /**
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-direction-in-place
+ *
+ * Purpose: Transform a direction in place by the matrix's 3x3 part, without
+ * translation; in the raw arm all reads precede the z/y/x binary32 stores.
+ * Reconstruction: zmth_main.c-resident copy of the reviewed gmod_pick.c
+ * in-place helper: the same named-source helper body, with
+ * consumer-specific operand lowering (retail family 0x4293da, 0x473f6d,
+ * 0x47460f, 0x485315; 0x473f6d is the x87-core start of the 0x473e60
+ * expansion, which begins at 0x473f65). Placed immediately before its first
+ * consumer, 0x473e60; original spelling, header ownership and declaration
+ * placement are unproved.
+ * Raw assembly: the same named-source body as the reviewed gmod_pick.c
+ * island.
+ * Operand setup: EAX/EBX receive vector/matrix through the named C operands.
+ * Inline substitution may use compiler-assigned homes or a symbolic
+ * constant address. No home displacement or absolute address is hard-coded
+ * in this helper's source.
+ * Island contract: EAX/EBX are clobbered; integer flags and the x87 control
+ * word unchanged; x87 entry/peak/exit depth 0/6/0 on normal completion; x87
+ * status and exceptions are not preserved. The vector's three binary32
+ * components must not overlap storage occupied by the matrix's nine 3x3
+ * members: xx, xy, xz, yx, yy, yz, zx, zy and zz. For the allowlisted
+ * 0x473e60 expansion, the vector may occupy that same matrix object's posX,
+ * posY and posZ storage. Stronger consumer-specific preconditions in the
+ * allowlist remain in force (the 0x4745e0 entry retains whole-matrix
+ * non-overlap).
+ * Consumers are scoped by the raw-assembly allowlist.
+ * Retail inline-expansion evidence: the listed consumers contain the operand reloads, arithmetic
+ * sequence and result stores without a call at those sites; the original inline helper's header
+ * ownership and declaration placement are not established (TU-resident reconstruction model).
+ * Original inline helper evidence: no standalone retail function; observed at
+ * retail 0x473e60 and 0x4745e0.
+ */
+__inline void Vec3TransformDirectionInPlace(const zMat4x3* matrix, zVec3* vector)
+{
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    __asm {
+    mov eax, vector
+    mov ebx, matrix
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xx
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xy
+    fld dword ptr [eax]zVec3.x
+    fmul dword ptr [ebx]zMat4x3.xz
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yx
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yy
+    fld dword ptr [eax]zVec3.y
+    fmul dword ptr [ebx]zMat4x3.yz
+    fxch st(2)
+    faddp st(5), st
+    faddp st(3), st
+    faddp st(1), st
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zx
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zy
+    fld dword ptr [eax]zVec3.z
+    fmul dword ptr [ebx]zMat4x3.zz
+    fxch st(2)
+    faddp st(5), st
+    faddp st(3), st
+    faddp st(1), st
+    fstp dword ptr [eax]zVec3.z
+    fstp dword ptr [eax]zVec3.y
+    fstp dword ptr [eax]zVec3.x
+    }
+#else
+    const zVec3 source = *vector;
+    vector->x = source.x * matrix->xx + source.y * matrix->yx + source.z * matrix->zx;
+    vector->y = source.x * matrix->xy + source.y * matrix->yy + source.z * matrix->zy;
+    vector->z = source.x * matrix->xz + source.y * matrix->yz + source.z * matrix->zz;
+#endif
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-camera-stageinverserotation
  * @recoil-artifact defines .text recoil:function:0x473e60: zMathCameraStageInverseRotation
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-negate
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-direction-in-place
+ *
+ *
+ * Raw assembly: three zmth.h ZMTH_VECTOR_NEGATE expansions at retail
+ * [0x473e82,0x473ea9), [0x473eb4,0x473edb) and [0x473f3b,0x473f62), and the
+ * zmth_main.c-resident inline direction helper expansion at
+ * [0x473f65,0x473fb7) (requires zmth_main.c /Ob1). The helper's vector is
+ * ScratchB's own translation storage (posX, posY, posZ), disjoint from the
+ * nine 3x3 members the helper reads, as its narrowed non-overlap contract
+ * permits for this consumer; its constant matrix argument lowers to the
+ * symbolic ScratchB address. The compiler owns position preparation,
+ * captures, homes, frame and register saves.
  *
  *
  * Purpose: stages camera scratch matrices for inverse rotation and translated camera position.
  */
 void __fastcall zMathCameraStageInverseRotation(const zMat4x3* worldMatrix)
 {
-    float yx;
-    float zx;
-    float xy;
-    float zy;
-    zVec3 pos;
+    float xz;
+    float yz;
+    zVec3* position;
     memcpy(&g_zMath_CameraScratchA, worldMatrix, sizeof(zMat4x3));
-
-    *(unsigned int*)(&g_zMath_CameraScratchA.yx) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchA.yy) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchA.yz) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchA.zx) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchA.zy) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchA.zz) ^= 0x80000000u;
+    ZMTH_VECTOR_NEGATE((const zVec3*)(&g_zMath_CameraScratchA.yx), (zVec3*)(&g_zMath_CameraScratchA.yx));
+    ZMTH_VECTOR_NEGATE((const zVec3*)(&g_zMath_CameraScratchA.zx), (zVec3*)(&g_zMath_CameraScratchA.zx));
 
     memcpy(&g_zMath_CameraScratchB, &g_zMath_CameraScratchA, sizeof(zMat4x3));
 
-    yx = g_zMath_CameraScratchA.yx;
-    zx = g_zMath_CameraScratchB.zx;
-    xy = g_zMath_CameraScratchA.xy;
-    zy = g_zMath_CameraScratchB.zy;
-    g_zMath_CameraScratchB.zx = g_zMath_CameraScratchB.xz;
-    g_zMath_CameraScratchB.xy = yx;
-    g_zMath_CameraScratchB.zy = g_zMath_CameraScratchB.yz;
-    g_zMath_CameraScratchB.yx = xy;
-    g_zMath_CameraScratchB.xz = zx;
-    g_zMath_CameraScratchB.yz = zy;
+    g_zMath_CameraScratchB.xy = g_zMath_CameraScratchA.yx;
+    g_zMath_CameraScratchB.yx = g_zMath_CameraScratchA.xy;
+    xz = g_zMath_CameraScratchB.xz;
+    g_zMath_CameraScratchB.xz = g_zMath_CameraScratchB.zx;
+    g_zMath_CameraScratchB.zx = xz;
+    yz = g_zMath_CameraScratchB.yz;
+    g_zMath_CameraScratchB.yz = g_zMath_CameraScratchB.zy;
+    g_zMath_CameraScratchB.zy = yz;
 
-    *(unsigned int*)(&g_zMath_CameraScratchB.posX) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchB.posY) ^= 0x80000000u;
-    *(unsigned int*)(&g_zMath_CameraScratchB.posZ) ^= 0x80000000u;
-
-    pos.x = g_zMath_CameraScratchB.posX;
-    pos.y = g_zMath_CameraScratchB.posY;
-    pos.z = g_zMath_CameraScratchB.posZ;
-    g_zMath_CameraScratchB.posZ
-        = pos.x * g_zMath_CameraScratchB.xz + pos.y * g_zMath_CameraScratchB.yz + pos.z * g_zMath_CameraScratchB.zz;
-    g_zMath_CameraScratchB.posY
-        = pos.x * g_zMath_CameraScratchB.xy + pos.y * g_zMath_CameraScratchB.yy + pos.z * g_zMath_CameraScratchB.zy;
-    g_zMath_CameraScratchB.posX
-        = pos.x * g_zMath_CameraScratchB.xx + pos.y * g_zMath_CameraScratchB.yx + pos.z * g_zMath_CameraScratchB.zx;
+    position = (zVec3*)(&g_zMath_CameraScratchB.posX);
+    ZMTH_VECTOR_NEGATE(position, position);
+    Vec3TransformDirectionInPlace(&g_zMath_CameraScratchB, position);
 }
 
 /**
@@ -1214,70 +1650,6 @@ void __fastcall Vec3ToRightXZ(const zVec3* in, zVec3* out)
     out->x = -in->z;
     out->z = in->x;
     out->y = 0.0f;
-}
-
-/**
- * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-direction-in-place
- *
- * Purpose: Transform a direction in place by the matrix's 3x3 part, without
- * translation; in the raw arm all reads precede the z/y/x binary32 stores.
- * Reconstruction: zmth_main.c-resident copy of the reviewed gmod_pick.c
- * in-place helper (same body; retail family 0x4293da, 0x473f6d, 0x47460f,
- * 0x485315); original spelling and declaration location unproved.
- * Raw assembly: identical body to the reviewed gmod_pick.c island.
- * Island contract: EAX/EBX hold vector/matrix from compiler-owned parameter
- * homes and are clobbered; integer flags and the x87 control word unchanged;
- * x87 entry/peak/exit depth 0/6/0 on normal completion; x87 status and
- * exceptions are not preserved. The vector must not overlap the matrix.
- * Consumers are scoped by the raw-assembly allowlist.
- * Retail inline-expansion evidence: the listed consumer contains the operand reloads, arithmetic
- * sequence and result stores without a call at that site; the original inline helper's header
- * ownership and declaration placement are not established (TU-resident reconstruction model).
- * Original inline helper evidence: no standalone retail function; observed at
- * retail 0x4745e0.
- */
-__inline void Vec3TransformDirectionInPlace(const zMat4x3* matrix, zVec3* vector)
-{
-#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
-    __asm {
-    mov eax, vector
-    mov ebx, matrix
-    fld dword ptr [eax]zVec3.x
-    fmul dword ptr [ebx]zMat4x3.xx
-    fld dword ptr [eax]zVec3.x
-    fmul dword ptr [ebx]zMat4x3.xy
-    fld dword ptr [eax]zVec3.x
-    fmul dword ptr [ebx]zMat4x3.xz
-    fld dword ptr [eax]zVec3.y
-    fmul dword ptr [ebx]zMat4x3.yx
-    fld dword ptr [eax]zVec3.y
-    fmul dword ptr [ebx]zMat4x3.yy
-    fld dword ptr [eax]zVec3.y
-    fmul dword ptr [ebx]zMat4x3.yz
-    fxch st(2)
-    faddp st(5), st
-    faddp st(3), st
-    faddp st(1), st
-    fld dword ptr [eax]zVec3.z
-    fmul dword ptr [ebx]zMat4x3.zx
-    fld dword ptr [eax]zVec3.z
-    fmul dword ptr [ebx]zMat4x3.zy
-    fld dword ptr [eax]zVec3.z
-    fmul dword ptr [ebx]zMat4x3.zz
-    fxch st(2)
-    faddp st(5), st
-    faddp st(3), st
-    faddp st(1), st
-    fstp dword ptr [eax]zVec3.z
-    fstp dword ptr [eax]zVec3.y
-    fstp dword ptr [eax]zVec3.x
-    }
-#else
-    const zVec3 source = *vector;
-    vector->x = source.x * matrix->xx + source.y * matrix->yx + source.z * matrix->zx;
-    vector->y = source.x * matrix->xy + source.y * matrix->yy + source.z * matrix->zy;
-    vector->z = source.x * matrix->xz + source.y * matrix->yz + source.z * matrix->zz;
-#endif
 }
 
 /**

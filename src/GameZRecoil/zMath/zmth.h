@@ -876,14 +876,18 @@ __inline void Vec3Subtract(const zVec3* left, const zVec3* right, zVec3* dest)
  * reproduce the approved consumer bodies. Permission covers only the
  * allowlisted consumer/range pairs.
  *
- * Contract: C++ captures source, then destination, once; arguments must be
- * side-effect-free pointer expressions. All three component loads precede
- * the stores. Clobbers EAX, EBX, ECX and EDX; arithmetic flags are the result
- * of the final XOR. No x87 instructions. The compiler owns captures, homes,
- * frame and register saves.
+ * Contract (VC5/x86 raw arm, C or C++): ordinary block declarations capture
+ * destination, then source, exactly once each in block-local const
+ * pointers; arguments must be side-effect-free pointer expressions.
+ * Source == destination is permitted. All three integer component loads
+ * precede all stores. Clobbers EAX, EBX, ECX and EDX; integer arithmetic
+ * flags are those left by the final XOR. No x87 instructions are executed.
+ * The compiler owns capture evaluation, initialization and stores, home
+ * allocation, frame and register saves.
  *
- * Fallback: reference only; it negates values rather than flipping
- * representation bits, so NaN payload and signed-zero handling may differ.
+ * Fallback: reference value negation only; representation-level and
+ * floating-point-environment equivalence to the raw arm is not
+ * guaranteed. In particular, signalling-NaN handling can differ.
  */
 #define ZMTH_VECTOR_NEGATE(source, destination)                                                                        \
     do {                                                                                                               \

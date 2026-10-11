@@ -176,7 +176,8 @@
     {                                                                                                                  \
         int _polyIndex;                                                                                                \
         if ((attr0) != 0) {                                                                                            \
-            const float _grayBase = (grayBase);                                                                        \
+            /* Unparenthesized: retail stores _grayBase before the loop guard only for this form. */                   \
+            const float _grayBase = grayBase;                                                                          \
             const float* _attr0Source = &(attr0)[(lastIndex)];                                                         \
             for (_polyIndex = 0; _polyIndex < (vertexCount); ++_polyIndex, --_attr0Source) {                           \
                 if (!(*_attr0Source > (1.0f / 255.0f))) {                                                              \
@@ -1705,7 +1706,7 @@ void __fastcall SubmitPolyRenderClass(
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon
  * @recoil-artifact defines .text recoil:function:0x4abb20: zVideo_dd3d::SubmitPolygon.
- *
+ * @recoil-match byte
  *
  * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
  * route them to immediate, overwrite, or sorted transparent submission.
