@@ -216,8 +216,8 @@ struct HudUiElement {
     virtual void OnEndCapture();
     virtual void OnPointerButtonState(int x, int y);
     virtual void OnCapturedPrimaryRelease();
-    virtual int ShouldHandleInput(HudUiBackground* background, int hovered);
-    virtual void AfterInputUpdate(HudUiBackground* background, int hovered);
+    virtual bool ShouldHandleInput(HudUiBackground* background, bool hovered);
+    virtual void AfterInputUpdate(HudUiBackground* background, bool hovered);
     virtual int HitTest(int px, int py);
     virtual void SetVisible(int visible);
     virtual int GetCenterX();

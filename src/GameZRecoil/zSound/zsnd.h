@@ -442,7 +442,7 @@ extern DSCAPS g_zSnd_BackendAuxHandleOrConfig;
 extern zReader::Node* g_zSnd_ConfigRootNode;
 extern zArchiveList* g_zSnd_SearchPathList;
 extern int g_zSnd_ListenerStateValid;
-extern zSndListenerState g_zSnd_ListenerState;
+extern zVec3 g_zSnd_ListenerState[4];
 extern zVec3 g_zSnd_ListenerVelocity;
 extern zVec3 g_zSnd_PreviousListenerPos;
 extern zArchiveList* g_zSndStream_PendingList;

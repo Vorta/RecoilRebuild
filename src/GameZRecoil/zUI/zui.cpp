@@ -189,10 +189,33 @@ HudUiElement* HudUiBackgroundContainer::GetInputFocus()
     return inputFocusElement;
 }
 
+namespace {
+/**
+ * Purpose: read and write a HUD element's input-state word (bit 0 hovered,
+ * bit 1 captured). Retail UpdateAll keeps the loaded word in a register for
+ * each test-and-update.
+ */
+inline unsigned short GetElementState(HudUiElement* element)
+{
+    return element->state;
+}
+
+inline void SetElementState(HudUiElement* element, unsigned short state)
+{
+    element->state = state;
+}
+
+inline int IsElementCaptured(HudUiElement* element)
+{
+    int captured = (GetElementState(element) & 2) == 2;
+    return captured;
+}
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduibackgroundcontainer-updateall
  * @recoil-artifact defines .text recoil:function:0x4bc570: HudUiBackgroundContainer::UpdateAll.
- *
+ * @recoil-match byte
  *
  * Purpose: Dispatch background mouse input, update child widgets, and move the focus cursor.
  */
@@ -207,25 +230,26 @@ void HudUiBackgroundContainer::UpdateAll(float deltaSeconds)
     memcpy(&mouseState, zInput::MouseGetStateSnapshotPtr(), sizeof(mouseState));
 
     for (HudUiElement* widget = childHead; widget != 0; widget = widget->next) {
-        const int hit = widget->HitTest(mouseState.cursorClientX, mouseState.cursorClientY);
-        const int hovered = hit == 1 ? 1 : 0;
+        // Retail passes the hit result as a bool (byte home re-read as the pushed dword).
+        const bool hovered = widget->HitTest(mouseState.cursorClientX, mouseState.cursorClientY) == 1;
 
-        if (widget->ShouldHandleInput(background, hovered) != 0) {
-            if ((mouseState.button2Transition & 4) != 0 && (widget->state & 2) == 2) {
-                widget->state = (unsigned short)(widget->state & 0xfffd);
+        if (widget->ShouldHandleInput(background, hovered)) {
+            if ((mouseState.button2Transition & 4) != 0 && IsElementCaptured(widget)) {
+                SetElementState(widget, GetElementState(widget) & 0xfffd);
                 widget->OnEndCapture();
             }
 
-            if (hovered != 0) {
-                if ((widget->state & 1) == 0) {
-                    widget->state = (unsigned short)(widget->state | 1);
+            if (hovered) {
+                if ((GetElementState(widget) & 1) == 0) {
+                    SetElementState(widget, GetElementState(widget) | 1);
                     widget->ShowPreview();
                 } else {
                     widget->OnHoverRepeat();
                 }
 
-                if ((mouseState.button1Transition & captureTransitionMask) != 0 && (widget->state & 2) == 0) {
-                    widget->state = (unsigned short)(widget->state | 2);
+                if ((mouseState.button1Transition & captureTransitionMask) != 0
+                    && ((unsigned short)~GetElementState(widget) & 2) != 0) {
+                    SetElementState(widget, GetElementState(widget) | 2);
                     widget->OnBeginCapture();
                 }
 
@@ -245,8 +269,8 @@ void HudUiBackgroundContainer::UpdateAll(float deltaSeconds)
                     widget->OnCapturedPrimaryRelease();
                 }
             } else {
-                if ((mouseState.button1Transition & captureTransitionMask) != 0 && (widget->state & 2) == 2) {
-                    widget->state = (unsigned short)(widget->state & 0xfffd);
+                if ((mouseState.button1Transition & captureTransitionMask) != 0 && IsElementCaptured(widget)) {
+                    SetElementState(widget, GetElementState(widget) & 0xfffd);
                     widget->OnEndCapture();
                 }
 
@@ -254,8 +278,8 @@ void HudUiBackgroundContainer::UpdateAll(float deltaSeconds)
                     widget->OnPointerButtonState(mouseState.cursorClientX, mouseState.cursorClientY);
                 }
 
-                if ((widget->state & 1) == 1) {
-                    widget->state = (unsigned short)(widget->state & 0xfffe);
+                if ((GetElementState(widget) & 1) == 1) {
+                    SetElementState(widget, GetElementState(widget) & 0xfffe);
                     widget->HidePreview();
                 }
             }
@@ -264,17 +288,16 @@ void HudUiBackgroundContainer::UpdateAll(float deltaSeconds)
         widget->AfterInputUpdate(background, hovered);
     }
 
-    HudUiElement* const focusBeforeUpdate = inputFocusElement;
-    if (focusBeforeUpdate != 0) {
-        focusBeforeUpdate->DrawBase();
+    // Retail re-reads the focus element member at each use.
+    if (inputFocusElement != 0) {
+        inputFocusElement->DrawBase();
     }
 
     HudUiContainer::UpdateAll(deltaSeconds);
 
-    HudUiElement* const focusAfterUpdate = inputFocusElement;
-    if (focusAfterUpdate != 0) {
-        focusAfterUpdate->SetPos(mouseState.cursorClientX, mouseState.cursorClientY);
-        focusAfterUpdate->Update(deltaSeconds);
+    if (inputFocusElement != 0) {
+        inputFocusElement->SetPos(mouseState.cursorClientX, mouseState.cursorClientY);
+        inputFocusElement->Update(deltaSeconds);
     }
 }
 
@@ -1107,9 +1130,9 @@ void HudUiElement::OnCapturedPrimaryRelease() { }
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::ShouldHandleInput.
  */
-int HudUiElement::ShouldHandleInput(HudUiBackground*, int)
+bool HudUiElement::ShouldHandleInput(HudUiBackground*, bool)
 {
-    return 1;
+    return true;
 }
 
 /**
@@ -1117,7 +1140,7 @@ int HudUiElement::ShouldHandleInput(HudUiBackground*, int)
  * Evidence: recovered in the HUD source cluster near address-backed 0x404d60 HudUiElement::GetY callers.
  * Purpose: preserve the recovered HUD behavior for HudUiElement::AfterInputUpdate.
  */
-void HudUiElement::AfterInputUpdate(HudUiBackground*, int) { }
+void HudUiElement::AfterInputUpdate(HudUiBackground*, bool) { }
 
 /**
  * Original-source helper; no standalone retail function exists.

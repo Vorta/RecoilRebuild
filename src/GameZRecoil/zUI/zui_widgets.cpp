@@ -802,7 +802,8 @@ inline void HudUiSetPanelVectorVisible(HudUiPanelPtrVector& panels, int visible)
 struct HudUiZrdDeleteChildIfPresent {
     HudUiPanel* operator()(HudUiPanel* childWidgetOrNull)
     {
-        return (HudUiPanel*)(HudUiZrdWidget::DeleteChildIfPresent(childWidgetOrNull));
+        delete childWidgetOrNull;
+        return 0;
     }
 };
 
@@ -1986,50 +1987,22 @@ HudUiZrdWidget::HudUiZrdWidget()
 
 HudUiZrdWidget::~HudUiZrdWidget()
 {
-    {
-        HudUiZrdDeleteChildIfPresent deleteChildIfPresent;
-        HudUiZrdDeleteChildIfPresent deleteChildIfPresentCopy(deleteChildIfPresent);
-        std::transform(labelPanels.begin(), labelPanels.end(), labelPanels.begin(), deleteChildIfPresentCopy);
-    }
-
-    {
-        HudUiPanelPtrVector::iterator rolloverIt = rolloverLabelPanels.begin();
-        HudUiPanelPtrVector::iterator rolloverOut = rolloverLabelPanels.begin();
-        HudUiPanelPtrVector::iterator rolloverEnd = rolloverLabelPanels.end();
-        while (rolloverIt != rolloverEnd) {
-            if (*rolloverIt != 0) {
-                delete (*rolloverIt);
-            }
-
-            *rolloverOut = 0;
-            ++rolloverIt;
-            ++rolloverOut;
-        }
-    }
-
-    {
-        HudUiPanelPtrVector::iterator activateIt = activateLabelPanels.begin();
-        HudUiPanelPtrVector::iterator activateOut = activateLabelPanels.begin();
-        HudUiPanelPtrVector::iterator activateEnd = activateLabelPanels.end();
-        while (activateIt != activateEnd) {
-            if (*activateIt != 0) {
-                delete (*activateIt);
-            }
-
-            *activateOut = 0;
-            ++activateIt;
-            ++activateOut;
-        }
-    }
-
-    typedef HudUiPanelPtrVector::iterator (HudUiPanelPtrVector::*ErasePanelRangeMethod)(
-        HudUiPanelPtrVector::iterator,
-        HudUiPanelPtrVector::iterator
+    std::transform(labelPanels.begin(), labelPanels.end(), labelPanels.begin(), HudUiZrdDeleteChildIfPresent());
+    std::transform(
+        rolloverLabelPanels.begin(),
+        rolloverLabelPanels.end(),
+        rolloverLabelPanels.begin(),
+        HudUiZrdDeleteChildIfPresent()
     );
-    ErasePanelRangeMethod erasePanelRange = (ErasePanelRangeMethod)(&HudUiPanelPtrVector::erase);
-    (labelPanels.*erasePanelRange)(labelPanels.begin(), labelPanels.end());
-    (rolloverLabelPanels.*erasePanelRange)(rolloverLabelPanels.begin(), rolloverLabelPanels.end());
-    (activateLabelPanels.*erasePanelRange)(activateLabelPanels.begin(), activateLabelPanels.end());
+    std::transform(
+        activateLabelPanels.begin(),
+        activateLabelPanels.end(),
+        activateLabelPanels.begin(),
+        HudUiZrdDeleteChildIfPresent()
+    );
+    labelPanels.erase(labelPanels.begin(), labelPanels.end());
+    rolloverLabelPanels.erase(rolloverLabelPanels.begin(), rolloverLabelPanels.end());
+    activateLabelPanels.erase(activateLabelPanels.begin(), activateLabelPanels.end());
 
     if (defaultImage != 0 && defaultImage != image) {
         defaultImage = zVid_Image::ReleaseIfNotDefault(defaultImage);
@@ -2055,7 +2028,7 @@ HudUiZrdWidget::~HudUiZrdWidget()
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-zrd-widget-delete-child-if-present
  * @recoil-artifact defines .text recoil:function:0x4b52f0: HudUiZrdWidget::DeleteChildIfPresent.
- * @recoil-match byte
+ * @recoil-match source
  * Purpose: delete a child widget when one is given; used to empty the label-panel lists.
  */
 void* __stdcall HudUiZrdWidget::DeleteChildIfPresent(void* childWidgetOrNull)

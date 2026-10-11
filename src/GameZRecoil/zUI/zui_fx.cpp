@@ -1051,6 +1051,16 @@ static inline zVidImagePartial* HudUiMessageBoxCreateSolidImage(int width, int h
 }
 
 /**
+ * Recovered original-source helper, no standalone retail function.
+ * Observed caller: 0x4bf060 HudUiMessageBoxDialog::Constructor.
+ * Purpose: show a button's normal image and keep it as the button's default image.
+ */
+static inline void HudUiMessageBoxSetDefaultImage(HudUiZrdWidget* button, zVidImagePartial* image)
+{
+    button->defaultImage = button->SetImageBorrowedAndInvalidate(image);
+}
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-constructor
  * @recoil-artifact defines .text recoil:function:0x4bf060: HudUiMessageBoxDialog::Constructor.
  *
@@ -1092,10 +1102,11 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
         return;
     }
 
-    const int left = blitRect.right / 2 - 150;
+    POINT origin;
+    origin.x = blitRect.right / 2 - 150;
     fallbackWidth = 300;
     fallbackHeight = 200;
-    const int top = blitRect.bottom / 2 - 100;
+    origin.y = blitRect.bottom / 2 - 100;
 
     backgroundImage = HudUiMessageBoxCreateSolidImage(
         fallbackWidth,
@@ -1117,13 +1128,16 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
     messagePanel.SetTextFmt("");
     titlePanel.SetTextFmt("");
     okButton.LoadFromZrd(0, this);
-    okButton.defaultImage = okButton.SetImageBorrowedAndInvalidate(okButtonNormalImage);
+    HudUiMessageBoxSetDefaultImage(&okButton, okButtonNormalImage);
     okButton.rolloverImage = okButtonPressedImage;
 
-    backdropWidget.SetPos(left, top);
-    titlePanel.SetPos(left + 10, top + 10);
-    messagePanel.SetPos(left + 10, top + 30);
-    okButton.SetPos(left + fallbackWidth / 2 - fallbackWidth / 8, top - fallbackHeight / 4 + fallbackHeight - 10);
+    backdropWidget.SetPos(origin.x, origin.y);
+    titlePanel.SetPos(origin.x + 10, origin.y + 10);
+    messagePanel.SetPos(origin.x + 10, origin.y + 30);
+    okButton.SetPos(
+        origin.x + fallbackWidth / 2 - fallbackWidth / 8,
+        origin.y - fallbackHeight / 4 + fallbackHeight - 10
+    );
 
     AddChild(&backdropWidget);
     AddChild(&messagePanel);
