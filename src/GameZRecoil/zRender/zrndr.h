@@ -463,7 +463,7 @@ void __fastcall OverlayBlendRow565Scalar(unsigned short* rowPixels16, int rightD
 void __fastcall OverlayBlendRow555Mmx(unsigned short* rowPixels16, int pixelCount);
 void __fastcall OverlayBlendRow565Mmx(unsigned short* rowPixels16, int pixelCount);
 void __fastcall SpanMmxSetPixelFormatMasks(int greenBits);
-void __cdecl SelectSpanRoutines();
+void __fastcall SelectSpanRoutines();
 void __fastcall
 FogTarget565SetPackedColorAndRamp(FogParamsPartial* params, int packedRed, int packedGreen, int packedBlue);
 void __fastcall SpanAlphaBlend565ConstAlphaFromPal8(int texU, int texV, int pixelCount, int texVShift);

@@ -1466,7 +1466,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16fromtex16to565
  * @recoil-artifact defines .text recoil:function:0x49c150: zRndr::SpanMasked16FromTex16To565
- *
+ * @recoil-match commutative
  *
  * Source-shape evidence: BN samples a nonzero tex16 mask and copies it only
  * for alpha >= 0xfc; the partial-alpha branch emits channel math that collapses

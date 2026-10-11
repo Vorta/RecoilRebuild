@@ -398,14 +398,16 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
     int blitPrimaryToSwFirst
 )
 {
-    // BN keeps the checked display surface live, then reloads it after Blt/retry paths.
+    // Retail reloads the display surface in one block at the top of every retry
+    // (both retry paths jump to it) and again after the optional Blt.
     IDirectDrawSurface3* displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
     if (displaySurface == 0) {
         return 0x400;
     }
 
-    for (;;) {
+    while (1) {
         HRESULT hresult;
+        displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
         if (blitPrimaryToSwFirst != 0) {
             const DWORD bltFlags = waitForPresent != 0 ? DDBLT_WAIT : 0;
             g_zVideo_SwSurfaceState.surf->lpVtbl->Blt(
@@ -422,7 +424,6 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
         hresult = displaySurface->lpVtbl->Flip(displaySurface, 0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
         if (hresult != DD_OK) {
             if (hresult == DDERR_WASSTILLDRAWING) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
                 continue;
             }
 
@@ -432,7 +433,6 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
             }
 
             if (hresult == DD_OK) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
                 continue;
             }
 
@@ -1706,7 +1706,7 @@ void __fastcall SubmitPolyRenderClass(
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon
  * @recoil-artifact defines .text recoil:function:0x4abb20: zVideo_dd3d::SubmitPolygon.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
  * route them to immediate, overwrite, or sorted transparent submission.

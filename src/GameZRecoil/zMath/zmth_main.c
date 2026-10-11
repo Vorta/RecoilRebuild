@@ -1843,41 +1843,39 @@ void __fastcall zMathMatTransformBBoxToCorners(const zMat4x3* matrix, const zBBo
     zVec3 work;
     zVec3 minXMaxY;
     zVec3 maxXMaxY;
-    float savedComponent; // Some captures are unused; preserve the closer retail x87 schedule.
-    minXMinY.x = bbox->min.x; // Seed the factor to retain retail's multiply operand order.
-    minXMinY.x *= matrix->xx;
+
+    // X-row products for both X extremes, then the max-Y and min-Y contributions.
+    minXMinY.x = bbox->min.x * matrix->xx;
     minXMinY.y = bbox->min.x * matrix->xy;
     minXMinY.z = bbox->min.x * matrix->xz;
-    maxXMinY.x = matrix->xx * bbox->max.x;
+    maxXMinY.x = bbox->max.x * matrix->xx;
     maxXMinY.y = bbox->max.x * matrix->xy;
     maxXMinY.z = bbox->max.x * matrix->xz;
-    work.y = matrix->yy * bbox->max.y;
-    work.z = matrix->yz * bbox->max.y;
     work.x = bbox->max.y * matrix->yx;
+    work.y = bbox->max.y * matrix->yy;
+    work.z = bbox->max.y * matrix->yz;
     minXMaxY.x = work.x + minXMinY.x;
     minXMaxY.y = work.y + minXMinY.y;
     minXMaxY.z = work.z + minXMinY.z;
     maxXMaxY.x = work.x + maxXMinY.x;
     maxXMaxY.y = work.y + maxXMinY.y;
     maxXMaxY.z = work.z + maxXMinY.z;
-    // Add min-Y in place after saving the max-Y combinations.
-    work.x = matrix->yx * bbox->min.y;
-    work.y = matrix->yy * bbox->min.y;
-    work.z = matrix->yz * bbox->min.y;
-    minXMinY.x = work.x + minXMinY.x;
-    minXMinY.y = work.y + minXMinY.y;
-    minXMinY.z = work.z + minXMinY.z;
-    maxXMinY.x = work.x + maxXMinY.x;
-    maxXMinY.y = work.y + maxXMinY.y;
-    maxXMinY.z = work.z + maxXMinY.z;
-    // Reuse the contribution vector for each Z plane.
-    work.x = matrix->zx;
-    work.x = work.x * bbox->min.z + matrix->posX;
-    work.y = matrix->zy * bbox->min.z + matrix->posY;
-    work.z = matrix->zz * bbox->min.z + matrix->posZ;
+    work.x = bbox->min.y * matrix->yx;
+    work.y = bbox->min.y * matrix->yy;
+    work.z = bbox->min.y * matrix->yz;
+    minXMinY.x += work.x;
+    minXMinY.y += work.y;
+    minXMinY.z += work.z;
+    maxXMinY.x += work.x;
+    maxXMinY.y += work.y;
+    maxXMinY.z += work.z;
+    // Reuse the contribution vector for each Z plane (retail keeps one 12-byte slot).
+    work.x = bbox->min.z * matrix->zx + matrix->posX;
+    work.y = bbox->min.z * matrix->zy + matrix->posY;
+    work.z = bbox->min.z * matrix->zz + matrix->posZ;
     outCorners->corners[2].x = work.x + maxXMinY.x;
     outCorners->corners[2].y = work.y + maxXMinY.y;
-    outCorners->corners[2].z = (savedComponent = work.z) + maxXMinY.z;
+    outCorners->corners[2].z = work.z + maxXMinY.z;
     outCorners->corners[3].x = work.x + minXMinY.x;
     outCorners->corners[3].y = work.y + minXMinY.y;
     outCorners->corners[3].z = work.z + minXMinY.z;
@@ -1896,8 +1894,7 @@ void __fastcall zMathMatTransformBBoxToCorners(const zMat4x3* matrix, const zBBo
     work.y += matrix->posY;
     work.z += matrix->posZ;
     outCorners->corners[0].x = work.x + minXMinY.x;
-    savedComponent = work.y;
-    outCorners->corners[0].y = savedComponent + minXMinY.y;
+    outCorners->corners[0].y = work.y + minXMinY.y;
     outCorners->corners[0].z = work.z + minXMinY.z;
 
     outCorners->corners[1].x = work.x + maxXMinY.x;

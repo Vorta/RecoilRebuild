@@ -21,6 +21,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* zrndr_poly.c point routine for the lens-flare point-op slot (see SelectSpanRoutines). */
+void __fastcall zRndrPlotLensFlarePixel16(unsigned short* dstPixels, int y, int x, int color16);
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-g-zvideo-pfnbltsourcetoprimary
  * @recoil-artifact defines .data recoil:data:0x6320ac: g_zVideo_pfnBltSourceToPrimary.
@@ -666,11 +669,15 @@ int __cdecl InitFrameScratchBuffers(void)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-selectspanroutines
  * @recoil-artifact defines .text recoil:function:0x48ff80: zRndr::SelectSpanRoutines
- *
+ * @recoil-match byte
  *
  * Purpose: Refresh pixel-pack state and install the active 16-bit point, line, and span routines.
+ * Evidence: retail loads the PixelPackGet* arguments in /Gr fastcall caller order
+ * (mov edx; mov ecx; push), so the definition keeps the default convention. It stores
+ * 0x4992b0 into both point-op slots as two immediates (0x49000d lens-flare slot,
+ * 0x490017 active slot): one identical point routine per slot, folded by /OPT:ICF.
  */
-void __cdecl SelectSpanRoutines(void)
+void __fastcall SelectSpanRoutines(void)
 {
     PixelPackGetRgbBits(&g_pixelPackRedBits, &g_pixelPackGreenBits, &g_pixelPackBlueBits);
     PixelPackGetRgbMasks(&g_pixelPackRedMask, &g_pixelPackGreenMask, &g_pixelPackBlueMask);
@@ -687,7 +694,7 @@ void __cdecl SelectSpanRoutines(void)
         return;
     }
 
-    g_pfnPointOpCandidate = (PointOpProc)zRndrPlotPixel16;
+    g_pfnPointOpCandidate = (PointOpProc)zRndrPlotLensFlarePixel16;
     g_pfnPointOpActive = (PointOpProc)zRndrPlotPixel16;
     g_pfnImmediateRaster4 = zRndrDrawLine16;
     g_pfnImmediateRasterReserved = zRndrDrawLine16Segmented;

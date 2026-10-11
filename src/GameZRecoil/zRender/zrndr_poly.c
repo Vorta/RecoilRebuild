@@ -5182,12 +5182,30 @@ zVidImagePartial* __fastcall zRndrTextureMipSelectVariantImage(
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-plotpixel16
- * @recoil-artifact defines .text recoil:function:0x4992b0: zRndrPlotPixel16
+ * @recoil-artifact defines .text recoil:logical-function:0x4992b0:zrender-plot-pixel16: zRndrPlotPixel16
  * @recoil-match byte
  *
  * Purpose: Plot one 16-bit pixel into the active framebuffer row pitch.
  */
 void __fastcall zRndrPlotPixel16(unsigned short* dstPixels, int y, int x, int color16)
+{
+    const unsigned int pitchWords = (unsigned int)(g_pitchBytes) >> 1;
+    dstPixels[pitchWords * y + x] = (unsigned short)(color16);
+}
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-plotlensflarepixel16
+ * @recoil-artifact defines .text recoil:logical-function:0x4992b0:zrender-plot-lens-flare-pixel16: zRndrPlotLensFlarePixel16
+ * @recoil-match byte
+ *
+ * Purpose: Plot one 16-bit pixel for lens-flare samples; SelectSpanRoutines installs it in the
+ * lens-flare point-op slot (g_pfnPointOpCandidate) beside zRndrPlotPixel16 in the active slot.
+ * Evidence: retail SelectSpanRoutines stores 0x4992b0 into both slots as two immediates
+ * (0x49000d, 0x490017), so the slots name two identical routines that /OPT:ICF folds. The
+ * 1998-07-21 and 1998-08-12 demos still plot unfaded lens-flare samples through this slot
+ * (call sites 0x4897cb and 0x48e1eb); retail 0x498cb0 stores the pixel inline.
+ */
+void __fastcall zRndrPlotLensFlarePixel16(unsigned short* dstPixels, int y, int x, int color16)
 {
     const unsigned int pitchWords = (unsigned int)(g_pitchBytes) >> 1;
     dstPixels[pitchWords * y + x] = (unsigned short)(color16);
