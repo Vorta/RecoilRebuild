@@ -2238,11 +2238,17 @@ int __fastcall RaycastSelectClosestHitBetweenPoints(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.raycastfindclosest
  * @recoil-artifact defines .text recoil:function:0x444e90: CZDisplayInstance::RaycastFindClosest.
- *
+ * @recoil-match byte
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.
  * Purpose: preserve the recovered cls_di raycast/filter runtime behavior.
+ * Control flow: a first-hit in the child loop leaves the child loop and the grid
+ * walk in one jump to the final candidate test (retail 0x4453a7 -> 0x4455a5, the
+ * same join as the normal walk exit; also in the 1998-07-21 demo). This uses the
+ * single forward goto under the user-authorized, Pro-reviewed 0x444e90 goto
+ * exception (match-proofs.md); duplicated tails, break/re-test and hit flags
+ * were compiled and do not reproduce it.
  */
 int __fastcall RaycastFindClosest(
     CZNodePartial* world,
@@ -2404,11 +2410,7 @@ int __fastcall RaycastFindClosest(
                     if ((node->flags & kNodeFlagEnabledForPick) != 0 && (node->flags & kNodeFlagRaycastable) != 0) {
                         BuildPickCandidatesForSegmentChildFallback(node, area->childCount + 1);
                         if (g_cls_di_BreakOnFirstCandidate != 0 && g_DiPickCandidateBuffer->candidateCount > 0) {
-                            // Retail leaves the walk straight from the child loop (no second hit test),
-                            // keeping the clamped-cell offsets applied.
-                            MatStackPopPtr();
-                            g_cls_di_StopAfterFirstHit = 0;
-                            return rayData->candidateCount <= 0 ? 1 : 0;
+                            goto walkDone;
                         }
                     }
                 }
@@ -2462,6 +2464,7 @@ int __fastcall RaycastFindClosest(
         }
     }
 
+walkDone:
     if ((g_cls_di_BreakOnFirstCandidate == 0 || rayData->candidateCount <= 0) && world->listCountB > 0) {
         BuildPickCandidatesForSegment(world);
     }
