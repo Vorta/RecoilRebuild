@@ -1480,21 +1480,49 @@ void HudSensorTrackerMap::MapZoomOut()
     }
 }
 
+namespace zMath {
+/**
+ * Purpose: Linearly interpolate from toward to by t, storing x/y/z in dest.
+ *
+ * Reconstruction: map.cpp-resident inline adapter to the reviewed
+ * vector-lerp family. The (from, to, t, dest) parameter convention follows
+ * the separately address-backed zMath::Vec3Slerp interface at 0x472a10
+ * (source match), corroborated by Vec3ScaleAdd at 0x472770 (byte match):
+ * two vector inputs, then scalar, then output.
+ *
+ * Retail evidence is the call-free vector-lerp sequence in 0x416be0.
+ * This declaration is a reconstruction model; the original helper name,
+ * lexical signature, header ownership and declaration placement are
+ * not established.
+ *
+ * Under the governed /Ob1 profile, operand preparation and parameter
+ * homes are compiler-generated. Raw-assembly permission covers only
+ * retail [0x416c45,0x416c85) in the listed consumer.
+ */
+inline void Vec3Lerp(const zVec3* from, const zVec3* to, float t, zVec3* dest)
+{
+    ZMTH_VECTOR_LERP_BOUND(dest, from, to, t);
+}
+} // namespace zMath
+
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudsensortracker-updatemapscalelerp
  * @recoil-artifact defines .text recoil:function:0x416be0: HudSensorTrackerMap::UpdateMapScaleLerp
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-lerp
- *
+ * @recoil-match byte
  *
  * Purpose: Advance the map overlay scale interpolation and update the current overlay scale vector.
  *
  * Raw assembly: one unchanged vector-lerp family expansion at retail
- * [0x416c45,0x416c85) (64 bytes), invoked through ZMTH_VECTOR_LERP.
+ * [0x416c45,0x416c85) (64 bytes), invoked through the map.cpp-resident
+ * zMath::Vec3Lerp(from, to, t, dest) adapter and its unchanged
+ * ZMTH_VECTOR_LERP_BOUND(dest, from, to, t) body.
  * Evidence: three operand-home reloads followed by the reviewed 55-byte
- * x87 lerp core, storing x, y, z in order. The member-wise C spelling
- * and native-C control did not reproduce the retail function.
- * Historical operand declaration order and invocation syntax are unresolved.
- * Operand preparation, frame construction and control flow are outside
+ * x87 lerp core, storing x, y, z in order. The previously reviewed
+ * member-wise C spelling and native-C control did not reproduce retail.
+ * The original helper declaration and placement remain unestablished.
+ * Operand preparation [0x416c21,0x416c45), frame construction and
+ * surrounding control flow remain compiler-generated and outside
  * this raw-assembly permission.
  */
 int HudSensorTrackerMap::UpdateMapScaleLerp()
@@ -1506,7 +1534,7 @@ int HudSensorTrackerMap::UpdateMapScaleLerp()
             mapScaleLerpT = 1.0f;
         }
 
-        ZMTH_VECTOR_LERP(&mapScaleCurrent, &mapScaleStart, &mapScaleGoal, mapScaleLerpT);
+        zMath::Vec3Lerp(&mapScaleStart, &mapScaleGoal, mapScaleLerpT, &mapScaleCurrent);
     }
 
     return 1;
