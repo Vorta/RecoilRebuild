@@ -12,6 +12,7 @@
 !/docs/**
 /docs/reconstruction/
 /src/native/
+!/exports/
 
 # Generated/compiler output is never public source.
 *.obj
