@@ -1320,18 +1320,18 @@ int __fastcall
 HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectNodeAnimEvent* animEvent)
 {
     CZNodePartial* node;
-    int result;
+    int result = 1;
+    int transformBasis = 0;
     float frameStepSec;
-    zVec3 worldPos = { 0 };
+    zVec3 delta;
     if (self == 0 || sequenceRuntime == 0 || animEvent == 0 || animEvent->targetNodeRefIndex < 0) {
-        return 1;
+        // Retail returns 2 for a missing entry, runtime, event or node reference (0x45a90e).
+        return 2;
     }
 
     node = self->nodeRefList[animEvent->targetNodeRefIndex].node;
-    result = 1;
 
     if (sequenceRuntime->runState == 0) {
-        unsigned char transformBasis;
         if ((animEvent->flags & 0x0400) == 0) {
             animEvent->runtimeElapsedSec = 0.0f;
         }
@@ -1350,51 +1350,50 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
             animEvent->scaleStart.y = animEvent->rotationOrCameraPosEnd.y;
         }
         if ((animEvent->flags & 0x08) != 0) {
-            const float randAngleUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
-            float randAngle;
-            float yawUnit;
+            const float yawUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
             float yaw;
-            float launchMagnitudeUnit;
+            float pitchUnit;
+            float pitch;
+            float launchUnit;
             float launchMagnitude;
-            float spinMagnitudeUnit;
-            float spinMagnitude;
-            zVec3 dir = { 0 };
+            float accelUnit;
+            float accelMagnitude;
+            zVec3 dir;
             float vertical;
             float horizontal;
             float vx;
             float vz;
             g_zEffect_RandTableIndex = (g_zEffect_RandTableIndex + 1) % 200;
-            randAngle = (animEvent->positionOrTargetStart.y - animEvent->positionOrTargetStart.x) * randAngleUnit
+            yaw = (animEvent->positionOrTargetStart.y - animEvent->positionOrTargetStart.x) * yawUnit
                 + animEvent->positionOrTargetStart.x;
-            yawUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
+            pitchUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
             g_zEffect_RandTableIndex = (g_zEffect_RandTableIndex + 1) % 200;
-            yaw = (animEvent->positionOrTargetEnd.x - animEvent->positionOrTargetStart.z) * yawUnit
+            pitch = (animEvent->positionOrTargetEnd.x - animEvent->positionOrTargetStart.z) * pitchUnit
                 + animEvent->positionOrTargetStart.z;
-            launchMagnitudeUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
+            launchUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
             g_zEffect_RandTableIndex = (g_zEffect_RandTableIndex + 1) % 200;
-            launchMagnitude
-                = (animEvent->positionOrTargetEnd.z - animEvent->positionOrTargetEnd.y) * launchMagnitudeUnit
+            launchMagnitude = (animEvent->positionOrTargetEnd.z - animEvent->positionOrTargetEnd.y) * launchUnit
                 + animEvent->positionOrTargetEnd.y;
-            spinMagnitudeUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
+            accelUnit = g_zEffect_RandUnitTable[g_zEffect_RandTableIndex];
             g_zEffect_RandTableIndex = (g_zEffect_RandTableIndex + 1) % 200;
-            spinMagnitude = (animEvent->positionOrTargetRate.y - animEvent->positionOrTargetRate.x) * spinMagnitudeUnit
+            accelMagnitude = (animEvent->positionOrTargetRate.y - animEvent->positionOrTargetRate.x) * accelUnit
                 + animEvent->positionOrTargetRate.x;
 
-            zMathVec3DirFromYaw(&dir, spinMagnitude * 0.01745329251994);
-            vertical = yaw * 0.0111111114f;
-            horizontal = vertical < 0.0 ? vertical + 1.0f : 1.0f - vertical;
-            vx = horizontal * dir.x;
-            vz = horizontal * dir.z;
-
+            // Retail feeds the first random range to the yaw and scales the second vector by the fourth.
+            zMathVec3DirFromYaw(&dir, yaw * 0.01745329251994);
+            vertical = pitch * 0.0111111114f;
             animEvent->scaleEnd.x = vertical;
+            horizontal = vertical >= 0.0 ? 1.0f - vertical : vertical + 1.0f;
+            vx = horizontal * dir.x;
             animEvent->scaleStart.z = vx;
+            vz = horizontal * dir.z;
             animEvent->scaleEnd.y = vz;
             animEvent->positionOrTargetRate.z = launchMagnitude * vx;
             animEvent->rotationOrCameraPosStart.x = launchMagnitude * vertical;
             animEvent->rotationOrCameraPosStart.y = launchMagnitude * vz;
-            animEvent->rotationOrCameraPosStart.z = randAngle * vx;
-            animEvent->rotationOrCameraPosEnd.x = randAngle * vertical;
-            animEvent->rotationOrCameraPosEnd.y = randAngle * vz;
+            animEvent->rotationOrCameraPosStart.z = accelMagnitude * vx;
+            animEvent->rotationOrCameraPosEnd.x = accelMagnitude * vertical;
+            animEvent->rotationOrCameraPosEnd.y = accelMagnitude * vz;
             animEvent->rotationOrCameraPosEnd.z = animEvent->positionOrTargetRate.z;
             animEvent->rotationOrCameraPosRate = animEvent->rotationOrCameraPosStart;
             animEvent->scaleStart.x = animEvent->rotationOrCameraPosEnd.x;
@@ -1408,20 +1407,21 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
             animEvent->endTimeSec = animEvent->scaleRate.y;
         }
 
-        transformBasis = 0;
         if ((animEvent->flags & 0x02) != 0 && (self->flags & 0x80) != 0) {
             transformBasis = 1;
         }
+        // Only flag 0x2000 routes the 0x01 offset through the node basis; otherwise it is added directly.
         if ((animEvent->flags & 0x01) != 0) {
-            transformBasis = 1;
             if ((animEvent->flags & 0x2000) != 0) {
+                transformBasis = 1;
+            } else {
                 animEvent->scaleStart.x += animEvent->nodeAlphaEnd;
             }
         }
 
         if (transformBasis) {
-            zMat4x3 slotBuffer = { 0 };
-            zMat4x3 basisMatrix = { 0 };
+            zMat4x3 slotBuffer;
+            zMat4x3 basisMatrix;
             const zMat4x3* matrix;
             MatStackPushPtr((float*)(&slotBuffer));
             MatLoadIdentity();
@@ -1435,18 +1435,18 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
             basisMatrix.zx = slotBuffer.xz;
             basisMatrix.zy = slotBuffer.yz;
             basisMatrix.zz = slotBuffer.zz;
+            basisMatrix.posX = 0.0f;
+            basisMatrix.posY = 0.0f;
+            basisMatrix.posZ = 0.0f;
             MatLoadCurrentFrom(&basisMatrix);
             matrix = (const zMat4x3*)(*g_currentMatrixPtrSlot);
 
             if ((animEvent->flags & 0x02) != 0 && (self->flags & 0x80) != 0) {
-                zVec3 velocity;
+                const zVec3* const velocity = &self->velocity;
                 zVec3 out;
-                velocity.x = self->velocity.x;
-                velocity.y = self->velocity.y;
-                velocity.z = self->velocity.z;
-                out.x = velocity.x * matrix->xx + velocity.y * matrix->yx + velocity.z * matrix->zx + matrix->posX;
-                out.y = velocity.x * matrix->xy + velocity.y * matrix->yy + velocity.z * matrix->zy + matrix->posY;
-                out.z = velocity.x * matrix->xz + velocity.y * matrix->yz + velocity.z * matrix->zz + matrix->posZ;
+                out.x = velocity->x * matrix->xx + velocity->y * matrix->yx + velocity->z * matrix->zx + matrix->posX;
+                out.y = velocity->x * matrix->xy + velocity->y * matrix->yy + velocity->z * matrix->zy + matrix->posY;
+                out.z = velocity->x * matrix->xz + velocity->y * matrix->yz + velocity->z * matrix->zz + matrix->posZ;
                 animEvent->rotationOrCameraPosEnd.z += out.x;
                 animEvent->rotationOrCameraPosRate.x += out.y;
                 animEvent->rotationOrCameraPosRate.y += out.z;
@@ -1470,46 +1470,58 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
         }
     }
 
-    frameStepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
     if ((animEvent->flags & 0x0400) != 0 && sequenceRuntime->eventElapsedSec > animEvent->runtimeElapsedSec) {
-        frameStepSec -= sequenceRuntime->eventElapsedSec - animEvent->runtimeElapsedSec;
+        frameStepSec = g_zEffectAnim_State.frameDeltaRemainingSec
+            - (sequenceRuntime->eventElapsedSec - animEvent->runtimeElapsedSec);
+    } else {
+        frameStepSec = g_zEffectAnim_State.frameDeltaRemainingSec;
     }
 
     if ((animEvent->flags & 0x0c) != 0) {
-        float dx = animEvent->rotationOrCameraPosEnd.z * frameStepSec;
-        float dy = animEvent->rotationOrCameraPosRate.x * frameStepSec;
-        float dz = animEvent->rotationOrCameraPosRate.y * frameStepSec;
-        int movementClamped = 0;
+        zVec3 worldPos;
+        int movementClamped;
+        delta.x = animEvent->rotationOrCameraPosEnd.z * frameStepSec;
+        delta.z = animEvent->rotationOrCameraPosRate.y * frameStepSec;
+        delta.y = animEvent->rotationOrCameraPosRate.x * frameStepSec;
+        movementClamped = 0;
 
         if ((animEvent->flags & 0x01) != 0) {
-            zClassDiPickCandidateEntry candidate = { 0 };
+            zClassDiPickCandidateEntry candidate;
             int found;
             GetWorldPosition(node, &worldPos);
             gwNodeSetCellPickable(self->boundNode, 0);
             found = FindNearestPickCandidateBelowPoint(&worldPos, &candidate);
             gwNodeSetCellPickable(self->boundNode, 1);
 
-            if (dy < 0.0 && found != 0 && worldPos.y + dy < candidate.hitPos.y) {
-                movementClamped = 1;
-                if (fabs(animEvent->rotationOrCameraPosEnd.z) < 0.100000001f
-                    && fabs(animEvent->rotationOrCameraPosRate.y) < 0.100000001f) {
-                    dy = candidate.hitPos.y - worldPos.y;
-                } else {
-                    dy = fabs(dy * 0.5f) + candidate.hitPos.y - worldPos.y;
-                }
-            } else if (found == 0 && (animEvent->flags & 0x0400) == 0) {
-                animEvent->runtimeElapsedSec += frameStepSec;
-                if (animEvent->runtimeElapsedSec > 15.0f) {
-                    result = 2;
-                    movementClamped = 1;
+            // Retail only clamps or ages a falling step (0x45a401).
+            if (delta.y < 0.0) {
+                if (found != 0) {
+                    if (worldPos.y + delta.y < candidate.hitPos.y) {
+                        movementClamped = 1;
+                        if (fabs(animEvent->rotationOrCameraPosEnd.z) < 0.100000001f
+                            && fabs(animEvent->rotationOrCameraPosRate.y) < 0.100000001f) {
+                            delta.y = candidate.hitPos.y - worldPos.y;
+                        } else {
+                            delta.y = fabs(delta.y * 0.5f) + candidate.hitPos.y - worldPos.y;
+                        }
+                    }
+                } else if ((animEvent->flags & 0x0400) == 0) {
+                    animEvent->runtimeElapsedSec += frameStepSec;
+                    if (animEvent->runtimeElapsedSec > 15.0f) {
+                        result = 2;
+                        movementClamped = 1;
+                    }
                 }
             }
         }
 
-        if (node->classId == 5) {
-            gwObject3DTranslatePosition(node, dx, dy, dz);
-        } else if (node->classId == 1) {
-            gwCameraTranslate(node, dx, dy, dz);
+        switch (node->classId) {
+        case 5:
+            gwObject3DTranslatePosition(node, delta.x, delta.y, delta.z);
+            break;
+        case 1:
+            gwCameraTranslate(node, delta.x, delta.y, delta.z);
+            break;
         }
 
         if (movementClamped != 0) {
@@ -1527,34 +1539,36 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
             }
         }
 
-        if (movementClamped != 0 && (animEvent->flags & 0x0800) != 0) {
-            short runtimeIndex;
-            if (animEvent->packedRuntimeIndex < 0) {
-                int i;
-                for (i = 0; i < self->runtimeSequenceCount; ++i) {
-                    if (strcmp(self->runtimeList[i].sequenceName, animEvent->targetName) == 0) {
-                        animEvent->packedRuntimeIndex = (short)(i);
-                        break;
+        // The name lookup and the impact sound only run for a clamped step (0x45a55f).
+        if (movementClamped != 0) {
+            if ((animEvent->flags & 0x0800) != 0) {
+                short runtimeIndex;
+                if (animEvent->packedRuntimeIndex < 0) {
+                    int i;
+                    for (i = 0; i < self->runtimeSequenceCount; ++i) {
+                        if (strcmp(self->runtimeList[i].sequenceName, animEvent->targetName) == 0) {
+                            animEvent->packedRuntimeIndex = (short)(i);
+                            break;
+                        }
                     }
                 }
+                runtimeIndex = animEvent->packedRuntimeIndex;
+                if (runtimeIndex >= 0 && self->runtimeList[runtimeIndex].runState == 3) {
+                    self->runtimeList[runtimeIndex].runState = 0;
+                }
             }
-            runtimeIndex = animEvent->packedRuntimeIndex;
-            if (runtimeIndex >= 0 && self->runtimeList[runtimeIndex].runState == 3) {
-                self->runtimeList[runtimeIndex].runState = 0;
-            }
-        }
 
-        if ((animEvent->flags & 0x1000) != 0 && animEvent->sampleRefIndex > 0) {
-            const float speed = sqrt(
-                animEvent->rotationOrCameraPosEnd.z * animEvent->rotationOrCameraPosEnd.z
-                + animEvent->rotationOrCameraPosRate.x * animEvent->rotationOrCameraPosRate.x
-                + animEvent->rotationOrCameraPosRate.y * animEvent->rotationOrCameraPosRate.y
-            );
-            const float threshold
-                = animEvent->lookupScale < 0.0f ? animEvent->nodeAlphaEnd * 10.0f : animEvent->lookupScale;
-            const float gain = speed >= threshold ? 1.0f : speed / threshold;
-            zSndSample* const sample = self->sampleRefList[animEvent->sampleRefIndex].sample;
-            zSndSamplePlayA3D(sample, gain, &worldPos, 0);
+            if ((animEvent->flags & 0x1000) != 0 && animEvent->sampleRefIndex > 0) {
+                float gain = sqrt(
+                    animEvent->rotationOrCameraPosEnd.z * animEvent->rotationOrCameraPosEnd.z
+                    + animEvent->rotationOrCameraPosRate.x * animEvent->rotationOrCameraPosRate.x
+                    + animEvent->rotationOrCameraPosRate.y * animEvent->rotationOrCameraPosRate.y
+                );
+                float threshold;
+                threshold = animEvent->lookupScale < 0.0f ? animEvent->nodeAlphaEnd * 10.0f : animEvent->lookupScale;
+                gain = gain > threshold ? 1.0f : gain / threshold;
+                zSndSamplePlayA3D(self->sampleRefList[animEvent->sampleRefIndex].sample, gain, &worldPos, 0);
+            }
         }
 
         animEvent->rotationOrCameraPosEnd.z += animEvent->rotationOrCameraPosRate.z * frameStepSec;
@@ -1563,35 +1577,49 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
     }
 
     if ((animEvent->flags & 0x20) != 0) {
-        const float dx = animEvent->runtimeVecB.x * frameStepSec;
-        const float dy = animEvent->runtimeVecB.y * frameStepSec;
-        const float dz = animEvent->runtimeVecB.z * frameStepSec;
-        if (node->classId == 5) {
-            gwObject3DTranslateRotation(node, dx, dy, dz);
-        } else if (node->classId == 1) {
-            gwCameraAddEulerAngles(node, dx, dy, dz);
+        float* rotationRates;
+        const float* rotationAccels;
+        int i;
+        switch (node->classId) {
+        case 5:
+            gwObject3DTranslateRotation(
+                node,
+                animEvent->runtimeVecB.x * frameStepSec,
+                animEvent->runtimeVecB.y * frameStepSec,
+                animEvent->runtimeVecB.z * frameStepSec
+            );
+            break;
+        case 1:
+            gwCameraAddEulerAngles(
+                node,
+                animEvent->runtimeVecB.x * frameStepSec,
+                animEvent->runtimeVecB.y * frameStepSec,
+                animEvent->runtimeVecB.z * frameStepSec
+            );
+            break;
         }
-        animEvent->runtimeVecB.x += animEvent->runtimeVecA.x * frameStepSec;
-        animEvent->runtimeVecB.y += animEvent->runtimeVecA.y * frameStepSec;
-        animEvent->runtimeVecB.z += animEvent->runtimeVecA.z * frameStepSec;
+        rotationRates = &animEvent->runtimeVecB.x;
+        rotationAccels = &animEvent->runtimeVecA.x;
+        for (i = 0; i < 3; ++i) {
+            rotationRates[i] += rotationAccels[i] * frameStepSec;
+        }
     }
 
+    // Retail reuses the movement block's pre-acceleration delta here.
     if ((animEvent->flags & 0x40) != 0) {
-        gwObject3DTranslateRotation(
-            node,
-            animEvent->rotationOrCameraPosRate.y * frameStepSec * animEvent->scaleRate.y,
-            0.0f,
-            -animEvent->rotationOrCameraPosEnd.z * frameStepSec * animEvent->scaleRate.y
-        );
+        gwObject3DTranslateRotation(node, delta.z * animEvent->scaleRate.y, 0.0f, -(delta.x * animEvent->scaleRate.y));
     }
 
     if ((animEvent->flags & 0x80) != 0) {
-        const float dx = animEvent->scaleEnd.y * frameStepSec * animEvent->scaleRate.y;
-        const float dz = -animEvent->scaleStart.z * frameStepSec * animEvent->scaleRate.y;
-        if (node->classId == 5) {
-            gwObject3DTranslateRotation(node, dx, 0.0f, dz);
-        } else if (node->classId == 1) {
-            gwCameraAddEulerAngles(node, dx, 0.0f, dz);
+        const float yawDx = animEvent->scaleEnd.y * frameStepSec * animEvent->scaleRate.y;
+        const float yawDz = -animEvent->scaleStart.z * frameStepSec * animEvent->scaleRate.y;
+        switch (node->classId) {
+        case 5:
+            gwObject3DTranslateRotation(node, yawDx, 0.0f, yawDz);
+            break;
+        case 1:
+            gwCameraAddEulerAngles(node, yawDx, 0.0f, yawDz);
+            break;
         }
         animEvent->scaleRate.y += animEvent->scaleRate.x * frameStepSec;
     }
@@ -1616,16 +1644,13 @@ HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceR
         gwObject3DSetScale(node, scale.x, scale.y, scale.z);
     }
 
-    if ((animEvent->flags & 0x0200) != 0) {
-        if (node != 0 && node->userDataOrDiRef != 0) {
-            zDiPartial* const di = (zDiPartial*)(node->userDataOrDiRef);
-            di->flags |= 0x08;
-            di->blendScale += animEvent->nodeAlphaRate * frameStepSec;
-            if (di->blendScale > 1.0f) {
-                di->blendScale = 1.0f;
-            } else if (di->blendScale < 0.00001f) {
-                di->flags &= ~0x08;
-            }
+    if ((animEvent->flags & 0x0200) != 0 && node->userDataOrDiRef != 0) {
+        ((zDiPartial*)(node->userDataOrDiRef))->flags |= 0x08;
+        ((zDiPartial*)(node->userDataOrDiRef))->blendScale += animEvent->nodeAlphaRate * frameStepSec;
+        if (((zDiPartial*)(node->userDataOrDiRef))->blendScale > 1.0f) {
+            ((zDiPartial*)(node->userDataOrDiRef))->blendScale = 1.0f;
+        } else if (((zDiPartial*)(node->userDataOrDiRef))->blendScale < 0.00001f) {
+            ((zDiPartial*)(node->userDataOrDiRef))->flags &= ~0x08;
         }
     }
 
@@ -3523,7 +3548,7 @@ int __fastcall HandleTopMessageEvent(zEffectAnimEntry* self, zEffectTopMessageEv
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.runsequenceevents
  * @recoil-artifact defines .text recoil:function:0x45cc00: zEffect_Anim::RunSequenceEvents.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance a runtime event stream by trigger timing and dispatch

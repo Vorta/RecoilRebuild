@@ -3272,13 +3272,121 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan565scalar
  * @recoil-artifact defines .text recoil:function:0x49e200: zRndr::FogBlendSpan565Scalar
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-scalar
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-565-scalar
+ * @recoil-match byte
  *
- *
+ * Raw-assembly exception: explicit, address-scoped whole-body inline-assembly
+ * exception (Pro-reviewed 2026-10-13) covering only retail [0x49e20f,0x49e2f0),
+ * the 225-byte, 70-instruction scalar RGB565 fog-blend block. Native-C control 1
+ * (the fallback below): 320 bytes / 293 masked differences; control 2 with _rotr
+ * and dword pairs: 256 / 233.
+ * Source-shape evidence: BN retail strongly supports an original VC5 inline-assembly
+ * body: named-parameter spills, a second EBP save, temporary EBP reuse and internal
+ * flag dependencies inside a compiler-generated frame. The compiler owns the EBP
+ * frame, the fastcall pixels/pixelCount spill homes, the EBX/ESI/EDI saves, the
+ * epilogue, ret 8 and padding. The block loads the four arguments through their
+ * compiler-assigned homes before EBP is repurposed as the fog step register; no
+ * frame-relative access occurs until EBP is restored. It tests the odd pixel with
+ * shr/jae, rotates the ramp term with ror and blends packed pixel pairs in one
+ * dword. All branches remain internal, and the block restores EBP and balances ESP
+ * before falling through to the compiler epilogue.
+ * The shared RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM span-family guard also enables
+ * these separately approved scalar fog helpers; this block executes no MMX. The
+ * unchanged C fallback is algorithmic and does not reproduce the retail bytes.
  * Purpose: Blend a 565 span with the active fog color using scalar pair processing.
  */
 void __fastcall
 FogBlendSpan565Scalar(unsigned short* pixels, int pixelCount, int fogCoordFixed24, int fogCoordStepFixed24)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    __asm {
+        push ebp
+        mov ecx, pixelCount
+        mov esi, fogCoordFixed24
+        mov edi, pixels
+        mov ebp, fogCoordStepFixed24
+        shr ecx, 1
+        jae zRndr_fog565_scalar_pairs
+        cmp esi, 1000000h
+        jl zRndr_fog565_scalar_odd_ramp
+        mov ax, word ptr [g_fogParamsActive.packedColor16]
+        mov word ptr [edi], ax
+        jmp zRndr_fog565_scalar_odd_next
+
+    zRndr_fog565_scalar_odd_ramp:
+        cmp esi, 80000h
+        jl zRndr_fog565_scalar_odd_next
+        xor eax, eax
+        mov ax, word ptr [edi]
+        mov edx, 1000000h
+        sub edx, esi
+        mov ebx, eax
+        shr edx, 13h
+        and eax, 7e0h
+        shr eax, 5
+        and ebx, 0f81fh
+        imul eax, edx
+        imul ebx, edx
+        mov edx, dword ptr [g_fogParamsActive.packedColorRamp + edx*4]
+        add eax, edx
+        ror edx, 0bh
+        add ebx, edx
+        shr ebx, 5
+        and eax, 7e0h
+        and ebx, 0f81fh
+        add eax, ebx
+        mov word ptr [edi], ax
+
+    zRndr_fog565_scalar_odd_next:
+        add edi, 2
+        add esi, ebp
+        or ecx, ecx
+
+    zRndr_fog565_scalar_pairs:
+        je zRndr_fog565_scalar_done
+        add ebp, ebp
+
+    zRndr_fog565_scalar_pair_loop:
+        cmp esi, 1000000h
+        jl zRndr_fog565_scalar_pair_ramp
+        mov eax, dword ptr [g_fogParamsActive.packedColor16Dup]
+        mov dword ptr [edi], eax
+        jmp zRndr_fog565_scalar_pair_next
+
+    zRndr_fog565_scalar_pair_ramp:
+        cmp esi, 80000h
+        jl zRndr_fog565_scalar_pair_next
+        mov eax, dword ptr [edi]
+        mov edx, 1000000h
+        sub edx, esi
+        mov ebx, eax
+        shr edx, 13h
+        and eax, 0f81f07e0h
+        shr eax, 5
+        and ebx, 7e0f81fh
+        imul eax, edx
+        imul ebx, edx
+        mov edx, dword ptr [g_fogParamsActive.packedColorRamp + edx*4]
+        add eax, edx
+        ror edx, 0bh
+        add ebx, edx
+        shr ebx, 5
+        and eax, 0f81f07e0h
+        and ebx, 7e0f81fh
+        add eax, ebx
+        mov dword ptr [edi], eax
+
+    zRndr_fog565_scalar_pair_next:
+        add edi, 4
+        add esi, ebp
+        dec ecx
+        jne zRndr_fog565_scalar_pair_loop
+
+    zRndr_fog565_scalar_done:
+        pop ebp
+    }
+#else
     unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
     const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
@@ -3320,6 +3428,7 @@ FogBlendSpan565Scalar(unsigned short* pixels, int pixelCount, int fogCoordFixed2
         fogCoord += pairFogStep;
         --pairCount;
     }
+#endif
 }
 } // namespace zRndr
 
@@ -3327,13 +3436,119 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fogblendspan555scalar
  * @recoil-artifact defines .text recoil:function:0x49e300: zRndr::FogBlendSpan555Scalar
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-scalar
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fog-blend-span-555-scalar
+ * @recoil-match byte
  *
- *
+ * Raw-assembly exception: explicit, address-scoped whole-body inline-assembly
+ * exception (Pro-reviewed 2026-10-13) covering only retail [0x49e30f,0x49e3f0),
+ * the 225-byte, 70-instruction scalar RGB555 fog-blend block. Native-C control 1
+ * (the fallback below): 320 bytes / 294 masked differences; supplementary control 2
+ * was tested only on the 0x49e200 sibling: 256 / 233.
+ * Source-shape evidence: BN retail strongly supports the 555 twin of the 0x49e200
+ * original VC5 inline-assembly body; only the channel masks differ. The compiler
+ * owns the EBP frame, the fastcall pixels/pixelCount spill homes, the EBX/ESI/EDI
+ * saves, the epilogue, ret 8 and padding. The block loads the four arguments
+ * through their compiler-assigned homes before EBP is repurposed as the fog step
+ * register; no frame-relative access occurs until EBP is restored. It blends packed
+ * pixel pairs in one dword. All branches remain internal, and the block restores
+ * EBP and balances ESP before falling through to the compiler epilogue.
+ * The shared RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM span-family guard also enables
+ * these separately approved scalar fog helpers; this block executes no MMX. The
+ * unchanged C fallback is algorithmic and does not reproduce the retail bytes.
  * Purpose: Blend a 555 span with the active fog color using scalar pair processing.
  */
 void __fastcall
 FogBlendSpan555Scalar(unsigned short* pixels, int pixelCount, int fogCoordFixed24, int fogCoordStepFixed24)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_SPAN_MMX_RAW_ASM)
+    __asm {
+        push ebp
+        mov ecx, pixelCount
+        mov esi, fogCoordFixed24
+        mov edi, pixels
+        mov ebp, fogCoordStepFixed24
+        shr ecx, 1
+        jae zRndr_fog555_scalar_pairs
+        cmp esi, 1000000h
+        jl zRndr_fog555_scalar_odd_ramp
+        mov ax, word ptr [g_fogParamsActive.packedColor16]
+        mov word ptr [edi], ax
+        jmp zRndr_fog555_scalar_odd_next
+
+    zRndr_fog555_scalar_odd_ramp:
+        cmp esi, 80000h
+        jl zRndr_fog555_scalar_odd_next
+        xor eax, eax
+        mov ax, word ptr [edi]
+        mov edx, 1000000h
+        sub edx, esi
+        mov ebx, eax
+        shr edx, 13h
+        and eax, 3e0h
+        shr eax, 5
+        and ebx, 7c1fh
+        imul eax, edx
+        imul ebx, edx
+        mov edx, dword ptr [g_fogParamsActive.packedColorRamp + edx*4]
+        add eax, edx
+        ror edx, 0bh
+        add ebx, edx
+        shr ebx, 5
+        and eax, 3e0h
+        and ebx, 7c1fh
+        add eax, ebx
+        mov word ptr [edi], ax
+
+    zRndr_fog555_scalar_odd_next:
+        add edi, 2
+        add esi, ebp
+        or ecx, ecx
+
+    zRndr_fog555_scalar_pairs:
+        je zRndr_fog555_scalar_done
+        add ebp, ebp
+
+    zRndr_fog555_scalar_pair_loop:
+        cmp esi, 1000000h
+        jl zRndr_fog555_scalar_pair_ramp
+        mov eax, dword ptr [g_fogParamsActive.packedColor16Dup]
+        mov dword ptr [edi], eax
+        jmp zRndr_fog555_scalar_pair_next
+
+    zRndr_fog555_scalar_pair_ramp:
+        cmp esi, 80000h
+        jl zRndr_fog555_scalar_pair_next
+        mov eax, dword ptr [edi]
+        mov edx, 1000000h
+        sub edx, esi
+        mov ebx, eax
+        shr edx, 13h
+        and eax, 7c1f03e0h
+        shr eax, 5
+        and ebx, 3e07c1fh
+        imul eax, edx
+        imul ebx, edx
+        mov edx, dword ptr [g_fogParamsActive.packedColorRamp + edx*4]
+        add eax, edx
+        ror edx, 0bh
+        add ebx, edx
+        shr ebx, 5
+        and eax, 7c1f03e0h
+        and ebx, 3e07c1fh
+        add eax, ebx
+        mov dword ptr [edi], eax
+
+    zRndr_fog555_scalar_pair_next:
+        add edi, 4
+        add esi, ebp
+        dec ecx
+        jne zRndr_fog555_scalar_pair_loop
+
+    zRndr_fog555_scalar_done:
+        pop ebp
+    }
+#else
     unsigned int fogCoord = (unsigned int)(fogCoordFixed24);
     const unsigned int fogStep = (unsigned int)(fogCoordStepFixed24);
     unsigned int pairCount = (unsigned int)(pixelCount) >> 1;
@@ -3375,6 +3590,7 @@ FogBlendSpan555Scalar(unsigned short* pixels, int pixelCount, int fogCoordFixed2
         fogCoord += pairFogStep;
         --pairCount;
     }
+#endif
 }
 } // namespace zRndr
 

@@ -1084,12 +1084,13 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
             }
 
             clipTouched = 1;
+            const int polygonPointCount = (int)(polygon->vertexCountAndFlags & 0xff);
             zVec3* inputContourPoints;
             const int inputContourPointCount
                 = zGeometry_Weiler::GetInputContourAPointList(clipPolygon->weilerState, &inputContourPoints);
 
             zGeometry_TriangleSoup* triangleSoup = zGeometry::TriangulatePolygonWithHole(
-                polygon->vertexCountAndFlags & 0xff,
+                polygonPointCount,
                 polygonPointsBuffer,
                 inputContourPointCount,
                 inputContourPoints
@@ -1100,7 +1101,9 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 clipPolygonDirty = 1;
             }
 
-            if (triangleSoup->triangleCount < (int)(polygon->vertexCountAndFlags & 0xff) + inputContourPointCount) {
+            zVec3* trianglePoints = triangleSoup->triangleVerts;
+
+            if (triangleSoup->triangleCount < polygonPointCount + inputContourPointCount) {
                 if (polygonPointsBuffer != 0) {
                     free(polygonPointsBuffer);
                 }
@@ -1109,7 +1112,6 @@ ProcessClipPatchNode(zGeometry_ClipPolygonPartial* clipPolygon, zModel_DrawBatch
                 return 0;
             }
 
-            zVec3* trianglePoints = triangleSoup->triangleVerts;
             for (int triangleIndex = 0; triangleIndex < triangleSoup->triangleCount; ++triangleIndex) {
                 zGeometry_Vec3Array::EnsurePositiveCrossZ(3, trianglePoints, 1);
                 zGeometry_Vec3Array::RotateNeg90AroundX(3, trianglePoints);
