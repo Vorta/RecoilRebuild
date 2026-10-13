@@ -90,6 +90,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 - Destroyed enemies can continue to trigger proximity mines in single-player, even after their visible models disappear. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Mission 3 turret `tur_202` uses the ordinary pulse-turret model but fires enhanced red pulse ammunition. Present since [1.0.1.23](#10123--full-game).
+- Finishing a mission in HOVER mode can start the next mission with a TRACKED appearance but HOVER movement and engine sounds, with no active mode highlighted in the HUD. HOVER cannot be selected again until switching to another mode; selecting TRACKED restores normal behavior. Present since [1.0.1.23](#10123--full-game).
 - High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Easy and Hard vehicle parameters and pickup layouts fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
@@ -98,7 +99,6 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 - With CD Audio enabled, entering or resuming a mission can crash if the CD drive reports exactly two tracks. Regression introduced in [Demo 1998-09-28](#demo-1998-09-28).
 - HOVER-to-TRACKED transformations incorrectly succeed over water. Regression introduced in [1.0.1.23](#10123--full-game).
 - Disabling an object's texture scrolling through `Object3DSetScroll` or `Object3DSetScrollAlways` can crash the game. Regression introduced in [Demo 1998-09-28](#demo-1998-09-28).
-
 
 ## 1.0.1.23 — Full game
 
@@ -178,6 +178,7 @@ Changelog up until version 1.0.6.8 is a historic reconstruction, not an actual c
 
 - Destroyed enemies can continue to trigger proximity mines in single-player, even after their visible models disappear. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Mission 3 turret `tur_202` uses the ordinary pulse-turret model but fires enhanced red pulse ammunition.
+- Finishing a mission in HOVER mode can start the next mission with a TRACKED appearance but HOVER movement and engine sounds, with no active mode highlighted in the HUD. HOVER cannot be selected again until switching to another mode; selecting TRACKED restores normal behavior.
 - High frame rates can cause uneven or accelerated vehicle movement. Vehicle physics advances even on frames with little or no measured elapsed time, and timing precision degrades after long Windows uptimes. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Enemy nanite and most ammunition drops stop appearing when that pickup type's instance counter reaches 100. Collecting pickups does not reset the counter, and failed nanite drops also suppress the alternative ammunition reward. Present since [Demo 1998-07-21](#demo-1998-07-21).
 - Easy and Hard vehicle parameters and pickup layouts fall back to Normal when the matching difficulty files exist only inside ZBD archives. The file check searches only for loose files.
