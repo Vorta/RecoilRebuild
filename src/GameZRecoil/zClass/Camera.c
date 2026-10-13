@@ -2451,6 +2451,7 @@ int __fastcall find_convex_hull_xz(zVec3* points, int count)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtiles
  * @recoil-artifact defines .text recoil:function:0x44c3c0: CZCamera::BuildFrustumGridTiles
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  *
  *
  * Purpose: build clamped in-world frustum grid rings from the active
@@ -2646,6 +2647,7 @@ BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCam
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtilesfromparams
  * @recoil-artifact defines .text recoil:function:0x44c8e0: CZCamera::BuildFrustumGridTilesFromParams
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  * @recoil-match source
  *
  * Purpose: build frustum grid rings while preserving raw out-of-bounds

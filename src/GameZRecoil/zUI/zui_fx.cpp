@@ -397,7 +397,7 @@ void HudWeatherFx::ApplyPass3()
             texCoords[3].u = particleQuads[particleIndex].texCoordUEnd;
             texCoords[3].v = 0.0f;
 
-            if (((HudWeatherFxPointBatch*)(clipVerts))->ArePointBatchInsideRect(4, clipRectOrNull) != 0) {
+            if (((HudWeatherFxPointBatch*)(clipVerts))->ArePointBatchInsideRect(texCoords, 4, clipRectOrNull) != 0) {
                 g_zVideo_pfnSubmitPolyRenderClass(
                     clipVerts,
                     texCoords,
@@ -431,7 +431,11 @@ void HudWeatherFx::ApplyPass3()
  *
  * Purpose: Accept a projected weather quad only when all points lie inside the viewport.
  */
-int HudWeatherFxPointBatch::ArePointBatchInsideRect(int pointCount, const HudUiRect* viewportRect)
+int __fastcall HudWeatherFxPointBatch::ArePointBatchInsideRect(
+    const zVideo_TexCoord*,
+    int pointCount,
+    const HudUiRect* viewportRect
+)
 {
     if (viewportRect == 0) {
         return 1;
@@ -454,6 +458,7 @@ int HudWeatherFxPointBatch::ArePointBatchInsideRect(int pointCount, const HudUiR
 
     return 1;
 }
+RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxsnow-hudweatherfxsnow-0x4be280

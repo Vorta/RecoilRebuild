@@ -54,9 +54,9 @@ struct HudWeatherFxPointBatch {
     float y;
     float z;
 
-    int ArePointBatchInsideRect(int pointCount, const HudUiRect* viewportRect);
+    int __fastcall ArePointBatchInsideRect(const zVideo_TexCoord*, int pointCount, const HudUiRect* viewportRect);
 };
-RECOIL_STATIC_ASSERT(sizeof(HudWeatherFxPointBatch) == 0x0c);
+/** The 0x0c size assert sits beside the __fastcall member's definition in zui_fx.cpp (EDX = unused tex coords). */
 
 struct HudUiSaveLoadEntry : WIN32_FIND_DATAA { };
 RECOIL_STATIC_ASSERT(sizeof(HudUiSaveLoadEntry) == 0x140);
