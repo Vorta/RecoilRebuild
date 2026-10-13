@@ -1379,7 +1379,7 @@ __inline void Vec3TransformDirectionInPlace(const zMat4x3* matrix, zVec3* vector
  * @recoil-artifact defines .text recoil:function:0x473e60: zMathCameraStageInverseRotation
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-negate
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.vector-transform-direction-in-place
- *
+ * @recoil-match byte
  *
  * Raw assembly: three zmth.h ZMTH_VECTOR_NEGATE expansions at retail
  * [0x473e82,0x473ea9), [0x473eb4,0x473edb) and [0x473f3b,0x473f62), and the
@@ -1414,8 +1414,8 @@ void __fastcall zMathCameraStageInverseRotation(const zMat4x3* worldMatrix)
     g_zMath_CameraScratchB.yz = g_zMath_CameraScratchB.zy;
     g_zMath_CameraScratchB.zy = yz;
 
+    ZMTH_VECTOR_NEGATE((const zVec3*)(&g_zMath_CameraScratchB.posX), (zVec3*)(&g_zMath_CameraScratchB.posX));
     position = (zVec3*)(&g_zMath_CameraScratchB.posX);
-    ZMTH_VECTOR_NEGATE(position, position);
     Vec3TransformDirectionInPlace(&g_zMath_CameraScratchB, position);
 }
 
@@ -1890,9 +1890,9 @@ void __fastcall zMathMatTransformBBoxToCorners(const zMat4x3* matrix, const zBBo
     work.x = bbox->max.z * matrix->zx;
     work.y = bbox->max.z * matrix->zy;
     work.z = bbox->max.z * matrix->zz;
-    work.x += matrix->posX;
-    work.y += matrix->posY;
     work.z += matrix->posZ;
+    work.y += matrix->posY;
+    work.x += matrix->posX;
     outCorners->corners[0].x = work.x + minXMinY.x;
     outCorners->corners[0].y = work.y + minXMinY.y;
     outCorners->corners[0].z = work.z + minXMinY.z;
