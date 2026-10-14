@@ -333,7 +333,7 @@ void HudUiPanel::RebuildTextRect()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiflashpanel-computeflashblendcolor
  * @recoil-artifact defines .text recoil:function:0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor.
- *
+ * @recoil-match instruction
  *
  * Purpose: clamp endpoint flash colors and blend RGB channels for intermediate flash values.
  */
