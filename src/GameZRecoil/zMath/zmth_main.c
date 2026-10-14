@@ -2379,7 +2379,7 @@ int __fastcall LineVsSphereHit(
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-length-sq
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- *
+ * @recoil-match source
  *
  * Purpose: recovers perspective-correct reciprocal-Z and UV-over-Z plane gradients for a triangle.
  */
