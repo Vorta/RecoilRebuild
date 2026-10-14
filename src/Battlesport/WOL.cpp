@@ -1032,7 +1032,7 @@ void WestwoodOnlineUpgradeDialog::UpdateSessionListQueryFromControls()
 /**
  * @recoil-anchor recoil:anchor:battlesport.wol.westwoodonlineupgradedialog-appendstatustextfmt
  * @recoil-artifact defines .text recoil:function:0x43d060: WestwoodOnlineUpgradeDialog::AppendStatusTextFmt
- *
+ * @recoil-match byte
  *
  * Purpose: format and append a status line while keeping the status list
  * bounded and scrolled.
