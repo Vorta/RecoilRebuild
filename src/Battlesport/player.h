@@ -131,6 +131,26 @@ struct PlayerMasterWeaponSpec {
     int initialHardpointSelectState;
 };
 
+/**
+ * Purpose: Hold player list state and establish an empty list.
+ * This state-only template and spelling are provisional: retail proves the
+ * repeated layout and initialization, not an original template identity.
+ */
+template <class Node> struct CPlayerListState {
+    int listAux;
+    Node* head;
+    Node* tail;
+    int count;
+
+    CPlayerListState()
+    {
+        listAux = 0;
+        tail = 0;
+        head = 0;
+        count = 0;
+    }
+};
+
 struct PlayerAiRuntimePartial {
     unsigned char unknown_00[0x48];
     int attackBuddyNetId;
@@ -164,10 +184,9 @@ struct PlayerMasterCommonData {
     float invMaxHealth;
     int pickupType;
     int pickupCapacity;
-    int weaponSpecListAux;
-    PlayerMasterWeaponSpec* weaponSpecHead;
-    PlayerMasterWeaponSpec* weaponSpecTail;
-    int weaponSpecCount;
+    // Retail `new PlayerMasterCommonData` runs this list's inline constructor before
+    // the memset (0x42058b..0x42059d stores listAux, tail, head, count).
+    CPlayerListState<PlayerMasterWeaponSpec> weaponSpecs;
     int weaponNodeCount;
 };
 
@@ -339,25 +358,6 @@ typedef std::vector<PlayerNodeFlagRestoreEntry> PlayerNodeFlagRestoreEntryVector
 
 extern PlayerNodeFlagRestoreEntryVector g_PlayerNodeFlagRestoreEntries;
 
-/**
- * Purpose: Hold player list state and establish an empty list.
- * This state-only template and spelling are provisional: retail proves the
- * repeated layout and initialization, not an original template identity.
- */
-template <class Node> struct CPlayerListState {
-    int listAux;
-    Node* head;
-    Node* tail;
-    int count;
-
-    CPlayerListState()
-    {
-        listAux = 0;
-        tail = 0;
-        head = 0;
-        count = 0;
-    }
-};
 typedef CPlayerListState<PlayerMasterCommonData> CPlayerMasterCommonDataList;
 typedef CPlayerListState<PlayerMasterModalData> CPlayerMasterModalDataList;
 typedef CPlayerListState<zUtil_SaveGameState> CPlayerSaveStateList;
@@ -421,7 +421,7 @@ enum PlayerLifecycleState {
 
 enum PlayerOptCatalogFlags { kOptCatalogFlagAltDispatchLatch = 0x02 };
 
-const char* __cdecl GetAivZrdPath();
+const char* __fastcall GetAivZrdPath(const char* extraSearchPath);
 void __fastcall ExtractVehicleNameFromAivName(const char* aivName, char* outVehicleName);
 CZNodePartial* __fastcall CloneType6NodeFromTemplateAndRename(const char* templateName, const char* newName);
 int __fastcall CreateFromNamesAtPose(
@@ -768,10 +768,7 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, trackSwitchDist2) == 0x394
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, maxHealth) == 0x398);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, invMaxHealth) == 0x39c);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, pickupCapacity) == 0x3a4);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecListAux) == 0x3a8);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecHead) == 0x3ac);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecTail) == 0x3b0);
-RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecCount) == 0x3b4);
+RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponSpecs) == 0x3a8);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterCommonData, weaponNodeCount) == 0x3b8);
 RECOIL_STATIC_ASSERT(sizeof(PlayerMasterCommonData) == 0x3bc);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMasterModalData, next) == 0x00);

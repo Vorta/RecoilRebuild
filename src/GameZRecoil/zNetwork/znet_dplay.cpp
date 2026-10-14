@@ -456,7 +456,7 @@ void __cdecl ClearEnumeratedSessionList()
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\zNetwork\zNetwork.cpp.
  * Purpose: Return the cached DirectPlay local-player key.
  */
-extern "C" int __cdecl zNetworkGetLocalPlayerKey()
+extern "C" int __fastcall zNetworkGetLocalPlayerKey()
 {
     return g_zNetwork_LocalPlayerKey;
 }

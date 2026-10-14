@@ -189,7 +189,7 @@ namespace zTurret_System {
 int __cdecl ResetIterationState();
 int __fastcall LoadDefinitionsFromPath(CZNodePartial* worldNode, const char* path);
 void __cdecl TickAllRuntimesRoundRobin();
-int __cdecl DisableTickCallback();
+int __fastcall DisableTickCallback();
 int __cdecl EnableTickCallback();
 int __cdecl Shutdown();
 int __cdecl FreeAllRuntimes();

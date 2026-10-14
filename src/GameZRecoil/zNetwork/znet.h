@@ -218,7 +218,7 @@ extern char g_zNetwork_ProviderName_Ipx[0x4];
 extern char g_zNetwork_ModemSessionName[0xd];
 
 int __cdecl zNetworkDPlayDestroyCachedLocalPlayer();
-int __cdecl zNetworkGetLocalPlayerKey();
+int __fastcall zNetworkGetLocalPlayerKey();
 int __cdecl zNetworkGetLocalPlayerColorIndex();
 int __fastcall zNetworkDPlaySendUnreliable(zNetworkPacketHeader* packet, unsigned int packetSizeBytes);
 int __fastcall zNetworkDPlaySendReliable(zNetworkPacketHeader* packet, unsigned int packetSizeBytes);

@@ -3925,6 +3925,11 @@ zReader::Node* HudUiBackground::LoadFromZrd(const char* zrdPath, const char* sec
  *
  *
  * Purpose: load the recovered HUD data handled by HudUiBackground::LoadZrdAndSection.
+ *
+ * Evidence: a font entry with fewer than eight fields takes the LEFT store
+ * (retail jl at 0x4b9ac2 targets 0x4b9b87), so its alignment resets to left.
+ * The image and text sections share one list-node local; retail keeps both
+ * lookups in the same frame home.
  */
 zReader::Node*
 HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* sectionName, int capturePrimary)
@@ -3948,6 +3953,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
         cfgRoot = sectionRoot;
 
         if (sectionRoot != 0) {
+            zReader::Node* listNode;
             zReader::Node* const imagePath = zRdrFindTag(sectionRoot, "IMAGE_PATH");
             if (imagePath != 0) {
                 zImageInitMissionResources(imagePath->value.nodes[1].value.str);
@@ -3996,24 +4002,22 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                     if (fontEntry->value.nodes[0].value.i32 >= 7) {
                         fontStyles[styleIndex].fontWeight = fontEntry->value.nodes[6].value.i32;
                     }
-                    if (fontEntry->value.nodes[0].value.i32 >= 8) {
-                        const char* const align = fontEntry->value.nodes[7].value.str;
-                        if (strcmp(align, "LEFT") != 0) {
-                            if (strcmp(align, "RIGHT") == 0) {
-                                fontStyles[styleIndex].alignMode = 2;
-                            } else if (strcmp(align, "CENTER") == 0) {
-                                fontStyles[styleIndex].alignMode = 1;
-                            }
-                        } else {
-                            fontStyles[styleIndex].alignMode = 0;
+                    if (fontEntry->value.nodes[0].value.i32 >= 8
+                        && strcmp(fontEntry->value.nodes[7].value.str, "LEFT") != 0) {
+                        if (strcmp(fontEntry->value.nodes[7].value.str, "RIGHT") == 0) {
+                            fontStyles[styleIndex].alignMode = 2;
+                        } else if (strcmp(fontEntry->value.nodes[7].value.str, "CENTER") == 0) {
+                            fontStyles[styleIndex].alignMode = 1;
                         }
+                    } else {
+                        fontStyles[styleIndex].alignMode = 0;
                     }
                 }
             }
 
-            zReader::Node* const imageListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
-            if (imageListNode != 0) {
-                int imageCount = imageListNode->value.nodes[0].value.i32;
+            listNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_IMAGES);
+            if (listNode != 0) {
+                int imageCount = listNode->value.nodes[0].value.i32;
                 if (imageCount >= 20) {
                     imageCount = 20;
                 }
@@ -4021,7 +4025,7 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 for (int index = 1; index < imageCount; ++index) {
                     const int originX = uiOriginX;
                     const int originY = uiOriginY;
-                    zReader::Node* const imageEntry = &imageListNode->value.nodes[index];
+                    zReader::Node* const imageEntry = &listNode->value.nodes[index];
 
                     // Retail addresses the array element directly: the flag store stays ahead of the
                     // SetVisible vtable load, and the flag byte is zero-extended before masking (0x4b9c43).
@@ -4084,13 +4088,12 @@ HudUiBackground::LoadZrdAndSection(zReader::Node* loadedRootNode, const char* se
                 }
             }
 
-            zReader::Node* const textListNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
-            if (textListNode != 0) {
-                const int textCount
-                    = textListNode->value.nodes[0].value.i32 < 50 ? textListNode->value.nodes[0].value.i32 : 50;
+            listNode = zRdrFindTag(cfgRoot, zHudCfgKey_BACKGROUND_TEXT);
+            if (listNode != 0) {
+                const int textCount = listNode->value.nodes[0].value.i32 < 50 ? listNode->value.nodes[0].value.i32 : 50;
 
                 for (int index = 1; index < textCount; ++index) {
-                    zReader::Node* const textEntry = &textListNode->value.nodes[index];
+                    zReader::Node* const textEntry = &listNode->value.nodes[index];
 
                     // Retail addresses the array element directly: the alignMode store stays ahead of
                     // the SetFont vtable load (0x4b9e3d).

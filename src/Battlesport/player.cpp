@@ -1795,16 +1795,16 @@ namespace Player {
 #define DeleteWeaponSpecs(commonData)                                                                                  \
     do {                                                                                                               \
         PlayerMasterCommonData* const playerCommonData = (commonData);                                                 \
-        PlayerMasterWeaponSpec* playerWeaponSpec = playerCommonData->weaponSpecHead;                                   \
+        PlayerMasterWeaponSpec* playerWeaponSpec = playerCommonData->weaponSpecs.head;                                 \
         while (playerWeaponSpec != 0) {                                                                                \
             PlayerMasterWeaponSpec* const playerWeaponSpecNext = playerWeaponSpec->next;                               \
             ::operator delete(playerWeaponSpec);                                                                       \
             playerWeaponSpec = playerWeaponSpecNext;                                                                   \
         }                                                                                                              \
-        playerCommonData->weaponSpecListAux = 0;                                                                       \
-        playerCommonData->weaponSpecTail = 0;                                                                          \
-        playerCommonData->weaponSpecHead = 0;                                                                          \
-        playerCommonData->weaponSpecCount = 0;                                                                         \
+        playerCommonData->weaponSpecs.listAux = 0;                                                                     \
+        playerCommonData->weaponSpecs.tail = 0;                                                                        \
+        playerCommonData->weaponSpecs.head = 0;                                                                        \
+        playerCommonData->weaponSpecs.count = 0;                                                                       \
     } while (0)
 
 } // namespace Player
@@ -2487,17 +2487,17 @@ void __fastcall ShutdownMissionRuntime()
     PlayerMasterCommonData* commonData;
     for (commonData = g_PlayerMasterCommonDataList.head; commonData != 0;
         commonData = commonData != 0 ? commonData->next : 0) {
-        PlayerMasterWeaponSpec* weaponSpec = commonData->weaponSpecHead;
+        PlayerMasterWeaponSpec* weaponSpec = commonData->weaponSpecs.head;
         while (weaponSpec != 0) {
             PlayerMasterWeaponSpec* const next = weaponSpec != 0 ? weaponSpec->next : 0;
             ::operator delete(weaponSpec);
             weaponSpec = next;
         }
 
-        commonData->weaponSpecListAux = 0;
-        commonData->weaponSpecTail = 0;
-        commonData->weaponSpecHead = 0;
-        commonData->weaponSpecCount = 0;
+        commonData->weaponSpecs.listAux = 0;
+        commonData->weaponSpecs.tail = 0;
+        commonData->weaponSpecs.head = 0;
+        commonData->weaponSpecs.count = 0;
     }
 
     commonData = g_PlayerMasterCommonDataList.head;
@@ -2609,8 +2609,9 @@ namespace Player {
  *
  * Purpose: return the static player AIV archive path used by mission bootstrap.
  */
-const char* __cdecl GetAivZrdPath()
+const char* __fastcall GetAivZrdPath(const char* extraSearchPath)
 {
+    // Retail callers pass ECX = 0 (0x420852, 0x42089f), mirroring SelectZrdByDifficulty.
     return g_Player_AivZrdPath;
 }
 } // namespace Player
@@ -2845,8 +2846,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     zReader::Node* vehicleRoot = zReader::Load(zVehicle::SelectZrdByDifficulty(0), 0, 0);
     const int vehicleCount = (PlayerZrdArrayCount(PlayerZrdArrayNode(vehicleRoot, 1)) - 1) / 2;
     for (int vehicleIndex = 0; vehicleIndex < vehicleCount; ++vehicleIndex) {
-        PlayerMasterCommonData* const commonData
-            = (PlayerMasterCommonData*)(::operator new(sizeof(PlayerMasterCommonData)));
+        PlayerMasterCommonData* const commonData = new PlayerMasterCommonData;
         memset(commonData, 0, sizeof(PlayerMasterCommonData));
         if (commonData != 0) {
             commonData->next = 0;
@@ -2920,13 +2920,13 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     stealthSaveState->firstSaveState->playerState->projectileSpawnVel.x = 0.0f;
     stealthPlayerState->cameraState = zOpt::GetCameraModePlayerState();
 
-    zReader::Node* aivRoot = zReader::Load(GetAivZrdPath(), 0, 0);
+    zReader::Node* aivRoot = zReader::Load(GetAivZrdPath(0), 0, 0);
     if (aivRoot == 0) {
         zError::ReportOld(0x800, "D:\\Proj\\Battlesport\\player.cpp", 0x399, g_Player_AivArchiveMissingMsg);
         return;
     }
 
-    zReader::BuildResolvedParentDir(GetAivZrdPath(), g_Player_AivParentDir);
+    zReader::BuildResolvedParentDir(GetAivZrdPath(0), g_Player_AivParentDir);
     int aivCount = (PlayerZrdArrayCount(PlayerZrdArrayNode(aivRoot, 1)) - 1) / 2;
     if (zOpt::GetNetworkEnabled() != 0) {
         aivCount = 1;
@@ -4006,14 +4006,14 @@ LoadMasterCommonDataFromNode(PlayerMasterCommonData* commonData, zReader::Node* 
         memset(weaponSpec, 0, sizeof(PlayerMasterWeaponSpec));
         if (weaponSpec != 0) {
             weaponSpec->next = 0;
-            if (commonData->weaponSpecCount == 0) {
-                commonData->weaponSpecHead = weaponSpec;
+            if (commonData->weaponSpecs.count == 0) {
+                commonData->weaponSpecs.head = weaponSpec;
             } else {
-                commonData->weaponSpecTail->next = weaponSpec;
+                commonData->weaponSpecs.tail->next = weaponSpec;
             }
-            commonData->weaponSpecTail = weaponSpec;
+            commonData->weaponSpecs.tail = weaponSpec;
             weaponSpec->next = 0;
-            ++commonData->weaponSpecCount;
+            ++commonData->weaponSpecs.count;
         }
 
         strcpy(weaponSpec->optCatalogName, PlayerZrdArrayBase(weaponsNode)[index + 1].value.nodes[1].value.str);

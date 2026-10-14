@@ -676,7 +676,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
     int altDefaultSelected = 0;
     int primaryDefaultSelected = 0;
     if (masterCommonData->weaponNodeCount > 0) {
-        for (PlayerMasterWeaponSpec* weaponSpec = masterCommonData->weaponSpecHead; weaponSpec != 0;
+        for (PlayerMasterWeaponSpec* weaponSpec = masterCommonData->weaponSpecs.head; weaponSpec != 0;
             weaponSpec = weaponSpec != 0 ? weaponSpec->next : 0) {
             char optCatalogName[0x14];
             strcpy(optCatalogName, weaponSpec->optCatalogName);

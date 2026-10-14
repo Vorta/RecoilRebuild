@@ -401,7 +401,7 @@ void __cdecl EndChatComposeAndSendThunk();
 } // namespace GameNet
 
 namespace Net {
-void __cdecl InitFromZrd();
+void __fastcall InitFromZrd();
 void __fastcall FormatIpv4Address(char* outText, unsigned int ipAddress);
 } // namespace Net
 

@@ -753,7 +753,7 @@ void __cdecl AtExitReleaseAllInterfacesAndSurfaces(void)
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-module-init
  * @recoil-artifact defines .text recoil:function:0x4a7530: zVideo::ModuleInit.
- *
+ * @recoil-match instruction
  *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: initialize zVideo global defaults, software renderer dispatch,

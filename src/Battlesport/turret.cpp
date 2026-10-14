@@ -1083,7 +1083,7 @@ void __cdecl TickAllRuntimesRoundRobin()
  * Source file: D:\Proj\Battlesport\turret.cpp.
  * Purpose: Disables the zTurret round-robin action callback node.
  */
-int __cdecl DisableTickCallback()
+int __fastcall DisableTickCallback()
 {
     return CZClass::gwNodeSetActionCallback(g_zTurret_CallbackNode, 0);
 }

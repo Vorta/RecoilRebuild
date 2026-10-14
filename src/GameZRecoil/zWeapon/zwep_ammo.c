@@ -1860,26 +1860,26 @@ void __cdecl ProcessRuntimeInstances(void)
                                     );
                                     trailRuntime->trailDistance = travelledDistance;
                                 }
-                            } else {
-                                if ((entry->flags & 0x800u) != 0) {
-                                    trailRuntime->volumeFadeTimer -= g_OptCatalogRuntimeDeltaTime;
-                                    if (trailRuntime->volumeFadeTimer > 0.0f) {
-                                        zSndPlayHandleSetFreqScaled(
-                                            trailRuntime->stopSoundHandle,
-                                            trailRuntime->volumeFadeTimer / entry->detonationDistSq
-                                        );
-                                    } else {
-                                        trailRuntime->volumeFadeTimer = 0.0f;
-                                    }
-                                }
-                                if (spawnResult == 1) {
-                                    segment->pos = hit->pos;
-                                    rayStart = &segment->pos;
-                                    rayDirection = &reflectedDirection;
-                                    continueReflection = 1;
+                            } else if ((entry->flags & 0x800u) != 0) {
+                                trailRuntime->volumeFadeTimer -= g_OptCatalogRuntimeDeltaTime;
+                                if (trailRuntime->volumeFadeTimer > 0.0f) {
+                                    zSndPlayHandleSetFreqScaled(
+                                        trailRuntime->stopSoundHandle,
+                                        trailRuntime->volumeFadeTimer / entry->detonationDistSq
+                                    );
                                 } else {
-                                    segment->pos = hit->pos;
+                                    trailRuntime->volumeFadeTimer = 0.0f;
                                 }
+                            }
+                            // Retail 0x4b03dd: every hit path, including spawnResult == 0, reaches the
+                            // spawnResult == 1 test, so a non-reflecting hit always ends the segment at hit->pos.
+                            if (spawnResult == 1) {
+                                segment->pos = hit->pos;
+                                rayStart = &segment->pos;
+                                rayDirection = &reflectedDirection;
+                                continueReflection = 1;
+                            } else {
+                                segment->pos = hit->pos;
                             }
                         } else if ((entry->flags & 0x800u) != 0) {
                             trailRuntime->volumeFadeTimer = 0.0f;

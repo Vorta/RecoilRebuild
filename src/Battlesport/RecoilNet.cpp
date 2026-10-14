@@ -184,7 +184,7 @@ namespace Net {
  * create the local player row, initialize host HUD timer state, and respawn
  * the local player.
  */
-void __cdecl InitFromZrd()
+void __fastcall InitFromZrd()
 {
     zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
@@ -197,6 +197,7 @@ void __cdecl InitFromZrd()
         saveState = saveState != 0 ? saveState->next : 0;
     }
 
+    // Retail pushes Load's stack argument after ECX/EDX: VC5 does so only after a non-cdecl call in a non-cdecl caller.
     zTurret_System::DisableTickCallback();
     zReader::Node* const treeRoot = zReader::Load("net.zrd", 0, 0);
     if (treeRoot != 0) {

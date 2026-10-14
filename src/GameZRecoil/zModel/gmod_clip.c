@@ -648,13 +648,15 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 if (prevVert->x >= clipRect->xMin && currVert->x >= clipRect->xMin) {
                     scratchVerts[outputCount] = *currVert;
                     ++outputCount;
+                } else if (prevVert->x < clipRect->xMin && currVert->x < clipRect->xMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x >= clipRect->xMin && currVert->x < clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
                     scratchVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
                     scratchVerts[outputCount].z = prevVert->z + (currVert->z - prevVert->z) * t;
                     ++outputCount;
-                } else if (currVert->x >= clipRect->xMin) {
+                } else if (prevVert->x < clipRect->xMin && currVert->x >= clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
                     scratchVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -697,13 +699,15 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 if (prevVert->x < clipRect->xMaxAlt && currVert->x < clipRect->xMaxAlt) {
                     destVerts[outputCount] = *currVert;
                     ++outputCount;
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x < clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
                     destVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
                     destVerts[outputCount].z = prevVert->z + (currVert->z - prevVert->z) * t;
                     ++outputCount;
-                } else if (currVert->x < clipRect->xMaxAlt) {
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x < clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
                     destVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -746,13 +750,15 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 if (prevVert->y >= clipRect->yMin && currVert->y >= clipRect->yMin) {
                     destVerts[outputCount] = *currVert;
                     ++outputCount;
+                } else if (prevVert->y < clipRect->yMin && currVert->y < clipRect->yMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y >= clipRect->yMin && currVert->y < clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMin;
                     destVerts[outputCount].z = prevVert->z + (currVert->z - prevVert->z) * t;
                     ++outputCount;
-                } else if (currVert->y >= clipRect->yMin) {
+                } else if (prevVert->y < clipRect->yMin && currVert->y >= clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMin;
@@ -795,13 +801,15 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 if (prevVert->y < clipRect->yMaxAlt && currVert->y < clipRect->yMaxAlt) {
                     destVerts[outputCount] = *currVert;
                     ++outputCount;
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y < clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMaxAlt;
                     destVerts[outputCount].z = prevVert->z + (currVert->z - prevVert->z) * t;
                     ++outputCount;
-                } else if (currVert->y < clipRect->yMaxAlt) {
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y < clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMaxAlt;
@@ -869,6 +877,8 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     scratchAttr1[outputCount] = currAttr1;
                     scratchAttr2[outputCount] = currAttr2;
                     ++outputCount;
+                } else if (prevVert->x < clipRect->xMin && currVert->x < clipRect->xMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x >= clipRect->xMin && currVert->x < clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
@@ -878,7 +888,7 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     scratchAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
                     scratchAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
                     ++outputCount;
-                } else if (currVert->x >= clipRect->xMin) {
+                } else if (prevVert->x < clipRect->xMin && currVert->x >= clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
                     scratchVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -954,6 +964,8 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = currAttr1;
                     destAttr2[outputCount] = currAttr2;
                     ++outputCount;
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x < clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
@@ -963,7 +975,7 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
                     destAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
                     ++outputCount;
-                } else if (currVert->x < clipRect->xMaxAlt) {
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x < clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
                     destVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -1039,6 +1051,8 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = currAttr1;
                     destAttr2[outputCount] = currAttr2;
                     ++outputCount;
+                } else if (prevVert->y < clipRect->yMin && currVert->y < clipRect->yMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y >= clipRect->yMin && currVert->y < clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
@@ -1048,7 +1062,7 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
                     destAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
                     ++outputCount;
-                } else if (currVert->y >= clipRect->yMin) {
+                } else if (prevVert->y < clipRect->yMin && currVert->y >= clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMin;
@@ -1124,6 +1138,8 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = currAttr1;
                     destAttr2[outputCount] = currAttr2;
                     ++outputCount;
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y < clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
@@ -1133,7 +1149,7 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     destAttr1[outputCount] = prevAttr1 + (currAttr1 - prevAttr1) * t;
                     destAttr2[outputCount] = prevAttr2 + (currAttr2 - prevAttr2) * t;
                     ++outputCount;
-                } else if (currVert->y < clipRect->yMaxAlt) {
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y < clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMaxAlt;
@@ -1199,12 +1215,14 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                     scratchVerts[outputCount].x = currVert->x;
                     scratchVerts[outputCount].y = currVert->y;
                     ++outputCount;
+                } else if (prevVert->x < clipRect->xMin && currVert->x < clipRect->xMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x >= clipRect->xMin && currVert->x < clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
                     scratchVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
                     ++outputCount;
-                } else if (currVert->x >= clipRect->xMin) {
+                } else if (prevVert->x < clipRect->xMin && currVert->x >= clipRect->xMin) {
                     const float t = (clipRect->xMin - prevVert->x) / (currVert->x - prevVert->x);
                     scratchVerts[outputCount].x = clipRect->xMin;
                     scratchVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -1248,12 +1266,14 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                     destVerts[outputCount].x = currVert->x;
                     destVerts[outputCount].y = currVert->y;
                     ++outputCount;
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->x < clipRect->xMaxAlt && currVert->x >= clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
                     destVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
                     ++outputCount;
-                } else if (currVert->x < clipRect->xMaxAlt) {
+                } else if (prevVert->x >= clipRect->xMaxAlt && currVert->x < clipRect->xMaxAlt) {
                     const float t = (clipRect->xMaxAlt - prevVert->x) / (currVert->x - prevVert->x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
                     destVerts[outputCount].y = prevVert->y + (currVert->y - prevVert->y) * t;
@@ -1297,12 +1317,14 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                     destVerts[outputCount].x = currVert->x;
                     destVerts[outputCount].y = currVert->y;
                     ++outputCount;
+                } else if (prevVert->y < clipRect->yMin && currVert->y < clipRect->yMin) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y >= clipRect->yMin && currVert->y < clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMin;
                     ++outputCount;
-                } else if (currVert->y >= clipRect->yMin) {
+                } else if (prevVert->y < clipRect->yMin && currVert->y >= clipRect->yMin) {
                     const float t = (clipRect->yMin - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMin;
@@ -1346,12 +1368,14 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                     destVerts[outputCount].x = currVert->x;
                     destVerts[outputCount].y = currVert->y;
                     ++outputCount;
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
+                    // Both outside: nothing is emitted.
                 } else if (prevVert->y < clipRect->yMaxAlt && currVert->y >= clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMaxAlt;
                     ++outputCount;
-                } else if (currVert->y < clipRect->yMaxAlt) {
+                } else if (prevVert->y >= clipRect->yMaxAlt && currVert->y < clipRect->yMaxAlt) {
                     const float t = (clipRect->yMaxAlt - prevVert->y) / (currVert->y - prevVert->y);
                     destVerts[outputCount].x = prevVert->x + (currVert->x - prevVert->x) * t;
                     destVerts[outputCount].y = clipRect->yMaxAlt;

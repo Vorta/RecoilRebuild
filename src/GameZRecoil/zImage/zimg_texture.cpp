@@ -1609,7 +1609,7 @@ extern "C" char g_zOpt_OptionName_TextureMemorySw[];
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-init
  * @recoil-artifact defines .text recoil:function:0x46eb20: zImageInit.
- *
+ * @recoil-match instruction
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zVideo\zVideo.cpp.
  * Purpose: reset font-table state, optionally load fonts, and bind the
