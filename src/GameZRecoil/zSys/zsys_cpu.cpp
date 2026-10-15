@@ -14,14 +14,16 @@ using zSys::Sub64;
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-g-zsys-cpubenchmarkdurationtable
  * @recoil-artifact defines .data recoil:data:0x4e46a0: g_zSys_CpuBenchmarkDurationTable.
  * Purpose: maps CPU-class indices to the fixed BSF-loop cycle budget.
+ * Not const: retail keeps the table in writable .data (0x4e46a0); VC5 places
+ * const namespace-scope arrays in .rdata.
  */
-const unsigned int g_zSys_CpuBenchmarkDurationTable[12] = { 0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38 };
+unsigned int g_zSys_CpuBenchmarkDurationTable[12] = { 0, 0, 0, 115, 47, 43, 38, 38, 38, 38, 38, 38 };
 
 struct CpuBenchmarkResolver {
     static zSys::CpuBenchmarkResult __fastcall ResolveCpuBenchmarkPacket(int cpuClassHint);
-    zSys::CpuBenchmarkResult* MeasureMhzViaBsfLoopQpc(zSys::CpuBenchmarkResult* outBuffer);
-    zSys::CpuBenchmarkResult* MeasureCpuMhzRdtscQpc(zSys::CpuBenchmarkResult* outBuffer);
-    zSys::CpuBenchmarkResult* MeasureCpuMhzCmosRtc(zSys::CpuBenchmarkResult* outBuffer);
+    static zSys::CpuBenchmarkResult __fastcall MeasureMhzViaBsfLoopQpc(unsigned int expectedCycles);
+    static zSys::CpuBenchmarkResult __fastcall MeasureCpuMhzRdtscQpc(unsigned int expectedCycles);
+    static zSys::CpuBenchmarkResult __fastcall MeasureCpuMhzCmosRtc(unsigned int expectedCycles);
 };
 } // namespace
 
@@ -31,19 +33,6 @@ struct CpuBenchmarkResolver {
 extern "C" unsigned int g_zSys_CpuVendorNonIntelMarker = 0;
 
 namespace zSys {
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
- * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
- * @recoil-match byte
- *
- * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
- */
-RECOIL_NO_GS int __cdecl GetCpuMhz()
-{
-    const CpuBenchmarkResult result = CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(0);
-    return result.cpuMhzRounded;
-}
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-hascpuidsupport
@@ -415,12 +404,29 @@ unsigned short __cdecl ReadCpuidVendorAndFamily()
     return (cpuInfo[0] >> 8) & 0x0f;
 #endif
 }
+
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-zsys-getcpumhz
+ * @recoil-artifact defines .text recoil:function:0x4b31c0: zSys::GetCpuMhz.
+ * @recoil-match byte
+ *
+ * Purpose: resolve the current CPU benchmark packet and return the rounded MHz value.
+ * Approved definition-order exception for 0x4b36f0: GetCpuMhz is placed
+ * here, with its body unchanged, to obtain the shared return-copy tail
+ * observed in the NB tests of CB_c1_static under VC5 SP3 /O2.
+ * This placement does not establish retail source definition order.
+ */
+RECOIL_NO_GS int __cdecl GetCpuMhz()
+{
+    const CpuBenchmarkResult result = CpuBenchmarkResolver::ResolveCpuBenchmarkPacket(0);
+    return result.cpuMhzRounded;
+}
 } // namespace zSys
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zsys-zsys-cpu-cpubenchmarkresolver-resolvecpubenchmarkpacket
  * @recoil-artifact defines .text recoil:function:0x4b36f0: CpuBenchmarkResolver::ResolveCpuBenchmarkPacket.
- *
+ * @recoil-match byte
  *
  * Purpose: chooses the CPU benchmark strategy and writes the result packet.
  */
@@ -443,20 +449,16 @@ zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::ResolveCpuBenchmarkPac
         forcedLowHint = 1;
         expectedCycles = (unsigned int)(cpuClassHint) * 4000u;
     }
-    zSys::CpuBenchmarkResult localResult;
-    const zSys::CpuBenchmarkResult* measured;
     if ((featureFlags & 0x10u) != 0 && !forcedLowHint) {
         if (cpuClassHint == 0) {
-            measured = ((CpuBenchmarkResolver*)expectedCycles)->MeasureCpuMhzRdtscQpc(&localResult);
+            return MeasureCpuMhzRdtscQpc(expectedCycles);
         } else {
-            measured = ((CpuBenchmarkResolver*)expectedCycles)->MeasureCpuMhzCmosRtc(&localResult);
+            return MeasureCpuMhzCmosRtc(expectedCycles);
         }
     } else if ((cpuClass & 0xffff) >= 3) {
-        measured = ((CpuBenchmarkResolver*)expectedCycles)->MeasureMhzViaBsfLoopQpc(&localResult);
-    } else {
-        return result;
+        return MeasureMhzViaBsfLoopQpc(expectedCycles);
     }
-    return *measured;
+    return result;
 }
 
 #if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZSYS_CPU_RAW_ASM)
@@ -473,7 +475,7 @@ zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::ResolveCpuBenchmarkPac
  * raw-assembly timing exception retains the exact address-scoped benchmark
  * body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(zSys::CpuBenchmarkResult*)
+__declspec(naked) zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(unsigned int)
 {
     __asm {
         push ebp
@@ -590,15 +592,16 @@ __declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaB
  * Purpose: provide the portable fallback for the fixed BSF/QPC CPU benchmark
  * when the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(zSys::CpuBenchmarkResult* outBuffer)
+zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(unsigned int expectedCycles)
 {
+    zSys::CpuBenchmarkResult result;
     LARGE_INTEGER frequency;
     if (QueryPerformanceFrequency(&frequency) == 0) {
-        outBuffer->totalCycles = 0;
-        outBuffer->totalMicroseconds = 0;
-        outBuffer->cpuMhzRaw = 0;
-        outBuffer->cpuMhzRounded = 0;
-        return outBuffer;
+        result.totalCycles = 0;
+        result.totalMicroseconds = 0;
+        result.cpuMhzRaw = 0;
+        result.cpuMhzRounded = 0;
+        return result;
     }
     unsigned int minTicks = 0xffffffffu;
     for (int sample = 0; sample < 10; ++sample) {
@@ -615,16 +618,15 @@ zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(zSys::Cp
             minTicks = ticks;
         }
     }
-    const unsigned int expectedCycles = (unsigned int)((unsigned int)(this));
     const unsigned int microseconds = frequency.LowPart == 0
         ? 0
         : (unsigned int)(((unsigned __int64)(minTicks) * 1000000ui64) / (unsigned int)(frequency.LowPart));
     const unsigned int raw = microseconds == 0 ? 0 : expectedCycles / microseconds;
-    outBuffer->totalCycles = expectedCycles;
-    outBuffer->totalMicroseconds = microseconds;
-    outBuffer->cpuMhzRaw = raw;
-    outBuffer->cpuMhzRounded = raw;
-    return outBuffer;
+    result.totalCycles = expectedCycles;
+    result.totalMicroseconds = microseconds;
+    result.cpuMhzRaw = raw;
+    result.cpuMhzRounded = raw;
+    return result;
 }
 #endif
 
@@ -642,7 +644,7 @@ zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureMhzViaBsfLoopQpc(zSys::Cp
  * documented raw-assembly CPU timing exception retains the address-scoped
  * benchmark body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(zSys::CpuBenchmarkResult*)
+__declspec(naked) zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(unsigned int)
 {
     __asm {
         push ebp
@@ -880,22 +882,23 @@ __declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzR
  * Purpose: provide the portable fallback for the RDTSC/QPC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(zSys::CpuBenchmarkResult* outBuffer)
+zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureCpuMhzRdtscQpc(unsigned int)
 {
+    zSys::CpuBenchmarkResult result;
     LARGE_INTEGER frequency;
     LARGE_INTEGER start;
     LARGE_INTEGER end;
+    memset(&result, 0, sizeof(result));
     if (QueryPerformanceFrequency(&frequency) == 0) {
-        memset(outBuffer, 0, sizeof(*outBuffer));
-        return outBuffer;
+        return result;
     }
     QueryPerformanceCounter(&start);
     QueryPerformanceCounter(&end);
-    outBuffer->totalCycles = (unsigned int)(end.LowPart - start.LowPart);
-    outBuffer->totalMicroseconds = 1;
-    outBuffer->cpuMhzRaw = (int)(outBuffer->totalCycles);
-    outBuffer->cpuMhzRounded = outBuffer->cpuMhzRaw;
-    return outBuffer;
+    result.totalCycles = (unsigned int)(end.LowPart - start.LowPart);
+    result.totalMicroseconds = 1;
+    result.cpuMhzRaw = (int)(result.totalCycles);
+    result.cpuMhzRounded = result.cpuMhzRaw;
+    return result;
 }
 #endif
 
@@ -979,7 +982,7 @@ void __fastcall ReadTsc64(unsigned int* outHigh, unsigned int* outLow)
  * documented raw-assembly CPU timing exception retains the address-scoped
  * benchmark body.
  */
-__declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(zSys::CpuBenchmarkResult*)
+__declspec(naked) zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(unsigned int)
 {
     __asm {
         sub esp, 028h
@@ -1119,18 +1122,19 @@ __declspec(naked) zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzC
  * Purpose: provide the portable fallback for the CMOS/TSC CPU benchmark when
  * the address-scoped VC5 x86 raw-assembly exception is not enabled.
  */
-zSys::CpuBenchmarkResult* CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(zSys::CpuBenchmarkResult* outBuffer)
+zSys::CpuBenchmarkResult __fastcall CpuBenchmarkResolver::MeasureCpuMhzCmosRtc(unsigned int)
 {
+    zSys::CpuBenchmarkResult result;
     unsigned int high0 = 0, low0 = 0, high1 = 0, low1 = 0;
     zSys::ReadTsc64(&high0, &low0);
     zSys::ReadTsc64(&high1, &low1);
     unsigned int elapsedHigh = 0, elapsedLow = 0;
     zSys::Sub64(high0, low0, high1, low1, &elapsedHigh, &elapsedLow);
-    outBuffer->totalCycles = elapsedLow;
-    outBuffer->totalMicroseconds = 1000000u;
-    outBuffer->cpuMhzRaw = (int)(elapsedLow / 1000000u);
-    outBuffer->cpuMhzRounded = outBuffer->cpuMhzRaw;
-    return outBuffer;
+    result.totalCycles = elapsedLow;
+    result.totalMicroseconds = 1000000u;
+    result.cpuMhzRaw = (int)(elapsedLow / 1000000u);
+    result.cpuMhzRounded = result.cpuMhzRaw;
+    return result;
 }
 #endif
 

@@ -623,7 +623,7 @@ namespace zGeometry_ClipPolygon {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-snappointsnearnodemodelxy
  * @recoil-artifact defines .text recoil:function:0x46b030: zGeometry_ClipPolygon::SnapPointsNearNodeModelXY
- *
+ * @recoil-match instruction
  *
  * Purpose: Snap clip polygon points to nearby model polygon edges in XY space.
  */
