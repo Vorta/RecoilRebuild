@@ -685,7 +685,7 @@ int __fastcall TryGetPolygonHitAtQueryXZ(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidateforsegmentvspolygon
  * @recoil-artifact defines .text recoil:function:0x4857f0: CZDisplayInstance::BuildPickCandidateForSegmentVsPolygon.
- *
+ * @recoil-match commutative
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.

@@ -75,7 +75,7 @@ void __cdecl Reset()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-time-time-time-tick-time-cpp
  * @recoil-artifact defines .text recoil:function:0x4a56d0: Time::Tick (Time.cpp).
- *
+ * @recoil-match commutative
  *
  * Purpose: Advances scaled and unscaled frame time, applying the configured maximum-delta clamp.
  */
