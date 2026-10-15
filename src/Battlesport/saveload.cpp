@@ -943,13 +943,3 @@ void __fastcall RecoilStateSaveLoadTransition::QueueOpenLoadDialog(RecoilSaveLoa
     g_RecoilStateSaveLoadTransition.m_dialogKind = RECOIL_SAVELOAD_DIALOG_LOAD;
     g_RecoilApp.QueuePushState(&g_RecoilStateSaveLoadTransition, 0);
 }
-
-/**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and HudUiSaveLoadDialog::RefreshSaveFileList (0x4355e0) orders
- * code by that counter's parity at code generation. This declaration is never
- * referenced and emits no code, data or symbols. User-authorized exception:
- * match-proofs.md "Per-TU VC5 ID-counter parity exception".
- * Purpose: keep this file's ID-counter parity after shared-header changes.
- */
-extern int g_SaveLoadIdCounterAlignment0;

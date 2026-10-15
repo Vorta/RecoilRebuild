@@ -2416,10 +2416,10 @@ int __cdecl OptCatalogIsDamageMaskEnabled(void)
  *
  * Purpose: set the current damage-mask UV phase used by the OptCatalog stamp pass.
  */
-void __stdcall OptCatalogSetDamageMaskUv(float u, float v)
+void __stdcall OptCatalogSetDamageMaskUv(zVec2 uv)
 {
-    g_OptCatalogDamageMaskPhaseU = u;
-    g_OptCatalogDamageMaskPhaseV = v;
+    g_OptCatalogDamageMaskPhaseU = uv.x;
+    g_OptCatalogDamageMaskPhaseV = uv.y;
 }
 
 /**

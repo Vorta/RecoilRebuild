@@ -662,8 +662,9 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
             const float vdx = pointDwords[vIndex] - pointDwords[pIndex];
             const float vdy = pointDwords[vIndex + 1] - pointDwords[pIndex + 1];
             if (ndy * mdx > ndx * mdy && vdy * ndx >= vdx * ndy && vdx * mdy > vdy * mdx) {
+                const float dx = pointDwords[minPoint[0]] - pointDwords[point[0]];
                 const float dy = pointDwords[minPoint[1]] - pointDwords[point[1]];
-                const float distanceSq = mdx * mdx + dy * dy;
+                const float distanceSq = dx * dx + dy * dy;
                 if (distanceSq < bestDistanceSq) {
                     bestDistanceSq = distanceSq;
                     bestPoint = point;
@@ -684,10 +685,10 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
         farPoint = bestPoint;
     }
 
-    int* out = outSplitPointLists->pointDwordOffsets;
     if (farPoint > minPoint) {
         outSplitPointLists->pointCount0 = (farPoint - minPoint) / pointDwordStride + 1;
         outSplitPointLists->pointCount1 = pointCount - outSplitPointLists->pointCount0 + 2;
+        int* out = outSplitPointLists->pointDwordOffsets;
         memcpy(out, minPoint, pointDwordStride * outSplitPointLists->pointCount0 * sizeof(int));
         out += pointDwordStride * outSplitPointLists->pointCount0;
         memcpy(out, farPoint, (end - farPoint) * sizeof(int));
@@ -698,6 +699,7 @@ int __fastcall TrySplitPointDwordOffsetsAtBestDiagonal(
 
     outSplitPointLists->pointCount0 = (minPoint - farPoint) / pointDwordStride + 1;
     outSplitPointLists->pointCount1 = pointCount - outSplitPointLists->pointCount0 + 2;
+    int* out = outSplitPointLists->pointDwordOffsets;
     memcpy(out, farPoint, pointDwordStride * outSplitPointLists->pointCount0 * sizeof(int));
     out += pointDwordStride * outSplitPointLists->pointCount0;
     memcpy(out, minPoint, (end - minPoint) * sizeof(int));

@@ -2417,7 +2417,7 @@ void __fastcall SetObject3DColorModeForMaterials(zDiPartial* self, int colorMode
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
  * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
  */

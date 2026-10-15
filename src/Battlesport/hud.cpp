@@ -9890,7 +9890,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
@@ -13289,3 +13289,16 @@ void zFMV_Action::RunBlockingTimed()
     while (Update((GetTickCount() * 0.001f) - startSec) != 0) { }
     End();
 }
+
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and HudUiListMenuEntry::SortRange (0x414710) orders its
+ * partition-length evaluation by that counter. These declarations are never
+ * referenced and emit no code, data or symbols. User-authorized exception:
+ * match-proofs.md "0x414710 VC5 ID-counter alignment exception"; evidence in
+ * build/diagnostics/sortrange-id-counter-20260926.
+ * Purpose: align the ID counter so SortRange's unchanged source emits the retail order.
+ */
+extern int g_HudSortRangeIdCounterAlignment0;
+extern int g_HudSortRangeIdCounterAlignment1;
+extern int g_HudSortRangeIdCounterAlignment2;

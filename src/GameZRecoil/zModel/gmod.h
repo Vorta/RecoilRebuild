@@ -158,7 +158,7 @@ extern "C" {
 int __cdecl zModelInit();
 
 int __cdecl zModelDisplayInit();
-void __stdcall OptCatalogSetDamageMaskUv(float u, float v);
+void __stdcall OptCatalogSetDamageMaskUv(zVec2 uv);
 int __cdecl OptCatalogIsDamageMaskEnabled();
 void __fastcall OptCatalogSetDamageMaskEnabled(int enabled);
 int __fastcall OptCatalogIsDamageMaskSlotPtrRegistered(void* slotPtr);

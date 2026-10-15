@@ -863,7 +863,7 @@ void __fastcall HudSensorTrackerMap::DrawDiamondMarker(
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-cliporsplitsegment
  * @recoil-artifact defines .text recoil:function:0x415fb0: HudRectI::ClipOrSplitSegment
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Clip or split a segment against this rectangle and preserve split output globals.
  */
@@ -993,7 +993,7 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */
@@ -1045,7 +1045,7 @@ int __fastcall HudRectI::SegmentIntersectsEdge(int edgeCode, const zVec3* segmen
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudgeom2d-classifypointagainstsegment
  * @recoil-artifact defines .text recoil:function:0x416390: HudGeom2D::ClassifyPointAgainstSegment
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Classify a point against a 2D segment using the segment cross product and extents.
  */

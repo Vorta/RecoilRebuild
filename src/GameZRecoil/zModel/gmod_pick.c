@@ -1086,7 +1086,7 @@ int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
                 return 0;
             }
 
-            OptCatalogSetDamageMaskUv(outUv->x, outUv->y);
+            OptCatalogSetDamageMaskUv(*outUv);
             return 1;
         }
     }
@@ -1522,7 +1522,7 @@ void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
                                       - polygonVertices[0].z)
                                     * vGrad.y
                                 + faceUvData->uvs[0].y;
-                            OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            OptCatalogSetDamageMaskUv(*scratchUv);
                         }
                         outCandidateBuffersBySegment[segmentIndex]
                             .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
@@ -1623,7 +1623,7 @@ void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
                                       - polygonVertices[0].x)
                                     * vGrad.x
                                 + faceUvData->uvs[0].y;
-                            OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            OptCatalogSetDamageMaskUv(*scratchUv);
                         }
                         outCandidateBuffersBySegment[segmentIndex]
                             .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
@@ -1724,7 +1724,7 @@ void __fastcall BuildPickCandidatesForSegmentBatchVsPolygonWithDamageMaskUv(
                                       - polygonVertices[0].x)
                                     * vGrad.x
                                 + faceUvData->uvs[0].y;
-                            OptCatalogSetDamageMaskUv(scratchUv->x, scratchUv->y);
+                            OptCatalogSetDamageMaskUv(*scratchUv);
                         }
                         outCandidateBuffersBySegment[segmentIndex]
                             .entries[outCandidateBuffersBySegment[segmentIndex].candidateCount]
