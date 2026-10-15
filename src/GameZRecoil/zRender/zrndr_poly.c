@@ -2519,12 +2519,12 @@ void __fastcall zRndrDrawFlatQueued(
     determinant = dy21 * dx01 - dx21 * dy01;
     imageWidth = (float)(image->width);
     imageHeight = (float)(image->height);
-    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
-    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
-    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
-    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
-    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
-    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    scaledUV[0].x = triUVs[0].x * (imageWidth * triVerts[0].z);
+    scaledUV[0].y = triUVs[0].y * (imageHeight * triVerts[0].z);
+    scaledUV[1].x = triUVs[1].x * (imageWidth * triVerts[1].z);
+    scaledUV[1].y = triUVs[1].y * (imageHeight * triVerts[1].z);
+    scaledUV[2].x = triUVs[2].x * (imageWidth * triVerts[2].z);
+    scaledUV[2].y = triUVs[2].y * (imageHeight * triVerts[2].z);
     if (determinant != 0.0) {
         inverseDeterminant = -1.0f / determinant;
         dz01 = triVerts[0].z - triVerts[1].z;
@@ -2887,12 +2887,12 @@ void __fastcall RendererDrawPolyTLV(
     determinant = dy21 * dx01 - dx21 * dy01;
     imageWidth = (float)(image->width);
     imageHeight = (float)(image->height);
-    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
-    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
-    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
-    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
-    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
-    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    scaledUV[0].x = triUVs[0].x * (imageWidth * triVerts[0].z);
+    scaledUV[0].y = triUVs[0].y * (imageHeight * triVerts[0].z);
+    scaledUV[1].x = triUVs[1].x * (imageWidth * triVerts[1].z);
+    scaledUV[1].y = triUVs[1].y * (imageHeight * triVerts[1].z);
+    scaledUV[2].x = triUVs[2].x * (imageWidth * triVerts[2].z);
+    scaledUV[2].y = triUVs[2].y * (imageHeight * triVerts[2].z);
     if (determinant != 0.0) {
         inverseDeterminant = -1.0f / determinant;
         dz01 = triVerts[0].z - triVerts[1].z;
@@ -3970,12 +3970,12 @@ void __fastcall zRndrDrawTexturedQueuedAlpha(
     image = entry != 0 ? entry->image : 0;
     imageWidth = (float)(image->width);
     imageHeight = (float)(image->height);
-    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
-    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
-    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
-    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
-    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
-    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    scaledUV[0].x = triUVs[0].x * (imageWidth * triVerts[0].z);
+    scaledUV[0].y = triUVs[0].y * (imageHeight * triVerts[0].z);
+    scaledUV[1].x = triUVs[1].x * (imageWidth * triVerts[1].z);
+    scaledUV[1].y = triUVs[1].y * (imageHeight * triVerts[1].z);
+    scaledUV[2].x = triUVs[2].x * (imageWidth * triVerts[2].z);
+    scaledUV[2].y = triUVs[2].y * (imageHeight * triVerts[2].z);
     if (clippedTriVerts != 0
         && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f)) {
         zMathBuildPerspectiveTextureInterpolants(
@@ -4455,12 +4455,12 @@ void __fastcall zRndrDrawTexturedFanTri(
     image = entry != 0 ? entry->image : 0;
     imageWidth = (float)(image->width);
     imageHeight = (float)(image->height);
-    scaledUV[0].x = imageWidth * triVerts[0].z * triUVs[0].x;
-    scaledUV[0].y = imageHeight * triVerts[0].z * triUVs[0].y;
-    scaledUV[1].x = imageWidth * triVerts[1].z * triUVs[1].x;
-    scaledUV[1].y = imageHeight * triVerts[1].z * triUVs[1].y;
-    scaledUV[2].x = imageWidth * triVerts[2].z * triUVs[2].x;
-    scaledUV[2].y = imageHeight * triVerts[2].z * triUVs[2].y;
+    scaledUV[0].x = triUVs[0].x * (imageWidth * triVerts[0].z);
+    scaledUV[0].y = triUVs[0].y * (imageHeight * triVerts[0].z);
+    scaledUV[1].x = triUVs[1].x * (imageWidth * triVerts[1].z);
+    scaledUV[1].y = triUVs[1].y * (imageHeight * triVerts[1].z);
+    scaledUV[2].x = triUVs[2].x * (imageWidth * triVerts[2].z);
+    scaledUV[2].y = triUVs[2].y * (imageHeight * triVerts[2].z);
     if (clippedTriVerts != 0
         && (clippedTriVerts[0].z < 10.0f || clippedTriVerts[1].z < 10.0f || clippedTriVerts[2].z < 10.0f)) {
         zMathBuildPerspectiveTextureInterpolants(

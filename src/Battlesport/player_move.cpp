@@ -1462,7 +1462,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatesubmodewaterprobestate
  * @recoil-artifact defines .text recoil:function:0x4289f0: Player::UpdateSubModeWaterProbeState.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
- *
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateSubModeWaterProbeState from the recovered
@@ -1510,9 +1510,12 @@ void __fastcall UpdateSubModeWaterProbeState(zUtil_SaveGameState* saveState)
         if (resolvedY > surfaceY) {
             resolvedY = surfaceY;
         } else {
-            deepestSubmergedSampleHeight -= masterModalData->probePoints[15 + deepestSubmergedSampleIndex].y;
-            if (resolvedY < deepestSubmergedSampleHeight) {
-                resolvedY = deepestSubmergedSampleHeight;
+            // A separate floor local: retail then packs the FastExp result into the deepest-sample slot and the
+            // pitch wave into the surface slot ([ebp-8]/[ebp-0xc]).
+            const float floorY
+                = deepestSubmergedSampleHeight - masterModalData->probePoints[15 + deepestSubmergedSampleIndex].y;
+            if (resolvedY < floorY) {
+                resolvedY = floorY;
             }
         }
 
@@ -1864,7 +1867,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x429240: Player::ApplyAmphibSpeedOscillation.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-move.vector-transform-direction-in-place
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered
