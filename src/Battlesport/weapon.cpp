@@ -2266,7 +2266,7 @@ SelectPrimaryGunFirePointAndSlot(zUtil_SaveGameState* saveState, PlayerGunFireSl
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-composeaimbasisworldmatrix
  * @recoil-artifact defines .text recoil:function:0x43afd0: Player::ComposeAimBasisWorldMatrix
- *
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: compose the current player aim basis into a world-space transform.
@@ -2275,9 +2275,8 @@ void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     // Retail evidence (0x43b015..0x43b0a8): the turret zx/zz operands load before
-    // the gun-fire copy and each yaw component is stored before its row reuse.
+    // the gun-fire copy; the shared yaw-row products are compiler temporaries.
     zMat4x3 gunMatrix;
-    zVec3 yaw;
     zMat4x3 turretMatrix;
     zMat4x3 gunFireTransform;
     memcpy(&gunMatrix, CZObject3D::gwObject3DGetMatrixPtr(playerState->gunNode), sizeof(gunMatrix));
@@ -2288,16 +2287,19 @@ void __fastcall ComposeAimBasisWorldMatrix(zUtil_SaveGameState* saveState, zMat4
     outMatrix34->xy = turretMatrix.xx * gunFireTransform.xy + turretMatrix.xz * gunFireTransform.zy;
     outMatrix34->xz = turretMatrix.xx * gunFireTransform.xz + turretMatrix.xz * gunFireTransform.zz;
 
-    yaw.x = turretMatrix.zx * gunFireTransform.xx + turretMatrix.zz * gunFireTransform.zx;
-    outMatrix34->yx = gunFireTransform.yx * gunMatrix.yy + gunMatrix.yz * yaw.x;
-    yaw.y = turretMatrix.zx * gunFireTransform.xy + turretMatrix.zz * gunFireTransform.zy;
-    outMatrix34->yy = gunFireTransform.yy * gunMatrix.yy + gunMatrix.yz * yaw.y;
-    yaw.z = turretMatrix.zx * gunFireTransform.xz + turretMatrix.zz * gunFireTransform.zz;
-    outMatrix34->yz = gunFireTransform.yz * gunMatrix.yy + gunMatrix.yz * yaw.z;
+    outMatrix34->yx = gunFireTransform.yx * gunMatrix.yy
+        + gunMatrix.yz * (turretMatrix.zx * gunFireTransform.xx + turretMatrix.zz * gunFireTransform.zx);
+    outMatrix34->yy = gunFireTransform.yy * gunMatrix.yy
+        + gunMatrix.yz * (turretMatrix.zx * gunFireTransform.xy + turretMatrix.zz * gunFireTransform.zy);
+    outMatrix34->yz = gunFireTransform.yz * gunMatrix.yy
+        + gunMatrix.yz * (turretMatrix.zx * gunFireTransform.xz + turretMatrix.zz * gunFireTransform.zz);
 
-    outMatrix34->zx = gunFireTransform.yx * gunMatrix.zy + gunMatrix.zz * yaw.x;
-    outMatrix34->zy = gunFireTransform.yy * gunMatrix.zy + gunMatrix.zz * yaw.y;
-    outMatrix34->zz = gunFireTransform.yz * gunMatrix.zy + gunMatrix.zz * yaw.z;
+    outMatrix34->zx = gunFireTransform.yx * gunMatrix.zy
+        + gunMatrix.zz * (turretMatrix.zx * gunFireTransform.xx + turretMatrix.zz * gunFireTransform.zx);
+    outMatrix34->zy = gunFireTransform.yy * gunMatrix.zy
+        + gunMatrix.zz * (turretMatrix.zx * gunFireTransform.xy + turretMatrix.zz * gunFireTransform.zy);
+    outMatrix34->zz = gunFireTransform.yz * gunMatrix.zy
+        + gunMatrix.zz * (turretMatrix.zx * gunFireTransform.xz + turretMatrix.zz * gunFireTransform.zz);
 
     outMatrix34->posX = playerState->aimBasisOrigin.x;
     outMatrix34->posY = playerState->aimBasisOrigin.y;
@@ -2351,7 +2353,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
