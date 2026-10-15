@@ -819,6 +819,32 @@ struct HudUiZrdDeleteChildIfPresent {
 };
 
 /**
+ * Purpose: implement the authorized VC5 /Ob1 inline-budget alignment
+ * exception for recoil:function:0x4b50c0, granted on 2026-10-15.
+ *
+ * This forwarding helper preserves the existing image-release API calls.
+ * Its existence in the original source is not independently established.
+ * In the measured P5 model, using it at the five existing release sites
+ * reproduces the retail pattern: the first delete-functor site and all
+ * three vector::erase calls remain out of line, the next two functor
+ * sites inline, and all four vector destructor bodies inline.
+ *
+ * The measured five-to-six expansion window does not identify an
+ * original helper. This exception permits exactly the five recorded
+ * uses in ~HudUiZrdWidget, with the existing guards, assignments,
+ * discarded final return value, and operation order unchanged.
+ * No additional inline layers or uses are authorized.
+ *
+ * See the 0x4b50c0 VC5 inline-budget alignment exception in match-proofs.md
+ * for scope and renewal obligations.
+ * All normal match and acceptance gates remain unchanged.
+ */
+inline zVidImagePartial* HudUiZrdReleaseImage(zVidImagePartial* image)
+{
+    return zVid_Image::ReleaseIfNotDefault(image);
+}
+
+/**
  * Original-source helper; no standalone retail function exists.
  * Evidence: recovered in the HUD source cluster near address-backed 0x414670 HudUiTripletEntries::GetCount callers.
  * Purpose: preserve the recovered HUD behavior for ZrdArrayBase.
@@ -2011,28 +2037,28 @@ HudUiZrdWidget::~HudUiZrdWidget()
         activateLabelPanels.begin(),
         HudUiZrdDeleteChildIfPresent()
     );
-    labelPanels.erase(labelPanels.begin(), labelPanels.end());
-    rolloverLabelPanels.erase(rolloverLabelPanels.begin(), rolloverLabelPanels.end());
-    activateLabelPanels.erase(activateLabelPanels.begin(), activateLabelPanels.end());
+    labelPanels.clear();
+    rolloverLabelPanels.clear();
+    activateLabelPanels.clear();
 
     if (defaultImage != 0 && defaultImage != image) {
-        defaultImage = zVid_Image::ReleaseIfNotDefault(defaultImage);
+        defaultImage = HudUiZrdReleaseImage(defaultImage);
     }
 
     if (activateImage != 0 && activateImage != image) {
-        activateImage = zVid_Image::ReleaseIfNotDefault(activateImage);
+        activateImage = HudUiZrdReleaseImage(activateImage);
     }
 
     if (rolloverImage != 0 && rolloverImage != image) {
-        rolloverImage = zVid_Image::ReleaseIfNotDefault(rolloverImage);
+        rolloverImage = HudUiZrdReleaseImage(rolloverImage);
     }
 
     if (disabledImage != 0 && disabledImage != image) {
-        disabledImage = zVid_Image::ReleaseIfNotDefault(disabledImage);
+        disabledImage = HudUiZrdReleaseImage(disabledImage);
     }
 
     if (image != 0 && ownsImage == 0) {
-        zVid_Image::ReleaseIfNotDefault(image);
+        HudUiZrdReleaseImage(image);
     }
 }
 

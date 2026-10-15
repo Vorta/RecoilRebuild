@@ -1236,9 +1236,9 @@ int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(SpanNodePartial* lhs, Sp
         return 1;
     }
 
+    rhsWidth = (float)(rhs->sampleXMax - rhs->sampleXMin);
     rhsDepthDelta = rhs->invDepth - rhs->invDepthStep;
     lhsStartOffset = (float)(lhs->sampleXMin - rhs->sampleXMin);
-    rhsWidth = (float)(rhs->sampleXMax - rhs->sampleXMin);
     lhsStartDepthDelta = lhs->invDepth - rhs->invDepth;
     rhsStartSide = rhsDepthDelta * lhsStartOffset + rhsWidth * lhsStartDepthDelta;
     if (rhsStartSide >= negativeBias) {

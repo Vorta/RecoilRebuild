@@ -334,7 +334,7 @@ void HudWeatherFx::ResetParticleSlot(int particleIndex, int)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-applypass3
  * @recoil-artifact defines .text recoil:function:0x4bdfd0: HudWeatherFx::ApplyPass3.
- *
+ * @recoil-match commutative
  *
  * Purpose: Draw software weather lines or submit hardware textured weather quads
  * through the pass-3 HUD element callback.
