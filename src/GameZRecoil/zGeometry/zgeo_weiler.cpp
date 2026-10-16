@@ -3465,7 +3465,7 @@ char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPoint
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-intersect2d
  * @recoil-artifact defines .text recoil:function:0x468c40: zGeometry_Weiler::Intersect2d
- *
+ * @recoil-match source
  *
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 rendering is limited at the classifier callsite and
  * computed Y store, so assembly is source of truth. Purpose: Build the crossing record, if any, for the classified
@@ -3509,14 +3509,14 @@ int __fastcall Intersect2d(
                 }
 
                 // Retail scales by the reciprocal divisor term by term.
-                edge0Param = (edge1Start.x - edge0Start.x) * (edge1ReverseDeltaY * (1.0 / divisor))
-                    + (edge1Start.y - edge0Start.y) * (-edge1ReverseDeltaX * (1.0 / divisor));
+                divisor = 1.0 / divisor;
+                edge0Param = (edge1Start.x - edge0Start.x) * (edge1ReverseDeltaY * divisor);
+                edge0Param += (edge1Start.y - edge0Start.y) * (-edge1ReverseDeltaX * divisor);
                 createdXing->point.x = (float)(edge0DeltaX * edge0Param + edge0Start.x);
                 createdXing->point.y = (float)(edge0DeltaY * edge0Param + edge0Start.y);
 
                 // Retail reuses divisor as the z-interpolation x span, kept on the x87 stack (0x468d6c..0x468d93).
-                divisor = edge1Start.x - edge1End.x;
-                if (divisor != 0.0) {
+                if ((divisor = edge1Start.x - edge1End.x) != 0.0) {
                     createdXing->point.z
                         = (edge1Start.x - createdXing->point.x) / divisor * (edge1End.z - edge1Start.z) + edge1Start.z;
                 } else {

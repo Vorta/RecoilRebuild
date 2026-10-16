@@ -1147,6 +1147,8 @@ void __fastcall FxPass3CopySurfacePixelToScratchClipped(int dstDx, int dstDy, in
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-fxpass3-applytocurrentsurface
  * @recoil-artifact defines .text recoil:function:0x48daf0: zVideo::FxPass3ApplyToCurrentSurface.
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fx-pass3-fast-sqrt-estimate
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fx-pass3-fast-sqrt-estimate recoil:function:0x48daf0
  *
  *
  * Source owner evidence: current BN assembly identifies the original file as
@@ -1163,7 +1165,7 @@ void __fastcall FxPass3CopySurfacePixelToScratchClipped(int dstDx, int dstDy, in
  * when the whole ring fits the clip and falls back to the clipped pixel helper when any
  * endpoint can cross the active rectangle.
  * Purpose: apply the local pass-3 animated radial ring warp to the active
- * 16-bpp FX surface.
+ * 16-bpp FX surface; its four sqrt estimates are owner-authorized inline asm (retail bit trick).
  */
 void __fastcall FxPass3ApplyToCurrentSurface(
     int centerX,
@@ -1176,37 +1178,33 @@ void __fastcall FxPass3ApplyToCurrentSurface(
     zVidRect32* clipRectOrNull
 )
 {
-    unsigned short* srcCenter;
-    unsigned short* dstCenter;
-    float* sinTable;
-    float* recipTable;
-    int currentRadiusSquared;
-    int maxRadiusSquared;
-    int left;
-    int top;
-    int outerMinX;
-    int outerMaxX;
-    int outerMinY;
-    int outerMaxY;
     float amplitude;
-    int tableIndex;
-    float radius;
+    float* sinTable;
+    int outerMinY;
     int x;
-    int y;
-    float distanceSquared;
-    int sqrtBits;
-    int sqrtBitsAgain;
-    int radiusIndex;
     int offsetX;
-    float sinValue;
     float recipValue;
-    int offsetY;
-    int srcX;
-    int srcY;
-    int copyY;
-    int copyX;
+    float radius;
     unsigned short* copyDst;
+    int y;
+    unsigned short* srcCenter;
+    int offsetY;
+    int outerMaxY;
+    int outerMinX;
+    int copyX;
+    int radiusIndex;
+    int maxRadiusSquared;
+    float sinValue;
+    int srcX;
+    float* recipTable;
+    int copyY;
+    int srcY;
+    int tableIndex;
+    int outerMaxX;
+    int currentRadiusSquared;
     unsigned short* copySrc;
+    int top;
+    unsigned short* dstCenter;
 
     // Retail builds both center pointers and both tables before validating the radii.
     srcCenter = g_zVideo_FxSurfacePixels16 + centerY * g_zVideo_FxSurfacePitchPixels16 + centerX;
@@ -1238,8 +1236,7 @@ void __fastcall FxPass3ApplyToCurrentSurface(
         g_zVideo_FxPass3_ClipMaxX = g_zVideo_FxSurfaceWidth - 1;
     }
 
-    left = centerX - maxRadius;
-    outerMinX = left - extent;
+    outerMinX = centerX - maxRadius - extent;
     if (outerMinX > g_zVideo_FxPass3_ClipMaxX) {
         return;
     }
@@ -1260,9 +1257,10 @@ void __fastcall FxPass3ApplyToCurrentSurface(
     amplitude = (float)(extent);
     sinTable[0] = sin(sinPhase) * amplitude;
     recipTable[0] = 1.0f;
-    tableIndex = currentRadius - 1;
-    if (tableIndex < 1) {
+    if (currentRadius - 1 < 1) {
         tableIndex = 1;
+    } else {
+        tableIndex = currentRadius - 1;
     }
     for (; tableIndex <= maxRadius; ++tableIndex) {
         radius = (float)(tableIndex);
@@ -1275,21 +1273,46 @@ void __fastcall FxPass3ApplyToCurrentSurface(
         // The whole ring fits the clip: scatter through the center pointers.
         for (y = -maxRadius; y <= currentRadius; ++y) {
             for (x = y; x <= currentRadius; ++x) {
+                float distanceSquared;
+
                 distanceSquared = (float)(x * x + y * y);
                 if (distanceSquared < maxRadiusSquared && currentRadiusSquared < distanceSquared) {
-                    sqrtBits = *((int*)(&distanceSquared));
-                    sqrtBits = (sqrtBits >> 1) + 0x1fc00000;
-                    if ((int)(*((float*)(&sqrtBits))) < maxRadius) {
-                        sqrtBitsAgain = *((int*)(&distanceSquared));
-                        sqrtBitsAgain = (sqrtBitsAgain >> 1) + 0x1fc00000;
-                        radiusIndex = (int)(*((float*)(&sqrtBitsAgain)));
-                    } else {
+                    float sqrtEstimate;
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                    __asm {
+                        mov eax, distanceSquared
+                        sar eax, 1
+                        add eax, 01fc00000h
+                        mov sqrtEstimate, eax
+                    }
+#else
+                    *(int*)&sqrtEstimate = (*(int*)&distanceSquared >> 1) + 0x1fc00000;
+#endif
+                    if ((int)(sqrtEstimate) < maxRadius)
+                    {
+                        float sqrtEstimateAgain;
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                        __asm {
+                            mov eax, distanceSquared
+                            sar eax, 1
+                            add eax, 01fc00000h
+                            mov sqrtEstimateAgain, eax
+                        }
+#else
+                        *(int*)&sqrtEstimateAgain = (*(int*)&distanceSquared >> 1) + 0x1fc00000;
+#endif
+                        radiusIndex = (int)(sqrtEstimateAgain);
+                    }
+                    else
+                    {
                         radiusIndex = maxRadius;
                     }
-                    sinValue = sinTable[radiusIndex];
                     recipValue = recipTable[radiusIndex];
-                    offsetX = (int)(x * sinValue * recipValue);
-                    offsetY = (int)(y * sinValue * recipValue);
+                    sinValue = sinTable[radiusIndex];
+                    offsetX = (int)((x * sinValue) * recipValue);
+                    offsetY = (int)((y * sinValue) * recipValue);
                     // Retail forms each source index from the offsets inline (0x48dda1..0x48def9).
                     dstCenter[y * g_zVideo_FxSurfaceWidth + x]
                         = srcCenter[(y + offsetY) * g_zVideo_FxSurfacePitchPixels16 + (x + offsetX)];
@@ -1326,7 +1349,7 @@ void __fastcall FxPass3ApplyToCurrentSurface(
             if (copyY > currentRadius || copyY < -currentRadius) {
                 copyDst = &g_zVideo_FxSurfacePixels16[copyY * g_zVideo_FxSurfacePitchPixels16 - maxRadius + centerX];
                 copySrc = &g_zVideo_FxPass3_ScratchPixels16[copyY * g_zVideo_FxSurfaceWidth - maxRadius + centerX];
-                for (copyX = left; copyX < centerX + maxRadius; ++copyX) {
+                for (copyX = centerX - maxRadius; copyX < centerX + maxRadius; ++copyX) {
                     if (copyX > currentRadius || copyX < -currentRadius) {
                         *copyDst++ = *copySrc++;
                     }
@@ -1338,28 +1361,54 @@ void __fastcall FxPass3ApplyToCurrentSurface(
         g_zVideo_FxPass3_ScratchOffsetY = centerY;
         for (y = -maxRadius; y <= currentRadius; ++y) {
             for (x = y; x <= currentRadius; ++x) {
+                float distanceSquared;
+
                 distanceSquared = (float)(x * x + y * y);
                 if (distanceSquared < maxRadiusSquared && currentRadiusSquared < distanceSquared) {
-                    sqrtBits = *((int*)(&distanceSquared));
-                    sqrtBits = (sqrtBits >> 1) + 0x1fc00000;
-                    if ((int)(*((float*)(&sqrtBits))) < maxRadius) {
-                        sqrtBitsAgain = *((int*)(&distanceSquared));
-                        sqrtBitsAgain = (sqrtBitsAgain >> 1) + 0x1fc00000;
-                        radiusIndex = (int)(*((float*)(&sqrtBitsAgain)));
-                    } else {
+                    int offsetX;
+                    float sqrtEstimate;
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                    __asm {
+                        mov eax, distanceSquared
+                        sar eax, 1
+                        add eax, 01fc00000h
+                        mov sqrtEstimate, eax
+                    }
+#else
+                    *(int*)&sqrtEstimate = (*(int*)&distanceSquared >> 1) + 0x1fc00000;
+#endif
+                    if ((int)(sqrtEstimate) < maxRadius)
+                    {
+                        float sqrtEstimateAgain;
+
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+                        __asm {
+                            mov eax, distanceSquared
+                            sar eax, 1
+                            add eax, 01fc00000h
+                            mov sqrtEstimateAgain, eax
+                        }
+#else
+                        *(int*)&sqrtEstimateAgain = (*(int*)&distanceSquared >> 1) + 0x1fc00000;
+#endif
+                        radiusIndex = (int)(sqrtEstimateAgain);
+                    }
+                    else
+                    {
                         radiusIndex = maxRadius;
                     }
                     radius = sinTable[radiusIndex] * recipTable[radiusIndex];
-                    srcX = x + (int)((float)(x)*radius);
-                    srcY = y + (int)((float)(y)*radius);
-                    FxPass3CopySurfacePixelToScratchClipped(x, y, srcX, srcY);
-                    FxPass3CopySurfacePixelToScratchClipped(y, x, srcY, srcX);
-                    FxPass3CopySurfacePixelToScratchClipped(-x, y, -srcX, srcY);
-                    FxPass3CopySurfacePixelToScratchClipped(y, -x, srcY, -srcX);
-                    FxPass3CopySurfacePixelToScratchClipped(x, -y, srcX, -srcY);
-                    FxPass3CopySurfacePixelToScratchClipped(-y, x, -srcY, srcX);
-                    FxPass3CopySurfacePixelToScratchClipped(-x, -y, -srcX, -srcY);
-                    FxPass3CopySurfacePixelToScratchClipped(-y, -x, -srcY, -srcX);
+                    offsetX = (int)((float)(x)*radius);
+                    offsetY = (int)((float)(y)*radius);
+                    FxPass3CopySurfacePixelToScratchClipped(x, y, x + offsetX, y + offsetY);
+                    FxPass3CopySurfacePixelToScratchClipped(y, x, y + offsetY, x + offsetX);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, y, -(x + offsetX), y + offsetY);
+                    FxPass3CopySurfacePixelToScratchClipped(y, -x, y + offsetY, -(x + offsetX));
+                    FxPass3CopySurfacePixelToScratchClipped(x, -y, x + offsetX, -(y + offsetY));
+                    FxPass3CopySurfacePixelToScratchClipped(-y, x, -(y + offsetY), x + offsetX);
+                    FxPass3CopySurfacePixelToScratchClipped(-x, -y, -(x + offsetX), -(y + offsetY));
+                    FxPass3CopySurfacePixelToScratchClipped(-y, -x, -(y + offsetY), -(x + offsetX));
                 } else {
                     FxPass3CopySurfacePixelToScratchClipped(x, y, x, y);
                     FxPass3CopySurfacePixelToScratchClipped(y, x, y, x);
@@ -1379,10 +1428,14 @@ void __fastcall FxPass3ApplyToCurrentSurface(
             ++copyY) {
             if (copyY > currentRadius || copyY < -currentRadius) {
                 copyDst = g_zVideo_FxSurfacePixels16 + copyY * g_zVideo_FxSurfacePitchPixels16
-                    + (left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX);
+                    + (centerX - maxRadius > g_zVideo_FxPass3_ClipMinX ? centerX - maxRadius
+                                                                       : g_zVideo_FxPass3_ClipMinX);
                 copySrc = g_zVideo_FxPass3_ScratchPixels16 + copyY * g_zVideo_FxSurfaceWidth
-                    + (left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX);
-                for (copyX = left > g_zVideo_FxPass3_ClipMinX ? left : g_zVideo_FxPass3_ClipMinX; copyX
+                    + (centerX - maxRadius > g_zVideo_FxPass3_ClipMinX ? centerX - maxRadius
+                                                                       : g_zVideo_FxPass3_ClipMinX);
+                for (copyX
+                    = centerX - maxRadius > g_zVideo_FxPass3_ClipMinX ? centerX - maxRadius : g_zVideo_FxPass3_ClipMinX;
+                    copyX
                     < (centerX + maxRadius < g_zVideo_FxPass3_ClipMaxX ? centerX + maxRadius
                                                                        : g_zVideo_FxPass3_ClipMaxX);
                     ++copyX) {

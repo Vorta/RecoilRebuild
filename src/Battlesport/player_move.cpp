@@ -1870,7 +1870,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x429240: Player::ApplyAmphibSpeedOscillation.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-move.vector-transform-direction-in-place
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered

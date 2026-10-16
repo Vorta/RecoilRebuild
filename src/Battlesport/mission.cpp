@@ -929,7 +929,7 @@ void HudSensorObjectiveSlot::Reset()
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-load-objectives-from-path
  * @recoil-artifact defines .text recoil:function:0x417f90: HudSensorTracker::LoadObjectivesFromPath.
- *
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\mission.cpp.
  * Purpose: load mission objective data, timing values, image resources, and objective slots from a ZRD path.
@@ -982,14 +982,13 @@ int HudSensorTracker::LoadObjectivesFromPath(const char* path)
 
     int objectiveNumber = 1;
     do {
-        const int objectiveIndex = objectiveNumber - 1;
-        if (objectiveIndex == 10) {
+        if (objectiveNumber - 1 == 10) {
             zError::ReportOld(
                 0x400,
                 g_HudSensorTracker_MissionCppSourcePath,
                 0x2ee,
                 g_HudSensorTracker_ObjectivesArrayOverflowFmt,
-                objectiveIndex
+                10
             );
             break;
         }
