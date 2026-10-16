@@ -1011,14 +1011,17 @@ __inline void MatMultiply4x3(const zMat4x3* left, const zMat4x3* right, zMat4x3*
  * @recoil-artifact defines .text recoil:function:0x473370: zMath::MatMultiply.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-3x3
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-4x3
- *
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-copy
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.main.matrix-multiply-copy
+ * @recoil-match byte
  *
  * Raw assembly: the zmth_main.c-resident inline helper expansions at retail
  * [0x4733c3,0x4734ce) (3x3, mode 2) and [0x4734e1,0x473653) (4x3),
- * including their operand-home reloads (requires zmth_main.c /Ob1). The
- * compiler owns the frame, register saves, src spill, identity fast path,
- * mode branch, argument captures, join, final 12-dword copy (ordinary C memcpy)
- * and the identity-flag stores.
+ * including their operand-home reloads (requires zmth_main.c /Ob1), and the
+ * owner-authorized final 12-dword copy at [0x47366b,0x473676) (count, source
+ * and dest locals; rep movsd). The fast path stores the identity flag through
+ * a pointer local (owner-authorized single-use local). The compiler owns the
+ * frame, register saves, src spill, mode branch, argument captures and join.
  *
  *
  * Purpose: Update the current matrix as src * current, using the retail x87
@@ -1034,9 +1037,12 @@ __inline void MatMultiply4x3(const zMat4x3* left, const zMat4x3* right, zMat4x3*
 void __fastcall MatMultiply(const zMat4x3* src, int mode)
 {
     zMat4x3 out;
+    int* flag;
     if (*g_currentMatrixIdentityFlagSlot != 0) {
         memcpy(*g_currentMatrixPtrSlot, src, sizeof(zMat4x3));
-        *g_currentMatrixIdentityFlagSlot = 0;
+        // Authorized exception for 0x473370: retain this single-use local to reproduce VC5 code generation.
+        flag = g_currentMatrixIdentityFlagSlot;
+        *flag = 0;
         return;
     }
 
@@ -1045,7 +1051,21 @@ void __fastcall MatMultiply(const zMat4x3* src, int mode)
     } else {
         MatMultiply4x3(src, (const zMat4x3*)(*g_currentMatrixPtrSlot), &out);
     }
+#if defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100
+    {
+        int count = sizeof(zMat4x3) / 4;
+        const void* source = &out;
+        void* dest = *g_currentMatrixPtrSlot;
+        __asm {
+        mov ecx, count
+        mov edi, dest
+        mov esi, source
+        rep movsd
+        }
+    }
+#else
     memcpy(*g_currentMatrixPtrSlot, &out, sizeof(zMat4x3));
+#endif
     *g_currentMatrixIdentityFlagSlot = 0;
 }
 
@@ -1146,7 +1166,7 @@ void __stdcall MatTranslate(float tx, float ty, float tz)
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatex
  * @recoil-artifact defines .text recoil:function:0x473970: zMath::MatRotateX.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: applies an X-axis rotation to the current matrix stack slot.
  */
