@@ -11706,13 +11706,14 @@ void HudUiMessage::ReleaseImages()
  */
 void HudUiMessage::RebuildWeaponLayout()
 {
+    HudUiRect widgetClipRect;
+    HudUiRect panelClipRect;
     HudUiWidget* const layoutWidget2 = &g_HudLayoutHW.widget2;
     const int anchorX = layoutWidget2->GetCenterX();
     const int anchorY = layoutWidget2->GetCenterY();
 
     const int clipLeft = layoutX + (g_HudUiMgrHudOriginX / 2);
     zVidImagePartial* const baseImage = variantImages[0];
-    HudUiRect widgetClipRect;
     widgetClipRect.left = clipLeft;
     widgetClipRect.top = layoutY;
     widgetClipRect.right = clipLeft + baseImage->width;
@@ -11721,7 +11722,6 @@ void HudUiMessage::RebuildWeaponLayout()
     SetPos(clipLeft + anchorX, layoutY + anchorY);
     SetBltSourceAndClipRect(0, &widgetClipRect);
 
-    HudUiRect panelClipRect;
     panelClipRect.left = clipLeft + 3;
     panelClipRect.top = widgetClipRect.bottom;
     panelClipRect.right = widgetClipRect.right - 2;

@@ -2027,7 +2027,7 @@ void __fastcall zRndrSpanOcclusionInsertSpanNodeNoDepthTest(SpanNodePartial** sp
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-buildspanlist
  * @recoil-artifact defines .text recoil:function:0x491840: zRndrSpanOcclusionBuildSpanList.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: build visible fragments for one pending span against the current
@@ -2109,23 +2109,18 @@ void __fastcall zRndrSpanOcclusionBuildSpanList(SpanNodePartial** spanList, int 
         }
 
         if (maxDepthSpan != pending) {
-            maxDepth
-                = (double)pending->invDepth > pending->invDepthStep ? (double)pending->invDepth : pending->invDepthStep;
+            maxDepth = __max(pending->invDepth, pending->invDepthStep);
             maxDepthSpan = pending;
         }
-        occluderMinDepth
-            = (double)current->invDepth < current->invDepthStep ? (double)current->invDepth : current->invDepthStep;
+        occluderMinDepth = __min(current->invDepth, current->invDepthStep);
         if (occluderMinDepth * g_spanDepthBiasPlusOne >= maxDepth) {
             pendingInFront = 0;
         } else {
             if (minDepthSpan != pending) {
-                minDepth = (double)pending->invDepth < pending->invDepthStep ? (double)pending->invDepth
-                                                                             : pending->invDepthStep;
+                minDepth = __min(pending->invDepth, pending->invDepthStep);
                 minDepthSpan = pending;
             }
-            if (minDepth * g_spanDepthBiasPlusOne
-                >= ((double)current->invDepth > current->invDepthStep ? (double)current->invDepth
-                                                                      : current->invDepthStep)) {
+            if (minDepth * g_spanDepthBiasPlusOne >= __max(current->invDepth, current->invDepthStep)) {
                 pendingInFront = 1;
             } else {
                 pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);
@@ -2349,7 +2344,7 @@ void __fastcall zRndrSpanOcclusionBuildSpanListFast(SpanNodePartial** spanList, 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-spanocclusion-testcolumnvisibility
  * @recoil-artifact defines .text recoil:function:0x491dd0: zRndrSpanOcclusionTestColumnVisibility.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Draw.cpp.
  * Purpose: test whether the pending span node remains visible in one occlusion
@@ -2414,26 +2409,21 @@ void __fastcall zRndrSpanOcclusionTestColumnVisibility(int columnIndex, int* isV
             return;
         }
 
-        // Retail compares the endpoint depths double-widened (fld/fld/fcompp)
-        // and selects them on the FPU before each store or multiply.
+        // The CRT __max/__min macros select each span's nearer/farther endpoint
+        // depth on the FPU (fld/fld/fcompp) before each store or multiply.
         if (maxDepthSpan != pending) {
-            maxDepth
-                = (double)pending->invDepth > pending->invDepthStep ? (double)pending->invDepth : pending->invDepthStep;
+            maxDepth = __max(pending->invDepth, pending->invDepthStep);
             maxDepthSpan = pending;
         }
-        occluderMinDepth
-            = (double)current->invDepth < current->invDepthStep ? (double)current->invDepth : current->invDepthStep;
+        occluderMinDepth = __min(current->invDepth, current->invDepthStep);
         if (occluderMinDepth * g_spanDepthBiasPlusOne >= maxDepth) {
             pendingInFront = 0;
         } else {
             if (minDepthSpan != pending) {
-                minDepth = (double)pending->invDepth < pending->invDepthStep ? (double)pending->invDepth
-                                                                             : pending->invDepthStep;
+                minDepth = __min(pending->invDepth, pending->invDepthStep);
                 minDepthSpan = pending;
             }
-            if (minDepth * g_spanDepthBiasPlusOne
-                >= ((double)current->invDepth > current->invDepthStep ? (double)current->invDepth
-                                                                      : current->invDepthStep)) {
+            if (minDepth * g_spanDepthBiasPlusOne >= __max(current->invDepth, current->invDepthStep)) {
                 pendingInFront = 1;
             } else {
                 pendingInFront = zRndrSpanOcclusionTestSpanDepthOrderPair(pending, current);

@@ -2935,7 +2935,10 @@ void __fastcall RenderFrustumGridTiles(CZNodePartial* world, CZNodePartial* came
             int visible;
 
             if (tile->hasPosOffset != 0) {
-                zVec3 posOffset = { -tile->posOffsetX, 0.0f, -tile->posOffsetZ };
+                // Unused capture: retail evaluates the z offset as a non-leaf operand (load scheduled before the call
+                // setup).
+                float offsetZ;
+                zVec3 posOffset = { -tile->posOffsetX, 0.0f, -(offsetZ = tile->posOffsetZ) };
                 UpdateImpl(camera, &posOffset);
                 cameraAtBasePos = 0;
             } else if (cameraAtBasePos == 0) {

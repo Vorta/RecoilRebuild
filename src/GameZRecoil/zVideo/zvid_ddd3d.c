@@ -43,10 +43,10 @@
 
 #define PackColorAttrConstant(baseColor, attr1Scale, alphaBits)                                                        \
     ((alphaBits)                                                                                                       \
-        | ((((((DWORD)((int)((baseColor).r * (attr1Scale) + 0.5)) << 8)                                                \
-                 | (DWORD)((int)((baseColor).g * (attr1Scale) + 0.5)))                                                 \
+        | ((((((DWORD)((int)(((baseColor).r * (attr1Scale)) + 0.5)) << 8)                                              \
+                 | (DWORD)((int)(((baseColor).g * (attr1Scale)) + 0.5)))                                               \
                 << 8)                                                                                                  \
-            | (DWORD)((int)((baseColor).b * (attr1Scale) + 0.5)))))
+            | (DWORD)((int)(((baseColor).b * (attr1Scale)) + 0.5)))))
 
 #define FillColorAttrSpecularReverse(attr2, lastIndex, vertexCount)                                                    \
     {                                                                                                                  \
@@ -76,9 +76,9 @@
                         = PackColorAttrConstant((baseColor), (attr1Scale), (alphaBits));                               \
                 } else {                                                                                               \
                     float _channels[3];                                                                                \
-                    _channels[0] = (baseColor).r * (attr1Scale) + *_attr0Source * g_zVideo_D3DColorAttrBiasR;          \
-                    _channels[1] = (baseColor).g * (attr1Scale) + *_attr0Source * g_zVideo_D3DColorAttrBiasG;          \
-                    _channels[2] = (baseColor).b * (attr1Scale) + *_attr0Source * g_zVideo_D3DColorAttrBiasB;          \
+                    _channels[0] = ((baseColor).r * (attr1Scale)) + (*_attr0Source * g_zVideo_D3DColorAttrBiasR);      \
+                    _channels[1] = ((baseColor).g * (attr1Scale)) + (*_attr0Source * g_zVideo_D3DColorAttrBiasG);      \
+                    _channels[2] = ((baseColor).b * (attr1Scale)) + (*_attr0Source * g_zVideo_D3DColorAttrBiasB);      \
                     if (_channels[g_zVideo_D3DColorNormalizeChannelIndex] > 255.0f) {                                  \
                         const float _scale = 1.0f / _channels[g_zVideo_D3DColorNormalizeChannelIndex] * 255.0f;        \
                         _channels[0] *= _scale;                                                                        \
