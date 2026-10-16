@@ -39,7 +39,7 @@ extern char g_HudCfgKey_Ammo[5];
 extern "C" zTurret_SystemState g_zTurret_SystemStateStorage = { 0 };
 
 namespace {
-const int kPlayerLifecycleInactive = 4;
+const int kTurretControlInactive = 4; // CTRL_INACTIVE
 const int kPlayerMasterTypeSub = 2;
 const unsigned int kZClassNodeActiveFlag = 0x04;
 const int kZClassNodeObject3D = 6;
@@ -461,8 +461,8 @@ void zTurret_Runtime::Tick(const zVec3* playerFxOffsetWorld)
         }
 
         if (VariantTag::CurrentAllowsId(turretNode->nodeType) != 0
-            && ((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->lifecycleState
-                != kPlayerLifecycleInactive) {
+            && ((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->controlType
+                != kTurretControlInactive) {
             const float distance
                 = (float)fabs(worldPos.x - playerFxOffsetWorld->x) + (float)fabs(worldPos.z - playerFxOffsetWorld->z);
             nearestTargetScore = distance;
@@ -544,8 +544,7 @@ void zTurret_Runtime::Tick(const zVec3* playerFxOffsetWorld)
     }
 
     if (VariantTag::CurrentAllowsId(turretNode->nodeType) != 0
-        && ((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->lifecycleState
-            != kPlayerLifecycleInactive) {
+        && ((zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState))->controlType != kTurretControlInactive) {
         const float distance
             = (float)fabs(worldPos.x - playerFxOffsetWorld->x) + (float)fabs(worldPos.z - playerFxOffsetWorld->z);
         nearestTargetScore = distance;

@@ -46,7 +46,7 @@ enum {
     kPlayerCameraStateRestorePrevious = 8
 };
 
-const int kPlayerAiMode2TopSteering = 1;
+const int kPlayerAiTopPursuit = 1;
 const int kPlayerNanitePanelDisabledSentinel = 123456789;
 const float kPlayerAltAmmoDisabledSentinel = 123456792.0f;
 const float kPlayerRecentHitAlertSec = 5.0f;
@@ -653,7 +653,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
         playerState->altWeaponBanks[bankIndex].controllerA.weaponSideIndex = 0;
         playerState->altWeaponBanks[bankIndex].controllerA.flags &= ~kPlayerGunControllerAvailableFlag;
         playerState->altWeaponBanks[bankIndex].controllerA.ammoOrCharge
-            = saveState->playerState->lifecycleState == kPlayerLifecycleRemote ? kPlayerAltAmmoDisabledSentinel : 0.0f;
+            = saveState->playerState->controlType == CTRL_REMOTE ? kPlayerAltAmmoDisabledSentinel : 0.0f;
         playerState->altWeaponBanks[bankIndex].controllerA.attachNodePrimary = 0;
         playerState->altWeaponBanks[bankIndex].controllerA.trailRuntimeState = 0;
 
@@ -661,7 +661,7 @@ void __fastcall LoadWeaponBanksAndSelectDefaults(zUtil_SaveGameState* saveState)
         playerState->altWeaponBanks[bankIndex].controllerB.weaponSideIndex = 1;
         playerState->altWeaponBanks[bankIndex].controllerB.flags &= ~kPlayerGunControllerAvailableFlag;
         playerState->altWeaponBanks[bankIndex].controllerB.ammoOrCharge
-            = saveState->playerState->lifecycleState == kPlayerLifecycleRemote ? kPlayerAltAmmoDisabledSentinel : 0.0f;
+            = saveState->playerState->controlType == CTRL_REMOTE ? kPlayerAltAmmoDisabledSentinel : 0.0f;
         playerState->altWeaponBanks[bankIndex].controllerB.attachNodePrimary = 0;
         playerState->altWeaponBanks[bankIndex].controllerB.trailRuntimeState = 0;
     }
@@ -1175,7 +1175,7 @@ void __fastcall UpdateMarkersAndProgressFromVariantTag(const zTag4Partial* requi
                 playerState->recentHitFlag = 0;
             }
 
-            if (playerState->lifecycleState != 1 && playerState->lifecycleState != 4
+            if (playerState->controlType != CTRL_PLAYER && playerState->controlType != CTRL_INACTIVE
                 && VariantTag::TagsOverlap(&playerState->variantTag, requiredVariantTag) != 0) {
                 // Retail 0x439748 compares the double sum against a double 650.0.
                 if (fabs(playerState->fxOffsetWorld.x - localPlayerState->worldPos.x)
@@ -1323,7 +1323,7 @@ void __fastcall ResetDamageVisualsAndTimedStatus(zUtil_SaveGameState* saveState)
 
     if (playerState->recentHitValid != 0) {
         if (g_Time_AccumulatedTimeSec < playerState->recentHitFxExpireTime) {
-            if (playerState->lifecycleState != kPlayerLifecycleRemote) {
+            if (playerState->controlType != CTRL_REMOTE) {
                 if (saveState == (zUtil_SaveGameState*)g_GameStateOrMapTable) {
                     EnterDestroyedState(saveState, 0, 0, playerState->recentHitDamage * g_FrameDeltaTimeSec);
                 } else {
@@ -2630,7 +2630,7 @@ int __fastcall HitCallbackRecordNetContextAndTimedStatus(
 )
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+    if (playerState->controlType == CTRL_INACTIVE) {
         return 0;
     }
 
@@ -2673,7 +2673,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
 
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+    if (playerState->controlType == CTRL_INACTIVE) {
         return 0;
     }
 
@@ -2714,7 +2714,7 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
     playerState->statusMeterScaled = masterCommonData->invMaxHealth * playerState->statusMeterValue;
 
     if (playerState->statusMeterValue <= 0.0f) {
-        playerState->lifecycleState = kPlayerLifecycleInactive;
+        playerState->controlType = CTRL_INACTIVE;
         playerState->statusMeterValue = 0.0f;
 
         if (zSnd::GetAudioApiOption() == ZSND_AUDIO_API_A3D) {
@@ -2764,9 +2764,8 @@ int __fastcall HitCallbackRecordContextAndTimedStatus(
 
     DamageFeedback::SetIntensityScalar(masterCommonData->invMaxHealth * playerState->statusMeterValue);
 
-    if (playerState->lifecycleState == kPlayerLifecycleAi
-        && playerState->aiTopLevelState != kPlayerAiMode2TopSteering) {
-        AINet::AiEnterMode2SteeringPursuit(saveState);
+    if (playerState->controlType == CTRL_AI && playerState->aiTopLevelState != kPlayerAiTopPursuit) {
+        AINet::AiEnterPursuit(saveState);
         if (playerState->aiRuntime != 0 && playerState->aiRuntime->attackBuddyNetId != 0) {
             AINet::AiAlertAttackBuddies(saveState);
         }
@@ -2812,7 +2811,7 @@ void __fastcall EnterLocalInactiveDestroyedLifecycle(zUtil_SaveGameState* saveSt
     }
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    playerState->lifecycleState = kPlayerLifecycleInactive;
+    playerState->controlType = CTRL_INACTIVE;
     playerState->altGunTransitionState = 1;
     playerState->altGunTransitionController = 0;
     playerState->altGunTransitionTimerA = 0.0f;
@@ -2859,8 +2858,8 @@ int __fastcall EnterDestroyedState(
     PlayerMasterCommonData* const masterCommonData = playerState->masterCommonData;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
 
-    if (playerState->transitionDamageSuppressed != 0 || playerState->lifecycleState == kPlayerLifecycleInactive
-        || playerState->lifecycleState == kPlayerLifecycleDestroyed) {
+    if (playerState->transitionDamageSuppressed != 0 || playerState->controlType == CTRL_INACTIVE
+        || playerState->controlType == CTRL_DESTROYED) {
         return 0;
     }
 
@@ -2918,7 +2917,7 @@ int __fastcall EnterDestroyedState(
         if (playerState->airborneFlag == 0) {
             EnterLocalInactiveDestroyedLifecycle(saveState);
         } else {
-            playerState->lifecycleState = kPlayerLifecycleDestroyed;
+            playerState->controlType = CTRL_DESTROYED;
         }
 
         if (zOpt::GetNetworkEnabled() != 0) {

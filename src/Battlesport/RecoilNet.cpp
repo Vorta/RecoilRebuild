@@ -189,8 +189,8 @@ void __fastcall InitFromZrd()
     zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        if (playerState->lifecycleState == 2) {
-            playerState->lifecycleState = 4;
+        if (playerState->controlType == CTRL_AI) {
+            playerState->controlType = CTRL_INACTIVE;
             CZNodePartial* const rootNode = playerState->rootNode;
             CZClass::RemoveChild(rootNode->listA[0], rootNode);
         }
@@ -630,7 +630,7 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
         netNodeName
     );
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    playerState->lifecycleState = 3;
+    playerState->controlType = CTRL_REMOTE;
     playerState->amphibUnlocked = 1;
     playerState->hoverUnlocked = 1;
     playerState->subUnlocked = 1;
@@ -871,7 +871,7 @@ int __fastcall HandlePkt03RemoveRemotePlayer(int senderPlayerId, zNetworkPacketH
     if (saveState != 0) {
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
         playerState->cameraTransitionTimer = 1;
-        playerState->lifecycleState = 4;
+        playerState->controlType = CTRL_INACTIVE;
         Player::ResetAltGunRuntimeState(saveState);
         Player::RemoveAllDeployedMines(saveState);
     }

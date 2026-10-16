@@ -1767,7 +1767,7 @@ int HudSensorTrackerMap::SetSaveStateMarkerMaxDistance(float maxDist)
 int HudSensorTrackerMap::DrawSaveStateMarker(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    if (playerState->lifecycleState == 4 || saveState == trackedSaveStateSelection) {
+    if (playerState->controlType == CTRL_INACTIVE || saveState == trackedSaveStateSelection) {
         return 0;
     }
 

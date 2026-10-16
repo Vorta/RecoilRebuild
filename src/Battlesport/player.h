@@ -41,18 +41,18 @@ extern zVec3 g_Player_AmphibBasisUpRef;
 extern float g_Player_AmphibSteerBasisLerpRate;
 extern zInput_GameStateOrMapTablePartial* g_GameStateOrMapTable;
 extern int g_Player_NextOrdinal;
-extern int g_Player_AiMode2State1Finalized;
-extern float g_Player_AiMode2_PathFollowPitchInputScale;
-extern float g_Player_AiMode2_PathFollowPitchTurnGain;
-extern float g_Player_AiMode2_SteeringPitchInputScale;
-extern float g_Player_AiMode2_SteeringPitchTurnGain;
-extern float g_Player_AiMode2_SteeringVerticalErrorScale;
-extern float g_Player_AiMode2_TuningScalar55A;
-extern float g_Player_AiMode2_TuningScalar55B;
-extern float g_Player_AiMode2_TuningScalar5;
-extern float g_Player_AiMode2_TuningScalar10;
-extern volatile float g_Player_AiMode2_OffsetTargetRotateCos15Deg;
-extern volatile float g_Player_AiMode2_OffsetTargetRotateSin15Deg;
+extern int g_Player_Ai_PursuitEntryDisabled;
+extern float g_Player_Ai_PathFollowHeightToPitchScale;
+extern float g_Player_Ai_PathFollowPitchErrorGain;
+extern float g_Player_Ai_PursuitSlopeToPitchScale;
+extern float g_Player_Ai_PursuitPitchErrorGain;
+extern float g_Player_Ai_PursuitVerticalInputGain;
+extern float g_AINet_UnresolvedFloat4DA0D4;
+extern float g_AINet_UnresolvedFloat4DA0D8;
+extern float g_AINet_UnresolvedFloat4DA0DC;
+extern float g_AINet_UnresolvedFloat4DA0E0;
+extern volatile float g_Player_Ai_OffsetTargetRotationCos;
+extern volatile float g_Player_Ai_OffsetTargetRotationSin;
 extern float g_Player_TotalTimeSecScaled;
 extern float g_Player_DeltaTime;
 extern float g_Player_InvDeltaTime;
@@ -332,7 +332,7 @@ struct PlayerVehicleListSaveEntry {
     int aiPathCursorAdvanceRequested;
     int aiCurrentSteeringSubstate;
     int aiReturnSteeringSubstate;
-    int masterType;
+    int controlType;
     float statusMeterScaled;
     float statusMeterValue;
     int nanitePanelLevel;
@@ -409,15 +409,16 @@ namespace zVehicle {
 const char* __fastcall SelectZrdByDifficulty(const char* extraSearchPath);
 } // namespace zVehicle
 
-namespace Player {
-enum PlayerLifecycleState {
-    kPlayerLifecycleLocal = 1,
-    kPlayerLifecycleAi = 2,
-    kPlayerLifecycleRemote = 3,
-    kPlayerLifecycleInactive = 4,
-    kPlayerLifecycleDestroyed = 5,
-    kPlayerLifecycleState6Inactive = 6
+enum VehicleControlType { // Who drives a vehicle, or why it is idle; CTRL_* spelling from a later Zipper engine.
+    CTRL_PLAYER = 1,
+    CTRL_AI = 2,
+    CTRL_REMOTE = 3,
+    CTRL_INACTIVE = 4,
+    CTRL_DESTROYED = 5,
+    CTRL_SUSPENDED = 6
 };
+
+namespace Player {
 
 enum PlayerOptCatalogFlags { kOptCatalogFlagAltDispatchLatch = 0x02 };
 
@@ -585,8 +586,7 @@ void __fastcall MinesZARReadEntryOrReset(
     void* userData
 );
 int __fastcall WriteMinesZarSection(zZbdSectionCallbackCtx* writer, void* userData);
-void __fastcall
-UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count, int unusedTotalMode2Count);
+void __fastcall UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveAiCount, int unusedTotalAiCount);
 void __fastcall RefreshHudFromState(zUtil_SaveGameState* saveState);
 void __fastcall ApplyStatusMeterChange(zUtil_SaveGameState* saveState, float delta, int mode);
 int __fastcall UpdateStatusMeter(zUtil_SaveGameState* saveState, int mode, float delta);
@@ -856,7 +856,7 @@ RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiRestoreTarget) == 0x
 RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiDynamicOffsetDir) == 0x40);
 RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActivationRadiusSq) == 0x4c);
 RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, aiActive) == 0x5c);
-RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, masterType) == 0x6c);
+RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, controlType) == 0x6c);
 RECOIL_STATIC_ASSERT(offsetof(PlayerVehicleListSaveEntry, localMasterType) == 0x7c);
 RECOIL_STATIC_ASSERT(sizeof(PlayerVehicleListSaveEntry) == 0x80);
 RECOIL_STATIC_ASSERT(offsetof(PlayerMineSaveEntry, optCatalogName) == 0x04);

@@ -1510,7 +1510,7 @@ int HudSensorTracker::UpdateObjectiveFlow()
             zUtil_PlayerStateStorage* const playerState
                 = (zUtil_PlayerStateStorage*)(g_GameStateOrMapTable->playerState);
             if (objectiveReadTimeSecRaw + menuTransitionDelaySec <= g_Time_AccumulatedTimeSec) {
-                if (playerState->lifecycleState == 4) {
+                if (playerState->controlType == CTRL_INACTIVE) {
                     RecoilStateMainMenuTransition::QueueEnter(RECOIL_MAINMENU_ROUTE_INGAME);
                 }
 
@@ -1537,7 +1537,7 @@ int HudSensorTracker::UpdateObjectiveFlow()
 
                     if (finalMissionFlag != 0 && completedObjectiveCount == 5) {
                         g_HudSensorTracker_ObjectiveCommandLocked = 1;
-                        AINet::AiFinalizeMode2State1ForAllPlayers();
+                        AINet::AiRestorePursuitStatesAndDisableEntry();
                         zTurret_System::DisableTickCallback();
                         HudUiMgrObjective::SetVisibleAndResetMeterFill(0);
                         SetObjectivePanelVisible(1);
@@ -3672,7 +3672,7 @@ void __fastcall TickRemoteNetworkPlayer(zUtil_SaveGameState* saveState)
         zMath::Vec3BlendByFirstWeight(&playerState->worldPos, &playerState->netReceivedPos, 0.649999976f);
         playerState->vehicleRotationAngles = playerState->netReceivedAngles;
 
-        if (playerState->lifecycleState != kPlayerLifecycleDestroyed) {
+        if (playerState->controlType != CTRL_DESTROYED) {
             UpdateAltGunAimDirection(saveState);
             UpdateGunDispatchRequestsFromTriggerLatches(saveState);
             TickAltGunRuntimeState(saveState);
@@ -3829,7 +3829,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-finalize-callback
  * @recoil-artifact defines .text recoil:function:0x41bca0: Player::DestroyedStateResetFinalizeCallback.
- * @recoil-match source
+ *
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,
@@ -3856,7 +3856,7 @@ void __fastcall DestroyedStateResetFinalizeCallback(zUtil_SaveGameState* saveSta
     }
 
     DestroyedStateResetLocalFinalize();
-    playerState->lifecycleState = kPlayerLifecycleLocal;
+    playerState->controlType = CTRL_PLAYER;
     playerState->statusMeterValue = masterCommonData->maxHealth;
     playerState->cameraTransitionTimer = 0;
 }
@@ -3896,8 +3896,8 @@ void __fastcall ClearRespawnTransitionFlagCallback(zUtil_SaveGameState* saveStat
 void __cdecl DestroyedStateResetLocalFinalize()
 {
     zUtil_PlayerStateStorage* const playerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
-        playerState->lifecycleState = kPlayerLifecycleLocal;
+    if (playerState->controlType == CTRL_INACTIVE) {
+        playerState->controlType = CTRL_PLAYER;
         zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
         ApplyCameraState(g_PlayerPrevCameraState);
         ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState*)g_GameStateOrMapTable);

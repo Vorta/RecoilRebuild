@@ -115,7 +115,7 @@ zUtil_SaveGameState::zUtil_SaveGameState()
  */
 void zUtil_SaveGameState::FreeOwnedResources()
 {
-    if (playerState->lifecycleState == 2) {
+    if (playerState->controlType == CTRL_AI) {
         AINet::AiDiscardNegativeBranchPathNodes(this);
     }
 

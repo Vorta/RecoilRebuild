@@ -127,9 +127,9 @@ struct zUtil_PlayerStateStorage {
             OptCatalogEntryDef* recentHitSource;
             float recentHitFxExpireTime;
             zEffectAnimEntry* recentHitLightHandle;
-            union {
-                int lifecycleState;
-                int masterType;
+            union { // controlTypeAlias has no separate meaning; the union is the matched layout model.
+                int controlType; // VehicleControlType
+                int controlTypeAlias;
             };
             union {
                 float primaryGunGateUntilTime;
@@ -375,7 +375,7 @@ struct zUtil_PlayerStateStorage {
             int aiSavedTopLevelState;
             int aiReturnTopLevelState;
             float aiStateUntilTime;
-            float aiMode2AttackDwell;
+            float aiAttackDwell;
             float aiNotPursuitDwell;
             float aiHideTime0;
             float aiHideTime1;
@@ -403,7 +403,7 @@ struct zUtil_PlayerStateStorage {
                 int unknown_0ff8;
                 float targetDistanceSq;
             };
-            int aiMode2SteeringRetryCount;
+            int aiSteeringCollisionCount;
             zVec3 autoTurnTargetDir;
             zVec3 autoTurnTargetWorldPos;
             int autoTurnActive;
@@ -522,7 +522,7 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, recentHitLightHandle) ==
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, netUpdateReceived) == 0x44);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, probeImpactSlot1SeenFlag) == 0x34);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, probeImpactSlot4SeenFlag) == 0x3c);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, lifecycleState) == 0x60);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, controlType) == 0x60);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, primaryGunGateUntilTime) == 0x64);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, masterTypeTransitionCooldownUntilTime) == 0x64);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, throttleInput) == 0x68);
@@ -684,7 +684,7 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiTopLevelState) == 0xf8
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiSavedTopLevelState) == 0xf88);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiReturnTopLevelState) == 0xf8c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiStateUntilTime) == 0xf90);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiMode2AttackDwell) == 0xf94);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiAttackDwell) == 0xf94);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiNotPursuitDwell) == 0xf98);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiHideTime0) == 0xf9c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiHideTime1) == 0xfa0);
@@ -706,7 +706,7 @@ RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiActive) == 0xfe8);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiPathCursorAdvanceRequested) == 0xfec);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiCurrentSteeringSubstate) == 0xff0);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiReturnSteeringSubstate) == 0xff4);
-RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiMode2SteeringRetryCount) == 0xffc);
+RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, aiSteeringCollisionCount) == 0xffc);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnTargetDir) == 0x1000);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnTargetWorldPos) == 0x100c);
 RECOIL_STATIC_ASSERT(offsetof(zUtil_PlayerStateStorage, autoTurnActive) == 0x1018);

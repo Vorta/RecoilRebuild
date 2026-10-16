@@ -209,15 +209,15 @@ void __cdecl TickAllPlayers()
     g_Player_TotalTimeSecScaled = g_Time_AccumulatedTimeSec;
     g_Player_DeltaTimeScaled001 = g_Player_DeltaTime * 0.00999999978f;
 
-    int activeMode2Count = 0;
-    int totalMode2Count = 0;
+    int activeAiCount = 0;
+    int totalAiCount = 0;
     zUtil_SaveGameState* saveState;
     for (saveState = g_PlayerSaveStateList.head; saveState != 0; saveState = saveState != 0 ? saveState->next : 0) {
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        const int lifecycleState = playerState->lifecycleState;
+        const int controlType = playerState->controlType;
         playerState->generalFlags |= kPlayerPerFrameGeneralFlag;
 
-        if (lifecycleState == kPlayerLifecycleInactive || lifecycleState == kPlayerLifecycleState6Inactive) {
+        if (controlType == CTRL_INACTIVE || controlType == CTRL_SUSPENDED) {
             if (playerState->altGunFireHeldFlag != 0) {
                 PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
                 playerState->altGunFireHeldFlag = 0;
@@ -236,13 +236,13 @@ void __cdecl TickAllPlayers()
                 && saveState != g_Player2SaveState) {
                 CZClass::gwNodeSetActive(playerState->rootNode, 0);
             }
-        } else if (lifecycleState == kPlayerLifecycleRemote) {
+        } else if (controlType == CTRL_REMOTE) {
             TickRemoteNetworkPlayer(saveState);
         } else {
             if (saveState == g_LocalPlayerSaveState) {
                 TickLocalPlayerControls(saveState);
-            } else if (lifecycleState == kPlayerLifecycleAi) {
-                ++totalMode2Count;
+            } else if (controlType == CTRL_AI) {
+                ++totalAiCount;
                 if (VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0
                     && ((playerState->targetDistanceSq = zMath::Vec3DistSqXZ(
                              &playerState->worldPos,
@@ -251,8 +251,8 @@ void __cdecl TickAllPlayers()
                         || playerState->recentHitFlag != 0)
                     && playerState->aiTickSuppressed == 0) {
                     playerState->aiActive = 1;
-                    ++activeMode2Count;
-                    AINet::TickAiMode2TopLevel(saveState);
+                    ++activeAiCount;
+                    AINet::TickAiTopLevel(saveState);
                 } else {
                     if (playerState->cameraTickEnabled != 0) {
                         TickActiveCameraState(saveState);
@@ -272,12 +272,12 @@ void __cdecl TickAllPlayers()
                 }
             }
 
-            const int postTickLifecycleState = playerState->lifecycleState;
-            if (postTickLifecycleState == kPlayerLifecycleLocal || postTickLifecycleState == 0
+            const int postTickControlType = playerState->controlType;
+            if (postTickControlType == CTRL_PLAYER || postTickControlType == 0
                 || VariantTag::TagsOverlap(&playerState->variantTag, &g_VariantTag_Current) != 0) {
                 TickMasterTypeAndForceFeedback(saveState);
 
-                if (playerState->masterType != kPlayerMasterTypeAmphib) {
+                if (playerState->controlType != CTRL_DESTROYED) {
                     if (g_Player_LocalControlEnabled != 0) {
                         UpdateAltGunAimDirection(saveState);
                     }
@@ -309,7 +309,7 @@ void __cdecl TickAllPlayers()
 
     if (zSnd::GetAudioApiOption() != ZSND_AUDIO_API_A3D) {
         zUtil_SaveGameState* const localSaveState = (zUtil_SaveGameState*)g_GameStateOrMapTable;
-        if (localSaveState->playerState->lifecycleState != kPlayerLifecycleInactive) {
+        if (localSaveState->playerState->controlType != CTRL_INACTIVE) {
             localSaveState->UpdateModalLoopSfx(1);
         }
     }
@@ -318,7 +318,7 @@ void __cdecl TickAllPlayers()
         GameNet::TickLocalPlayerPkt06ReplicationAndHudTimer((zUtil_SaveGameState*)g_GameStateOrMapTable);
     }
 
-    UpdateDebugOverlayHud(g_CurrentPlayerSaveState, activeMode2Count, totalMode2Count);
+    UpdateDebugOverlayHud(g_CurrentPlayerSaveState, activeAiCount, totalAiCount);
 }
 } // namespace Player
 namespace Player {
@@ -339,7 +339,7 @@ void __fastcall TickMasterTypeAndForceFeedback(zUtil_SaveGameState* saveState)
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* const masterModalData = saveState->primaryModalState->masterModalData;
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+    if (playerState->controlType == CTRL_INACTIVE) {
         return;
     }
 
@@ -498,7 +498,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     playerState->motionBasis.posX = playerState->worldPos.x;
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
-    if (playerState->lifecycleState != 0) {
+    if (playerState->controlType != 0) {
         ProcessPendingContactQueues(saveState);
     }
 
@@ -713,7 +713,7 @@ void __fastcall UpdateMasterTypeHover(zUtil_SaveGameState* saveState)
     playerState->worldPos.y += g_Player_DeltaTime * playerState->projectileSpawnVel.y;
     playerState->motionBasis.posY = playerState->worldPos.y;
 
-    if (playerState->lifecycleState != 0) {
+    if (playerState->controlType != 0) {
         ProcessPendingContactQueues(saveState);
     }
 
@@ -929,7 +929,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x4279f0: Player::UpdateMasterTypeAmphib.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
- * @recoil-match source
+ *
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeAmphib from the recovered
@@ -1005,7 +1005,7 @@ void __fastcall UpdateMasterTypeAmphib(zUtil_SaveGameState* saveState)
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
 
-    if (playerState->lifecycleState != 0) {
+    if (playerState->controlType != 0) {
         ProcessPendingContactQueues(saveState);
     }
 
@@ -2030,7 +2030,7 @@ void __fastcall RebuildSteerBasisFromMotionAxes(zUtil_SaveGameState* saveState)
         playerState->steeringInputCopy = turnSignFloat;
         playerState->angVelYaw = turnSignFloat * masterModalData->yawRateMax;
 
-        if (saveState == g_CurrentPlayerSaveState && playerState->lifecycleState != 2) {
+        if (saveState == g_CurrentPlayerSaveState && playerState->controlType != CTRL_AI) {
             zVec3 normalizedCursor;
             HudUiMgr::ProjectPointToNormalizedClamped(&playerState->autoTurnTargetWorldPos, &normalizedCursor);
             playerState->autoTurnCursorNormX = normalizedCursor.x;

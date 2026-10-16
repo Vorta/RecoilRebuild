@@ -310,11 +310,10 @@ namespace Player {
  * Purpose: refresh weapon HUD values, objective counter text, and the debug
  * overlay lines for the current player save state.
  */
-void __fastcall
-UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count, int unusedTotalMode2Count)
+void __fastcall UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveAiCount, int unusedTotalAiCount)
 {
-    (void)unusedActiveMode2Count;
-    (void)unusedTotalMode2Count;
+    (void)unusedActiveAiCount;
+    (void)unusedTotalAiCount;
 
     if (saveState == 0) {
         return;
@@ -371,8 +370,8 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
     }
 
     char debugLine[256];
-    const int lifecycleState = playerState->lifecycleState;
-    if (lifecycleState == kPlayerLifecycleLocal || lifecycleState == 0) {
+    const int controlType = playerState->controlType;
+    if (controlType == CTRL_PLAYER || controlType == 0) {
         if (playerState->airborneFlag != 0) {
             sprintf(debugLine, g_Player_HudReadoutFmt_DynamicsA, playerState->rootNode->name, masterTypeName);
         } else if (playerState->slipSfxActive != 0) {
@@ -380,7 +379,7 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
         } else {
             sprintf(debugLine, g_Player_HudReadoutFmt_Dynamics, playerState->rootNode->name, masterTypeName);
         }
-    } else if (lifecycleState == kPlayerLifecycleAi) {
+    } else if (controlType == CTRL_AI) {
         sprintf(
             debugLine,
             g_Player_HudReadoutFmt_ModeGoalNode,
@@ -388,7 +387,7 @@ UpdateDebugOverlayHud(zUtil_SaveGameState* saveState, int unusedActiveMode2Count
             playerState->aiTopLevelState,
             playerState->aiCurrentPathNode->nodeIndex
         );
-    } else if (lifecycleState == kPlayerLifecycleInactive) {
+    } else if (controlType == CTRL_INACTIVE) {
         sprintf(debugLine, g_Player_HudReadoutFmt_Dead, playerState->rootNode->name);
     }
 
@@ -1069,7 +1068,7 @@ void __cdecl SyncLocalPoseFromRootNode()
     playerState->motionBasis.posY = playerState->worldPos.y;
     playerState->motionBasis.posZ = playerState->worldPos.z;
     playerState->previousTransform = playerState->motionBasis;
-    playerState->lifecycleState = 1;
+    playerState->controlType = CTRL_PLAYER;
 }
 } // namespace Player
 namespace Player {
@@ -1225,7 +1224,7 @@ void __fastcall AsyncCommandCallback(zEffectAnimEntry* animEntry, void*, int eve
 
     case 11:
         if (zOpt::GetNetworkEnabled() == 0) {
-            ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->lifecycleState = kPlayerLifecycleState6Inactive;
+            ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->controlType = CTRL_SUSPENDED;
             ((zUtil_SaveGameState*)g_GameStateOrMapTable)->UpdateModalLoopSfx(0);
         }
         return;

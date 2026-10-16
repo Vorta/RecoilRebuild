@@ -250,13 +250,13 @@ int g_Player_RebuildCameraDirFlatFromCurrentTarget = 0;
 int g_Player_NextOrdinal = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-aimode2state1finalized
- * @recoil-artifact defines .data recoil:data:0x4f36ac: g_Player_AiMode2State1Finalized.
+ * @recoil-artifact defines .data recoil:data:0x4f36ac: g_Player_Ai_PursuitEntryDisabled.
  * BN types this as a zero-filled .data int written by
- * AINet::AiFinalizeMode2State1ForAllPlayers and read by the Mode2 State1 AI
- * steering/latch helpers.
- * Purpose: Latches completion of the Mode2 State1 saved-state finalization pass.
+ * AINet::AiRestorePursuitStatesAndDisableEntry and read by the AI pursuit-entry
+ * helpers.
+ * Purpose: Nonzero blocks AI pursuit entry and buddy-alert propagation.
  */
-int g_Player_AiMode2State1Finalized = 0;
+int g_Player_Ai_PursuitEntryDisabled = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-g-player-healthysubnodename
  * @recoil-artifact defines .data recoil:data:0x4db5ec: g_Player_HealthySubNodeName.
@@ -1277,13 +1277,13 @@ enum PlayerMasterTypeId {
     kPlayerMasterTypeHover = 4,
     kPlayerMasterTypeAmphib = 5
 };
-const int kPlayerAiMode2TopSteering = 1;
-const int kPlayerAiMode2SteerDirectTarget = 0;
-const int kPlayerAiMode2SteerOffsetTarget = 1;
-const int kPlayerAiMode2SteerDynamicOffsetTarget = 2;
-const int kPlayerAiMode2SteerPathFollow = 3;
-const int kPlayerAiMode2SteerTurnInPlace = 5;
-const int kPlayerAiMode2SteerAutoTurn = 6;
+const int kPlayerAiTopPursuit = 1;
+const int kPlayerAiSteerDirectTarget = 0;
+const int kPlayerAiSteerOffsetTarget = 1;
+const int kPlayerAiSteerDynamicOffsetTarget = 2;
+const int kPlayerAiSteerPathFollow = 3;
+const int kPlayerAiSteerTurnInPlace = 5;
+const int kPlayerAiSteerAutoTurn = 6;
 const float kPlayerAiAltGunAttackForwardMin = 0.75f;
 const float kPlayerAiAltGunStatusMinScale = 0.5f;
 const int kPlayerAiTopPathFollow = 0;
@@ -2265,7 +2265,7 @@ void __fastcall zZarReadMissionSaveDataSection(
     ApplyMissionSaveData(saveData);
     g_Player_LastValidCameraVariantTag = saveData->lastValidCameraVariantTag;
 
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+    if (playerState->controlType == CTRL_INACTIVE) {
         zEffect_Anim::zEffAnimReset(playerState->destroyedRespawnFxEntry, playerState->rootNode);
     }
 
@@ -2311,7 +2311,7 @@ int __fastcall zZarWriteVehicleListSection(zZbdSectionCallbackCtx* writer, void*
         vehicleRecord.aiPathCursorAdvanceRequested = playerState->aiPathCursorAdvanceRequested;
         vehicleRecord.aiCurrentSteeringSubstate = playerState->aiCurrentSteeringSubstate;
         vehicleRecord.aiReturnSteeringSubstate = playerState->aiReturnSteeringSubstate;
-        vehicleRecord.masterType = playerState->masterType;
+        vehicleRecord.controlType = playerState->controlType;
         vehicleRecord.statusMeterScaled = playerState->statusMeterScaled;
         vehicleRecord.statusMeterValue = playerState->statusMeterValue;
         vehicleRecord.nanitePanelLevel = playerState->nanitePanelLevel;
@@ -2365,8 +2365,7 @@ void __fastcall zZarReadVehicleListSection(
         saveState = saveState != 0 ? saveState->next : 0;
     }
 
-    const bool restoreHealthyNode
-        = playerState->lifecycleState == kPlayerLifecycleInactive && saveData->masterType != kPlayerLifecycleInactive;
+    const bool restoreHealthyNode = playerState->controlType == CTRL_INACTIVE && saveData->controlType != CTRL_INACTIVE;
 
     playerState->projectileSpawnVel.x = playerState->projectileSpawnVel.y = playerState->projectileSpawnVel.z = 0.0f;
     playerState->localVel.x = playerState->localVel.y = playerState->localVel.z = 0.0f;
@@ -2383,7 +2382,7 @@ void __fastcall zZarReadVehicleListSection(
     playerState->aiHideTime1 = g_Time_AccumulatedTimeSec;
     playerState->unknown_0fa4 = g_Time_AccumulatedTimeSec;
     playerState->aiStateStartTime = g_Time_AccumulatedTimeSec;
-    playerState->aiStateEndTime = playerState->aiMode2AttackDwell + g_Time_AccumulatedTimeSec;
+    playerState->aiStateEndTime = playerState->aiAttackDwell + g_Time_AccumulatedTimeSec;
 
     playerState->aiAttackRadiusSq = saveData->aiAttackRadiusSq;
     playerState->aiRestoreDistanceSq = saveData->aiRestoreDistanceSq;
@@ -2398,7 +2397,7 @@ void __fastcall zZarReadVehicleListSection(
     playerState->aiPathCursorAdvanceRequested = saveData->aiPathCursorAdvanceRequested;
     playerState->aiCurrentSteeringSubstate = saveData->aiCurrentSteeringSubstate;
     playerState->aiReturnSteeringSubstate = saveData->aiReturnSteeringSubstate;
-    playerState->lifecycleState = saveData->masterType;
+    playerState->controlType = saveData->controlType;
     playerState->statusMeterScaled = saveData->statusMeterScaled;
     playerState->statusMeterValue = saveData->statusMeterValue;
     playerState->nanitePanelLevel = saveData->nanitePanelLevel;
@@ -2428,7 +2427,7 @@ void __fastcall zZarReadVehicleListSection(
         }
     }
 
-    if (playerState->lifecycleState == kPlayerLifecycleInactive) {
+    if (playerState->controlType == CTRL_INACTIVE) {
         CZClass::gwNodeSetActive(playerState->rootNode, 0);
     } else {
         CZClass::gwNodeSetActive(playerState->rootNode, 1);
@@ -2960,7 +2959,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     zReader::Free(aivRoot);
 
     zUtil_SaveGameState* const headSaveState = g_PlayerSaveStateList.head;
-    headSaveState->playerState->lifecycleState = kPlayerLifecycleInactive;
+    headSaveState->playerState->controlType = CTRL_INACTIVE;
     g_LocalPlayerSaveState = headSaveState != 0 ? headSaveState->next : 0;
     zUtil_SaveGameState* const localSaveState = g_LocalPlayerSaveState;
     g_CurrentPlayerSaveState = localSaveState;
@@ -2969,7 +2968,7 @@ void __fastcall InitMissionRuntimeFromWorldAndCamera(CZNodePartial* worldNode, C
     g_Variant_CurrentTag = g_Player_LastValidCameraVariantTag = g_VariantTag_Current
         = localSaveState->playerState->variantTag;
     zEffect::SetConditionalRefPos(&localSaveState->playerState->worldPos);
-    localSaveState->playerState->lifecycleState = kPlayerLifecycleLocal;
+    localSaveState->playerState->controlType = CTRL_PLAYER;
     g_GameStateOrMapTable = (zInput_GameStateOrMapTablePartial*)localSaveState;
 
     if (zOpt::GetNetworkEnabled() != 0) {
@@ -3158,11 +3157,11 @@ void __fastcall InitStateFromNameAndMasterCommonData(
 
     AINet* aiNet;
     if (playerState->aiNetId != 0 && (aiNet = AINet::FindByNetId(playerState->aiNetId)) != 0) {
-        playerState->lifecycleState = kPlayerLifecycleAi;
+        playerState->controlType = CTRL_AI;
     } else {
-        playerState->lifecycleState = kPlayerLifecycleInactive;
+        playerState->controlType = CTRL_INACTIVE;
     }
-    if (playerState->lifecycleState == kPlayerLifecycleAi) {
+    if (playerState->controlType == CTRL_AI) {
         playerState->aiNet = aiNet;
         switch (aiNet->aiType) {
         case AINET_TYPE_ST:
@@ -3200,9 +3199,9 @@ void __fastcall InitStateFromNameAndMasterCommonData(
             playerState->aiAttackRadiusSq = 1500.0f;
         }
         if (aiNet->attackDwell != 0.0f) {
-            playerState->aiMode2AttackDwell = aiNet->attackDwell;
+            playerState->aiAttackDwell = aiNet->attackDwell;
         } else {
-            playerState->aiMode2AttackDwell = 10.0f;
+            playerState->aiAttackDwell = 10.0f;
         }
         if (aiNet->notPursuitDwell != 0.0f) {
             playerState->aiNotPursuitDwell = aiNet->notPursuitDwell;

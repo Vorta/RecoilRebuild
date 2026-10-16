@@ -680,7 +680,7 @@ void __fastcall ResolvePendingWorldCollisionContact(zUtil_SaveGameState* saveSta
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerPendingContact* const contact = playerState->worldCollisionQueue.head;
     PreparePendingWorldCollisionResponse(saveState, contact);
-    if (playerState->lifecycleState == kPlayerLifecycleLocal) {
+    if (playerState->controlType == CTRL_PLAYER) {
         saveState->StartModalLoopSfxHandle(4, 1.0f);
     }
     ResolvePendingCollisionContact(saveState, playerState->worldCollisionQueue.head);
@@ -742,7 +742,7 @@ void __fastcall ProcessPendingPickupContacts(zUtil_SaveGameState* saveState)
         return;
     }
 
-    if (playerState->lifecycleState == 4 || playerState->lifecycleState == 5) {
+    if (playerState->controlType == CTRL_INACTIVE || playerState->controlType == CTRL_DESTROYED) {
         return;
     }
 
@@ -1079,7 +1079,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match source
+ *
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
@@ -1111,7 +1111,7 @@ void __fastcall ResolvePendingPlayerCollisionContact(zUtil_SaveGameState* saveSt
 
     ResolvePendingCollisionContact(saveState, playerState->playerCollisionQueue.head);
 
-    if (targetPlayerState->lifecycleState == kPlayerLifecycleAi) {
+    if (targetPlayerState->controlType == CTRL_AI) {
         massScale *= 1.10000002f;
         // Retail reads the named 0.2f constant's storage (0x4d073c) here, not a separate literal.
         if ((targetPlayerState->statusMeterValue - massScale) * targetCommonData->invMaxHealth

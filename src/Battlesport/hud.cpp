@@ -743,8 +743,8 @@ const int kHudCheatRespawnPickupTypeId = 902;
 const int kHudCheatPickup903TypeId = 903;
 const int kHudCheatBindCommand31 = 31;
 const int kHudCheatBindCommand36 = 36;
-const int kHudCheatLifecycleLocal = 1;
-const int kHudCheatLifecycleInactive = 4;
+const int kHudCheatControlPlayer = 1;
+const int kHudCheatControlInactive = 4;
 const int kHudCheatMasterTypeSub = 2;
 const int kHudCheatMasterTypeHover = 4;
 const int kHudCheatMasterTypeAmphib = 5;
@@ -776,8 +776,8 @@ int __fastcall ExecuteCommandString(CString* commandString)
             playerState->recentHitValid = 0;
         }
 
-        if (playerState->lifecycleState == kHudCheatLifecycleInactive) {
-            playerState->lifecycleState = kHudCheatLifecycleLocal;
+        if (playerState->controlType == kHudCheatControlInactive) {
+            playerState->controlType = kHudCheatControlPlayer;
             zOpt::SetSteeringMode(g_PlayerPrevSteeringMode);
             Player::ApplyCameraState(g_PlayerPrevCameraState);
             Player::ResetMouseControlStateAndRecenterCursor((zUtil_SaveGameState*)g_GameStateOrMapTable);
@@ -12448,7 +12448,7 @@ HudUiMainMenuDialog::HudUiMainMenuDialog(RecoilMainMenuEntryRoute route)
         zInput_GameStateOrMapTablePartial* const gameState = g_GameStateOrMapTable;
         zUtil_PlayerStateStorage* const playerState = (zUtil_PlayerStateStorage*)gameState->playerState;
         zReader::Node* loadedSection;
-        if (playerState->lifecycleState == 4) {
+        if (playerState->controlType == CTRL_INACTIVE) {
             loadedSection = LoadFromZrd("dialog.zrd", "MAINMENU3", 0);
             if (loadedSection != 0) {
                 BindWidgetByName(loadedSection, &newGameButton, "NEWGAME");

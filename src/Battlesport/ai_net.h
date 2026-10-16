@@ -79,9 +79,9 @@ struct AINet {
     static AINetNode* __fastcall FindNearestNode(const zVec3* position, AINetNode* nodeListHead);
     static AINetNode* __fastcall FindNodeByIndex(int nodeIndex, AINetNode* nodeListHead);
     static void __fastcall ResolveNeighborLinksAndBuildProbeFans(AINetNode* nodeListHead, float pathWidth);
-    static void __fastcall TickAiMode2TopLevel(zUtil_SaveGameState* saveState);
-    static void __fastcall TickAiMode2PathFollow(zUtil_SaveGameState* saveState);
-    static int __fastcall AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState* saveState);
+    static void __fastcall TickAiTopLevel(zUtil_SaveGameState* saveState);
+    static void __fastcall TickAiPathFollow(zUtil_SaveGameState* saveState);
+    static int __fastcall AiCheckAutoTurnRequired(zUtil_SaveGameState* saveState);
     static void __fastcall AiAdvancePathCursorAndComputeTargetVec(
         zUtil_SaveGameState* saveState,
         AINetNode** currentNodeInOut,
@@ -94,53 +94,53 @@ struct AINet {
         int* outBranchIndex,
         int excludedBranchIndex
     );
-    static void __fastcall TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveState);
-    static void __fastcall UpdateAiMode2MoveAndTurnTowardTarget(
+    static void __fastcall TickAiPursuit(zUtil_SaveGameState* saveState);
+    static void __fastcall UpdateAiTargetRangeSteering(
         zUtil_SaveGameState* saveState,
         float forwardDot,
         float lateralDot,
         float targetDistance
     );
-    static void __fastcall TickAiMode2OffsetTargetSteering(
+    static void __fastcall TickAiOffsetTargetSteering(
         zUtil_SaveGameState* saveState,
         float unusedForwardDot,
         float unusedLateralDot,
         float unusedTargetDistance
     );
-    static void __fastcall TickAiMode2DynamicOffsetTargetSteering(
+    static void __fastcall TickAiDynamicOffsetTargetSteering(
         zUtil_SaveGameState* saveState,
         float unusedForwardDot,
         float unusedLateralDot,
         float targetDistance
     );
-    static int __fastcall AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameState* saveState);
+    static int __fastcall AiTryEnterPursuitIfLineOfSight(zUtil_SaveGameState* saveState);
     static void __fastcall AiAlertAttackBuddies(zUtil_SaveGameState* saveState);
-    static void __fastcall AiEnterMode2SteeringPursuit(zUtil_SaveGameState* saveState);
+    static void __fastcall AiEnterPursuit(zUtil_SaveGameState* saveState);
     static int __fastcall
     HasLineOfSightFromLocalPlayerFxOffset(CZNodePartial* node, const zVec3* point, int directionMode);
     static int __fastcall HasLineOfSightFromCameraTarget(CZNodePartial* node, const zVec3* point, int directionMode);
     static void __fastcall AiRebuildSyntheticPathToNodeIfFar(zUtil_SaveGameState* saveState, AINetNode* targetNode);
     static void __fastcall AiRestoreSavedTopLevelState(zUtil_SaveGameState* saveState);
-    static void __fastcall UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameState* saveState);
-    static void __fastcall UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState* saveState);
+    static void __fastcall UpdateAiTopLevelTurnTowardLocalPlayer(zUtil_SaveGameState* saveState);
+    static void __fastcall UpdateAiTurnInPlaceTowardLocalPlayer(zUtil_SaveGameState* saveState);
     static void __fastcall
-    TickAiMode2AltGunAttackWindow(zUtil_SaveGameState* saveState, float targetDistance, float forwardDot);
+    TickAiAltGunAttackWindow(zUtil_SaveGameState* saveState, float targetDistance, float forwardDot);
     static void __fastcall SolveAltGunLeadTargetPoint(
         zUtil_SaveGameState* saveState,
         zUtil_SaveGameState* targetSaveState,
         zVec3* outTargetPos
     );
     static void __fastcall
-    UpdateAiMode2MoveAndTurnTowardOffsetTarget(zUtil_SaveGameState* saveState, zUtil_SaveGameState* targetState);
-    static void __fastcall UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
+    UpdateAiOffsetTargetSteering(zUtil_SaveGameState* saveState, zUtil_SaveGameState* targetState);
+    static void __fastcall UpdateAiDynamicOffsetTargetSteering(
         zUtil_SaveGameState* saveState,
         zUtil_SaveGameState* targetState,
         float targetDistance
     );
-    static void __fastcall TickAiMode2TimedPathSteering(zUtil_SaveGameState* saveState);
+    static void __fastcall TickAiTimedPathSteering(zUtil_SaveGameState* saveState);
     static void __fastcall AiSteerTowardPathNodeForward(zUtil_SaveGameState* saveState);
     static void __fastcall AiSteerTowardPathNodeReverse(zUtil_SaveGameState* saveState);
-    static void __cdecl AiFinalizeMode2State1ForAllPlayers();
+    static void __cdecl AiRestorePursuitStatesAndDisableEntry();
     static void __cdecl BuildAiPeerRingsByAiNetId();
     static void __fastcall AiDiscardNegativeBranchPathNodes(zUtil_SaveGameState* saveState);
     void Free();

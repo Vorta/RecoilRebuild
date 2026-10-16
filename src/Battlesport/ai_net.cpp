@@ -29,81 +29,76 @@ AINet* g_AINetListHead = 0;
 AINet* g_AINetListTail = 0;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-pathfollowpitchinputscale
- * @recoil-artifact defines .data recoil:data:0x4da0c0: g_Player_AiMode2_PathFollowPitchInputScale.
- * BN types this as an initialized .data float used by the Mode2 AI
- * path-follow pitch steering input.
- * Purpose: Scales path-follow vertical steering error into pitch input.
+ * @recoil-artifact defines .data recoil:data:0x4da0c0: g_Player_Ai_PathFollowHeightToPitchScale.
+ * BN types this as an initialized .data float read by AI path following.
+ * Purpose: Scales path-node height error plus the modal bias into desired pitch.
  */
-float g_Player_AiMode2_PathFollowPitchInputScale = 0.0174499992f;
+float g_Player_Ai_PathFollowHeightToPitchScale = 0.0174499992f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-pathfollowpitchturngain
- * @recoil-artifact defines .data recoil:data:0x4da0c4: g_Player_AiMode2_PathFollowPitchTurnGain.
- * BN types this as an initialized .data float paired with the Mode2 AI
- * path-follow pitch input scale.
- * Purpose: Scales path-follow pitch input into turn correction.
+ * @recoil-artifact defines .data recoil:data:0x4da0c4: g_Player_Ai_PathFollowPitchErrorGain.
+ * BN types this as an initialized .data float read by AI path following.
+ * Purpose: Scales desired-minus-current pitch into submarine pitch input.
  */
-float g_Player_AiMode2_PathFollowPitchTurnGain = 5.69999981f;
+float g_Player_Ai_PathFollowPitchErrorGain = 5.69999981f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-steeringpitchinputscale
- * @recoil-artifact defines .data recoil:data:0x4da0c8: g_Player_AiMode2_SteeringPitchInputScale.
- * BN types this as an initialized .data float used by the Mode2 AI steering
- * substates.
- * Purpose: Scales steering vertical distance into pitch input.
+ * @recoil-artifact defines .data recoil:data:0x4da0c8: g_Player_Ai_PursuitSlopeToPitchScale.
+ * BN types this as an initialized .data float read by the AI pursuit tick.
+ * Purpose: Scales the target slope (height difference over horizontal distance) into desired pitch.
  */
-float g_Player_AiMode2_SteeringPitchInputScale = 0.800000012f;
+float g_Player_Ai_PursuitSlopeToPitchScale = 0.800000012f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-steeringpitchturngain
- * @recoil-artifact defines .data recoil:data:0x4da0cc: g_Player_AiMode2_SteeringPitchTurnGain.
- * BN types this as an initialized .data float paired with the Mode2 AI
- * steering pitch input scale.
- * Purpose: Scales steering pitch input into turn correction.
+ * @recoil-artifact defines .data recoil:data:0x4da0cc: g_Player_Ai_PursuitPitchErrorGain.
+ * BN types this as an initialized .data float read by the AI pursuit tick.
+ * Purpose: Scales the pursuit pitch error into submarine pitch input.
  */
-float g_Player_AiMode2_SteeringPitchTurnGain = 5.69999981f;
+float g_Player_Ai_PursuitPitchErrorGain = 5.69999981f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-steeringverticalerrorscale
- * @recoil-artifact defines .data recoil:data:0x4da0d0: g_Player_AiMode2_SteeringVerticalErrorScale.
- * BN types this as an initialized .data float read by the Mode2 AI steering
- * substates.
- * Purpose: Scales steering vertical error before pitch correction.
+ * @recoil-artifact defines .data recoil:data:0x4da0d0: g_Player_Ai_PursuitVerticalInputGain.
+ * BN types this as an initialized .data float read by the AI pursuit tick.
+ * Purpose: Scales the height error directly into the submarine vertical input.
  */
-float g_Player_AiMode2_SteeringVerticalErrorScale = 0.100000001f;
+float g_Player_Ai_PursuitVerticalInputGain = 0.100000001f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-tuningscalar55a
- * @recoil-artifact defines .data recoil:data:0x4da0d4: g_Player_AiMode2_TuningScalar55A.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the first Mode2 AI 55.0 tuning scalar.
+ * @recoil-artifact defines .data recoil:data:0x4da0d4: g_AINet_UnresolvedFloat4DA0D4.
+ * BN types this as an initialized .data float in the contiguous AINet float
+ * range. No reader is recovered; its role is unresolved.
+ * Purpose: Stores the first unresolved AINet 55.0 scalar.
  */
-float g_Player_AiMode2_TuningScalar55A = 55.0f;
+float g_AINet_UnresolvedFloat4DA0D4 = 55.0f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-tuningscalar55b
- * @recoil-artifact defines .data recoil:data:0x4da0d8: g_Player_AiMode2_TuningScalar55B.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the second Mode2 AI 55.0 tuning scalar.
+ * @recoil-artifact defines .data recoil:data:0x4da0d8: g_AINet_UnresolvedFloat4DA0D8.
+ * BN types this as an initialized .data float in the contiguous AINet float
+ * range. No reader is recovered; its role is unresolved.
+ * Purpose: Stores the second unresolved AINet 55.0 scalar.
  */
-float g_Player_AiMode2_TuningScalar55B = 55.0f;
+float g_AINet_UnresolvedFloat4DA0D8 = 55.0f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-tuningscalar5
- * @recoil-artifact defines .data recoil:data:0x4da0dc: g_Player_AiMode2_TuningScalar5.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the Mode2 AI 5.0 tuning scalar.
+ * @recoil-artifact defines .data recoil:data:0x4da0dc: g_AINet_UnresolvedFloat4DA0DC.
+ * BN types this as an initialized .data float in the contiguous AINet float
+ * range. No reader is recovered; its role is unresolved.
+ * Purpose: Stores the unresolved AINet 5.0 scalar.
  */
-float g_Player_AiMode2_TuningScalar5 = 5.0f;
+float g_AINet_UnresolvedFloat4DA0DC = 5.0f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-tuningscalar10
- * @recoil-artifact defines .data recoil:data:0x4da0e0: g_Player_AiMode2_TuningScalar10.
- * BN types this as an initialized .data float in the contiguous Mode2 AI
- * tuning scalar range.
- * Purpose: Stores the Mode2 AI 10.0 tuning scalar.
+ * @recoil-artifact defines .data recoil:data:0x4da0e0: g_AINet_UnresolvedFloat4DA0E0.
+ * BN types this as an initialized .data float in the contiguous AINet float
+ * range. No reader is recovered; its role is unresolved.
+ * Purpose: Stores the unresolved AINet 10.0 scalar.
  */
-float g_Player_AiMode2_TuningScalar10 = 10.0f;
+float g_AINet_UnresolvedFloat4DA0E0 = 10.0f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-offsettargetrotatecos15deg
- * @recoil-artifact defines .data recoil:data:0x4da0e4: g_Player_AiMode2_OffsetTargetRotateCos15Deg.
- * BN types this as an initialized .data float used by the Mode2 AI offset
- * target steering rotation.
+ * @recoil-artifact defines .data recoil:data:0x4da0e4: g_Player_Ai_OffsetTargetRotationCos.
+ * BN types this as an initialized .data float used by the AI offset-target
+ * steering rotation (initialized to about 15 degrees).
  * Inferred declaration qualifier: consistent volatile float declarations
  * reproduce both retail coefficient reads under canonical VC5SP3. The
  * original cv-qualification and its purpose remain unresolved; no external
@@ -111,12 +106,12 @@ float g_Player_AiMode2_TuningScalar10 = 10.0f;
  * 2026-09-08T16-25-03-957Z. Qualifier controls affect only this scalar's reads.
  * Purpose: Stores the retail cosine scalar for offset-target rotation.
  */
-volatile float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
+volatile float g_Player_Ai_OffsetTargetRotationCos = 0.965900004f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-player-aimode2-offsettargetrotatesin15deg
- * @recoil-artifact defines .data recoil:data:0x4da0e8: g_Player_AiMode2_OffsetTargetRotateSin15Deg.
- * BN types this as an initialized .data float used by the Mode2 AI offset
- * target steering rotation.
+ * @recoil-artifact defines .data recoil:data:0x4da0e8: g_Player_Ai_OffsetTargetRotationSin.
+ * BN types this as an initialized .data float used by the AI offset-target
+ * steering rotation (initialized to about 15 degrees).
  * Inferred declaration qualifier: consistent volatile float declarations
  * reproduce both retail coefficient reads under canonical VC5SP3. The
  * original cv-qualification and its purpose remain unresolved; no external
@@ -124,7 +119,7 @@ volatile float g_Player_AiMode2_OffsetTargetRotateCos15Deg = 0.965900004f;
  * 2026-09-08T16-25-03-957Z. Qualifier controls affect only this scalar's reads.
  * Purpose: Stores the retail sine scalar for offset-target rotation.
  */
-volatile float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
+volatile float g_Player_Ai_OffsetTargetRotationSin = 0.25879999995f;
 }
 
 #include "Battlesport/game_net.h"
@@ -155,13 +150,13 @@ volatile float g_Player_AiMode2_OffsetTargetRotateSin15Deg = 0.25879999995f;
 #include <math.h>
 #include <string.h>
 
-const int kPlayerAiMode2TopSteering = 1;
-const int kPlayerAiMode2SteerDirectTarget = 0;
-const int kPlayerAiMode2SteerOffsetTarget = 1;
-const int kPlayerAiMode2SteerDynamicOffsetTarget = 2;
-const int kPlayerAiMode2SteerPathFollow = 3;
-const int kPlayerAiMode2SteerTurnInPlace = 5;
-const int kPlayerAiMode2SteerAutoTurn = 6;
+const int kPlayerAiTopPursuit = 1;
+const int kPlayerAiSteerDirectTarget = 0;
+const int kPlayerAiSteerOffsetTarget = 1;
+const int kPlayerAiSteerDynamicOffsetTarget = 2;
+const int kPlayerAiSteerPathFollow = 3;
+const int kPlayerAiSteerTurnInPlace = 5;
+const int kPlayerAiSteerAutoTurn = 6;
 const float kPlayerAiAltGunAttackForwardMin = 0.75f;
 const float kPlayerAiAltGunStatusMinScale = 0.5f;
 const int kPlayerAiTopPathFollow = 0;
@@ -170,7 +165,7 @@ const int kPlayerAiTopTurnOnlyTowardTarget = 3;
 const int kPlayerAiTopPathSteering = 4;
 const int kPlayerAiTopAutoTurn = 5;
 const int kPlayerMasterTypeSub = 2;
-const int kPlayerLifecycleInactive = 4;
+const int kAiNetControlInactive = 4; // CTRL_INACTIVE
 const float kPlayerAiPathFollowMinThrottle = 0.25f;
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.path-node-advance-distance
@@ -565,13 +560,13 @@ const unsigned int kOptCatalogFlagCreateTrail = 0x02;
 #endif
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-top-level
- * @recoil-artifact defines .text recoil:function:0x401060: AINet::TickAiMode2TopLevel.
+ * @recoil-artifact defines .text recoil:function:0x401060: AINet::TickAiTopLevel.
  * @recoil-match byte
  *
- * Purpose: Dispatches the active mode-2 top-level state and attack-pursuit transitions. Source model: AINet source-file
+ * Purpose: Dispatches the active AI top-level state and attack-pursuit transitions. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
+void __fastcall AINet::TickAiTopLevel(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
@@ -579,8 +574,8 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
 
     switch (playerState->aiTopLevelState) {
     case kPlayerAiTopPathFollow:
-        TickAiMode2PathFollow(saveState);
-        if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
+        TickAiPathFollow(saveState);
+        if (AiTryEnterPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
                 playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
@@ -595,7 +590,7 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
             playerState->aiTopLevelState = playerState->aiReturnTopLevelState;
         }
 
-        if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
+        if (AiTryEnterPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
                 playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
@@ -604,13 +599,13 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
         return;
     }
 
-    case kPlayerAiMode2TopSteering:
-        TickAiMode2SteeringSubstate(saveState);
+    case kPlayerAiTopPursuit:
+        TickAiPursuit(saveState);
         return;
 
     case kPlayerAiTopTurnTowardTarget:
-        UpdateAiMode2TurnTowardPlayerNoThrottle(saveState);
-        if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
+        UpdateAiTopLevelTurnTowardLocalPlayer(saveState);
+        if (AiTryEnterPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
                 playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
@@ -619,13 +614,13 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
         return;
 
     case kPlayerAiTopTurnOnlyTowardTarget:
-        UpdateAiMode2TurnInPlaceTowardPlayer(saveState);
-        AiTryEnterMode2AttackPursuitIfLineOfSight(saveState);
+        UpdateAiTurnInPlaceTowardLocalPlayer(saveState);
+        AiTryEnterPursuitIfLineOfSight(saveState);
         return;
 
     case kPlayerAiTopPathSteering:
-        TickAiMode2TimedPathSteering(saveState);
-        if (AiTryEnterMode2AttackPursuitIfLineOfSight(saveState)) {
+        TickAiTimedPathSteering(saveState);
+        if (AiTryEnterPursuitIfLineOfSight(saveState)) {
             AiRebuildSyntheticPathToNodeIfFar(
                 saveState,
                 playerState->aiCurrentPathNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]
@@ -640,7 +635,7 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-path-follow
- * @recoil-artifact defines .text recoil:function:0x401180: AINet::TickAiMode2PathFollow.
+ * @recoil-artifact defines .text recoil:function:0x401180: AINet::TickAiPathFollow.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401180
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x401180
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x401180
@@ -651,7 +646,7 @@ void __fastcall AINet::TickAiMode2TopLevel(zUtil_SaveGameState* saveState)
  * Purpose: Steers toward the current AI path edge, advances the cursor, or arms auto-turn. Source model: AINet
  * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
+void __fastcall AINet::TickAiPathFollow(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     AINetNode* currentNode;
@@ -674,7 +669,7 @@ void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
     edgeProbeFan = currentNode->probeFans[playerState->aiCurrentPathNeighborIndex];
     targetPathNode = &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
 
-    if (AiMode2ForwardProbeRequiresAutoTurn(saveState) != 0) {
+    if (AiCheckAutoTurnRequired(saveState) != 0) {
         AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan, &targetDelta);
         targetPathNode = &currentNode->neighborNodes[playerState->aiCurrentPathNeighborIndex]->position;
         playerState->aiReturnTopLevelState = playerState->aiTopLevelState;
@@ -703,7 +698,7 @@ void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
         if (playerState->aiPathCursorAdvanceRequested != 0) {
             AiAdvancePathCursorAndComputeTargetVec(saveState, &currentNode, &edgeProbeFan, &targetDelta);
             playerState->aiPathCursorAdvanceRequested = 0;
-            TickAiMode2PathFollow(saveState);
+            TickAiPathFollow(saveState);
             return;
         }
 
@@ -724,9 +719,9 @@ void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
 
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
         const float pitchInput = ((targetPathNode->y - playerState->worldPos.y + masterModalData->modeAltTransitionTime)
-                                         * g_Player_AiMode2_PathFollowPitchInputScale
+                                         * g_Player_Ai_PathFollowHeightToPitchScale
                                      - playerState->vehiclePitchRad)
-            * g_Player_AiMode2_PathFollowPitchTurnGain;
+            * g_Player_Ai_PathFollowPitchErrorGain;
         playerState->subPitchInput = pitchInput;
         playerState->subPitchInputCopy = pitchInput;
     }
@@ -739,7 +734,7 @@ void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ai-mode2-forward-probe-requires-auto-turn
- * @recoil-artifact defines .text recoil:function:0x401420: AINet::AiMode2ForwardProbeRequiresAutoTurn.
+ * @recoil-artifact defines .text recoil:function:0x401420: AINet::AiCheckAutoTurnRequired.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.forward-probe-add-world recoil:function:0x401420
  * @recoil-match byte
  *
@@ -748,7 +743,7 @@ void __fastcall AINet::TickAiMode2PathFollow(zUtil_SaveGameState* saveState)
  * Purpose: Checks forward probe queues and requests auto-turn recovery when blocked. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState* saveState)
+int __fastcall AINet::AiCheckAutoTurnRequired(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerMasterModalData* masterModalData = saveState->primaryModalState->masterModalData;
@@ -757,7 +752,7 @@ int __fastcall AINet::AiMode2ForwardProbeRequiresAutoTurn(zUtil_SaveGameState* s
     CZDisplayInstanceSegmentEndpoints segmentPairs[1];
 
     if (playerState->playerCollisionResolved != 0 || playerState->preferredCollisionResolved != 0) {
-        ++playerState->aiMode2SteeringRetryCount;
+        ++playerState->aiSteeringCollisionCount;
         return 1;
     }
 
@@ -867,7 +862,7 @@ void __fastcall AINet::AiAdvancePathCursorAndComputeTargetVec(
  * @recoil-artifact defines .text recoil:function:0x4016a0: AINet::AiChooseNextPathBranchIndex.
  * @recoil-match byte
  *
- * Purpose: Selects the next non-excluded AI path branch for mode-2 steering.
+ * Purpose: Selects the next non-excluded AI path branch for AI steering.
  */
 int __fastcall AINet::AiChooseNextPathBranchIndex(
     zUtil_SaveGameState* saveState,
@@ -907,7 +902,7 @@ int __fastcall AINet::AiChooseNextPathBranchIndex(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-steering-substate
- * @recoil-artifact defines .text recoil:function:0x401710: AINet::TickAiMode2SteeringSubstate.
+ * @recoil-artifact defines .text recoil:function:0x401710: AINet::TickAiPursuit.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401710
  * @recoil-match byte
  *
@@ -916,7 +911,7 @@ int __fastcall AINet::AiChooseNextPathBranchIndex(
  * Purpose: Runs pursuit steering, submarine vertical controls, and pursuit exit checks. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveState)
+void __fastcall AINet::TickAiPursuit(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     float forwardDot;
@@ -927,7 +922,7 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveStat
     const zVec3 targetWorldSnapshot = ((zUtil_PlayerStateStorage*)g_GameStateOrMapTable->playerState)->worldPos;
 
     if (g_Player_TotalTimeSecScaled >= playerState->aiNextPathRebuildTime
-        && playerState->aiCurrentSteeringSubstate != kPlayerAiMode2SteerPathFollow) {
+        && playerState->aiCurrentSteeringSubstate != kPlayerAiSteerPathFollow) {
         AiRebuildSyntheticPathToNodeIfFar(saveState, playerState->aiCurrentPathNode);
     }
 
@@ -950,34 +945,34 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveStat
     lateralDot = steerBasisNorm.z * targetDelta.x - steerBasisNorm.x * targetDelta.z;
     forwardDot = steerBasisNorm.x * targetDelta.x + steerBasisNorm.z * targetDelta.z;
 
-    if (playerState->aiMode2SteeringRetryCount > 6) {
-        playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerTurnInPlace;
+    if (playerState->aiSteeringCollisionCount > 6) {
+        playerState->aiCurrentSteeringSubstate = kPlayerAiSteerTurnInPlace;
     }
 
     switch (playerState->aiCurrentSteeringSubstate) {
-    case kPlayerAiMode2SteerDirectTarget:
-        UpdateAiMode2MoveAndTurnTowardTarget(saveState, forwardDot, lateralDot, targetDistance);
+    case kPlayerAiSteerDirectTarget:
+        UpdateAiTargetRangeSteering(saveState, forwardDot, lateralDot, targetDistance);
         break;
-    case kPlayerAiMode2SteerOffsetTarget:
-        TickAiMode2OffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
+    case kPlayerAiSteerOffsetTarget:
+        TickAiOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerDynamicOffsetTarget:
-        TickAiMode2DynamicOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
+    case kPlayerAiSteerDynamicOffsetTarget:
+        TickAiDynamicOffsetTargetSteering(saveState, forwardDot, lateralDot, targetDistance);
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerAutoTurn:
+    case kPlayerAiSteerAutoTurn:
         if (playerState->autoTurnActive == 0) {
             playerState->aiCurrentSteeringSubstate = playerState->aiReturnSteeringSubstate;
         }
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerTurnInPlace:
-        UpdateAiMode2TurnInPlaceTowardPlayer(saveState);
+    case kPlayerAiSteerTurnInPlace:
+        UpdateAiTurnInPlaceTowardLocalPlayer(saveState);
         forwardDot = 1.0f;
         break;
-    case kPlayerAiMode2SteerPathFollow:
-        TickAiMode2PathFollow(saveState);
+    case kPlayerAiSteerPathFollow:
+        TickAiPathFollow(saveState);
         forwardDot = 1.0f;
         break;
     default:
@@ -985,22 +980,22 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveStat
     }
 
     if (masterModalData->masterType == kPlayerMasterTypeSub) {
-        float pitchInput = g_Player_AiMode2_SteeringPitchInputScale;
+        float pitchInput = g_Player_Ai_PursuitSlopeToPitchScale;
         pitchInput *= verticalDistanceScale;
-        pitchInput = (pitchInput - playerState->vehiclePitchRad) * g_Player_AiMode2_SteeringPitchTurnGain;
+        pitchInput = (pitchInput - playerState->vehiclePitchRad) * g_Player_Ai_PursuitPitchErrorGain;
         playerState->subPitchInput = pitchInput;
         playerState->subPitchInputCopy = pitchInput;
 
         const float verticalInput
-            = (targetWorldSnapshot.y - playerState->worldPos.y) * g_Player_AiMode2_SteeringVerticalErrorScale;
+            = (targetWorldSnapshot.y - playerState->worldPos.y) * g_Player_Ai_PursuitVerticalInputGain;
         playerState->subVerticalInput = verticalInput;
         playerState->subVerticalInputCopy = verticalInput;
     }
 
-    TickAiMode2AltGunAttackWindow(saveState, targetDistance, forwardDot);
+    TickAiAltGunAttackWindow(saveState, targetDistance, forwardDot);
 
     zUtil_PlayerStateStorage* targetPlayerState = (zUtil_PlayerStateStorage*)g_GameStateOrMapTable->playerState;
-    if (targetPlayerState->lifecycleState == kPlayerLifecycleInactive
+    if (targetPlayerState->controlType == kAiNetControlInactive
         || zMath::Vec3DeltaLengthSq(&playerState->worldPos, &playerState->aiRestoreTarget)
             > playerState->aiRestoreDistanceSq) {
         AiRestoreSavedTopLevelState(saveState);
@@ -1010,13 +1005,13 @@ void __fastcall AINet::TickAiMode2SteeringSubstate(zUtil_SaveGameState* saveStat
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.update-ai-mode2-move-and-turn-toward-target
- * @recoil-artifact defines .text recoil:function:0x401970: AINet::UpdateAiMode2MoveAndTurnTowardTarget.
+ * @recoil-artifact defines .text recoil:function:0x401970: AINet::UpdateAiTargetRangeSteering.
  * @recoil-match byte
  *
  * Purpose: Converts target alignment and pursuit distance into throttle and steering input. Source model: AINet
  * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
+void __fastcall AINet::UpdateAiTargetRangeSteering(
     zUtil_SaveGameState* saveState,
     float forwardDot,
     float lateralDot,
@@ -1046,13 +1041,13 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardTarget(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-offset-target-steering
- * @recoil-artifact defines .text recoil:function:0x401a40: AINet::TickAiMode2OffsetTargetSteering.
+ * @recoil-artifact defines .text recoil:function:0x401a40: AINet::TickAiOffsetTargetSteering.
  * @recoil-match byte
  *
  * Purpose: Runs offset-target pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2OffsetTargetSteering(
+void __fastcall AINet::TickAiOffsetTargetSteering(
     zUtil_SaveGameState* saveState,
     float unusedForwardDot,
     float unusedLateralDot,
@@ -1064,8 +1059,8 @@ void __fastcall AINet::TickAiMode2OffsetTargetSteering(
     (void)unusedTargetDistance;
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    if (AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0) {
-        UpdateAiMode2MoveAndTurnTowardOffsetTarget(saveState, (zUtil_SaveGameState*)g_GameStateOrMapTable);
+    if (AiCheckAutoTurnRequired(saveState) == 0) {
+        UpdateAiOffsetTargetSteering(saveState, (zUtil_SaveGameState*)g_GameStateOrMapTable);
         return;
     }
 
@@ -1080,18 +1075,18 @@ void __fastcall AINet::TickAiMode2OffsetTargetSteering(
     playerState->throttleInputCopy = 0.0f;
     playerState->throttleInput = 0.0f;
     playerState->aiReturnSteeringSubstate = currentSteeringSubstate;
-    playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerAutoTurn;
+    playerState->aiCurrentSteeringSubstate = kPlayerAiSteerAutoTurn;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-dynamic-offset-target-steering
- * @recoil-artifact defines .text recoil:function:0x401ab0: AINet::TickAiMode2DynamicOffsetTargetSteering.
+ * @recoil-artifact defines .text recoil:function:0x401ab0: AINet::TickAiDynamicOffsetTargetSteering.
  * @recoil-match byte
  *
  * Purpose: Runs dynamic-offset pursuit or switches to auto-turn recovery when blocked. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
+void __fastcall AINet::TickAiDynamicOffsetTargetSteering(
     zUtil_SaveGameState* saveState,
     float unusedForwardDot,
     float unusedLateralDot,
@@ -1102,12 +1097,8 @@ void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
     (void)unusedLateralDot;
 
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-    if (AiMode2ForwardProbeRequiresAutoTurn(saveState) == 0) {
-        UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
-            saveState,
-            (zUtil_SaveGameState*)g_GameStateOrMapTable,
-            targetDistance
-        );
+    if (AiCheckAutoTurnRequired(saveState) == 0) {
+        UpdateAiDynamicOffsetTargetSteering(saveState, (zUtil_SaveGameState*)g_GameStateOrMapTable, targetDistance);
         return;
     }
 
@@ -1122,21 +1113,21 @@ void __fastcall AINet::TickAiMode2DynamicOffsetTargetSteering(
     playerState->throttleInputCopy = 0.0f;
     playerState->throttleInput = 0.0f;
     playerState->aiReturnSteeringSubstate = currentSteeringSubstate;
-    playerState->aiCurrentSteeringSubstate = kPlayerAiMode2SteerAutoTurn;
+    playerState->aiCurrentSteeringSubstate = kPlayerAiSteerAutoTurn;
 }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ai-try-enter-mode2-attack-pursuit-if-line-of-sight
- * @recoil-artifact defines .text recoil:function:0x401b20: AINet::AiTryEnterMode2AttackPursuitIfLineOfSight.
+ * @recoil-artifact defines .text recoil:function:0x401b20: AINet::AiTryEnterPursuitIfLineOfSight.
  * @recoil-match byte
  *
  * Purpose: Tests attack range and local-player line of sight before steering pursuit. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameState* saveState)
+int __fastcall AINet::AiTryEnterPursuitIfLineOfSight(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const aiState = saveState->playerState;
-    if (g_Player_AiMode2State1Finalized == 0) {
+    if (g_Player_Ai_PursuitEntryDisabled == 0) {
         if (g_Player_TotalTimeSecScaled > aiState->aiStateUntilTime) {
             zUtil_PlayerStateStorage* const localPlayerState
                 = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
@@ -1146,12 +1137,12 @@ int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameSt
                 zVec3 lineOfSightPoint = aiState->fxOffsetWorld;
                 lineOfSightPoint.y -= kPlayerAiAttackLosTargetYOffset;
                 if (HasLineOfSightFromLocalPlayerFxOffset(aiState->rootNode, &lineOfSightPoint, 1) != 0) {
-                    AiEnterMode2SteeringPursuit(saveState);
+                    AiEnterPursuit(saveState);
                     aiState->aiTargetLineOfSightClear = 1;
                     if (aiState->aiNet->attackBuddyNetId != 0) {
                         AiAlertAttackBuddies(saveState);
                     }
-                    aiState->aiMode2SteeringRetryCount = 0;
+                    aiState->aiSteeringCollisionCount = 0;
                     return 1;
                 } else {
                     aiState->aiTargetLineOfSightClear = 0;
@@ -1173,13 +1164,13 @@ int __fastcall AINet::AiTryEnterMode2AttackPursuitIfLineOfSight(zUtil_SaveGameSt
 void __fastcall AINet::AiAlertAttackBuddies(zUtil_SaveGameState* saveState)
 {
     zUtil_SaveGameState* buddySaveState = saveState->aiPeerRingNext;
-    if (g_Player_AiMode2State1Finalized != 0 || buddySaveState == saveState) {
+    if (g_Player_Ai_PursuitEntryDisabled != 0 || buddySaveState == saveState) {
         return;
     }
 
     do {
-        if (buddySaveState->playerState->aiTopLevelState != kPlayerAiMode2TopSteering) {
-            AiEnterMode2SteeringPursuit(buddySaveState);
+        if (buddySaveState->playerState->aiTopLevelState != kPlayerAiTopPursuit) {
+            AiEnterPursuit(buddySaveState);
             buddySaveState->playerState->recentHitFlag = 1;
             buddySaveState->playerState->recentHitExpireTime = g_Time_AccumulatedTimeSec + 10.0f;
         }
@@ -1189,7 +1180,7 @@ void __fastcall AINet::AiAlertAttackBuddies(zUtil_SaveGameState* saveState)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ai-enter-mode2-steering-pursuit
- * @recoil-artifact defines .text recoil:function:0x401c60: AINet::AiEnterMode2SteeringPursuit.
+ * @recoil-artifact defines .text recoil:function:0x401c60: AINet::AiEnterPursuit.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x401c60
  * @recoil-match byte
  *
@@ -1198,29 +1189,29 @@ void __fastcall AINet::AiAlertAttackBuddies(zUtil_SaveGameState* saveState)
  * Purpose: Saves the prior top-level state and enters steering pursuit for the attack window. Source model: AINet
  * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::AiEnterMode2SteeringPursuit(zUtil_SaveGameState* saveState)
+void __fastcall AINet::AiEnterPursuit(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const aiState = saveState->playerState;
     zUtil_PlayerStateStorage* const localPlayerState = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState;
-    if (g_Player_AiMode2State1Finalized != 0) {
+    if (g_Player_Ai_PursuitEntryDisabled != 0) {
         return;
     }
 
     const int previousTopLevelState = aiState->aiTopLevelState;
     aiState->aiSavedTopLevelState = previousTopLevelState;
     aiState->aiStateStartTime = g_Player_TotalTimeSecScaled;
-    aiState->aiStateEndTime = aiState->aiMode2AttackDwell + g_Player_TotalTimeSecScaled;
-    if (previousTopLevelState != kPlayerAiMode2TopSteering) {
-        aiState->aiTopLevelState = kPlayerAiMode2TopSteering;
+    aiState->aiStateEndTime = aiState->aiAttackDwell + g_Player_TotalTimeSecScaled;
+    if (previousTopLevelState != kPlayerAiTopPursuit) {
+        aiState->aiTopLevelState = kPlayerAiTopPursuit;
     }
 
     AINetNode* const restorePathNode = aiState->aiCurrentPathNode->neighborNodes[aiState->aiCurrentPathNeighborIndex];
     aiState->aiRestoreTarget = restorePathNode->position;
 
     switch (aiState->aiCurrentSteeringSubstate) {
-    case kPlayerAiMode2SteerDirectTarget:
+    case kPlayerAiSteerDirectTarget:
         return;
-    case kPlayerAiMode2SteerDynamicOffsetTarget:
+    case kPlayerAiSteerDynamicOffsetTarget:
         break;
     default:
         return;
@@ -1713,7 +1704,7 @@ void __fastcall AINet::AiRestoreSavedTopLevelState(zUtil_SaveGameState* saveStat
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.update-ai-mode2-turn-toward-player-no-throttle
- * @recoil-artifact defines .text recoil:function:0x402090: AINet::UpdateAiMode2TurnTowardPlayerNoThrottle.
+ * @recoil-artifact defines .text recoil:function:0x402090: AINet::UpdateAiTopLevelTurnTowardLocalPlayer.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402090
  * @recoil-match byte
  *
@@ -1722,7 +1713,7 @@ void __fastcall AINet::AiRestoreSavedTopLevelState(zUtil_SaveGameState* saveStat
  * Purpose: Turns toward the local player while holding throttle at zero. Source model: AINet source-file contribution
  * over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameState* saveState)
+void __fastcall AINet::UpdateAiTopLevelTurnTowardLocalPlayer(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
@@ -1761,16 +1752,16 @@ void __fastcall AINet::UpdateAiMode2TurnTowardPlayerNoThrottle(zUtil_SaveGameSta
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.update-ai-mode2-turn-in-place-toward-player
- * @recoil-artifact defines .text recoil:function:0x402170: AINet::UpdateAiMode2TurnInPlaceTowardPlayer.
+ * @recoil-artifact defines .text recoil:function:0x402170: AINet::UpdateAiTurnInPlaceTowardLocalPlayer.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.vector-subtract recoil:function:0x402170
  * @recoil-match byte
  *
  * Original function evidence: retail 0x402170 contains the shared fixed-register
  * grouped-x87 subtraction expansion.
- * Purpose: Turns in place toward the local player without changing throttle. Source model: AINet source-file
+ * Purpose: Turns in place toward the local player and zeroes both throttle inputs. Source model: AINet source-file
  * contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState* saveState)
+void __fastcall AINet::UpdateAiTurnInPlaceTowardLocalPlayer(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 #if !(defined(_MSC_VER) && defined(_M_IX86) && _MSC_VER == 1100)
@@ -1809,18 +1800,14 @@ void __fastcall AINet::UpdateAiMode2TurnInPlaceTowardPlayer(zUtil_SaveGameState*
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-alt-gun-attack-window
- * @recoil-artifact defines .text recoil:function:0x402250: AINet::TickAiMode2AltGunAttackWindow.
+ * @recoil-artifact defines .text recoil:function:0x402250: AINet::TickAiAltGunAttackWindow.
  * @recoil-match byte
  *
  * Provisional source-placement hypothesis: Battlesport/ai_net.h.
- * Purpose: reimplement AINet::TickAiMode2AltGunAttackWindow from the recovered
+ * Purpose: reimplement AINet::TickAiAltGunAttackWindow from the recovered
  * Battlesport ai_net.cpp source-file contribution.
  */
-void __fastcall AINet::TickAiMode2AltGunAttackWindow(
-    zUtil_SaveGameState* saveState,
-    float targetDistance,
-    float forwardDot
-)
+void __fastcall AINet::TickAiAltGunAttackWindow(zUtil_SaveGameState* saveState, float targetDistance, float forwardDot)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
     PlayerGunFireController* const activeAltGunController = playerState->activeAltGunController;
@@ -1828,7 +1815,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
     if (g_Player_TotalTimeSecScaled > playerState->aiStateEndTime) {
         const float startTime = g_Player_TotalTimeSecScaled + playerState->aiNotPursuitDwell;
         playerState->aiStateStartTime = startTime;
-        playerState->aiStateEndTime = startTime + playerState->aiMode2AttackDwell;
+        playerState->aiStateEndTime = startTime + playerState->aiAttackDwell;
     }
 
     if (playerState->altGunFireHeldFlag == 0) {
@@ -1838,7 +1825,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
             || targetDistance >= activeAltGunController->aiAttackRangeMax
             || targetDistance <= activeAltGunController->aiAttackRangeMin
             || HasLineOfSightFromLocalPlayerFxOffset(playerState->rootNode, &playerState->fxOffsetWorld, 1) == 0
-            || ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->lifecycleState == kPlayerLifecycleInactive) {
+            || ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->controlType == kAiNetControlInactive) {
             return;
         }
 
@@ -1891,7 +1878,7 @@ void __fastcall AINet::TickAiMode2AltGunAttackWindow(
 
     if (g_Player_TotalTimeSecScaled <= activeAltGunController->nextDispatchTime
         && forwardDot >= kPlayerAiAltGunAttackForwardMin && targetDistance <= activeAltGunController->aiAttackRangeMax
-        && ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->lifecycleState != kPlayerLifecycleInactive) {
+        && ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->controlType != kAiNetControlInactive) {
         playerState->storedTargetPos = ((zUtil_SaveGameState*)g_GameStateOrMapTable)->playerState->fxOffsetWorld;
         return;
     }
@@ -2013,10 +2000,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * Purpose: Rotates the target-to-AI vector by accepted tuning globals and steers to the offset point. Source model:
  * AINet source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
-    zUtil_SaveGameState* saveState,
-    zUtil_SaveGameState* targetState
-)
+void __fastcall AINet::UpdateAiOffsetTargetSteering(zUtil_SaveGameState* saveState, zUtil_SaveGameState* targetState)
 {
     zUtil_PlayerStateStorage* savedPlayerState; // Unused snapshot preserves retail VC5 x87 evaluation order.
     zUtil_PlayerStateStorage* const playerState = (savedPlayerState = saveState->playerState);
@@ -2036,10 +2020,10 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
     zMath::Vec3Normalize(&targetToPlayerDir);
 
     targetDir.y = 0.0f;
-    targetDir.x = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.x
-        - g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.z;
-    targetDir.z = g_Player_AiMode2_OffsetTargetRotateCos15Deg * targetToPlayerDir.z
-        + g_Player_AiMode2_OffsetTargetRotateSin15Deg * targetToPlayerDir.x;
+    targetDir.x = g_Player_Ai_OffsetTargetRotationCos * targetToPlayerDir.x
+        - g_Player_Ai_OffsetTargetRotationSin * targetToPlayerDir.z;
+    targetDir.z = g_Player_Ai_OffsetTargetRotationCos * targetToPlayerDir.z
+        + g_Player_Ai_OffsetTargetRotationSin * targetToPlayerDir.x;
     targetDir.x = offsetDistance * targetDir.x;
     targetDir.z = offsetDistance * targetDir.z;
 
@@ -2093,7 +2077,7 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardOffsetTarget(
  * Purpose: Blends dynamic pursuit and side-offset steering based on distance to the local player. Source model: AINet
  * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
+void __fastcall AINet::UpdateAiDynamicOffsetTargetSteering(
     zUtil_SaveGameState* saveState,
     zUtil_SaveGameState* targetState,
     float targetDistance
@@ -2192,13 +2176,13 @@ void __fastcall AINet::UpdateAiMode2MoveAndTurnTowardDynamicOffsetTarget(
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.tick-ai-mode2-timed-path-steering
- * @recoil-artifact defines .text recoil:function:0x402b70: AINet::TickAiMode2TimedPathSteering.
+ * @recoil-artifact defines .text recoil:function:0x402b70: AINet::TickAiTimedPathSteering.
  * @recoil-match byte
  *
  * Purpose: Alternates timed forward and reverse path-node steering around the AI home path node. Source model: AINet
  * source-file contribution over save-state/playerState, not a Player class.
  */
-void __fastcall AINet::TickAiMode2TimedPathSteering(zUtil_SaveGameState* saveState)
+void __fastcall AINet::TickAiTimedPathSteering(zUtil_SaveGameState* saveState)
 {
     zUtil_PlayerStateStorage* const playerState = saveState->playerState;
 
@@ -2211,7 +2195,7 @@ void __fastcall AINet::TickAiMode2TimedPathSteering(zUtil_SaveGameState* saveSta
         } else if (currentPathNode->neighborNodes[0] == pathAnchorNode && currentPathNode->nodeIndex != -1) {
             AiSteerTowardPathNodeReverse(saveState);
         } else {
-            TickAiMode2PathFollow(saveState);
+            TickAiPathFollow(saveState);
         }
     }
 
@@ -2366,28 +2350,28 @@ void __fastcall AINet::AiSteerTowardPathNodeReverse(zUtil_SaveGameState* saveSta
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.ai-finalize-mode2-state1-for-all-players
- * @recoil-artifact defines .text recoil:function:0x402f10: AINet::AiFinalizeMode2State1ForAllPlayers.
+ * @recoil-artifact defines .text recoil:function:0x402f10: AINet::AiRestorePursuitStatesAndDisableEntry.
  * @recoil-match byte
  *
  * BN shows traversal from g_PlayerSaveStateList.head, filtering
- * lifecycleState == 2 and aiTopLevelState == 1, restoring matching nodes, and
- * setting g_Player_AiMode2State1Finalized to 1 after the pass.
- * Purpose: Finalizes AI Mode2 State1 by restoring saved top-level state for
- * active AI players and setting the global finalization latch.
+ * controlType == AI and aiTopLevelState == pursuit, restoring matching nodes, and
+ * setting g_Player_Ai_PursuitEntryDisabled to 1 after the pass.
+ * Purpose: Restores the saved top-level state of every AI player currently in
+ * pursuit, then disables further pursuit entry.
  */
-void AINet::AiFinalizeMode2State1ForAllPlayers()
+void AINet::AiRestorePursuitStatesAndDisableEntry()
 {
     zUtil_SaveGameState* saveState = g_PlayerSaveStateList.head;
     while (saveState != 0) {
         zUtil_PlayerStateStorage* const playerState = saveState->playerState;
-        if (playerState->lifecycleState == 2 && playerState->aiTopLevelState == 1) {
+        if (playerState->controlType == CTRL_AI && playerState->aiTopLevelState == kPlayerAiTopPursuit) {
             AiRestoreSavedTopLevelState(saveState);
         }
 
         saveState = saveState != 0 ? saveState->next : 0;
     }
 
-    g_Player_AiMode2State1Finalized = 1;
+    g_Player_Ai_PursuitEntryDisabled = 1;
 }
 
 #include "GameZRecoil/zMath/zmth.h"
@@ -2793,8 +2777,7 @@ void AINet::BuildAiPeerRingsByAiNetId()
         zUtil_SaveGameState* candidate = saveState != 0 ? saveState->next : 0;
         while (candidate != 0) {
             zUtil_PlayerStateStorage* const candidatePlayerState = candidate->playerState;
-            if (candidatePlayerState->aiNetId == aiNetId
-                && candidatePlayerState->lifecycleState != kPlayerLifecycleInactive
+            if (candidatePlayerState->aiNetId == aiNetId && candidatePlayerState->controlType != kAiNetControlInactive
                 && candidate->aiPeerRingNext == candidate) {
                 candidate->aiPeerRingNext = saveState->aiPeerRingNext;
                 saveState->aiPeerRingNext = candidate;
