@@ -527,7 +527,7 @@ void WestwoodOnlineUpgradeConfigDialog::Destructor()
 
 #include "Battlesport/wol_dialog.h"
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/recoil_app.h"
 #include "Battlesport/wol_api.h"
 #include "GameZRecoil/zGame/zgame.h"

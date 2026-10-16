@@ -9,7 +9,7 @@
 
 #include "GameZRecoil/zHud/zhud_ui.h"
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud.h"

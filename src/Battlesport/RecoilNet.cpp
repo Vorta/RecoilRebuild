@@ -52,7 +52,7 @@
 
 #include "Battlesport/game_net.h"
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/mission.h"

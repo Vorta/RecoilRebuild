@@ -2118,7 +2118,7 @@ int RecoilApp_MpExitDialogState::OnUpdateShouldQuit()
 #include "recoil/Mfc42Abi.h"
 #include "Battlesport/hud_ui_net_game_setup.h"
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/game_net.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/recoil_app.h"
@@ -2755,7 +2755,7 @@ void __fastcall HudUiNetGameSetupOverlayOwner::QueueEnterWithReconfigureFlag(int
 }
 #include "Battlesport/game_net.h"
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/hud_sensor_tracker.h"
 #include "Battlesport/mission.h"

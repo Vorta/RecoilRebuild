@@ -3,7 +3,7 @@
 #include "recoil/recoil_types.h"
 #include <stddef.h>
 
-#include "CZGameFrame/CZGameFrame.h"
+#include "Battlesport/WinFrame.h"
 #include "recoil/recoil_callconv.h"
 
 namespace MfcCmdUI {

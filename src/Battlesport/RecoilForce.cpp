@@ -5,7 +5,7 @@
 // pool separately. Original filename unresolved; RecoilForce.cpp is a
 // provisional name (2026-10-02).
 
-#include "Battlesport/CZRecoilFrame.h"
+#include "Battlesport/RecoilFrame.h"
 #include "Battlesport/about.h"
 #include "Battlesport/briefing.h"
 #include "Battlesport/game_net.h"

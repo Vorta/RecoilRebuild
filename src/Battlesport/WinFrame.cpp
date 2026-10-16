@@ -1,4 +1,4 @@
-#include "CZGameFrame.h"
+#include "WinFrame.h"
 
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zInput/zinput.h"
