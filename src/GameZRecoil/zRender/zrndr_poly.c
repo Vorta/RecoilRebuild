@@ -5498,17 +5498,49 @@ void __fastcall zRndrDrawLine16Clipped(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan16opaque
  * @recoil-artifact defines .text recoil:function:0x4997d0: zRndrFillSpan16Opaque
- *
+ * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.fill-span16-opaque-esp-pivot
+ * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.fill-span16-opaque-esp-pivot recoil:function:0x4997d0
+ * @recoil-match byte
  *
  * Purpose: Fill the active reverse span with one opaque 16-bit color.
  *
  * Evidence: BN reads gRndr_CurrentSpanBaseAddr, computes the end of the span,
  * and writes pixels backward with push ax/eax. It does not touch
- * gRndr_SavedEspSlot, so source keeps this leaf as a typed reverse fill rather
- * than part of the switch-vshift ESP-pivot source family.
+ * gRndr_SavedEspSlot: the original body is one inline-assembly block that
+ * points ESP at the span end and lets the EBP frame VC5 builds for __asm
+ * restore it. The guarded body is the owner-authorized whole-function
+ * assembly exception for this function only; the C loop is the portable
+ * fallback.
  */
 void __fastcall zRndrFillSpan16Opaque(int packedColor16, int pixelCount)
 {
+#if defined(_MSC_VER) && defined(_M_IX86) && defined(RECOIL_ENABLE_ZRNDR_ESP_PIVOT_RAW_ASM)
+    __asm {
+        mov ecx, pixelCount
+        mov eax, packedColor16
+        mov edx, eax
+        mov esp, dword ptr [g_spanCurrentSpanBaseAddr]
+        shl eax, 10h
+        add esp, ecx
+        or eax, edx
+        add esp, ecx
+        shr ecx, 1
+        jae recoil_fill16_no_word
+        push ax
+    recoil_fill16_no_word:
+        shr ecx, 1
+        jae recoil_fill16_no_dword
+        push eax
+    recoil_fill16_no_dword:
+        je recoil_fill16_done
+    recoil_fill16_loop:
+        push eax
+        push eax
+        dec ecx
+        jne recoil_fill16_loop
+    recoil_fill16_done:
+    }
+#else
     const unsigned short color16 = (unsigned short)(packedColor16);
     unsigned short* cursor = g_spanCurrentSpanBaseAddr + pixelCount;
     unsigned int remaining = (unsigned int)(pixelCount);
@@ -5518,12 +5550,13 @@ void __fastcall zRndrFillSpan16Opaque(int packedColor16, int pixelCount)
         *cursor = color16;
         --remaining;
     }
+#endif
 }
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-fillspan555solid
  * @recoil-artifact defines .text recoil:function:0x499810: zRndrFillSpan555Solid
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Blend a solid color into the active 555 span using the supplied alpha.
  *
