@@ -1307,6 +1307,48 @@ int __fastcall HandleActivateEvent(zEffectAnimEntry* self, zEffectActivateEvent*
     return 2;
 }
 
+/*
+ * Event type 0x0a (HandleNodeAnimEvent) record. It shares the type-0x0b
+ * zEffectNodeAnimEvent layout except that retail reads the node reference as a
+ * short (0x459ead: mov ax,[esi+0x10]; test ax,ax; movsx).
+ */
+typedef struct zEffectNodePhysicsEvent {
+    zEffectAnimEventHeader header;
+    int flags;
+    short targetNodeRefIndex;
+    unsigned char unknown_12[0x02];
+    float nodeAlphaStart;
+    float nodeAlphaEnd;
+    float nodeAlphaRate;
+    zVec3 positionOrTargetStart;
+    zVec3 positionOrTargetEnd;
+    zVec3 positionOrTargetRate;
+    zVec3 rotationOrCameraPosStart;
+    zVec3 rotationOrCameraPosEnd;
+    zVec3 rotationOrCameraPosRate;
+    zVec3 scaleStart;
+    zVec3 scaleEnd;
+    zVec3 scaleRate;
+    float endTimeSec;
+    unsigned char unknown_90[0x04];
+    zVec3 runtimeVecA;
+    zVec3 runtimeVecB;
+    zVec3 runtimeVecC;
+    zVec3 runtimeVecD;
+    zVec3 runtimeVecE;
+    char targetName[0x20];
+    short packedRuntimeIndex;
+    short sampleRefIndex;
+    float lookupScale;
+    float runtimeElapsedSec;
+} zEffectNodePhysicsEvent;
+
+RECOIL_STATIC_ASSERT(sizeof(zEffectNodePhysicsEvent) == 0xfc);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodePhysicsEvent, targetNodeRefIndex) == 0x10);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodePhysicsEvent, positionOrTargetStart) == 0x20);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodePhysicsEvent, rotationOrCameraPosStart) == 0x44);
+RECOIL_STATIC_ASSERT(offsetof(zEffectNodePhysicsEvent, runtimeVecA) == 0x94);
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handlenodeanimevent
  * @recoil-artifact defines .text recoil:function:0x459e70: zEffect::HandleNodeAnimEvent.
@@ -1317,8 +1359,9 @@ int __fastcall HandleActivateEvent(zEffectAnimEntry* self, zEffectActivateEvent*
  * DI blend, and collision gating for a node animation event.
  */
 int __fastcall
-HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectNodeAnimEvent* animEvent)
+HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectAnimEventHeader* event)
 {
+    zEffectNodePhysicsEvent* const animEvent = (zEffectNodePhysicsEvent*)(event);
     CZNodePartial* node;
     int result = 1;
     int transformBasis = 0;
@@ -3648,8 +3691,7 @@ int __fastcall RunSequenceEvents(zEffectAnimEntry* self, zEffectAnimSurfaceRunti
             sequenceRuntime->runState = HandleActivateEvent(self, (zEffectActivateEvent*)(currentEvent));
             break;
         case 0x0a:
-            sequenceRuntime->runState
-                = HandleNodeAnimEvent(self, sequenceRuntime, (zEffectNodeAnimEvent*)(currentEvent));
+            sequenceRuntime->runState = HandleNodeAnimEvent(self, sequenceRuntime, currentEvent);
             break;
         case 0x0b:
             sequenceRuntime->runState

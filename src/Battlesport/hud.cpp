@@ -8822,7 +8822,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         g_HudUiMgrSensorFxViewportHeight = sensorHeight;
         HudUiMgrSensor::SetViewportRect(sensorX, sensorY, sensorWidth, sensorHeight);
 
-        const float range = sensorPayload[5].value.f32;
+        const float range = sensorPayload[5].value.i32;
         float rangeBitsValue = range * range * 0.5f;
         unsigned int rangeBits = 0;
         memcpy(&rangeBits, &rangeBitsValue, sizeof(rangeBits));

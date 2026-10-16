@@ -1159,11 +1159,8 @@ int __fastcall AnimateCameraParamsOverTime(
     zEffectCameraAnimEvent* animEvent
 );
 int __fastcall FindNearestPickCandidateBelowPoint(const zVec3* point, zClassDiPickCandidateEntry* outCandidate);
-int __fastcall HandleNodeAnimEvent(
-    zEffectAnimEntry* self,
-    zEffectAnimSurfaceRuntime* sequenceRuntime,
-    zEffectNodeAnimEvent* nodeAnimEvent
-);
+int __fastcall
+HandleNodeAnimEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* sequenceRuntime, zEffectAnimEventHeader* event);
 int __fastcall AnimateNodeOverTime(
     zEffectAnimEntry* self,
     zEffectAnimSurfaceRuntime* sequenceRuntime,

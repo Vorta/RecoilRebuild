@@ -796,30 +796,33 @@ int __fastcall gClsReadNode(CZNodePartial* node, void* stream)
     case 0:
         break;
 
-    case kZClassNodeSound: {
-        CZSoundDataPartial* data;
+    case kZClassNodeSound:
         result = 1;
         ReportOld(0x200, g_CZClass_SourceFile_ClsZbdC, 0x2f1, g_CZClass_ReadSoundNodeDataIncompleteMsg);
 
-        data = (CZSoundDataPartial*)(malloc(sizeof(CZSoundDataPartial)));
-        node->classData = data;
-        if (!ReadZbdBlob(data, sizeof(CZSoundDataPartial), stream)) {
+        node->classData = malloc(sizeof(CZSoundDataPartial));
+        if (!ReadZbdBlob(node->classData, sizeof(CZSoundDataPartial), stream)) {
             return ReportZbdReadFailure(0x2fc, g_CZClass_ReadNodeSoundDataErrorMsg);
         }
 
-        data->sample = 0;
-        data->playHandle = 0;
-        if (data->attachedWorldCount > 0) {
-            data->attachedWorlds = (CZNodePartial**)(malloc(data->attachedWorldCount * sizeof(CZNodePartial*)));
-            ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
+        ((CZSoundDataPartial*)(node->classData))->sample = 0;
+        ((CZSoundDataPartial*)(node->classData))->playHandle = 0;
+        if (((CZSoundDataPartial*)(node->classData))->attachedWorldCount > 0) {
+            ((CZSoundDataPartial*)(node->classData))->attachedWorlds = (CZNodePartial**)(malloc(
+                ((CZSoundDataPartial*)(node->classData))->attachedWorldCount * sizeof(CZNodePartial*)
+            ));
+            ReadNodeRefListIndices(
+                ((CZSoundDataPartial*)(node->classData))->attachedWorlds,
+                ((CZSoundDataPartial*)(node->classData))->attachedWorldCount,
+                stream
+            );
         } else {
-            data->attachedWorlds = 0;
+            ((CZSoundDataPartial*)(node->classData))->attachedWorlds = 0;
         }
 
         CZTypeListInsert(6, node);
         CZTypeListInsert(0x0a, node);
         break;
-    }
 
     case kZClassNodeObject3D:
         result = 1;
@@ -839,62 +842,76 @@ int __fastcall gClsReadNode(CZNodePartial* node, void* stream)
         CZTypeListInsert(6, node);
         break;
 
-    case kZClassNodeLight: {
-        CZLightDataPartial* data;
+    case kZClassNodeLight:
         result = 1;
-        data = (CZLightDataPartial*)(malloc(sizeof(CZLightDataPartial)));
-        node->classData = data;
-        if (!ReadZbdBlob(data, sizeof(CZLightDataPartial), stream)) {
+        node->classData = malloc(sizeof(CZLightDataPartial));
+        if (!ReadZbdBlob(node->classData, sizeof(CZLightDataPartial), stream)) {
             return ReportZbdReadFailure(0x34d, g_CZClass_ReadNodeLightDataErrorMsg);
         }
 
-        if (data->attachedWorldCount > 0) {
-            data->attachedWorlds = (CZNodePartial**)(malloc(data->attachedWorldCount * sizeof(CZNodePartial*)));
-            ReadNodeRefListIndices(data->attachedWorlds, data->attachedWorldCount, stream);
+        if (((CZLightDataPartial*)(node->classData))->attachedWorldCount > 0) {
+            ((CZLightDataPartial*)(node->classData))->attachedWorlds = (CZNodePartial**)(malloc(
+                ((CZLightDataPartial*)(node->classData))->attachedWorldCount * sizeof(CZNodePartial*)
+            ));
+            ReadNodeRefListIndices(
+                ((CZLightDataPartial*)(node->classData))->attachedWorlds,
+                ((CZLightDataPartial*)(node->classData))->attachedWorldCount,
+                stream
+            );
         } else {
-            data->attachedWorlds = 0;
+            ((CZLightDataPartial*)(node->classData))->attachedWorlds = 0;
         }
 
         CZTypeListInsert(6, node);
         CZTypeListInsert(9, node);
         break;
-    }
 
-    case kZClassNodeCamera: {
-        CZCameraDataPartial* data;
+    case kZClassNodeCamera:
         result = 1;
-        data = (CZCameraDataPartial*)(malloc(sizeof(CZCameraDataPartial)));
-        node->classData = data;
-        if (!ReadZbdBlob(data, sizeof(CZCameraDataPartial), stream)) {
+        node->classData = malloc(sizeof(CZCameraDataPartial));
+        if (!ReadZbdBlob(node->classData, sizeof(CZCameraDataPartial), stream)) {
             return ReportZbdReadFailure(0x371, g_CZClass_ReadNodeCameraDataErrorMsg);
         }
 
-        data->worldNode = NodeIndexToPtr((int)((int)(data->worldNode)));
-        data->windowNode = NodeIndexToPtr((int)((int)(data->windowNode)));
-        data->horizonNode = NodeIndexToPtr((int)((int)(data->horizonNode)));
-        data->horizonXZNode = NodeIndexToPtr((int)((int)(data->horizonXZNode)));
+        ((CZCameraDataPartial*)(node->classData))->worldNode
+            = NodeIndexToPtr((int)(((CZCameraDataPartial*)(node->classData))->worldNode));
+        ((CZCameraDataPartial*)(node->classData))->windowNode
+            = NodeIndexToPtr((int)(((CZCameraDataPartial*)(node->classData))->windowNode));
+        ((CZCameraDataPartial*)(node->classData))->horizonNode
+            = NodeIndexToPtr((int)(((CZCameraDataPartial*)(node->classData))->horizonNode));
+        ((CZCameraDataPartial*)(node->classData))->horizonXZNode
+            = NodeIndexToPtr((int)(((CZCameraDataPartial*)(node->classData))->horizonXZNode));
 
         CZTypeListInsert(6, node);
         CZTypeListInsert(8, node);
-        gwCameraSetNearFarClip(node, data->nearClip, data->farClip);
-        gwCameraSetViewport(node, data->viewportWidth, data->viewportHeight);
+        gwCameraSetNearFarClip(
+            node,
+            ((CZCameraDataPartial*)(node->classData))->nearClip,
+            ((CZCameraDataPartial*)(node->classData))->farClip
+        );
+        gwCameraSetViewport(
+            node,
+            ((CZCameraDataPartial*)(node->classData))->viewportWidth,
+            ((CZCameraDataPartial*)(node->classData))->viewportHeight
+        );
         break;
-    }
 
-    case kZClassNodeDisplay: {
-        CZDisplayDataPartial* data;
+    case kZClassNodeDisplay:
         result = 1;
-        data = (CZDisplayDataPartial*)(malloc(sizeof(CZDisplayDataPartial)));
-        node->classData = data;
-        if (!ReadZbdBlob(data, sizeof(CZDisplayDataPartial), stream)) {
+        node->classData = malloc(sizeof(CZDisplayDataPartial));
+        if (!ReadZbdBlob(node->classData, sizeof(CZDisplayDataPartial), stream)) {
             return ReportZbdReadFailure(0x39a, g_CZClass_ReadNodeDisplayDataErrorMsg);
         }
 
         CZTypeListInsert(6, node);
         CZTypeListInsert(0x0f, node);
-        gwDisplaySetBackgroundColor(node, data->backgroundR, data->backgroundG, data->backgroundB);
+        gwDisplaySetBackgroundColor(
+            node,
+            ((CZDisplayDataPartial*)(node->classData))->backgroundR,
+            ((CZDisplayDataPartial*)(node->classData))->backgroundG,
+            ((CZDisplayDataPartial*)(node->classData))->backgroundB
+        );
         break;
-    }
 
     case kZClassNodeWindow:
         result = 1;
@@ -906,49 +923,69 @@ int __fastcall gClsReadNode(CZNodePartial* node, void* stream)
         CZTypeListInsert(0x0e, node);
         break;
 
-    case kZClassNodeWorld: {
-        CZWorldDataPartial* data;
+    case kZClassNodeWorld:
         result = 1;
-        data = (CZWorldDataPartial*)(malloc(sizeof(CZWorldDataPartial)));
-        node->classData = data;
-        if (!ReadZbdBlob(data, sizeof(CZWorldDataPartial), stream)) {
+        node->classData = malloc(sizeof(CZWorldDataPartial));
+        if (!ReadZbdBlob(node->classData, sizeof(CZWorldDataPartial), stream)) {
             return ReportZbdReadFailure(0x3d4, g_CZClass_ReadNodeWorldDataErrorMsg);
         }
 
-        if (data->lightCount > 0) {
-            data->lightNodes = (CZNodePartial**)(malloc(data->lightCount * sizeof(CZNodePartial*)));
-            ReadNodeRefListIndices(data->lightNodes, data->lightCount, stream);
-            data->lightDataList = (CZLightDataPartial**)(malloc(data->lightCount * sizeof(CZLightDataPartial*)));
+        if (((CZWorldDataPartial*)(node->classData))->lightCount > 0) {
+            ((CZWorldDataPartial*)(node->classData))->lightNodes = (CZNodePartial**)(malloc(
+                ((CZWorldDataPartial*)(node->classData))->lightCount * sizeof(CZNodePartial*)
+            ));
+            ReadNodeRefListIndices(
+                ((CZWorldDataPartial*)(node->classData))->lightNodes,
+                ((CZWorldDataPartial*)(node->classData))->lightCount,
+                stream
+            );
+            ((CZWorldDataPartial*)(node->classData))->lightDataList = (CZLightDataPartial**)(malloc(
+                ((CZWorldDataPartial*)(node->classData))->lightCount * sizeof(CZLightDataPartial*)
+            ));
         } else {
-            data->lightNodes = 0;
-            data->lightDataList = 0;
+            ((CZWorldDataPartial*)(node->classData))->lightNodes = 0;
+            ((CZWorldDataPartial*)(node->classData))->lightDataList = 0;
         }
 
-        if (data->soundCount > 0) {
-            data->soundNodes = (CZNodePartial**)(malloc(data->soundCount * sizeof(CZNodePartial*)));
-            ReadNodeRefListIndices(data->soundNodes, data->soundCount, stream);
-            data->soundDataList = (CZSoundDataPartial**)(malloc(data->soundCount * sizeof(CZSoundDataPartial*)));
+        if (((CZWorldDataPartial*)(node->classData))->soundCount > 0) {
+            ((CZWorldDataPartial*)(node->classData))->soundNodes = (CZNodePartial**)(malloc(
+                ((CZWorldDataPartial*)(node->classData))->soundCount * sizeof(CZNodePartial*)
+            ));
+            ReadNodeRefListIndices(
+                ((CZWorldDataPartial*)(node->classData))->soundNodes,
+                ((CZWorldDataPartial*)(node->classData))->soundCount,
+                stream
+            );
+            ((CZWorldDataPartial*)(node->classData))->soundDataList = (CZSoundDataPartial**)(malloc(
+                ((CZWorldDataPartial*)(node->classData))->soundCount * sizeof(CZSoundDataPartial*)
+            ));
         } else {
-            data->soundNodes = 0;
-            data->soundDataList = 0;
+            ((CZWorldDataPartial*)(node->classData))->soundNodes = 0;
+            ((CZWorldDataPartial*)(node->classData))->soundDataList = 0;
         }
 
-        data->areaGridRows = (zWorldAreaPartial**)(calloc(data->areaGridRowCount, sizeof(zWorldAreaPartial*)));
+        ((CZWorldDataPartial*)(node->classData))->areaGridRows = (zWorldAreaPartial**)(calloc(
+            ((CZWorldDataPartial*)(node->classData))->areaGridRowCount,
+            sizeof(zWorldAreaPartial*)
+        ));
         {
+            zWorldAreaPartial** rowSlot = ((CZWorldDataPartial*)(node->classData))->areaGridRows;
             int row;
-            for (row = 0; row < data->areaGridRowCount; ++row) {
-                data->areaGridRows[row]
-                    = (zWorldAreaPartial*)(calloc(data->areaGridColCount, sizeof(zWorldAreaPartial)));
+            for (row = 0; row < ((CZWorldDataPartial*)(node->classData))->areaGridRowCount; ++row) {
+                *rowSlot++ = (zWorldAreaPartial*)(calloc(
+                    ((CZWorldDataPartial*)(node->classData))->areaGridColCount,
+                    sizeof(zWorldAreaPartial)
+                ));
             }
         }
 
         {
             int row;
-            for (row = 0; row < data->areaGridRowCount; ++row) {
-                zWorldAreaPartial* area = data->areaGridRows[row];
+            for (row = 0; row < ((CZWorldDataPartial*)(node->classData))->areaGridRowCount; ++row) {
+                zWorldAreaPartial* area = ((CZWorldDataPartial*)(node->classData))->areaGridRows[row];
                 {
                     int col;
-                    for (col = 0; col < data->areaGridColCount; ++col) {
+                    for (col = 0; col < ((CZWorldDataPartial*)(node->classData))->areaGridColCount; ++col) {
                         if (!ReadZbdBlob(area, sizeof(zWorldAreaPartial), stream)) {
                             return ReportZbdReadFailure(0x423, g_CZClass_ReadWorldAreaPartitionDataErrorMsg);
                         }
@@ -965,19 +1002,31 @@ int __fastcall gClsReadNode(CZNodePartial* node, void* stream)
             }
         }
 
-        data->pendingAreaUpdateCount = 0;
-        data->pendingAreaUpdateCapacity = 0;
-        data->pendingAreaUpdates = 0;
+        ((CZWorldDataPartial*)(node->classData))->pendingAreaUpdateCount = 0;
+        ((CZWorldDataPartial*)(node->classData))->pendingAreaUpdateCapacity = 0;
+        ((CZWorldDataPartial*)(node->classData))->pendingAreaUpdates = 0;
         CZTypeListInsert(6, node);
         CZTypeListInsert(0x0d, node);
-        SetPendingFogState(node, data->fogState);
-        SetPendingFogColorRgb01(node, data->ambientColor.red, data->ambientColor.green, data->ambientColor.blue);
-        SetPendingFogAltitudeRange(node, data->fogHeightLow, data->fogHeightHigh);
-        SetPendingFogRange(node, data->fogDistanceStart, data->fogDistanceEnd);
-        SetPendingFogDensity(node, data->fogDensity);
+        SetPendingFogState(node, ((CZWorldDataPartial*)(node->classData))->fogState);
+        SetPendingFogColorRgb01(
+            node,
+            ((CZWorldDataPartial*)(node->classData))->ambientColor.red,
+            ((CZWorldDataPartial*)(node->classData))->ambientColor.green,
+            ((CZWorldDataPartial*)(node->classData))->ambientColor.blue
+        );
+        SetPendingFogAltitudeRange(
+            node,
+            ((CZWorldDataPartial*)(node->classData))->fogHeightLow,
+            ((CZWorldDataPartial*)(node->classData))->fogHeightHigh
+        );
+        SetPendingFogRange(
+            node,
+            ((CZWorldDataPartial*)(node->classData))->fogDistanceStart,
+            ((CZWorldDataPartial*)(node->classData))->fogDistanceEnd
+        );
+        SetPendingFogDensity(node, ((CZWorldDataPartial*)(node->classData))->fogDensity);
         ApplyPendingFogSettings(node);
         break;
-    }
 
     default:
         ReportOld(
@@ -1000,12 +1049,13 @@ int __fastcall gClsReadNode(CZNodePartial* node, void* stream)
     }
 
     if (node->listCountB > 0) {
+        result = 1;
         node->listB = (CZNodePartial**)(malloc(node->listCountB * sizeof(CZNodePartial*)));
         ReadNodeRefListIndices(node->listB, node->listCountB, stream);
-        return 1;
+    } else {
+        node->listB = 0;
     }
 
-    node->listB = 0;
     return result;
 }
 

@@ -744,7 +744,7 @@ int HudSensorTracker::InitMissionGameplaySystems()
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.hud-sensor-tracker-on-objective-command
  * @recoil-artifact defines .text recoil:function:0x417ca0: HudSensorTracker::OnObjectiveCommand.
- *
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\map.cpp.
  * Purpose: dispatch bound HUD objective/map command ids to the global
@@ -755,7 +755,10 @@ void __fastcall HudSensorTracker::OnObjectiveCommand(int commandId)
     switch (commandId) {
     case 0x1b:
         if (zOpt::GetNetworkEnabled() == 0 || GameNet::GetStatusBitAllowMaps() != 0) {
-            g_HudSensorTracker.MapOverlayRefToggle(g_HudSensorTracker.mapScaleLerpActive == 0 ? 1 : 0);
+            // Authorized exception for 0x417ca0: retain this single-use local
+            // to reproduce VC5 code generation; original-source spelling is unproven.
+            const int overlayActive = g_HudSensorTracker.mapScaleLerpActive;
+            g_HudSensorTracker.MapOverlayRefToggle(overlayActive == 0 ? 1 : 0);
         }
         break;
 

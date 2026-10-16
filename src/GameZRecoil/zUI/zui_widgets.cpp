@@ -1133,14 +1133,14 @@ inline void LoadHudZrdSound(zReader::Node* parentNode, zSndSample** outSound, fl
         hudElement_->flags = (unsigned char)((hudVisibleFlag_ & ~0xefu) | 0x02u);                                      \
         const char* const hudLabelKey_ = (labelSpecBase_)[1].value.str;                                                \
         hudPanel_->SetTextFmt(zLoc::ResolveMessageKeyOrFallback(hudLabelKey_));                                        \
-        hudElement_->SetPos(                                                                                           \
+        hudPanel_->SetPos(                                                                                             \
             hudLabelOriginX_ + (labelSpecBase_)[2].value.i32,                                                          \
             hudLabelOriginY_ + (labelSpecBase_)[3].value.i32                                                           \
         );                                                                                                             \
         const int hudStyleIndex_ = (labelSpecBase_)[4].value.i32;                                                      \
-        const HudFontStyle* const hudStyle_ = (widget_)->owner->fontStyles[hudStyleIndex_].validMarker != 0            \
-            ? &((widget_)->owner->fontStyles[hudStyleIndex_])                                                          \
-            : 0;                                                                                                       \
+        HudUiBackground* const hudOwner_ = (widget_)->owner;                                                           \
+        const HudFontStyle* const hudStyle_                                                                            \
+            = hudOwner_->fontStyles[hudStyleIndex_].validMarker != 0 ? &hudOwner_->fontStyles[hudStyleIndex_] : 0;     \
         if (hudStyle_ != 0) {                                                                                          \
             hudPanel_->alignMode = hudStyle_->alignMode;                                                               \
             hudPanel_->SetFont(hudStyle_->fontName, hudStyle_->fontSize, hudStyle_->fontWeight, 0, 0, 0, 2);           \
@@ -2570,6 +2570,42 @@ int HudUiCheckToggleWidget::SetChecked(int newChecked)
     Invalidate();
     return previousChecked;
 }
+namespace {
+/**
+ * Original-source helper; no standalone retail function exists.
+ * Evidence: retail 0x4b7340 HudUiCheckToggleWidget::LoadFromZrd and 0x4b8850
+ * CHudRadioButtonWidget::LoadFromZrd end with the same image-or-label bounds
+ * sequence (identical instruction streams up to register renaming). As one
+ * inline helper, the VC5 /Ob1 site pattern of 0x4b7340 matches retail
+ * (SetShadow expanded in the label array loader) and 0x4b8850 is unchanged.
+ * Purpose: set the widget bounds from its state image, or from the stacked
+ * label panels when the widget has no image.
+ */
+inline void HudUiZrdUpdateLabelBounds(HudUiZrdWidget* widget, zVidImagePartial* boundsImage)
+{
+    if (boundsImage != 0) {
+        widget->boundsRect.top = widget->y;
+        widget->boundsRect.left = widget->x;
+        widget->boundsRect.bottom = widget->y + boundsImage->height;
+        widget->boundsRect.right = widget->x + boundsImage->width;
+    } else if (widget->labelPanels.begin() != 0) {
+        widget->boundsRect.top = widget->labelPanels[0]->GetCenterY();
+        widget->boundsRect.left = widget->labelPanels[0]->GetCenterX();
+        widget->boundsRect.bottom = widget->labelPanels[0]->QueryTextHeight() + widget->boundsRect.top;
+
+        for (HudUiPanelPtrVector::iterator panelIt = widget->labelPanels.begin(); panelIt != widget->labelPanels.end();
+            ++panelIt) {
+            widget->boundsRect.bottom += (*panelIt)->QueryTextHeight();
+            widget->boundsRect.right = (*panelIt)->QueryTextWidth() + widget->boundsRect.left > widget->boundsRect.right
+                ? (*panelIt)->QueryTextWidth() + widget->boundsRect.left
+                : widget->boundsRect.right;
+        }
+
+        widget->boundsRect.bottom -= widget->labelPanels[0]->QueryTextHeight();
+    }
+}
+} // namespace
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduichecktogglewidget-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x4b7340: HudUiCheckToggleWidget::LoadFromZrd.
@@ -2669,25 +2705,7 @@ int HudUiCheckToggleWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgrou
         }
     }
 
-    if (uncheckedImage != 0) {
-        boundsRect.top = y;
-        boundsRect.left = x;
-        boundsRect.bottom = y + uncheckedImage->height;
-        boundsRect.right = x + uncheckedImage->width;
-    } else if (labelPanels.begin() != 0) {
-        boundsRect.top = labelPanels[0]->GetCenterY();
-        boundsRect.left = labelPanels[0]->GetCenterX();
-        boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
-
-        for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
-            boundsRect.bottom += (*panelIt)->QueryTextHeight();
-            boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right
-                ? (*panelIt)->QueryTextWidth() + boundsRect.left
-                : boundsRect.right;
-        }
-
-        boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
-    }
+    HudUiZrdUpdateLabelBounds(this, uncheckedImage);
 
     return 1;
 }
@@ -3355,7 +3373,7 @@ void CHudRadioButtonWidget::OnActivate()
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.chud-radio-button-widget-load-from-zrd
  * @recoil-artifact defines .text recoil:function:0x4b8850: CHudRadioButtonWidget::LoadFromZrd.
- *
+ * @recoil-match byte
  *
  * Purpose: load the recovered HUD data handled by CHudRadioButtonWidget::LoadFromZrd.
  */
@@ -3363,7 +3381,10 @@ int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
 {
     HudUiZrdWidget::LoadFromZrd(zrdSection, ownerDialog);
 
-    unselectedImage = image;
+    // Authorized exception for 0x4b8850: retain this single-use local
+    // to reproduce VC5 code generation; original-source spelling is unproven.
+    zVidImagePartial* const loadedImage = image;
+    unselectedImage = loadedImage;
     unselectedRolloverImage = rolloverImage;
     selectedImage = activateImage;
     selectedRolloverImage = activateImage;
@@ -3373,25 +3394,7 @@ int CHudRadioButtonWidget::LoadFromZrd(zReader::Node* zrdSection, HudUiBackgroun
     boundsRect.bottom = boundsRect.top + (image != 0 ? image->width : 0);
     boundsRect.right = (image != 0 ? image->height : 0) + boundsRect.left;
 
-    if (unselectedImage != 0) {
-        boundsRect.top = y;
-        boundsRect.left = x;
-        boundsRect.bottom = unselectedImage->height + y;
-        boundsRect.right = unselectedImage->width + x;
-    } else if (labelPanels.begin() != 0) {
-        boundsRect.top = labelPanels[0]->GetCenterY();
-        boundsRect.left = labelPanels[0]->GetCenterX();
-        boundsRect.bottom = labelPanels[0]->QueryTextHeight() + boundsRect.top;
-
-        for (HudUiPanelPtrVector::iterator panelIt = labelPanels.begin(); panelIt != labelPanels.end(); ++panelIt) {
-            boundsRect.bottom += (*panelIt)->QueryTextHeight();
-            boundsRect.right = (*panelIt)->QueryTextWidth() + boundsRect.left > boundsRect.right
-                ? (*panelIt)->QueryTextWidth() + boundsRect.left
-                : boundsRect.right;
-        }
-
-        boundsRect.bottom -= labelPanels[0]->QueryTextHeight();
-    }
+    HudUiZrdUpdateLabelBounds(this, unselectedImage);
 
     mouseRectValid = 1;
     mouseRect = boundsRect;

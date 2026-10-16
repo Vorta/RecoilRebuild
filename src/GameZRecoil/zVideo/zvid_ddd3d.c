@@ -398,16 +398,12 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
     int blitPrimaryToSwFirst
 )
 {
-    // Retail reloads the display surface in one block at the top of every retry
-    // (both retry paths jump to it) and again after the optional Blt.
-    IDirectDrawSurface3* displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-    if (displaySurface == 0) {
+    if (g_zVideo_DisplayModeSurfaceState.surf == 0) {
         return 0x400;
     }
 
-    while (1) {
+    for (;;) {
         HRESULT hresult;
-        displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
         if (blitPrimaryToSwFirst != 0) {
             const DWORD bltFlags = waitForPresent != 0 ? DDBLT_WAIT : 0;
             g_zVideo_SwSurfaceState.surf->lpVtbl->Blt(
@@ -418,18 +414,17 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
                 bltFlags,
                 0
             );
-            displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
         }
 
-        hresult = displaySurface->lpVtbl->Flip(displaySurface, 0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
+        hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl
+                      ->Flip(g_zVideo_DisplayModeSurfaceState.surf, 0, waitForPresent != 0 ? DDFLIP_WAIT : 0);
         if (hresult != DD_OK) {
             if (hresult == DDERR_WASSTILLDRAWING) {
                 continue;
             }
 
             if (hresult == DDERR_SURFACELOST) {
-                displaySurface = g_zVideo_DisplayModeSurfaceState.surf;
-                hresult = displaySurface->lpVtbl->Restore(displaySurface);
+                hresult = g_zVideo_DisplayModeSurfaceState.surf->lpVtbl->Restore(g_zVideo_DisplayModeSurfaceState.surf);
             }
 
             if (hresult == DD_OK) {
@@ -440,7 +435,6 @@ int __fastcall zVideodd3dPresentDisplayModeSurface(
             return 0x5a56ffff;
         }
 
-        // Retail places the DD_OK return after the failure handling.
         return 0;
     }
 }

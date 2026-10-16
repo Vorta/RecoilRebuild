@@ -1887,12 +1887,9 @@ void __fastcall zMathMatTransformBBoxToCorners(const zMat4x3* matrix, const zBBo
     outCorners->corners[7].y = minXMaxY.y + work.y;
     outCorners->corners[7].z = minXMaxY.z + work.z;
 
-    work.x = bbox->max.z * matrix->zx;
-    work.y = bbox->max.z * matrix->zy;
-    work.z = bbox->max.z * matrix->zz;
-    work.z += matrix->posZ;
-    work.y += matrix->posY;
-    work.x += matrix->posX;
+    work.x = bbox->max.z * matrix->zx + matrix->posX;
+    work.y = bbox->max.z * matrix->zy + matrix->posY;
+    work.z = bbox->max.z * matrix->zz + matrix->posZ;
     outCorners->corners[0].x = work.x + minXMinY.x;
     outCorners->corners[0].y = work.y + minXMinY.y;
     outCorners->corners[0].z = work.z + minXMinY.z;
