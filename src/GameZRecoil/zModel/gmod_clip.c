@@ -14,6 +14,9 @@
 
 enum { kClipBufferCapacity = 0x40 };
 
+// Edge interpolation shared by the XY clippers: from + (to - from) * t.
+#define ZCLIP_LERP(dest, from, to, t) dest = (from) + ((to) - (from)) * (t)
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zvideo-setactiveviewcontext
  * @recoil-artifact defines .text recoil:function:0x479ce0: zVideoSetActiveViewContext.
@@ -624,13 +627,15 @@ int __fastcall ClipPolyNearZ_WithAttr0(zClipRectPartial* clipRect, volatile int*
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-alt
  * @recoil-artifact defines .text recoil:function:0x47b540: zClipRect::ClipPoly_NoUV_Alt
- *
+ * @recoil-match byte
  *
  * Purpose: Clip the active polygon vertex stream against enabled XY bounds without UVs.
  */
 int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
 {
     zClipVert scratchVerts[kClipBufferCapacity];
+    zClipVert* sourceVerts;
+    zClipVert* destVerts;
     int outputCount = 0;
     int parity = 0;
     int prevIndex;
@@ -638,7 +643,6 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
     float t;
 
     if ((clipRect->flags & 0x01) != 0) {
-        zClipVert* destVerts;
         destVerts = scratchVerts;
         prevIndex = *vertexCount - 1;
         i = 0;
@@ -653,19 +657,15 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                     ++outputCount;
                 } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                     ++outputCount;
                     destVerts[outputCount] = g_Clip_PolyVerts[i];
                     ++outputCount;
@@ -680,8 +680,6 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
     }
 
     if ((clipRect->flags & 0x02) != 0) {
-        zClipVert* sourceVerts;
-        zClipVert* destVerts;
         if (parity == 0) {
             destVerts = scratchVerts;
             sourceVerts = g_Clip_PolyVerts;
@@ -703,18 +701,14 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     ++outputCount;
@@ -729,8 +723,6 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
     }
 
     if ((clipRect->flags & 0x04) != 0) {
-        zClipVert* sourceVerts;
-        zClipVert* destVerts;
         if (parity == 0) {
             destVerts = scratchVerts;
             sourceVerts = g_Clip_PolyVerts;
@@ -752,18 +744,14 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     ++outputCount;
@@ -778,8 +766,6 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
     }
 
     if ((clipRect->flags & 0x08) != 0) {
-        zClipVert* sourceVerts;
-        zClipVert* destVerts;
         if (parity == 0) {
             destVerts = scratchVerts;
             sourceVerts = g_Clip_PolyVerts;
@@ -801,18 +787,14 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     ++outputCount;
@@ -839,7 +821,7 @@ int __fastcall ClipPoly_NoUV_Alt(zClipRectPartial* clipRect, int* vertexCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-withattr012-alt
  * @recoil-artifact defines .text recoil:function:0x47bd30: zClipRect::ClipPoly_NoUV_WithAttr012_Alt
- *
+ * @recoil-match byte
  *
  * Purpose: Clip active polygon vertex and three-attribute streams against enabled XY bounds.
  */
@@ -884,31 +866,21 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
-                    destAttr0[outputCount]
-                        = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                    destAttr1[outputCount]
-                        = g_Clip_PolyAttr1[prevIndex] + (g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[prevIndex]) * t;
-                    destAttr2[outputCount]
-                        = g_Clip_PolyAttr2[prevIndex] + (g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], g_Clip_PolyAttr1[prevIndex], g_Clip_PolyAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], g_Clip_PolyAttr2[prevIndex], g_Clip_PolyAttr2[i], t);
                     ++outputCount;
                 } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
-                    destAttr0[outputCount]
-                        = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                    destAttr1[outputCount]
-                        = g_Clip_PolyAttr1[prevIndex] + (g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[prevIndex]) * t;
-                    destAttr2[outputCount]
-                        = g_Clip_PolyAttr2[prevIndex] + (g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], g_Clip_PolyAttr1[prevIndex], g_Clip_PolyAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], g_Clip_PolyAttr2[prevIndex], g_Clip_PolyAttr2[i], t);
                     ++outputCount;
                     destVerts[outputCount] = g_Clip_PolyVerts[i];
                     destAttr0[outputCount] = g_Clip_PolyAttr0[i];
@@ -928,21 +900,21 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
     if ((clipRect->flags & 0x02) != 0) {
         if (parity == 0) {
             destVerts = scratchVerts;
-            destAttr0 = scratchAttr0;
-            destAttr1 = scratchAttr1;
-            destAttr2 = scratchAttr2;
             sourceVerts = g_Clip_PolyVerts;
+            destAttr0 = scratchAttr0;
             sourceAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = scratchAttr1;
             sourceAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = scratchAttr2;
             sourceAttr2 = g_Clip_PolyAttr2;
         } else {
             sourceVerts = scratchVerts;
-            sourceAttr0 = scratchAttr0;
-            sourceAttr1 = scratchAttr1;
-            sourceAttr2 = scratchAttr2;
             destVerts = g_Clip_PolyVerts;
+            sourceAttr0 = scratchAttr0;
             destAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = scratchAttr1;
             destAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = scratchAttr2;
             destAttr2 = g_Clip_PolyAttr2;
         }
 
@@ -962,24 +934,20 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                 } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     destAttr0[outputCount] = sourceAttr0[i];
@@ -999,21 +967,21 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
     if ((clipRect->flags & 0x04) != 0) {
         if (parity == 0) {
             destVerts = scratchVerts;
-            destAttr0 = scratchAttr0;
-            destAttr1 = scratchAttr1;
-            destAttr2 = scratchAttr2;
             sourceVerts = g_Clip_PolyVerts;
+            destAttr0 = scratchAttr0;
             sourceAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = scratchAttr1;
             sourceAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = scratchAttr2;
             sourceAttr2 = g_Clip_PolyAttr2;
         } else {
             sourceVerts = scratchVerts;
-            sourceAttr0 = scratchAttr0;
-            sourceAttr1 = scratchAttr1;
-            sourceAttr2 = scratchAttr2;
             destVerts = g_Clip_PolyVerts;
+            sourceAttr0 = scratchAttr0;
             destAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = scratchAttr1;
             destAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = scratchAttr2;
             destAttr2 = g_Clip_PolyAttr2;
         }
 
@@ -1033,24 +1001,20 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     destAttr0[outputCount] = sourceAttr0[i];
@@ -1070,21 +1034,21 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
     if ((clipRect->flags & 0x08) != 0) {
         if (parity == 0) {
             destVerts = scratchVerts;
-            destAttr0 = scratchAttr0;
-            destAttr1 = scratchAttr1;
-            destAttr2 = scratchAttr2;
             sourceVerts = g_Clip_PolyVerts;
+            destAttr0 = scratchAttr0;
             sourceAttr0 = g_Clip_PolyAttr0;
+            destAttr1 = scratchAttr1;
             sourceAttr1 = g_Clip_PolyAttr1;
+            destAttr2 = scratchAttr2;
             sourceAttr2 = g_Clip_PolyAttr2;
         } else {
             sourceVerts = scratchVerts;
-            sourceAttr0 = scratchAttr0;
-            sourceAttr1 = scratchAttr1;
-            sourceAttr2 = scratchAttr2;
             destVerts = g_Clip_PolyVerts;
+            sourceAttr0 = scratchAttr0;
             destAttr0 = g_Clip_PolyAttr0;
+            sourceAttr1 = scratchAttr1;
             destAttr1 = g_Clip_PolyAttr1;
+            sourceAttr2 = scratchAttr2;
             destAttr2 = g_Clip_PolyAttr2;
         }
 
@@ -1104,24 +1068,20 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
                 } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                    destVerts[outputCount].z
-                        = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
-                    destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                    destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
-                    destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                    ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
+                    ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                    ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
+                    ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
                     ++outputCount;
                     destVerts[outputCount] = sourceVerts[i];
                     destAttr0[outputCount] = sourceAttr0[i];
@@ -1144,9 +1104,9 @@ int __fastcall ClipPoly_NoUV_WithAttr012_Alt(zClipRectPartial* clipRect, int* ve
 
     if (parity == 1) {
         memcpy(g_Clip_PolyVerts, scratchVerts, (size_t)(outputCount) * sizeof(zClipVert));
-        memcpy(g_Clip_PolyAttr0, scratchAttr0, (size_t)(outputCount) * sizeof(float));
-        memcpy(g_Clip_PolyAttr1, scratchAttr1, (size_t)(outputCount) * sizeof(float));
-        memcpy(g_Clip_PolyAttr2, scratchAttr2, (size_t)(outputCount) * sizeof(float));
+        memcpy(g_Clip_PolyAttr0, scratchAttr0, (size_t)*vertexCount * sizeof(float));
+        memcpy(g_Clip_PolyAttr1, scratchAttr1, (size_t)*vertexCount * sizeof(float));
+        memcpy(g_Clip_PolyAttr2, scratchAttr2, (size_t)*vertexCount * sizeof(float));
     }
     return 1;
 }
@@ -1185,15 +1145,13 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
                     ++outputCount;
                 } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                     t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                         / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMin;
-                    destVerts[outputCount].y
-                        = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
                     ++outputCount;
                     destVerts[outputCount].x = g_Clip_PolyVerts[i].x;
                     destVerts[outputCount].y = g_Clip_PolyVerts[i].y;
@@ -1231,14 +1189,12 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                     t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                     destVerts[outputCount].x = clipRect->xMaxAlt;
-                    destVerts[outputCount].y
-                        = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
+                    ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
                     ++outputCount;
                     destVerts[outputCount].x = sourceVerts[i].x;
                     destVerts[outputCount].y = sourceVerts[i].y;
@@ -1276,14 +1232,12 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                     t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMin;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
                     ++outputCount;
                     destVerts[outputCount].x = sourceVerts[i].x;
                     destVerts[outputCount].y = sourceVerts[i].y;
@@ -1321,14 +1275,12 @@ int __fastcall ClipPoly_NoUV(zClipRectPartial* clipRect, int* vertexCount)
                 } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
                     ++outputCount;
                 } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                     t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                     destVerts[outputCount].y = clipRect->yMaxAlt;
-                    destVerts[outputCount].x
-                        = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
+                    ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
                     ++outputCount;
                     destVerts[outputCount].x = sourceVerts[i].x;
                     destVerts[outputCount].y = sourceVerts[i].y;
@@ -1487,20 +1439,16 @@ int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount)
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destVerts[outputCount].z
-                    = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
             } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destVerts[outputCount].z
-                    = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
                 destVerts[outputCount] = g_Clip_PolyVerts[i];
@@ -1540,15 +1488,15 @@ int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount)
             } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
@@ -1588,15 +1536,15 @@ int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount)
             } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
@@ -1636,15 +1584,15 @@ int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount)
             } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
@@ -1673,7 +1621,7 @@ int __fastcall ClipPoly(zClipRectPartial* clipRect, int* vertexCount)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-nouv-withattr0-alt
  * @recoil-artifact defines .text recoil:function:0x47dfb0: zClipRect::ClipPoly_NoUV_WithAttr0_Alt
- *
+ * @recoil-match byte
  *
  * Purpose: Clip the active polygon vertex and first-attribute streams against enabled XY bounds.
  */
@@ -1708,19 +1656,15 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destAttrs[outputCount]
-                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destAttrs[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
                 ++outputCount;
             } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destAttrs[outputCount]
-                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destAttrs[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
                 ++outputCount;
                 destVerts[outputCount].x = g_Clip_PolyVerts[i].x;
                 destVerts[outputCount].y = g_Clip_PolyVerts[i].y;
@@ -1761,14 +1705,14 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
             } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
                 destVerts[outputCount].x = sourceVerts[i].x;
                 destVerts[outputCount].y = sourceVerts[i].y;
@@ -1809,14 +1753,14 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
             } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
                 destVerts[outputCount].x = sourceVerts[i].x;
                 destVerts[outputCount].y = sourceVerts[i].y;
@@ -1857,14 +1801,14 @@ int __fastcall ClipPoly_NoUV_WithAttr0_Alt(zClipRectPartial* clipRect, int* vert
             } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destAttrs[outputCount] = sourceAttrs[prevIndex] + (sourceAttrs[i] - sourceAttrs[prevIndex]) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destAttrs[outputCount], sourceAttrs[prevIndex], sourceAttrs[i], t);
                 ++outputCount;
                 destVerts[outputCount].x = sourceVerts[i].x;
                 destVerts[outputCount].y = sourceVerts[i].y;
@@ -2018,7 +1962,7 @@ int __fastcall ClipPolyZRange_WithAttr012(zClipRectPartial* clipRect, volatile i
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zcliprect-clippoly-withattr012
  * @recoil-artifact defines .text recoil:function:0x47efd0: zClipRect::ClipPoly_WithAttr012
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmodel.gmod-clip.uv-lerp
- *
+ * @recoil-match byte
  *
  * Purpose: Clip active polygon vertex, UV, and three-attribute streams against enabled XY bounds.
  *
@@ -2075,33 +2019,23 @@ int __fastcall ClipPoly_WithAttr012(zClipRectPartial* clipRect, int* vertexCount
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destVerts[outputCount].z
-                    = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount]
-                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                destAttr2[outputCount]
-                    = g_Clip_PolyAttr2[prevIndex] + (g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[prevIndex]) * t;
-                destAttr1[outputCount]
-                    = g_Clip_PolyAttr1[prevIndex] + (g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], g_Clip_PolyAttr2[prevIndex], g_Clip_PolyAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], g_Clip_PolyAttr1[prevIndex], g_Clip_PolyAttr1[i], t);
                 ++outputCount;
             } else if (g_Clip_PolyVerts[prevIndex].x < clipRect->xMin && g_Clip_PolyVerts[i].x >= clipRect->xMin) {
                 t = (clipRect->xMin - g_Clip_PolyVerts[prevIndex].x)
                     / (g_Clip_PolyVerts[i].x - g_Clip_PolyVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMin;
-                destVerts[outputCount].y
-                    = g_Clip_PolyVerts[prevIndex].y + (g_Clip_PolyVerts[i].y - g_Clip_PolyVerts[prevIndex].y) * t;
-                destVerts[outputCount].z
-                    = g_Clip_PolyVerts[prevIndex].z + (g_Clip_PolyVerts[i].z - g_Clip_PolyVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, g_Clip_PolyVerts[prevIndex].y, g_Clip_PolyVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, g_Clip_PolyVerts[prevIndex].z, g_Clip_PolyVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount]
-                    = g_Clip_PolyAttr0[prevIndex] + (g_Clip_PolyAttr0[i] - g_Clip_PolyAttr0[prevIndex]) * t;
-                destAttr2[outputCount]
-                    = g_Clip_PolyAttr2[prevIndex] + (g_Clip_PolyAttr2[i] - g_Clip_PolyAttr2[prevIndex]) * t;
-                destAttr1[outputCount]
-                    = g_Clip_PolyAttr1[prevIndex] + (g_Clip_PolyAttr1[i] - g_Clip_PolyAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], g_Clip_PolyAttr0[prevIndex], g_Clip_PolyAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], g_Clip_PolyAttr2[prevIndex], g_Clip_PolyAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], g_Clip_PolyAttr1[prevIndex], g_Clip_PolyAttr1[i], t);
                 ++outputCount;
                 destVerts[outputCount] = g_Clip_PolyVerts[i];
                 destUvs[outputCount] = sourceUvs[i];
@@ -2158,22 +2092,22 @@ int __fastcall ClipPoly_WithAttr012(zClipRectPartial* clipRect, int* vertexCount
             } else if (sourceVerts[prevIndex].x < clipRect->xMaxAlt && sourceVerts[i].x >= clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].x >= clipRect->xMaxAlt && sourceVerts[i].x < clipRect->xMaxAlt) {
                 t = (clipRect->xMaxAlt - sourceVerts[prevIndex].x) / (sourceVerts[i].x - sourceVerts[prevIndex].x);
                 destVerts[outputCount].x = clipRect->xMaxAlt;
-                destVerts[outputCount].y = sourceVerts[prevIndex].y + (sourceVerts[i].y - sourceVerts[prevIndex].y) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].y, sourceVerts[prevIndex].y, sourceVerts[i].y, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
                 destUvs[outputCount] = sourceUvs[i];
@@ -2230,22 +2164,22 @@ int __fastcall ClipPoly_WithAttr012(zClipRectPartial* clipRect, int* vertexCount
             } else if (sourceVerts[prevIndex].y >= clipRect->yMin && sourceVerts[i].y < clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y < clipRect->yMin && sourceVerts[i].y >= clipRect->yMin) {
                 t = (clipRect->yMin - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMin;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
                 destUvs[outputCount] = sourceUvs[i];
@@ -2302,22 +2236,22 @@ int __fastcall ClipPoly_WithAttr012(zClipRectPartial* clipRect, int* vertexCount
             } else if (sourceVerts[prevIndex].y < clipRect->yMaxAlt && sourceVerts[i].y >= clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
             } else if (sourceVerts[prevIndex].y >= clipRect->yMaxAlt && sourceVerts[i].y < clipRect->yMaxAlt) {
                 t = (clipRect->yMaxAlt - sourceVerts[prevIndex].y) / (sourceVerts[i].y - sourceVerts[prevIndex].y);
                 destVerts[outputCount].y = clipRect->yMaxAlt;
-                destVerts[outputCount].x = sourceVerts[prevIndex].x + (sourceVerts[i].x - sourceVerts[prevIndex].x) * t;
-                destVerts[outputCount].z = sourceVerts[prevIndex].z + (sourceVerts[i].z - sourceVerts[prevIndex].z) * t;
+                ZCLIP_LERP(destVerts[outputCount].x, sourceVerts[prevIndex].x, sourceVerts[i].x, t);
+                ZCLIP_LERP(destVerts[outputCount].z, sourceVerts[prevIndex].z, sourceVerts[i].z, t);
                 ZCLIP_UV_LERP(&destUvs[outputCount], &sourceUvs[prevIndex], &sourceUvs[i], t);
-                destAttr0[outputCount] = sourceAttr0[prevIndex] + (sourceAttr0[i] - sourceAttr0[prevIndex]) * t;
-                destAttr2[outputCount] = sourceAttr2[prevIndex] + (sourceAttr2[i] - sourceAttr2[prevIndex]) * t;
-                destAttr1[outputCount] = sourceAttr1[prevIndex] + (sourceAttr1[i] - sourceAttr1[prevIndex]) * t;
+                ZCLIP_LERP(destAttr0[outputCount], sourceAttr0[prevIndex], sourceAttr0[i], t);
+                ZCLIP_LERP(destAttr2[outputCount], sourceAttr2[prevIndex], sourceAttr2[i], t);
+                ZCLIP_LERP(destAttr1[outputCount], sourceAttr1[prevIndex], sourceAttr1[i], t);
                 ++outputCount;
                 destVerts[outputCount] = sourceVerts[i];
                 destUvs[outputCount] = sourceUvs[i];

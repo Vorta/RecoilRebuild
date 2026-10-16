@@ -194,6 +194,9 @@ RECOIL_STATIC_ASSERT(sizeof(WeilerPreclassifyContourPacket) == 0x30);
         && (((aEnd)->y >= (aStart)->y && (cEnd)->y >= (cStart)->y)                                                     \
             || ((aEnd)->y <= (aStart)->y && (cEnd)->y <= (cStart)->y)))
 
+// Three-way XY coordinate comparison: -1 below, 1 above, 0 equal.
+#define WEILER_COMPARE_SIGN(value, reference) ((value) < (reference) ? -1 : (value) > (reference) ? 1 : 0)
+
 struct WeilerPointBoundsXY {
     float minX;
     float maxX;
@@ -3394,17 +3397,16 @@ bool __fastcall GenerateOutsideResults(zGeometry_WeilerStatePartial* self)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-classifypointincontourpointlistxy
  * @recoil-artifact defines .text recoil:function:0x468a10: zGeometry_Weiler::ClassifyPointInContourPointListXY
- *
+ * @recoil-match byte
  *
  * Purpose: Classify a test point as outside, on, or inside an XY contour by crossing parity.
  */
 char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPointCount, zVec3* contourPoints)
 {
     float x = contourPoints[contourPointCount - 1].x;
-    // Retail compares y double-widened (fld/fld/fcompp) while x stays a float compare.
-    double y = contourPoints[contourPointCount - 1].y;
-    int xSide = x < point->x ? -1 : x > point->x ? 1 : 0;
-    int ySide = y < point->y ? -1 : y > point->y ? 1 : 0;
+    float y = contourPoints[contourPointCount - 1].y;
+    int xSide = WEILER_COMPARE_SIGN(x, point->x);
+    int ySide = WEILER_COMPARE_SIGN(y, point->y);
 
     int crossingParity = 0;
     if (xSide == 0 && ySide == 0) {
@@ -3418,8 +3420,8 @@ char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPoint
         const int previousYSide = ySide;
         x = contourPoints->x;
         y = contourPoints->y;
-        xSide = x < point->x ? -1 : x > point->x ? 1 : 0;
-        ySide = y < point->y ? -1 : y > point->y ? 1 : 0;
+        xSide = WEILER_COMPARE_SIGN(x, point->x);
+        ySide = WEILER_COMPARE_SIGN(y, point->y);
         ++contourPoints;
 
         if (xSide == 0 && ySide == 0) {
@@ -3434,7 +3436,7 @@ char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPoint
                 float intersectionSide;
 
                 // Retail keeps intersectionSide live across both tests (fld st(0); fcomp).
-                if ((intersectionSide = xIntersection < point->x ? -1 : xIntersection > point->x ? 1 : 0) == 0.0f) {
+                if ((intersectionSide = WEILER_COMPARE_SIGN(xIntersection, point->x)) == 0.0f) {
                     return 0;
                 }
 
