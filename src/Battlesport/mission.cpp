@@ -3829,7 +3829,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-finalize-callback
  * @recoil-artifact defines .text recoil:function:0x41bca0: Player::DestroyedStateResetFinalizeCallback.
- *
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,

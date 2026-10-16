@@ -392,6 +392,12 @@ inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
     out->z = vec->z * scale;
 }
 
+#define PLAYER_CLAMP_TO(value, limit)                                                                                  \
+    if ((value) > (double)limit) {                                                                                     \
+        value = limit;                                                                                                 \
+    } else if ((value) < -limit) {                                                                                     \
+        value = -limit;                                                                                                \
+    }
 namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-updatemastertypetrack
@@ -401,7 +407,7 @@ namespace Player {
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-direction
- *
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::UpdateMasterTypeTrack from the recovered
@@ -420,6 +426,7 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
     float rollTarget;
     float pitchFiltered;
     float rollFiltered;
+    float pitchAngle;
     RebuildSteerBasisFromMotionAxes(saveState);
 
     if (playerState->airborneFlag != 0) {
@@ -581,26 +588,22 @@ void __fastcall UpdateMasterTypeTrack(zUtil_SaveGameState* saveState)
         pitchTarget = masterModalData->chassisPitchRate * playerState->angVelPitch
             + masterModalData->chassisPitchMax * playerState->localVel.z;
         rollScale = masterModalData->chassisRollMax;
-        rollTarget = 0.0f;
+        *(int*)&rollTarget = 0;
         pitchFiltered = dampingWeight * primaryModalState->chassisPitchFilterState + pitchTarget * newWeight;
         primaryModalState->chassisPitchFilterState = pitchFiltered;
         rollFiltered = dampingWeight * primaryModalState->chassisRollFilterState + rollTarget * newWeight;
         primaryModalState->chassisRollFilterState = rollFiltered;
 
-        pitchTarget -= pitchFiltered;
-        primaryModalState->chassisPitchAngleRad = pitchTarget;
+        pitchAngle = pitchTarget - pitchFiltered;
+        primaryModalState->chassisPitchAngleRad = pitchAngle;
         primaryModalState->chassisRollAngleRad
             = rollScale * playerState->angVelYaw * playerState->localVel.z + (rollTarget - rollFiltered);
-        if (masterModalData->chassisPitchDamping < pitchTarget) {
+        if (masterModalData->chassisPitchDamping < pitchAngle) {
             primaryModalState->chassisPitchAngleRad = masterModalData->chassisPitchDamping;
-        } else if (pitchTarget < -masterModalData->chassisPitchDamping) {
+        } else if (pitchAngle < -masterModalData->chassisPitchDamping) {
             primaryModalState->chassisPitchAngleRad = -masterModalData->chassisPitchDamping;
         }
-        if (primaryModalState->chassisRollAngleRad > (double)masterModalData->chassisRollDamping) {
-            primaryModalState->chassisRollAngleRad = masterModalData->chassisRollDamping;
-        } else if (primaryModalState->chassisRollAngleRad < -masterModalData->chassisRollDamping) {
-            primaryModalState->chassisRollAngleRad = -masterModalData->chassisRollDamping;
-        }
+        PLAYER_CLAMP_TO(primaryModalState->chassisRollAngleRad, masterModalData->chassisRollDamping);
         CZObject3D::gwObject3DSetRotation(
             primaryModalState->modalNode,
             primaryModalState->chassisPitchAngleRad,
@@ -1867,7 +1870,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x429240: Player::ApplyAmphibSpeedOscillation.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player-move.vector-transform-direction-in-place
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyAmphibSpeedOscillation from the recovered
