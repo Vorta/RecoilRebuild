@@ -2881,9 +2881,9 @@ void __fastcall RendererDrawPolyTLV(
 
     image = entry != 0 ? entry->image : 0;
     dx21 = triVerts[2].x - triVerts[1].x;
+    dy21 = triVerts[2].y - triVerts[1].y;
     dy01 = triVerts[0].y - triVerts[1].y;
     dx01 = triVerts[0].x - triVerts[1].x;
-    dy21 = triVerts[2].y - triVerts[1].y;
     determinant = dy21 * dx01 - dx21 * dy01;
     imageWidth = (float)(image->width);
     imageHeight = (float)(image->height);
@@ -3048,10 +3048,6 @@ void __fastcall RendererDrawPolyTLV(
         } while (edgeVertexIndex != bottomVertexIndex);
     }
 
-    currentXFixedA = edgeTableA[0].currentXFixed;
-    currentXFixedB = edgeTableB[0].currentXFixed;
-    xStepFixedA = edgeTableA[0].xStepFixed;
-    xStepFixedB = edgeTableB[0].xStepFixed;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[topVertexIndex].y);
     firstScanline = (fixed16Value + 0x7fff) >> 16;
     ZRNDR_SET_FIXED16_FROM_FLOAT(fixed16Value, polyVerts[bottomVertexIndex].y);
@@ -3091,6 +3087,10 @@ void __fastcall RendererDrawPolyTLV(
     g_spanActiveTexShift = selectedImage->uShiftFrom20;
     g_spanActiveTexUMask = selectedImage->uMask;
     g_spanActiveTexVMask = selectedImage->vMaskFixed20;
+    currentXFixedA = edgeTableA[0].currentXFixed;
+    currentXFixedB = edgeTableB[0].currentXFixed;
+    xStepFixedA = edgeTableA[0].xStepFixed;
+    xStepFixedB = edgeTableB[0].xStepFixed;
 
     for (y = firstScanline; y <= lastScanline; ++y) {
         while (y >= edgeTableA[edgeIndexA].yStart && edgeIndexA < edgeCountA) {

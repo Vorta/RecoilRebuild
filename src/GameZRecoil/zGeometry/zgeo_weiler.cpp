@@ -1124,10 +1124,10 @@ int __fastcall ClassifyContainedContour(zGeometry_WeilerStatePartial* self)
     // Recovered from retail 0x465ac0: one switch over the Intersect2d case id, with per-case edge splits,
     // adjacent-edge classification switches, xing links and a skip over freshly split C/D segments.
     WeilerPreclassifyContourPacket* const contourPacket = (WeilerPreclassifyContourPacket*)(self->contourBuffer.base);
-    zGeometry_WeilerContourSegmentPartial* contourASegment = contourPacket->contourA.firstSegment;
+    zGeometry_WeilerContourSegmentPartial* contourDSegment = contourPacket->contourD.firstSegment;
     zGeometry_WeilerContourSegmentPartial* contourBSegment = contourPacket->contourB.firstSegment;
     zGeometry_WeilerContourSegmentPartial* contourCSegment = contourPacket->contourC.firstSegment;
-    zGeometry_WeilerContourSegmentPartial* contourDSegment = contourPacket->contourD.firstSegment;
+    zGeometry_WeilerContourSegmentPartial* contourASegment = contourPacket->contourA.firstSegment;
     zGeometry_WeilerContourSegmentPartial* const contourAFirst = contourASegment;
     zGeometry_WeilerContourSegmentPartial* contourCFirst;
     zGeometry_WeilerContourSegmentPartial* segment;

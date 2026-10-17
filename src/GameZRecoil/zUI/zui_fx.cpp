@@ -193,18 +193,6 @@ HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget = { 0.0f, 0.
  * Purpose: Retain the previous rain camera target coordinates for frame-to-frame drift.
  */
 HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-f-0x56bf68
- * @recoil-artifact defines .data recoil:data:0x56bf68: g_HudWeatherFxSnow_TimeAccumulator.
- * Purpose: Accumulate elapsed snow update time.
- */
-float g_HudWeatherFxSnow_TimeAccumulator = 0.0f;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-f-0x56bf6c
- * @recoil-artifact defines .data recoil:data:0x56bf6c: g_HudWeatherFxRain_TimeAccumulator.
- * Purpose: Accumulate elapsed rain update time.
- */
-float g_HudWeatherFxRain_TimeAccumulator = 0.0f;
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfx-hudweatherfx-0x4bdc70
@@ -489,7 +477,8 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
         return;
     }
 
-    g_HudWeatherFxSnow_TimeAccumulator += deltaSeconds;
+    static float timeAccumulator = 0.0f;
+    timeAccumulator += deltaSeconds;
     if (camera == 0) {
         return;
     }
@@ -643,7 +632,7 @@ HudWeatherFxRain::~HudWeatherFxRain() { }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-update
  * @recoil-artifact defines .text recoil:function:0x4be880: HudWeatherFxRain::Update.
- *
+ * @recoil-match byte
  *
  * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
  */
@@ -653,7 +642,8 @@ void HudWeatherFxRain::Update(float deltaSeconds)
         return;
     }
 
-    g_HudWeatherFxRain_TimeAccumulator += deltaSeconds;
+    static float timeAccumulator = 0.0f;
+    timeAccumulator += deltaSeconds;
     if (camera == 0) {
         return;
     }
@@ -1069,7 +1059,7 @@ static inline void HudUiMessageBoxSetDefaultImage(HudUiZrdWidget* button, zVidIm
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-constructor
  * @recoil-artifact defines .text recoil:function:0x4bf060: HudUiMessageBoxDialog::Constructor.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Source model: class-first constructor for HudUiMessageBoxDialog; BN table
  * 0x4d4028 is installed at object offset zero by the constructed C++ object.

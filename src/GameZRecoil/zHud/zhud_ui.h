@@ -2798,7 +2798,7 @@ struct HudUiShieldMessageWidget {
     HudUiShieldMeterCandidate meter;
     unsigned char unknown_4bc[0x08];
 
-    static int __stdcall ApplyLayout(zReader::Node* layoutRoot);
+    int ApplyLayout(zReader::Node* layoutRoot);
     void ShutdownShieldWidget();
 };
 
@@ -2824,7 +2824,7 @@ struct HudUiTimerPanelFloat : HudUiPanelSimple {
  * table, and later ShutdownResources 0x40fbd0 destroys the complete object.
  */
 struct HudUiStringMenu : HudUiContainer {
-    unsigned char unknown_10[0x10];
+    HudUiRect font;
     HudUiPanelSimple items[23];
 
     HudUiStringMenu();

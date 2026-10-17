@@ -312,17 +312,21 @@ int __fastcall WriteToStream(void* stream)
     FILE* const file = (FILE*)(stream);
     int capacity;
     int result;
+    size_t itemsWritten;
     long tableOffset;
     int diIndex;
     long endOffset;
 
-    if (fwrite(&g_zModel_DiPoolCapacity, 4, 1, file) != 1) {
+    itemsWritten = fwrite(&g_zModel_DiPoolCapacity, 4, 1, file);
+    if (itemsWritten != 1) {
         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x141, g_zModel_WriteModel3dBufferErrorMsg);
     }
-    if (fwrite(&g_zModel_DiPoolInUseCount, 4, 1, file) != 1) {
+    itemsWritten = fwrite(&g_zModel_DiPoolInUseCount, 4, 1, file);
+    if (itemsWritten != 1) {
         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x14e, g_zModel_WriteModel3dBufferErrorMsg);
     }
-    if (fwrite(&g_zModel_DiPoolFreeHeadIndex, 4, 1, file) != 1) {
+    itemsWritten = fwrite(&g_zModel_DiPoolFreeHeadIndex, 4, 1, file);
+    if (itemsWritten != 1) {
         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x15b, g_zModel_WriteModel3dBufferErrorMsg);
     }
 
@@ -333,7 +337,8 @@ int __fastcall WriteToStream(void* stream)
     capacity = g_zModel_DiPoolCapacity;
     result = capacity;
     tableOffset = ftell(file);
-    if (fwrite(g_zModel_DiPoolBase, capacity * sizeof(zDiPartial), 1, file) != 1) {
+    itemsWritten = fwrite(g_zModel_DiPoolBase, capacity * sizeof(zDiPartial), 1, file);
+    if (itemsWritten != 1) {
         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x172, g_zModel_WriteModel3dBufferErrorMsg);
         result = 0;
     }
@@ -346,7 +351,8 @@ int __fastcall WriteToStream(void* stream)
 
         if (di->vertCount > 0) {
             wroteDynamicData = 1;
-            if (fwrite(di->verts, 0x0c, di->vertCount, file) != (size_t)(di->vertCount)) {
+            itemsWritten = fwrite(di->verts, 0x0c, di->vertCount, file);
+            if (itemsWritten != (size_t)(di->vertCount)) {
                 ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x18c, g_zModel_WriteModel3dBufferErrorMsg);
                 result = 0;
                 break;
@@ -355,7 +361,8 @@ int __fastcall WriteToStream(void* stream)
 
         if (di->normalCount > 0) {
             wroteDynamicData = 1;
-            if (fwrite(di->normals, 0x0c, di->normalCount, file) != (size_t)(di->normalCount)) {
+            itemsWritten = fwrite(di->normals, 0x0c, di->normalCount, file);
+            if (itemsWritten != (size_t)(di->normalCount)) {
                 ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x19f, g_zModel_WriteModel3dBufferErrorMsg);
                 result = 0;
                 break;
@@ -364,7 +371,8 @@ int __fastcall WriteToStream(void* stream)
 
         if (di->blendVertCount > 0) {
             wroteDynamicData = 1;
-            if (fwrite(di->blendVerts, 0x0c, di->blendVertCount, file) != (size_t)(di->blendVertCount)) {
+            itemsWritten = fwrite(di->blendVerts, 0x0c, di->blendVertCount, file);
+            if (itemsWritten != (size_t)(di->blendVertCount)) {
                 ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x1b2, g_zModel_WriteModel3dBufferErrorMsg);
                 result = 0;
                 break;
@@ -375,8 +383,8 @@ int __fastcall WriteToStream(void* stream)
             zModel_PointEntryPartial* point;
             int pointIndex;
             wroteDynamicData = 1;
-            if (fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount, file)
-                != (size_t)(di->pointCount)) {
+            itemsWritten = fwrite(di->pointEntries, sizeof(zModel_PointEntryPartial), di->pointCount, file);
+            if (itemsWritten != (size_t)(di->pointCount)) {
                 ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x1c9, g_zModel_WriteModel3dBufferErrorMsg);
                 result = 0;
                 break;
@@ -384,12 +392,13 @@ int __fastcall WriteToStream(void* stream)
 
             point = di->pointEntries;
             for (pointIndex = 0; pointIndex < di->pointCount; ++pointIndex, ++point) {
-                if (point->pointCamCount > 0
-                    && fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file)
-                        != (size_t)(point->pointCamCount)) {
-                    ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x1dd, g_zModel_WriteModel3dBufferErrorMsg);
-                    result = 0;
-                    break;
+                if (point->pointCamCount > 0) {
+                    itemsWritten = fwrite(point->pointCamList, sizeof(zVec3), point->pointCamCount, file);
+                    if (itemsWritten != (size_t)(point->pointCamCount)) {
+                        ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x1dd, g_zModel_WriteModel3dBufferErrorMsg);
+                        result = 0;
+                        break;
+                    }
                 }
             }
         }
@@ -413,37 +422,47 @@ int __fastcall WriteToStream(void* stream)
                     = (zModel_MaterialPartial*)(IndexFromPtrOrMinus1((zModel_MaterialSlot*)(convertedEntry->material)));
             }
 
-            if (fwrite(serializedEntries, entryBytes, 1, file) != 1) {
+            itemsWritten = fwrite(serializedEntries, entryBytes, 1, file);
+            if (itemsWritten != 1) {
                 ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x209, g_zModel_WriteModel3dBufferErrorMsg);
                 result = 0;
                 break;
             }
 
+            convertedEntry = serializedEntries;
             sourceEntries = di->entries;
-            for (writeIndex = 0; writeIndex < entryCount; ++writeIndex) {
-                zDiEntryPartial* const entry = &serializedEntries[writeIndex];
-                if ((entry->flagsAndIndexCount & 0xff) > 0) {
-                    if (fwrite(entry->vertexIndices, 4, entry->flagsAndIndexCount & 0xff, file)
-                        != (entry->flagsAndIndexCount & 0xff)) {
+            for (writeIndex = 0; writeIndex < entryCount; ++writeIndex, ++convertedEntry, ++sourceEntries) {
+                if ((convertedEntry->flagsAndIndexCount & 0xff) > 0) {
+                    itemsWritten
+                        = fwrite(convertedEntry->vertexIndices, 4, convertedEntry->flagsAndIndexCount & 0xff, file);
+                    if (itemsWritten != (convertedEntry->flagsAndIndexCount & 0xff)) {
                         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x21e, g_zModel_WriteModel3dBufferErrorMsg);
                         result = 0;
                         break;
                     }
-                    if ((entry->flagsAndIndexCount & 0x0200) != 0 && entry->normalIndices != 0
-                        && fwrite(entry->normalIndices, 4, entry->flagsAndIndexCount & 0xff, file)
-                            != (entry->flagsAndIndexCount & 0xff)) {
-                        ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x22e, g_zModel_WriteModel3dBufferErrorMsg);
-                        result = 0;
-                        break;
+                    if ((convertedEntry->flagsAndIndexCount & 0x0200) != 0 && convertedEntry->normalIndices != 0) {
+                        itemsWritten
+                            = fwrite(convertedEntry->normalIndices, 4, convertedEntry->flagsAndIndexCount & 0xff, file);
+                        if (itemsWritten != (convertedEntry->flagsAndIndexCount & 0xff)) {
+                            ReportOld(
+                                0x200,
+                                g_zModel_SourceFile_GmodConstC,
+                                0x22e,
+                                g_zModel_WriteModel3dBufferErrorMsg
+                            );
+                            result = 0;
+                            break;
+                        }
                     }
                 }
 
-                if ((sourceEntries[writeIndex].material->flags & 0x0100) != 0
-                    && fwrite(entry->uvPairs, 8, entry->flagsAndIndexCount & 0xff, file)
-                        != (entry->flagsAndIndexCount & 0xff)) {
-                    ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x240, g_zModel_WriteModel3dBufferErrorMsg);
-                    result = 0;
-                    break;
+                if ((sourceEntries->material->flags & 0x0100) != 0) {
+                    itemsWritten = fwrite(convertedEntry->uvPairs, 8, convertedEntry->flagsAndIndexCount & 0xff, file);
+                    if (itemsWritten != (convertedEntry->flagsAndIndexCount & 0xff)) {
+                        ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x240, g_zModel_WriteModel3dBufferErrorMsg);
+                        result = 0;
+                        break;
+                    }
                 }
             }
 
@@ -457,7 +476,8 @@ int __fastcall WriteToStream(void* stream)
 
     endOffset = ftell(file);
     fseek(file, tableOffset, SEEK_SET);
-    if (fwrite(g_zModel_DiPoolBase, g_zModel_DiPoolCapacity * sizeof(zDiPartial), 1, file) != 1) {
+    itemsWritten = fwrite(g_zModel_DiPoolBase, g_zModel_DiPoolCapacity * sizeof(zDiPartial), 1, file);
+    if (itemsWritten != 1) {
         ReportOld(0x200, g_zModel_SourceFile_GmodConstC, 0x263, g_zModel_WriteModel3dBufferErrorMsg);
         result = 0;
     }
@@ -2417,7 +2437,7 @@ void __fastcall SetObject3DColorModeForMaterials(zDiPartial* self, int colorMode
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.rebuildgenerateduvpairsforentry
  * @recoil-artifact defines .text recoil:function:0x4843b0: zDi::RebuildGeneratedUvPairsForEntry
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: rebuild generated UV pairs for polygon vertices beyond the first triangle.
  */

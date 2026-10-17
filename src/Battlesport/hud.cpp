@@ -7742,7 +7742,7 @@ void __stdcall HudScoreboard::DispatchSetScale(float deltaTime)
  * Purpose: Apply the shield-message HUD layout and reset the displayed
  * percent text.
  */
-int __stdcall HudUiShieldMessageWidget::ApplyLayout(zReader::Node* layoutRoot)
+int HudUiShieldMessageWidget::ApplyLayout(zReader::Node* layoutRoot)
 {
     HudUiLayoutNode::ApplyImageWidget(
         &layoutRoot->value.nodes[1],
@@ -8732,9 +8732,9 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     g_HudLayoutHW.LoadTypeIIFromZarRoot(root);
     SwitchActiveDialog(&g_HudLayoutSW);
 
-    HudUiRect objectiveSummaryFont = { 0 };
-    HudUiRect objectiveDescriptionFont = { 0 };
-    HudUiRect ammoFont = { 0 };
+    HudUiRect objectiveSummaryFont;
+    HudUiRect objectiveDescriptionFont;
+    HudUiRect ammoFont;
 
     zReader::Node* const fontsNode = zRdrFindTag(root, g_HudCfgKey_Fonts);
     if (fontsNode != 0) {
@@ -8745,37 +8745,37 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
             HudUiLayoutNode::ReadRect(node, &objectiveDescriptionFont);
         }
         if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_Strings)) {
-            HudUiPanelFontParams* const fontArgs = (HudUiPanelFontParams*)(&g_HudUiMgrStringMenu->unknown_10[0]);
-            HudUiLayoutNode::ReadRect(node, (HudUiRect*)(fontArgs));
-            {
-                int itemIndex4;
-                for (itemIndex4 = 0;
-                    itemIndex4 < (int)(sizeof(g_HudUiMgrStringMenu->items) / sizeof(g_HudUiMgrStringMenu->items[0]));
-                    ++itemIndex4) {
-                    HudUiPanelSimple& item = g_HudUiMgrStringMenu->items[itemIndex4];
-                    item.SetFont(fontArgs->faceName, fontArgs->weight, fontArgs->width, fontArgs->height, 0, 0, 2);
-                }
-            }
+            HudUiLayoutNode::ReadRect(node, &g_HudUiMgrStringMenu->font);
+            HudUiPanelSimple* item = &g_HudUiMgrStringMenu->items[0];
+            int itemsRemaining = (int)(sizeof(g_HudUiMgrStringMenu->items) / sizeof(g_HudUiMgrStringMenu->items[0]));
+            do {
+                item->SetFont(
+                    (const char*)(g_HudUiMgrStringMenu->font.left),
+                    g_HudUiMgrStringMenu->font.right,
+                    g_HudUiMgrStringMenu->font.bottom,
+                    g_HudUiMgrStringMenu->font.top,
+                    0,
+                    0,
+                    2
+                );
+                ++item;
+            } while (--itemsRemaining != 0);
         }
         if (zReader::Node* const node = zRdrFindTag(fontsNode, "MESSAGES")) {
-            HudUiRect messagesFont = { 0 };
+            HudUiRect messagesFont;
             HudUiLayoutNode::ReadRect(node, &messagesFont);
-            if (g_HudUiTopMessageStack != 0) {
-                g_HudUiTopMessageStack->SetFontAll(
-                    (const char*)(messagesFont.left),
-                    messagesFont.right,
-                    messagesFont.bottom,
-                    messagesFont.top
-                );
-            }
-            if (g_HudUiChatMessageStack != 0) {
-                g_HudUiChatMessageStack->SetFontAll(
-                    (const char*)(messagesFont.left),
-                    messagesFont.right,
-                    messagesFont.bottom,
-                    messagesFont.top
-                );
-            }
+            g_HudUiTopMessageStack->SetFontAll(
+                (const char*)(messagesFont.left),
+                messagesFont.right,
+                messagesFont.bottom,
+                messagesFont.top
+            );
+            g_HudUiChatMessageStack->SetFontAll(
+                (const char*)(messagesFont.left),
+                messagesFont.right,
+                messagesFont.bottom,
+                messagesFont.top
+            );
         }
         if (zReader::Node* const node = zRdrFindTag(fontsNode, g_HudCfgKey_Ammo)) {
             HudUiLayoutNode::ReadRect(node, &ammoFont);
@@ -8787,12 +8787,9 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     }
 
     zReader::Node* const sensorNode = zRdrFindTag(root, g_HudCfgKey_Sensor);
-    int sensorCenterX = 0;
-    int sensorCenterY = 0;
     if (sensorNode != 0) {
-        zReader::Node* const sensorPayload = sensorNode->value.nodes;
         HudUiLayoutNode::ApplyImageWidget(
-            &sensorPayload[1],
+            &sensorNode->value.nodes[1],
             &g_HudUiMgrSensorPanel,
             0,
             g_HudUiMgrHudOriginY,
@@ -8801,19 +8798,20 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
             &g_HudUiMgrSensorBlock.sensorViewportRect
         );
 
-        sensorCenterX = g_HudUiMgrSensorPanel.GetCenterX();
-        sensorCenterY = g_HudUiMgrSensorPanel.GetCenterY();
-        g_HudUiMgrSensorBlock.sensorParam = sensorPayload[2].value.f32;
+        int sensorCenter[2];
+        sensorCenter[0] = g_HudUiMgrSensorPanel.GetCenterX();
+        sensorCenter[1] = g_HudUiMgrSensorPanel.GetCenterY();
+        g_HudUiMgrSensorBlock.sensorParam = sensorNode->value.nodes[2].value.f32;
 
-        int sensorOffsetX = 0;
-        int sensorOffsetY = 0;
-        int sensorWidth = 0;
-        int sensorHeight = 0;
-        HudUiLayoutNode::ReadInt3(&sensorPayload[3], &sensorOffsetX, &sensorOffsetY, 0);
-        HudUiLayoutNode::ReadInt3(&sensorPayload[4], &sensorWidth, &sensorHeight, 0);
+        int sensorOffsetX;
+        int sensorOffsetY;
+        int sensorWidth;
+        int sensorHeight;
+        HudUiLayoutNode::ReadInt3(&sensorNode->value.nodes[3], &sensorOffsetX, &sensorOffsetY, 0);
+        HudUiLayoutNode::ReadInt3(&sensorNode->value.nodes[4], &sensorWidth, &sensorHeight, 0);
 
-        const int sensorX = sensorCenterX + sensorOffsetX;
-        const int sensorY = sensorCenterY + sensorOffsetY;
+        const int sensorX = sensorCenter[0] + sensorOffsetX;
+        const int sensorY = sensorCenter[1] + sensorOffsetY;
         g_HudUiMgrSensorFxRect.left = sensorX;
         g_HudUiMgrSensorFxRect.top = sensorY;
         g_HudUiMgrSensorFxRect.right = sensorX + sensorWidth;
@@ -8822,19 +8820,34 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         g_HudUiMgrSensorFxViewportHeight = sensorHeight;
         HudUiMgrSensor::SetViewportRect(sensorX, sensorY, sensorWidth, sensorHeight);
 
-        const float range = sensorPayload[5].value.i32;
-        float rangeBitsValue = range * range * 0.5f;
-        unsigned int rangeBits = 0;
-        memcpy(&rangeBits, &rangeBitsValue, sizeof(rangeBits));
-        rangeBits = (rangeBits >> 1) + 0x1fc00000u;
-        memcpy(&rangeBitsValue, &rangeBits, sizeof(rangeBitsValue));
-        g_HudUiMgrSensorBlock.sensorRangeSq = rangeBitsValue + rangeBitsValue;
+        const float range = sensorNode->value.nodes[5].value.i32;
+        g_HudUiMgrSensorBlock.sensorRangeSq = range * range * 0.5f;
+        int rangeBits;
+        memcpy(&rangeBits, &g_HudUiMgrSensorBlock.sensorRangeSq, sizeof(rangeBits));
+        rangeBits = (rangeBits >> 1) + 0x1fc00000;
+        float sqrtEstimate;
+        memcpy(&sqrtEstimate, &rangeBits, sizeof(sqrtEstimate));
+        g_HudUiMgrSensorBlock.sensorRangeSq = sqrtEstimate + sqrtEstimate;
 
-        const int overlayAnchor[2] = { sensorCenterX, sensorCenterY };
-        HudUiLayoutNode::ApplyImageWidget(&sensorPayload[6], &g_HudUiMgrSensorOverlay, 0, 0, overlayAnchor, 0, 0);
+        HudUiLayoutNode::ApplyImageWidget(
+            &sensorNode->value.nodes[6],
+            &g_HudUiMgrSensorOverlay,
+            0,
+            0,
+            sensorCenter,
+            0,
+            0
+        );
 
-        HudUiRect meterRect = { 0 };
-        HudUiLayoutNode::ApplyMeterQuad(&sensorPayload[7], &g_HudUiMgrSensorMeter, 0, 0, overlayAnchor, &meterRect);
+        HudUiRect meterRect;
+        HudUiLayoutNode::ApplyMeterQuad(
+            &sensorNode->value.nodes[7],
+            &g_HudUiMgrSensorMeter,
+            0,
+            0,
+            sensorCenter,
+            &meterRect
+        );
         g_HudUiMgrSensorMeter.drawParam = 0x7e0;
         ((HudUiElement*)(&g_HudUiMgrSensorMeter))->SetBltSourceAndClipRect(g_HudUiMgrSensorPanel.image, &meterRect);
 
@@ -8844,46 +8857,56 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     }
 
     if (zReader::Node* const objectiveNode = zRdrFindTag(root, g_HudCfgKey_Objective)) {
-        zReader::Node* const objectivePayload = objectiveNode->value.nodes;
-        g_HudUiMgrObjectivePhaseDurationSec = objectivePayload[1].value.f32;
+        g_HudUiMgrObjectivePhaseDurationSec = objectiveNode->value.nodes[1].value.f32;
 
-        const int panelCenter[2] = { sensorCenterX != 0 ? sensorCenterX : g_HudUiMgrSensorPanel.GetCenterX(),
-            sensorCenterY != 0 ? sensorCenterY : g_HudUiMgrSensorPanel.GetCenterY() };
-        HudUiLayoutNode::ApplyImageWidget(&objectivePayload[2], &g_HudUiMgrObjectiveWidget, 0, 0, panelCenter, 0, 0);
+        {
+            int panelCenter[2];
+            panelCenter[0] = g_HudUiMgrSensorPanel.GetCenterX();
+            panelCenter[1] = g_HudUiMgrSensorPanel.GetCenterY();
+            HudUiLayoutNode::ApplyImageWidget(
+                &objectiveNode->value.nodes[2],
+                &g_HudUiMgrObjectiveWidget,
+                0,
+                0,
+                panelCenter,
+                0,
+                0
+            );
+        }
 
         int objectiveCenter[2] = { g_HudUiMgrObjectiveWidget.GetCenterX(), g_HudUiMgrObjectiveWidget.GetCenterY() };
-        HudUiRect objectiveBarRect = { 0 };
+        HudUiRect objectiveBarRect;
         HudUiLayoutNode::ApplyCornerTextQuad(
-            &objectivePayload[3],
+            &objectiveNode->value.nodes[3],
             &g_HudUiMgrObjectiveBar,
             objectiveCenter,
             &objectiveBarRect
         );
         g_HudUiMgr.objective.slideRangeX = (float)(objectiveBarRect.right - objectiveBarRect.left);
 
-        int red = 0;
-        int green = 0;
-        int blue = 0;
-        HudUiLayoutNode::ReadInt3(&objectivePayload[4], &red, &green, &blue);
+        int red;
+        int green;
+        int blue;
+        HudUiLayoutNode::ReadInt3(&objectiveNode->value.nodes[4], &red, &green, &blue);
         g_HudUiMgrObjectiveBar.drawParam
             = zVidPackColorRGB((unsigned char)(red), (unsigned char)(green), (unsigned char)(blue)) & 0xffffu;
 
-        int x = 0;
-        int y = 0;
-        HudUiLayoutNode::ReadInt3(&objectivePayload[5], &x, &y, 0);
+        int x;
+        int y;
+        HudUiLayoutNode::ReadInt3(&objectiveNode->value.nodes[5], &x, &y, 0);
         ((HudUiElement*)(g_HudUiMgrObjectiveSummaryTextPanel))->SetPos(objectiveCenter[0] + x, objectiveCenter[1] + y);
-        HudUiLayoutNode::ReadInt3(&objectivePayload[6], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&objectiveNode->value.nodes[6], &x, &y, 0);
         ((HudUiElement*)(g_HudUiMgrObjectiveDescTextPanel))->SetPos(objectiveCenter[0] + x, objectiveCenter[1] + y);
 
-        HudUiRect wrapRect = { 0 };
+        HudUiRect wrapRect;
         wrapRect.left = 0;
         wrapRect.top = 0;
-        wrapRect.right = panelCenter[0] - x * 2 - objectiveBarRect.left;
-        wrapRect.bottom = panelCenter[1] - objectiveBarRect.bottom;
+        wrapRect.right = objectiveBarRect.right - x * 2 - objectiveBarRect.left;
+        wrapRect.bottom = objectiveBarRect.bottom - objectiveBarRect.top;
         g_HudUiMgrObjectiveDescTextPanel->EnableWordWrapWithRect(&wrapRect);
 
         HudUiLayoutNode::ApplyMeterQuad(
-            &objectivePayload[7],
+            &objectiveNode->value.nodes[7],
             &g_HudUiMgrObjectiveMeter,
             0,
             0,
@@ -8897,7 +8920,7 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
         g_HudUiMgrObjectiveMeter.points[0].y = (float)(meterTop);
         g_HudUiMgrObjectiveMeter.points[3].y = (float)(meterTop);
 
-        HudUiLayoutNode::ReadInt3(&objectivePayload[8], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&objectiveNode->value.nodes[8], &x, &y, 0);
         ((HudUiElement*)(g_HudUiMgrObjectiveLabelTextPanel))->SetPos(x, y + g_HudUiMgrHudOriginY);
         g_HudUiMgrObjectiveLabelTextPanel->SetTextFmt(zLoc::GetMessageString(0x906));
         ((HudUiElement*)(&g_HudUiMgrObjectiveSensorRect))
@@ -8937,64 +8960,63 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     }
 
     if (zReader::Node* const reticleNode = zRdrFindTag(root, g_HudCfgKey_Reticule)) {
-        zReader::Node* const reticlePayload = reticleNode->value.nodes;
-        g_HudUiMgrReticleImages[0] = zImage::TexDirFindOrCreateByPath(reticlePayload[1].value.str);
-        g_HudUiMgrReticleImages[1] = zImage::TexDirFindOrCreateByPath(reticlePayload[2].value.str);
-        g_HudUiMgrReticleImages[2] = zImage::TexDirFindOrCreateByPath(reticlePayload[3].value.str);
+        g_HudUiMgrReticleImages[0] = zImage::TexDirFindOrCreateByPath(reticleNode->value.nodes[1].value.str);
+        g_HudUiMgrReticleImages[1] = zImage::TexDirFindOrCreateByPath(reticleNode->value.nodes[2].value.str);
+        g_HudUiMgrReticleImages[2] = zImage::TexDirFindOrCreateByPath(reticleNode->value.nodes[3].value.str);
         g_HudUiMgrReticleWidget.SetImageBorrowedAndInvalidate(g_HudUiMgrReticleImages[0]);
-        g_HudUiMgrReticleWidget.imageStateWord = (g_HudUiMgrReticleWidget.imageStateWord & 0xffff0000u) | 1u;
+        *((unsigned short*)(&g_HudUiMgrReticleWidget.imageStateWord)) = 1;
         ((HudUiElement*)(&g_HudUiMgrReticleWidget))->Invalidate();
         zVidImagePartial* const image = g_HudUiMgrReticleWidget.image;
-        g_HudUiMgrReticleWidgetHalfW = image != 0 ? (short)(image->width) / 2 : 0;
-        g_HudUiMgrReticleWidgetHalfH = image != 0 ? (short)(image->height) / 2 : 0;
+        g_HudUiMgrReticleWidgetHalfW = (image != 0 ? (short)(image->width) : 0) / 2;
+        g_HudUiMgrReticleWidgetHalfH = (image != 0 ? (short)(image->height) : 0) / 2;
         ((HudUiElement*)(&g_HudUiMgrReticleWidget))->SetVisible(0);
     }
 
     if (zReader::Node* const statsNode = zRdrFindTag(root, g_HudCfgKey_Stats)) {
-        zReader::Node* const statsPayload = statsNode->value.nodes;
         HudUiWidget* const layoutWidget = &g_HudLayoutHW.widget1;
         const int layoutCenterX = layoutWidget->GetCenterX();
         const int layoutCenterY = layoutWidget->GetCenterY();
         int x;
         int y;
         int z;
-        HudUiLayoutNode::ReadInt3(&statsPayload[1], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[1], &x, &y, 0);
         const int counterX = (g_HudUiMgrHudOriginX / 2) + x;
         ((HudUiElement*)(g_HudUiMgrObjectiveCounterTextPanel))->SetPos(counterX + layoutCenterX, y + layoutCenterY);
         ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel))->alignMode = 1;
         HudUiRect counterClip = { counterX - 0x14, y, counterX + 0x14, y + 0x0a };
         g_HudUiMgrObjectiveCounterTextPanel->SetBltSourceAndClipRect(0, &counterClip);
-        ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel))->SetTextFmt(g_HudUiBlankSpaces8);
-        ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel))->UpdateTextBoundsFromContent();
-        ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel))->SetTextFmt("%d", 0);
-        ((HudUiPanel*)(g_HudUiMgrObjectiveCounterTextPanel))->UpdateTextBoundsFromContent();
+        g_HudUiMgrObjectiveCounterTextPanel->SetTextFmt(g_HudUiBlankSpaces8);
+        g_HudUiMgrObjectiveCounterTextPanel->UpdateTextBoundsFromContent();
+        g_HudUiMgrObjectiveCounterTextPanel->SetTextFmt("%d", 0);
+        g_HudUiMgrObjectiveCounterTextPanel->UpdateTextBoundsFromContent();
 
-        HudUiLayoutNode::ReadInt3(&statsPayload[2], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[2], &x, &y, 0);
         const int timerX = x + g_HudUiMgrHudOriginX;
         ((HudUiElement*)(g_HudUiMgrTimerPanel))->SetPos(timerX + layoutCenterX, y + layoutCenterY);
-        HudUiRect timerClip = { timerX, y, 0, 0 };
-        g_HudUiMgrTimerPanel->SetBltSourceAndClipRect(0, &timerClip);
+        counterClip.left = timerX;
+        counterClip.top = y;
+        g_HudUiMgrTimerPanel->SetBltSourceAndClipRect(0, &counterClip);
         ((HudUiPanel*)(g_HudUiMgrTimerPanel))->SetTextFmt("00:00:00");
 
         HudUiTriplet* const triplet = g_HudUiMgrStatsList->triplet;
-        HudUiLayoutNode::ReadInt3(&statsPayload[3], &x, &y, &z);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[3], &x, &y, &z);
         triplet->baseXStart = x + layoutCenterX + g_HudUiMgrHudOriginX;
         triplet->baseYStart = y + layoutCenterY;
         triplet->rowPitchYStart = z;
-        HudUiLayoutNode::ReadInt3(&statsPayload[4], &x, &y, &z);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[4], &x, &y, &z);
         triplet->baseXEnd = x + layoutCenterX + g_HudUiMgrHudOriginX;
         triplet->baseYEnd = y + layoutCenterY;
         triplet->rowPitchYEnd = z;
-        HudUiLayoutNode::ReadInt3(&statsPayload[5], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[5], &x, &y, 0);
         triplet->lapsColumnOffsetXStart = x;
         triplet->lapsColumnOffsetXEnd = y;
-        HudUiLayoutNode::ReadInt3(&statsPayload[6], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[6], &x, &y, 0);
         triplet->killsColumnOffsetXStart = x;
         triplet->killsColumnOffsetXEnd = y;
-        HudUiLayoutNode::ReadInt3(&statsPayload[7], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[7], &x, &y, 0);
         triplet->fontSizeStart = x;
         triplet->fontSizeEnd = y;
-        HudUiLayoutNode::ReadInt3(&statsPayload[8], &x, &y, 0);
+        HudUiLayoutNode::ReadInt3(&statsNode->value.nodes[8], &x, &y, 0);
         triplet->fontWeightStart = x;
         triplet->fontWeightEnd = y;
         triplet->InterpolateLayout(0.0f);
@@ -9002,24 +9024,26 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
     }
 
     if (zReader::Node* const shieldNode = zRdrFindTag(root, g_HudCfgKey_Shield)) {
-        HudUiShieldMessageWidget::ApplyLayout(shieldNode);
+        g_HudUiMgrShieldMessageWidget->ApplyLayout(shieldNode);
     }
 
     if (zReader::Node* const targetNode = zRdrFindTag(root, g_HudCfgKey_Target)) {
-        zReader::Node* const targetPayload = targetNode->value.nodes;
-        g_HudUiMgrSensorTargetMarkerImages[0] = zImage::TexDirFindOrCreateByPath(targetPayload[1].value.str);
-        g_HudUiMgrSensorTargetMarkerImages[1] = zImage::TexDirFindOrCreateByPath(targetPayload[2].value.str);
-        g_HudUiMgrSensorTargetMarkerImages[2] = zImage::TexDirFindOrCreateByPath(targetPayload[3].value.str);
-        g_HudUiMgrSensorTargetMarkerImages[3] = zImage::TexDirFindOrCreateByPath(targetPayload[4].value.str);
-        g_HudUiMgrSensorTargetMarkerImages[4] = zImage::TexDirFindOrCreateByPath(targetPayload[5].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[0] = zImage::TexDirFindOrCreateByPath(targetNode->value.nodes[1].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[1] = zImage::TexDirFindOrCreateByPath(targetNode->value.nodes[2].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[2] = zImage::TexDirFindOrCreateByPath(targetNode->value.nodes[3].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[3] = zImage::TexDirFindOrCreateByPath(targetNode->value.nodes[4].value.str);
+        g_HudUiMgrSensorTargetMarkerImages[4] = zImage::TexDirFindOrCreateByPath(targetNode->value.nodes[5].value.str);
 
         {
             int slotIndex5;
             for (slotIndex5 = 0; slotIndex5 < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
                 ++slotIndex5) {
                 HudUiSlot& slot = g_HudUiMgrWeaponSlots[slotIndex5];
-                slot.trackMarkerWidget.imageStateWord = (slot.trackMarkerWidget.imageStateWord & 0xffff0000u) | 1u;
+                *((unsigned short*)(&slot.trackMarkerWidget.imageStateWord)) = 1;
                 ((HudUiElement*)(&slot.trackMarkerWidget))->Invalidate();
+                *((unsigned short*)(&slot.slotWidget.imageStateWord)) = 1;
+                ((HudUiElement*)(&slot.slotWidget))->Invalidate();
+                g_HudUiMgr.AddChild(&slot);
             }
         }
 
@@ -9028,8 +9052,6 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
             for (slotIndex6 = 0; slotIndex6 < (int)(sizeof(g_HudUiMgrWeaponSlots) / sizeof(g_HudUiMgrWeaponSlots[0]));
                 ++slotIndex6) {
                 HudUiSlot& slot = g_HudUiMgrWeaponSlots[slotIndex6];
-                ((HudUiElement*)(&slot.slotWidget))->Invalidate();
-                g_HudUiMgr.AddChild(&slot);
                 ((HudUiElement*)(&slot.trackMarkerWidget))->SetVisible(0);
                 ((HudUiElement*)(&slot.slotWidget))->SetVisible(0);
             }
@@ -9040,11 +9062,10 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
 
     zReader::Node* weaponNode = zRdrFindTag(root, g_HudCfgKey_Weapon);
     if (weaponNode != 0) {
-        zReader::Node* const weaponPayload = weaponNode->value.nodes;
         {
             for (int index = 1; index < 10; ++index) {
                 g_HudUiMgrMessages[index].LoadWeaponLayoutFromNode(
-                    &weaponPayload[index],
+                    &weaponNode->value.nodes[index],
                     (const HudUiPanelFontParams*)(&ammoFont)
                 );
             }
@@ -9053,10 +9074,9 @@ int __fastcall EnsureHudLoaded(const char* entryPath)
 
     zReader::Node* modesNode = zRdrFindTag(root, g_HudCfgKey_Modes);
     if (modesNode != 0) {
-        zReader::Node* const modesPayload = modesNode->value.nodes;
         {
             for (int index = 0; index < 4; ++index) {
-                g_HudUiMgrModeCounters[index].ApplyFromLayoutNode(&modesPayload[index + 1]);
+                g_HudUiMgrModeCounters[index].ApplyFromLayoutNode(&modesNode->value.nodes[index + 1]);
             }
         }
     }

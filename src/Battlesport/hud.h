@@ -609,16 +609,6 @@ extern zSndSample* g_Hud_LowMeterLoopSample;
 extern int g_Hud_LowMeterLoopActive;
 extern float g_Hud_LowMeterBeepInterval;
 extern float g_Hud_LowMeterNextBeepTime;
-extern HudWeatherFxCameraTargetHistory g_HudWeatherFxSnow_LastCameraTarget;
-extern float g_HudWeatherFxSnow_TimeAccumulator;
-extern HudWeatherFxCameraTargetHistory g_HudWeatherFxRain_LastCameraTarget;
-extern float g_HudWeatherFxRain_TimeAccumulator;
-#define g_HudWeatherFxSnow_LastCameraTargetX (g_HudWeatherFxSnow_LastCameraTarget.x)
-#define g_HudWeatherFxSnow_LastCameraTargetY (g_HudWeatherFxSnow_LastCameraTarget.y)
-#define g_HudWeatherFxSnow_LastCameraTargetZ (g_HudWeatherFxSnow_LastCameraTarget.z)
-#define g_HudWeatherFxRain_LastCameraTargetX (g_HudWeatherFxRain_LastCameraTarget.x)
-#define g_HudWeatherFxRain_LastCameraTargetY (g_HudWeatherFxRain_LastCameraTarget.y)
-#define g_HudWeatherFxRain_LastCameraTargetZ (g_HudWeatherFxRain_LastCameraTarget.z)
 namespace HudUiCallback {
 int QueueCheatCodeState();
 } // namespace HudUiCallback
