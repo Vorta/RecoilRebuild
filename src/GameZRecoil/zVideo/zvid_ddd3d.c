@@ -872,9 +872,10 @@ ConvertImagePixelsForTexture(unsigned short* dstPixels, zVidImagePartial* image,
     // Retail keeps one row/column pair for both conversion loops (shared stack slots).
     int row;
     int column;
+    unsigned int src;
+    unsigned int alpha;
     char* alphaMap;
     unsigned short* srcPixels;
-    unsigned char* dstRowBytes;
     unsigned char* alphaCursor;
     unsigned int redAlphaMask;
     int redAlphaShift;
@@ -885,22 +886,27 @@ ConvertImagePixelsForTexture(unsigned short* dstPixels, zVidImagePartial* image,
 
     alphaMap = image->alphaMap;
     srcPixels = (unsigned short*)(image->pixels);
-    dstRowBytes = (unsigned char*)(dstPixels);
 
     if (alphaMap == 0) {
         const unsigned int redGreenMask = g_zVideo_PixelPack.rMask | g_zVideo_PixelPack.gMask;
         {
             for (row = 0; row < image->height; ++row) {
-                unsigned short* dstCursor = (unsigned short*)(dstRowBytes);
+                unsigned short* dstCursor = dstPixels;
                 {
                     for (column = 0; column < image->width; ++column) {
-                        const unsigned int src = *srcPixels++;
-                        const unsigned int alphaBit = src != 0 ? 0x8000 : 0;
-                        *dstCursor++ = (unsigned short)((src & g_zVideo_PixelPack.bMask)
-                            | ((src >> 1) & (redGreenMask >> 1)) | alphaBit);
+                        unsigned int redGreen;
+                        src = *srcPixels++;
+                        redGreen = src;
+                        alpha = src != 0 ? 0x8000 : 0;
+                        redGreen >>= 1;
+                        redGreen &= redGreenMask >> 1;
+                        src &= g_zVideo_PixelPack.bMask;
+                        src |= redGreen;
+                        src |= alpha;
+                        *dstCursor++ = (unsigned short)src;
                     }
                 }
-                dstRowBytes += pitchBytes;
+                dstPixels = (unsigned short*)((unsigned char*)dstPixels + pitchBytes);
             }
         }
         return;
@@ -921,17 +927,25 @@ ConvertImagePixelsForTexture(unsigned short* dstPixels, zVidImagePartial* image,
 
     {
         for (row = 0; row < image->height; ++row) {
-            unsigned short* dstCursor = (unsigned short*)(dstRowBytes);
+            unsigned short* dstCursor = dstPixels;
             {
                 for (column = 0; column < image->width; ++column) {
-                    const unsigned short src = *srcPixels++;
-                    const unsigned int alpha = (*alphaCursor++ & 0xf0) << 8;
-                    *dstCursor++ = (unsigned short)(((src >> 1) & (g_zVideo_PixelPack.bMask >> 1))
-                        | ((greenAlphaMask & src) >> greenAlphaShift) | ((redAlphaMask & src) >> redAlphaShift)
-                        | alpha);
+                    unsigned int red;
+                    unsigned int green;
+                    src = *srcPixels++;
+                    alpha = (*alphaCursor & 0xf0) << 8;
+                    red = redAlphaMask;
+                    green = greenAlphaMask;
+                    red &= src;
+                    red >>= redAlphaShift;
+                    green &= src;
+                    green >>= greenAlphaShift;
+                    *dstCursor++
+                        = (unsigned short)(((src >> 1) & (g_zVideo_PixelPack.bMask >> 1)) | green | red | alpha);
+                    ++alphaCursor;
                 }
             }
-            dstRowBytes += pitchBytes;
+            dstPixels = (unsigned short*)((unsigned char*)dstPixels + pitchBytes);
         }
     }
 }

@@ -425,7 +425,7 @@ int __cdecl IsStereoAuxEnabled()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zsound.zsnd-cd.getvolume
  * @recoil-artifact defines .text recoil:function:0x4a27f0: zSndCd::GetVolume.
- *
+ * @recoil-match byte
  *
  * Purpose: read the AUX mixer volume into mono or stereo output channels.
  */
@@ -442,12 +442,14 @@ int __fastcall GetVolume(unsigned short* primaryVolumeOut, unsigned short* secon
         return zSnd::ReportMciError(mciError, "D:\\Proj\\GameZRecoil\\zSound\\zsnd_cd.cpp", 0x194);
     }
 
-    g_zSndCdAuxVolumePrimary = (unsigned short)(volume & 0xffff);
+    const DWORD channelMask = 0xffff;
     if (stereoAuxEnabled != 0) {
+        g_zSndCdAuxVolumePrimary = (unsigned short)(volume & channelMask);
         *primaryVolumeOut = g_zSndCdAuxVolumePrimary;
-        g_zSndCdAuxVolumeSecondary = (unsigned short)((volume >> 16) & 0xffff);
+        g_zSndCdAuxVolumeSecondary = (unsigned short)((volume >> 16) & channelMask);
         *secondaryVolumeOut = g_zSndCdAuxVolumeSecondary;
     } else {
+        g_zSndCdAuxVolumePrimary = (unsigned short)(volume & channelMask);
         g_zSndCdAuxVolumeSecondary = g_zSndCdAuxVolumePrimary;
         *secondaryVolumeOut = g_zSndCdAuxVolumeSecondary;
         *primaryVolumeOut = g_zSndCdAuxVolumeSecondary;

@@ -1643,11 +1643,14 @@ void __fastcall buffBlurRegionVertical(zVidRect32* rectOrNull, int mode)
             if (columnCount > 0) {
                 int count = columnCount;
                 do {
+                    const unsigned int green = (((src[-surfaceWidth] & greenMask) + ((*src & greenMask) << 1)
+                                                    + (src[surfaceWidth] & greenMask))
+                                                   >> 2)
+                        & greenMask;
                     const unsigned int rb
-                        = (src[-surfaceWidth] & rbMask) + ((*src & rbMask) << 1) + (src[surfaceWidth] & rbMask);
-                    const unsigned int green = (src[-surfaceWidth] & greenMask) + ((*src & greenMask) << 1)
-                        + (src[surfaceWidth] & greenMask);
-                    *scratch = (unsigned short)(((rb >> 2) & rbMask) | ((green >> 2) & greenMask));
+                        = (((src[-surfaceWidth] & rbMask) + ((*src & rbMask) << 1) + (src[surfaceWidth] & rbMask)) >> 2)
+                        & rbMask;
+                    *scratch = (unsigned short)(rb | green);
                     ++src;
                     ++scratch;
                     --count;
