@@ -46,10 +46,6 @@ struct RecoilStateMainMenuTransition : RecoilApp_IState {
     void OnResume(int param);
     void OnDeactivate();
 
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateMainMenuTransition* StaticInit();
-    static void RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     static void ClearPausedAudioSnapshot();
     static void __fastcall QueueEnter(RecoilMainMenuEntryRoute entryRoute);
     static void __fastcall SetDeferredVideoModeIndex(zVidModeIndex modeIndex);
@@ -61,14 +57,7 @@ RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_entryRoute) == 0x
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_deferredVideoModeIndex) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateMainMenuTransition, m_pausedAudioSnapshot) == 0x14);
 
-union RecoilStateMainMenuTransitionStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(RecoilStateMainMenuTransition)];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateMainMenuTransitionStorage) == 0x18);
-
-extern RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition;
-#define g_RecoilState_MainMenuTransition (*(RecoilStateMainMenuTransition*)&g_RecoilState_MainMenuTransition)
+extern RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
 
 struct CHudUiMainMenuDialogCreditsButton : HudUiZrdWidget {
     CHudUiMainMenuDialogCreditsButton();

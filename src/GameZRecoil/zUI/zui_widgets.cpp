@@ -108,13 +108,6 @@ HudUiRect g_HudUiMgrSensor_FxRectScratch = { 0 };
 #undef g_HudUiMgr
 #undef g_HudLayoutHW
 #undef g_HudLayoutSW
-#undef g_HudCmdDialogState
-
-union HudUiSensorWindowStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(CWnd)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
 
 /*
  * Retail HUD UI storage and CRT initialization are not the same sequence.
@@ -125,14 +118,6 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == sizeof(CWnd));
  * CString, HudLayoutSW, HudLayoutHW, HudUiMgr, then CWnd.
  */
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduisensorwindow
- * @recoil-artifact defines .data recoil:data:0x4e5e90: g_HudUiSensorWindow.
- * Source model: zero-initialized provider CWnd storage; the explicit HUD CRT
- * row constructs it and registers the provider destructor.
- * Purpose: preserve the recovered HUD global storage for g_HudUiSensorWindow.
- */
-HudUiSensorWindowStorage g_HudUiSensorWindow = { 0 };
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduimgr
  * @recoil-artifact defines .data recoil:data:0x4e5ed0: g_HudUiMgr.
  * Source model: zero-initialized HudUiMgrData storage; HudUiMgr::StaticInit
@@ -140,23 +125,7 @@ HudUiSensorWindowStorage g_HudUiSensorWindow = { 0 };
  * Purpose: preserve the recovered HUD global storage for g_HudUiMgr.
  */
 HudUiMgrDataStorage g_HudUiMgr = { 0 };
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudlayoutsw
- * @recoil-artifact defines .data recoil:data:0x4eda68: g_HudLayoutSW.
- * Owner data: typed 236-byte singleton with compiler-owned static lifetime.
- * Retail startup constructs the software layout before the hardware layout.
- * Purpose: own the global software HUD layout instance.
- */
-HudLayoutSW g_HudLayoutSW;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudlayouthw
- * @recoil-artifact defines .data recoil:data:0x4ed718: g_HudLayoutHW.
- * Owner data: typed 844-byte singleton with compiler-owned static lifetime.
- * Purpose: own the global hardware HUD layout instance.
- */
-HudLayoutHW g_HudLayoutHW;
 
-#define g_HudUiSensorWindow (*(CWnd*)&g_HudUiSensorWindow)
 #define g_HudUiMgr (*(HudUiMgrData*)&g_HudUiMgr)
 
 HudUiRect g_HudUiMgrSensorFxRect = { 0 };
@@ -188,16 +157,6 @@ HudUiTextStack4* g_HudUiTopMessageStack = 0;
  * Purpose: preserve the recovered HUD global storage for g_HudUi_AuxOverlayEnabled.
  */
 int g_HudUi_AuxOverlayEnabled = 0;
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudcmddialogstate
- * @recoil-artifact defines .data recoil:data:0x4e5df0: g_HudCmdDialogState.
- * BN identifies 0x4e5df0 as an eight-byte BSS HudCmdDialogState object. VC5 emits the
- * 0x40bc20/0x40bc30/0x40bc40/0x40bc50 static init and at-exit thunks from this global object.
- * Purpose: preserve the recovered HUD global storage for g_HudCmdDialogState.
- */
-HudCmdDialogStateStorage g_HudCmdDialogState = { 0 };
-
-#define g_HudCmdDialogState (*(HudCmdDialogState*)&g_HudCmdDialogState)
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduioptionspanel-resolutioncyclenodename
@@ -654,14 +613,6 @@ char g_HudUiMessage_NodeName[8] = "Message";
  * Purpose: separate the local player name from chat text when composing HUD messages.
  */
 char g_HudUiMessage_SeparatorColon[2] = ":";
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* HudUiSensorWindowCrtInitializerFn)();
-#pragma data_seg(".CRT$XCU")
-/* VC5 emits this HUD sensor window startup callback as a direct .CRT$XCU row. */
-HudUiSensorWindowCrtInitializerFn s_HudUiSensorWindowCrtInit = HudUiSensorWindow::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
 
 /**
  * Original inline helper; no standalone retail function exists. BN vtable
@@ -1524,7 +1475,7 @@ void HudUiTextInput::SetCursorPosition(int position)
 /**
  * @recoil-anchor recoil:anchor:zui.zui-widgets.hud-ui-text-input-dispatch-key-action
  * @recoil-artifact defines .text recoil:function:0x4b4460: HudUiTextInput::DispatchKeyAction.
- * @recoil-match source
+ * @recoil-match byte
  * Purpose: route a key to its mapped edit action (insert, ignore, cancel and the editing keys).
  */
 void HudUiTextInput::DispatchKeyAction(int key)

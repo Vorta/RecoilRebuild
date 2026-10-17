@@ -20,20 +20,6 @@ extern "C" void __cdecl _ftol();
 
 extern "C" {
 /**
- * Storage group: g_zInput_GlobalStateStorage.
- * BN types this as the static zInput_GlobalState object used by 0x4719f0,
- * 0x471ab0, 0x471a10, 0x471a20, and the input activation/suspend helpers.
- * The device-registry flag bytes at 0x561cb8..0x561cba carry both device-ready
- * bit 0 and suspend bit 1 for keyboard, joystick, and mouse respectively;
- * compatibility field macros expose the recovered retail names used by the
- * rest of the zInput source, including the joystick force-feedback caps at
- * 0x565e18..0x565e20 and the current bind-map/overlay lifetime fields at
- * 0x565ea0..0x565eb8.
- * Purpose: Owns the zero-filled zInput static aggregate from DirectInput root
- * state through bind-map overlay lifetime state.
- */
-zInput_GlobalState g_zInput_GlobalStateStorage = { 0 };
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zinput.zinput.g-zinput-mouseactive
  * @recoil-artifact defines .data recoil:data:0x561c74: g_zInput_MouseActive.
  * BN types this as the zero-filled mouse-active flag toggled by zInput app

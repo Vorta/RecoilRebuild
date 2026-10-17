@@ -1079,7 +1079,7 @@ namespace Player {
  * @recoil-anchor recoil:anchor:battlesport-player-player-resolvependingplayercollisioncontact
  * @recoil-artifact defines .text recoil:function:0x424ac0: Player::ResolvePendingPlayerCollisionContact.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: src/Battlesport/player.cpp.
  * Purpose: reimplement Player::ResolvePendingPlayerCollisionContact from the recovered
@@ -1128,7 +1128,7 @@ namespace Player {
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate recoil:function:0x424bf0
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.vec3-fast-normalize.fast-sqrt-estimate
- * @recoil-match source
+ * @recoil-match byte
  *
  * Raw assembly: the reviewed full-XYZ dot island bound directly to the vec
  * parameter (retail loads ECX and EDX from the one home [ebp-8]) and one

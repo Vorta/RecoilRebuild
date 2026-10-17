@@ -42,34 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#undef g_HudUiOptionsPanelOverlayOwner
-/**
- * Source owner: legacy.hud_ui.class_huduioptionspaneloverlayowner.
- * Purpose: own the zero-initialized options-panel overlay singleton storage.
- */
-HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner = { 0 };
-#undef g_RecoilState_ConfirmQuit
-/**
- * Purpose: own the zero-initialized confirm-quit app-state singleton storage.
- */
-RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit = { 0 };
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
-#undef g_RecoilStateControls
-/**
- * Source owner: legacy.app_shell.class_recoilstatecontrols.
- * Purpose: own the zero-initialized controls app-state singleton storage.
- */
-RecoilStateControlsStorage g_RecoilStateControls = { 0 };
-#undef g_RecoilStateCheatCode
-/**
- * Source owner: legacy.app_shell.class_recoilstatecheatcode.
- * Purpose: own the zero-initialized cheat-code app-state singleton storage.
- */
-RecoilStateCheatCodeStorage g_RecoilStateCheatCode = { 0 };
-#define g_HudUiOptionsPanelOverlayOwner (*(HudUiOptionsPanelOverlayOwner*)&g_HudUiOptionsPanelOverlayOwner)
-#define g_RecoilState_ConfirmQuit (*(RecoilStateConfirmQuit*)&g_RecoilState_ConfirmQuit)
-#define g_RecoilStateControls (*(RecoilStateControls*)&g_RecoilStateControls)
-#define g_RecoilStateCheatCode (*(RecoilStateCheatCode*)&g_RecoilStateCheatCode)
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.g-huduicontrolsdialog-cameramodeselectornodename
@@ -898,49 +871,16 @@ HudUiCheatCodeDialog::HudUiCheatCodeDialog()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x406e90: RecoilStateCheatCode::StaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-recoilstatecheatcode
+ * @recoil-artifact defines .data recoil:data:0x4e5ce8: g_RecoilStateCheatCode.
+ * @recoil-artifact emits .text recoil:function:0x406e90: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x406ea0: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x406eb0: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x406ec0: VC5 global-object exit destructor thunk.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: construct the global cheat-code state and register its atexit teardown.
+ * Purpose: own the ordinary static-storage cheat-code app-state object.
  */
-void RecoilStateCheatCode::StaticInitAndRegisterAtExit()
-{
-    ConstructGlobal();
-    StaticInit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-constructglobal
- * @recoil-artifact defines .text recoil:function:0x406ea0: RecoilStateCheatCode::ConstructGlobal.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: run explicit construction for the global cheat-code app-state object.
- */
-RecoilStateCheatCode* RecoilStateCheatCode::ConstructGlobal()
-{
-    return &((&g_RecoilStateCheatCode)->RecoilStateCheatCode::RecoilStateCheatCode());
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-staticinit
- * @recoil-artifact defines .text recoil:function:0x406eb0: RecoilStateCheatCode::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: register the global cheat-code app-state destructor with atexit.
- */
-void RecoilStateCheatCode::StaticInit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x406ec0: RecoilStateCheatCode::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCheatCode.cpp.
- * Purpose: destroy the global cheat-code app-state object during CRT shutdown.
- */
-void RecoilStateCheatCode::AtExitDestructor()
-{
-    (&g_RecoilStateCheatCode)->RecoilStateCheatCode::~RecoilStateCheatCode();
-}
+RecoilStateCheatCode g_RecoilStateCheatCode;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecheatcode-recoilstatecheatcode
@@ -3724,102 +3664,16 @@ void HudUiControlsDialog_OptionSelector::DestructorCoreThunk()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduicontrolsdialog-destructor
- * @recoil-artifact defines .text recoil:function:0x408c70: HudUiControlsDialog::Destructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\hud_ui_dialogs.cpp.
- * Purpose: Destroy the controls dialog child widgets in reverse construction order before background cleanup.
- * Evidence: BN/source slice tears down camera, cursor, steering, throttle, mouse/joystick selectors,
- * commands/resume widgets, then the HudUiBackground base.
- */
-void HudUiControlsDialog::Destructor()
-{
-    cameraModeSelector.DestructorCore();
-    cursorModeSelector.DestructorCore();
-    steeringModeSelector.DestructorCore();
-    throttleModeSelector.DestructorCore();
-    mouseOrJoystickSelector.DestructorCore();
-    commandsWidget.DestructorCore();
-    resumeWidget.DestructorCore();
-    this->HudUiBackground::~HudUiBackground();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecontrols-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x408d20: RecoilStateControls::StaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-recoilstatecontrols
+ * @recoil-artifact defines .data recoil:data:0x4e5dd0: g_RecoilStateControls.
+ * @recoil-artifact emits .text recoil:function:0x408d20: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x408d30: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x408d40: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x408d50: VC5 global-object exit destructor thunk.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: construct the global controls app state and register its CRT shutdown destructor.
+ * Purpose: own the ordinary static-storage controls app-state object.
  */
-void RecoilStateControls::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* BattlesportHudCrtInitializerFn)();
-/* VC5 emits this controls-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateControls
-    = RecoilStateControls::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this confirm-quit-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateConfirmQuit
-    = RecoilStateConfirmQuit::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this options-panel owner startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_HudUiOptionsPanelOverlayOwner
-    = HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-/* VC5 emits this cheat-code-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-BattlesportHudCrtInitializerFn s_BattlesportHudCrtInit_RecoilStateCheatCode
-    = RecoilStateCheatCode::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecontrols-staticinit
- * @recoil-artifact defines .text recoil:function:0x408d30: RecoilStateControls::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: placement-construct the zero-initialized global controls app state singleton.
- */
-RecoilStateControls* RecoilStateControls::StaticInit()
-{
-    return new (&g_RecoilStateControls) RecoilStateControls;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecontrols-registeratexit
- * @recoil-artifact defines .text recoil:function:0x408d40: RecoilStateControls::RegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: register the global controls app state destructor with the CRT atexit list.
- */
-void RecoilStateControls::RegisterAtExit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecontrols-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x408d50: RecoilStateControls::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\recoil_state.cpp.
- * Purpose: destroy the global controls app state during CRT shutdown.
- */
-void RecoilStateControls::AtExitDestructor()
-{
-    g_RecoilStateControls.~RecoilStateControls();
-}
+RecoilStateControls g_RecoilStateControls;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecontrols-recoilstatecontrols
@@ -4395,71 +4249,16 @@ void HudUiPanelSpan::Clear()
 #include <new>
 #include <stdlib.h>
 
-#undef g_RecoilStateCredits
 /**
- * Source owner: legacy.app_shell.cluster_recoilstatebase.
- * Source model note: StaticInit constructs the typed object in this storage and
- * AtExitDestructor tears it down through the CRT at-exit list.
- * Purpose: own the zero-initialized credits app-state singleton storage.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-recoilstatecredits
+ * @recoil-artifact defines .data recoil:data:0x4e5de0: g_RecoilStateCredits.
+ * @recoil-artifact emits .text recoil:function:0x409950: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x409960: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x409970: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x409980: VC5 global-object exit destructor thunk.
+ * Purpose: own the ordinary static-storage credits app-state object.
  */
-RecoilStateCreditsStorage g_RecoilStateCredits = { 0 };
-#define g_RecoilStateCredits (*(RecoilStateCredits*)&g_RecoilStateCredits)
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecredits-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x409950: RecoilStateCredits::StaticInitAndRegisterAtExit.
- *
- * Purpose: construct the global credits app state and register its CRT
- * shutdown destructor.
- */
-void RecoilStateCredits::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* RecoilStateCreditsCrtInitializerFn)();
-/* VC5 emits this credits-state startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-RecoilStateCreditsCrtInitializerFn s_RecoilStateCreditsCrtInit = RecoilStateCredits::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecredits-staticinit
- * @recoil-artifact defines .text recoil:function:0x409960: RecoilStateCredits::StaticInit.
- *
- * Purpose: placement-construct the zero-initialized global credits app-state
- * singleton.
- */
-RecoilStateCredits* RecoilStateCredits::StaticInit()
-{
-    return new (&g_RecoilStateCredits) RecoilStateCredits;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecredits-registeratexit
- * @recoil-artifact defines .text recoil:function:0x409970: RecoilStateCredits::RegisterAtExit.
- *
- * Purpose: register the global credits app-state destructor with the CRT
- * at-exit list.
- */
-void RecoilStateCredits::RegisterAtExit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecredits-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x409980: RecoilStateCredits::AtExitDestructor.
- *
- * Purpose: destroy the global credits app state during CRT shutdown.
- */
-void RecoilStateCredits::AtExitDestructor()
-{
-    g_RecoilStateCredits.~RecoilStateCredits();
-}
+RecoilStateCredits g_RecoilStateCredits;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatecredits-recoilstatecredits
@@ -4973,15 +4772,6 @@ HudCmdDialog::HudCmdDialog()
     zInput::ResetAllTransitionState();
     ((HudUiContainer*)(this))->SetChildFlags(0);
 }
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-destructor-hudcmddialog
- * @recoil-artifact defines .text recoil:function:0x40adf0: HudCmdDialog::~HudCmdDialog.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: let ordinary C++ member and base lifetime rules tear down the
- * command dialog in reverse construction order.
- */
-HudCmdDialog::~HudCmdDialog() { }
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialog-updateall
@@ -5563,57 +5353,16 @@ void HudCmdPrevCommandButton::OnActivate()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x40bc20: HudCmdDialogState::StaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudcmddialogstate
+ * @recoil-artifact defines .data recoil:data:0x4e5df0: g_HudCmdDialogState.
+ * @recoil-artifact emits .text recoil:function:0x40bc20: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x40bc30: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x40bc40: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x40bc50: VC5 global-object exit destructor thunk.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: Construct the global command-dialog state and register its at-exit teardown.
+ * Purpose: own the ordinary static-storage command-dialog app-state object.
  */
-void HudCmdDialogState::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-staticinit
- * @recoil-artifact defines .text recoil:function:0x40bc30: HudCmdDialogState::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: Construct the command-dialog state in its static storage.
- */
-HudCmdDialogState* HudCmdDialogState::StaticInit()
-{
-    return new (&g_HudCmdDialogState) HudCmdDialogState;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-registeratexit
- * @recoil-artifact defines .text recoil:function:0x40bc40: HudCmdDialogState::RegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: Register the command-dialog state static destructor with the CRT.
- */
-void HudCmdDialogState::RegisterAtExit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x40bc50: HudCmdDialogState::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudCmdDialog.cpp.
- * Purpose: Destroy the global command-dialog state during CRT at-exit cleanup.
- */
-void HudCmdDialogState::AtExitDestructor()
-{
-    g_HudCmdDialogState.HudCmdDialogState::~HudCmdDialogState();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* HudCmdDialogStateCrtInitializerFn)();
-/* VC5 emits this command-dialog startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-HudCmdDialogStateCrtInitializerFn s_HudCmdDialogStateCrtInit = HudCmdDialogState::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
+HudCmdDialogState g_HudCmdDialogState;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hudcmddialogstate-hudcmddialogstate
@@ -6848,57 +6597,16 @@ void HudUiFillBitmap::DestructorCoreThunk()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudoptionsdialog-destructor-hudoptionsdialog
- * @recoil-artifact defines .text recoil:function:0x40cf60: HudOptionsDialog::~HudOptionsDialog.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-huduioptionspaneloverlayowner
+ * @recoil-artifact defines .data recoil:data:0x4e5e08: g_HudUiOptionsPanelOverlayOwner.
+ * @recoil-artifact emits .text recoil:function:0x40d070: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x40d080: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d090: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d0a0: VC5 global-object exit destructor thunk.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: let VC5 emit the options dialog member/base teardown state machine.
+ * Purpose: own the ordinary static-storage options-panel overlay app state.
  */
-HudOptionsDialog::~HudOptionsDialog() { }
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x40d070: HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Construct the global options overlay owner and register its exit cleanup.
- */
-void HudUiOptionsPanelOverlayOwner::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-staticinit
- * @recoil-artifact defines .text recoil:function:0x40d080: HudUiOptionsPanelOverlayOwner::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Placement-construct the global options overlay owner.
- */
-HudUiOptionsPanelOverlayOwner* HudUiOptionsPanelOverlayOwner::StaticInit()
-{
-    return new (&g_HudUiOptionsPanelOverlayOwner) HudUiOptionsPanelOverlayOwner;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-registeratexit
- * @recoil-artifact defines .text recoil:function:0x40d090: HudUiOptionsPanelOverlayOwner::RegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Register the global options overlay owner destructor for process exit.
- */
-void HudUiOptionsPanelOverlayOwner::RegisterAtExit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x40d0a0: HudUiOptionsPanelOverlayOwner::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudOptionsDialog.cpp.
- * Purpose: Run process-exit cleanup for the global options overlay owner.
- */
-void HudUiOptionsPanelOverlayOwner::AtExitDestructor()
-{
-    g_HudUiOptionsPanelOverlayOwner.~HudUiOptionsPanelOverlayOwner();
-}
+HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduioptionspaneloverlayowner-huduioptionspaneloverlayowner
@@ -6963,6 +6671,18 @@ void HudUiOptionsPanelOverlayOwner::QueueEnter()
     g_RecoilApp.QueuePushState((RecoilApp_IState*)&g_HudUiOptionsPanelOverlayOwner, 0);
 }
 
+/**
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitripletwndclassname
+ * @recoil-artifact defines .data recoil:data:0x4ed714: g_HudUiTripletWndClassName.
+ * @recoil-artifact emits .text recoil:function:0x40d1e0: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x40d1f0: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d200: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d210: VC5 global-object exit destructor thunk.
+ * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
+ * Purpose: store the registered window class name used by HUD triplet panels.
+ */
+CString g_HudUiTripletWndClassName;
+
 namespace HudUiListMenuEntry {
 
 /**
@@ -6986,24 +6706,33 @@ int __fastcall CompareSortKey(const HudUiScoreboardEntry* entryA, const HudUiSco
 
 } // namespace HudUiListMenuEntry
 
-LPCSTR __stdcall AfxRegisterWndClass(UINT classStyle, HCURSOR cursor, HBRUSH background, HICON icon);
-
-union HudUiTripletWndClassNameStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(CString)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiTripletWndClassNameStorage) == 0x04);
-
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.g-huduitripletwndclassname
- * @recoil-artifact defines .data recoil:data:0x4ed714: g_HudUiTripletWndClassName.
- * Source model: zero-initialized provider CString storage; the explicit HUD
- * triplet CRT row constructs/destructs the object.
- * Purpose: store the registered window class name used by HUD triplet panels.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudlayoutsw
+ * @recoil-artifact defines .data recoil:data:0x4eda68: g_HudLayoutSW.
+ * @recoil-artifact emits .text recoil:function:0x40d260: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x40d270: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d280: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d290: VC5 global-object exit destructor thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d2a0: VC5 implicit destructor called by the exit destructor thunk; not an authored body.
+ * Owner data: typed 236-byte singleton with compiler-owned static lifetime.
+ * Retail startup constructs the software layout before the hardware layout.
+ * Purpose: own the global software HUD layout instance.
  */
-HudUiTripletWndClassNameStorage g_HudUiTripletWndClassName = { 0 };
+HudLayoutSW g_HudLayoutSW;
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-hudlayouthw
+ * @recoil-artifact defines .data recoil:data:0x4ed718: g_HudLayoutHW.
+ * @recoil-artifact emits .text recoil:function:0x40d2f0: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x40d300: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d310: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d320: VC5 global-object exit destructor thunk.
+ * @recoil-artifact emits .text recoil:function:0x40d330: VC5 implicit destructor called by the exit destructor thunk; not an authored body.
+ * Owner data: typed 844-byte singleton with compiler-owned static lifetime.
+ * Purpose: own the global hardware HUD layout instance.
+ */
+HudLayoutHW g_HudLayoutHW;
 
-#define g_HudUiTripletWndClassName (*(CString*)&g_HudUiTripletWndClassName)
+LPCSTR __stdcall AfxRegisterWndClass(UINT classStyle, HCURSOR cursor, HBRUSH background, HICON icon);
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.g-hudfontname-arial
@@ -7065,54 +6794,6 @@ char g_HudUiTimerPanel_NodeName[9] = "HUDTimer";
  */
 char g_HudUiTimerPanel_TimerDataSectionName[10] = "TimerData";
 
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-staticinitwndclassnameandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x40d1e0: HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
- * Purpose: construct the HUD triplet window-class CString and register its
- * static destructor during CRT startup.
- */
-void __cdecl HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit()
-{
-    ConstructWndClassName();
-    RegisterWndClassNameDtorAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-constructwndclassname
- * @recoil-artifact defines .text recoil:function:0x40d1f0: HudUiTriplet::ConstructWndClassName.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
- * Purpose: default-construct the HUD triplet window-class CString in its
- * global storage.
- */
-CString* HudUiTriplet::ConstructWndClassName()
-{
-    return new (&g_HudUiTripletWndClassName) CString;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-registerwndclassnamedtoratexit
- * @recoil-artifact defines .text recoil:function:0x40d200: HudUiTriplet::RegisterWndClassNameDtorAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
- * Purpose: register the HUD triplet window-class CString destructor with the
- * CRT at-exit list.
- */
-void HudUiTriplet::RegisterWndClassNameDtorAtExit()
-{
-    atexit(DestroyWndClassName);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.huduitriplet-destroywndclassname
- * @recoil-artifact defines .text recoil:function:0x40d210: HudUiTriplet::DestroyWndClassName.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiTriplet.cpp.
- * Purpose: destroy the HUD triplet window-class CString during CRT shutdown.
- */
-void __cdecl HudUiTriplet::DestroyWndClassName()
-{
-    g_HudUiTripletWndClassName.~CString();
-}
-
 namespace HudUiListMenuEntry {
 
 void __fastcall SortRange(HudUiScoreboardEntry* begin, HudUiScoreboardEntry* end, int unusedFlags);
@@ -7121,25 +6802,9 @@ void __fastcall InsertionSortRange(HudUiScoreboardEntry* begin, HudUiScoreboardE
 
 } // namespace HudUiListMenuEntry
 
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.hudlayoutbase-destructor
- * @recoil-artifact defines .text recoil:function:0x40d3b0: HudLayoutBase::Destructor.
- * Purpose: run the address-backed layout-base cleanup operation independently
- * of compiler-owned typed-global destruction.
- */
-void HudLayoutBase::Destructor()
-{
-    widget0.DestructorCore();
-    this->HudUiContainer::~HudUiContainer();
-}
-
 #if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* HudUiTripletWndClassNameCrtInitializerFn)();
 typedef void(__cdecl* HudUiMgrCrtInitializerFn)();
 #pragma data_seg(".CRT$XCU")
-/* VC5 emits this HUD triplet CString startup callback as a direct .CRT$XCU row. */
-HudUiTripletWndClassNameCrtInitializerFn s_HudUiTripletWndClassNameCrtInit
-    = HudUiTriplet::StaticInitWndClassNameAndRegisterAtExit;
 /* VC5 emits this HUD manager startup callback as a direct .CRT$XCU row. */
 HudUiMgrCrtInitializerFn s_HudUiCrtInit_HudUiMgr = HudUiMgr::StaticInitAndRegisterAtExit;
 #pragma data_seg()
@@ -8671,12 +8336,7 @@ extern char g_HudLayout_TypeIISectionName[];
 extern char g_HudUiBlankSpaces3[4];
 
 extern char g_HudUiMessage_ClearSpecialToken165[4];
-union HudUiSensorWindowStorage {
-    unsigned long align;
-    unsigned char bytes[0x40];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiSensorWindowStorage) == 0x40);
-extern HudUiSensorWindowStorage g_HudUiSensorWindow;
+extern CWnd g_HudUiSensorWindow;
 extern CZFMVPlayback* g_HudUiSensorWindowPlayback;
 extern char g_Hud_CheckpointOverflowMsg[20];
 
@@ -11109,58 +10769,17 @@ int __fastcall ApplyHudModeSwitch(int hudType)
 }
 
 } // namespace HudUiMgr
-namespace HudUiSensorWindow {
-CWnd* StaticInit();
-int RegisterAtExit();
-void __cdecl AtExitDestructor();
-
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x4136f0: HudUiSensorWindow::StaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-g-huduisensorwindow
+ * @recoil-artifact defines .data recoil:data:0x4e5e90: g_HudUiSensorWindow.
+ * @recoil-artifact emits .text recoil:function:0x4136f0: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x413700: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x413710: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x413720: VC5 global-object exit destructor thunk.
  * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: construct the global HUD sensor CWnd and register its static
- * destructor during CRT startup.
+ * Purpose: own the ordinary static-storage HUD sensor CWnd.
  */
-void __cdecl StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.staticinit
- * @recoil-artifact defines .text recoil:function:0x413700: HudUiSensorWindow::StaticInit.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: default-construct the global HUD sensor CWnd in its static storage.
- */
-CWnd* StaticInit()
-{
-    return new (&g_HudUiSensorWindow) CWnd;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.registeratexit
- * @recoil-artifact defines .text recoil:function:0x413710: HudUiSensorWindow::RegisterAtExit.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: register the global HUD sensor CWnd destructor with the CRT
- * at-exit list.
- */
-int RegisterAtExit()
-{
-    return atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x413720: HudUiSensorWindow::AtExitDestructor.
- * Retail literal-backed physical source block: D:\Proj\Battlesport\hud.cpp.
- * Purpose: destroy the global HUD sensor CWnd during CRT shutdown.
- */
-void __cdecl AtExitDestructor()
-{
-    ((CWnd*)&g_HudUiSensorWindow)->~CWnd();
-}
-} // namespace HudUiSensorWindow
+CWnd g_HudUiSensorWindow;
 
 namespace HudUiMgr {
 /**
@@ -11188,7 +10807,7 @@ void DestroySensorWindow()
     }
 
     g_HudUiSensorWindowPlayback = 0;
-    ((CWnd*)&g_HudUiSensorWindow)->CWnd::DestroyWindow();
+    g_HudUiSensorWindow.CWnd::DestroyWindow();
 }
 
 /**
@@ -12204,50 +11823,16 @@ const char kHudTailCommandNameWeaponSetMaxTetherAltitude[] = "WeaponSetMaxTether
 } // namespace
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x414a60: CRecoilInterp::StaticInitAndRegisterAtExit.
- *
- * Purpose: construct the process-wide interpreter and register its shutdown
- * callback during static initialization.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-globalcontext
+ * @recoil-artifact defines .data recoil:data:0x4edb78: g_zInterp_GlobalContext.
+ * @recoil-artifact emits .text recoil:function:0x414a60: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x414a70: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x414a80: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x414a90: VC5 global-object exit destructor thunk.
+ * @recoil-artifact emits .text recoil:function:0x414aa0: VC5 implicit CRecoilInterp destructor (tail jump to CZInterp::~CZInterp) called by the exit destructor thunk; not an authored body.
+ * Purpose: process-wide script interpreter context constructed at startup.
  */
-int CRecoilInterp::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    return RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-staticinit
- * @recoil-artifact defines .text recoil:function:0x414a70: CRecoilInterp::StaticInit.
- *
- * Purpose: static initializer wrapper for the process-wide interpreter.
- */
-CZInterp* CRecoilInterp::StaticInit()
-{
-    return new (&g_zInterp_GlobalContext) CRecoilInterp;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-registeratexit
- * @recoil-artifact defines .text recoil:function:0x414a80: CRecoilInterp::RegisterAtExit.
- *
- * Purpose: register the global interpreter destructor with the CRT atexit list.
- */
-int CRecoilInterp::RegisterAtExit()
-{
-    return atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x414a90: CRecoilInterp::AtExitDestructor.
- *
- * Purpose: tear down the process-wide interpreter during CRT shutdown.
- */
-void CRecoilInterp::AtExitDestructor()
-{
-    g_zInterp_GlobalContext.~CRecoilInterp();
-}
+CRecoilInterp g_zInterp_GlobalContext;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.zinterp-globalcontext-zinterp-globalcontext
@@ -12656,77 +12241,18 @@ int RecoilStateDialogHost::OnUpdateShouldQuit()
 #include <new>
 #include <stdlib.h>
 
-#undef g_RecoilState_MainMenuTransition
 /**
- * Data owner: legacy.app_shell.class_recoilstatemainmenutransition. BN exposes
- * a 0x18-byte zero-initialized .data object at 0x4edc58. The source keeps
- * explicit aligned storage so VC5 does not emit an automatic compiler startup
- * row; StaticInit constructs the typed singleton in place, and
- * AtExitDestructor destroys that same object. BN base-object xrefs are
- * StaticInit, AtExitDestructor, and QueueEnter.
- * Purpose: own the global app-state singleton used while transitioning into
- * the main menu.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-recoilstate-mainmenutransition
+ * @recoil-artifact defines .data recoil:data:0x4edc58: g_RecoilState_MainMenuTransition.
+ * @recoil-artifact emits .text recoil:function:0x415100: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x415110: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x415120: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x415130: VC5 global-object exit destructor thunk.
+ * Data owner: legacy.app_shell.class_recoilstatemainmenutransition.
+ * Purpose: own the global app-state singleton used while transitioning into the main menu.
  */
-RecoilStateMainMenuTransitionStorage g_RecoilState_MainMenuTransition = { 0 };
-#define g_RecoilState_MainMenuTransition (*(RecoilStateMainMenuTransition*)&g_RecoilState_MainMenuTransition)
+RecoilStateMainMenuTransition g_RecoilState_MainMenuTransition;
 
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x415100: RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit.
- *
- * Purpose: construct the static transition state and register its at-exit
- * destructor callback.
- */
-void RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-staticinit
- * @recoil-artifact defines .text recoil:function:0x415110: RecoilStateMainMenuTransition::StaticInit.
- *
- * Purpose: construct the global main-menu transition state in place and return
- * it to the static-initialization wrapper.
- */
-RecoilStateMainMenuTransition* RecoilStateMainMenuTransition::StaticInit()
-{
-    return new (&g_RecoilState_MainMenuTransition) RecoilStateMainMenuTransition;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-registeratexit
- * @recoil-artifact defines .text recoil:function:0x415120: RecoilStateMainMenuTransition::RegisterAtExit.
- *
- * Purpose: register the static transition state's destruction callback with
- * the CRT at-exit list.
- */
-void RecoilStateMainMenuTransition::RegisterAtExit()
-{
-    atexit(RecoilStateMainMenuTransition::AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstatemainmenutransition-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x415130: RecoilStateMainMenuTransition::AtExitDestructor.
- *
- * Purpose: destroy the global main-menu transition state from the registered
- * at-exit callback.
- */
-void RecoilStateMainMenuTransition::AtExitDestructor()
-{
-    g_RecoilState_MainMenuTransition.~RecoilStateMainMenuTransition();
-}
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* MainMenuTransitionCrtInitializerFn)();
-/* VC5 emits this main-menu transition startup callback as a direct .CRT$XCU row. */
-#pragma data_seg(".CRT$XCU")
-MainMenuTransitionCrtInitializerFn s_MainMenuTransitionCrtInit
-    = RecoilStateMainMenuTransition::StaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduimainmenudialog-loadbutton-onactivate
  * @recoil-artifact defines .text recoil:function:0x415140: CHudUiMainMenuDialogLoadButton::OnActivate.
@@ -13137,49 +12663,16 @@ void HudUiConfirmQuitOkButton::OnActivate()
 }
 
 /**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-staticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x415810: RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:battlesport.hud.g-recoilstate-confirmquit
+ * @recoil-artifact defines .data recoil:data:0x4edc48: g_RecoilState_ConfirmQuit.
+ * @recoil-artifact emits .text recoil:function:0x415810: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x415820: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x415830: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x415840: VC5 global-object exit destructor thunk.
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInitAndRegisterAtExit.
+ * Purpose: own the ordinary static-storage confirm-quit app-state object.
  */
-void RecoilStateConfirmQuit::StaticInitAndRegisterAtExit()
-{
-    StaticInit();
-    RegisterAtExit();
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-staticinit
- * @recoil-artifact defines .text recoil:function:0x415820: RecoilStateConfirmQuit::StaticInit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::StaticInit.
- */
-RecoilStateConfirmQuit* RecoilStateConfirmQuit::StaticInit()
-{
-    return new (&g_RecoilState_ConfirmQuit) RecoilStateConfirmQuit;
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-registeratexit
- * @recoil-artifact defines .text recoil:function:0x415830: RecoilStateConfirmQuit::RegisterAtExit.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: preserve the recovered HUD behavior for RecoilStateConfirmQuit::RegisterAtExit.
- */
-void RecoilStateConfirmQuit::RegisterAtExit()
-{
-    atexit(AtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-atexitdestructor
- * @recoil-artifact defines .text recoil:function:0x415840: RecoilStateConfirmQuit::AtExitDestructor.
- * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudConfirmQuitDialog.cpp.
- * Purpose: run the recovered RecoilStateConfirmQuit::AtExitDestructor teardown path.
- */
-void RecoilStateConfirmQuit::AtExitDestructor()
-{
-    g_RecoilState_ConfirmQuit.~RecoilStateConfirmQuit();
-}
+RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoilstateconfirmquit-recoilstateconfirmquit

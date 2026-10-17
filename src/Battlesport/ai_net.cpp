@@ -1895,7 +1895,7 @@ void __fastcall AINet::TickAiAltGunAttackWindow(zUtil_SaveGameState* saveState, 
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate recoil:function:0x4024a0
- * @recoil-match byte
+ * @recoil-match source
  *
  * Original function evidence: retail 0x4024a0 contains two shared fixed-register
  * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
@@ -1991,7 +1991,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4026d0
- * @recoil-match byte
+ * @recoil-match source
  *
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, and pointer
  * variants and mixed native dot/cross failed; use the five exact shared islands.

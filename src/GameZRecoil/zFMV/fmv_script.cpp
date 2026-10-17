@@ -26,6 +26,17 @@
  * Purpose: keep this file's ID-counter parity after shared-header changes.
  */
 extern int g_FmvScriptIdCounterAlignment0;
+extern int g_FmvScriptIdCounterAlignment1;
+extern int g_FmvScriptIdCounterAlignment2;
+extern int g_FmvScriptIdCounterAlignment3;
+extern int g_FmvScriptIdCounterAlignment4;
+extern int g_FmvScriptIdCounterAlignment5;
+extern int g_FmvScriptIdCounterAlignment6;
+extern int g_FmvScriptIdCounterAlignment7;
+extern int g_FmvScriptIdCounterAlignment8;
+extern int g_FmvScriptIdCounterAlignment9;
+extern int g_FmvScriptIdCounterAlignment10;
+extern int g_FmvScriptIdCounterAlignment11;
 
 extern "C" HWND g_RecoilApp_hWndMain;
 

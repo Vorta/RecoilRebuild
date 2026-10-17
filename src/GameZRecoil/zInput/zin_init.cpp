@@ -40,67 +40,23 @@ inline int IsUnsuspended(char flags)
     return !(flags & kSuspendFlag);
 }
 
+} // namespace zInput
+
+extern "C" {
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstatestaticinitandregisteratexit
- * @recoil-artifact defines .text recoil:function:0x4719e0: zInput::GlobalStateStaticInitAndRegisterAtExit.
+ * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-g-zinput-globalstatestorage
+ * @recoil-artifact defines .data recoil:data:0x561cb0: g_zInput_GlobalStateStorage.
+ * @recoil-artifact emits .text recoil:function:0x4719e0: VC5 static initializer coordinator.
+ * @recoil-artifact emits .text recoil:function:0x4719f0: VC5 global-object construction thunk.
+ * @recoil-artifact emits .text recoil:function:0x471a00: VC5 atexit registration thunk.
+ * @recoil-artifact emits .text recoil:function:0x471a10: VC5 global-object exit destructor thunk.
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * BN assembly calls zInput::GlobalStateStaticInit and tail-jumps to
- * zInput::GlobalStateRegisterAtExit.
- * Purpose: perform zInput global-state static construction and register its
- * CRT shutdown callback.
+ * Purpose: own the zInput static aggregate from DirectInput root state through bind-map overlay lifetime state.
  */
-void __cdecl GlobalStateStaticInitAndRegisterAtExit()
-{
-    GlobalStateStaticInit();
-    GlobalStateRegisterAtExit();
+zInput_GlobalState g_zInput_GlobalStateStorage;
 }
 
-#if defined(_MSC_VER) && defined(_M_IX86)
-typedef void(__cdecl* ZInputCrtInitializerFn)();
-/* VC5 emits these zInput startup callbacks as direct .CRT$XCU rows. */
-#pragma data_seg(".CRT$XCU")
-ZInputCrtInitializerFn s_zInputCrtInit_GlobalState = GlobalStateStaticInitAndRegisterAtExit;
-#pragma data_seg()
-#endif
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstatestaticinit
- * @recoil-artifact defines .text recoil:function:0x4719f0: zInput::GlobalStateStaticInit.
- * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
- * to zInput_GlobalState::Constructor.
- * Purpose: run zInput global-state static construction.
- */
-void* GlobalStateStaticInit()
-{
-    return GlobalStateConstructor(&g_zInput_GlobalStateStorage);
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstateregisteratexit
- * @recoil-artifact defines .text recoil:function:0x471a00: zInput::GlobalStateRegisterAtExit.
- * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * BN assembly pushes zInput::GlobalStateAtExitDestructor and calls the CRT
- * atexit provider.
- * Purpose: register the zInput global-state static destructor.
- */
-int GlobalStateRegisterAtExit()
-{
-    return atexit(GlobalStateAtExitDestructor);
-}
-
-/**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstateatexitdestructor
- * @recoil-artifact defines .text recoil:function:0x471a10: zInput::GlobalStateAtExitDestructor.
- * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zInput\zin_init.cpp.
- * BN assembly loads 0x561cb0 as the static-object this pointer and tail-jumps
- * to zInput_GlobalState::Destructor.
- * Purpose: expose the zInput global-state destructor as a CRT atexit callback.
- */
-void __cdecl GlobalStateAtExitDestructor()
-{
-    GlobalStateDestructor(&g_zInput_GlobalStateStorage);
-}
+namespace zInput {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-globalstatedestructor
@@ -113,15 +69,17 @@ void __cdecl GlobalStateAtExitDestructor()
  * size field intact.
  * Purpose: tear down the zInput bind-map overlay static lifetime state.
  */
-void __fastcall GlobalStateDestructor(zInput_GlobalState* self)
+} // namespace zInput
+
+zInput_GlobalState::~zInput_GlobalState()
 {
-    BindMapOverlayDeleteNodeList(&self->bindMapOverlayNodeFreeList);
-    BindMapOverlayDeleteNodeList(&self->bindMapOverlayNodeBlockList);
-    self->bindMapOverlayNodeBlockList = 0;
-    self->bindMapOverlayNodeFreeList = 0;
-    self->bindMapOverlayReserved = 0;
-    self->bindMapOverlayNodeStackHead = 0;
-    self->bindMapOverlayDepth = 0;
+    zInput::BindMapOverlayDeleteNodeList(&bindMapOverlayNodeFreeList);
+    zInput::BindMapOverlayDeleteNodeList(&bindMapOverlayNodeBlockList);
+    bindMapOverlayNodeBlockList = 0;
+    bindMapOverlayNodeFreeList = 0;
+    bindMapOverlayReserved = 0;
+    bindMapOverlayNodeStackHead = 0;
+    bindMapOverlayDepth = 0;
 }
 
 /**
@@ -136,16 +94,17 @@ void __fastcall GlobalStateDestructor(zInput_GlobalState* self)
  * duplicate aggregate mirror.
  * Purpose: initialize the zInput bind-map overlay static lifetime state.
  */
-void* __fastcall GlobalStateConstructor(zInput_GlobalState* self)
+zInput_GlobalState::zInput_GlobalState()
 {
-    self->bindMapOverlayNodeBlockList = 0;
-    self->bindMapOverlayNodeFreeList = 0;
-    self->bindMapOverlayReserved = 0;
-    self->bindMapOverlayNodeStackHead = 0;
-    self->bindMapOverlayDepth = 0;
-    self->bindMapOverlayBlockSize = 8;
-    return self;
+    bindMapOverlayNodeBlockList = 0;
+    bindMapOverlayNodeFreeList = 0;
+    bindMapOverlayReserved = 0;
+    bindMapOverlayNodeStackHead = 0;
+    bindMapOverlayDepth = 0;
+    bindMapOverlayBlockSize = 8;
 }
+
+namespace zInput {
 
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinput-zin-init-onappdeactivate

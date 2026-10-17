@@ -51,6 +51,10 @@
 extern int g_PlayerTerrainIdCounterAlignment0;
 extern int g_PlayerTerrainIdCounterAlignment1;
 extern int g_PlayerTerrainIdCounterAlignment2;
+extern int g_PlayerTerrainIdCounterAlignment3;
+extern int g_PlayerTerrainIdCounterAlignment4;
+extern int g_PlayerTerrainIdCounterAlignment5;
+extern int g_PlayerTerrainIdCounterAlignment6;
 extern char g_HudUiCounterText_PlayerLabel[];
 
 extern "C" {
@@ -961,7 +965,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match byte
+ * @recoil-match source
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered

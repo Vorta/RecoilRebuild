@@ -40,6 +40,8 @@
  * Purpose: keep this file's ID-counter parity after shared-header changes.
  */
 extern int g_MapIdCounterAlignment0;
+extern int g_MapIdCounterAlignment1;
+extern int g_MapIdCounterAlignment2;
 
 extern "C" char g_HudSensorTracker_ZarSectionName_MissionData[0x0c];
 extern "C" char g_HudSensorTracker_ObjectivesZrdPath[0x0f];
@@ -993,7 +995,7 @@ int __fastcall HudRectI::IsCornerOutcode(int outcode)
 /**
  * @recoil-anchor recoil:anchor:battlesport.map.hudrecti-segmentintersectsedge
  * @recoil-artifact defines .text recoil:function:0x4162b0: HudRectI::SegmentIntersectsEdge
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Test whether a segment crosses the requested rectangle edge.
  */

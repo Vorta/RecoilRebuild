@@ -193,20 +193,7 @@ struct CZInterp {
 struct CRecoilInterp : CZInterp {
     CRecoilInterp();
 
-    /**
-     * Original helper evidence: no standalone authored retail function; the
-     * VC5 ordinary-global probe emits this inline destructor only as the
-     * generated CRT teardown call to CZInterp::~CZInterp.
-     * Purpose: release the process-wide interpreter during ordinary C++ shutdown.
-     */
-    ~CRecoilInterp() { }
-
     virtual int DispatchHook(char* commandToken);
-
-    static int StaticInitAndRegisterAtExit();
-    static CZInterp* StaticInit();
-    static int RegisterAtExit();
-    static void __cdecl AtExitDestructor();
 };
 
 RECOIL_STATIC_ASSERT(sizeof(CRecoilInterp) == 0xcc);

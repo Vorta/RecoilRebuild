@@ -1413,17 +1413,6 @@ void HudUiTextInput::OnOverflow() { }
  */
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduitextinput-destructorcore
- * @recoil-artifact defines .text recoil:function:0x4b4ab0: HudUiTextInput::DestructorCoreThunk.
- * Purpose: tail-call the recovered base text-input destructor from legacy
- * thunk entry points.
- */
-void HudUiTextInput::DestructorCore()
-{
-    this->HudUiTextInput::~HudUiTextInput();
-}
-
-/**
  * Purpose: preserve the recovered HUD behavior for HudUiTextInput::AllocTextBuffer.
  */
 

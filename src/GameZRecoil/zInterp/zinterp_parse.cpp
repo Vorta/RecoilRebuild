@@ -111,17 +111,6 @@ zDiPartial* g_zInterp_CurrentCycleTextureDi = 0;
 unsigned int g_zInterp_NodeUserDataScratch = 0;
 
 /**
- * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-globalcontext
- * @recoil-artifact defines .data recoil:data:0x4edb78: g_zInterp_GlobalContext.
- * Data owner: CRecoilInterp initialized instance. The ordinary
- * file-scope object lets VC5 emit its natural CRT construction and teardown
- * roots, which retain the derived constructor and virtual dispatch table.
- *
- * Purpose: process-wide script interpreter context constructed at startup.
- */
-CRecoilInterp g_zInterp_GlobalContext;
-
-/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zinterp-zinterp-parse-g-zinterp-preparedindexfilename
  * @recoil-artifact defines .data recoil:data:0x4e48f4: g_zInterp_PreparedIndexFileName.
  * Data owner: CZInterp initialized globals.

@@ -315,13 +315,17 @@ struct HudUiContainer {
     void InvalidateChildren();
 };
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-layout-base.type
+ * @recoil-artifact emits .text recoil:function:0x40d3b0: VC5 implicit destructor reached from the HudLayoutSW/HudLayoutHW implicit destructors; not an authored body.
+ * Purpose: Defines the shared HUD layout base whose implicit destructor VC5 emits for the typed layout globals.
+ */
 struct HudLayoutBase : HudUiContainer {
     HudUiRect layoutRect;
     HudUiRect activeRect;
     HudUiWidget widget0;
 
     HudLayoutBase();
-    void Destructor();
     virtual int SetActive(int active);
     virtual void UpdateAll(float deltaSeconds);
     virtual void LayoutPreUpdate();
@@ -420,10 +424,6 @@ void DisableTopAndChatStacks();
 int __fastcall InitHudLayouts(const HudUiRect* displaySection, const HudUiRect* windowSection);
 void ShutdownResources();
 } // namespace HudUiMgr
-
-namespace HudUiSensorWindow {
-void __cdecl StaticInitAndRegisterAtExit();
-} // namespace HudUiSensorWindow
 
 namespace HudUiAuxOverlay {
 void __fastcall UpdateTextLine(int op, int index, const char* format);
@@ -1620,7 +1620,6 @@ struct HudUiTextInput {
     HudUiTextInput(int bufferSize);
     HudUiTextInput* Constructor(int bufferSize);
     void AllocTextBuffer(int bufferSize);
-    void DestructorCore();
     void SetContents(const char* source);
     char* GetBuffer();
     void SetCursorPosition(int position);
@@ -1636,6 +1635,11 @@ struct HudUiTextInput {
 
 struct HudUiNumericTextInput;
 
+/**
+ * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-ui-owned-text-input.type
+ * @recoil-artifact emits .text recoil:function:0x4b4ab0: VC5 implicit destructor (tail jump to HudUiTextInput::~HudUiTextInput) used by the HudUiNumericTextInput unwind actions; not an authored body.
+ * Purpose: Defines the numeric-input owned text editor whose implicit destructor VC5 emits in zui_widgets.cpp.
+ */
 struct HudUiOwnedTextInput : HudUiTextInput {
     HudUiNumericTextInput* owner;
 
@@ -2233,6 +2237,7 @@ struct HudCmdSetListWidget : HudUiCycleSelectorWidget {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-cmd-dialog.type
  * @recoil-artifact emits .text recoil:function:0x40a920: VC5 scalar deleting destructor emitted for this virtual-destructor model.
+ * @recoil-artifact emits .text recoil:function:0x40adf0: VC5 implicit virtual destructor (member and base teardown); not an authored body.
  * Purpose: Record compiler-generated lifecycle code emitted by the complete HudCmdDialog type.
  */
 struct HudCmdDialog : HudUiBackground {
@@ -2253,7 +2258,6 @@ struct HudCmdDialog : HudUiBackground {
     int captureState;
 
     HudCmdDialog();
-    virtual ~HudCmdDialog();
     virtual void UpdateAll(float deltaTime);
     int SelectGroupRelative(int delta);
     int SelectCommandRelative(int delta);
@@ -2471,6 +2475,7 @@ struct CHudUiOptionsPanelResolution : HudUiCycleSelectorWidget {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zhud.hud-options-dialog.type
  * @recoil-artifact emits .text recoil:function:0x40cf00: VC5 scalar deleting destructor emitted for this virtual-destructor model.
+ * @recoil-artifact emits .text recoil:function:0x40cf60: VC5 implicit virtual destructor (member and base teardown); not an authored body.
  * Purpose: Record compiler-generated lifecycle code emitted by the complete HudOptionsDialog type.
  */
 struct HudOptionsDialog : HudUiBackground {
@@ -2489,7 +2494,6 @@ struct HudOptionsDialog : HudUiBackground {
     CHudUiOptionsPanelResolution resolutionSelector;
 
     HudOptionsDialog();
-    ~HudOptionsDialog();
 };
 
 /**
@@ -2499,10 +2503,6 @@ struct HudOptionsDialog : HudUiBackground {
  */
 struct HudCmdDialogState : RecoilStateDialogHost {
     HudCmdDialogState();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static HudCmdDialogState* StaticInit();
-    static void RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     static void QueueEnter();
     int OnTryBecomeCurrent();
     void OnDeactivate();
@@ -2511,14 +2511,7 @@ struct HudCmdDialogState : RecoilStateDialogHost {
 RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogState) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(HudCmdDialogState, m_dialog) == 0x04);
 
-union HudCmdDialogStateStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudCmdDialogState)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudCmdDialogStateStorage) == 0x08);
-
-extern HudCmdDialogStateStorage g_HudCmdDialogState;
-#define g_HudCmdDialogState (*(HudCmdDialogState*)&g_HudCmdDialogState)
+extern HudCmdDialogState g_HudCmdDialogState;
 
 struct HudUiMessageBoxDialog : HudUiBackground {
     zVidRect32 blitRect;
@@ -2921,10 +2914,6 @@ struct HudUiTriplet : HudUiContainer {
     int fontWeightStart;
     int fontWeightEnd;
 
-    static void __cdecl StaticInitWndClassNameAndRegisterAtExit();
-    static CString* ConstructWndClassName();
-    static void RegisterWndClassNameDtorAtExit();
-    static void __cdecl DestroyWndClassName();
     HudUiTriplet();
     inline void ConfigurePanelFont(HudUiPanel*& panel);
     ~HudUiTriplet();

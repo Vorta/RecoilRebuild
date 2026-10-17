@@ -402,24 +402,13 @@ extern HudUiNewGamePanelOverlayOwner g_HudUiNewGamePanelOverlayOwner;
  */
 struct HudUiOptionsPanelOverlayOwner : RecoilStateDialogHost {
     HudUiOptionsPanelOverlayOwner();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static HudUiOptionsPanelOverlayOwner* StaticInit();
-    static void RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     ~HudUiOptionsPanelOverlayOwner();
     int OnTryBecomeCurrent();
     static void QueueEnter();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwner) == 0x08);
 
-union HudUiOptionsPanelOverlayOwnerStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(HudUiOptionsPanelOverlayOwner)];
-};
-RECOIL_STATIC_ASSERT(sizeof(HudUiOptionsPanelOverlayOwnerStorage) == 0x08);
-
-extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
-#define g_HudUiOptionsPanelOverlayOwner (*(HudUiOptionsPanelOverlayOwner*)&g_HudUiOptionsPanelOverlayOwner)
+extern HudUiOptionsPanelOverlayOwner g_HudUiOptionsPanelOverlayOwner;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-confirm-quit.type
@@ -429,10 +418,6 @@ extern HudUiOptionsPanelOverlayOwnerStorage g_HudUiOptionsPanelOverlayOwner;
  */
 struct RecoilStateConfirmQuit : RecoilStateDialogHost {
     RecoilStateConfirmQuit();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateConfirmQuit* StaticInit();
-    static void RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     ~RecoilStateConfirmQuit();
@@ -440,14 +425,7 @@ struct RecoilStateConfirmQuit : RecoilStateDialogHost {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuit) == 0x08);
 
-union RecoilStateConfirmQuitStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(RecoilStateConfirmQuit)];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateConfirmQuitStorage) == 0x08);
-
-extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
-#define g_RecoilState_ConfirmQuit (*(RecoilStateConfirmQuit*)&g_RecoilState_ConfirmQuit)
+extern RecoilStateConfirmQuit g_RecoilState_ConfirmQuit;
 
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.recoil-state-controls.type
@@ -457,10 +435,6 @@ extern RecoilStateConfirmQuitStorage g_RecoilState_ConfirmQuit;
  */
 struct RecoilStateControls : RecoilStateDialogHost {
     RecoilStateControls();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateControls* StaticInit();
-    static void RegisterAtExit();
-    static void __cdecl AtExitDestructor();
     ~RecoilStateControls();
     int OnTryBecomeCurrent();
     void OnDeactivate();
@@ -470,14 +444,7 @@ struct RecoilStateControls : RecoilStateDialogHost {
 };
 RECOIL_STATIC_ASSERT(sizeof(RecoilStateControls) == 0x08);
 
-union RecoilStateControlsStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(RecoilStateControls)];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateControlsStorage) == 0x08);
-
-extern RecoilStateControlsStorage g_RecoilStateControls;
-#define g_RecoilStateControls (*(RecoilStateControls*)&g_RecoilStateControls)
+extern RecoilStateControls g_RecoilStateControls;
 
 struct CHudUiControlsDialogResumeWidget : HudUiZrdWidget {
     /**
@@ -507,6 +474,7 @@ RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog_OptionSelector) == 0x17c);
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.hud-ui-controls-dialog.type
  * @recoil-artifact emits .text recoil:function:0x408c40: VC5 compiler-generated deleting-destructor contribution anchored to this complete type definition; not an authored body.
+ * @recoil-artifact emits .text recoil:function:0x408c70: VC5 implicit destructor (member and base teardown); not an authored body.
  * Purpose: Own the controls widgets and five distinct, zero-data selector types.
  * Role names are inferred; native lifetime emits their separate retail tables.
  */
@@ -525,7 +493,6 @@ struct HudUiControlsDialog : HudUiBackground {
     } cameraModeSelector;
 
     HudUiControlsDialog();
-    void Destructor();
 };
 RECOIL_STATIC_ASSERT(sizeof(HudUiControlsDialog) == 0xb350);
 RECOIL_STATIC_ASSERT(offsetof(HudUiControlsDialog, resumeWidget) == 0xa94c);
@@ -582,10 +549,6 @@ struct RecoilStateCheatCode : RecoilStateDialogHost {
     RecoilPtr32 m_audioSnapshot; // zSndPlayHandleSnapshotList*
 
     RecoilStateCheatCode();
-    static void __cdecl StaticInitAndRegisterAtExit();
-    static RecoilStateCheatCode* ConstructGlobal();
-    static void StaticInit();
-    static void __cdecl AtExitDestructor();
     int OnTryBecomeCurrent();
     void OnDeactivate();
     ~RecoilStateCheatCode();
@@ -594,14 +557,7 @@ RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCode) == 0x10);
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_prevHalfResAdjustMode) == 0x08);
 RECOIL_STATIC_ASSERT(offsetof(RecoilStateCheatCode, m_audioSnapshot) == 0x0c);
 
-union RecoilStateCheatCodeStorage {
-    unsigned long align;
-    unsigned char bytes[sizeof(RecoilStateCheatCode)];
-};
-RECOIL_STATIC_ASSERT(sizeof(RecoilStateCheatCodeStorage) == 0x10);
-
-extern RecoilStateCheatCodeStorage g_RecoilStateCheatCode;
-#define g_RecoilStateCheatCode (*(RecoilStateCheatCode*)&g_RecoilStateCheatCode)
+extern RecoilStateCheatCode g_RecoilStateCheatCode;
 
 extern "C" int g_RecoilState_MainMenuSkipExitDelay;
 extern zSndSample* g_Hud_LowMeterBeepSample;

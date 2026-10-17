@@ -313,12 +313,6 @@ int __fastcall DISetJoystickEnabled(int enable);
 int __fastcall DIWaitForButtonPress(int loopUntilPressed);
 int __fastcall DIReportError(int hresult, const char* sourceFile, int sourceLine);
 int __fastcall BindMapPackBindingCode(int primary, int secondary, int joy, int mouse);
-void* __fastcall GlobalStateConstructor(::zInput_GlobalState* self);
-void __fastcall GlobalStateDestructor(::zInput_GlobalState* self);
-void* GlobalStateStaticInit();
-int GlobalStateRegisterAtExit();
-void __cdecl GlobalStateAtExitDestructor();
-void __cdecl GlobalStateStaticInitAndRegisterAtExit();
 int __cdecl BindGroupListGetCount();
 char* __fastcall BindGroupListGetGroupTitle(int groupIndex);
 int __fastcall BindGroupListGetGroupCommandCount(int groupIndex);
@@ -429,6 +423,9 @@ struct zInput_GlobalState {
     zInput_BindMapOverlayStackNode* bindMapOverlayNodeStackHead;
     int bindMapOverlayReserved;
     int bindMapOverlayDepth;
+
+    zInput_GlobalState();
+    ~zInput_GlobalState();
 };
 typedef char zInput_GlobalState_directInput_check[(offsetof(zInput_GlobalState, directInput) == 0x00) ? 1 : -1];
 typedef char zInput_GlobalState_hWnd_check[(offsetof(zInput_GlobalState, hWnd) == 0x04) ? 1 : -1];

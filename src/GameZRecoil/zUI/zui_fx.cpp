@@ -632,7 +632,7 @@ HudWeatherFxRain::~HudWeatherFxRain() { }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-update
  * @recoil-artifact defines .text recoil:function:0x4be880: HudWeatherFxRain::Update.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
  */

@@ -40,6 +40,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/**
+ * VC5 C1 draws declarations, labels and temporaries from one translation-unit
+ * ID counter, and Player::RebuildSteerBasisRawFromRef (0x42b8c0) order(s) code by
+ * that counter's parity at parse time. These declarations are never referenced and
+ * emit no code, data or symbols. User-authorized exception: match-proofs.md
+ * "Per-TU VC5 ID-counter parity exception".
+ * Purpose: keep this file's ID-counter parity after shared-header changes.
+ */
+extern int g_PlayerStateIdCounterAlignment0;
+extern int g_PlayerStateIdCounterAlignment1;
+extern int g_PlayerStateIdCounterAlignment2;
+extern int g_PlayerStateIdCounterAlignment3;
+extern int g_PlayerStateIdCounterAlignment4;
+extern int g_PlayerStateIdCounterAlignment5;
+
 extern char g_HudUiCounterText_PlayerLabel[];
 
 extern "C" {

@@ -632,7 +632,7 @@ void __fastcall FreeAltWeaponTrailRuntimeStates(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-loadweaponbanksandselectdefaults
  * @recoil-artifact defines .text recoil:function:0x438ba0: Player::LoadWeaponBanksAndSelectDefaults
- * @recoil-match byte
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Purpose: rebuild weapon-bank controller state from master weapon specs,
@@ -1446,7 +1446,7 @@ namespace Player {
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-tickaltgunruntimestate
  * @recoil-artifact defines .text recoil:function:0x439ba0: Player::TickAltGunRuntimeState.
- * @recoil-match byte
+ * @recoil-match source
  *
  * BN source path: D:\Proj\Battlesport\player.cpp.
  * Source model: Player source-file runtime tick owner for active alt-gun state;
@@ -2041,7 +2041,7 @@ void __fastcall UpdateAltGunAimDirection(zUtil_SaveGameState* saveState)
  * @recoil-artifact defines .text recoil:function:0x43a900: Player::DecayAndApplyAltFireSlotOffsetToNode.
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits recoil:function:0x43a900
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.decay-alt-fire-slot-offset.fast-exp-bits
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::DecayAndApplyAltFireSlotOffsetToNode from the recovered
@@ -3352,7 +3352,7 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-autoswitchtonextusablealtweapon
  * @recoil-artifact defines .text recoil:function:0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
- * @recoil-match byte
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered
