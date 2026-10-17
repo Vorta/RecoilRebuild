@@ -848,15 +848,26 @@ void __fastcall BuildEnvironmentProbeResult(zUtil_SaveGameState* saveState, Play
 }
 } // namespace Player
 namespace Player {
+#pragma optimize("w", on)
 /**
  * @recoil-anchor recoil:anchor:battlesport-player-player-findthirdprobeandcomputenormal
  * @recoil-artifact defines .text recoil:function:0x42d320: Player::FindThirdProbeAndComputeNormal.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot
- *
+ * @recoil-match byte
  *
  * Raw assembly: reviewed (Pro batch Z, run 96d501c4): the transform-point
  * expansion [0x42d3b2,0x42d416) and the vector dot [0x42d514,0x42d533).
+ *
+ * Authorized exception: "0x42d320 function-scoped alias-assumption pragma"
+ * (2026-10-17). Under VC5 SP3, the scoped "w" setting reproduces the
+ * retail support-point loads at +0x15d/+0x187/+0x1ba: [95,576,576] becomes
+ * [0,576,576], with all 18 other TU rows remaining exact.
+ * "w" is the weaker sufficient assumption; the original pragma spelling
+ * is not established. The trailing reset is required.
+ * Evidence: attach-sbs-pragma-w.txt, attach-rdata-pool.txt,
+ * attach-flag-sweep.txt, and the named exception record, including its
+ * control and demo-comparison evidence. No broader pragma use is approved.
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::FindThirdProbeAndComputeNormal from the recovered
@@ -916,6 +927,7 @@ void __fastcall FindThirdProbeAndComputeNormal(zUtil_SaveGameState* saveState, P
     playerState->worldPos.y = SolveHeightOnSurface(saveState, surfaceDot);
     RebuildOrientationFromNormal(saveState);
 }
+#pragma optimize("", on)
 } // namespace Player
 
 namespace zMath {

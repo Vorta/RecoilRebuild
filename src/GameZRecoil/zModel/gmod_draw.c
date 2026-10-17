@@ -2049,10 +2049,8 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
     const unsigned int wrapExtent = g_zVideo_ActiveRendererPath != 0 ? 0x80 : 0x800;
     float deltaU;
     float deltaV;
-    float minU;
-    float minV;
-    float maxU;
-    float maxV;
+    zModel_Uv minUv;
+    zModel_Uv maxUv;
     int floorMinU;
     int floorMinV;
     int ceilMaxU;
@@ -2068,33 +2066,33 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
         deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
         deltaV = g_FrameDeltaTimeSec * scrollRates[1];
         // Retail seeds the bounds from the scrolled first UV before storing it (as in the one-axis paths).
-        minU = deltaU + uvs[0].u;
-        minV = deltaV + uvs[0].v;
-        maxU = minU;
-        maxV = minV;
-        uvs[0].u = minU;
-        uvs[0].v = minV;
-        // Walking the scrolled UVs keeps minU x87-resident through this loop, as retail does.
+        minUv.u = deltaU + uvs[0].u;
+        minUv.v = deltaV + uvs[0].v;
+        maxUv.u = minUv.u;
+        maxUv.v = minUv.v;
+        uvs[0].u = minUv.u;
+        uvs[0].v = minUv.v;
+        // Walking the scrolled UVs keeps minUv.u x87-resident through this loop, as retail does.
         uv = &uvs[1];
         for (i = 1; i < uvCount; ++i, ++uv) {
             uv->u = deltaU + uv->u;
             uv->v = deltaV + uv->v;
-            if (uv->u < minU) {
-                minU = uv->u;
-            } else if (uv->u > maxU) {
-                maxU = uv->u;
+            if (uv->u < minUv.u) {
+                minUv.u = uv->u;
+            } else if (uv->u > maxUv.u) {
+                maxUv.u = uv->u;
             }
-            if (uv->v < minV) {
-                minV = uv->v;
-            } else if (uv->v > maxV) {
-                maxV = uv->v;
+            if (uv->v < minUv.v) {
+                minUv.v = uv->v;
+            } else if (uv->v > maxUv.v) {
+                maxUv.v = uv->v;
             }
         }
 
-        floorMinU = (int)floor(minU);
-        floorMinV = (int)floor(minV);
-        ceilMaxU = (int)ceil(maxU);
-        ceilMaxV = (int)ceil(maxV);
+        floorMinU = (int)floor(minUv.u);
+        floorMinV = (int)floor(minUv.v);
+        ceilMaxU = (int)ceil(maxUv.u);
+        ceilMaxV = (int)ceil(maxUv.v);
         extentU = wrapExtent >> textureInfo->wrapShiftU;
         extentV = wrapExtent >> textureInfo->wrapShiftV;
         correctionU = 0;
@@ -2126,21 +2124,21 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
         }
     } else if (scrollRates[0] != 0.0f) {
         deltaU = scrollRates[0] * g_FrameDeltaTimeSec;
-        minU = deltaU + uvs[0].u;
-        maxU = minU;
-        uvs[0].u = minU;
+        minUv.u = deltaU + uvs[0].u;
+        maxUv.u = minUv.u;
+        uvs[0].u = minUv.u;
         uv = &uvs[1];
         for (i = 1; i < uvCount; ++i, ++uv) {
             uv->u = deltaU + uv->u;
-            if (uv->u < minU) {
-                minU = uv->u;
-            } else if (uv->u > maxU) {
-                maxU = uv->u;
+            if (uv->u < minUv.u) {
+                minUv.u = uv->u;
+            } else if (uv->u > maxUv.u) {
+                maxUv.u = uv->u;
             }
         }
 
-        floorMinU = (int)floor(minU);
-        ceilMaxU = (int)ceil(maxU);
+        floorMinU = (int)floor(minUv.u);
+        ceilMaxU = (int)ceil(maxUv.u);
         extentU = wrapExtent >> textureInfo->wrapShiftU;
         correctionU = 0;
         if (floorMinU <= -extentU) {
@@ -2156,21 +2154,21 @@ void __fastcall zModelInstanceUpdateScrollingTextures(
         }
     } else if (scrollRates[1] != 0.0f) {
         deltaV = g_FrameDeltaTimeSec * scrollRates[1];
-        minV = deltaV + uvs[0].v;
-        maxV = minV;
-        uvs[0].v = minV;
+        minUv.v = deltaV + uvs[0].v;
+        maxUv.v = minUv.v;
+        uvs[0].v = minUv.v;
         uv = &uvs[1];
         for (i = 1; i < uvCount; ++i, ++uv) {
             uv->v = deltaV + uv->v;
-            if (uv->v < minV) {
-                minV = uv->v;
-            } else if (uv->v > maxV) {
-                maxV = uv->v;
+            if (uv->v < minUv.v) {
+                minUv.v = uv->v;
+            } else if (uv->v > maxUv.v) {
+                maxUv.v = uv->v;
             }
         }
 
-        floorMinV = (int)floor(minV);
-        ceilMaxV = (int)ceil(maxV);
+        floorMinV = (int)floor(minUv.v);
+        ceilMaxV = (int)ceil(maxUv.v);
         extentV = wrapExtent >> textureInfo->wrapShiftV;
         correctionV = 0;
         if (floorMinV <= -extentV) {

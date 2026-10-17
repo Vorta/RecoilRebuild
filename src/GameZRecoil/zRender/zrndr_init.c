@@ -1289,8 +1289,7 @@ int __fastcall zRndrSpanOcclusionTestSpanDepthOrderPair(SpanNodePartial* lhs, Sp
 void __fastcall zRndr_SpanOcclusion_InsertSpanNode_Local(SpanNodePartial** spanList, int columnIndex, int* spanCount)
 {
     SpanNodePartial* pending = g_spanAllocCursor;
-    SpanNodePartial** columnHeadTable = g_spanColumnHeadTable;
-    SpanNodePartial* current = columnHeadTable[columnIndex];
+    SpanNodePartial* current = g_spanColumnHeadTable[columnIndex];
     SpanNodePartial* previous;
     float maxPendingDepth;
     float maxCurrentDepth;

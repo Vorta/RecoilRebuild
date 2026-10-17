@@ -4270,7 +4270,7 @@ inline void HudUiPanelSpan::clear()
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.huduizrdscrollingtext-loadfromzrd
  * @recoil-artifact defines .text recoil:function:0x409570: HudUiZrdScrollingText::LoadFromZrd.
- *
+ * @recoil-match source
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiCreditsPanel.cpp.
  * Purpose: load scrolling credits rows from ZRD layout data and compute stacked row heights.

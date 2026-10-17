@@ -3875,8 +3875,8 @@ void __fastcall zRndrDrawTexturedQueuedAlpha(
     int variantIndex
 )
 {
-    ScanConvertEdge edgeTableB[0x40];
-    ScanConvertEdge edgeTableA[0x40];
+    ScanConvertEdge edgeTableB[0x41];
+    ScanConvertEdge edgeTableA[0x41];
     SpanNodePartial* spanList[0x141];
     zVidImagePartial* image;
     float imageWidth;
@@ -4360,8 +4360,8 @@ void __fastcall zRndrDrawTexturedFanTri(
     int variantIndex
 )
 {
-    ScanConvertEdge edgeTableB[0x40];
-    ScanConvertEdge edgeTableA[0x40];
+    ScanConvertEdge edgeTableB[0x41];
+    ScanConvertEdge edgeTableA[0x41];
     SpanNodePartial* spanList[0x141];
     zVidImagePartial* image;
     float imageWidth;
