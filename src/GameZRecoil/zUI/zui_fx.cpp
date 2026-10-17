@@ -22,6 +22,7 @@
 #include "GameZRecoil/zFMV/fmv.h"
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zMath/zmth.h"
+#define HUD_WEATHER_STORE_QUAD_FLOAT(base_, index_, member_, value_) (((base_)[(index_)]).member_) = (value_)
 #include "GameZRecoil/zModel/gmod.h"
 #include "GameZRecoil/zRender/zrndr.h"
 #include "GameZRecoil/zTime/time.h"
@@ -533,8 +534,8 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
     zMath::MatRotateX(cameraAngles.x);
 
     // Retail keeps this float scale on the x87 stack and multiplies each component in memory.
-    const float gravityScale = gravity * 0.1;
     zVec3 gravityOffset = basisVector;
+    const float gravityScale = gravity * 0.1;
     gravityOffset.x *= gravityScale;
     gravityOffset.y *= gravityScale;
     gravityOffset.z *= gravityScale;
@@ -591,8 +592,8 @@ void HudWeatherFxSnow::Update(float deltaSeconds)
                   * (float)(viewportHeight))
             - particleQuads[particleIndex].y;
         particleQuads[particleIndex].color16 = packedColor16;
-        particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuads[particleIndex].texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        HUD_WEATHER_STORE_QUAD_FLOAT(particleQuads, particleIndex, texCoordUStart, probeDepthFactor * alphaStartScale);
+        HUD_WEATHER_STORE_QUAD_FLOAT(particleQuads, particleIndex, texCoordUEnd, sourceDepthFactor * alphaEndScale);
         // Retail multiplies by the constant last and consumes sourceDepthFactor here (fxch/fmulp).
         particleQuads[particleIndex].slantOffset = (int)(3.5 * sourceDepthFactor * (float)(activeParticleCount + 1));
 
@@ -697,8 +698,8 @@ void HudWeatherFxRain::Update(float deltaSeconds)
     zMath::MatRotateX(cameraAngles.x);
 
     // Retail keeps this float scale on the x87 stack and multiplies each component in memory.
-    const float gravityScale = gravity * 0.1;
     zVec3 gravityOffset = basisVector;
+    const float gravityScale = gravity * 0.1;
     gravityOffset.x *= gravityScale;
     gravityOffset.y *= gravityScale;
     gravityOffset.z *= gravityScale;
@@ -755,8 +756,8 @@ void HudWeatherFxRain::Update(float deltaSeconds)
                   * (float)(viewportHeight))
             - particleQuads[particleIndex].y;
         particleQuads[particleIndex].color16 = packedColor16;
-        particleQuads[particleIndex].texCoordUStart = probeDepthFactor * alphaStartScale;
-        particleQuads[particleIndex].texCoordUEnd = sourceDepthFactor * alphaEndScale;
+        HUD_WEATHER_STORE_QUAD_FLOAT(particleQuads, particleIndex, texCoordUStart, probeDepthFactor * alphaStartScale);
+        HUD_WEATHER_STORE_QUAD_FLOAT(particleQuads, particleIndex, texCoordUEnd, sourceDepthFactor * alphaEndScale);
         particleQuads[particleIndex].slantOffset = kHudWeatherFxRainSlantDelta;
 
         ResetParticleSlot(particleIndex, 0);
@@ -1068,7 +1069,7 @@ static inline void HudUiMessageBoxSetDefaultImage(HudUiZrdWidget* button, zVidIm
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-constructor
  * @recoil-artifact defines .text recoil:function:0x4bf060: HudUiMessageBoxDialog::Constructor.
- *
+ * @recoil-match byte
  *
  * Source model: class-first constructor for HudUiMessageBoxDialog; BN table
  * 0x4d4028 is installed at object offset zero by the constructed C++ object.
@@ -1130,21 +1131,21 @@ HudUiMessageBoxDialog::HudUiMessageBoxDialog(const char* zrdPath, const char* se
     );
 
     backdropWidget.SetImageBorrowedAndInvalidate(backgroundImage);
+    HudUiElement* const backdrop = &backdropWidget;
     messagePanel.SetTextFmt("");
     titlePanel.SetTextFmt("");
     okButton.LoadFromZrd(0, this);
     HudUiMessageBoxSetDefaultImage(&okButton, okButtonNormalImage);
     okButton.rolloverImage = okButtonPressedImage;
 
-    backdropWidget.SetPos(origin.x, origin.y);
-    titlePanel.SetPos(origin.x + 10, origin.y + 10);
-    messagePanel.SetPos(origin.x + 10, origin.y + 30);
-    okButton.SetPos(
-        origin.x + fallbackWidth / 2 - fallbackWidth / 8,
-        origin.y - fallbackHeight / 4 + fallbackHeight - 10
-    );
+    const int dialogMargin = 10;
+    backdrop->SetPos(origin.x, origin.y);
+    titlePanel.SetPos(origin.x + dialogMargin, origin.y + dialogMargin);
+    messagePanel.SetPos(origin.x + dialogMargin, origin.y + 30);
+    const int width = fallbackWidth;
+    okButton.SetPos(origin.x + width / 2 - width / 8, origin.y - fallbackHeight / 4 + fallbackHeight - dialogMargin);
 
-    AddChild(&backdropWidget);
+    AddChild(backdrop);
     AddChild(&messagePanel);
     AddChild(&titlePanel);
     AddChild(&okButton);

@@ -1567,7 +1567,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN inlines the odd tex16 alpha-map scalar path,
  * duplicates one sampled texel into a packed pair, reduces alpha to five bits,
@@ -1576,10 +1576,10 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    const int uStep = g_spanActiveTexUStepFixed20;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
-    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    int uStep = g_spanActiveTexUStepFixed20;
+    int vStep = g_spanActiveTexVStepFixed20;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
@@ -1591,13 +1591,16 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCo
             if (alpha >= 0xf8) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
@@ -1606,33 +1609,48 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCo
         ++dst;
     }
 
-    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+    pixelCount >>= 1;
+    if (pixelCount == 0) {
+        return;
+    }
+
+    uStep *= 2;
+    vStep *= 2;
+    do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
+        int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned int texel = texels16[sourceIndex];
-            const unsigned int sourcePair = (texel << 16) + texel;
+            unsigned int sourcePair = texels16[sourceIndex];
+            sourcePair += sourcePair << 16;
             if (alpha >= 0xf8) {
                 memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
                 unsigned int destPair;
                 memcpy(&destPair, dst, sizeof(destPair));
-                const int alpha5 = alpha >> 3;
-                const int inverseAlpha5 = 0x1f - alpha5;
-                const unsigned int blendedPair
-                    = ((((destPair & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5)
-                        & 0x07e0f81fu
-                    | ((((destPair >> 5) & 0x07c0f83fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
-                        & 0xf81f07e0u;
-                memcpy(dst, &blendedPair, sizeof(blendedPair));
+                alpha >>= 3;
+                unsigned int sourceLow = sourcePair & 0x07e0f81fu;
+                unsigned int destLow = destPair & 0x07e0f81fu;
+                sourcePair = (sourcePair >> 5) & 0x07c0f83fu;
+                destPair = (destPair >> 5) & 0x07c0f83fu;
+                sourceLow *= alpha;
+                sourcePair *= alpha;
+                alpha = 0x1f - alpha;
+                destLow *= alpha;
+                destPair *= alpha;
+                destLow += sourceLow;
+                destPair += sourcePair;
+                destLow = (destLow >> 5) & 0x07e0f81fu;
+                destPair &= 0xf81f07e0u;
+                destPair |= destLow;
+                memcpy(dst, &destPair, sizeof(destPair));
             }
         }
 
-        texU += uStep * 2;
-        texV += vStep * 2;
+        texU += uStep;
+        texV += vStep;
         dst += 2;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1640,7 +1658,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN matches the tex16 alpha-map odd/pair loop with
  * 555-specific red and green masks in the packed two-pixel blend.
@@ -1648,10 +1666,10 @@ namespace zRndr {
  */
 void __fastcall SpanAlphaBlend555FromTex16Alpha8(int texU, int texV, int pixelCount, int texVShift)
 {
-    const int uStep = g_spanActiveTexUStepFixed20;
     const unsigned short* texels16 = (const unsigned short*)(g_spanActiveTexPixels);
-    const int vStep = g_spanActiveTexVStepFixed20;
     const unsigned char* alphaMap = (const unsigned char*)(g_spanActiveTexAlphaMap);
+    int uStep = g_spanActiveTexUStepFixed20;
+    int vStep = g_spanActiveTexVStepFixed20;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
 
     if ((pixelCount & 1) != 0) {
@@ -1663,13 +1681,16 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(int texU, int texV, int pixelCo
             if (alpha >= 0xf8) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffffc00);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
@@ -1678,33 +1699,48 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(int texU, int texV, int pixelCo
         ++dst;
     }
 
-    for (pixelCount >>= 1; pixelCount != 0; --pixelCount) {
+    pixelCount >>= 1;
+    if (pixelCount == 0) {
+        return;
+    }
+
+    uStep *= 2;
+    vStep *= 2;
+    do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
+        int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned int texel = texels16[sourceIndex];
-            const unsigned int sourcePair = (texel << 16) + texel;
+            unsigned int sourcePair = texels16[sourceIndex];
+            sourcePair += sourcePair << 16;
             if (alpha >= 0xf8) {
                 memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
                 unsigned int destPair;
                 memcpy(&destPair, dst, sizeof(destPair));
-                const int alpha5 = alpha >> 3;
-                const int inverseAlpha5 = 0x1f - alpha5;
-                const unsigned int blendedPair
-                    = ((((destPair & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5)
-                        & 0x03e07c1fu
-                    | ((((destPair >> 5) & 0x03e0f81fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
-                        & 0x7c1f03e0u;
-                memcpy(dst, &blendedPair, sizeof(blendedPair));
+                alpha >>= 3;
+                unsigned int sourceLow = sourcePair & 0x03e07c1fu;
+                unsigned int destLow = destPair & 0x03e07c1fu;
+                sourcePair = (sourcePair >> 5) & 0x03e0f81fu;
+                destPair = (destPair >> 5) & 0x03e0f81fu;
+                sourceLow *= alpha;
+                sourcePair *= alpha;
+                alpha = 0x1f - alpha;
+                destLow *= alpha;
+                destPair *= alpha;
+                destLow += sourceLow;
+                destPair += sourcePair;
+                destLow = (destLow >> 5) & 0x03e07c1fu;
+                destPair &= 0x7c1f03e0u;
+                destPair |= destLow;
+                memcpy(dst, &destPair, sizeof(destPair));
             }
         }
 
-        texU += uStep * 2;
-        texV += vStep * 2;
+        texU += uStep;
+        texV += vStep;
         dst += 2;
-    }
+    } while (--pixelCount != 0);
 }
 } // namespace zRndr
 
@@ -1712,7 +1748,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN samples a 16-bit texel through the active U/V
  * masks, skips only when gRndr_ActiveConstAlphaBits <= 3, copies for alpha
@@ -1808,7 +1844,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c970: zRndr::SpanAlphaBlend565ConstAlphaFromTex16Alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN uses the same active U/V index for tex16 and
  * alpha-map reads, scales the alpha byte by the float stored in
@@ -2145,7 +2181,7 @@ namespace zRndr {
  * @recoil-artifact defines .text recoil:function:0x49cea0: zRndr::SpanAlphaBlend555MmxFromTex16Alpha8
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zrender.span-alpha-blend-555-mmx-from-tex16-alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN retail evidence: BN matches the 565 MMX alpha-map staging loop but
  * uses the 555 red/green masks and an alpha > 7 scalar-tail gate.
@@ -2359,7 +2395,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN expands each sampled pal8 texel through the active
  * palette before the odd scalar and packed two-pixel 565 alpha-map blend.
@@ -2371,8 +2407,8 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
     const unsigned char* texels8 = g_spanActiveTexPixels;
     int uStep = g_spanActiveTexUStepFixed20;
     int vStep = g_spanActiveTexVStepFixed20;
-    const unsigned short* palette = g_spanActiveTexPalette;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short* palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
         const int sourceIndex
@@ -2383,13 +2419,16 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
             if (alpha >= 0xf8) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffff800);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = (((srcColor & 0x07e0) - (dstColor & 0x07e0)) * alpha) >> 8;
+                int redDelta = (((srcColor & 0xf800) - (dstColor & 0xf800)) * alpha) >> 8;
+                redDelta &= 0xfffff800;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
@@ -2409,23 +2448,31 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
     do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
+        int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned int texel = palette[texels8[sourceIndex]];
-            const unsigned int sourcePair = (texel << 16) + texel;
+            unsigned int sourcePair = palette[texels8[sourceIndex]];
+            sourcePair += sourcePair << 16;
             if (alpha >= 0xf8) {
                 memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
                 unsigned int destPair;
                 memcpy(&destPair, dst, sizeof(destPair));
-                const int alpha5 = alpha >> 3;
-                const int inverseAlpha5 = 0x1f - alpha5;
-                const unsigned int blendedPair
-                    = ((((destPair & 0x07e0f81fu) * inverseAlpha5) + ((sourcePair & 0x07e0f81fu) * alpha5)) >> 5)
-                        & 0x07e0f81fu
-                    | ((((destPair >> 5) & 0x07c0f83fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x07c0f83fu) * alpha5))
-                        & 0xf81f07e0u;
-                memcpy(dst, &blendedPair, sizeof(blendedPair));
+                alpha >>= 3;
+                unsigned int sourceLow = sourcePair & 0x07e0f81fu;
+                unsigned int destLow = destPair & 0x07e0f81fu;
+                sourcePair = (sourcePair >> 5) & 0x07c0f83fu;
+                destPair = (destPair >> 5) & 0x07c0f83fu;
+                sourceLow *= alpha;
+                sourcePair *= alpha;
+                alpha = 0x1f - alpha;
+                destLow *= alpha;
+                destPair *= alpha;
+                destLow += sourceLow;
+                destPair += sourcePair;
+                destLow = (destLow >> 5) & 0x07e0f81fu;
+                destPair &= 0xf81f07e0u;
+                destPair |= destLow;
+                memcpy(dst, &destPair, sizeof(destPair));
             }
         }
 
@@ -2440,7 +2487,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
- *
+ * @recoil-match source
  *
  * Source-shape evidence: BN matches the pal8 alpha-map odd/pair loop with
  * active-palette expansion and 555-specific packed blend masks.
@@ -2452,8 +2499,8 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
     const unsigned char* texels8 = g_spanActiveTexPixels;
     int uStep = g_spanActiveTexUStepFixed20;
     int vStep = g_spanActiveTexVStepFixed20;
-    const unsigned short* palette = g_spanActiveTexPalette;
     unsigned short* dst = g_spanCurrentSpanBaseAddr;
+    const unsigned short* palette = g_spanActiveTexPalette;
 
     if ((pixelCount & 1) != 0) {
         const int sourceIndex
@@ -2464,13 +2511,16 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
             if (alpha >= 0xf8) {
                 *dst = (unsigned short)(srcColor);
             } else {
-                const int dstColor = (short)(*dst);
-                const int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
-                const int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
-                int blended = dstColor + (redDelta & 0xfffffc00);
-                const int blueDelta = (((srcColor & 0x001f) - (blended & 0x001f)) * alpha) >> 8;
-                blended += (greenDelta & 0xffffffe0) + blueDelta;
-                *dst = (unsigned short)(blended);
+                int dstColor = (short)(*dst);
+                int greenDelta = (((srcColor & 0x03e0) - (dstColor & 0x03e0)) * alpha) >> 8;
+                int redDelta = (((srcColor & 0x7c00) - (dstColor & 0x7c00)) * alpha) >> 8;
+                redDelta &= 0xfffffc00;
+                greenDelta &= 0xffffffe0;
+                dstColor += redDelta;
+                int blueDelta = (((srcColor & 0x001f) - (dstColor & 0x001f)) * alpha) >> 8;
+                blueDelta += greenDelta;
+                dstColor += blueDelta;
+                *dst = (unsigned short)(dstColor);
             }
         }
 
@@ -2490,23 +2540,31 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
     do {
         const int sourceIndex
             = (int)((unsigned int)(texV & g_spanActiveTexVMask) >> texVShift) + ((texU >> 20) & g_spanActiveTexUMask);
-        const int alpha = alphaMap[sourceIndex];
+        int alpha = alphaMap[sourceIndex];
         if (alpha >= 8) {
-            const unsigned int texel = palette[texels8[sourceIndex]];
-            const unsigned int sourcePair = (texel << 16) + texel;
+            unsigned int sourcePair = palette[texels8[sourceIndex]];
+            sourcePair += sourcePair << 16;
             if (alpha >= 0xf8) {
                 memcpy(dst, &sourcePair, sizeof(sourcePair));
             } else {
                 unsigned int destPair;
                 memcpy(&destPair, dst, sizeof(destPair));
-                const int alpha5 = alpha >> 3;
-                const int inverseAlpha5 = 0x1f - alpha5;
-                const unsigned int blendedPair
-                    = ((((destPair & 0x03e07c1fu) * inverseAlpha5) + ((sourcePair & 0x03e07c1fu) * alpha5)) >> 5)
-                        & 0x03e07c1fu
-                    | ((((destPair >> 5) & 0x03e0f81fu) * inverseAlpha5) + (((sourcePair >> 5) & 0x03e0f81fu) * alpha5))
-                        & 0x7c1f03e0u;
-                memcpy(dst, &blendedPair, sizeof(blendedPair));
+                alpha >>= 3;
+                unsigned int sourceLow = sourcePair & 0x03e07c1fu;
+                unsigned int destLow = destPair & 0x03e07c1fu;
+                sourcePair = (sourcePair >> 5) & 0x03e0f81fu;
+                destPair = (destPair >> 5) & 0x03e0f81fu;
+                sourceLow *= alpha;
+                sourcePair *= alpha;
+                alpha = 0x1f - alpha;
+                destLow *= alpha;
+                destPair *= alpha;
+                destLow += sourceLow;
+                destPair += sourcePair;
+                destLow = (destLow >> 5) & 0x03e07c1fu;
+                destPair &= 0x7c1f03e0u;
+                destPair |= destLow;
+                memcpy(dst, &destPair, sizeof(destPair));
             }
         }
 

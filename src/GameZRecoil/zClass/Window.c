@@ -65,6 +65,8 @@ CZNodePartial* __cdecl gwWindowNew(void)
     CZWindowData* data;
     int pitchBytes;
     void* buffer;
+    int* fbBppAddress;
+    int* fbHeightAddress;
     if (node == 0) {
         ReportOld(0x400, "D:\\Proj\\GameZRecoil\\zClass\\Window.c", 0x61, "Null node pointer.");
         return 0;
@@ -72,20 +74,22 @@ CZNodePartial* __cdecl gwWindowNew(void)
 
     node->classId = kZClassNodeWindow;
     data = (CZWindowData*)(calloc(1, sizeof(CZWindowData)));
-    node->classData = data;
+    fbBppAddress = &data->fbBpp;
+    fbHeightAddress = &data->fbHeight;
     data->resolutionWidth = 1;
     data->resolutionHeight = 1;
+    node->classData = data;
     data->bufferIndex = -1;
 
-    buffer = GetActiveRegionState(&data->fbWidth, &data->fbHeight, &data->fbBpp, &pitchBytes);
+    buffer = GetActiveRegionState(&data->fbWidth, fbHeightAddress, fbBppAddress, &pitchBytes);
     data->buffer = buffer;
     printf(
         "Window (new %x) buffer: %x (%d x %d x %d)\n",
         (unsigned int)((unsigned int)(data)),
         (unsigned int)((unsigned int)(buffer)),
         data->fbWidth,
-        data->fbHeight,
-        data->fbBpp
+        *fbHeightAddress,
+        *fbBppAddress
     );
 
     if (CZTypeListInsert(14, node) != 0) {

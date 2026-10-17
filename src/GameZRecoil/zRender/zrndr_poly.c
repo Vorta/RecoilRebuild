@@ -4919,9 +4919,6 @@ LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, fl
     int x;
     unsigned short* pixel;
     zRndr_LensFlareSource* lensFlareSource;
-    int overlayAlpha;
-    int overlayColor;
-    int blended;
     int greenDelta;
     int blueDelta;
     int blendTowardFramebuffer;
@@ -4956,6 +4953,9 @@ LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, fl
     packedColor = sample->packedColor16;
 
     if (g_overlayBlendEnabled != 0) {
+        int overlayAlpha;
+        int overlayColor;
+        int blended;
         overlayAlpha = (int)(g_overlayBlendAlpha * 255.0);
         if (g_pixelPackGreenBits == 6) {
             if (overlayAlpha > 3) {
@@ -4963,13 +4963,31 @@ LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, fl
                     packedColor = g_overlayBlendPackedColor16 & 0xffff;
                 } else {
                     overlayColor = g_overlayBlendPackedColor16;
-                    redDelta = ((((overlayColor & 0xf800) - (packedColor & 0xf800)) * overlayAlpha) >> 8) & 0xfffff800;
-                    blended = packedColor + redDelta;
-                    greenDelta = ((overlayColor & 0x07e0) - (packedColor & 0x07e0)) * overlayAlpha;
-                    blueDelta = ((overlayColor & 0x001f) - (blended & 0x001f)) * overlayAlpha;
-                    greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                    blended = overlayColor;
+                    blended &= 0xf800;
+                    blueDelta = packedColor;
+                    blueDelta &= 0xf800;
+                    blended -= blueDelta;
+                    blended *= overlayAlpha;
+                    blended >>= 8;
+                    blended &= 0xfffff800;
+                    blended += packedColor;
+                    blueDelta = overlayColor;
+                    packedColor &= 0x07e0;
+                    blueDelta &= 0x001f;
+                    redDelta = blended;
+                    redDelta &= 0x001f;
+                    blueDelta -= redDelta;
+                    blueDelta *= overlayAlpha;
                     blueDelta >>= 8;
-                    packedColor = greenDelta + blueDelta + blended;
+                    overlayColor &= 0x07e0;
+                    overlayColor -= packedColor;
+                    overlayColor *= overlayAlpha;
+                    overlayColor >>= 8;
+                    overlayColor &= 0xffffffe0;
+                    overlayColor += blueDelta;
+                    overlayColor += blended;
+                    packedColor = overlayColor;
                 }
             }
         } else if (overlayAlpha > 7) {
@@ -4977,15 +4995,31 @@ LensFlareDrawQueuedSample16ClippedFramebuffer(LensFlareSamplePartial* sample, fl
                 packedColor = g_overlayBlendPackedColor16 & 0xffff;
             } else {
                 overlayColor = g_overlayBlendPackedColor16;
-                greenDelta = ((overlayColor & 0x03e0) - (packedColor & 0x03e0)) * overlayAlpha;
-                blueDelta = ((overlayColor & 0x001f) - (packedColor & 0x001f)) * overlayAlpha;
-                redDelta = ((overlayColor & 0x7c00) - (packedColor & 0x7c00)) * overlayAlpha;
-                greenDelta = (greenDelta >> 8) & 0xffffffe0;
+                blueDelta = packedColor;
+                blueDelta &= 0x03e0;
+                redDelta = packedColor;
+                greenDelta = overlayColor;
+                greenDelta &= 0x03e0;
+                redDelta &= 0x001f;
+                greenDelta -= blueDelta;
+                greenDelta *= overlayAlpha;
+                greenDelta >>= 8;
+                greenDelta &= 0xffffffe0;
+                blueDelta = overlayColor;
+                overlayColor &= 0x7c00;
+                blueDelta &= 0x001f;
+                blueDelta -= redDelta;
+                redDelta = packedColor;
+                blueDelta *= overlayAlpha;
+                redDelta &= 0x7c00;
+                overlayColor -= redDelta;
                 blueDelta >>= 8;
-                redDelta = (redDelta >> 8) & 0xfffffc00;
+                overlayColor *= overlayAlpha;
+                overlayColor >>= 8;
                 greenDelta += blueDelta;
-                redDelta += greenDelta;
-                packedColor += redDelta;
+                overlayColor &= 0xfffffc00;
+                overlayColor += greenDelta;
+                packedColor += overlayColor;
             }
         }
     }
