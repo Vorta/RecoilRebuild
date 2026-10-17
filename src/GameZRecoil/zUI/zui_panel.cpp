@@ -333,7 +333,7 @@ void HudUiPanel::RebuildTextRect()
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-widgets-huduiflashpanel-computeflashblendcolor
  * @recoil-artifact defines .text recoil:function:0x4bb0c0: HudUiFlashPanel::ComputeFlashBlendColor.
- * @recoil-match instruction
+ * @recoil-match byte
  *
  * Purpose: clamp endpoint flash colors and blend RGB channels for intermediate flash values.
  */
@@ -347,10 +347,15 @@ unsigned int __fastcall HudUiFlashPanel::ComputeFlashBlendColor(unsigned int col
     }
 
     // Retail computes 1.0 - blend once in double precision (fsubr qword) and keeps it unrounded on the x87
-    // stack for all three channels (0x4bb0ff); the inline double term reproduces that without a float local.
-    const int blue = (int)(GetRValue(color0) * (1.0 - blend) + GetRValue(color1) * blend);
-    const int green = (int)(GetGValue(color0) * (1.0 - blend) + GetGValue(color1) * blend);
-    const int red = (int)(GetBValue(color0) * (1.0 - blend) + GetBValue(color1) * blend);
+    // stack for all three channels (0x4bb0ff). Each channel's inverse-weighted term goes through the reused
+    // double working value, which keeps it unrounded and gives retail's per-channel schedule.
+    double channel;
+    channel = GetRValue(color0) * (1.0 - blend);
+    const int blue = (int)(channel + GetRValue(color1) * blend);
+    channel = GetGValue(color0) * (1.0 - blend);
+    const int green = (int)(channel + GetGValue(color1) * blend);
+    channel = GetBValue(color0) * (1.0 - blend);
+    const int red = (int)(channel + GetBValue(color1) * blend);
     return RGB(blue, green, red);
 }
 
