@@ -10,6 +10,45 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZimgTexture_0;
+extern int g_RemovedDebug_ZimgTexture_1;
+extern int g_RemovedDebug_ZimgTexture_2;
+extern int g_RemovedDebug_ZimgTexture_3;
+extern int g_RemovedDebug_ZimgTexture_4;
+extern int g_RemovedDebug_ZimgTexture_5;
+extern int g_RemovedDebug_ZimgTexture_6;
+extern int g_RemovedDebug_ZimgTexture_7;
+extern int g_RemovedDebug_ZimgTexture_8;
+extern int g_RemovedDebug_ZimgTexture_9;
+extern int g_RemovedDebug_ZimgTexture_10;
+extern int g_RemovedDebug_ZimgTexture_11;
+extern int g_RemovedDebug_ZimgTexture_12;
+extern int g_RemovedDebug_ZimgTexture_13;
+extern int g_RemovedDebug_ZimgTexture_14;
+extern int g_RemovedDebug_ZimgTexture_15;
+extern int g_RemovedDebug_ZimgTexture_16;
+extern int g_RemovedDebug_ZimgTexture_17;
+extern int g_RemovedDebug_ZimgTexture_18;
+extern int g_RemovedDebug_ZimgTexture_19;
+extern int g_RemovedDebug_ZimgTexture_20;
+extern int g_RemovedDebug_ZimgTexture_21;
+extern int g_RemovedDebug_ZimgTexture_22;
+extern int g_RemovedDebug_ZimgTexture_23;
+extern int g_RemovedDebug_ZimgTexture_24;
+extern int g_RemovedDebug_ZimgTexture_25;
+extern int g_RemovedDebug_ZimgTexture_26;
+extern int g_RemovedDebug_ZimgTexture_27;
+extern int g_RemovedDebug_ZimgTexture_28;
+extern int g_RemovedDebug_ZimgTexture_29;
+extern int g_RemovedDebug_ZimgTexture_30;
+extern int g_RemovedDebug_ZimgTexture_31;
+extern int g_RemovedDebug_ZimgTexture_32;
+
 extern "C" {
 extern char g_zVid_DefaultImageTexturePackReadonlyNameFmt[0x04];
 extern char g_zVid_DefaultImageTexturePackName[0x0a];
@@ -1242,7 +1281,7 @@ void __fastcall TexDirSetBaseNameFromPath(const char* sourcePath, char* destBase
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zimage-zimg-texture-zimage-texdirentry-buildmipchain
  * @recoil-artifact defines .text recoil:function:0x46e3e0: zImage_TexDirEntry::BuildMipChain.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: GameZRecoil/zImage/zimg_texture.cpp.
  * Source owner: engine.zimage.texture_directory_state.

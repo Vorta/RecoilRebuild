@@ -1412,9 +1412,20 @@ void __fastcall SpanMasked16FromPal8SwitchVShift(int texU, int texV, int pixelCo
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_0;
+extern int g_RemovedDebug_ZrndrSpan_1;
+extern int g_RemovedDebug_ZrndrSpan_2;
+extern int g_RemovedDebug_ZrndrSpan_3;
+extern int g_RemovedDebug_ZrndrSpan_4;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16frompal8to565
  * @recoil-artifact defines .text recoil:function:0x49c020: zRndr::SpanMasked16FromPal8To565
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN's retail body owns the same generic V-shift pal8
  * 565 loop as 0x49c230, including the nonzero source gate, alpha > 3 gate,
@@ -1463,6 +1474,14 @@ void __fastcall SpanMasked16FromPal8To565(int texU, int texV, int pixelCount, in
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_5;
+extern int g_RemovedDebug_ZrndrSpan_6;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanmasked16fromtex16to565
  * @recoil-artifact defines .text recoil:function:0x49c150: zRndr::SpanMasked16FromTex16To565
@@ -1567,7 +1586,7 @@ namespace zRndr {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c360: zRndr::SpanAlphaBlend565FromTex16Alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN inlines the odd tex16 alpha-map scalar path,
  * duplicates one sampled texel into a packed pair, reduces alpha to five bits,
@@ -1656,9 +1675,17 @@ void __fastcall SpanAlphaBlend565FromTex16Alpha8(int texU, int texV, int pixelCo
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_7;
+extern int g_RemovedDebug_ZrndrSpan_8;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555fromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49c560: zRndr::SpanAlphaBlend555FromTex16Alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the tex16 alpha-map odd/pair loop with
  * 555-specific red and green masks in the packed two-pixel blend.
@@ -1746,6 +1773,24 @@ void __fastcall SpanAlphaBlend555FromTex16Alpha8(int texU, int texV, int pixelCo
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_9;
+extern int g_RemovedDebug_ZrndrSpan_10;
+extern int g_RemovedDebug_ZrndrSpan_11;
+extern int g_RemovedDebug_ZrndrSpan_12;
+extern int g_RemovedDebug_ZrndrSpan_13;
+extern int g_RemovedDebug_ZrndrSpan_14;
+extern int g_RemovedDebug_ZrndrSpan_15;
+extern int g_RemovedDebug_ZrndrSpan_16;
+extern int g_RemovedDebug_ZrndrSpan_17;
+extern int g_RemovedDebug_ZrndrSpan_18;
+extern int g_RemovedDebug_ZrndrSpan_19;
+extern int g_RemovedDebug_ZrndrSpan_20;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c760: zRndr::SpanAlphaBlend565ConstAlphaFromTex16
  * @recoil-match byte
@@ -1795,6 +1840,19 @@ void __fastcall SpanAlphaBlend565ConstAlphaFromTex16(int texU, int texV, int pix
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_21;
+extern int g_RemovedDebug_ZrndrSpan_22;
+extern int g_RemovedDebug_ZrndrSpan_23;
+extern int g_RemovedDebug_ZrndrSpan_24;
+extern int g_RemovedDebug_ZrndrSpan_25;
+extern int g_RemovedDebug_ZrndrSpan_26;
+extern int g_RemovedDebug_ZrndrSpan_27;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafromtex16
  * @recoil-artifact defines .text recoil:function:0x49c860: zRndr::SpanAlphaBlend555ConstAlphaFromTex16
@@ -1959,6 +2017,16 @@ enum { kSpanAlpha8ScratchAlphas = offsetof(SpanAlpha8Scratch, alphas) };
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_28;
+extern int g_RemovedDebug_ZrndrSpan_29;
+extern int g_RemovedDebug_ZrndrSpan_30;
+extern int g_RemovedDebug_ZrndrSpan_31;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565mmxfromtex16alpha8
  * @recoil-artifact defines .text recoil:function:0x49cbb0: zRndr::SpanAlphaBlend565MmxFromTex16Alpha8
@@ -2393,9 +2461,16 @@ void __fastcall SpanAlphaBlend555MmxFromTex16Alpha8(int texU, int texV, int pixe
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_32;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d1a0: zRndr::SpanAlphaBlend565FromPal8Alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN expands each sampled pal8 texel through the active
  * palette before the odd scalar and packed two-pixel 565 alpha-map blend.
@@ -2485,9 +2560,16 @@ void __fastcall SpanAlphaBlend565FromPal8Alpha8(int texU, int texV, int pixelCou
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_33;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555frompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d3b0: zRndr::SpanAlphaBlend555FromPal8Alpha8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN matches the pal8 alpha-map odd/pair loop with
  * active-palette expansion and 555-specific packed blend masks.
@@ -2577,9 +2659,19 @@ void __fastcall SpanAlphaBlend555FromPal8Alpha8(int texU, int texV, int pixelCou
 
 namespace zRndr {
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_34;
+extern int g_RemovedDebug_ZrndrSpan_35;
+extern int g_RemovedDebug_ZrndrSpan_36;
+extern int g_RemovedDebug_ZrndrSpan_37;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d5c0: zRndr::SpanAlphaBlend565ConstAlphaFastFromPal8
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source-shape evidence: BN samples an 8-bit texel, expands it through the
  * active palette before the alpha gate, skips only when alpha <= 3, copies for
@@ -2625,6 +2717,20 @@ void __fastcall SpanAlphaBlend565ConstAlphaFastFromPal8(int texU, int texV, int 
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_38;
+extern int g_RemovedDebug_ZrndrSpan_39;
+extern int g_RemovedDebug_ZrndrSpan_40;
+extern int g_RemovedDebug_ZrndrSpan_41;
+extern int g_RemovedDebug_ZrndrSpan_42;
+extern int g_RemovedDebug_ZrndrSpan_43;
+extern int g_RemovedDebug_ZrndrSpan_44;
+extern int g_RemovedDebug_ZrndrSpan_45;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend555constalphafastfrompal8
  * @recoil-artifact defines .text recoil:function:0x49d6e0: zRndr::SpanAlphaBlend555ConstAlphaFastFromPal8
@@ -2672,6 +2778,22 @@ void __fastcall SpanAlphaBlend555ConstAlphaFastFromPal8(int texU, int texV, int 
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_46;
+extern int g_RemovedDebug_ZrndrSpan_47;
+extern int g_RemovedDebug_ZrndrSpan_48;
+extern int g_RemovedDebug_ZrndrSpan_49;
+extern int g_RemovedDebug_ZrndrSpan_50;
+extern int g_RemovedDebug_ZrndrSpan_51;
+extern int g_RemovedDebug_ZrndrSpan_52;
+extern int g_RemovedDebug_ZrndrSpan_53;
+extern int g_RemovedDebug_ZrndrSpan_54;
+extern int g_RemovedDebug_ZrndrSpan_55;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565constalphafrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49d810: zRndr::SpanAlphaBlend565ConstAlphaFromPal8Alpha8
@@ -2776,6 +2898,14 @@ void __fastcall SpanAlphaBlend555ConstAlphaFromPal8Alpha8(int texU, int texV, in
 } // namespace zRndr
 
 namespace zRndr {
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrSpan_56;
+extern int g_RemovedDebug_ZrndrSpan_57;
+
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-spanalphablend565mmxfrompal8alpha8
  * @recoil-artifact defines .text recoil:function:0x49da80: zRndr::SpanAlphaBlend565MmxFromPal8Alpha8

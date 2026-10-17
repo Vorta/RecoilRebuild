@@ -13,6 +13,238 @@
 #include <math.h>
 #include <stdlib.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrFx_0;
+extern int g_RemovedDebug_ZrndrFx_1;
+extern int g_RemovedDebug_ZrndrFx_2;
+extern int g_RemovedDebug_ZrndrFx_3;
+extern int g_RemovedDebug_ZrndrFx_4;
+extern int g_RemovedDebug_ZrndrFx_5;
+extern int g_RemovedDebug_ZrndrFx_6;
+extern int g_RemovedDebug_ZrndrFx_7;
+extern int g_RemovedDebug_ZrndrFx_8;
+extern int g_RemovedDebug_ZrndrFx_9;
+extern int g_RemovedDebug_ZrndrFx_10;
+extern int g_RemovedDebug_ZrndrFx_11;
+extern int g_RemovedDebug_ZrndrFx_12;
+extern int g_RemovedDebug_ZrndrFx_13;
+extern int g_RemovedDebug_ZrndrFx_14;
+extern int g_RemovedDebug_ZrndrFx_15;
+extern int g_RemovedDebug_ZrndrFx_16;
+extern int g_RemovedDebug_ZrndrFx_17;
+extern int g_RemovedDebug_ZrndrFx_18;
+extern int g_RemovedDebug_ZrndrFx_19;
+extern int g_RemovedDebug_ZrndrFx_20;
+extern int g_RemovedDebug_ZrndrFx_21;
+extern int g_RemovedDebug_ZrndrFx_22;
+extern int g_RemovedDebug_ZrndrFx_23;
+extern int g_RemovedDebug_ZrndrFx_24;
+extern int g_RemovedDebug_ZrndrFx_25;
+extern int g_RemovedDebug_ZrndrFx_26;
+extern int g_RemovedDebug_ZrndrFx_27;
+extern int g_RemovedDebug_ZrndrFx_28;
+extern int g_RemovedDebug_ZrndrFx_29;
+extern int g_RemovedDebug_ZrndrFx_30;
+extern int g_RemovedDebug_ZrndrFx_31;
+extern int g_RemovedDebug_ZrndrFx_32;
+extern int g_RemovedDebug_ZrndrFx_33;
+extern int g_RemovedDebug_ZrndrFx_34;
+extern int g_RemovedDebug_ZrndrFx_35;
+extern int g_RemovedDebug_ZrndrFx_36;
+extern int g_RemovedDebug_ZrndrFx_37;
+extern int g_RemovedDebug_ZrndrFx_38;
+extern int g_RemovedDebug_ZrndrFx_39;
+extern int g_RemovedDebug_ZrndrFx_40;
+extern int g_RemovedDebug_ZrndrFx_41;
+extern int g_RemovedDebug_ZrndrFx_42;
+extern int g_RemovedDebug_ZrndrFx_43;
+extern int g_RemovedDebug_ZrndrFx_44;
+extern int g_RemovedDebug_ZrndrFx_45;
+extern int g_RemovedDebug_ZrndrFx_46;
+extern int g_RemovedDebug_ZrndrFx_47;
+extern int g_RemovedDebug_ZrndrFx_48;
+extern int g_RemovedDebug_ZrndrFx_49;
+extern int g_RemovedDebug_ZrndrFx_50;
+extern int g_RemovedDebug_ZrndrFx_51;
+extern int g_RemovedDebug_ZrndrFx_52;
+extern int g_RemovedDebug_ZrndrFx_53;
+extern int g_RemovedDebug_ZrndrFx_54;
+extern int g_RemovedDebug_ZrndrFx_55;
+extern int g_RemovedDebug_ZrndrFx_56;
+extern int g_RemovedDebug_ZrndrFx_57;
+extern int g_RemovedDebug_ZrndrFx_58;
+extern int g_RemovedDebug_ZrndrFx_59;
+extern int g_RemovedDebug_ZrndrFx_60;
+extern int g_RemovedDebug_ZrndrFx_61;
+extern int g_RemovedDebug_ZrndrFx_62;
+extern int g_RemovedDebug_ZrndrFx_63;
+extern int g_RemovedDebug_ZrndrFx_64;
+extern int g_RemovedDebug_ZrndrFx_65;
+extern int g_RemovedDebug_ZrndrFx_66;
+extern int g_RemovedDebug_ZrndrFx_67;
+extern int g_RemovedDebug_ZrndrFx_68;
+extern int g_RemovedDebug_ZrndrFx_69;
+extern int g_RemovedDebug_ZrndrFx_70;
+extern int g_RemovedDebug_ZrndrFx_71;
+extern int g_RemovedDebug_ZrndrFx_72;
+extern int g_RemovedDebug_ZrndrFx_73;
+extern int g_RemovedDebug_ZrndrFx_74;
+extern int g_RemovedDebug_ZrndrFx_75;
+extern int g_RemovedDebug_ZrndrFx_76;
+extern int g_RemovedDebug_ZrndrFx_77;
+extern int g_RemovedDebug_ZrndrFx_78;
+extern int g_RemovedDebug_ZrndrFx_79;
+extern int g_RemovedDebug_ZrndrFx_80;
+extern int g_RemovedDebug_ZrndrFx_81;
+extern int g_RemovedDebug_ZrndrFx_82;
+extern int g_RemovedDebug_ZrndrFx_83;
+extern int g_RemovedDebug_ZrndrFx_84;
+extern int g_RemovedDebug_ZrndrFx_85;
+extern int g_RemovedDebug_ZrndrFx_86;
+extern int g_RemovedDebug_ZrndrFx_87;
+extern int g_RemovedDebug_ZrndrFx_88;
+extern int g_RemovedDebug_ZrndrFx_89;
+extern int g_RemovedDebug_ZrndrFx_90;
+extern int g_RemovedDebug_ZrndrFx_91;
+extern int g_RemovedDebug_ZrndrFx_92;
+extern int g_RemovedDebug_ZrndrFx_93;
+extern int g_RemovedDebug_ZrndrFx_94;
+extern int g_RemovedDebug_ZrndrFx_95;
+extern int g_RemovedDebug_ZrndrFx_96;
+extern int g_RemovedDebug_ZrndrFx_97;
+extern int g_RemovedDebug_ZrndrFx_98;
+extern int g_RemovedDebug_ZrndrFx_99;
+extern int g_RemovedDebug_ZrndrFx_100;
+extern int g_RemovedDebug_ZrndrFx_101;
+extern int g_RemovedDebug_ZrndrFx_102;
+extern int g_RemovedDebug_ZrndrFx_103;
+extern int g_RemovedDebug_ZrndrFx_104;
+extern int g_RemovedDebug_ZrndrFx_105;
+extern int g_RemovedDebug_ZrndrFx_106;
+extern int g_RemovedDebug_ZrndrFx_107;
+extern int g_RemovedDebug_ZrndrFx_108;
+extern int g_RemovedDebug_ZrndrFx_109;
+extern int g_RemovedDebug_ZrndrFx_110;
+extern int g_RemovedDebug_ZrndrFx_111;
+extern int g_RemovedDebug_ZrndrFx_112;
+extern int g_RemovedDebug_ZrndrFx_113;
+extern int g_RemovedDebug_ZrndrFx_114;
+extern int g_RemovedDebug_ZrndrFx_115;
+extern int g_RemovedDebug_ZrndrFx_116;
+extern int g_RemovedDebug_ZrndrFx_117;
+extern int g_RemovedDebug_ZrndrFx_118;
+extern int g_RemovedDebug_ZrndrFx_119;
+extern int g_RemovedDebug_ZrndrFx_120;
+extern int g_RemovedDebug_ZrndrFx_121;
+extern int g_RemovedDebug_ZrndrFx_122;
+extern int g_RemovedDebug_ZrndrFx_123;
+extern int g_RemovedDebug_ZrndrFx_124;
+extern int g_RemovedDebug_ZrndrFx_125;
+extern int g_RemovedDebug_ZrndrFx_126;
+extern int g_RemovedDebug_ZrndrFx_127;
+extern int g_RemovedDebug_ZrndrFx_128;
+extern int g_RemovedDebug_ZrndrFx_129;
+extern int g_RemovedDebug_ZrndrFx_130;
+extern int g_RemovedDebug_ZrndrFx_131;
+extern int g_RemovedDebug_ZrndrFx_132;
+extern int g_RemovedDebug_ZrndrFx_133;
+extern int g_RemovedDebug_ZrndrFx_134;
+extern int g_RemovedDebug_ZrndrFx_135;
+extern int g_RemovedDebug_ZrndrFx_136;
+extern int g_RemovedDebug_ZrndrFx_137;
+extern int g_RemovedDebug_ZrndrFx_138;
+extern int g_RemovedDebug_ZrndrFx_139;
+extern int g_RemovedDebug_ZrndrFx_140;
+extern int g_RemovedDebug_ZrndrFx_141;
+extern int g_RemovedDebug_ZrndrFx_142;
+extern int g_RemovedDebug_ZrndrFx_143;
+extern int g_RemovedDebug_ZrndrFx_144;
+extern int g_RemovedDebug_ZrndrFx_145;
+extern int g_RemovedDebug_ZrndrFx_146;
+extern int g_RemovedDebug_ZrndrFx_147;
+extern int g_RemovedDebug_ZrndrFx_148;
+extern int g_RemovedDebug_ZrndrFx_149;
+extern int g_RemovedDebug_ZrndrFx_150;
+extern int g_RemovedDebug_ZrndrFx_151;
+extern int g_RemovedDebug_ZrndrFx_152;
+extern int g_RemovedDebug_ZrndrFx_153;
+extern int g_RemovedDebug_ZrndrFx_154;
+extern int g_RemovedDebug_ZrndrFx_155;
+extern int g_RemovedDebug_ZrndrFx_156;
+extern int g_RemovedDebug_ZrndrFx_157;
+extern int g_RemovedDebug_ZrndrFx_158;
+extern int g_RemovedDebug_ZrndrFx_159;
+extern int g_RemovedDebug_ZrndrFx_160;
+extern int g_RemovedDebug_ZrndrFx_161;
+extern int g_RemovedDebug_ZrndrFx_162;
+extern int g_RemovedDebug_ZrndrFx_163;
+extern int g_RemovedDebug_ZrndrFx_164;
+extern int g_RemovedDebug_ZrndrFx_165;
+extern int g_RemovedDebug_ZrndrFx_166;
+extern int g_RemovedDebug_ZrndrFx_167;
+extern int g_RemovedDebug_ZrndrFx_168;
+extern int g_RemovedDebug_ZrndrFx_169;
+extern int g_RemovedDebug_ZrndrFx_170;
+extern int g_RemovedDebug_ZrndrFx_171;
+extern int g_RemovedDebug_ZrndrFx_172;
+extern int g_RemovedDebug_ZrndrFx_173;
+extern int g_RemovedDebug_ZrndrFx_174;
+extern int g_RemovedDebug_ZrndrFx_175;
+extern int g_RemovedDebug_ZrndrFx_176;
+extern int g_RemovedDebug_ZrndrFx_177;
+extern int g_RemovedDebug_ZrndrFx_178;
+extern int g_RemovedDebug_ZrndrFx_179;
+extern int g_RemovedDebug_ZrndrFx_180;
+extern int g_RemovedDebug_ZrndrFx_181;
+extern int g_RemovedDebug_ZrndrFx_182;
+extern int g_RemovedDebug_ZrndrFx_183;
+extern int g_RemovedDebug_ZrndrFx_184;
+extern int g_RemovedDebug_ZrndrFx_185;
+extern int g_RemovedDebug_ZrndrFx_186;
+extern int g_RemovedDebug_ZrndrFx_187;
+extern int g_RemovedDebug_ZrndrFx_188;
+extern int g_RemovedDebug_ZrndrFx_189;
+extern int g_RemovedDebug_ZrndrFx_190;
+extern int g_RemovedDebug_ZrndrFx_191;
+extern int g_RemovedDebug_ZrndrFx_192;
+extern int g_RemovedDebug_ZrndrFx_193;
+extern int g_RemovedDebug_ZrndrFx_194;
+extern int g_RemovedDebug_ZrndrFx_195;
+extern int g_RemovedDebug_ZrndrFx_196;
+extern int g_RemovedDebug_ZrndrFx_197;
+extern int g_RemovedDebug_ZrndrFx_198;
+extern int g_RemovedDebug_ZrndrFx_199;
+extern int g_RemovedDebug_ZrndrFx_200;
+extern int g_RemovedDebug_ZrndrFx_201;
+extern int g_RemovedDebug_ZrndrFx_202;
+extern int g_RemovedDebug_ZrndrFx_203;
+extern int g_RemovedDebug_ZrndrFx_204;
+extern int g_RemovedDebug_ZrndrFx_205;
+extern int g_RemovedDebug_ZrndrFx_206;
+extern int g_RemovedDebug_ZrndrFx_207;
+extern int g_RemovedDebug_ZrndrFx_208;
+extern int g_RemovedDebug_ZrndrFx_209;
+extern int g_RemovedDebug_ZrndrFx_210;
+extern int g_RemovedDebug_ZrndrFx_211;
+extern int g_RemovedDebug_ZrndrFx_212;
+extern int g_RemovedDebug_ZrndrFx_213;
+extern int g_RemovedDebug_ZrndrFx_214;
+extern int g_RemovedDebug_ZrndrFx_215;
+extern int g_RemovedDebug_ZrndrFx_216;
+extern int g_RemovedDebug_ZrndrFx_217;
+extern int g_RemovedDebug_ZrndrFx_218;
+extern int g_RemovedDebug_ZrndrFx_219;
+extern int g_RemovedDebug_ZrndrFx_220;
+extern int g_RemovedDebug_ZrndrFx_221;
+extern int g_RemovedDebug_ZrndrFx_222;
+extern int g_RemovedDebug_ZrndrFx_223;
+extern int g_RemovedDebug_ZrndrFx_224;
+extern int g_RemovedDebug_ZrndrFx_225;
+
 /* zVideo entry point (zvid_ddd3d.c); zvid.h declares it for the C++ units only. */
 void __fastcall QueueSolidQuad(unsigned int packedColor16, double alpha, zVidRect32* clipRect);
 
@@ -956,7 +1188,7 @@ void __fastcall zRndrOverlayRectSubmit(unsigned short packedColor16, double alph
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-overlayrect-flushsw
  * @recoil-artifact defines .text recoil:function:0x48d7a0: zRndrOverlayRectFlushSw
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_Overlay.cpp.
  * Source file evidence: recovered original path on the prior source label.
@@ -1037,7 +1269,7 @@ void __fastcall zRndrOverlayRectFlushSw(void)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-drawnoiserect
  * @recoil-artifact defines .text recoil:function:0x48d910: zVid::DrawNoiseRect.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zImage\zvid_buff.c.
  * Purpose: overlay thresholded grayscale noise on the active FX surface rectangle.

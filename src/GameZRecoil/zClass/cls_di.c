@@ -8,6 +8,79 @@
 #include <math.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ClsDi_0;
+extern int g_RemovedDebug_ClsDi_1;
+extern int g_RemovedDebug_ClsDi_2;
+extern int g_RemovedDebug_ClsDi_3;
+extern int g_RemovedDebug_ClsDi_4;
+extern int g_RemovedDebug_ClsDi_5;
+extern int g_RemovedDebug_ClsDi_6;
+extern int g_RemovedDebug_ClsDi_7;
+extern int g_RemovedDebug_ClsDi_8;
+extern int g_RemovedDebug_ClsDi_9;
+extern int g_RemovedDebug_ClsDi_10;
+extern int g_RemovedDebug_ClsDi_11;
+extern int g_RemovedDebug_ClsDi_12;
+extern int g_RemovedDebug_ClsDi_13;
+extern int g_RemovedDebug_ClsDi_14;
+extern int g_RemovedDebug_ClsDi_15;
+extern int g_RemovedDebug_ClsDi_16;
+extern int g_RemovedDebug_ClsDi_17;
+extern int g_RemovedDebug_ClsDi_18;
+extern int g_RemovedDebug_ClsDi_19;
+extern int g_RemovedDebug_ClsDi_20;
+extern int g_RemovedDebug_ClsDi_21;
+extern int g_RemovedDebug_ClsDi_22;
+extern int g_RemovedDebug_ClsDi_23;
+extern int g_RemovedDebug_ClsDi_24;
+extern int g_RemovedDebug_ClsDi_25;
+extern int g_RemovedDebug_ClsDi_26;
+extern int g_RemovedDebug_ClsDi_27;
+extern int g_RemovedDebug_ClsDi_28;
+extern int g_RemovedDebug_ClsDi_29;
+extern int g_RemovedDebug_ClsDi_30;
+extern int g_RemovedDebug_ClsDi_31;
+extern int g_RemovedDebug_ClsDi_32;
+extern int g_RemovedDebug_ClsDi_33;
+extern int g_RemovedDebug_ClsDi_34;
+extern int g_RemovedDebug_ClsDi_35;
+extern int g_RemovedDebug_ClsDi_36;
+extern int g_RemovedDebug_ClsDi_37;
+extern int g_RemovedDebug_ClsDi_38;
+extern int g_RemovedDebug_ClsDi_39;
+extern int g_RemovedDebug_ClsDi_40;
+extern int g_RemovedDebug_ClsDi_41;
+extern int g_RemovedDebug_ClsDi_42;
+extern int g_RemovedDebug_ClsDi_43;
+extern int g_RemovedDebug_ClsDi_44;
+extern int g_RemovedDebug_ClsDi_45;
+extern int g_RemovedDebug_ClsDi_46;
+extern int g_RemovedDebug_ClsDi_47;
+extern int g_RemovedDebug_ClsDi_48;
+extern int g_RemovedDebug_ClsDi_49;
+extern int g_RemovedDebug_ClsDi_50;
+extern int g_RemovedDebug_ClsDi_51;
+extern int g_RemovedDebug_ClsDi_52;
+extern int g_RemovedDebug_ClsDi_53;
+extern int g_RemovedDebug_ClsDi_54;
+extern int g_RemovedDebug_ClsDi_55;
+extern int g_RemovedDebug_ClsDi_56;
+extern int g_RemovedDebug_ClsDi_57;
+extern int g_RemovedDebug_ClsDi_58;
+extern int g_RemovedDebug_ClsDi_59;
+extern int g_RemovedDebug_ClsDi_60;
+extern int g_RemovedDebug_ClsDi_61;
+extern int g_RemovedDebug_ClsDi_62;
+extern int g_RemovedDebug_ClsDi_63;
+extern int g_RemovedDebug_ClsDi_64;
+extern int g_RemovedDebug_ClsDi_65;
+extern int g_RemovedDebug_ClsDi_66;
+
 CZDisplayInstanceRaycastFilterRuntime g_CZDisplayInstance_RaycastFilterRuntime = { 0 };
 
 enum {
@@ -3468,7 +3541,7 @@ int __fastcall BuildPickCandidatesForSegmentsForLight(CZNodePartial* node, int n
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.cls-di.filterregionsagainstsphere
  * @recoil-artifact defines .text recoil:function:0x446a80: CZDisplayInstance::FilterRegionsAgainstSphere.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.

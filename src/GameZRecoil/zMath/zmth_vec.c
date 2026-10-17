@@ -197,10 +197,111 @@ void __fastcall zMathVec3DivScalar(const zVec3* vec, zVec3* out, float scalar)
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthVec_0;
+extern int g_RemovedDebug_ZmthVec_1;
+extern int g_RemovedDebug_ZmthVec_2;
+extern int g_RemovedDebug_ZmthVec_3;
+extern int g_RemovedDebug_ZmthVec_4;
+extern int g_RemovedDebug_ZmthVec_5;
+extern int g_RemovedDebug_ZmthVec_6;
+extern int g_RemovedDebug_ZmthVec_7;
+extern int g_RemovedDebug_ZmthVec_8;
+extern int g_RemovedDebug_ZmthVec_9;
+extern int g_RemovedDebug_ZmthVec_10;
+extern int g_RemovedDebug_ZmthVec_11;
+extern int g_RemovedDebug_ZmthVec_12;
+extern int g_RemovedDebug_ZmthVec_13;
+extern int g_RemovedDebug_ZmthVec_14;
+extern int g_RemovedDebug_ZmthVec_15;
+extern int g_RemovedDebug_ZmthVec_16;
+extern int g_RemovedDebug_ZmthVec_17;
+extern int g_RemovedDebug_ZmthVec_18;
+extern int g_RemovedDebug_ZmthVec_19;
+extern int g_RemovedDebug_ZmthVec_20;
+extern int g_RemovedDebug_ZmthVec_21;
+extern int g_RemovedDebug_ZmthVec_22;
+extern int g_RemovedDebug_ZmthVec_23;
+extern int g_RemovedDebug_ZmthVec_24;
+extern int g_RemovedDebug_ZmthVec_25;
+extern int g_RemovedDebug_ZmthVec_26;
+extern int g_RemovedDebug_ZmthVec_27;
+extern int g_RemovedDebug_ZmthVec_28;
+extern int g_RemovedDebug_ZmthVec_29;
+extern int g_RemovedDebug_ZmthVec_30;
+extern int g_RemovedDebug_ZmthVec_31;
+extern int g_RemovedDebug_ZmthVec_32;
+extern int g_RemovedDebug_ZmthVec_33;
+extern int g_RemovedDebug_ZmthVec_34;
+extern int g_RemovedDebug_ZmthVec_35;
+extern int g_RemovedDebug_ZmthVec_36;
+extern int g_RemovedDebug_ZmthVec_37;
+extern int g_RemovedDebug_ZmthVec_38;
+extern int g_RemovedDebug_ZmthVec_39;
+extern int g_RemovedDebug_ZmthVec_40;
+extern int g_RemovedDebug_ZmthVec_41;
+extern int g_RemovedDebug_ZmthVec_42;
+extern int g_RemovedDebug_ZmthVec_43;
+extern int g_RemovedDebug_ZmthVec_44;
+extern int g_RemovedDebug_ZmthVec_45;
+extern int g_RemovedDebug_ZmthVec_46;
+extern int g_RemovedDebug_ZmthVec_47;
+extern int g_RemovedDebug_ZmthVec_48;
+extern int g_RemovedDebug_ZmthVec_49;
+extern int g_RemovedDebug_ZmthVec_50;
+extern int g_RemovedDebug_ZmthVec_51;
+extern int g_RemovedDebug_ZmthVec_52;
+extern int g_RemovedDebug_ZmthVec_53;
+extern int g_RemovedDebug_ZmthVec_54;
+extern int g_RemovedDebug_ZmthVec_55;
+extern int g_RemovedDebug_ZmthVec_56;
+extern int g_RemovedDebug_ZmthVec_57;
+extern int g_RemovedDebug_ZmthVec_58;
+extern int g_RemovedDebug_ZmthVec_59;
+extern int g_RemovedDebug_ZmthVec_60;
+extern int g_RemovedDebug_ZmthVec_61;
+extern int g_RemovedDebug_ZmthVec_62;
+extern int g_RemovedDebug_ZmthVec_63;
+extern int g_RemovedDebug_ZmthVec_64;
+extern int g_RemovedDebug_ZmthVec_65;
+extern int g_RemovedDebug_ZmthVec_66;
+extern int g_RemovedDebug_ZmthVec_67;
+extern int g_RemovedDebug_ZmthVec_68;
+extern int g_RemovedDebug_ZmthVec_69;
+extern int g_RemovedDebug_ZmthVec_70;
+extern int g_RemovedDebug_ZmthVec_71;
+extern int g_RemovedDebug_ZmthVec_72;
+extern int g_RemovedDebug_ZmthVec_73;
+extern int g_RemovedDebug_ZmthVec_74;
+extern int g_RemovedDebug_ZmthVec_75;
+extern int g_RemovedDebug_ZmthVec_76;
+extern int g_RemovedDebug_ZmthVec_77;
+extern int g_RemovedDebug_ZmthVec_78;
+extern int g_RemovedDebug_ZmthVec_79;
+extern int g_RemovedDebug_ZmthVec_80;
+extern int g_RemovedDebug_ZmthVec_81;
+extern int g_RemovedDebug_ZmthVec_82;
+extern int g_RemovedDebug_ZmthVec_83;
+extern int g_RemovedDebug_ZmthVec_84;
+extern int g_RemovedDebug_ZmthVec_85;
+extern int g_RemovedDebug_ZmthVec_86;
+extern int g_RemovedDebug_ZmthVec_87;
+extern int g_RemovedDebug_ZmthVec_88;
+extern int g_RemovedDebug_ZmthVec_89;
+extern int g_RemovedDebug_ZmthVec_90;
+extern int g_RemovedDebug_ZmthVec_91;
+extern int g_RemovedDebug_ZmthVec_92;
+extern int g_RemovedDebug_ZmthVec_93;
+extern int g_RemovedDebug_ZmthVec_94;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3normalizexz-gamezrecoil-zmath-zmath-vec3-cpp
  * @recoil-artifact defines .text recoil:function:0x4727f0: zMath::Vec3NormalizeXZ (GameZRecoil/zMath/zmath_vec3.cpp).
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec.vector-length
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Normalizes a vector in the XZ plane while preserving the input Y value and leaving output Y untouched.
  */
@@ -257,7 +358,7 @@ void __fastcall Vec3Reflect(zVec3* normal, zVec3* incident, zVec3* reflected)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3lerp-gamezrecoil-zmath-zmath-vec3-cpp
  * @recoil-artifact defines .text recoil:function:0x472960: zMath::Vec3BlendByFirstWeight (GameZRecoil/zMath/zmath_vec3.cpp).
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Blends the first vector in place with a second vector using a*t + b*(1-t).
  */
@@ -306,7 +407,7 @@ void __fastcall Vec3BlendByFirstWeightNormalize(zVec3* inOut, const zVec3* other
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec3-slerp.fast-sqrt-estimate recoil:function:0x472a10
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec3-slerp.fast-sqrt-estimate
- * @recoil-match source
+ * @recoil-match byte
  *
  * Raw assembly: the reviewed full-XYZ dot island bound directly to the a/b
  * parameters (retail loads ECX/EDX from their prologue homes), and one
@@ -406,7 +507,7 @@ void __fastcall Vec3Slerp(const zVec3* a, const zVec3* b, float t, zVec3* out)
  * @recoil-artifact defines .text recoil:function:0x472cc0: zMath::Vec3Perp2D (GameZRecoil/zMath/zmath_vec2.cpp).
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate recoil:function:0x472cc0
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmath.vec3-perp2d.fast-sqrt-estimate
- * @recoil-match source
+ * @recoil-match byte
  *
  * Raw assembly: one in-body 13-byte fast-sqrt estimate island at retail
  * [0x472d03,0x472d10).

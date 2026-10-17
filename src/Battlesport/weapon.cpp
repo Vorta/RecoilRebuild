@@ -33,6 +33,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Weapon_0;
+
 extern "C" char g_Player_KillVerbToken[0x0a];
 extern const zVec3 kPlayerDefaultAltGunAimOrigin;
 
@@ -2353,7 +2360,7 @@ void __fastcall BuildGunFireTransform(zUtil_SaveGameState* saveState)
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-updatealtgunaimbasisorigin
  * @recoil-artifact defines .text recoil:function:0x43b3e0: Player::UpdateAltGunAimBasisOrigin
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: compute the world-space origin used as the alternate gun aim basis.
  */
@@ -2381,11 +2388,162 @@ void __fastcall UpdateAltGunAimBasisOrigin(zUtil_SaveGameState* saveState, zVec3
         + gunFireTransform.zz * localAimZ + gunFireTransform.posZ;
 }
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Weapon_1;
+extern int g_RemovedDebug_Weapon_2;
+extern int g_RemovedDebug_Weapon_3;
+extern int g_RemovedDebug_Weapon_4;
+extern int g_RemovedDebug_Weapon_5;
+extern int g_RemovedDebug_Weapon_6;
+extern int g_RemovedDebug_Weapon_7;
+extern int g_RemovedDebug_Weapon_8;
+extern int g_RemovedDebug_Weapon_9;
+extern int g_RemovedDebug_Weapon_10;
+extern int g_RemovedDebug_Weapon_11;
+extern int g_RemovedDebug_Weapon_12;
+extern int g_RemovedDebug_Weapon_13;
+extern int g_RemovedDebug_Weapon_14;
+extern int g_RemovedDebug_Weapon_15;
+extern int g_RemovedDebug_Weapon_16;
+extern int g_RemovedDebug_Weapon_17;
+extern int g_RemovedDebug_Weapon_18;
+extern int g_RemovedDebug_Weapon_19;
+extern int g_RemovedDebug_Weapon_20;
+extern int g_RemovedDebug_Weapon_21;
+extern int g_RemovedDebug_Weapon_22;
+extern int g_RemovedDebug_Weapon_23;
+extern int g_RemovedDebug_Weapon_24;
+extern int g_RemovedDebug_Weapon_25;
+extern int g_RemovedDebug_Weapon_26;
+extern int g_RemovedDebug_Weapon_27;
+extern int g_RemovedDebug_Weapon_28;
+extern int g_RemovedDebug_Weapon_29;
+extern int g_RemovedDebug_Weapon_30;
+extern int g_RemovedDebug_Weapon_31;
+extern int g_RemovedDebug_Weapon_32;
+extern int g_RemovedDebug_Weapon_33;
+extern int g_RemovedDebug_Weapon_34;
+extern int g_RemovedDebug_Weapon_35;
+extern int g_RemovedDebug_Weapon_36;
+extern int g_RemovedDebug_Weapon_37;
+extern int g_RemovedDebug_Weapon_38;
+extern int g_RemovedDebug_Weapon_39;
+extern int g_RemovedDebug_Weapon_40;
+extern int g_RemovedDebug_Weapon_41;
+extern int g_RemovedDebug_Weapon_42;
+extern int g_RemovedDebug_Weapon_43;
+extern int g_RemovedDebug_Weapon_44;
+extern int g_RemovedDebug_Weapon_45;
+extern int g_RemovedDebug_Weapon_46;
+extern int g_RemovedDebug_Weapon_47;
+extern int g_RemovedDebug_Weapon_48;
+extern int g_RemovedDebug_Weapon_49;
+extern int g_RemovedDebug_Weapon_50;
+extern int g_RemovedDebug_Weapon_51;
+extern int g_RemovedDebug_Weapon_52;
+extern int g_RemovedDebug_Weapon_53;
+extern int g_RemovedDebug_Weapon_54;
+extern int g_RemovedDebug_Weapon_55;
+extern int g_RemovedDebug_Weapon_56;
+extern int g_RemovedDebug_Weapon_57;
+extern int g_RemovedDebug_Weapon_58;
+extern int g_RemovedDebug_Weapon_59;
+extern int g_RemovedDebug_Weapon_60;
+extern int g_RemovedDebug_Weapon_61;
+extern int g_RemovedDebug_Weapon_62;
+extern int g_RemovedDebug_Weapon_63;
+extern int g_RemovedDebug_Weapon_64;
+extern int g_RemovedDebug_Weapon_65;
+extern int g_RemovedDebug_Weapon_66;
+extern int g_RemovedDebug_Weapon_67;
+extern int g_RemovedDebug_Weapon_68;
+extern int g_RemovedDebug_Weapon_69;
+extern int g_RemovedDebug_Weapon_70;
+extern int g_RemovedDebug_Weapon_71;
+extern int g_RemovedDebug_Weapon_72;
+extern int g_RemovedDebug_Weapon_73;
+extern int g_RemovedDebug_Weapon_74;
+extern int g_RemovedDebug_Weapon_75;
+extern int g_RemovedDebug_Weapon_76;
+extern int g_RemovedDebug_Weapon_77;
+extern int g_RemovedDebug_Weapon_78;
+extern int g_RemovedDebug_Weapon_79;
+extern int g_RemovedDebug_Weapon_80;
+extern int g_RemovedDebug_Weapon_81;
+extern int g_RemovedDebug_Weapon_82;
+extern int g_RemovedDebug_Weapon_83;
+extern int g_RemovedDebug_Weapon_84;
+extern int g_RemovedDebug_Weapon_85;
+extern int g_RemovedDebug_Weapon_86;
+extern int g_RemovedDebug_Weapon_87;
+extern int g_RemovedDebug_Weapon_88;
+extern int g_RemovedDebug_Weapon_89;
+extern int g_RemovedDebug_Weapon_90;
+extern int g_RemovedDebug_Weapon_91;
+extern int g_RemovedDebug_Weapon_92;
+extern int g_RemovedDebug_Weapon_93;
+extern int g_RemovedDebug_Weapon_94;
+extern int g_RemovedDebug_Weapon_95;
+extern int g_RemovedDebug_Weapon_96;
+extern int g_RemovedDebug_Weapon_97;
+extern int g_RemovedDebug_Weapon_98;
+extern int g_RemovedDebug_Weapon_99;
+extern int g_RemovedDebug_Weapon_100;
+extern int g_RemovedDebug_Weapon_101;
+extern int g_RemovedDebug_Weapon_102;
+extern int g_RemovedDebug_Weapon_103;
+extern int g_RemovedDebug_Weapon_104;
+extern int g_RemovedDebug_Weapon_105;
+extern int g_RemovedDebug_Weapon_106;
+extern int g_RemovedDebug_Weapon_107;
+extern int g_RemovedDebug_Weapon_108;
+extern int g_RemovedDebug_Weapon_109;
+extern int g_RemovedDebug_Weapon_110;
+extern int g_RemovedDebug_Weapon_111;
+extern int g_RemovedDebug_Weapon_112;
+extern int g_RemovedDebug_Weapon_113;
+extern int g_RemovedDebug_Weapon_114;
+extern int g_RemovedDebug_Weapon_115;
+extern int g_RemovedDebug_Weapon_116;
+extern int g_RemovedDebug_Weapon_117;
+extern int g_RemovedDebug_Weapon_118;
+extern int g_RemovedDebug_Weapon_119;
+extern int g_RemovedDebug_Weapon_120;
+extern int g_RemovedDebug_Weapon_121;
+extern int g_RemovedDebug_Weapon_122;
+extern int g_RemovedDebug_Weapon_123;
+extern int g_RemovedDebug_Weapon_124;
+extern int g_RemovedDebug_Weapon_125;
+extern int g_RemovedDebug_Weapon_126;
+extern int g_RemovedDebug_Weapon_127;
+extern int g_RemovedDebug_Weapon_128;
+extern int g_RemovedDebug_Weapon_129;
+extern int g_RemovedDebug_Weapon_130;
+extern int g_RemovedDebug_Weapon_131;
+extern int g_RemovedDebug_Weapon_132;
+extern int g_RemovedDebug_Weapon_133;
+extern int g_RemovedDebug_Weapon_134;
+extern int g_RemovedDebug_Weapon_135;
+extern int g_RemovedDebug_Weapon_136;
+extern int g_RemovedDebug_Weapon_137;
+extern int g_RemovedDebug_Weapon_138;
+extern int g_RemovedDebug_Weapon_139;
+extern int g_RemovedDebug_Weapon_140;
+extern int g_RemovedDebug_Weapon_141;
+extern int g_RemovedDebug_Weapon_142;
+extern int g_RemovedDebug_Weapon_143;
+extern int g_RemovedDebug_Weapon_144;
+extern int g_RemovedDebug_Weapon_145;
+
+/**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-applyaimpitchtodirection
  * @recoil-artifact defines .text recoil:function:0x43b500: Player::ApplyAimPitchToDirection
  * @recoil-raw-consumer recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate recoil:function:0x43b500
  * @recoil-raw-asm recoil:raw-asm:battlesport.player.apply-aim-pitch.fast-sqrt-estimate
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: adjust an aim direction to the requested pitch while preserving
  * horizontal heading when possible; reviewed inline asm reproduces the retail
@@ -3352,7 +3510,7 @@ int __fastcall IsAltWeaponAllowedInCurrentMasterMode(zUtil_SaveGameState* saveSt
 /**
  * @recoil-anchor recoil:anchor:battlesport-weapon-player-autoswitchtonextusablealtweapon
  * @recoil-artifact defines .text recoil:function:0x43c660: Player::AutoSwitchToNextUsableAltWeapon.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::AutoSwitchToNextUsableAltWeapon from the recovered

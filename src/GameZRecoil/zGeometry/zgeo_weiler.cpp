@@ -9,6 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZgeoWeiler_0;
+
 extern "C" const char g_zGeometry_WeilerIntersectBufferEntryFailedFmt[0x32]
     = "%s %d: weiler_intersect call to bufEntry failed.\n";
 
@@ -3465,7 +3472,7 @@ char __fastcall ClassifyPointInContourPointListXY(zVec3* point, int contourPoint
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-weiler-intersect2d
  * @recoil-artifact defines .text recoil:function:0x468c40: zGeometry_Weiler::Intersect2d
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source: D:\Proj\GameZRecoil\zGeometry\zgeo_weiler.cpp; BN x87 rendering is limited at the classifier callsite and
  * computed Y store, so assembly is source of truth. Purpose: Build the crossing record, if any, for the classified

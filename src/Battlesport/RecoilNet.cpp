@@ -701,6 +701,37 @@ int __fastcall SpawnRemotePlayerFromPkt06PlayerStateSnapshot(int senderPlayerId,
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_RecoilNet_0;
+extern int g_RemovedDebug_RecoilNet_1;
+extern int g_RemovedDebug_RecoilNet_2;
+extern int g_RemovedDebug_RecoilNet_3;
+extern int g_RemovedDebug_RecoilNet_4;
+extern int g_RemovedDebug_RecoilNet_5;
+extern int g_RemovedDebug_RecoilNet_6;
+extern int g_RemovedDebug_RecoilNet_7;
+extern int g_RemovedDebug_RecoilNet_8;
+extern int g_RemovedDebug_RecoilNet_9;
+extern int g_RemovedDebug_RecoilNet_10;
+extern int g_RemovedDebug_RecoilNet_11;
+extern int g_RemovedDebug_RecoilNet_12;
+extern int g_RemovedDebug_RecoilNet_13;
+extern int g_RemovedDebug_RecoilNet_14;
+extern int g_RemovedDebug_RecoilNet_15;
+extern int g_RemovedDebug_RecoilNet_16;
+extern int g_RemovedDebug_RecoilNet_17;
+extern int g_RemovedDebug_RecoilNet_18;
+extern int g_RemovedDebug_RecoilNet_19;
+extern int g_RemovedDebug_RecoilNet_20;
+extern int g_RemovedDebug_RecoilNet_21;
+extern int g_RemovedDebug_RecoilNet_22;
+extern int g_RemovedDebug_RecoilNet_23;
+extern int g_RemovedDebug_RecoilNet_24;
+
+/**
  * Purpose: Apply a replicated player-state snapshot packet to an existing
  * remote-player row and its save-state storage.
  */

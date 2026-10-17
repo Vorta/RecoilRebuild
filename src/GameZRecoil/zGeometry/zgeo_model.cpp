@@ -10,6 +10,125 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZgeoModel_0;
+extern int g_RemovedDebug_ZgeoModel_1;
+extern int g_RemovedDebug_ZgeoModel_2;
+extern int g_RemovedDebug_ZgeoModel_3;
+extern int g_RemovedDebug_ZgeoModel_4;
+extern int g_RemovedDebug_ZgeoModel_5;
+extern int g_RemovedDebug_ZgeoModel_6;
+extern int g_RemovedDebug_ZgeoModel_7;
+extern int g_RemovedDebug_ZgeoModel_8;
+extern int g_RemovedDebug_ZgeoModel_9;
+extern int g_RemovedDebug_ZgeoModel_10;
+extern int g_RemovedDebug_ZgeoModel_11;
+extern int g_RemovedDebug_ZgeoModel_12;
+extern int g_RemovedDebug_ZgeoModel_13;
+extern int g_RemovedDebug_ZgeoModel_14;
+extern int g_RemovedDebug_ZgeoModel_15;
+extern int g_RemovedDebug_ZgeoModel_16;
+extern int g_RemovedDebug_ZgeoModel_17;
+extern int g_RemovedDebug_ZgeoModel_18;
+extern int g_RemovedDebug_ZgeoModel_19;
+extern int g_RemovedDebug_ZgeoModel_20;
+extern int g_RemovedDebug_ZgeoModel_21;
+extern int g_RemovedDebug_ZgeoModel_22;
+extern int g_RemovedDebug_ZgeoModel_23;
+extern int g_RemovedDebug_ZgeoModel_24;
+extern int g_RemovedDebug_ZgeoModel_25;
+extern int g_RemovedDebug_ZgeoModel_26;
+extern int g_RemovedDebug_ZgeoModel_27;
+extern int g_RemovedDebug_ZgeoModel_28;
+extern int g_RemovedDebug_ZgeoModel_29;
+extern int g_RemovedDebug_ZgeoModel_30;
+extern int g_RemovedDebug_ZgeoModel_31;
+extern int g_RemovedDebug_ZgeoModel_32;
+extern int g_RemovedDebug_ZgeoModel_33;
+extern int g_RemovedDebug_ZgeoModel_34;
+extern int g_RemovedDebug_ZgeoModel_35;
+extern int g_RemovedDebug_ZgeoModel_36;
+extern int g_RemovedDebug_ZgeoModel_37;
+extern int g_RemovedDebug_ZgeoModel_38;
+extern int g_RemovedDebug_ZgeoModel_39;
+extern int g_RemovedDebug_ZgeoModel_40;
+extern int g_RemovedDebug_ZgeoModel_41;
+extern int g_RemovedDebug_ZgeoModel_42;
+extern int g_RemovedDebug_ZgeoModel_43;
+extern int g_RemovedDebug_ZgeoModel_44;
+extern int g_RemovedDebug_ZgeoModel_45;
+extern int g_RemovedDebug_ZgeoModel_46;
+extern int g_RemovedDebug_ZgeoModel_47;
+extern int g_RemovedDebug_ZgeoModel_48;
+extern int g_RemovedDebug_ZgeoModel_49;
+extern int g_RemovedDebug_ZgeoModel_50;
+extern int g_RemovedDebug_ZgeoModel_51;
+extern int g_RemovedDebug_ZgeoModel_52;
+extern int g_RemovedDebug_ZgeoModel_53;
+extern int g_RemovedDebug_ZgeoModel_54;
+extern int g_RemovedDebug_ZgeoModel_55;
+extern int g_RemovedDebug_ZgeoModel_56;
+extern int g_RemovedDebug_ZgeoModel_57;
+extern int g_RemovedDebug_ZgeoModel_58;
+extern int g_RemovedDebug_ZgeoModel_59;
+extern int g_RemovedDebug_ZgeoModel_60;
+extern int g_RemovedDebug_ZgeoModel_61;
+extern int g_RemovedDebug_ZgeoModel_62;
+extern int g_RemovedDebug_ZgeoModel_63;
+extern int g_RemovedDebug_ZgeoModel_64;
+extern int g_RemovedDebug_ZgeoModel_65;
+extern int g_RemovedDebug_ZgeoModel_66;
+extern int g_RemovedDebug_ZgeoModel_67;
+extern int g_RemovedDebug_ZgeoModel_68;
+extern int g_RemovedDebug_ZgeoModel_69;
+extern int g_RemovedDebug_ZgeoModel_70;
+extern int g_RemovedDebug_ZgeoModel_71;
+extern int g_RemovedDebug_ZgeoModel_72;
+extern int g_RemovedDebug_ZgeoModel_73;
+extern int g_RemovedDebug_ZgeoModel_74;
+extern int g_RemovedDebug_ZgeoModel_75;
+extern int g_RemovedDebug_ZgeoModel_76;
+extern int g_RemovedDebug_ZgeoModel_77;
+extern int g_RemovedDebug_ZgeoModel_78;
+extern int g_RemovedDebug_ZgeoModel_79;
+extern int g_RemovedDebug_ZgeoModel_80;
+extern int g_RemovedDebug_ZgeoModel_81;
+extern int g_RemovedDebug_ZgeoModel_82;
+extern int g_RemovedDebug_ZgeoModel_83;
+extern int g_RemovedDebug_ZgeoModel_84;
+extern int g_RemovedDebug_ZgeoModel_85;
+extern int g_RemovedDebug_ZgeoModel_86;
+extern int g_RemovedDebug_ZgeoModel_87;
+extern int g_RemovedDebug_ZgeoModel_88;
+extern int g_RemovedDebug_ZgeoModel_89;
+extern int g_RemovedDebug_ZgeoModel_90;
+extern int g_RemovedDebug_ZgeoModel_91;
+extern int g_RemovedDebug_ZgeoModel_92;
+extern int g_RemovedDebug_ZgeoModel_93;
+extern int g_RemovedDebug_ZgeoModel_94;
+extern int g_RemovedDebug_ZgeoModel_95;
+extern int g_RemovedDebug_ZgeoModel_96;
+extern int g_RemovedDebug_ZgeoModel_97;
+extern int g_RemovedDebug_ZgeoModel_98;
+extern int g_RemovedDebug_ZgeoModel_99;
+extern int g_RemovedDebug_ZgeoModel_100;
+extern int g_RemovedDebug_ZgeoModel_101;
+extern int g_RemovedDebug_ZgeoModel_102;
+extern int g_RemovedDebug_ZgeoModel_103;
+extern int g_RemovedDebug_ZgeoModel_104;
+extern int g_RemovedDebug_ZgeoModel_105;
+extern int g_RemovedDebug_ZgeoModel_106;
+extern int g_RemovedDebug_ZgeoModel_107;
+extern int g_RemovedDebug_ZgeoModel_108;
+extern int g_RemovedDebug_ZgeoModel_109;
+extern int g_RemovedDebug_ZgeoModel_110;
+extern int g_RemovedDebug_ZgeoModel_111;
+extern int g_RemovedDebug_ZgeoModel_112;
+
 namespace {
 const float kRandToDebugColorScale = 0.00778221991f;
 
@@ -122,7 +241,7 @@ namespace zGeometry_Model {
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zgeometry-zgeo-model-findorcreaterandomdebugmaterial
  * @recoil-artifact defines .text recoil:function:0x46a690: zGeometry_Model::FindOrCreateRandomDebugMaterial
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Create or reuse a randomized debug material and remember the last result.
  */

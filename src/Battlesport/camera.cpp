@@ -45,6 +45,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Camera_0;
+extern int g_RemovedDebug_Camera_1;
+extern int g_RemovedDebug_Camera_2;
+extern int g_RemovedDebug_Camera_3;
+extern int g_RemovedDebug_Camera_4;
+extern int g_RemovedDebug_Camera_5;
+extern int g_RemovedDebug_Camera_6;
+extern int g_RemovedDebug_Camera_7;
+extern int g_RemovedDebug_Camera_8;
+extern int g_RemovedDebug_Camera_9;
+extern int g_RemovedDebug_Camera_10;
+extern int g_RemovedDebug_Camera_11;
+extern int g_RemovedDebug_Camera_12;
+extern int g_RemovedDebug_Camera_13;
+extern int g_RemovedDebug_Camera_14;
+extern int g_RemovedDebug_Camera_15;
+extern int g_RemovedDebug_Camera_16;
+
 namespace Player {
 
 enum HudPhysicalPlayerMasterTypeId { kPlayerMasterTypeSub = 2, kPlayerMasterTypeTrack = 3 };
@@ -133,7 +156,7 @@ void __fastcall TickActiveCameraState(zUtil_SaveGameState* saveState)
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-dot-xz
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.fast-exp-bits
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Update the player chase camera from controls, motion, and obstructions.
  * Shared camera scalars require the complete camera consumer population.

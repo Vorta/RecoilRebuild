@@ -26,6 +26,59 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Pickup_0;
+extern int g_RemovedDebug_Pickup_1;
+extern int g_RemovedDebug_Pickup_2;
+extern int g_RemovedDebug_Pickup_3;
+extern int g_RemovedDebug_Pickup_4;
+extern int g_RemovedDebug_Pickup_5;
+extern int g_RemovedDebug_Pickup_6;
+extern int g_RemovedDebug_Pickup_7;
+extern int g_RemovedDebug_Pickup_8;
+extern int g_RemovedDebug_Pickup_9;
+extern int g_RemovedDebug_Pickup_10;
+extern int g_RemovedDebug_Pickup_11;
+extern int g_RemovedDebug_Pickup_12;
+extern int g_RemovedDebug_Pickup_13;
+extern int g_RemovedDebug_Pickup_14;
+extern int g_RemovedDebug_Pickup_15;
+extern int g_RemovedDebug_Pickup_16;
+extern int g_RemovedDebug_Pickup_17;
+extern int g_RemovedDebug_Pickup_18;
+extern int g_RemovedDebug_Pickup_19;
+extern int g_RemovedDebug_Pickup_20;
+extern int g_RemovedDebug_Pickup_21;
+extern int g_RemovedDebug_Pickup_22;
+extern int g_RemovedDebug_Pickup_23;
+extern int g_RemovedDebug_Pickup_24;
+extern int g_RemovedDebug_Pickup_25;
+extern int g_RemovedDebug_Pickup_26;
+extern int g_RemovedDebug_Pickup_27;
+extern int g_RemovedDebug_Pickup_28;
+extern int g_RemovedDebug_Pickup_29;
+extern int g_RemovedDebug_Pickup_30;
+extern int g_RemovedDebug_Pickup_31;
+extern int g_RemovedDebug_Pickup_32;
+extern int g_RemovedDebug_Pickup_33;
+extern int g_RemovedDebug_Pickup_34;
+extern int g_RemovedDebug_Pickup_35;
+extern int g_RemovedDebug_Pickup_36;
+extern int g_RemovedDebug_Pickup_37;
+extern int g_RemovedDebug_Pickup_38;
+extern int g_RemovedDebug_Pickup_39;
+extern int g_RemovedDebug_Pickup_40;
+extern int g_RemovedDebug_Pickup_41;
+extern int g_RemovedDebug_Pickup_42;
+extern int g_RemovedDebug_Pickup_43;
+extern int g_RemovedDebug_Pickup_44;
+extern int g_RemovedDebug_Pickup_45;
+extern int g_RemovedDebug_Pickup_46;
+
 extern const zVec3 g_Player_ConstZeroVec3;
 extern char g_PickupLogicalName_ERFPG_AMMO[];
 extern char g_PickupLogicalName_HEMORTAR_AMMO[];
@@ -1924,7 +1977,7 @@ int __fastcall Pickup::SpawnListHasEntryNearXZ(zVec3* position, float clearanceR
 /**
  * @recoil-anchor recoil:anchor:battlesport.pickup.pickup-selectnextvtolspawntypeindex
  * @recoil-artifact defines .text recoil:function:0x41e480: Pickup::SelectNextVTOLSpawnTypeIndex (D:\Proj\Battlesport\pickup.cpp).
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: rotate through available weapon pickups for the next VTOL drop.
  */

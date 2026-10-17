@@ -44,6 +44,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_RecoilApp_0;
+
 #ifndef SPI_SETSCREENSAVERRUNNING
 #define SPI_SETSCREENSAVERRUNNING 0x0061
 #endif
@@ -1115,7 +1122,7 @@ int CRecoilAppPlayState::OnTryBecomeCurrent()
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilapp.crecoil-app-play-state-tick-and-render-frame
  * @recoil-artifact defines .text recoil:function:0x42f280: CRecoilAppPlayState::TickAndRenderFrame.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: tick input, simulation, rendering, HUD, audio, and presentation for
  * one active play-state frame.

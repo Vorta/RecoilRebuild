@@ -6,6 +6,58 @@
 // separate it from RecoilForce.cpp; the two are kept apart by module. Original
 // filename unresolved; RecoilFrame.cpp is a provisional name (2026-10-02).
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_RecoilFrame_0;
+extern int g_RemovedDebug_RecoilFrame_1;
+extern int g_RemovedDebug_RecoilFrame_2;
+extern int g_RemovedDebug_RecoilFrame_3;
+extern int g_RemovedDebug_RecoilFrame_4;
+extern int g_RemovedDebug_RecoilFrame_5;
+extern int g_RemovedDebug_RecoilFrame_6;
+extern int g_RemovedDebug_RecoilFrame_7;
+extern int g_RemovedDebug_RecoilFrame_8;
+extern int g_RemovedDebug_RecoilFrame_9;
+extern int g_RemovedDebug_RecoilFrame_10;
+extern int g_RemovedDebug_RecoilFrame_11;
+extern int g_RemovedDebug_RecoilFrame_12;
+extern int g_RemovedDebug_RecoilFrame_13;
+extern int g_RemovedDebug_RecoilFrame_14;
+extern int g_RemovedDebug_RecoilFrame_15;
+extern int g_RemovedDebug_RecoilFrame_16;
+extern int g_RemovedDebug_RecoilFrame_17;
+extern int g_RemovedDebug_RecoilFrame_18;
+extern int g_RemovedDebug_RecoilFrame_19;
+extern int g_RemovedDebug_RecoilFrame_20;
+extern int g_RemovedDebug_RecoilFrame_21;
+extern int g_RemovedDebug_RecoilFrame_22;
+extern int g_RemovedDebug_RecoilFrame_23;
+extern int g_RemovedDebug_RecoilFrame_24;
+extern int g_RemovedDebug_RecoilFrame_25;
+extern int g_RemovedDebug_RecoilFrame_26;
+extern int g_RemovedDebug_RecoilFrame_27;
+extern int g_RemovedDebug_RecoilFrame_28;
+extern int g_RemovedDebug_RecoilFrame_29;
+extern int g_RemovedDebug_RecoilFrame_30;
+extern int g_RemovedDebug_RecoilFrame_31;
+extern int g_RemovedDebug_RecoilFrame_32;
+extern int g_RemovedDebug_RecoilFrame_33;
+extern int g_RemovedDebug_RecoilFrame_34;
+extern int g_RemovedDebug_RecoilFrame_35;
+extern int g_RemovedDebug_RecoilFrame_36;
+extern int g_RemovedDebug_RecoilFrame_37;
+extern int g_RemovedDebug_RecoilFrame_38;
+extern int g_RemovedDebug_RecoilFrame_39;
+extern int g_RemovedDebug_RecoilFrame_40;
+extern int g_RemovedDebug_RecoilFrame_41;
+extern int g_RemovedDebug_RecoilFrame_42;
+extern int g_RemovedDebug_RecoilFrame_43;
+extern int g_RemovedDebug_RecoilFrame_44;
+extern int g_RemovedDebug_RecoilFrame_45;
+
 #include "Battlesport/RecoilFrame.h"
 #include "Battlesport/about.h"
 #include "Battlesport/briefing.h"
@@ -200,7 +252,7 @@ IMPLEMENT_DYNCREATE(CZRecoilFrame, CZGameFrame)
 /**
  * @recoil-anchor recoil:anchor:battlesport.recoilframe.czrecoil-frame-czrecoil-frame
  * @recoil-artifact defines .text recoil:function:0x430250: CZRecoilFrame::CZRecoilFrame.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: construct the MFC-derived Recoil frame, including the menu, window,
  * launch options, renderer menu state, and Westwood Online availability.

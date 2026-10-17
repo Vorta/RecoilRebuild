@@ -2,6 +2,46 @@
 
 #include "GameZRecoil/include/zclip_rect.h"
 #include "GameZRecoil/zError/zerr.h"
+
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZvidDdd3d_0;
+extern int g_RemovedDebug_ZvidDdd3d_1;
+extern int g_RemovedDebug_ZvidDdd3d_2;
+extern int g_RemovedDebug_ZvidDdd3d_3;
+extern int g_RemovedDebug_ZvidDdd3d_4;
+extern int g_RemovedDebug_ZvidDdd3d_5;
+extern int g_RemovedDebug_ZvidDdd3d_6;
+extern int g_RemovedDebug_ZvidDdd3d_7;
+extern int g_RemovedDebug_ZvidDdd3d_8;
+extern int g_RemovedDebug_ZvidDdd3d_9;
+extern int g_RemovedDebug_ZvidDdd3d_10;
+extern int g_RemovedDebug_ZvidDdd3d_11;
+extern int g_RemovedDebug_ZvidDdd3d_12;
+extern int g_RemovedDebug_ZvidDdd3d_13;
+extern int g_RemovedDebug_ZvidDdd3d_14;
+extern int g_RemovedDebug_ZvidDdd3d_15;
+extern int g_RemovedDebug_ZvidDdd3d_16;
+extern int g_RemovedDebug_ZvidDdd3d_17;
+extern int g_RemovedDebug_ZvidDdd3d_18;
+extern int g_RemovedDebug_ZvidDdd3d_19;
+extern int g_RemovedDebug_ZvidDdd3d_20;
+extern int g_RemovedDebug_ZvidDdd3d_21;
+extern int g_RemovedDebug_ZvidDdd3d_22;
+extern int g_RemovedDebug_ZvidDdd3d_23;
+extern int g_RemovedDebug_ZvidDdd3d_24;
+extern int g_RemovedDebug_ZvidDdd3d_25;
+extern int g_RemovedDebug_ZvidDdd3d_26;
+extern int g_RemovedDebug_ZvidDdd3d_27;
+extern int g_RemovedDebug_ZvidDdd3d_28;
+extern int g_RemovedDebug_ZvidDdd3d_29;
+extern int g_RemovedDebug_ZvidDdd3d_30;
+extern int g_RemovedDebug_ZvidDdd3d_31;
+extern int g_RemovedDebug_ZvidDdd3d_32;
+
 #include "GameZRecoil/zVideo/zvid_state.h"
 
 #include <malloc.h>
@@ -1184,7 +1224,7 @@ void __stdcall SetFogEnd(float fogEnd)
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-apply-fog-state-from-globals
  * @recoil-artifact defines .text recoil:function:0x4aaa90: zVideo_dd3d::ApplyFogStateFromGlobals.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: apply pending global fog enable, color, mode, start, and end
@@ -1219,7 +1259,7 @@ void __fastcall ApplyFogStateFromGlobals(float fogStart, float fogEnd, float unu
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-update-fog-color
  * @recoil-artifact defines .text recoil:function:0x4aab30: zVideo_dd3d::UpdateFogColor.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zVideo\zvid_ddd3d.c.
  * Purpose: upload the applied global fog RGB floats as a packed Direct3D
@@ -1568,6 +1608,363 @@ void __fastcall SubmitPolyColorAttr(
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZvidDdd3d_33;
+extern int g_RemovedDebug_ZvidDdd3d_34;
+extern int g_RemovedDebug_ZvidDdd3d_35;
+extern int g_RemovedDebug_ZvidDdd3d_36;
+extern int g_RemovedDebug_ZvidDdd3d_37;
+extern int g_RemovedDebug_ZvidDdd3d_38;
+extern int g_RemovedDebug_ZvidDdd3d_39;
+extern int g_RemovedDebug_ZvidDdd3d_40;
+extern int g_RemovedDebug_ZvidDdd3d_41;
+extern int g_RemovedDebug_ZvidDdd3d_42;
+extern int g_RemovedDebug_ZvidDdd3d_43;
+extern int g_RemovedDebug_ZvidDdd3d_44;
+extern int g_RemovedDebug_ZvidDdd3d_45;
+extern int g_RemovedDebug_ZvidDdd3d_46;
+extern int g_RemovedDebug_ZvidDdd3d_47;
+extern int g_RemovedDebug_ZvidDdd3d_48;
+extern int g_RemovedDebug_ZvidDdd3d_49;
+extern int g_RemovedDebug_ZvidDdd3d_50;
+extern int g_RemovedDebug_ZvidDdd3d_51;
+extern int g_RemovedDebug_ZvidDdd3d_52;
+extern int g_RemovedDebug_ZvidDdd3d_53;
+extern int g_RemovedDebug_ZvidDdd3d_54;
+extern int g_RemovedDebug_ZvidDdd3d_55;
+extern int g_RemovedDebug_ZvidDdd3d_56;
+extern int g_RemovedDebug_ZvidDdd3d_57;
+extern int g_RemovedDebug_ZvidDdd3d_58;
+extern int g_RemovedDebug_ZvidDdd3d_59;
+extern int g_RemovedDebug_ZvidDdd3d_60;
+extern int g_RemovedDebug_ZvidDdd3d_61;
+extern int g_RemovedDebug_ZvidDdd3d_62;
+extern int g_RemovedDebug_ZvidDdd3d_63;
+extern int g_RemovedDebug_ZvidDdd3d_64;
+extern int g_RemovedDebug_ZvidDdd3d_65;
+extern int g_RemovedDebug_ZvidDdd3d_66;
+extern int g_RemovedDebug_ZvidDdd3d_67;
+extern int g_RemovedDebug_ZvidDdd3d_68;
+extern int g_RemovedDebug_ZvidDdd3d_69;
+extern int g_RemovedDebug_ZvidDdd3d_70;
+extern int g_RemovedDebug_ZvidDdd3d_71;
+extern int g_RemovedDebug_ZvidDdd3d_72;
+extern int g_RemovedDebug_ZvidDdd3d_73;
+extern int g_RemovedDebug_ZvidDdd3d_74;
+extern int g_RemovedDebug_ZvidDdd3d_75;
+extern int g_RemovedDebug_ZvidDdd3d_76;
+extern int g_RemovedDebug_ZvidDdd3d_77;
+extern int g_RemovedDebug_ZvidDdd3d_78;
+extern int g_RemovedDebug_ZvidDdd3d_79;
+extern int g_RemovedDebug_ZvidDdd3d_80;
+extern int g_RemovedDebug_ZvidDdd3d_81;
+extern int g_RemovedDebug_ZvidDdd3d_82;
+extern int g_RemovedDebug_ZvidDdd3d_83;
+extern int g_RemovedDebug_ZvidDdd3d_84;
+extern int g_RemovedDebug_ZvidDdd3d_85;
+extern int g_RemovedDebug_ZvidDdd3d_86;
+extern int g_RemovedDebug_ZvidDdd3d_87;
+extern int g_RemovedDebug_ZvidDdd3d_88;
+extern int g_RemovedDebug_ZvidDdd3d_89;
+extern int g_RemovedDebug_ZvidDdd3d_90;
+extern int g_RemovedDebug_ZvidDdd3d_91;
+extern int g_RemovedDebug_ZvidDdd3d_92;
+extern int g_RemovedDebug_ZvidDdd3d_93;
+extern int g_RemovedDebug_ZvidDdd3d_94;
+extern int g_RemovedDebug_ZvidDdd3d_95;
+extern int g_RemovedDebug_ZvidDdd3d_96;
+extern int g_RemovedDebug_ZvidDdd3d_97;
+extern int g_RemovedDebug_ZvidDdd3d_98;
+extern int g_RemovedDebug_ZvidDdd3d_99;
+extern int g_RemovedDebug_ZvidDdd3d_100;
+extern int g_RemovedDebug_ZvidDdd3d_101;
+extern int g_RemovedDebug_ZvidDdd3d_102;
+extern int g_RemovedDebug_ZvidDdd3d_103;
+extern int g_RemovedDebug_ZvidDdd3d_104;
+extern int g_RemovedDebug_ZvidDdd3d_105;
+extern int g_RemovedDebug_ZvidDdd3d_106;
+extern int g_RemovedDebug_ZvidDdd3d_107;
+extern int g_RemovedDebug_ZvidDdd3d_108;
+extern int g_RemovedDebug_ZvidDdd3d_109;
+extern int g_RemovedDebug_ZvidDdd3d_110;
+extern int g_RemovedDebug_ZvidDdd3d_111;
+extern int g_RemovedDebug_ZvidDdd3d_112;
+extern int g_RemovedDebug_ZvidDdd3d_113;
+extern int g_RemovedDebug_ZvidDdd3d_114;
+extern int g_RemovedDebug_ZvidDdd3d_115;
+extern int g_RemovedDebug_ZvidDdd3d_116;
+extern int g_RemovedDebug_ZvidDdd3d_117;
+extern int g_RemovedDebug_ZvidDdd3d_118;
+extern int g_RemovedDebug_ZvidDdd3d_119;
+extern int g_RemovedDebug_ZvidDdd3d_120;
+extern int g_RemovedDebug_ZvidDdd3d_121;
+extern int g_RemovedDebug_ZvidDdd3d_122;
+extern int g_RemovedDebug_ZvidDdd3d_123;
+extern int g_RemovedDebug_ZvidDdd3d_124;
+extern int g_RemovedDebug_ZvidDdd3d_125;
+extern int g_RemovedDebug_ZvidDdd3d_126;
+extern int g_RemovedDebug_ZvidDdd3d_127;
+extern int g_RemovedDebug_ZvidDdd3d_128;
+extern int g_RemovedDebug_ZvidDdd3d_129;
+extern int g_RemovedDebug_ZvidDdd3d_130;
+extern int g_RemovedDebug_ZvidDdd3d_131;
+extern int g_RemovedDebug_ZvidDdd3d_132;
+extern int g_RemovedDebug_ZvidDdd3d_133;
+extern int g_RemovedDebug_ZvidDdd3d_134;
+extern int g_RemovedDebug_ZvidDdd3d_135;
+extern int g_RemovedDebug_ZvidDdd3d_136;
+extern int g_RemovedDebug_ZvidDdd3d_137;
+extern int g_RemovedDebug_ZvidDdd3d_138;
+extern int g_RemovedDebug_ZvidDdd3d_139;
+extern int g_RemovedDebug_ZvidDdd3d_140;
+extern int g_RemovedDebug_ZvidDdd3d_141;
+extern int g_RemovedDebug_ZvidDdd3d_142;
+extern int g_RemovedDebug_ZvidDdd3d_143;
+extern int g_RemovedDebug_ZvidDdd3d_144;
+extern int g_RemovedDebug_ZvidDdd3d_145;
+extern int g_RemovedDebug_ZvidDdd3d_146;
+extern int g_RemovedDebug_ZvidDdd3d_147;
+extern int g_RemovedDebug_ZvidDdd3d_148;
+extern int g_RemovedDebug_ZvidDdd3d_149;
+extern int g_RemovedDebug_ZvidDdd3d_150;
+extern int g_RemovedDebug_ZvidDdd3d_151;
+extern int g_RemovedDebug_ZvidDdd3d_152;
+extern int g_RemovedDebug_ZvidDdd3d_153;
+extern int g_RemovedDebug_ZvidDdd3d_154;
+extern int g_RemovedDebug_ZvidDdd3d_155;
+extern int g_RemovedDebug_ZvidDdd3d_156;
+extern int g_RemovedDebug_ZvidDdd3d_157;
+extern int g_RemovedDebug_ZvidDdd3d_158;
+extern int g_RemovedDebug_ZvidDdd3d_159;
+extern int g_RemovedDebug_ZvidDdd3d_160;
+extern int g_RemovedDebug_ZvidDdd3d_161;
+extern int g_RemovedDebug_ZvidDdd3d_162;
+extern int g_RemovedDebug_ZvidDdd3d_163;
+extern int g_RemovedDebug_ZvidDdd3d_164;
+extern int g_RemovedDebug_ZvidDdd3d_165;
+extern int g_RemovedDebug_ZvidDdd3d_166;
+extern int g_RemovedDebug_ZvidDdd3d_167;
+extern int g_RemovedDebug_ZvidDdd3d_168;
+extern int g_RemovedDebug_ZvidDdd3d_169;
+extern int g_RemovedDebug_ZvidDdd3d_170;
+extern int g_RemovedDebug_ZvidDdd3d_171;
+extern int g_RemovedDebug_ZvidDdd3d_172;
+extern int g_RemovedDebug_ZvidDdd3d_173;
+extern int g_RemovedDebug_ZvidDdd3d_174;
+extern int g_RemovedDebug_ZvidDdd3d_175;
+extern int g_RemovedDebug_ZvidDdd3d_176;
+extern int g_RemovedDebug_ZvidDdd3d_177;
+extern int g_RemovedDebug_ZvidDdd3d_178;
+extern int g_RemovedDebug_ZvidDdd3d_179;
+extern int g_RemovedDebug_ZvidDdd3d_180;
+extern int g_RemovedDebug_ZvidDdd3d_181;
+extern int g_RemovedDebug_ZvidDdd3d_182;
+extern int g_RemovedDebug_ZvidDdd3d_183;
+extern int g_RemovedDebug_ZvidDdd3d_184;
+extern int g_RemovedDebug_ZvidDdd3d_185;
+extern int g_RemovedDebug_ZvidDdd3d_186;
+extern int g_RemovedDebug_ZvidDdd3d_187;
+extern int g_RemovedDebug_ZvidDdd3d_188;
+extern int g_RemovedDebug_ZvidDdd3d_189;
+extern int g_RemovedDebug_ZvidDdd3d_190;
+extern int g_RemovedDebug_ZvidDdd3d_191;
+extern int g_RemovedDebug_ZvidDdd3d_192;
+extern int g_RemovedDebug_ZvidDdd3d_193;
+extern int g_RemovedDebug_ZvidDdd3d_194;
+extern int g_RemovedDebug_ZvidDdd3d_195;
+extern int g_RemovedDebug_ZvidDdd3d_196;
+extern int g_RemovedDebug_ZvidDdd3d_197;
+extern int g_RemovedDebug_ZvidDdd3d_198;
+extern int g_RemovedDebug_ZvidDdd3d_199;
+extern int g_RemovedDebug_ZvidDdd3d_200;
+extern int g_RemovedDebug_ZvidDdd3d_201;
+extern int g_RemovedDebug_ZvidDdd3d_202;
+extern int g_RemovedDebug_ZvidDdd3d_203;
+extern int g_RemovedDebug_ZvidDdd3d_204;
+extern int g_RemovedDebug_ZvidDdd3d_205;
+extern int g_RemovedDebug_ZvidDdd3d_206;
+extern int g_RemovedDebug_ZvidDdd3d_207;
+extern int g_RemovedDebug_ZvidDdd3d_208;
+extern int g_RemovedDebug_ZvidDdd3d_209;
+extern int g_RemovedDebug_ZvidDdd3d_210;
+extern int g_RemovedDebug_ZvidDdd3d_211;
+extern int g_RemovedDebug_ZvidDdd3d_212;
+extern int g_RemovedDebug_ZvidDdd3d_213;
+extern int g_RemovedDebug_ZvidDdd3d_214;
+extern int g_RemovedDebug_ZvidDdd3d_215;
+extern int g_RemovedDebug_ZvidDdd3d_216;
+extern int g_RemovedDebug_ZvidDdd3d_217;
+extern int g_RemovedDebug_ZvidDdd3d_218;
+extern int g_RemovedDebug_ZvidDdd3d_219;
+extern int g_RemovedDebug_ZvidDdd3d_220;
+extern int g_RemovedDebug_ZvidDdd3d_221;
+extern int g_RemovedDebug_ZvidDdd3d_222;
+extern int g_RemovedDebug_ZvidDdd3d_223;
+extern int g_RemovedDebug_ZvidDdd3d_224;
+extern int g_RemovedDebug_ZvidDdd3d_225;
+extern int g_RemovedDebug_ZvidDdd3d_226;
+extern int g_RemovedDebug_ZvidDdd3d_227;
+extern int g_RemovedDebug_ZvidDdd3d_228;
+extern int g_RemovedDebug_ZvidDdd3d_229;
+extern int g_RemovedDebug_ZvidDdd3d_230;
+extern int g_RemovedDebug_ZvidDdd3d_231;
+extern int g_RemovedDebug_ZvidDdd3d_232;
+extern int g_RemovedDebug_ZvidDdd3d_233;
+extern int g_RemovedDebug_ZvidDdd3d_234;
+extern int g_RemovedDebug_ZvidDdd3d_235;
+extern int g_RemovedDebug_ZvidDdd3d_236;
+extern int g_RemovedDebug_ZvidDdd3d_237;
+extern int g_RemovedDebug_ZvidDdd3d_238;
+extern int g_RemovedDebug_ZvidDdd3d_239;
+extern int g_RemovedDebug_ZvidDdd3d_240;
+extern int g_RemovedDebug_ZvidDdd3d_241;
+extern int g_RemovedDebug_ZvidDdd3d_242;
+extern int g_RemovedDebug_ZvidDdd3d_243;
+extern int g_RemovedDebug_ZvidDdd3d_244;
+extern int g_RemovedDebug_ZvidDdd3d_245;
+extern int g_RemovedDebug_ZvidDdd3d_246;
+extern int g_RemovedDebug_ZvidDdd3d_247;
+extern int g_RemovedDebug_ZvidDdd3d_248;
+extern int g_RemovedDebug_ZvidDdd3d_249;
+extern int g_RemovedDebug_ZvidDdd3d_250;
+extern int g_RemovedDebug_ZvidDdd3d_251;
+extern int g_RemovedDebug_ZvidDdd3d_252;
+extern int g_RemovedDebug_ZvidDdd3d_253;
+extern int g_RemovedDebug_ZvidDdd3d_254;
+extern int g_RemovedDebug_ZvidDdd3d_255;
+extern int g_RemovedDebug_ZvidDdd3d_256;
+extern int g_RemovedDebug_ZvidDdd3d_257;
+extern int g_RemovedDebug_ZvidDdd3d_258;
+extern int g_RemovedDebug_ZvidDdd3d_259;
+extern int g_RemovedDebug_ZvidDdd3d_260;
+extern int g_RemovedDebug_ZvidDdd3d_261;
+extern int g_RemovedDebug_ZvidDdd3d_262;
+extern int g_RemovedDebug_ZvidDdd3d_263;
+extern int g_RemovedDebug_ZvidDdd3d_264;
+extern int g_RemovedDebug_ZvidDdd3d_265;
+extern int g_RemovedDebug_ZvidDdd3d_266;
+extern int g_RemovedDebug_ZvidDdd3d_267;
+extern int g_RemovedDebug_ZvidDdd3d_268;
+extern int g_RemovedDebug_ZvidDdd3d_269;
+extern int g_RemovedDebug_ZvidDdd3d_270;
+extern int g_RemovedDebug_ZvidDdd3d_271;
+extern int g_RemovedDebug_ZvidDdd3d_272;
+extern int g_RemovedDebug_ZvidDdd3d_273;
+extern int g_RemovedDebug_ZvidDdd3d_274;
+extern int g_RemovedDebug_ZvidDdd3d_275;
+extern int g_RemovedDebug_ZvidDdd3d_276;
+extern int g_RemovedDebug_ZvidDdd3d_277;
+extern int g_RemovedDebug_ZvidDdd3d_278;
+extern int g_RemovedDebug_ZvidDdd3d_279;
+extern int g_RemovedDebug_ZvidDdd3d_280;
+extern int g_RemovedDebug_ZvidDdd3d_281;
+extern int g_RemovedDebug_ZvidDdd3d_282;
+extern int g_RemovedDebug_ZvidDdd3d_283;
+extern int g_RemovedDebug_ZvidDdd3d_284;
+extern int g_RemovedDebug_ZvidDdd3d_285;
+extern int g_RemovedDebug_ZvidDdd3d_286;
+extern int g_RemovedDebug_ZvidDdd3d_287;
+extern int g_RemovedDebug_ZvidDdd3d_288;
+extern int g_RemovedDebug_ZvidDdd3d_289;
+extern int g_RemovedDebug_ZvidDdd3d_290;
+extern int g_RemovedDebug_ZvidDdd3d_291;
+extern int g_RemovedDebug_ZvidDdd3d_292;
+extern int g_RemovedDebug_ZvidDdd3d_293;
+extern int g_RemovedDebug_ZvidDdd3d_294;
+extern int g_RemovedDebug_ZvidDdd3d_295;
+extern int g_RemovedDebug_ZvidDdd3d_296;
+extern int g_RemovedDebug_ZvidDdd3d_297;
+extern int g_RemovedDebug_ZvidDdd3d_298;
+extern int g_RemovedDebug_ZvidDdd3d_299;
+extern int g_RemovedDebug_ZvidDdd3d_300;
+extern int g_RemovedDebug_ZvidDdd3d_301;
+extern int g_RemovedDebug_ZvidDdd3d_302;
+extern int g_RemovedDebug_ZvidDdd3d_303;
+extern int g_RemovedDebug_ZvidDdd3d_304;
+extern int g_RemovedDebug_ZvidDdd3d_305;
+extern int g_RemovedDebug_ZvidDdd3d_306;
+extern int g_RemovedDebug_ZvidDdd3d_307;
+extern int g_RemovedDebug_ZvidDdd3d_308;
+extern int g_RemovedDebug_ZvidDdd3d_309;
+extern int g_RemovedDebug_ZvidDdd3d_310;
+extern int g_RemovedDebug_ZvidDdd3d_311;
+extern int g_RemovedDebug_ZvidDdd3d_312;
+extern int g_RemovedDebug_ZvidDdd3d_313;
+extern int g_RemovedDebug_ZvidDdd3d_314;
+extern int g_RemovedDebug_ZvidDdd3d_315;
+extern int g_RemovedDebug_ZvidDdd3d_316;
+extern int g_RemovedDebug_ZvidDdd3d_317;
+extern int g_RemovedDebug_ZvidDdd3d_318;
+extern int g_RemovedDebug_ZvidDdd3d_319;
+extern int g_RemovedDebug_ZvidDdd3d_320;
+extern int g_RemovedDebug_ZvidDdd3d_321;
+extern int g_RemovedDebug_ZvidDdd3d_322;
+extern int g_RemovedDebug_ZvidDdd3d_323;
+extern int g_RemovedDebug_ZvidDdd3d_324;
+extern int g_RemovedDebug_ZvidDdd3d_325;
+extern int g_RemovedDebug_ZvidDdd3d_326;
+extern int g_RemovedDebug_ZvidDdd3d_327;
+extern int g_RemovedDebug_ZvidDdd3d_328;
+extern int g_RemovedDebug_ZvidDdd3d_329;
+extern int g_RemovedDebug_ZvidDdd3d_330;
+extern int g_RemovedDebug_ZvidDdd3d_331;
+extern int g_RemovedDebug_ZvidDdd3d_332;
+extern int g_RemovedDebug_ZvidDdd3d_333;
+extern int g_RemovedDebug_ZvidDdd3d_334;
+extern int g_RemovedDebug_ZvidDdd3d_335;
+extern int g_RemovedDebug_ZvidDdd3d_336;
+extern int g_RemovedDebug_ZvidDdd3d_337;
+extern int g_RemovedDebug_ZvidDdd3d_338;
+extern int g_RemovedDebug_ZvidDdd3d_339;
+extern int g_RemovedDebug_ZvidDdd3d_340;
+extern int g_RemovedDebug_ZvidDdd3d_341;
+extern int g_RemovedDebug_ZvidDdd3d_342;
+extern int g_RemovedDebug_ZvidDdd3d_343;
+extern int g_RemovedDebug_ZvidDdd3d_344;
+extern int g_RemovedDebug_ZvidDdd3d_345;
+extern int g_RemovedDebug_ZvidDdd3d_346;
+extern int g_RemovedDebug_ZvidDdd3d_347;
+extern int g_RemovedDebug_ZvidDdd3d_348;
+extern int g_RemovedDebug_ZvidDdd3d_349;
+extern int g_RemovedDebug_ZvidDdd3d_350;
+extern int g_RemovedDebug_ZvidDdd3d_351;
+extern int g_RemovedDebug_ZvidDdd3d_352;
+extern int g_RemovedDebug_ZvidDdd3d_353;
+extern int g_RemovedDebug_ZvidDdd3d_354;
+extern int g_RemovedDebug_ZvidDdd3d_355;
+extern int g_RemovedDebug_ZvidDdd3d_356;
+extern int g_RemovedDebug_ZvidDdd3d_357;
+extern int g_RemovedDebug_ZvidDdd3d_358;
+extern int g_RemovedDebug_ZvidDdd3d_359;
+extern int g_RemovedDebug_ZvidDdd3d_360;
+extern int g_RemovedDebug_ZvidDdd3d_361;
+extern int g_RemovedDebug_ZvidDdd3d_362;
+extern int g_RemovedDebug_ZvidDdd3d_363;
+extern int g_RemovedDebug_ZvidDdd3d_364;
+extern int g_RemovedDebug_ZvidDdd3d_365;
+extern int g_RemovedDebug_ZvidDdd3d_366;
+extern int g_RemovedDebug_ZvidDdd3d_367;
+extern int g_RemovedDebug_ZvidDdd3d_368;
+extern int g_RemovedDebug_ZvidDdd3d_369;
+extern int g_RemovedDebug_ZvidDdd3d_370;
+extern int g_RemovedDebug_ZvidDdd3d_371;
+extern int g_RemovedDebug_ZvidDdd3d_372;
+extern int g_RemovedDebug_ZvidDdd3d_373;
+extern int g_RemovedDebug_ZvidDdd3d_374;
+extern int g_RemovedDebug_ZvidDdd3d_375;
+extern int g_RemovedDebug_ZvidDdd3d_376;
+extern int g_RemovedDebug_ZvidDdd3d_377;
+extern int g_RemovedDebug_ZvidDdd3d_378;
+extern int g_RemovedDebug_ZvidDdd3d_379;
+extern int g_RemovedDebug_ZvidDdd3d_380;
+extern int g_RemovedDebug_ZvidDdd3d_381;
+extern int g_RemovedDebug_ZvidDdd3d_382;
+extern int g_RemovedDebug_ZvidDdd3d_383;
+
+/**
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Prepare textured TL vertices for a render class and route them to
  * immediate Direct3D drawing or the overwrite/sorted polygon queues.
@@ -1714,7 +2111,7 @@ void __fastcall SubmitPolyRenderClass(
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon
  * @recoil-artifact defines .text recoil:function:0x4abb20: zVideo_dd3d::SubmitPolygon.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Build textured polygon TL vertices with fog color-attribute bias and
  * route them to immediate, overwrite, or sorted transparent submission.
@@ -1885,7 +2282,7 @@ void __fastcall SubmitPolygon(
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-submit-polygon-lit
  * @recoil-artifact defines .text recoil:function:0x4ac370: zVideo_dd3d::SubmitPolygonLit.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Build lit textured polygon TL vertices with fog color-attribute bias
  * and route them to immediate, overwrite, or sorted transparent submission.
@@ -2055,7 +2452,7 @@ void __fastcall SubmitPolygonLit(
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-ddd3d.z-video-dd3d-draw-point-color16
  * @recoil-artifact defines .text recoil:function:0x4acbd0: zVideo_dd3d::DrawPointColor16.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source file evidence: GameZRecoil/zVideo/zvid_ddd3d.c.
  * Purpose: Convert one 16-bit colored point to a Direct3D TL vertex and draw it

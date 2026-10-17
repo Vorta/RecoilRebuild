@@ -13,6 +13,268 @@
 #include <string.h>
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_GmodPick_0;
+extern int g_RemovedDebug_GmodPick_1;
+extern int g_RemovedDebug_GmodPick_2;
+extern int g_RemovedDebug_GmodPick_3;
+extern int g_RemovedDebug_GmodPick_4;
+extern int g_RemovedDebug_GmodPick_5;
+extern int g_RemovedDebug_GmodPick_6;
+extern int g_RemovedDebug_GmodPick_7;
+extern int g_RemovedDebug_GmodPick_8;
+extern int g_RemovedDebug_GmodPick_9;
+extern int g_RemovedDebug_GmodPick_10;
+extern int g_RemovedDebug_GmodPick_11;
+extern int g_RemovedDebug_GmodPick_12;
+extern int g_RemovedDebug_GmodPick_13;
+extern int g_RemovedDebug_GmodPick_14;
+extern int g_RemovedDebug_GmodPick_15;
+extern int g_RemovedDebug_GmodPick_16;
+extern int g_RemovedDebug_GmodPick_17;
+extern int g_RemovedDebug_GmodPick_18;
+extern int g_RemovedDebug_GmodPick_19;
+extern int g_RemovedDebug_GmodPick_20;
+extern int g_RemovedDebug_GmodPick_21;
+extern int g_RemovedDebug_GmodPick_22;
+extern int g_RemovedDebug_GmodPick_23;
+extern int g_RemovedDebug_GmodPick_24;
+extern int g_RemovedDebug_GmodPick_25;
+extern int g_RemovedDebug_GmodPick_26;
+extern int g_RemovedDebug_GmodPick_27;
+extern int g_RemovedDebug_GmodPick_28;
+extern int g_RemovedDebug_GmodPick_29;
+extern int g_RemovedDebug_GmodPick_30;
+extern int g_RemovedDebug_GmodPick_31;
+extern int g_RemovedDebug_GmodPick_32;
+extern int g_RemovedDebug_GmodPick_33;
+extern int g_RemovedDebug_GmodPick_34;
+extern int g_RemovedDebug_GmodPick_35;
+extern int g_RemovedDebug_GmodPick_36;
+extern int g_RemovedDebug_GmodPick_37;
+extern int g_RemovedDebug_GmodPick_38;
+extern int g_RemovedDebug_GmodPick_39;
+extern int g_RemovedDebug_GmodPick_40;
+extern int g_RemovedDebug_GmodPick_41;
+extern int g_RemovedDebug_GmodPick_42;
+extern int g_RemovedDebug_GmodPick_43;
+extern int g_RemovedDebug_GmodPick_44;
+extern int g_RemovedDebug_GmodPick_45;
+extern int g_RemovedDebug_GmodPick_46;
+extern int g_RemovedDebug_GmodPick_47;
+extern int g_RemovedDebug_GmodPick_48;
+extern int g_RemovedDebug_GmodPick_49;
+extern int g_RemovedDebug_GmodPick_50;
+extern int g_RemovedDebug_GmodPick_51;
+extern int g_RemovedDebug_GmodPick_52;
+extern int g_RemovedDebug_GmodPick_53;
+extern int g_RemovedDebug_GmodPick_54;
+extern int g_RemovedDebug_GmodPick_55;
+extern int g_RemovedDebug_GmodPick_56;
+extern int g_RemovedDebug_GmodPick_57;
+extern int g_RemovedDebug_GmodPick_58;
+extern int g_RemovedDebug_GmodPick_59;
+extern int g_RemovedDebug_GmodPick_60;
+extern int g_RemovedDebug_GmodPick_61;
+extern int g_RemovedDebug_GmodPick_62;
+extern int g_RemovedDebug_GmodPick_63;
+extern int g_RemovedDebug_GmodPick_64;
+extern int g_RemovedDebug_GmodPick_65;
+extern int g_RemovedDebug_GmodPick_66;
+extern int g_RemovedDebug_GmodPick_67;
+extern int g_RemovedDebug_GmodPick_68;
+extern int g_RemovedDebug_GmodPick_69;
+extern int g_RemovedDebug_GmodPick_70;
+extern int g_RemovedDebug_GmodPick_71;
+extern int g_RemovedDebug_GmodPick_72;
+extern int g_RemovedDebug_GmodPick_73;
+extern int g_RemovedDebug_GmodPick_74;
+extern int g_RemovedDebug_GmodPick_75;
+extern int g_RemovedDebug_GmodPick_76;
+extern int g_RemovedDebug_GmodPick_77;
+extern int g_RemovedDebug_GmodPick_78;
+extern int g_RemovedDebug_GmodPick_79;
+extern int g_RemovedDebug_GmodPick_80;
+extern int g_RemovedDebug_GmodPick_81;
+extern int g_RemovedDebug_GmodPick_82;
+extern int g_RemovedDebug_GmodPick_83;
+extern int g_RemovedDebug_GmodPick_84;
+extern int g_RemovedDebug_GmodPick_85;
+extern int g_RemovedDebug_GmodPick_86;
+extern int g_RemovedDebug_GmodPick_87;
+extern int g_RemovedDebug_GmodPick_88;
+extern int g_RemovedDebug_GmodPick_89;
+extern int g_RemovedDebug_GmodPick_90;
+extern int g_RemovedDebug_GmodPick_91;
+extern int g_RemovedDebug_GmodPick_92;
+extern int g_RemovedDebug_GmodPick_93;
+extern int g_RemovedDebug_GmodPick_94;
+extern int g_RemovedDebug_GmodPick_95;
+extern int g_RemovedDebug_GmodPick_96;
+extern int g_RemovedDebug_GmodPick_97;
+extern int g_RemovedDebug_GmodPick_98;
+extern int g_RemovedDebug_GmodPick_99;
+extern int g_RemovedDebug_GmodPick_100;
+extern int g_RemovedDebug_GmodPick_101;
+extern int g_RemovedDebug_GmodPick_102;
+extern int g_RemovedDebug_GmodPick_103;
+extern int g_RemovedDebug_GmodPick_104;
+extern int g_RemovedDebug_GmodPick_105;
+extern int g_RemovedDebug_GmodPick_106;
+extern int g_RemovedDebug_GmodPick_107;
+extern int g_RemovedDebug_GmodPick_108;
+extern int g_RemovedDebug_GmodPick_109;
+extern int g_RemovedDebug_GmodPick_110;
+extern int g_RemovedDebug_GmodPick_111;
+extern int g_RemovedDebug_GmodPick_112;
+extern int g_RemovedDebug_GmodPick_113;
+extern int g_RemovedDebug_GmodPick_114;
+extern int g_RemovedDebug_GmodPick_115;
+extern int g_RemovedDebug_GmodPick_116;
+extern int g_RemovedDebug_GmodPick_117;
+extern int g_RemovedDebug_GmodPick_118;
+extern int g_RemovedDebug_GmodPick_119;
+extern int g_RemovedDebug_GmodPick_120;
+extern int g_RemovedDebug_GmodPick_121;
+extern int g_RemovedDebug_GmodPick_122;
+extern int g_RemovedDebug_GmodPick_123;
+extern int g_RemovedDebug_GmodPick_124;
+extern int g_RemovedDebug_GmodPick_125;
+extern int g_RemovedDebug_GmodPick_126;
+extern int g_RemovedDebug_GmodPick_127;
+extern int g_RemovedDebug_GmodPick_128;
+extern int g_RemovedDebug_GmodPick_129;
+extern int g_RemovedDebug_GmodPick_130;
+extern int g_RemovedDebug_GmodPick_131;
+extern int g_RemovedDebug_GmodPick_132;
+extern int g_RemovedDebug_GmodPick_133;
+extern int g_RemovedDebug_GmodPick_134;
+extern int g_RemovedDebug_GmodPick_135;
+extern int g_RemovedDebug_GmodPick_136;
+extern int g_RemovedDebug_GmodPick_137;
+extern int g_RemovedDebug_GmodPick_138;
+extern int g_RemovedDebug_GmodPick_139;
+extern int g_RemovedDebug_GmodPick_140;
+extern int g_RemovedDebug_GmodPick_141;
+extern int g_RemovedDebug_GmodPick_142;
+extern int g_RemovedDebug_GmodPick_143;
+extern int g_RemovedDebug_GmodPick_144;
+extern int g_RemovedDebug_GmodPick_145;
+extern int g_RemovedDebug_GmodPick_146;
+extern int g_RemovedDebug_GmodPick_147;
+extern int g_RemovedDebug_GmodPick_148;
+extern int g_RemovedDebug_GmodPick_149;
+extern int g_RemovedDebug_GmodPick_150;
+extern int g_RemovedDebug_GmodPick_151;
+extern int g_RemovedDebug_GmodPick_152;
+extern int g_RemovedDebug_GmodPick_153;
+extern int g_RemovedDebug_GmodPick_154;
+extern int g_RemovedDebug_GmodPick_155;
+extern int g_RemovedDebug_GmodPick_156;
+extern int g_RemovedDebug_GmodPick_157;
+extern int g_RemovedDebug_GmodPick_158;
+extern int g_RemovedDebug_GmodPick_159;
+extern int g_RemovedDebug_GmodPick_160;
+extern int g_RemovedDebug_GmodPick_161;
+extern int g_RemovedDebug_GmodPick_162;
+extern int g_RemovedDebug_GmodPick_163;
+extern int g_RemovedDebug_GmodPick_164;
+extern int g_RemovedDebug_GmodPick_165;
+extern int g_RemovedDebug_GmodPick_166;
+extern int g_RemovedDebug_GmodPick_167;
+extern int g_RemovedDebug_GmodPick_168;
+extern int g_RemovedDebug_GmodPick_169;
+extern int g_RemovedDebug_GmodPick_170;
+extern int g_RemovedDebug_GmodPick_171;
+extern int g_RemovedDebug_GmodPick_172;
+extern int g_RemovedDebug_GmodPick_173;
+extern int g_RemovedDebug_GmodPick_174;
+extern int g_RemovedDebug_GmodPick_175;
+extern int g_RemovedDebug_GmodPick_176;
+extern int g_RemovedDebug_GmodPick_177;
+extern int g_RemovedDebug_GmodPick_178;
+extern int g_RemovedDebug_GmodPick_179;
+extern int g_RemovedDebug_GmodPick_180;
+extern int g_RemovedDebug_GmodPick_181;
+extern int g_RemovedDebug_GmodPick_182;
+extern int g_RemovedDebug_GmodPick_183;
+extern int g_RemovedDebug_GmodPick_184;
+extern int g_RemovedDebug_GmodPick_185;
+extern int g_RemovedDebug_GmodPick_186;
+extern int g_RemovedDebug_GmodPick_187;
+extern int g_RemovedDebug_GmodPick_188;
+extern int g_RemovedDebug_GmodPick_189;
+extern int g_RemovedDebug_GmodPick_190;
+extern int g_RemovedDebug_GmodPick_191;
+extern int g_RemovedDebug_GmodPick_192;
+extern int g_RemovedDebug_GmodPick_193;
+extern int g_RemovedDebug_GmodPick_194;
+extern int g_RemovedDebug_GmodPick_195;
+extern int g_RemovedDebug_GmodPick_196;
+extern int g_RemovedDebug_GmodPick_197;
+extern int g_RemovedDebug_GmodPick_198;
+extern int g_RemovedDebug_GmodPick_199;
+extern int g_RemovedDebug_GmodPick_200;
+extern int g_RemovedDebug_GmodPick_201;
+extern int g_RemovedDebug_GmodPick_202;
+extern int g_RemovedDebug_GmodPick_203;
+extern int g_RemovedDebug_GmodPick_204;
+extern int g_RemovedDebug_GmodPick_205;
+extern int g_RemovedDebug_GmodPick_206;
+extern int g_RemovedDebug_GmodPick_207;
+extern int g_RemovedDebug_GmodPick_208;
+extern int g_RemovedDebug_GmodPick_209;
+extern int g_RemovedDebug_GmodPick_210;
+extern int g_RemovedDebug_GmodPick_211;
+extern int g_RemovedDebug_GmodPick_212;
+extern int g_RemovedDebug_GmodPick_213;
+extern int g_RemovedDebug_GmodPick_214;
+extern int g_RemovedDebug_GmodPick_215;
+extern int g_RemovedDebug_GmodPick_216;
+extern int g_RemovedDebug_GmodPick_217;
+extern int g_RemovedDebug_GmodPick_218;
+extern int g_RemovedDebug_GmodPick_219;
+extern int g_RemovedDebug_GmodPick_220;
+extern int g_RemovedDebug_GmodPick_221;
+extern int g_RemovedDebug_GmodPick_222;
+extern int g_RemovedDebug_GmodPick_223;
+extern int g_RemovedDebug_GmodPick_224;
+extern int g_RemovedDebug_GmodPick_225;
+extern int g_RemovedDebug_GmodPick_226;
+extern int g_RemovedDebug_GmodPick_227;
+extern int g_RemovedDebug_GmodPick_228;
+extern int g_RemovedDebug_GmodPick_229;
+extern int g_RemovedDebug_GmodPick_230;
+extern int g_RemovedDebug_GmodPick_231;
+extern int g_RemovedDebug_GmodPick_232;
+extern int g_RemovedDebug_GmodPick_233;
+extern int g_RemovedDebug_GmodPick_234;
+extern int g_RemovedDebug_GmodPick_235;
+extern int g_RemovedDebug_GmodPick_236;
+extern int g_RemovedDebug_GmodPick_237;
+extern int g_RemovedDebug_GmodPick_238;
+extern int g_RemovedDebug_GmodPick_239;
+extern int g_RemovedDebug_GmodPick_240;
+extern int g_RemovedDebug_GmodPick_241;
+extern int g_RemovedDebug_GmodPick_242;
+extern int g_RemovedDebug_GmodPick_243;
+extern int g_RemovedDebug_GmodPick_244;
+extern int g_RemovedDebug_GmodPick_245;
+extern int g_RemovedDebug_GmodPick_246;
+extern int g_RemovedDebug_GmodPick_247;
+extern int g_RemovedDebug_GmodPick_248;
+extern int g_RemovedDebug_GmodPick_249;
+extern int g_RemovedDebug_GmodPick_250;
+extern int g_RemovedDebug_GmodPick_251;
+extern int g_RemovedDebug_GmodPick_252;
+extern int g_RemovedDebug_GmodPick_253;
+extern int g_RemovedDebug_GmodPick_254;
+extern int g_RemovedDebug_GmodPick_255;
+
+/**
  * @recoil-raw-asm recoil:raw-asm:gamezrecoil.zmodel.gmod-pick.vector-transform-point-in-place
  *
  * Purpose: Transform a point in place by the matrix's 3x3 part plus
@@ -625,7 +887,7 @@ int __fastcall BuildPickCandidatesForSegmentVsBBoxFaces(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.trygetpolygonhitatqueryxz
  * @recoil-artifact defines .text recoil:function:0x4856d0: CZDisplayInstance::TryGetPolygonHitAtQueryXZ.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.
@@ -1095,9 +1357,29 @@ int __fastcall BuildPickCandidateForSegmentVsPolygonWithUv(
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_GmodPick_256;
+extern int g_RemovedDebug_GmodPick_257;
+extern int g_RemovedDebug_GmodPick_258;
+extern int g_RemovedDebug_GmodPick_259;
+extern int g_RemovedDebug_GmodPick_260;
+extern int g_RemovedDebug_GmodPick_261;
+extern int g_RemovedDebug_GmodPick_262;
+extern int g_RemovedDebug_GmodPick_263;
+extern int g_RemovedDebug_GmodPick_264;
+extern int g_RemovedDebug_GmodPick_265;
+extern int g_RemovedDebug_GmodPick_266;
+extern int g_RemovedDebug_GmodPick_267;
+extern int g_RemovedDebug_GmodPick_268;
+extern int g_RemovedDebug_GmodPick_269;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.buildpickcandidatesforsegmentbatchvspolygon
  * @recoil-artifact defines .text recoil:function:0x486290: CZDisplayInstance::BuildPickCandidatesForSegmentBatchVsPolygon.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provenance: address-backed cls_di.c reconstruction from current Binary Ninja
  * behavior/global evidence; native smoke coverage exercises the owner slice.

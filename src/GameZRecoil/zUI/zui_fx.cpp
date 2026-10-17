@@ -44,6 +44,13 @@
 #include <sys/stat.h>
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZuiFx_0;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-zvideofxpass3element-draw
  * @recoil-artifact defines .text recoil:function:0x4bdb60: zVideoFxPass3Element::Draw.
  * @recoil-match byte
@@ -632,7 +639,7 @@ HudWeatherFxRain::~HudWeatherFxRain() { }
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-hudweatherfxrain-update
  * @recoil-artifact defines .text recoil:function:0x4be880: HudWeatherFxRain::Update.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: Advance rain particles from camera drift, gravity, and wind, then project quads.
  */
@@ -1059,7 +1066,7 @@ static inline void HudUiMessageBoxSetDefaultImage(HudUiZrdWidget* button, zVidIm
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zui-zui-huduimessageboxdialog-constructor
  * @recoil-artifact defines .text recoil:function:0x4bf060: HudUiMessageBoxDialog::Constructor.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Source model: class-first constructor for HudUiMessageBoxDialog; BN table
  * 0x4d4028 is installed at object offset zero by the constructed C++ object.

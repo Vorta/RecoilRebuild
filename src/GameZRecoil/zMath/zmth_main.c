@@ -7,6 +7,116 @@
 #include <string.h>
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_0;
+extern int g_RemovedDebug_ZmthMain_1;
+extern int g_RemovedDebug_ZmthMain_2;
+extern int g_RemovedDebug_ZmthMain_3;
+extern int g_RemovedDebug_ZmthMain_4;
+extern int g_RemovedDebug_ZmthMain_5;
+extern int g_RemovedDebug_ZmthMain_6;
+extern int g_RemovedDebug_ZmthMain_7;
+extern int g_RemovedDebug_ZmthMain_8;
+extern int g_RemovedDebug_ZmthMain_9;
+extern int g_RemovedDebug_ZmthMain_10;
+extern int g_RemovedDebug_ZmthMain_11;
+extern int g_RemovedDebug_ZmthMain_12;
+extern int g_RemovedDebug_ZmthMain_13;
+extern int g_RemovedDebug_ZmthMain_14;
+extern int g_RemovedDebug_ZmthMain_15;
+extern int g_RemovedDebug_ZmthMain_16;
+extern int g_RemovedDebug_ZmthMain_17;
+extern int g_RemovedDebug_ZmthMain_18;
+extern int g_RemovedDebug_ZmthMain_19;
+extern int g_RemovedDebug_ZmthMain_20;
+extern int g_RemovedDebug_ZmthMain_21;
+extern int g_RemovedDebug_ZmthMain_22;
+extern int g_RemovedDebug_ZmthMain_23;
+extern int g_RemovedDebug_ZmthMain_24;
+extern int g_RemovedDebug_ZmthMain_25;
+extern int g_RemovedDebug_ZmthMain_26;
+extern int g_RemovedDebug_ZmthMain_27;
+extern int g_RemovedDebug_ZmthMain_28;
+extern int g_RemovedDebug_ZmthMain_29;
+extern int g_RemovedDebug_ZmthMain_30;
+extern int g_RemovedDebug_ZmthMain_31;
+extern int g_RemovedDebug_ZmthMain_32;
+extern int g_RemovedDebug_ZmthMain_33;
+extern int g_RemovedDebug_ZmthMain_34;
+extern int g_RemovedDebug_ZmthMain_35;
+extern int g_RemovedDebug_ZmthMain_36;
+extern int g_RemovedDebug_ZmthMain_37;
+extern int g_RemovedDebug_ZmthMain_38;
+extern int g_RemovedDebug_ZmthMain_39;
+extern int g_RemovedDebug_ZmthMain_40;
+extern int g_RemovedDebug_ZmthMain_41;
+extern int g_RemovedDebug_ZmthMain_42;
+extern int g_RemovedDebug_ZmthMain_43;
+extern int g_RemovedDebug_ZmthMain_44;
+extern int g_RemovedDebug_ZmthMain_45;
+extern int g_RemovedDebug_ZmthMain_46;
+extern int g_RemovedDebug_ZmthMain_47;
+extern int g_RemovedDebug_ZmthMain_48;
+extern int g_RemovedDebug_ZmthMain_49;
+extern int g_RemovedDebug_ZmthMain_50;
+extern int g_RemovedDebug_ZmthMain_51;
+extern int g_RemovedDebug_ZmthMain_52;
+extern int g_RemovedDebug_ZmthMain_53;
+extern int g_RemovedDebug_ZmthMain_54;
+extern int g_RemovedDebug_ZmthMain_55;
+extern int g_RemovedDebug_ZmthMain_56;
+extern int g_RemovedDebug_ZmthMain_57;
+extern int g_RemovedDebug_ZmthMain_58;
+extern int g_RemovedDebug_ZmthMain_59;
+extern int g_RemovedDebug_ZmthMain_60;
+extern int g_RemovedDebug_ZmthMain_61;
+extern int g_RemovedDebug_ZmthMain_62;
+extern int g_RemovedDebug_ZmthMain_63;
+extern int g_RemovedDebug_ZmthMain_64;
+extern int g_RemovedDebug_ZmthMain_65;
+extern int g_RemovedDebug_ZmthMain_66;
+extern int g_RemovedDebug_ZmthMain_67;
+extern int g_RemovedDebug_ZmthMain_68;
+extern int g_RemovedDebug_ZmthMain_69;
+extern int g_RemovedDebug_ZmthMain_70;
+extern int g_RemovedDebug_ZmthMain_71;
+extern int g_RemovedDebug_ZmthMain_72;
+extern int g_RemovedDebug_ZmthMain_73;
+extern int g_RemovedDebug_ZmthMain_74;
+extern int g_RemovedDebug_ZmthMain_75;
+extern int g_RemovedDebug_ZmthMain_76;
+extern int g_RemovedDebug_ZmthMain_77;
+extern int g_RemovedDebug_ZmthMain_78;
+extern int g_RemovedDebug_ZmthMain_79;
+extern int g_RemovedDebug_ZmthMain_80;
+extern int g_RemovedDebug_ZmthMain_81;
+extern int g_RemovedDebug_ZmthMain_82;
+extern int g_RemovedDebug_ZmthMain_83;
+extern int g_RemovedDebug_ZmthMain_84;
+extern int g_RemovedDebug_ZmthMain_85;
+extern int g_RemovedDebug_ZmthMain_86;
+extern int g_RemovedDebug_ZmthMain_87;
+extern int g_RemovedDebug_ZmthMain_88;
+extern int g_RemovedDebug_ZmthMain_89;
+extern int g_RemovedDebug_ZmthMain_90;
+extern int g_RemovedDebug_ZmthMain_91;
+extern int g_RemovedDebug_ZmthMain_92;
+extern int g_RemovedDebug_ZmthMain_93;
+extern int g_RemovedDebug_ZmthMain_94;
+extern int g_RemovedDebug_ZmthMain_95;
+extern int g_RemovedDebug_ZmthMain_96;
+extern int g_RemovedDebug_ZmthMain_97;
+extern int g_RemovedDebug_ZmthMain_98;
+extern int g_RemovedDebug_ZmthMain_99;
+extern int g_RemovedDebug_ZmthMain_100;
+extern int g_RemovedDebug_ZmthMain_101;
+extern int g_RemovedDebug_ZmthMain_102;
+extern int g_RemovedDebug_ZmthMain_103;
+
+/**
  * Purpose: stores the projection scale, offset, inverse scale, and sphere
  * radius cache values derived by zMath projection setup.
  */
@@ -1214,10 +1324,47 @@ void __stdcall MatRotateX(float angleRad)
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_104;
+extern int g_RemovedDebug_ZmthMain_105;
+extern int g_RemovedDebug_ZmthMain_106;
+extern int g_RemovedDebug_ZmthMain_107;
+extern int g_RemovedDebug_ZmthMain_108;
+extern int g_RemovedDebug_ZmthMain_109;
+extern int g_RemovedDebug_ZmthMain_110;
+extern int g_RemovedDebug_ZmthMain_111;
+extern int g_RemovedDebug_ZmthMain_112;
+extern int g_RemovedDebug_ZmthMain_113;
+extern int g_RemovedDebug_ZmthMain_114;
+extern int g_RemovedDebug_ZmthMain_115;
+extern int g_RemovedDebug_ZmthMain_116;
+extern int g_RemovedDebug_ZmthMain_117;
+extern int g_RemovedDebug_ZmthMain_118;
+extern int g_RemovedDebug_ZmthMain_119;
+extern int g_RemovedDebug_ZmthMain_120;
+extern int g_RemovedDebug_ZmthMain_121;
+extern int g_RemovedDebug_ZmthMain_122;
+extern int g_RemovedDebug_ZmthMain_123;
+extern int g_RemovedDebug_ZmthMain_124;
+extern int g_RemovedDebug_ZmthMain_125;
+extern int g_RemovedDebug_ZmthMain_126;
+extern int g_RemovedDebug_ZmthMain_127;
+extern int g_RemovedDebug_ZmthMain_128;
+extern int g_RemovedDebug_ZmthMain_129;
+extern int g_RemovedDebug_ZmthMain_130;
+extern int g_RemovedDebug_ZmthMain_131;
+extern int g_RemovedDebug_ZmthMain_132;
+extern int g_RemovedDebug_ZmthMain_133;
+extern int g_RemovedDebug_ZmthMain_134;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatey
  * @recoil-artifact defines .text recoil:function:0x473b10: zMath::MatRotateY.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: applies a Y-axis rotation to the current matrix stack slot while
  * preserving translation.
@@ -1269,7 +1416,7 @@ void __stdcall MatRotateY(float angleRad)
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matrotatez
  * @recoil-artifact defines .text recoil:function:0x473cc0: zMath::MatRotateZ.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: applies a Z-axis rotation to the current matrix stack slot.
  */
@@ -1457,6 +1604,13 @@ void __fastcall Vec3ArrayProjectToCachedY(const zVec3* points, float* outValues,
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_135;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matapplylocaltrs
  * @recoil-artifact defines .text recoil:function:0x474010: zMath::MatApplyLocalTRS.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
@@ -1526,10 +1680,22 @@ void __fastcall MatApplyLocalTRS(const zVec3* angles, const zVec3* position, con
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_136;
+extern int g_RemovedDebug_ZmthMain_137;
+extern int g_RemovedDebug_ZmthMain_138;
+extern int g_RemovedDebug_ZmthMain_139;
+extern int g_RemovedDebug_ZmthMain_140;
+extern int g_RemovedDebug_ZmthMain_141;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-matbuildeulerrotation3x3
  * @recoil-artifact defines .text recoil:function:0x474260: zMath::MatBuildEulerRotation3x3.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: builds a 3x3 Euler rotation basis in caller-provided matrix
  * storage and clears the translation row.
@@ -1622,7 +1788,7 @@ void __stdcall zMathSetupProjection(
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3array-addscaled
  * @recoil-artifact defines .text recoil:function:0x4744f0: zMathVec3ArrayAddScaled.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: writes bias plus scaled source vectors across a caller-provided
  * vector array.
@@ -1698,9 +1864,131 @@ void __fastcall zMathVec3ArrayTransformDirection(zVec3* vectors, int count)
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_142;
+extern int g_RemovedDebug_ZmthMain_143;
+extern int g_RemovedDebug_ZmthMain_144;
+extern int g_RemovedDebug_ZmthMain_145;
+extern int g_RemovedDebug_ZmthMain_146;
+extern int g_RemovedDebug_ZmthMain_147;
+extern int g_RemovedDebug_ZmthMain_148;
+extern int g_RemovedDebug_ZmthMain_149;
+extern int g_RemovedDebug_ZmthMain_150;
+extern int g_RemovedDebug_ZmthMain_151;
+extern int g_RemovedDebug_ZmthMain_152;
+extern int g_RemovedDebug_ZmthMain_153;
+extern int g_RemovedDebug_ZmthMain_154;
+extern int g_RemovedDebug_ZmthMain_155;
+extern int g_RemovedDebug_ZmthMain_156;
+extern int g_RemovedDebug_ZmthMain_157;
+extern int g_RemovedDebug_ZmthMain_158;
+extern int g_RemovedDebug_ZmthMain_159;
+extern int g_RemovedDebug_ZmthMain_160;
+extern int g_RemovedDebug_ZmthMain_161;
+extern int g_RemovedDebug_ZmthMain_162;
+extern int g_RemovedDebug_ZmthMain_163;
+extern int g_RemovedDebug_ZmthMain_164;
+extern int g_RemovedDebug_ZmthMain_165;
+extern int g_RemovedDebug_ZmthMain_166;
+extern int g_RemovedDebug_ZmthMain_167;
+extern int g_RemovedDebug_ZmthMain_168;
+extern int g_RemovedDebug_ZmthMain_169;
+extern int g_RemovedDebug_ZmthMain_170;
+extern int g_RemovedDebug_ZmthMain_171;
+extern int g_RemovedDebug_ZmthMain_172;
+extern int g_RemovedDebug_ZmthMain_173;
+extern int g_RemovedDebug_ZmthMain_174;
+extern int g_RemovedDebug_ZmthMain_175;
+extern int g_RemovedDebug_ZmthMain_176;
+extern int g_RemovedDebug_ZmthMain_177;
+extern int g_RemovedDebug_ZmthMain_178;
+extern int g_RemovedDebug_ZmthMain_179;
+extern int g_RemovedDebug_ZmthMain_180;
+extern int g_RemovedDebug_ZmthMain_181;
+extern int g_RemovedDebug_ZmthMain_182;
+extern int g_RemovedDebug_ZmthMain_183;
+extern int g_RemovedDebug_ZmthMain_184;
+extern int g_RemovedDebug_ZmthMain_185;
+extern int g_RemovedDebug_ZmthMain_186;
+extern int g_RemovedDebug_ZmthMain_187;
+extern int g_RemovedDebug_ZmthMain_188;
+extern int g_RemovedDebug_ZmthMain_189;
+extern int g_RemovedDebug_ZmthMain_190;
+extern int g_RemovedDebug_ZmthMain_191;
+extern int g_RemovedDebug_ZmthMain_192;
+extern int g_RemovedDebug_ZmthMain_193;
+extern int g_RemovedDebug_ZmthMain_194;
+extern int g_RemovedDebug_ZmthMain_195;
+extern int g_RemovedDebug_ZmthMain_196;
+extern int g_RemovedDebug_ZmthMain_197;
+extern int g_RemovedDebug_ZmthMain_198;
+extern int g_RemovedDebug_ZmthMain_199;
+extern int g_RemovedDebug_ZmthMain_200;
+extern int g_RemovedDebug_ZmthMain_201;
+extern int g_RemovedDebug_ZmthMain_202;
+extern int g_RemovedDebug_ZmthMain_203;
+extern int g_RemovedDebug_ZmthMain_204;
+extern int g_RemovedDebug_ZmthMain_205;
+extern int g_RemovedDebug_ZmthMain_206;
+extern int g_RemovedDebug_ZmthMain_207;
+extern int g_RemovedDebug_ZmthMain_208;
+extern int g_RemovedDebug_ZmthMain_209;
+extern int g_RemovedDebug_ZmthMain_210;
+extern int g_RemovedDebug_ZmthMain_211;
+extern int g_RemovedDebug_ZmthMain_212;
+extern int g_RemovedDebug_ZmthMain_213;
+extern int g_RemovedDebug_ZmthMain_214;
+extern int g_RemovedDebug_ZmthMain_215;
+extern int g_RemovedDebug_ZmthMain_216;
+extern int g_RemovedDebug_ZmthMain_217;
+extern int g_RemovedDebug_ZmthMain_218;
+extern int g_RemovedDebug_ZmthMain_219;
+extern int g_RemovedDebug_ZmthMain_220;
+extern int g_RemovedDebug_ZmthMain_221;
+extern int g_RemovedDebug_ZmthMain_222;
+extern int g_RemovedDebug_ZmthMain_223;
+extern int g_RemovedDebug_ZmthMain_224;
+extern int g_RemovedDebug_ZmthMain_225;
+extern int g_RemovedDebug_ZmthMain_226;
+extern int g_RemovedDebug_ZmthMain_227;
+extern int g_RemovedDebug_ZmthMain_228;
+extern int g_RemovedDebug_ZmthMain_229;
+extern int g_RemovedDebug_ZmthMain_230;
+extern int g_RemovedDebug_ZmthMain_231;
+extern int g_RemovedDebug_ZmthMain_232;
+extern int g_RemovedDebug_ZmthMain_233;
+extern int g_RemovedDebug_ZmthMain_234;
+extern int g_RemovedDebug_ZmthMain_235;
+extern int g_RemovedDebug_ZmthMain_236;
+extern int g_RemovedDebug_ZmthMain_237;
+extern int g_RemovedDebug_ZmthMain_238;
+extern int g_RemovedDebug_ZmthMain_239;
+extern int g_RemovedDebug_ZmthMain_240;
+extern int g_RemovedDebug_ZmthMain_241;
+extern int g_RemovedDebug_ZmthMain_242;
+extern int g_RemovedDebug_ZmthMain_243;
+extern int g_RemovedDebug_ZmthMain_244;
+extern int g_RemovedDebug_ZmthMain_245;
+extern int g_RemovedDebug_ZmthMain_246;
+extern int g_RemovedDebug_ZmthMain_247;
+extern int g_RemovedDebug_ZmthMain_248;
+extern int g_RemovedDebug_ZmthMain_249;
+extern int g_RemovedDebug_ZmthMain_250;
+extern int g_RemovedDebug_ZmthMain_251;
+extern int g_RemovedDebug_ZmthMain_252;
+extern int g_RemovedDebug_ZmthMain_253;
+extern int g_RemovedDebug_ZmthMain_254;
+extern int g_RemovedDebug_ZmthMain_255;
+extern int g_RemovedDebug_ZmthMain_256;
+extern int g_RemovedDebug_ZmthMain_257;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3arraytransformdirection
  * @recoil-artifact defines .text recoil:function:0x474670: zMath::Vec3ArrayTransformDirectionTranspose.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: transforms direction vectors in place by the transposed current matrix
  * rotation when the matrix stack slot is non-identity.
@@ -2106,6 +2394,36 @@ void __fastcall zMathMatExtractEulerAngles(const zMat4x3* matrix, zVec3* outEule
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZmthMain_258;
+extern int g_RemovedDebug_ZmthMain_259;
+extern int g_RemovedDebug_ZmthMain_260;
+extern int g_RemovedDebug_ZmthMain_261;
+extern int g_RemovedDebug_ZmthMain_262;
+extern int g_RemovedDebug_ZmthMain_263;
+extern int g_RemovedDebug_ZmthMain_264;
+extern int g_RemovedDebug_ZmthMain_265;
+extern int g_RemovedDebug_ZmthMain_266;
+extern int g_RemovedDebug_ZmthMain_267;
+extern int g_RemovedDebug_ZmthMain_268;
+extern int g_RemovedDebug_ZmthMain_269;
+extern int g_RemovedDebug_ZmthMain_270;
+extern int g_RemovedDebug_ZmthMain_271;
+extern int g_RemovedDebug_ZmthMain_272;
+extern int g_RemovedDebug_ZmthMain_273;
+extern int g_RemovedDebug_ZmthMain_274;
+extern int g_RemovedDebug_ZmthMain_275;
+extern int g_RemovedDebug_ZmthMain_276;
+extern int g_RemovedDebug_ZmthMain_277;
+extern int g_RemovedDebug_ZmthMain_278;
+extern int g_RemovedDebug_ZmthMain_279;
+extern int g_RemovedDebug_ZmthMain_280;
+extern int g_RemovedDebug_ZmthMain_281;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3-rotatex
  * @recoil-artifact defines .text recoil:function:0x474ec0: zMathVec3RotateX.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
@@ -2130,7 +2448,7 @@ void __fastcall zMathVec3RotateX(zVec3* outVec, const zVec3* inVec, float angleX
  * @recoil-anchor recoil:anchor:gamezrecoil-zmath-zmth-main-zmath-vec3rotatey-gamezrecoil-zmath-zmath-vec-cpp
  * @recoil-artifact defines .text recoil:function:0x474f40: zMath::Vec3RotateY (GameZRecoil/zMath/zmath_vec.cpp).
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.sin-cos
- * @recoil-match source
+ * @recoil-match byte
  *
  * One C-linkage implementation (VC5 decorated name @Vec3RotateY@12) in
  * the angle-last parameter order of the sibling zMathVec3RotateX: outVec

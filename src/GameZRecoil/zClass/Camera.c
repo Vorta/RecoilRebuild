@@ -16,6 +16,231 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Camera_0;
+extern int g_RemovedDebug_Camera_1;
+extern int g_RemovedDebug_Camera_2;
+extern int g_RemovedDebug_Camera_3;
+extern int g_RemovedDebug_Camera_4;
+extern int g_RemovedDebug_Camera_5;
+extern int g_RemovedDebug_Camera_6;
+extern int g_RemovedDebug_Camera_7;
+extern int g_RemovedDebug_Camera_8;
+extern int g_RemovedDebug_Camera_9;
+extern int g_RemovedDebug_Camera_10;
+extern int g_RemovedDebug_Camera_11;
+extern int g_RemovedDebug_Camera_12;
+extern int g_RemovedDebug_Camera_13;
+extern int g_RemovedDebug_Camera_14;
+extern int g_RemovedDebug_Camera_15;
+extern int g_RemovedDebug_Camera_16;
+extern int g_RemovedDebug_Camera_17;
+extern int g_RemovedDebug_Camera_18;
+extern int g_RemovedDebug_Camera_19;
+extern int g_RemovedDebug_Camera_20;
+extern int g_RemovedDebug_Camera_21;
+extern int g_RemovedDebug_Camera_22;
+extern int g_RemovedDebug_Camera_23;
+extern int g_RemovedDebug_Camera_24;
+extern int g_RemovedDebug_Camera_25;
+extern int g_RemovedDebug_Camera_26;
+extern int g_RemovedDebug_Camera_27;
+extern int g_RemovedDebug_Camera_28;
+extern int g_RemovedDebug_Camera_29;
+extern int g_RemovedDebug_Camera_30;
+extern int g_RemovedDebug_Camera_31;
+extern int g_RemovedDebug_Camera_32;
+extern int g_RemovedDebug_Camera_33;
+extern int g_RemovedDebug_Camera_34;
+extern int g_RemovedDebug_Camera_35;
+extern int g_RemovedDebug_Camera_36;
+extern int g_RemovedDebug_Camera_37;
+extern int g_RemovedDebug_Camera_38;
+extern int g_RemovedDebug_Camera_39;
+extern int g_RemovedDebug_Camera_40;
+extern int g_RemovedDebug_Camera_41;
+extern int g_RemovedDebug_Camera_42;
+extern int g_RemovedDebug_Camera_43;
+extern int g_RemovedDebug_Camera_44;
+extern int g_RemovedDebug_Camera_45;
+extern int g_RemovedDebug_Camera_46;
+extern int g_RemovedDebug_Camera_47;
+extern int g_RemovedDebug_Camera_48;
+extern int g_RemovedDebug_Camera_49;
+extern int g_RemovedDebug_Camera_50;
+extern int g_RemovedDebug_Camera_51;
+extern int g_RemovedDebug_Camera_52;
+extern int g_RemovedDebug_Camera_53;
+extern int g_RemovedDebug_Camera_54;
+extern int g_RemovedDebug_Camera_55;
+extern int g_RemovedDebug_Camera_56;
+extern int g_RemovedDebug_Camera_57;
+extern int g_RemovedDebug_Camera_58;
+extern int g_RemovedDebug_Camera_59;
+extern int g_RemovedDebug_Camera_60;
+extern int g_RemovedDebug_Camera_61;
+extern int g_RemovedDebug_Camera_62;
+extern int g_RemovedDebug_Camera_63;
+extern int g_RemovedDebug_Camera_64;
+extern int g_RemovedDebug_Camera_65;
+extern int g_RemovedDebug_Camera_66;
+extern int g_RemovedDebug_Camera_67;
+extern int g_RemovedDebug_Camera_68;
+extern int g_RemovedDebug_Camera_69;
+extern int g_RemovedDebug_Camera_70;
+extern int g_RemovedDebug_Camera_71;
+extern int g_RemovedDebug_Camera_72;
+extern int g_RemovedDebug_Camera_73;
+extern int g_RemovedDebug_Camera_74;
+extern int g_RemovedDebug_Camera_75;
+extern int g_RemovedDebug_Camera_76;
+extern int g_RemovedDebug_Camera_77;
+extern int g_RemovedDebug_Camera_78;
+extern int g_RemovedDebug_Camera_79;
+extern int g_RemovedDebug_Camera_80;
+extern int g_RemovedDebug_Camera_81;
+extern int g_RemovedDebug_Camera_82;
+extern int g_RemovedDebug_Camera_83;
+extern int g_RemovedDebug_Camera_84;
+extern int g_RemovedDebug_Camera_85;
+extern int g_RemovedDebug_Camera_86;
+extern int g_RemovedDebug_Camera_87;
+extern int g_RemovedDebug_Camera_88;
+extern int g_RemovedDebug_Camera_89;
+extern int g_RemovedDebug_Camera_90;
+extern int g_RemovedDebug_Camera_91;
+extern int g_RemovedDebug_Camera_92;
+extern int g_RemovedDebug_Camera_93;
+extern int g_RemovedDebug_Camera_94;
+extern int g_RemovedDebug_Camera_95;
+extern int g_RemovedDebug_Camera_96;
+extern int g_RemovedDebug_Camera_97;
+extern int g_RemovedDebug_Camera_98;
+extern int g_RemovedDebug_Camera_99;
+extern int g_RemovedDebug_Camera_100;
+extern int g_RemovedDebug_Camera_101;
+extern int g_RemovedDebug_Camera_102;
+extern int g_RemovedDebug_Camera_103;
+extern int g_RemovedDebug_Camera_104;
+extern int g_RemovedDebug_Camera_105;
+extern int g_RemovedDebug_Camera_106;
+extern int g_RemovedDebug_Camera_107;
+extern int g_RemovedDebug_Camera_108;
+extern int g_RemovedDebug_Camera_109;
+extern int g_RemovedDebug_Camera_110;
+extern int g_RemovedDebug_Camera_111;
+extern int g_RemovedDebug_Camera_112;
+extern int g_RemovedDebug_Camera_113;
+extern int g_RemovedDebug_Camera_114;
+extern int g_RemovedDebug_Camera_115;
+extern int g_RemovedDebug_Camera_116;
+extern int g_RemovedDebug_Camera_117;
+extern int g_RemovedDebug_Camera_118;
+extern int g_RemovedDebug_Camera_119;
+extern int g_RemovedDebug_Camera_120;
+extern int g_RemovedDebug_Camera_121;
+extern int g_RemovedDebug_Camera_122;
+extern int g_RemovedDebug_Camera_123;
+extern int g_RemovedDebug_Camera_124;
+extern int g_RemovedDebug_Camera_125;
+extern int g_RemovedDebug_Camera_126;
+extern int g_RemovedDebug_Camera_127;
+extern int g_RemovedDebug_Camera_128;
+extern int g_RemovedDebug_Camera_129;
+extern int g_RemovedDebug_Camera_130;
+extern int g_RemovedDebug_Camera_131;
+extern int g_RemovedDebug_Camera_132;
+extern int g_RemovedDebug_Camera_133;
+extern int g_RemovedDebug_Camera_134;
+extern int g_RemovedDebug_Camera_135;
+extern int g_RemovedDebug_Camera_136;
+extern int g_RemovedDebug_Camera_137;
+extern int g_RemovedDebug_Camera_138;
+extern int g_RemovedDebug_Camera_139;
+extern int g_RemovedDebug_Camera_140;
+extern int g_RemovedDebug_Camera_141;
+extern int g_RemovedDebug_Camera_142;
+extern int g_RemovedDebug_Camera_143;
+extern int g_RemovedDebug_Camera_144;
+extern int g_RemovedDebug_Camera_145;
+extern int g_RemovedDebug_Camera_146;
+extern int g_RemovedDebug_Camera_147;
+extern int g_RemovedDebug_Camera_148;
+extern int g_RemovedDebug_Camera_149;
+extern int g_RemovedDebug_Camera_150;
+extern int g_RemovedDebug_Camera_151;
+extern int g_RemovedDebug_Camera_152;
+extern int g_RemovedDebug_Camera_153;
+extern int g_RemovedDebug_Camera_154;
+extern int g_RemovedDebug_Camera_155;
+extern int g_RemovedDebug_Camera_156;
+extern int g_RemovedDebug_Camera_157;
+extern int g_RemovedDebug_Camera_158;
+extern int g_RemovedDebug_Camera_159;
+extern int g_RemovedDebug_Camera_160;
+extern int g_RemovedDebug_Camera_161;
+extern int g_RemovedDebug_Camera_162;
+extern int g_RemovedDebug_Camera_163;
+extern int g_RemovedDebug_Camera_164;
+extern int g_RemovedDebug_Camera_165;
+extern int g_RemovedDebug_Camera_166;
+extern int g_RemovedDebug_Camera_167;
+extern int g_RemovedDebug_Camera_168;
+extern int g_RemovedDebug_Camera_169;
+extern int g_RemovedDebug_Camera_170;
+extern int g_RemovedDebug_Camera_171;
+extern int g_RemovedDebug_Camera_172;
+extern int g_RemovedDebug_Camera_173;
+extern int g_RemovedDebug_Camera_174;
+extern int g_RemovedDebug_Camera_175;
+extern int g_RemovedDebug_Camera_176;
+extern int g_RemovedDebug_Camera_177;
+extern int g_RemovedDebug_Camera_178;
+extern int g_RemovedDebug_Camera_179;
+extern int g_RemovedDebug_Camera_180;
+extern int g_RemovedDebug_Camera_181;
+extern int g_RemovedDebug_Camera_182;
+extern int g_RemovedDebug_Camera_183;
+extern int g_RemovedDebug_Camera_184;
+extern int g_RemovedDebug_Camera_185;
+extern int g_RemovedDebug_Camera_186;
+extern int g_RemovedDebug_Camera_187;
+extern int g_RemovedDebug_Camera_188;
+extern int g_RemovedDebug_Camera_189;
+extern int g_RemovedDebug_Camera_190;
+extern int g_RemovedDebug_Camera_191;
+extern int g_RemovedDebug_Camera_192;
+extern int g_RemovedDebug_Camera_193;
+extern int g_RemovedDebug_Camera_194;
+extern int g_RemovedDebug_Camera_195;
+extern int g_RemovedDebug_Camera_196;
+extern int g_RemovedDebug_Camera_197;
+extern int g_RemovedDebug_Camera_198;
+extern int g_RemovedDebug_Camera_199;
+extern int g_RemovedDebug_Camera_200;
+extern int g_RemovedDebug_Camera_201;
+extern int g_RemovedDebug_Camera_202;
+extern int g_RemovedDebug_Camera_203;
+extern int g_RemovedDebug_Camera_204;
+extern int g_RemovedDebug_Camera_205;
+extern int g_RemovedDebug_Camera_206;
+extern int g_RemovedDebug_Camera_207;
+extern int g_RemovedDebug_Camera_208;
+extern int g_RemovedDebug_Camera_209;
+extern int g_RemovedDebug_Camera_210;
+extern int g_RemovedDebug_Camera_211;
+extern int g_RemovedDebug_Camera_212;
+extern int g_RemovedDebug_Camera_213;
+extern int g_RemovedDebug_Camera_214;
+extern int g_RemovedDebug_Camera_215;
+extern int g_RemovedDebug_Camera_216;
+extern int g_RemovedDebug_Camera_217;
+extern int g_RemovedDebug_Camera_218;
+
 int __fastcall BindWorldNode(CZNodePartial* worldNode);
 /* zRender and zVideo entry points; zrndr.h and zvid.h declare them for the C++ units only. */
 int __cdecl zRndrLensFlareGetQueuedSampleCount(void);
@@ -782,7 +1007,7 @@ int __fastcall
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.gwcameratranslatetarget
  * @recoil-artifact defines .text recoil:function:0x44a1a0: CZCamera::gwCameraTranslate.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: translate the camera position (matrix translation in matrix mode) and update children.
  */
@@ -1104,7 +1329,7 @@ __inline void Vec3ScaleTo(const zVec3* vec, float scale, zVec3* out)
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.updateimpl
  * @recoil-artifact defines .text recoil:function:0x44aa30: CZCamera::UpdateImpl.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-add
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: rebuild camera transforms, frustum planes, and clip centers.
  */
@@ -2648,7 +2873,7 @@ BuildFrustumGridTiles(CZNodePartial* world, CZWorldDataPartial* worldData, CZCam
  * @recoil-anchor recoil:anchor:gamezrecoil.zclass.camera.buildfrustumgridtilesfromparams
  * @recoil-artifact defines .text recoil:function:0x44c8e0: CZCamera::BuildFrustumGridTilesFromParams
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-transform-point
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: build frustum grid rings while preserving raw out-of-bounds
  * grid offsets for wrapped/clamped world positions.

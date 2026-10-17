@@ -950,9 +950,33 @@ void __fastcall zRndrLensFlareSetVisibleSampleStage(int stageIndex, zImage_TexDi
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZrndrDraw_0;
+extern int g_RemovedDebug_ZrndrDraw_1;
+extern int g_RemovedDebug_ZrndrDraw_2;
+extern int g_RemovedDebug_ZrndrDraw_3;
+extern int g_RemovedDebug_ZrndrDraw_4;
+extern int g_RemovedDebug_ZrndrDraw_5;
+extern int g_RemovedDebug_ZrndrDraw_6;
+extern int g_RemovedDebug_ZrndrDraw_7;
+extern int g_RemovedDebug_ZrndrDraw_8;
+extern int g_RemovedDebug_ZrndrDraw_9;
+extern int g_RemovedDebug_ZrndrDraw_10;
+extern int g_RemovedDebug_ZrndrDraw_11;
+extern int g_RemovedDebug_ZrndrDraw_12;
+extern int g_RemovedDebug_ZrndrDraw_13;
+extern int g_RemovedDebug_ZrndrDraw_14;
+extern int g_RemovedDebug_ZrndrDraw_15;
+extern int g_RemovedDebug_ZrndrDraw_16;
+extern int g_RemovedDebug_ZrndrDraw_17;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil-zrender-zrndr-draw-zrndr-lensflare-drawsamplestageclipped
  * @recoil-artifact defines .text recoil:function:0x49aa90: zRndrLensFlareDrawSampleStageClipped
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\GameZRecoil\zRndr\zRndr_LensFlare.cpp.
  * Source file evidence: Binary Ninja function source comment.

@@ -6,6 +6,13 @@
 #define ZMTH_VEC3ROTATEY_LEGACY_ORDER 1
 #include "Battlesport/ai_net.h"
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_AiNet_0;
+
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:battlesport.ai-net.g-ainet-path-probe-half-width-scale
@@ -1895,7 +1902,7 @@ void __fastcall AINet::TickAiAltGunAttackWindow(zUtil_SaveGameState* saveState, 
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-dot-xyz recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4024a0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.fast-sqrt-estimate recoil:function:0x4024a0
- * @recoil-match source
+ * @recoil-match byte
  *
  * Original function evidence: retail 0x4024a0 contains two shared fixed-register
  * grouped-x87 subtraction islands, three full-XYZ dot islands, and one
@@ -1991,7 +1998,7 @@ void __fastcall AINet::SolveAltGunLeadTargetPoint(
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.solve-alt-gun-lead.vector-add recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-dot-xz recoil:function:0x4026d0
  * @recoil-raw-consumer recoil:raw-asm:battlesport.ai-net.path-cross-xz recoil:function:0x4026d0
- * @recoil-match source
+ * @recoil-match byte
  *
  * Pro review 2026-09-08T14-41-30-384Z: native component, grouped, and pointer
  * variants and mixed native dot/cross failed; use the five exact shared islands.

@@ -18,25 +18,22 @@
 #include <sys/stat.h>
 
 /**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and 0x463570 and 0x463b00 order(s) code by that counter's
- * parity at parse time. These declarations are never referenced and emit no code,
- * data or symbols. User-authorized exception: match-proofs.md "Per-TU VC5
- * ID-counter parity exception".
- * Purpose: keep this file's ID-counter parity after shared-header changes.
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
  */
-extern int g_FmvScriptIdCounterAlignment0;
-extern int g_FmvScriptIdCounterAlignment1;
-extern int g_FmvScriptIdCounterAlignment2;
-extern int g_FmvScriptIdCounterAlignment3;
-extern int g_FmvScriptIdCounterAlignment4;
-extern int g_FmvScriptIdCounterAlignment5;
-extern int g_FmvScriptIdCounterAlignment6;
-extern int g_FmvScriptIdCounterAlignment7;
-extern int g_FmvScriptIdCounterAlignment8;
-extern int g_FmvScriptIdCounterAlignment9;
-extern int g_FmvScriptIdCounterAlignment10;
-extern int g_FmvScriptIdCounterAlignment11;
+extern int g_RemovedDebug_FmvScript_0;
+extern int g_RemovedDebug_FmvScript_1;
+extern int g_RemovedDebug_FmvScript_2;
+extern int g_RemovedDebug_FmvScript_3;
+extern int g_RemovedDebug_FmvScript_4;
+extern int g_RemovedDebug_FmvScript_5;
+extern int g_RemovedDebug_FmvScript_6;
+extern int g_RemovedDebug_FmvScript_7;
+extern int g_RemovedDebug_FmvScript_8;
+extern int g_RemovedDebug_FmvScript_9;
+extern int g_RemovedDebug_FmvScript_10;
+extern int g_RemovedDebug_FmvScript_11;
 
 extern "C" HWND g_RecoilApp_hWndMain;
 

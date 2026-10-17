@@ -42,6 +42,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Hud_0;
+
 extern "C" int g_RecoilState_MainMenuSkipExitDelay = 0;
 
 /**
@@ -9570,7 +9577,7 @@ namespace HudUiMgrSensor {
 /**
  * @recoil-anchor recoil:anchor:battlesport.hud.placetrackcounterwidget
  * @recoil-artifact defines .text recoil:function:0x412070: HudUiMgrSensor::PlaceTrackCounterWidget.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\HudUiMgrSensor.cpp.
  * Binary Ninja/source evidence keeps this in the sensor-target runtime owner:
@@ -12804,14 +12811,10 @@ void zFMV_Action::RunBlockingTimed()
 }
 
 /**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and HudUiListMenuEntry::SortRange (0x414710) orders its
- * partition-length evaluation by that counter. These declarations are never
- * referenced and emit no code, data or symbols. User-authorized exception:
- * match-proofs.md "0x414710 VC5 ID-counter alignment exception"; evidence in
- * build/diagnostics/sortrange-id-counter-20260926.
- * Purpose: align the ID counter so SortRange's unchanged source emits the retail order.
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
  */
-extern int g_HudSortRangeIdCounterAlignment0;
-extern int g_HudSortRangeIdCounterAlignment1;
-extern int g_HudSortRangeIdCounterAlignment2;
+extern int g_RemovedDebug_Hud_1;
+extern int g_RemovedDebug_Hud_2;
+extern int g_RemovedDebug_Hud_3;

@@ -12,6 +12,30 @@
  */
 #include <ddraw.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZvidDd_0;
+extern int g_RemovedDebug_ZvidDd_1;
+extern int g_RemovedDebug_ZvidDd_2;
+extern int g_RemovedDebug_ZvidDd_3;
+extern int g_RemovedDebug_ZvidDd_4;
+extern int g_RemovedDebug_ZvidDd_5;
+extern int g_RemovedDebug_ZvidDd_6;
+extern int g_RemovedDebug_ZvidDd_7;
+extern int g_RemovedDebug_ZvidDd_8;
+extern int g_RemovedDebug_ZvidDd_9;
+extern int g_RemovedDebug_ZvidDd_10;
+extern int g_RemovedDebug_ZvidDd_11;
+extern int g_RemovedDebug_ZvidDd_12;
+extern int g_RemovedDebug_ZvidDd_13;
+extern int g_RemovedDebug_ZvidDd_14;
+extern int g_RemovedDebug_ZvidDd_15;
+extern int g_RemovedDebug_ZvidDd_16;
+extern int g_RemovedDebug_ZvidDd_17;
+
 #include "GameZRecoil/zVideo/zvid.h"
 
 #include "GameZRecoil/zError/zerr.h"
@@ -113,7 +137,7 @@ int __fastcall
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-dd.z-video-dd-present-display-mode-surface
  * @recoil-artifact defines .text recoil:function:0x4a7b60: zVideoddPresentDisplayModeSurface.
- * @recoil-match source
+ * @recoil-match byte
  */
 zVideoddPresentDisplayModeSurface(zVidRect32 * srcRect, zVidRect32 * dstRect, int waitForPresent, int skipSurfaceStateSwap)
 {

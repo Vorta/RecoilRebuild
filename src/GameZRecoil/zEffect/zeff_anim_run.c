@@ -3067,9 +3067,17 @@ HandleEmitterLoopEvent(zEffectAnimEntry* self, zEffectAnimSurfaceRuntime* runtim
 }
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZeffAnimRun_0;
+extern int g_RemovedDebug_ZeffAnimRun_1;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalchainevent
  * @recoil-artifact defines .text recoil:function:0x45c3c0: zEffect::HandleConditionalChainEvent.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: evaluate a conditional event chain and skip to the matching branch
@@ -3226,7 +3234,7 @@ float __fastcall GetConditionalRefPosDistanceSq(CZNodePartial* node)
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.skipconditionalchaintoend
  * @recoil-artifact defines .text recoil:logical-function:0x45c6b0:zeffect-skip-conditional-chain-to-end: zEffect::SkipConditionalChainToEnd.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\GameZRecoil\zEffect\zeff_anim_run.c.
  * Purpose: advance the current event cursor to the end marker of a conditional
@@ -3246,7 +3254,7 @@ int __fastcall SkipConditionalChainToEnd(zEffectAnimEntry* self, zEffectAnimSurf
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zeffect.zeff-anim-run.handleconditionalelseifevent
  * @recoil-artifact defines .text recoil:logical-function:0x45c6b0:zeffect-handle-conditional-else-if-event: zEffect::HandleConditionalElseIfEvent.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Logical fold alias of 0x45c6b0 (zEffect::SkipConditionalChainToEnd).
  * Evidence: RunSequenceEvents dispatches event 0x21 (else-if) through its

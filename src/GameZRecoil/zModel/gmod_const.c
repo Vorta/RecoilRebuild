@@ -18,6 +18,154 @@
 #include <string.h>
 
 /**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_GmodConst_0;
+extern int g_RemovedDebug_GmodConst_1;
+extern int g_RemovedDebug_GmodConst_2;
+extern int g_RemovedDebug_GmodConst_3;
+extern int g_RemovedDebug_GmodConst_4;
+extern int g_RemovedDebug_GmodConst_5;
+extern int g_RemovedDebug_GmodConst_6;
+extern int g_RemovedDebug_GmodConst_7;
+extern int g_RemovedDebug_GmodConst_8;
+extern int g_RemovedDebug_GmodConst_9;
+extern int g_RemovedDebug_GmodConst_10;
+extern int g_RemovedDebug_GmodConst_11;
+extern int g_RemovedDebug_GmodConst_12;
+extern int g_RemovedDebug_GmodConst_13;
+extern int g_RemovedDebug_GmodConst_14;
+extern int g_RemovedDebug_GmodConst_15;
+extern int g_RemovedDebug_GmodConst_16;
+extern int g_RemovedDebug_GmodConst_17;
+extern int g_RemovedDebug_GmodConst_18;
+extern int g_RemovedDebug_GmodConst_19;
+extern int g_RemovedDebug_GmodConst_20;
+extern int g_RemovedDebug_GmodConst_21;
+extern int g_RemovedDebug_GmodConst_22;
+extern int g_RemovedDebug_GmodConst_23;
+extern int g_RemovedDebug_GmodConst_24;
+extern int g_RemovedDebug_GmodConst_25;
+extern int g_RemovedDebug_GmodConst_26;
+extern int g_RemovedDebug_GmodConst_27;
+extern int g_RemovedDebug_GmodConst_28;
+extern int g_RemovedDebug_GmodConst_29;
+extern int g_RemovedDebug_GmodConst_30;
+extern int g_RemovedDebug_GmodConst_31;
+extern int g_RemovedDebug_GmodConst_32;
+extern int g_RemovedDebug_GmodConst_33;
+extern int g_RemovedDebug_GmodConst_34;
+extern int g_RemovedDebug_GmodConst_35;
+extern int g_RemovedDebug_GmodConst_36;
+extern int g_RemovedDebug_GmodConst_37;
+extern int g_RemovedDebug_GmodConst_38;
+extern int g_RemovedDebug_GmodConst_39;
+extern int g_RemovedDebug_GmodConst_40;
+extern int g_RemovedDebug_GmodConst_41;
+extern int g_RemovedDebug_GmodConst_42;
+extern int g_RemovedDebug_GmodConst_43;
+extern int g_RemovedDebug_GmodConst_44;
+extern int g_RemovedDebug_GmodConst_45;
+extern int g_RemovedDebug_GmodConst_46;
+extern int g_RemovedDebug_GmodConst_47;
+extern int g_RemovedDebug_GmodConst_48;
+extern int g_RemovedDebug_GmodConst_49;
+extern int g_RemovedDebug_GmodConst_50;
+extern int g_RemovedDebug_GmodConst_51;
+extern int g_RemovedDebug_GmodConst_52;
+extern int g_RemovedDebug_GmodConst_53;
+extern int g_RemovedDebug_GmodConst_54;
+extern int g_RemovedDebug_GmodConst_55;
+extern int g_RemovedDebug_GmodConst_56;
+extern int g_RemovedDebug_GmodConst_57;
+extern int g_RemovedDebug_GmodConst_58;
+extern int g_RemovedDebug_GmodConst_59;
+extern int g_RemovedDebug_GmodConst_60;
+extern int g_RemovedDebug_GmodConst_61;
+extern int g_RemovedDebug_GmodConst_62;
+extern int g_RemovedDebug_GmodConst_63;
+extern int g_RemovedDebug_GmodConst_64;
+extern int g_RemovedDebug_GmodConst_65;
+extern int g_RemovedDebug_GmodConst_66;
+extern int g_RemovedDebug_GmodConst_67;
+extern int g_RemovedDebug_GmodConst_68;
+extern int g_RemovedDebug_GmodConst_69;
+extern int g_RemovedDebug_GmodConst_70;
+extern int g_RemovedDebug_GmodConst_71;
+extern int g_RemovedDebug_GmodConst_72;
+extern int g_RemovedDebug_GmodConst_73;
+extern int g_RemovedDebug_GmodConst_74;
+extern int g_RemovedDebug_GmodConst_75;
+extern int g_RemovedDebug_GmodConst_76;
+extern int g_RemovedDebug_GmodConst_77;
+extern int g_RemovedDebug_GmodConst_78;
+extern int g_RemovedDebug_GmodConst_79;
+extern int g_RemovedDebug_GmodConst_80;
+extern int g_RemovedDebug_GmodConst_81;
+extern int g_RemovedDebug_GmodConst_82;
+extern int g_RemovedDebug_GmodConst_83;
+extern int g_RemovedDebug_GmodConst_84;
+extern int g_RemovedDebug_GmodConst_85;
+extern int g_RemovedDebug_GmodConst_86;
+extern int g_RemovedDebug_GmodConst_87;
+extern int g_RemovedDebug_GmodConst_88;
+extern int g_RemovedDebug_GmodConst_89;
+extern int g_RemovedDebug_GmodConst_90;
+extern int g_RemovedDebug_GmodConst_91;
+extern int g_RemovedDebug_GmodConst_92;
+extern int g_RemovedDebug_GmodConst_93;
+extern int g_RemovedDebug_GmodConst_94;
+extern int g_RemovedDebug_GmodConst_95;
+extern int g_RemovedDebug_GmodConst_96;
+extern int g_RemovedDebug_GmodConst_97;
+extern int g_RemovedDebug_GmodConst_98;
+extern int g_RemovedDebug_GmodConst_99;
+extern int g_RemovedDebug_GmodConst_100;
+extern int g_RemovedDebug_GmodConst_101;
+extern int g_RemovedDebug_GmodConst_102;
+extern int g_RemovedDebug_GmodConst_103;
+extern int g_RemovedDebug_GmodConst_104;
+extern int g_RemovedDebug_GmodConst_105;
+extern int g_RemovedDebug_GmodConst_106;
+extern int g_RemovedDebug_GmodConst_107;
+extern int g_RemovedDebug_GmodConst_108;
+extern int g_RemovedDebug_GmodConst_109;
+extern int g_RemovedDebug_GmodConst_110;
+extern int g_RemovedDebug_GmodConst_111;
+extern int g_RemovedDebug_GmodConst_112;
+extern int g_RemovedDebug_GmodConst_113;
+extern int g_RemovedDebug_GmodConst_114;
+extern int g_RemovedDebug_GmodConst_115;
+extern int g_RemovedDebug_GmodConst_116;
+extern int g_RemovedDebug_GmodConst_117;
+extern int g_RemovedDebug_GmodConst_118;
+extern int g_RemovedDebug_GmodConst_119;
+extern int g_RemovedDebug_GmodConst_120;
+extern int g_RemovedDebug_GmodConst_121;
+extern int g_RemovedDebug_GmodConst_122;
+extern int g_RemovedDebug_GmodConst_123;
+extern int g_RemovedDebug_GmodConst_124;
+extern int g_RemovedDebug_GmodConst_125;
+extern int g_RemovedDebug_GmodConst_126;
+extern int g_RemovedDebug_GmodConst_127;
+extern int g_RemovedDebug_GmodConst_128;
+extern int g_RemovedDebug_GmodConst_129;
+extern int g_RemovedDebug_GmodConst_130;
+extern int g_RemovedDebug_GmodConst_131;
+extern int g_RemovedDebug_GmodConst_132;
+extern int g_RemovedDebug_GmodConst_133;
+extern int g_RemovedDebug_GmodConst_134;
+extern int g_RemovedDebug_GmodConst_135;
+extern int g_RemovedDebug_GmodConst_136;
+extern int g_RemovedDebug_GmodConst_137;
+extern int g_RemovedDebug_GmodConst_138;
+extern int g_RemovedDebug_GmodConst_139;
+extern int g_RemovedDebug_GmodConst_140;
+extern int g_RemovedDebug_GmodConst_141;
+
+/**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.g-zmodel-sourcefile-gmodconstc
  * @recoil-artifact defines .data recoil:data:0x4e13a0: g_zModel_SourceFile_GmodConstC.
  * Data owner: geometry_model_assets.zmodel_gmod_const_literals.
@@ -1368,7 +1516,7 @@ zVec3 __fastcall SetNormalizedCrossFromVertexTriplet(zVec3* vertex0, zVec3* vert
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.ispolygoncoplanar
  * @recoil-artifact defines .text recoil:function:0x482db0: zModel_Const::IsPolygonCoplanar
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: test whether every polygon vertex lies within the coplanar tolerance.
  */
@@ -1733,7 +1881,7 @@ int __fastcall AddPolygon(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil.zmodel.gmod-const.addpolygonex
  * @recoil-artifact defines .text recoil:function:0x483650: zDi::AddPolygonEx
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: add a polygon entry with optional normals, UVs, splitting, and generated UV repair.
  */

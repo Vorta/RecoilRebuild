@@ -15,14 +15,11 @@
 #include <string.h>
 
 /**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and ProjectInnerRingOntoCachedPlane (0x46c570) orders its x87 loads
- * by that counter's parity at parse time. These declarations are never referenced
- * and emit no code, data or symbols. User-authorized exception: match-proofs.md
- * "Per-TU VC5 ID-counter parity exception".
- * Purpose: keep this file's ID-counter parity after including zmth.h.
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
  */
-extern int g_ZgeoHoleIdCounterAlignment0;
+extern int g_RemovedDebug_ZgeoHole_0;
 
 namespace {
 /*

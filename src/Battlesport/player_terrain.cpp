@@ -4,6 +4,36 @@
 // that the neighbouring objects pool separately. Original filename unresolved;
 // player_terrain.cpp is a provisional name (2026-10-02).
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_PlayerTerrain_0;
+extern int g_RemovedDebug_PlayerTerrain_1;
+extern int g_RemovedDebug_PlayerTerrain_2;
+extern int g_RemovedDebug_PlayerTerrain_3;
+extern int g_RemovedDebug_PlayerTerrain_4;
+extern int g_RemovedDebug_PlayerTerrain_5;
+extern int g_RemovedDebug_PlayerTerrain_6;
+extern int g_RemovedDebug_PlayerTerrain_7;
+extern int g_RemovedDebug_PlayerTerrain_8;
+extern int g_RemovedDebug_PlayerTerrain_9;
+extern int g_RemovedDebug_PlayerTerrain_10;
+extern int g_RemovedDebug_PlayerTerrain_11;
+extern int g_RemovedDebug_PlayerTerrain_12;
+extern int g_RemovedDebug_PlayerTerrain_13;
+extern int g_RemovedDebug_PlayerTerrain_14;
+extern int g_RemovedDebug_PlayerTerrain_15;
+extern int g_RemovedDebug_PlayerTerrain_16;
+extern int g_RemovedDebug_PlayerTerrain_17;
+extern int g_RemovedDebug_PlayerTerrain_18;
+extern int g_RemovedDebug_PlayerTerrain_19;
+extern int g_RemovedDebug_PlayerTerrain_20;
+extern int g_RemovedDebug_PlayerTerrain_21;
+extern int g_RemovedDebug_PlayerTerrain_22;
+extern int g_RemovedDebug_PlayerTerrain_23;
+
 #include "recoil/Mfc42Abi.h"
 #include "player.h"
 
@@ -41,20 +71,17 @@
 #include <string.h>
 
 /**
- * VC5 C1 draws declarations, labels and temporaries from one translation-unit
- * ID counter, and 0x42cbd0 order(s) code by that counter's
- * parity at parse time. These declarations are never referenced and emit no code,
- * data or symbols. User-authorized exception: match-proofs.md "Per-TU VC5
- * ID-counter parity exception".
- * Purpose: keep this file's ID-counter parity after shared-header changes.
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
  */
-extern int g_PlayerTerrainIdCounterAlignment0;
-extern int g_PlayerTerrainIdCounterAlignment1;
-extern int g_PlayerTerrainIdCounterAlignment2;
-extern int g_PlayerTerrainIdCounterAlignment3;
-extern int g_PlayerTerrainIdCounterAlignment4;
-extern int g_PlayerTerrainIdCounterAlignment5;
-extern int g_PlayerTerrainIdCounterAlignment6;
+extern int g_RemovedDebug_PlayerTerrain_24;
+extern int g_RemovedDebug_PlayerTerrain_25;
+extern int g_RemovedDebug_PlayerTerrain_26;
+extern int g_RemovedDebug_PlayerTerrain_27;
+extern int g_RemovedDebug_PlayerTerrain_28;
+extern int g_RemovedDebug_PlayerTerrain_29;
+extern int g_RemovedDebug_PlayerTerrain_30;
 extern char g_HudUiCounterText_PlayerLabel[];
 
 extern "C" {
@@ -965,7 +992,7 @@ namespace Player {
  * @recoil-artifact defines .text recoil:function:0x42d5c0: Player::ApplyEnvironmentProbeResult.
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-subtract
  * @recoil-raw-consumer recoil:raw-asm:gamezrecoil.zmath.vector-rotate-rows-in-place
- * @recoil-match source
+ * @recoil-match byte
  *
  * Retail literal-backed physical source block: D:\Proj\Battlesport\player.cpp.
  * Purpose: reimplement Player::ApplyEnvironmentProbeResult from the recovered

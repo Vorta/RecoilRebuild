@@ -27,6 +27,45 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZwepAmmo_0;
+extern int g_RemovedDebug_ZwepAmmo_1;
+extern int g_RemovedDebug_ZwepAmmo_2;
+extern int g_RemovedDebug_ZwepAmmo_3;
+extern int g_RemovedDebug_ZwepAmmo_4;
+extern int g_RemovedDebug_ZwepAmmo_5;
+extern int g_RemovedDebug_ZwepAmmo_6;
+extern int g_RemovedDebug_ZwepAmmo_7;
+extern int g_RemovedDebug_ZwepAmmo_8;
+extern int g_RemovedDebug_ZwepAmmo_9;
+extern int g_RemovedDebug_ZwepAmmo_10;
+extern int g_RemovedDebug_ZwepAmmo_11;
+extern int g_RemovedDebug_ZwepAmmo_12;
+extern int g_RemovedDebug_ZwepAmmo_13;
+extern int g_RemovedDebug_ZwepAmmo_14;
+extern int g_RemovedDebug_ZwepAmmo_15;
+extern int g_RemovedDebug_ZwepAmmo_16;
+extern int g_RemovedDebug_ZwepAmmo_17;
+extern int g_RemovedDebug_ZwepAmmo_18;
+extern int g_RemovedDebug_ZwepAmmo_19;
+extern int g_RemovedDebug_ZwepAmmo_20;
+extern int g_RemovedDebug_ZwepAmmo_21;
+extern int g_RemovedDebug_ZwepAmmo_22;
+extern int g_RemovedDebug_ZwepAmmo_23;
+extern int g_RemovedDebug_ZwepAmmo_24;
+extern int g_RemovedDebug_ZwepAmmo_25;
+extern int g_RemovedDebug_ZwepAmmo_26;
+extern int g_RemovedDebug_ZwepAmmo_27;
+extern int g_RemovedDebug_ZwepAmmo_28;
+extern int g_RemovedDebug_ZwepAmmo_29;
+extern int g_RemovedDebug_ZwepAmmo_30;
+extern int g_RemovedDebug_ZwepAmmo_31;
+extern int g_RemovedDebug_ZwepAmmo_32;
+
 typedef struct OptCatalogQueuedImpactRecord {
     OptCatalogEntryDef* entry;
     CZNodePartial* ownerNode;
@@ -2113,7 +2152,7 @@ int __fastcall EmitCraterImpactEvent(
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-handleimpactevent
  * @recoil-artifact defines .text recoil:function:0x4b07d0: OptCatalog::HandleImpactEvent
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
  * BN behavior: ECX is OptCatalogEntryDef*, EDX is
@@ -2472,7 +2511,7 @@ ReflectAndSortImpactTraceList(OptCatalogTrailRuntimeState* runtime, float* targe
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zweapon-zwep-init-computetrailimpactresponse
  * @recoil-artifact defines .text recoil:function:0x4b0e20: OptCatalog::ComputeTrailImpactResponse
- * @recoil-match source
+ * @recoil-match byte
  *
  * BN source path: D:\Proj\GameZRecoil\zWeapon\zWeapon.cpp.
  * Purpose: raycast a trail segment against the runtime world, apply

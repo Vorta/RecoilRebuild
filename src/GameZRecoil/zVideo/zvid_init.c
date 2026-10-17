@@ -4,6 +4,177 @@
 #include "GameZRecoil/zGame/zgame.h"
 #include "GameZRecoil/zVideo/zvid_state.h"
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_ZvidInit_0;
+extern int g_RemovedDebug_ZvidInit_1;
+extern int g_RemovedDebug_ZvidInit_2;
+extern int g_RemovedDebug_ZvidInit_3;
+extern int g_RemovedDebug_ZvidInit_4;
+extern int g_RemovedDebug_ZvidInit_5;
+extern int g_RemovedDebug_ZvidInit_6;
+extern int g_RemovedDebug_ZvidInit_7;
+extern int g_RemovedDebug_ZvidInit_8;
+extern int g_RemovedDebug_ZvidInit_9;
+extern int g_RemovedDebug_ZvidInit_10;
+extern int g_RemovedDebug_ZvidInit_11;
+extern int g_RemovedDebug_ZvidInit_12;
+extern int g_RemovedDebug_ZvidInit_13;
+extern int g_RemovedDebug_ZvidInit_14;
+extern int g_RemovedDebug_ZvidInit_15;
+extern int g_RemovedDebug_ZvidInit_16;
+extern int g_RemovedDebug_ZvidInit_17;
+extern int g_RemovedDebug_ZvidInit_18;
+extern int g_RemovedDebug_ZvidInit_19;
+extern int g_RemovedDebug_ZvidInit_20;
+extern int g_RemovedDebug_ZvidInit_21;
+extern int g_RemovedDebug_ZvidInit_22;
+extern int g_RemovedDebug_ZvidInit_23;
+extern int g_RemovedDebug_ZvidInit_24;
+extern int g_RemovedDebug_ZvidInit_25;
+extern int g_RemovedDebug_ZvidInit_26;
+extern int g_RemovedDebug_ZvidInit_27;
+extern int g_RemovedDebug_ZvidInit_28;
+extern int g_RemovedDebug_ZvidInit_29;
+extern int g_RemovedDebug_ZvidInit_30;
+extern int g_RemovedDebug_ZvidInit_31;
+extern int g_RemovedDebug_ZvidInit_32;
+extern int g_RemovedDebug_ZvidInit_33;
+extern int g_RemovedDebug_ZvidInit_34;
+extern int g_RemovedDebug_ZvidInit_35;
+extern int g_RemovedDebug_ZvidInit_36;
+extern int g_RemovedDebug_ZvidInit_37;
+extern int g_RemovedDebug_ZvidInit_38;
+extern int g_RemovedDebug_ZvidInit_39;
+extern int g_RemovedDebug_ZvidInit_40;
+extern int g_RemovedDebug_ZvidInit_41;
+extern int g_RemovedDebug_ZvidInit_42;
+extern int g_RemovedDebug_ZvidInit_43;
+extern int g_RemovedDebug_ZvidInit_44;
+extern int g_RemovedDebug_ZvidInit_45;
+extern int g_RemovedDebug_ZvidInit_46;
+extern int g_RemovedDebug_ZvidInit_47;
+extern int g_RemovedDebug_ZvidInit_48;
+extern int g_RemovedDebug_ZvidInit_49;
+extern int g_RemovedDebug_ZvidInit_50;
+extern int g_RemovedDebug_ZvidInit_51;
+extern int g_RemovedDebug_ZvidInit_52;
+extern int g_RemovedDebug_ZvidInit_53;
+extern int g_RemovedDebug_ZvidInit_54;
+extern int g_RemovedDebug_ZvidInit_55;
+extern int g_RemovedDebug_ZvidInit_56;
+extern int g_RemovedDebug_ZvidInit_57;
+extern int g_RemovedDebug_ZvidInit_58;
+extern int g_RemovedDebug_ZvidInit_59;
+extern int g_RemovedDebug_ZvidInit_60;
+extern int g_RemovedDebug_ZvidInit_61;
+extern int g_RemovedDebug_ZvidInit_62;
+extern int g_RemovedDebug_ZvidInit_63;
+extern int g_RemovedDebug_ZvidInit_64;
+extern int g_RemovedDebug_ZvidInit_65;
+extern int g_RemovedDebug_ZvidInit_66;
+extern int g_RemovedDebug_ZvidInit_67;
+extern int g_RemovedDebug_ZvidInit_68;
+extern int g_RemovedDebug_ZvidInit_69;
+extern int g_RemovedDebug_ZvidInit_70;
+extern int g_RemovedDebug_ZvidInit_71;
+extern int g_RemovedDebug_ZvidInit_72;
+extern int g_RemovedDebug_ZvidInit_73;
+extern int g_RemovedDebug_ZvidInit_74;
+extern int g_RemovedDebug_ZvidInit_75;
+extern int g_RemovedDebug_ZvidInit_76;
+extern int g_RemovedDebug_ZvidInit_77;
+extern int g_RemovedDebug_ZvidInit_78;
+extern int g_RemovedDebug_ZvidInit_79;
+extern int g_RemovedDebug_ZvidInit_80;
+extern int g_RemovedDebug_ZvidInit_81;
+extern int g_RemovedDebug_ZvidInit_82;
+extern int g_RemovedDebug_ZvidInit_83;
+extern int g_RemovedDebug_ZvidInit_84;
+extern int g_RemovedDebug_ZvidInit_85;
+extern int g_RemovedDebug_ZvidInit_86;
+extern int g_RemovedDebug_ZvidInit_87;
+extern int g_RemovedDebug_ZvidInit_88;
+extern int g_RemovedDebug_ZvidInit_89;
+extern int g_RemovedDebug_ZvidInit_90;
+extern int g_RemovedDebug_ZvidInit_91;
+extern int g_RemovedDebug_ZvidInit_92;
+extern int g_RemovedDebug_ZvidInit_93;
+extern int g_RemovedDebug_ZvidInit_94;
+extern int g_RemovedDebug_ZvidInit_95;
+extern int g_RemovedDebug_ZvidInit_96;
+extern int g_RemovedDebug_ZvidInit_97;
+extern int g_RemovedDebug_ZvidInit_98;
+extern int g_RemovedDebug_ZvidInit_99;
+extern int g_RemovedDebug_ZvidInit_100;
+extern int g_RemovedDebug_ZvidInit_101;
+extern int g_RemovedDebug_ZvidInit_102;
+extern int g_RemovedDebug_ZvidInit_103;
+extern int g_RemovedDebug_ZvidInit_104;
+extern int g_RemovedDebug_ZvidInit_105;
+extern int g_RemovedDebug_ZvidInit_106;
+extern int g_RemovedDebug_ZvidInit_107;
+extern int g_RemovedDebug_ZvidInit_108;
+extern int g_RemovedDebug_ZvidInit_109;
+extern int g_RemovedDebug_ZvidInit_110;
+extern int g_RemovedDebug_ZvidInit_111;
+extern int g_RemovedDebug_ZvidInit_112;
+extern int g_RemovedDebug_ZvidInit_113;
+extern int g_RemovedDebug_ZvidInit_114;
+extern int g_RemovedDebug_ZvidInit_115;
+extern int g_RemovedDebug_ZvidInit_116;
+extern int g_RemovedDebug_ZvidInit_117;
+extern int g_RemovedDebug_ZvidInit_118;
+extern int g_RemovedDebug_ZvidInit_119;
+extern int g_RemovedDebug_ZvidInit_120;
+extern int g_RemovedDebug_ZvidInit_121;
+extern int g_RemovedDebug_ZvidInit_122;
+extern int g_RemovedDebug_ZvidInit_123;
+extern int g_RemovedDebug_ZvidInit_124;
+extern int g_RemovedDebug_ZvidInit_125;
+extern int g_RemovedDebug_ZvidInit_126;
+extern int g_RemovedDebug_ZvidInit_127;
+extern int g_RemovedDebug_ZvidInit_128;
+extern int g_RemovedDebug_ZvidInit_129;
+extern int g_RemovedDebug_ZvidInit_130;
+extern int g_RemovedDebug_ZvidInit_131;
+extern int g_RemovedDebug_ZvidInit_132;
+extern int g_RemovedDebug_ZvidInit_133;
+extern int g_RemovedDebug_ZvidInit_134;
+extern int g_RemovedDebug_ZvidInit_135;
+extern int g_RemovedDebug_ZvidInit_136;
+extern int g_RemovedDebug_ZvidInit_137;
+extern int g_RemovedDebug_ZvidInit_138;
+extern int g_RemovedDebug_ZvidInit_139;
+extern int g_RemovedDebug_ZvidInit_140;
+extern int g_RemovedDebug_ZvidInit_141;
+extern int g_RemovedDebug_ZvidInit_142;
+extern int g_RemovedDebug_ZvidInit_143;
+extern int g_RemovedDebug_ZvidInit_144;
+extern int g_RemovedDebug_ZvidInit_145;
+extern int g_RemovedDebug_ZvidInit_146;
+extern int g_RemovedDebug_ZvidInit_147;
+extern int g_RemovedDebug_ZvidInit_148;
+extern int g_RemovedDebug_ZvidInit_149;
+extern int g_RemovedDebug_ZvidInit_150;
+extern int g_RemovedDebug_ZvidInit_151;
+extern int g_RemovedDebug_ZvidInit_152;
+extern int g_RemovedDebug_ZvidInit_153;
+extern int g_RemovedDebug_ZvidInit_154;
+extern int g_RemovedDebug_ZvidInit_155;
+extern int g_RemovedDebug_ZvidInit_156;
+extern int g_RemovedDebug_ZvidInit_157;
+extern int g_RemovedDebug_ZvidInit_158;
+extern int g_RemovedDebug_ZvidInit_159;
+extern int g_RemovedDebug_ZvidInit_160;
+extern int g_RemovedDebug_ZvidInit_161;
+extern int g_RemovedDebug_ZvidInit_162;
+extern int g_RemovedDebug_ZvidInit_163;
+extern int g_RemovedDebug_ZvidInit_164;
+
 /* zGame entry point; zgame.h declares it for the C++ units only. */
 void __cdecl ReturnOnlyStub(void);
 
@@ -128,7 +299,7 @@ void __fastcall PixelPackGetPackingParams(int* outPackedBase, int* outSumMinus8,
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-pixel-pack-setup-from-masks
  * @recoil-artifact defines .text recoil:function:0x4a6bf0: zVideo::PixelPackSetupFromMasks.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: initialize the global display pixel-pack bit counts, masks, and
@@ -193,7 +364,7 @@ unsigned short __fastcall zVidPackColorRGB(unsigned char red, unsigned char gree
 /**
  * @recoil-anchor recoil:anchor:zvid.pack-color-rgb-floats
  * @recoil-artifact defines .text recoil:function:0x4a6d40: zVidPackColorRgbFloats.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: round RGB float channels and pack them through the active 16-bit pixel format.
  */
@@ -215,7 +386,7 @@ zVideo_PackedColor16 __fastcall zVidPackColorRgbFloats(zVideo_ColorRgbFloat* col
 /**
  * @recoil-anchor recoil:anchor:zvideo.zvid-init.z-video-texture-pixel-pack-setup-from-masks
  * @recoil-artifact defines .text recoil:function:0x4a6db0: zVideo::TexturePixelPackSetupFromMasks.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: GameZRecoil/zVideo/zVideo.cpp.
  * Purpose: initializes the global texture pixel-pack bit counts, masks,

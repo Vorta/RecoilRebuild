@@ -4,6 +4,34 @@
 // (0x4d2a8c) pool separately. Original filename unresolved; gmod_draw.c is a
 // provisional name (2026-10-02).
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_GmodDraw_0;
+extern int g_RemovedDebug_GmodDraw_1;
+extern int g_RemovedDebug_GmodDraw_2;
+extern int g_RemovedDebug_GmodDraw_3;
+extern int g_RemovedDebug_GmodDraw_4;
+extern int g_RemovedDebug_GmodDraw_5;
+extern int g_RemovedDebug_GmodDraw_6;
+extern int g_RemovedDebug_GmodDraw_7;
+extern int g_RemovedDebug_GmodDraw_8;
+extern int g_RemovedDebug_GmodDraw_9;
+extern int g_RemovedDebug_GmodDraw_10;
+extern int g_RemovedDebug_GmodDraw_11;
+extern int g_RemovedDebug_GmodDraw_12;
+extern int g_RemovedDebug_GmodDraw_13;
+extern int g_RemovedDebug_GmodDraw_14;
+extern int g_RemovedDebug_GmodDraw_15;
+extern int g_RemovedDebug_GmodDraw_16;
+extern int g_RemovedDebug_GmodDraw_17;
+extern int g_RemovedDebug_GmodDraw_18;
+extern int g_RemovedDebug_GmodDraw_19;
+extern int g_RemovedDebug_GmodDraw_20;
+extern int g_RemovedDebug_GmodDraw_21;
+
 #include "GameZRecoil/include/opt_catalog.h"
 #include "GameZRecoil/include/zclip_alt.h"
 #include "GameZRecoil/include/zclip_rect.h"
@@ -517,7 +545,7 @@ int __fastcall ProjectPointAndClampToScreenClip(const zVec3* srcPoint, zVec3* ds
 /**
  * @recoil-anchor recoil:anchor:gamezrecoil-zmodel-gmod-init-zclipalt-remappointxyinplace
  * @recoil-artifact defines .text recoil:function:0x4766a0: zClipAlt::RemapPointXYInPlace
- * @recoil-match source
+ * @recoil-match byte
  *
  * Purpose: reject a point outside the alternate clip rectangle or remap its XY
  * coordinates into source-rectangle space in place.

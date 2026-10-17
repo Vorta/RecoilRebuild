@@ -2,6 +2,71 @@
 
 #include "Battlesport/hud_sensor_tracker.h"
 
+/**
+ * Placeholders for debug-build declarations absent from the recovered shipping
+ * source. They are never referenced and emit no code, data or symbols; they keep
+ * VC5's C1 ID counter where the original declarations left it.
+ */
+extern int g_RemovedDebug_Mission_0;
+extern int g_RemovedDebug_Mission_1;
+extern int g_RemovedDebug_Mission_2;
+extern int g_RemovedDebug_Mission_3;
+extern int g_RemovedDebug_Mission_4;
+extern int g_RemovedDebug_Mission_5;
+extern int g_RemovedDebug_Mission_6;
+extern int g_RemovedDebug_Mission_7;
+extern int g_RemovedDebug_Mission_8;
+extern int g_RemovedDebug_Mission_9;
+extern int g_RemovedDebug_Mission_10;
+extern int g_RemovedDebug_Mission_11;
+extern int g_RemovedDebug_Mission_12;
+extern int g_RemovedDebug_Mission_13;
+extern int g_RemovedDebug_Mission_14;
+extern int g_RemovedDebug_Mission_15;
+extern int g_RemovedDebug_Mission_16;
+extern int g_RemovedDebug_Mission_17;
+extern int g_RemovedDebug_Mission_18;
+extern int g_RemovedDebug_Mission_19;
+extern int g_RemovedDebug_Mission_20;
+extern int g_RemovedDebug_Mission_21;
+extern int g_RemovedDebug_Mission_22;
+extern int g_RemovedDebug_Mission_23;
+extern int g_RemovedDebug_Mission_24;
+extern int g_RemovedDebug_Mission_25;
+extern int g_RemovedDebug_Mission_26;
+extern int g_RemovedDebug_Mission_27;
+extern int g_RemovedDebug_Mission_28;
+extern int g_RemovedDebug_Mission_29;
+extern int g_RemovedDebug_Mission_30;
+extern int g_RemovedDebug_Mission_31;
+extern int g_RemovedDebug_Mission_32;
+extern int g_RemovedDebug_Mission_33;
+extern int g_RemovedDebug_Mission_34;
+extern int g_RemovedDebug_Mission_35;
+extern int g_RemovedDebug_Mission_36;
+extern int g_RemovedDebug_Mission_37;
+extern int g_RemovedDebug_Mission_38;
+extern int g_RemovedDebug_Mission_39;
+extern int g_RemovedDebug_Mission_40;
+extern int g_RemovedDebug_Mission_41;
+extern int g_RemovedDebug_Mission_42;
+extern int g_RemovedDebug_Mission_43;
+extern int g_RemovedDebug_Mission_44;
+extern int g_RemovedDebug_Mission_45;
+extern int g_RemovedDebug_Mission_46;
+extern int g_RemovedDebug_Mission_47;
+extern int g_RemovedDebug_Mission_48;
+extern int g_RemovedDebug_Mission_49;
+extern int g_RemovedDebug_Mission_50;
+extern int g_RemovedDebug_Mission_51;
+extern int g_RemovedDebug_Mission_52;
+extern int g_RemovedDebug_Mission_53;
+extern int g_RemovedDebug_Mission_54;
+extern int g_RemovedDebug_Mission_55;
+extern int g_RemovedDebug_Mission_56;
+extern int g_RemovedDebug_Mission_57;
+extern int g_RemovedDebug_Mission_58;
+
 extern "C" {
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.g-hudsensortracker
@@ -3828,7 +3893,7 @@ void __fastcall DestroyedStateResetCallback(zEffectAnimEntry*, zUtil_SaveGameSta
 /**
  * @recoil-anchor recoil:anchor:battlesport.mission.player-destroyed-state-reset-finalize-callback
  * @recoil-artifact defines .text recoil:function:0x41bca0: Player::DestroyedStateResetFinalizeCallback.
- * @recoil-match source
+ * @recoil-match byte
  *
  * Provisional source-placement hypothesis: D:\Proj\Battlesport\player.cpp.
  * Purpose: finish the destroyed-state model fade-in and restore health,
